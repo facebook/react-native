@@ -61,17 +61,16 @@ Mauris vulputate metus venenatis, finibus augue vel, elementum neque. Donec laor
 Fusce pretium, libero ac dapibus sollicitudin, enim arcu interdum libero, suscipit euismod velit lectus tempor arcu. Sed venenatis lorem et nulla pretium, et ullamcorper sapien malesuada. Mauris ut dictum orci. Morbi eu lectus faucibus, rutrum dui nec, scelerisque ex. Donec vitae erat metus. Aliquam turpis diam, sodales nec commodo pretium, ornare nec metus. Proin elementum, est efficitur malesuada viverra, odio dui luctus orci, a elementum tortor enim quis arcu. Nullam molestie libero ac accumsan auctor. Aliquam consequat odio pretium orci ultricies, a ullamcorper tellus bibendum. Etiam tortor quam, fringilla nec lacus et, tincidunt ultrices mauris. Morbi lacus felis, pellentesque aliquam nisl ut, imperdiet congue lectus. Aliquam non scelerisque enim, vitae tincidunt nulla. Integer odio nisl, viverra sit amet malesuada nec, consectetur consequat turpis.
 
 Maecenas quis turpis vehicula, efficitur lorem eu, tempor lectus. Suspendisse porttitor ex vel nunc imperdiet iaculis. Maecenas dictum vel nisl ac ultricies. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam ac lectus porttitor, posuere nisi sed, ultricies est. Curabitur ullamcorper, dui ut vestibulum rhoncus, nibh velit pulvinar eros, vel bibendum felis quam id nibh. Integer ut purus cursus quam molestie pulvinar. Phasellus dictum nisi eu augue molestie commodo.
-`
+`;
 
 class ScrollViewExpandingExample extends React.Component<Props, State> {
-
   constructor(props) {
     super(props);
 
     this.state = {
       count: 20,
       isExpanded: {},
-      horizontal: false
+      horizontal: false,
     };
   }
 
@@ -81,7 +80,6 @@ class ScrollViewExpandingExample extends React.Component<Props, State> {
   ): Array<any> => {
     const items = [];
     for (let i = 0; i < nItems; i++) {
-
       const onPress = () => {
         this.state.isExpanded[i] = !this.state.isExpanded[i];
         this.setState(this.state);
@@ -93,7 +91,11 @@ class ScrollViewExpandingExample extends React.Component<Props, State> {
       };
 
       items[i] = (
-        <TouchableOpacity key={i} style={styles} onPress={onPress} onLongPress={onLongPress}>
+        <TouchableOpacity
+          key={i}
+          style={styles}
+          onPress={onPress}
+          onLongPress={onLongPress}>
           <Text>{this.state.isExpanded[i] ? LOREM : `Item ${i}`}</Text>
         </TouchableOpacity>
       );
@@ -106,14 +108,17 @@ class ScrollViewExpandingExample extends React.Component<Props, State> {
     const items = this.makeItems(this.state.count, styles.itemWrapper);
 
     const onMaintainVisibleContentPositionSwitchChange = () => {
-      this.state.maintainVisibleContentPosition = this.state.maintainVisibleContentPosition ? null : {minIndexForVisible: 0};
+      this.state.maintainVisibleContentPosition = this.state
+        .maintainVisibleContentPosition
+        ? null
+        : {minIndexForVisible: 0};
       this.setState(this.state);
-    }
+    };
 
     const onHorizontalSwitchChange = () => {
       this.state.horizontal = !this.state.horizontal;
       this.setState(this.state);
-    }
+    };
 
     return (
       <>
@@ -133,7 +138,9 @@ class ScrollViewExpandingExample extends React.Component<Props, State> {
         </View>
         <ScrollView
           horizontal={this.state.horizontal}
-          maintainVisibleContentPosition={this.state.maintainVisibleContentPosition}
+          maintainVisibleContentPosition={
+            this.state.maintainVisibleContentPosition
+          }
           style={styles.verticalScrollView}>
           {items}
         </ScrollView>

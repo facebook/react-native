@@ -86,23 +86,11 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
     dest(new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
 }
 
-
-def follyReplaceContent = '''
-  ssize_t r;
-  do {
-    r = open(name, flags, mode);
-  } while (r == -1 && errno == EINTR);
-  return r;
-'''
-
 task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy) {
     from(dependenciesPath ?: tarTree(downloadFolly.dest))
     from("src/main/jni/third-party/folly/Android.mk")
     include("folly-${FOLLY_VERSION}/folly/**/*", "Android.mk")
     eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
-    // Fixes problem with Folly failing to build on certain systems. See
-    // https://github.com/facebook/react-native/issues/28298
-    filter { line -> line.replaceAll('return int\\(wrapNoInt\\(open, name, flags, mode\\)\\);', follyReplaceContent) }
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/folly")
 }
