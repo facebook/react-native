@@ -620,7 +620,7 @@ jobs:
 
       - run:
           name: Display Environment info
-          command: npx envinfo@latest
+          command: npx envinfo@7.5.1 # Using this version that does not include playwright, since the windows orb provided by circleci does not contain Chrome required by playwright.
 
       - restore_cache:
           keys:
