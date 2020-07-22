@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -22,7 +22,7 @@ export function get<T: TurboModule>(name: string): ?T {
     // Backward compatibility layer during migration.
     const legacyModule = NativeModules[name];
     if (legacyModule != null) {
-      return ((legacyModule: any): T);
+      return ((legacyModule: $FlowFixMe): T);
     }
   }
 

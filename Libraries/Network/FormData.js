@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
 
-type FormDataValue = any;
+type FormDataValue = string | {name?: string, type?: string, uri: string};
 type FormDataNameValuePair = [string, FormDataValue];
 
 type Headers = {[name: string]: string, ...};

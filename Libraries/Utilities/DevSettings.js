@@ -5,12 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow strict-local
  */
 
 import NativeDevSettings from '../NativeModules/specs/NativeDevSettings';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 
-class DevSettings extends NativeEventEmitter {
+interface IDevSettings {
+  addMenuItem(title: string, handler: () => mixed): void;
+  reload(reason?: string): void;
+  onFastRefresh(): void;
+}
+
+class DevSettings extends NativeEventEmitter implements IDevSettings {
   _menuItems: Map<string, () => mixed>;
 
   constructor() {
@@ -39,9 +46,9 @@ class DevSettings extends NativeEventEmitter {
     });
   }
 
-  reload(reason: string) {
+  reload(reason?: string) {
     if (typeof NativeDevSettings.reloadWithReason === 'function') {
-      NativeDevSettings.reloadWithReason(reason || 'Uncategorized from JS');
+      NativeDevSettings.reloadWithReason(reason ?? 'Uncategorized from JS');
     } else {
       NativeDevSettings.reload();
     }
@@ -57,9 +64,12 @@ class DevSettings extends NativeEventEmitter {
 }
 
 // Avoid including the full `NativeDevSettings` class in prod.
-class NoopDevSettings {
+class NoopDevSettings implements IDevSettings {
   addMenuItem(title: string, handler: () => mixed) {}
-  reload() {}
+  reload(reason?: string) {}
+  onFastRefresh() {}
 }
 
-module.exports = __DEV__ ? new DevSettings() : new NoopDevSettings();
+module.exports = ((__DEV__
+  ? new DevSettings()
+  : new NoopDevSettings()): IDevSettings);

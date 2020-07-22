@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -67,10 +67,12 @@ class Blob {
    * the data in the specified range of bytes of the source Blob.
    * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Blob/slice
    */
+  // $FlowFixMe[unsafe-getters-setters]
   set data(data: ?BlobData) {
     this._data = data;
   }
 
+  // $FlowFixMe[unsafe-getters-setters]
   get data(): BlobData {
     if (!this._data) {
       throw new Error('Blob has been closed and is no longer available');
@@ -85,6 +87,7 @@ class Blob {
 
     if (typeof start === 'number') {
       if (start > size) {
+        // $FlowFixMe[reassign-const]
         start = size;
       }
       offset += start;
@@ -92,6 +95,7 @@ class Blob {
 
       if (typeof end === 'number') {
         if (end < 0) {
+          // $FlowFixMe[reassign-const]
           end = this.size + end;
         }
         size = end - start;
@@ -125,6 +129,7 @@ class Blob {
   /**
    * Size of the data contained in the Blob object, in bytes.
    */
+  // $FlowFixMe[unsafe-getters-setters]
   get size(): number {
     return this.data.size;
   }
@@ -133,6 +138,7 @@ class Blob {
    * String indicating the MIME type of the data contained in the Blob.
    * If the type is unknown, this string is empty.
    */
+  // $FlowFixMe[unsafe-getters-setters]
   get type(): string {
     return this.data.type || '';
   }

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  * @jsdoc
  */
 
@@ -31,6 +31,7 @@ function vibrateByPattern(pattern: Array<number>, repeat: boolean = false) {
   _vibrating = true;
   if (pattern[0] === 0) {
     NativeVibration.vibrate(_default_vibration_length);
+    // $FlowFixMe[reassign-const]
     pattern = pattern.slice(1);
   }
   if (pattern.length === 0) {
@@ -52,6 +53,7 @@ function vibrateScheduler(
   NativeVibration.vibrate(_default_vibration_length);
   if (nextIndex >= pattern.length) {
     if (repeat) {
+      // $FlowFixMe[reassign-const]
       nextIndex = 0;
     } else {
       _vibrating = false;

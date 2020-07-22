@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
@@ -22,9 +22,11 @@ export type PlatformSelectSpec<D, N, I> = {
 const Platform = {
   __constants: null,
   OS: 'ios',
+  // $FlowFixMe[unsafe-getters-setters]
   get Version(): string {
     return this.constants.osVersion;
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get constants(): {|
     forceTouchAvailable: boolean,
     interfaceIdiom: string,
@@ -43,18 +45,22 @@ const Platform = {
     }
     return this.__constants;
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get isPad(): boolean {
     return this.constants.interfaceIdiom === 'pad';
   },
   /**
    * Deprecated, use `isTV` instead.
    */
+  // $FlowFixMe[unsafe-getters-setters]
   get isTVOS(): boolean {
     return Platform.isTV;
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get isTV(): boolean {
     return this.constants.interfaceIdiom === 'tv';
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get isTesting(): boolean {
     if (__DEV__) {
       return this.constants.isTesting;
