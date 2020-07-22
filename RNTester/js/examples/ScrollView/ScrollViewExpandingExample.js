@@ -67,8 +67,8 @@ type Props = $ReadOnly<{||}>;
 type State = {
   count: number,
   horizontal: boolean,
-  isExpanded: { [key: number]: boolean },
-  maintainVisibleContentPosition?: { minIndexForVisible: number } | null
+  isExpanded: {[key: number]: boolean},
+  maintainVisibleContentPosition?: {minIndexForVisible: number} | null,
 };
 
 class ScrollViewExpandingExample extends React.Component<Props, State> {
@@ -79,7 +79,7 @@ class ScrollViewExpandingExample extends React.Component<Props, State> {
       count: 20,
       isExpanded: {},
       horizontal: false,
-      maintainVisibleContentPosition: null
+      maintainVisibleContentPosition: null,
     };
   }
 
