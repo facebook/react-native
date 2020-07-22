@@ -9,4 +9,8 @@
 
 'use strict';
 
-module.exports = require('@react-native/polyfills');
+module.exports = () => [
+  require.resolve('./console.js'),
+  require.resolve('./error-guard.js'),
+  require.resolve('./Object.es7.js'),
+];
