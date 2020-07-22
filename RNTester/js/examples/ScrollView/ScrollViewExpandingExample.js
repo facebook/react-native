@@ -63,14 +63,23 @@ Fusce pretium, libero ac dapibus sollicitudin, enim arcu interdum libero, suscip
 Maecenas quis turpis vehicula, efficitur lorem eu, tempor lectus. Suspendisse porttitor ex vel nunc imperdiet iaculis. Maecenas dictum vel nisl ac ultricies. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam ac lectus porttitor, posuere nisi sed, ultricies est. Curabitur ullamcorper, dui ut vestibulum rhoncus, nibh velit pulvinar eros, vel bibendum felis quam id nibh. Integer ut purus cursus quam molestie pulvinar. Phasellus dictum nisi eu augue molestie commodo.
 `;
 
+type Props = $ReadOnly<{||}>;
+type State = {
+  count: number,
+  horizontal: boolean,
+  isExpanded: { [key: number]: boolean },
+  maintainVisibleContentPosition?: { minIndexForVisible: number } | null
+};
+
 class ScrollViewExpandingExample extends React.Component<Props, State> {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
       count: 20,
       isExpanded: {},
       horizontal: false,
+      maintainVisibleContentPosition: null
     };
   }
 
@@ -176,10 +185,9 @@ exports.description =
 exports.simpleExampleContainer = true;
 exports.examples = [
   {
+    title: 'Expandable scroll view',
     render: function(): React.Element<typeof ScrollViewExpandingExample> {
       return <ScrollViewExpandingExample />;
     },
   },
 ];
-
-exports.ScrollViewExpandingExample = ScrollViewExpandingExample;
