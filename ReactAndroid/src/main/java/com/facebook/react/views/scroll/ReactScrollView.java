@@ -101,7 +101,12 @@ public class ReactScrollView extends ScrollView
   private @Nullable Rect prevFirstVisibleFrameForMaintainVisibleContentPosition = null;
 
   private final Handler mHandler = new Handler();
-  private final Runnable mComputeFirstVisibleViewRunnable = this::computeFirstVisibleItemForMaintainVisibleContentPosition;
+  private final Runnable mComputeFirstVisibleViewRunnable = new Runnable() {
+    @Override
+    public void run() {
+      computeFirstVisibleItemForMaintainVisibleContentPosition();
+    }
+  };
 
   private @Nullable ValueAnimator mScrollAnimator;
   private int mFinalAnimatedPositionScrollX;
