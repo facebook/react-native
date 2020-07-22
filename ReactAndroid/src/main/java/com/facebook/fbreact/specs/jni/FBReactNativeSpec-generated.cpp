@@ -588,40 +588,6 @@ namespace facebook {
   namespace react {
 
     
-    static facebook::jsi::Value __hostFunction_NativeCameraRollManagerSpecJSI_getPhotos(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "getPhotos", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeCameraRollManagerSpecJSI_saveToCameraRoll(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "saveToCameraRoll", "(Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeCameraRollManagerSpecJSI_deletePhotos(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "deletePhotos", "(Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Promise;)V", args, count);
-    }
-
-
-    NativeCameraRollManagerSpecJSI::NativeCameraRollManagerSpecJSI(const JavaTurboModule::InitParams &params)
-      : JavaTurboModule(params) {
-        
-        methodMap_["getPhotos"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerSpecJSI_getPhotos};
-        
-        
-        methodMap_["saveToCameraRoll"] = MethodMetadata {2, __hostFunction_NativeCameraRollManagerSpecJSI_saveToCameraRoll};
-        
-        
-        methodMap_["deletePhotos"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerSpecJSI_deletePhotos};
-        
-        
-
-    }
-
-  } // namespace react
-} // namespace facebook
-namespace facebook {
-  namespace react {
-
-    
     static facebook::jsi::Value __hostFunction_NativeClipboardSpecJSI_getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "getString", "(Lcom/facebook/react/bridge/Promise;)V", args, count);
     }

@@ -8,16 +8,27 @@
 #import <UIKit/UIKit.h>
 
 #import <react/attributedstring/AttributedString.h>
+#import <react/attributedstring/ParagraphAttributes.h>
+#import <react/textlayoutmanager/RCTTextLayoutManager.h>
 
 #import "RCTParagraphComponentView.h"
 
 @interface RCTParagraphComponentAccessibilityProvider : NSObject
 
-- (instancetype)initWithString:(facebook::react::AttributedString)attributedString view:(UIView *)view;
+- (instancetype)initWithString:(facebook::react::AttributedString)attributedString
+                 layoutManager:(RCTTextLayoutManager *)layoutManager
+           paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
+                         frame:(CGRect)frame
+                          view:(UIView *)view;
+
+/*
+ * Returns an array of `UIAccessibilityElement`s to be used for `UIAccessibilityContainer` implementation.
+ */
+- (NSArray<UIAccessibilityElement *> *)accessibilityElements;
 
 /**
- @abstract Array of accessibleElements for use in UIAccessibilityContainer implementation.
+ @abstract To make sure the provider is up to date.
 */
-- (NSArray<UIAccessibilityElement *> *)accessibilityElements;
+- (BOOL)isUpToDate:(facebook::react::AttributedString)currentAttributedString;
 
 @end

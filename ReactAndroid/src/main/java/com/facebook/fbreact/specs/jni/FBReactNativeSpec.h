@@ -174,20 +174,6 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * C++ class for module 'CameraRollManager'
-     */
-
-    class JSI_EXPORT NativeCameraRollManagerSpecJSI : public JavaTurboModule {
-    public:
-      NativeCameraRollManagerSpecJSI(const JavaTurboModule::InitParams &params);
-
-    };
-  } // namespace react
-} // namespace facebook
-
-namespace facebook {
-  namespace react {
-    /**
      * C++ class for module 'Clipboard'
      */
 

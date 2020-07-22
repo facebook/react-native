@@ -465,9 +465,14 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
     return;
   }
 
-  CGRect containerFrame = CGRect{CGPointZero, _scrollView.bounds.size};
-  containerFrame = UIEdgeInsetsInsetRect(containerFrame, _scrollView.contentInset);
-  containerFrame.origin = _scrollView.contentOffset;
+  CGRect visibleFrame = CGRect{_scrollView.contentOffset, _scrollView.bounds.size};
+  visibleFrame = CGRectInset(visibleFrame, -kClippingLeeway, -kClippingLeeway);
+
+  CGFloat scale = 1.0 / _scrollView.zoomScale;
+  visibleFrame.origin.x *= scale;
+  visibleFrame.origin.y *= scale;
+  visibleFrame.size.width *= scale;
+  visibleFrame.size.height *= scale;
 
   NSInteger mountedIndex = 0;
   for (UIView *componentView in _childComponentViews) {
@@ -485,8 +490,7 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
       auto layoutMetrics = viewComponentView->_layoutMetrics;
 
       if (layoutMetrics.overflowInset == EdgeInsets{}) {
-        CGRect viewFrameWithLeeway = CGRectInset(componentView.frame, -kClippingLeeway, -kClippingLeeway);
-        shouldBeMounted = CGRectIntersectsRect(containerFrame, viewFrameWithLeeway);
+        shouldBeMounted = CGRectIntersectsRect(visibleFrame, componentView.frame);
       }
     }
 
