@@ -174,9 +174,7 @@ using namespace facebook::react;
   }
 
   if (newTextInputProps.traits.textContentType != oldTextInputProps.traits.textContentType) {
-    if (@available(iOS 10.0, *)) {
-      _backedTextInputView.textContentType = RCTUITextContentTypeFromString(newTextInputProps.traits.textContentType);
-    }
+    _backedTextInputView.textContentType = RCTUITextContentTypeFromString(newTextInputProps.traits.textContentType);
   }
 
   if (newTextInputProps.traits.passwordRules != oldTextInputProps.traits.passwordRules) {
