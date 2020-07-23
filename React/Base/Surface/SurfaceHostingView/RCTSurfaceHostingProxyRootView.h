@@ -45,13 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
                 initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions;
 
-- (instancetype)initWithSurface:(RCTSurface *)surface
-                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
-                  NS_UNAVAILABLE;
-
 - (void)cancelTouches;
 
 @end
 
 NS_ASSUME_NONNULL_END
-

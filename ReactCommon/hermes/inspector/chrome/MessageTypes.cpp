@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<633984dcfe87d2822ef0e80c1aab93ef>>
+// @generated SignedSource<<f251363b69dd291d2c70e893c3fed04d>>
 
 #include "MessageTypes.h"
 
@@ -35,15 +35,23 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.setBreakpoint", makeUnique<debugger::SetBreakpointRequest>},
       {"Debugger.setBreakpointByUrl",
        makeUnique<debugger::SetBreakpointByUrlRequest>},
+      {"Debugger.setInstrumentationBreakpoint",
+       makeUnique<debugger::SetInstrumentationBreakpointRequest>},
       {"Debugger.setPauseOnExceptions",
        makeUnique<debugger::SetPauseOnExceptionsRequest>},
       {"Debugger.stepInto", makeUnique<debugger::StepIntoRequest>},
       {"Debugger.stepOut", makeUnique<debugger::StepOutRequest>},
       {"Debugger.stepOver", makeUnique<debugger::StepOverRequest>},
+      {"HeapProfiler.startTrackingHeapObjects",
+       makeUnique<heapProfiler::StartTrackingHeapObjectsRequest>},
+      {"HeapProfiler.stopTrackingHeapObjects",
+       makeUnique<heapProfiler::StopTrackingHeapObjectsRequest>},
       {"HeapProfiler.takeHeapSnapshot",
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
+      {"Runtime.runIfWaitingForDebugger",
+       makeUnique<runtime::RunIfWaitingForDebuggerRequest>},
   };
 
   dynamic obj = folly::parseJson(str);
@@ -501,6 +509,36 @@ void debugger::SetBreakpointByUrlRequest::accept(
   handler.handle(*this);
 }
 
+debugger::SetInstrumentationBreakpointRequest::
+    SetInstrumentationBreakpointRequest()
+    : Request("Debugger.setInstrumentationBreakpoint") {}
+
+debugger::SetInstrumentationBreakpointRequest::
+    SetInstrumentationBreakpointRequest(const dynamic &obj)
+    : Request("Debugger.setInstrumentationBreakpoint") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(instrumentation, params, "instrumentation");
+}
+
+dynamic debugger::SetInstrumentationBreakpointRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "instrumentation", instrumentation);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void debugger::SetInstrumentationBreakpointRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 debugger::SetPauseOnExceptionsRequest::SetPauseOnExceptionsRequest()
     : Request("Debugger.setPauseOnExceptions") {}
 
@@ -584,6 +622,66 @@ dynamic debugger::StepOverRequest::toDynamic() const {
 }
 
 void debugger::StepOverRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+heapProfiler::StartTrackingHeapObjectsRequest::StartTrackingHeapObjectsRequest()
+    : Request("HeapProfiler.startTrackingHeapObjects") {}
+
+heapProfiler::StartTrackingHeapObjectsRequest::StartTrackingHeapObjectsRequest(
+    const dynamic &obj)
+    : Request("HeapProfiler.startTrackingHeapObjects") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(trackAllocations, params, "trackAllocations");
+}
+
+dynamic heapProfiler::StartTrackingHeapObjectsRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "trackAllocations", trackAllocations);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::StartTrackingHeapObjectsRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+heapProfiler::StopTrackingHeapObjectsRequest::StopTrackingHeapObjectsRequest()
+    : Request("HeapProfiler.stopTrackingHeapObjects") {}
+
+heapProfiler::StopTrackingHeapObjectsRequest::StopTrackingHeapObjectsRequest(
+    const dynamic &obj)
+    : Request("HeapProfiler.stopTrackingHeapObjects") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(reportProgress, params, "reportProgress");
+  assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+}
+
+dynamic heapProfiler::StopTrackingHeapObjectsRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "reportProgress", reportProgress);
+  put(params, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::StopTrackingHeapObjectsRequest::accept(
+    RequestHandler &handler) const {
   handler.handle(*this);
 }
 
@@ -687,6 +785,28 @@ void runtime::GetPropertiesRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
+runtime::RunIfWaitingForDebuggerRequest::RunIfWaitingForDebuggerRequest()
+    : Request("Runtime.runIfWaitingForDebugger") {}
+
+runtime::RunIfWaitingForDebuggerRequest::RunIfWaitingForDebuggerRequest(
+    const dynamic &obj)
+    : Request("Runtime.runIfWaitingForDebugger") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic runtime::RunIfWaitingForDebuggerRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void runtime::RunIfWaitingForDebuggerRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 /// Responses
 ErrorResponse::ErrorResponse(const dynamic &obj) {
   assign(id, obj, "id");
@@ -774,6 +894,24 @@ dynamic debugger::SetBreakpointByUrlResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "breakpointId", breakpointId);
   put(res, "locations", locations);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+debugger::SetInstrumentationBreakpointResponse::
+    SetInstrumentationBreakpointResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(breakpointId, res, "breakpointId");
+}
+
+dynamic debugger::SetInstrumentationBreakpointResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "breakpointId", breakpointId);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);

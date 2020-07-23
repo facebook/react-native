@@ -17,35 +17,36 @@ namespace react {
 class ScrollViewProps final : public ViewProps {
  public:
   ScrollViewProps() = default;
-  ScrollViewProps(const ScrollViewProps &sourceProps, const RawProps &rawProps);
+  ScrollViewProps(ScrollViewProps const &sourceProps, RawProps const &rawProps);
 
 #pragma mark - Props
 
-  const bool alwaysBounceHorizontal{};
-  const bool alwaysBounceVertical{};
-  const bool bounces{true};
-  const bool bouncesZoom{true};
-  const bool canCancelContentTouches{true};
-  const bool centerContent{};
-  const bool automaticallyAdjustContentInsets{};
-  const Float decelerationRate{0.998};
-  const bool directionalLockEnabled{};
-  const ScrollViewIndicatorStyle indicatorStyle{};
-  const ScrollViewKeyboardDismissMode keyboardDismissMode{};
-  const Float maximumZoomScale{1.0};
-  const Float minimumZoomScale{1.0};
-  const bool scrollEnabled{true};
-  const bool pagingEnabled{};
-  const bool pinchGestureEnabled{true};
-  const bool scrollsToTop{true};
-  const bool showsHorizontalScrollIndicator{true};
-  const bool showsVerticalScrollIndicator{true};
-  const Float scrollEventThrottle{};
-  const Float zoomScale{1.0};
-  const EdgeInsets contentInset{};
-  const EdgeInsets scrollIndicatorInsets{};
-  const Float snapToInterval{};
-  const ScrollViewSnapToAlignment snapToAlignment{};
+  bool alwaysBounceHorizontal{};
+  bool alwaysBounceVertical{};
+  bool bounces{true};
+  bool bouncesZoom{true};
+  bool canCancelContentTouches{true};
+  bool centerContent{};
+  bool automaticallyAdjustContentInsets{};
+  Float decelerationRate{0.998};
+  bool directionalLockEnabled{};
+  ScrollViewIndicatorStyle indicatorStyle{};
+  ScrollViewKeyboardDismissMode keyboardDismissMode{};
+  Float maximumZoomScale{1.0};
+  Float minimumZoomScale{1.0};
+  bool scrollEnabled{true};
+  bool pagingEnabled{};
+  bool pinchGestureEnabled{true};
+  bool scrollsToTop{true};
+  bool showsHorizontalScrollIndicator{true};
+  bool showsVerticalScrollIndicator{true};
+  Float scrollEventThrottle{};
+  Float zoomScale{1.0};
+  EdgeInsets contentInset{};
+  Point contentOffset{};
+  EdgeInsets scrollIndicatorInsets{};
+  Float snapToInterval{};
+  ScrollViewSnapToAlignment snapToAlignment{};
 
 #pragma mark - DebugStringConvertible
 

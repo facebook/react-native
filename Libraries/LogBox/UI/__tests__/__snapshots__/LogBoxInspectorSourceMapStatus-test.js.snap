@@ -30,16 +30,16 @@ exports[`LogBoxInspectorSourceMapStatus should render for failed 1`] = `
   <ForwardRef(AnimatedComponentWrapper)
     source={
       Object {
-        "height": 16,
-        "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABVklEQVRYheWX4U3DMBBGH4gBMoJHyAgeoSNkAxjBG5QNOkJHCGzQDcoGZQP4gY3Oqe1cEscS4pNOqs9Jvqvv6ZrCf9fDhnutD4A3H810Br4mcW5l7hLmIdze5mZi+OJD5syeBYzC6CjyR5Ef9zI/CJMb0Im9zufC/qG2eQdchcGQuGYQ+9dJgZvl0B2xbJGrZW6IIevFXp9YVwcyB540syJfFcgSeJb0cVcDcg68XAFQCUhH+ShLBcBGIA158LQFqIB8zBRwEp9fgctcxQld/L2pZxZVAk/KkucjaDGQmoknrz35KEE2sABIRxm8tVIBaZgHb61UQOYmXk7aFgQVJ6QWPCnLAriYAVILnpTxD7yh/9EZiIEE4m+y29uMkGy1nQ6i9wYFRB5PwKdYP/v1msmnUe89gn695bG0iqjdXeMiRu9599csvGKZ0jlu0Ac/7d2rxX9Q37HW6QfX/ZguAAAAAElFTkSuQmCC",
-        "width": 16,
+        "testUri": "../Libraries/LogBox/UI/LogBoxImages/alert-triangle.png",
       }
     }
     style={
       Array [
         Object {
+          "height": 14,
           "marginEnd": 4,
           "tintColor": "rgba(255, 255, 255, 0.4)",
+          "width": 16,
         },
         Object {
           "tintColor": "rgba(243, 83, 105, 1)",
@@ -97,16 +97,16 @@ exports[`LogBoxInspectorSourceMapStatus should render for pending 1`] = `
   <ForwardRef(AnimatedComponentWrapper)
     source={
       Object {
-        "height": 16,
-        "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABN0lEQVRYhe2WzU3EMBCFP34KyJEjJaQDXAIlJJ24BSow2wEdhHSwJSwd7JHbcmC0mOxMnDiWDIInWbHkN29exo4n8IvRAEFGU8OAA04yulyR60Jm7msbyIZloAMGwBfI4UWrWxM08LW/weC4iOMNTog4g0awKjBG827GxBwC3996NHizAifsSrTRmlsZm23CT9adktyXSq6ZUPdxgiXnZzW8CLcLuC3lvqA/gCt5NtjlPQL7TP0Wu1HtRRu4PO3T4TKTz2kG+AG9IN6CR/Su9iojBw69egfghWgL/pGCp+JFVPUqTjWjlsuqeAo1o6rt2C8QcNiV0UxoHPMieojmz0CfMKyhl1hN84xbI3gnz5Ftp7kH3iT5LsFdDUf6pzSJ6r2glIFDbuDNhqRH4I7Pvv4EvG/QqocP2Jh/xzzX/zUAAAAASUVORK5CYII=",
-        "width": 16,
+        "testUri": "../Libraries/LogBox/UI/LogBoxImages/loader.png",
       }
     }
     style={
       Array [
         Object {
+          "height": 14,
           "marginEnd": 4,
           "tintColor": "rgba(255, 255, 255, 0.4)",
+          "width": 16,
         },
         Object {
           "tintColor": "rgba(250, 186, 48, 1)",

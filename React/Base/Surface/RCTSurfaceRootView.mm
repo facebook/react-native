@@ -11,6 +11,6 @@
 
 @implementation RCTSurfaceRootView
 
-RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
+RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 
 @end

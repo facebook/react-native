@@ -15,7 +15,7 @@ _DEBUG_PREPROCESSOR_FLAGS = []
 
 _APPLE_COMPILER_FLAGS = []
 
-def get_debug_preprocessor_flags():
+def get_preprocessor_flags_for_build_mode():
     return _DEBUG_PREPROCESSOR_FLAGS
 
 def get_apple_compiler_flags():
@@ -26,15 +26,6 @@ IS_OSS_BUILD = True
 GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
-
-APPLE_JSC_DEPS = []
-
-ANDROID_JSC_INTERNAL_DEPS = [
-    "//native/third-party/jsc:jsc",
-    "//native/third-party/jsc:jsc_legacy_profiler",
-]
-
-ANDROID_JSC_DEPS = ANDROID_JSC_INTERNAL_DEPS
 
 ANDROID = "Android"
 
@@ -95,6 +86,9 @@ def react_native_integration_tests_target(path):
 # Example: react_native_dep('java/com/facebook/systrace:systrace')
 def react_native_dep(path):
     return "//ReactAndroid/src/main/" + path
+
+def react_native_android_toplevel_dep(path):
+    return react_native_dep(path)
 
 # Example: react_native_xplat_dep('java/com/facebook/systrace:systrace')
 def react_native_xplat_dep(path):
@@ -192,12 +186,18 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
 
     is_androidx = kwargs.pop("is_androidx", False)
 
+    kwargs["deps"] = kwargs.pop("deps", []) + [
+        react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
+        react_native_xplat_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock2"),
+        react_native_dep("third-party/java/robolectric/4.3.1:robolectric"),
+    ]
+
     extra_vm_args = [
         "-XX:+UseConcMarkSweepGC",  # required by -XX:+CMSClassUnloadingEnabled
         "-XX:+CMSClassUnloadingEnabled",
         "-XX:ReservedCodeCacheSize=150M",
-        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric3/robolectric",
-        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric3/robolectric/*.jar",
+        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.3.1",
+        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.3.1/*.jar",
         "-Drobolectric.logging.enabled=true",
         "-XX:MaxPermSize=620m",
         "-Drobolectric.offline=true",

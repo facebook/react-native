@@ -13,6 +13,8 @@
 namespace facebook {
 namespace react {
 
+enum class DifferentiatorMode { Classic, OptimizedMoves };
+
 /*
  * Calculates a list of view mutations which describes how the old
  * `ShadowTree` can be transformed to the new one.

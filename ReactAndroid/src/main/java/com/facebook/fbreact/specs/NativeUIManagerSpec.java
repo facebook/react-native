@@ -43,9 +43,6 @@ public abstract class NativeUIManagerSpec extends ReactContextBaseJavaModule imp
       Callback errorCallback);
 
   @ReactMethod
-  public abstract void playTouchSound();
-
-  @ReactMethod
   public abstract void blur(Double reactTag);
 
   @ReactMethod

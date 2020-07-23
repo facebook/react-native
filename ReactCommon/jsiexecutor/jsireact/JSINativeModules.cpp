@@ -6,6 +6,7 @@
  */
 
 #include "jsireact/JSINativeModules.h"
+#include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #include <glog/logging.h>
 
@@ -24,20 +25,28 @@ JSINativeModules::JSINativeModules(
     std::shared_ptr<ModuleRegistry> moduleRegistry)
     : m_moduleRegistry(std::move(moduleRegistry)) {}
 
-Value JSINativeModules::getModule(Runtime& rt, const PropNameID& name) {
+Value JSINativeModules::getModule(Runtime &rt, const PropNameID &name) {
   if (!m_moduleRegistry) {
     return nullptr;
   }
 
   std::string moduleName = name.utf8(rt);
 
+  BridgeNativeModulePerfLogger::moduleJSRequireBeginningStart(
+      moduleName.c_str());
+
   const auto it = m_objects.find(moduleName);
   if (it != m_objects.end()) {
+    BridgeNativeModulePerfLogger::moduleJSRequireBeginningCacheHit(
+        moduleName.c_str());
+    BridgeNativeModulePerfLogger::moduleJSRequireBeginningEnd(
+        moduleName.c_str());
     return Value(rt, it->second);
   }
 
   auto module = createModule(rt, moduleName);
   if (!module.hasValue()) {
+    BridgeNativeModulePerfLogger::moduleJSRequireEndingFail(moduleName.c_str());
     // Allow lookup to continue in the objects own properties, which allows for
     // overrides of NativeModules
     return nullptr;
@@ -45,7 +54,10 @@ Value JSINativeModules::getModule(Runtime& rt, const PropNameID& name) {
 
   auto result =
       m_objects.emplace(std::move(moduleName), std::move(*module)).first;
-  return Value(rt, result->second);
+
+  Value ret = Value(rt, result->second);
+  BridgeNativeModulePerfLogger::moduleJSRequireEndingEnd(moduleName.c_str());
+  return ret;
 }
 
 void JSINativeModules::reset() {
@@ -54,8 +66,8 @@ void JSINativeModules::reset() {
 }
 
 folly::Optional<Object> JSINativeModules::createModule(
-    Runtime& rt,
-    const std::string& name) {
+    Runtime &rt,
+    const std::string &name) {
   bool hasLogger(ReactMarker::logTaggedMarker);
   if (hasLogger) {
     ReactMarker::logTaggedMarker(

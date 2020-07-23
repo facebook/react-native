@@ -26,9 +26,9 @@ class RawEvent {
       ValueFactory payloadFactory,
       SharedEventTarget eventTarget);
 
-  const std::string type;
-  const ValueFactory payloadFactory;
-  const SharedEventTarget eventTarget;
+  std::string type;
+  ValueFactory payloadFactory;
+  SharedEventTarget eventTarget;
 };
 
 } // namespace react

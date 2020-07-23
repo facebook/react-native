@@ -83,7 +83,7 @@ function getTestCasesForProp(propName, typeAnnotation) {
       propName,
       propValue: typeAnnotation.default != null ? typeAnnotation.default : 0.1,
     });
-  } else if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
+  } else if (typeAnnotation.type === 'ReservedPropTypeAnnotation') {
     if (typeAnnotation.name === 'ColorPrimitive') {
       cases.push({
         propName,

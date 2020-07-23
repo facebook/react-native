@@ -14,7 +14,11 @@ import type {
   SchemaType,
   FunctionTypeAnnotationParamTypeAnnotation,
   FunctionTypeAnnotationReturn,
+  TypeAliasTypeAnnotation,
+  ObjectTypeAliasTypeShape,
 } from '../../CodegenSchema';
+
+const {getTypeAliasTypeAnnotation} = require('./ObjCppUtils/Utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -49,12 +53,26 @@ namespace react {
 `;
 
 function translatePrimitiveJSTypeToCpp(
-  type:
+  typeAnnotation:
     | FunctionTypeAnnotationParamTypeAnnotation
-    | FunctionTypeAnnotationReturn,
-  error: string,
+    | FunctionTypeAnnotationReturn
+    | TypeAliasTypeAnnotation,
+  createErrorMessage: (typeName: string) => string,
+  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
 ) {
-  switch (type.type) {
+  const realTypeAnnotation =
+    typeAnnotation.type === 'TypeAliasTypeAnnotation'
+      ? getTypeAliasTypeAnnotation(typeAnnotation.name, aliases)
+      : typeAnnotation;
+  switch (realTypeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (realTypeAnnotation.name) {
+        case 'RootTag':
+          return 'double';
+        default:
+          (realTypeAnnotation.name: empty);
+          throw new Error(createErrorMessage(realTypeAnnotation.name));
+      }
     case 'VoidTypeAnnotation':
       return 'void';
     case 'StringTypeAnnotation':
@@ -75,11 +93,13 @@ function translatePrimitiveJSTypeToCpp(
       return 'jsi::Function';
     case 'GenericPromiseTypeAnnotation':
       return 'jsi::Value';
-
     default:
-      throw new Error(error);
+      // TODO (T65847278): Figure out why this does not work.
+      // (type: empty);
+      throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
+
 const propertyTemplate =
   'virtual ::_RETURN_VALUE_:: ::_PROPERTY_NAME_::(jsi::Runtime &rt::_ARGS_::) = 0;';
 
@@ -103,16 +123,16 @@ module.exports = {
 
     const modules = Object.keys(nativeModules)
       .map(name => {
-        const {properties} = nativeModules[name];
+        const {aliases, properties} = nativeModules[name];
         const traversedProperties = properties
           .map(prop => {
             const traversedArgs = prop.typeAnnotation.params
               .map(param => {
                 const translatedParam = translatePrimitiveJSTypeToCpp(
                   param.typeAnnotation,
-                  `Unspopported type for param "${param.name}" in ${
-                    prop.name
-                  }. Found: ${param.typeAnnotation.type}`,
+                  typeName =>
+                    `Unsupported type for param "${param.name}" in ${prop.name}. Found: ${typeName}`,
+                  aliases,
                 );
                 const isObject = translatedParam.startsWith('jsi::');
                 return (
@@ -128,9 +148,9 @@ module.exports = {
                 '::_RETURN_VALUE_::',
                 translatePrimitiveJSTypeToCpp(
                   prop.typeAnnotation.returnTypeAnnotation,
-                  `Unspopported return type for ${prop.name}. Found: ${
-                    prop.typeAnnotation.returnTypeAnnotation.type
-                  }`,
+                  typeName =>
+                    `Unsupported return type for ${prop.name}. Found: ${typeName}`,
+                  aliases,
                 ),
               )
               .replace(

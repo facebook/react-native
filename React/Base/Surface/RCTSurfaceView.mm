@@ -17,9 +17,9 @@
   RCTSurfaceStage _stage;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
+RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 
 - (instancetype)initWithSurface:(RCTSurface *)surface
 {
@@ -33,7 +33,7 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 
 #pragma mark - Internal Interface
 
-- (void)setRootView:(RCTSurfaceRootView *)rootView
+- (void)setRootView:(RCTSurfaceRootView *_Nullable)rootView
 {
   if (_rootView == rootView) {
     return;
@@ -72,11 +72,10 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 - (void)_updateStage
 {
   if (RCTSurfaceStageIsRunning(_stage)) {
-    if (_rootView.superview != self) {
+    if (_rootView && _rootView.superview != self) {
       [self addSubview:_rootView];
     }
-  }
-  else {
+  } else {
     [_rootView removeFromSuperview];
   }
 }

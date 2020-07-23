@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.TintContextWrapper;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
@@ -34,7 +35,8 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,6 +53,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private int mTextAlign = Gravity.NO_GRAVITY;
   private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
   private TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
+  private boolean mAdjustsFontSizeToFit = false;
   private int mLinkifyMaskType = 0;
   private boolean mNotifyOnInlineViewLayout;
 
@@ -65,7 +68,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
   }
 
-  private WritableMap inlineViewJson(
+  private static WritableMap inlineViewJson(
       int visibility, int index, int left, int top, int right, int bottom) {
     WritableMap json = Arguments.createMap();
     if (visibility == View.GONE) {
@@ -95,7 +98,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   @Override
   protected void onLayout(
       boolean changed, int textViewLeft, int textViewTop, int textViewRight, int textViewBottom) {
-    if (!(getText() instanceof Spanned)) {
+    // TODO T62882314: Delete this method when Fabric is fully released in OSS
+    int reactTag = getId();
+    if (!(getText() instanceof Spanned)
+        || ViewUtil.getUIManagerType(reactTag) == UIManagerType.FABRIC) {
       /**
        * In general, {@link #setText} is called via {@link ReactTextViewManager#updateExtraData}
        * before we are laid out. This ordering is a requirement because we utilize the data from
@@ -113,13 +119,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
 
     ReactContext reactContext = getReactContext();
-    if (!reactContext.hasCatalystInstance()) {
-      // In bridgeless mode there's no Catalyst instance; in that case, bail.
-      // TODO (T45503888): Figure out how to support nested views from JS or cpp.
-      return;
-    }
-
-    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    UIManagerModule uiManager =
+        Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule.class));
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();
@@ -256,9 +257,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
       WritableMap event = Arguments.createMap();
       event.putArray("inlineViews", inlineViewInfoArray2);
-      reactContext
-          .getJSModule(RCTEventEmitter.class)
-          .receiveEvent(getId(), "topInlineViewLayout", event);
+      if (uiManager != null) {
+        uiManager.receiveEvent(reactTag, "topInlineViewLayout", event);
+      }
     }
   }
 
@@ -474,6 +475,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     setMaxLines(mNumberOfLines);
   }
 
+  public void setAdjustFontSizeToFit(boolean adjustsFontSizeToFit) {
+    mAdjustsFontSizeToFit = adjustsFontSizeToFit;
+  }
+
   public void setEllipsizeLocation(TextUtils.TruncateAt ellipsizeLocation) {
     mEllipsizeLocation = ellipsizeLocation;
   }
@@ -485,7 +490,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   public void updateView() {
     @Nullable
     TextUtils.TruncateAt ellipsizeLocation =
-        mNumberOfLines == ViewDefaults.NUMBER_OF_LINES ? null : mEllipsizeLocation;
+        mNumberOfLines == ViewDefaults.NUMBER_OF_LINES || mAdjustsFontSizeToFit
+            ? null
+            : mEllipsizeLocation;
     setEllipsize(ellipsizeLocation);
   }
 

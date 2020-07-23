@@ -96,7 +96,7 @@ void EventQueue::flushStateUpdates() const {
   {
     std::lock_guard<std::mutex> lock(queueMutex_);
 
-    if (stateUpdateQueue_.size() == 0) {
+    if (stateUpdateQueue_.empty()) {
       return;
     }
 
@@ -105,8 +105,7 @@ void EventQueue::flushStateUpdates() const {
   }
 
   for (const auto &stateUpdate : stateUpdateQueue) {
-    auto pair = stateUpdate();
-    statePipe_(pair.second, pair.first);
+    statePipe_(stateUpdate);
   }
 }
 

@@ -98,10 +98,20 @@ class ComponentDescriptor {
    * `props` and `rawProps` applied on top of this.
    * If `props` is `nullptr`, a default `Props` object (with default values)
    * will be used.
+   * Must return an object which is NOT pointer equal to `props`.
    */
   virtual SharedProps cloneProps(
       const SharedProps &props,
       const RawProps &rawProps) const = 0;
+
+  /*
+   * Creates a new `Props` of a particular type with all values interpolated
+   * between `props` and `newProps`.
+   */
+  virtual SharedProps interpolateProps(
+      float animationProgress,
+      const SharedProps &props,
+      const SharedProps &newProps) const = 0;
 
   /*
    * Create an initial State object that represents (and contains) an initial
@@ -109,14 +119,14 @@ class ComponentDescriptor {
    */
   virtual State::Shared createInitialState(
       ShadowNodeFragment const &fragment,
-      SurfaceId const surfaceId) const = 0;
+      ShadowNodeFamily::Shared const &family) const = 0;
 
   /*
    * Creates a new State object that represents (and contains) a new version of
    * State's data.
    */
   virtual State::Shared createState(
-      const State::Shared &previousState,
+      ShadowNodeFamily const &family,
       const StateData::Shared &data) const = 0;
 
   /*

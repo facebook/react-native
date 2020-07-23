@@ -7,7 +7,7 @@
 THIS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$THIS_DIR/setup.sh"
 
-buck test fbsource//xplat/js/react-native-github/ReactCommon/hermes/inspector:chrome &&
-  buck test fbsource//xplat/js/react-native-github/ReactCommon/hermes/inspector:detail &&
-  buck test fbsource//xplat/js/react-native-github/ReactCommon/hermes/inspector:inspectorlib &&
-  buck build fbsource//xplat/js/react-native-github/ReactCommon/hermes/inspector:hermes-chrome-debug-server
+buck test //xplat/js/react-native-github/ReactCommon/hermes/inspector:chrome &&
+  buck test //xplat/js/react-native-github/ReactCommon/hermes/inspector:detail &&
+  buck test //xplat/js/react-native-github/ReactCommon/hermes/inspector:inspectorlib &&
+  buck build //xplat/js/react-native-github/ReactCommon/hermes/inspector:hermes-chrome-debug-server

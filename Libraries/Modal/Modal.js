@@ -5,27 +5,31 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
-const PropTypes = require('prop-types');
 const React = require('react');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
+const {RootTagContext} = require('../ReactNative/RootTag');
+
 import type {ViewProps} from '../Components/View/ViewPropTypes';
+import {VirtualizedListContextResetter} from '../Lists/VirtualizedListContext.js';
+import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
-import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
+
 /**
  * The Modal component is a simple way to present content above an enclosing view.
  *
- * See https://facebook.github.io/react-native/docs/modal.html
+ * See https://reactnative.dev/docs/modal.html
  */
 
 // In order to route onDismiss callbacks, we need to uniquely identifier each
@@ -44,14 +48,14 @@ export type Props = $ReadOnly<{|
   /**
    * The `animationType` prop controls how the modal animates.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#animationtype
+   * See https://reactnative.dev/docs/modal.html#animationtype
    */
   animationType?: ?('none' | 'slide' | 'fade'),
 
   /**
    * The `presentationStyle` prop controls how the modal appears.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#presentationstyle
+   * See https://reactnative.dev/docs/modal.html#presentationstyle
    */
   presentationStyle?: ?(
     | 'fullScreen'
@@ -64,7 +68,7 @@ export type Props = $ReadOnly<{|
    * The `transparent` prop determines whether your modal will fill the
    * entire view.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#transparent
+   * See https://reactnative.dev/docs/modal.html#transparent
    */
   transparent?: ?boolean,
 
@@ -72,7 +76,7 @@ export type Props = $ReadOnly<{|
    * The `statusBarTranslucent` prop determines whether your modal should go under
    * the system statusbar.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#transparent
+   * See https://reactnative.dev/docs/modal.html#transparent
    */
   statusBarTranslucent?: ?boolean,
 
@@ -80,16 +84,16 @@ export type Props = $ReadOnly<{|
    * The `hardwareAccelerated` prop controls whether to force hardware
    * acceleration for the underlying window.
    *
-   * This prop works inly on Android.
+   * This prop works only on Android.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#hardwareaccelerated
+   * See https://reactnative.dev/docs/modal.html#hardwareaccelerated
    */
   hardwareAccelerated?: ?boolean,
 
   /**
    * The `visible` prop determines whether your modal is visible.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#visible
+   * See https://reactnative.dev/docs/modal.html#visible
    */
   visible?: ?boolean,
 
@@ -99,7 +103,7 @@ export type Props = $ReadOnly<{|
    *
    * This is required on Apple TV and Android.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
+   * See https://reactnative.dev/docs/modal.html#onrequestclose
    */
   onRequestClose?: ?DirectEventHandler<null>,
 
@@ -107,7 +111,7 @@ export type Props = $ReadOnly<{|
    * The `onShow` prop allows passing a function that will be called once the
    * modal has been shown.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#onshow
+   * See https://reactnative.dev/docs/modal.html#onshow
    */
   onShow?: ?DirectEventHandler<null>,
 
@@ -115,19 +119,14 @@ export type Props = $ReadOnly<{|
    * The `onDismiss` prop allows passing a function that will be called once
    * the modal has been dismissed.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#ondismiss
+   * See https://reactnative.dev/docs/modal.html#ondismiss
    */
   onDismiss?: ?() => mixed,
 
   /**
-   * Deprecated. Use the `animationType` prop instead.
-   */
-  animated?: ?boolean,
-
-  /**
    * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#supportedorientations
+   * See https://reactnative.dev/docs/modal.html#supportedorientations
    */
   supportedOrientations?: ?$ReadOnlyArray<
     | 'portrait'
@@ -140,7 +139,7 @@ export type Props = $ReadOnly<{|
   /**
    * The `onOrientationChange` callback is called when the orientation changes while the modal is being displayed.
    *
-   * See https://facebook.github.io/react-native/docs/modal.html#onorientationchange
+   * See https://reactnative.dev/docs/modal.html#onorientationchange
    */
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
 |}>;
@@ -151,31 +150,15 @@ class Modal extends React.Component<Props> {
     hardwareAccelerated: false,
   };
 
-  static contextTypes: any | {|rootTag: React$PropType$Primitive<number>|} = {
-    rootTag: PropTypes.number,
-  };
+  static contextType: React.Context<RootTag> = RootTagContext;
 
   _identifier: number;
-  _eventSubscription: ?EmitterSubscription;
+  _eventSubscription: ?EventSubscription;
 
   constructor(props: Props) {
     super(props);
     Modal._confirmProps(props);
     this._identifier = uniqueModalIdentifier++;
-  }
-
-  static childContextTypes:
-    | any
-    | {|virtualizedList: React$PropType$Primitive<any>|} = {
-    virtualizedList: PropTypes.object,
-  };
-
-  getChildContext(): {|virtualizedList: null|} {
-    // Reset the context so VirtualizedList doesn't get confused by nesting
-    // in the React tree that doesn't reflect the native component hierarchy.
-    return {
-      virtualizedList: null,
-    };
   }
 
   componentWillUnmount() {
@@ -192,12 +175,10 @@ class Modal extends React.Component<Props> {
     if (
       props.presentationStyle &&
       props.presentationStyle !== 'overFullScreen' &&
-      props.transparent
+      props.transparent === true
     ) {
       console.warn(
-        `Modal with '${
-          props.presentationStyle
-        }' presentation style and 'transparent' value is not supported.`,
+        `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`,
       );
     }
   }
@@ -208,30 +189,22 @@ class Modal extends React.Component<Props> {
     }
 
     const containerStyles = {
-      backgroundColor: this.props.transparent ? 'transparent' : 'white',
+      backgroundColor:
+        this.props.transparent === true ? 'transparent' : 'white',
     };
 
-    let animationType = this.props.animationType;
-    if (!animationType) {
-      // manually setting default prop here to keep support for the deprecated 'animated' prop
-      animationType = 'none';
-      if (this.props.animated) {
-        animationType = 'slide';
-      }
-    }
+    let animationType = this.props.animationType || 'none';
 
     let presentationStyle = this.props.presentationStyle;
     if (!presentationStyle) {
       presentationStyle = 'fullScreen';
-      if (this.props.transparent) {
+      if (this.props.transparent === true) {
         presentationStyle = 'overFullScreen';
       }
     }
 
     const innerChildren = __DEV__ ? (
-      <AppContainer rootTag={this.context.rootTag}>
-        {this.props.children}
-      </AppContainer>
+      <AppContainer rootTag={this.context}>{this.props.children}</AppContainer>
     ) : (
       this.props.children
     );
@@ -250,11 +223,15 @@ class Modal extends React.Component<Props> {
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
         onOrientationChange={this.props.onOrientationChange}>
-        <ScrollView.Context.Provider value={null}>
-          <View style={[styles.container, containerStyles]}>
-            {innerChildren}
-          </View>
-        </ScrollView.Context.Provider>
+        <VirtualizedListContextResetter>
+          <ScrollView.Context.Provider value={null}>
+            <View
+              style={[styles.container, containerStyles]}
+              collapsable={false}>
+              {innerChildren}
+            </View>
+          </ScrollView.Context.Provider>
+        </VirtualizedListContextResetter>
       </RCTModalHostView>
     );
   }

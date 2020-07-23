@@ -23,9 +23,23 @@ class ViewShadowNode final : public ConcreteViewShadowNode<
                                  ViewProps,
                                  ViewEventEmitter> {
  public:
-  using ConcreteViewShadowNode::ConcreteViewShadowNode;
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = BaseShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::View);
+    return traits;
+  }
 
-  bool isLayoutOnly() const;
+  ViewShadowNode(
+      ShadowNodeFragment const &fragment,
+      ShadowNodeFamily::Shared const &family,
+      ShadowNodeTraits traits);
+
+  ViewShadowNode(
+      ShadowNode const &sourceShadowNode,
+      ShadowNodeFragment const &fragment);
+
+ private:
+  void initialize() noexcept;
 };
 
 } // namespace react

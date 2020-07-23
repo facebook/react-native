@@ -9,18 +9,25 @@ package com.facebook.react.animated;
 
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.IllegalViewOperationException;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
+import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.Event;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherListener;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -46,22 +53,60 @@ import java.util.Queue;
  */
 /*package*/ class NativeAnimatedNodesManager implements EventDispatcherListener {
 
+  private static final String TAG = "NativeAnimatedNodesManager";
+  private static final int MAX_INCONSISTENT_FRAMES = 64;
+
   private final SparseArray<AnimatedNode> mAnimatedNodes = new SparseArray<>();
   private final SparseArray<AnimationDriver> mActiveAnimations = new SparseArray<>();
   private final SparseArray<AnimatedNode> mUpdatedNodes = new SparseArray<>();
   // Mapping of a view tag and an event name to a list of event animation drivers. 99% of the time
   // there will be only one driver per mapping so all code code should be optimized around that.
   private final Map<String, List<EventAnimationDriver>> mEventDrivers = new HashMap<>();
-  private final UIManagerModule.CustomEventNamesResolver mCustomEventNamesResolver;
-  private final UIManagerModule mUIManagerModule;
+  private final ReactApplicationContext mReactApplicationContext;
   private int mAnimatedGraphBFSColor = 0;
+  private int mNumInconsistentFrames = 0;
   // Used to avoid allocating a new array on every frame in `runUpdates` and `onEventDispatch`.
   private final List<AnimatedNode> mRunUpdateNodeList = new LinkedList<>();
 
-  public NativeAnimatedNodesManager(UIManagerModule uiManager) {
-    mUIManagerModule = uiManager;
-    uiManager.getEventDispatcher().addListener(this);
-    mCustomEventNamesResolver = uiManager.getDirectEventNamesResolver();
+  private boolean mEventListenerInitializedForFabric = false;
+  private boolean mEventListenerInitializedForNonFabric = false;
+
+  public NativeAnimatedNodesManager(ReactApplicationContext reactApplicationContext) {
+    mReactApplicationContext = reactApplicationContext;
+  }
+
+  /**
+   * Initialize event listeners for Fabric UIManager or non-Fabric UIManager, exactly once. Once
+   * Fabric is the only UIManager, this logic can be simplified. This is only called on the JS
+   * thread.
+   *
+   * @param uiManagerType
+   */
+  @UiThread
+  public void initializeEventListenerForUIManagerType(@UIManagerType final int uiManagerType) {
+    if ((uiManagerType == UIManagerType.FABRIC && mEventListenerInitializedForFabric)
+        || (uiManagerType == UIManagerType.DEFAULT && mEventListenerInitializedForNonFabric)) {
+      return;
+    }
+
+    final NativeAnimatedNodesManager self = this;
+    mReactApplicationContext.runOnUiQueueThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            UIManager uiManager =
+                UIManagerHelper.getUIManager(mReactApplicationContext, uiManagerType);
+            if (uiManager != null) {
+              uiManager.<EventDispatcher>getEventDispatcher().addListener(self);
+
+              if (uiManagerType == UIManagerType.FABRIC) {
+                mEventListenerInitializedForFabric = true;
+              } else {
+                mEventListenerInitializedForNonFabric = true;
+              }
+            }
+          }
+        });
   }
 
   /*package*/ @Nullable
@@ -73,6 +118,7 @@ import java.util.Queue;
     return mActiveAnimations.size() > 0 || mUpdatedNodes.size() > 0;
   }
 
+  @UiThread
   public void createAnimatedNode(int tag, ReadableMap config) {
     if (mAnimatedNodes.get(tag) != null) {
       throw new JSApplicationIllegalArgumentException(
@@ -85,7 +131,7 @@ import java.util.Queue;
     } else if ("value".equals(type)) {
       node = new ValueAnimatedNode(config);
     } else if ("props".equals(type)) {
-      node = new PropsAnimatedNode(config, this, mUIManagerModule);
+      node = new PropsAnimatedNode(config, this);
     } else if ("interpolation".equals(type)) {
       node = new InterpolationAnimatedNode(config);
     } else if ("addition".equals(type)) {
@@ -112,74 +158,82 @@ import java.util.Queue;
     mUpdatedNodes.put(tag, node);
   }
 
+  @UiThread
   public void dropAnimatedNode(int tag) {
     mAnimatedNodes.remove(tag);
     mUpdatedNodes.remove(tag);
   }
 
+  @UiThread
   public void startListeningToAnimatedNodeValue(int tag, AnimatedNodeValueListener listener) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).setValueListener(listener);
   }
 
+  @UiThread
   public void stopListeningToAnimatedNodeValue(int tag) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).setValueListener(null);
   }
 
+  @UiThread
   public void setAnimatedNodeValue(int tag, double value) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
     }
     stopAnimationsForNode(node);
     ((ValueAnimatedNode) node).mValue = value;
     mUpdatedNodes.put(tag, node);
   }
 
+  @UiThread
   public void setAnimatedNodeOffset(int tag, double offset) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).mOffset = offset;
     mUpdatedNodes.put(tag, node);
   }
 
+  @UiThread
   public void flattenAnimatedNodeOffset(int tag) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).flattenOffset();
   }
 
+  @UiThread
   public void extractAnimatedNodeOffset(int tag) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).extractOffset();
   }
 
+  @UiThread
   public void startAnimatingNode(
       int animationId, int animatedNodeTag, ReadableMap animationConfig, Callback endCallback) {
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     if (node == null) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + animatedNodeTag + " does not exists");
+          "Animated node with tag " + animatedNodeTag + " does not exist");
     }
     if (!(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
@@ -211,6 +265,7 @@ import java.util.Queue;
     mActiveAnimations.put(animationId, animation);
   }
 
+  @UiThread
   private void stopAnimationsForNode(AnimatedNode animatedNode) {
     // in most of the cases there should never be more than a few active animations running at the
     // same time. Therefore it does not make much sense to create an animationId -> animation
@@ -231,6 +286,7 @@ import java.util.Queue;
     }
   }
 
+  @UiThread
   public void stopAnimation(int animationId) {
     // in most of the cases there should never be more than a few active animations running at the
     // same time. Therefore it does not make much sense to create an animationId -> animation
@@ -255,6 +311,7 @@ import java.util.Queue;
     // when the animation is already over.
   }
 
+  @UiThread
   public void connectAnimatedNodes(int parentNodeTag, int childNodeTag) {
     AnimatedNode parentNode = mAnimatedNodes.get(parentNodeTag);
     if (parentNode == null) {
@@ -285,6 +342,7 @@ import java.util.Queue;
     mUpdatedNodes.put(childNodeTag, childNode);
   }
 
+  @UiThread
   public void connectAnimatedNodeToView(int animatedNodeTag, int viewTag) {
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     if (node == null) {
@@ -297,11 +355,29 @@ import java.util.Queue;
               + "of type "
               + PropsAnimatedNode.class.getName());
     }
+    if (mReactApplicationContext == null) {
+      throw new IllegalStateException(
+          "Animated node could not be connected, no ReactApplicationContext: " + viewTag);
+    }
+
+    @Nullable
+    UIManager uiManager =
+        UIManagerHelper.getUIManagerForReactTag(mReactApplicationContext, viewTag);
+    if (uiManager == null) {
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Animated node could not be connected to UIManager - uiManager disappeared for tag: "
+                  + viewTag));
+      return;
+    }
+
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
-    propsAnimatedNode.connectToView(viewTag);
+    propsAnimatedNode.connectToView(viewTag, uiManager);
     mUpdatedNodes.put(animatedNodeTag, node);
   }
 
+  @UiThread
   public void disconnectAnimatedNodeFromView(int animatedNodeTag, int viewTag) {
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     if (node == null) {
@@ -318,6 +394,17 @@ import java.util.Queue;
     propsAnimatedNode.disconnectFromView(viewTag);
   }
 
+  @UiThread
+  public void getValue(int tag, Callback callback) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException(
+          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+    }
+    callback.invoke(((ValueAnimatedNode) node).getValue());
+  }
+
+  @UiThread
   public void restoreDefaultValues(int animatedNodeTag) {
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     // Restoring default values needs to happen before UIManager operations so it is
@@ -337,6 +424,7 @@ import java.util.Queue;
     propsAnimatedNode.restoreDefaultValues();
   }
 
+  @UiThread
   public void addAnimatedEventToView(int viewTag, String eventName, ReadableMap eventMapping) {
     int nodeTag = eventMapping.getInt("animatedValueTag");
     AnimatedNode node = mAnimatedNodes.get(nodeTag);
@@ -368,6 +456,7 @@ import java.util.Queue;
     }
   }
 
+  @UiThread
   public void removeAnimatedEventFromView(int viewTag, String eventName, int animatedValueTag) {
     String key = viewTag + eventName;
     if (mEventDrivers.containsKey(key)) {
@@ -386,6 +475,7 @@ import java.util.Queue;
     }
   }
 
+  @UiThread
   @Override
   public void onEventDispatch(final Event event) {
     // Events can be dispatched from any thread so we have to make sure handleEvent is run from the
@@ -403,10 +493,25 @@ import java.util.Queue;
     }
   }
 
+  @UiThread
   private void handleEvent(Event event) {
     if (!mEventDrivers.isEmpty()) {
       // If the event has a different name in native convert it to it's JS name.
-      String eventName = mCustomEventNamesResolver.resolveCustomEventName(event.getEventName());
+      // TODO T64216139 Remove dependency of UIManagerModule when the Constants are not in Native
+      // anymore
+      if (mReactApplicationContext == null) {
+        return;
+      }
+      UIManager uiManager =
+          UIManagerHelper.getUIManagerForReactTag(mReactApplicationContext, event.getViewTag());
+      if (uiManager == null) {
+        return;
+      }
+      String eventName = uiManager.resolveCustomDirectEventName(event.getEventName());
+      if (eventName == null) {
+        eventName = "";
+      }
+
       List<EventAnimationDriver> driversForKey = mEventDrivers.get(event.getViewTag() + eventName);
       if (driversForKey != null) {
         for (EventAnimationDriver driver : driversForKey) {
@@ -432,6 +537,7 @@ import java.util.Queue;
    * sub-graph of *active* nodes. This is done by adding node to the BFS queue only if all its
    * "predecessors" have already been visited.
    */
+  @UiThread
   public void runUpdates(long frameTimeNanos) {
     UiThreadUtil.assertOnUiThread();
     boolean hasFinishedAnimations = false;
@@ -474,6 +580,7 @@ import java.util.Queue;
     }
   }
 
+  @UiThread
   private void updateNodes(List<AnimatedNode> nodes) {
     int activeNodesCount = 0;
     int updatedNodesCount = 0;
@@ -539,26 +646,43 @@ import java.util.Queue;
     }
 
     // Run main "update" loop
+    boolean errorsCaught = false;
     while (!nodesQueue.isEmpty()) {
       AnimatedNode nextNode = nodesQueue.poll();
-      nextNode.update();
-      if (nextNode instanceof PropsAnimatedNode) {
-        // Send property updates to native view manager
-        try {
+      try {
+        nextNode.update();
+        if (nextNode instanceof PropsAnimatedNode) {
+          // Send property updates to native view manager
           ((PropsAnimatedNode) nextNode).updateView();
-        } catch (IllegalViewOperationException e) {
-          // An exception is thrown if the view hasn't been created yet. This can happen because
-          // views are
-          // created in batches. If this particular view didn't make it into a batch yet, the view
-          // won't
-          // exist and an exception will be thrown when attempting to start an animation on it.
-          //
-          // Eat the exception rather than crashing. The impact is that we may drop one or more
-          // frames of the
-          // animation.
+        }
+      } catch (IllegalViewOperationException e) {
+        // An exception is thrown if the view hasn't been created yet. This can happen because
+        // views are
+        // created in batches. If this particular view didn't make it into a batch yet, the view
+        // won't
+        // exist and an exception will be thrown when attempting to start an animation on it.
+        //
+        // Eat the exception rather than crashing. The impact is that we may drop one or more
+        // frames of the
+        // animation.
+        FLog.e(TAG, "Native animation workaround, frame lost as result of race condition", e);
+      } catch (JSApplicationCausedNativeException e) {
+        // In Fabric there can be race conditions between the JS thread setting up or tearing down
+        // animated nodes, and Fabric executing them on the UI thread, leading to temporary
+        // inconsistent
+        // states. We require that the inconsistency last for N frames before throwing these
+        // exceptions.
+        if (!errorsCaught) {
+          errorsCaught = true;
+          mNumInconsistentFrames++;
+        }
+        if (mNumInconsistentFrames > MAX_INCONSISTENT_FRAMES) {
+          throw new IllegalStateException(e);
+        } else {
           FLog.e(
-              ReactConstants.TAG,
-              "Native animation workaround, frame lost as result of race condition",
+              TAG,
+              "Swallowing exception due to potential race between JS and UI threads: inconsistent frame counter: "
+                  + mNumInconsistentFrames,
               e);
         }
       }
@@ -582,13 +706,23 @@ import java.util.Queue;
     // Verify that we've visited *all* active nodes. Throw otherwise as this would mean there is a
     // cycle in animated node graph. We also take advantage of the fact that all active nodes are
     // visited in the step above so that all the nodes properties `mActiveIncomingNodes` are set to
-    // zero
+    // zero.
+    // In Fabric there can be race conditions between the JS thread setting up or tearing down
+    // animated nodes, and Fabric executing them on the UI thread, leading to temporary inconsistent
+    // states. We require that the inconsistency last for 64 frames before throwing this exception.
     if (activeNodesCount != updatedNodesCount) {
-      throw new IllegalStateException(
-          "Looks like animated nodes graph has cycles, there are "
-              + activeNodesCount
-              + " but toposort visited only "
-              + updatedNodesCount);
+      if (!errorsCaught) {
+        mNumInconsistentFrames++;
+      }
+      if (mNumInconsistentFrames > MAX_INCONSISTENT_FRAMES) {
+        throw new IllegalStateException(
+            "Looks like animated nodes graph has cycles, there are "
+                + activeNodesCount
+                + " but toposort visited only "
+                + updatedNodesCount);
+      }
+    } else if (!errorsCaught) {
+      mNumInconsistentFrames = 0;
     }
   }
 }

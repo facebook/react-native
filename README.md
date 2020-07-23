@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://facebook.github.io/react-native/">
+  <a href="https://reactnative.dev/">
     React Native
   </a>
 </h1>
@@ -16,13 +16,10 @@
   <a href="https://circleci.com/gh/facebook/react-native">
     <img src="https://circleci.com/gh/facebook/react-native.svg?style=shield" alt="Current CircleCI build status." />
   </a>
-  <a href="https://ci.appveyor.com/project/facebook/react-native/branch/master">
-    <img src="https://ci.appveyor.com/api/projects/status/g8d58ipi3auqdtrk/branch/master?svg=true" alt="Current Appveyor build status." />
-  </a>
   <a href="https://www.npmjs.org/package/react-native">
     <img src="https://badge.fury.io/js/react-native.svg" alt="Current npm package version." />
   </a>
-  <a href="https://facebook.github.io/react-native/docs/contributing">
+  <a href="https://reactnative.dev/docs/contributing">
     <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome!" />
   </a>
   <a href="https://twitter.com/intent/follow?screen_name=reactnative">
@@ -31,15 +28,15 @@
 </p>
 
 <h3 align="center">
-  <a href="https://facebook.github.io/react-native/docs/getting-started">Getting Started</a>
+  <a href="https://reactnative.dev/docs/getting-started">Getting Started</a>
   <span> · </span>
-  <a href="https://facebook.github.io/react-native/docs/tutorial">Learn the Basics</a>
+  <a href="https://reactnative.dev/docs/tutorial">Learn the Basics</a>
   <span> · </span>
-  <a href="https://facebook.github.io/react-native/showcase.html">Showcase</a>
+  <a href="https://reactnative.dev/showcase.html">Showcase</a>
   <span> · </span>
-  <a href="https://facebook.github.io/react-native/docs/contributing">Contribute</a>
+  <a href="https://reactnative.dev/docs/contributing">Contribute</a>
   <span> · </span>
-  <a href="https://facebook.github.io/react-native/en/help">Community</a>
+  <a href="https://reactnative.dev/en/help">Community</a>
   <span> · </span>
   <a href="https://github.com/facebook/react-native/blob/master/.github/SUPPORT.md">Support</a>
 </h3>
@@ -54,7 +51,7 @@ React Native brings [**React**'s][r] declarative UI framework to iOS and Android
 React Native is developed and supported by many companies and individual core contributors. Find out more in our [ecosystem overview][e].
 
 [r]: https://reactjs.org/
-[p]: https://facebook.github.io/react-native/docs/out-of-tree-platforms
+[p]: https://reactnative.dev/docs/out-of-tree-platforms
 [e]: https://github.com/facebook/react-native/blob/master/ECOSYSTEM.md
 
 ## Contents
@@ -74,15 +71,15 @@ React Native apps may target iOS 10.0 and Android 4.1 (API 16) or newer. You may
 
 ## 🎉 Building your first React Native app
 
-Follow the [Getting Started guide](https://facebook.github.io/react-native/docs/getting-started.html). The recommended way to install React Native depends on your project. Here you can find short guides for the most common scenarios:
+Follow the [Getting Started guide](https://reactnative.dev/docs/getting-started.html). The recommended way to install React Native depends on your project. Here you can find short guides for the most common scenarios:
 
 - [Trying out React Native][hello-world]
 - [Creating a New Application][new-app]
 - [Adding React Native to an Existing Application][existing]
 
 [hello-world]: https://snack.expo.io/@hramos/hello,-world!
-[new-app]: https://facebook.github.io/react-native/docs/getting-started.html
-[existing]: https://facebook.github.io/react-native/docs/integration-with-existing-apps.html
+[new-app]: https://reactnative.dev/docs/getting-started.html
+[existing]: https://reactnative.dev/docs/integration-with-existing-apps.html
 
 ## 📖 Documentation
 
@@ -92,7 +89,7 @@ The React Native documentation discusses components, APIs, and topics that are s
 
 The source for the React Native documentation and website is hosted on a separate repo, [**@facebook/react-native-website**][repo-website].
 
-[docs]: https://facebook.github.io/react-native/docs/getting-started.html
+[docs]: https://reactnative.dev/docs/getting-started.html
 [r-docs]: https://reactjs.org/docs/getting-started.html
 [repo-website]: https://github.com/facebook/react-native-website
 
@@ -102,7 +99,7 @@ Upgrading to new versions of React Native may give you access to more APIs, view
 
 React Native releases are discussed in the React Native Community, [**@react-native-community/react-native-releases**][repo-releases].
 
-[u]: https://facebook.github.io/react-native/docs/upgrading
+[u]: https://reactnative.dev/docs/upgrading
 [repo-releases]: https://github.com/react-native-community/react-native-releases
 
 ## 👏 How to Contribute
@@ -120,7 +117,7 @@ Please read the [full text][code] so that you can understand what actions will a
 
 Read our [**Contributing Guide**][contribute] to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes to React Native.
 
-[contribute]: https://facebook.github.io/react-native/docs/contributing
+[contribute]: https://reactnative.dev/docs/contributing
 
 ### [Open Source Roadmap][roadmap]
 

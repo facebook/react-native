@@ -18,11 +18,19 @@ using namespace facebook::react;
 #define EXPECT_EQ_WITH_THRESHOLD(a, b, threshold) \
   EXPECT_TRUE((a >= b - threshold) && (a <= b + threshold))
 
+template <typename ClockT>
+void sleep(double durationInSeconds) {
+  auto timepoint = ClockT::now() +
+      std::chrono::milliseconds((long long)(durationInSeconds * 1000));
+  while (ClockT::now() < timepoint) {
+  }
+}
+
 TEST(MountingTelemetryTest, timepoints) {
-  auto threshold = int64_t{30};
+  auto threshold = int64_t{70};
 
   auto timepointA = telemetryTimePointNow();
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  sleep<TelemetryClock>(0.1);
   auto timepointB = telemetryTimePointNow();
 
   auto duration = telemetryDurationToMilliseconds(timepointB - timepointA);
@@ -31,21 +39,21 @@ TEST(MountingTelemetryTest, timepoints) {
 }
 
 TEST(MountingTelemetryTest, normalUseCase) {
-  auto threshold = int64_t{30};
+  auto threshold = int64_t{70};
   auto telemetry = MountingTelemetry{};
 
   telemetry.willCommit();
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  sleep<TelemetryClock>(0.1);
   telemetry.willLayout();
-  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  sleep<TelemetryClock>(0.2);
   telemetry.didLayout();
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  sleep<TelemetryClock>(0.1);
   telemetry.didCommit();
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+  sleep<TelemetryClock>(0.3);
 
   telemetry.willMount();
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  sleep<TelemetryClock>(0.1);
   telemetry.didMount();
 
   auto commitDuration = telemetryDurationToMilliseconds(

@@ -90,22 +90,23 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
   switch (type) {
     case 'ImageSource':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'ImageSourcePrimitive',
       };
     case 'ColorValue':
+    case 'ProcessedColorValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'ColorPrimitive',
       };
     case 'PointValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'PointPrimitive',
       };
     case 'EdgeInsetsValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
     case 'Stringish':
@@ -213,30 +214,31 @@ function getTypeAnnotation(
   switch (type) {
     case 'ImageSource':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'ImageSourcePrimitive',
       };
     case 'ColorValue':
+    case 'ProcessedColorValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'ColorPrimitive',
       };
     case 'ColorArrayValue':
       return {
         type: 'ArrayTypeAnnotation',
         elementType: {
-          type: 'NativePrimitiveTypeAnnotation',
+          type: 'ReservedPropTypeAnnotation',
           name: 'ColorPrimitive',
         },
       };
     case 'PointValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'PointPrimitive',
       };
     case 'EdgeInsetsValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
     case 'Int32':
@@ -343,8 +345,8 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
   }
   if (
     value.type === 'NullableTypeAnnotation' &&
-    (typeAnnotation.type === 'GenericTypeAnnotation' &&
-      typeAnnotation.id.name === 'WithDefault')
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === 'WithDefault'
   ) {
     throw new Error(
       'WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it.',

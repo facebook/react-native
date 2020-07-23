@@ -23,7 +23,6 @@
  */
 RCT_EXTERN NSString *const RCTJavaScriptWillStartLoadingNotification;
 
-
 /**
  * This notification fires when the bridge starts executing the JS bundle.
  */
@@ -33,6 +32,11 @@ RCT_EXTERN NSString *const RCTJavaScriptWillStartExecutingNotification;
  * This notification fires when the bridge has finished loading the JS bundle.
  */
 RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
+
+/**
+ * This notification fires every time the bridge has finished loading an additional JS bundle.
+ */
+RCT_EXTERN NSString *const RCTAdditionalJavaScriptDidLoadNotification;
 
 /**
  * This notification fires when the bridge failed to load the JS bundle. The
@@ -134,7 +138,13 @@ RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescripti
  * For this reason, the block should always return new module instances, and
  * module instances should not be shared between bridges.
  */
-typedef NSArray<id<RCTBridgeModule>> *(^RCTBridgeModuleListProvider)(void);
+typedef NSArray<id<RCTBridgeModule>> * (^RCTBridgeModuleListProvider)(void);
+
+/**
+ * These blocks are used to report whether an additional bundle
+ * fails or succeeds loading.
+ */
+typedef void (^RCTLoadAndExecuteErrorBlock)(NSError *error);
 
 /**
  * This function returns the module name for a given class.
@@ -147,6 +157,10 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  */
 RCT_EXTERN BOOL RCTTurboModuleEnabled(void);
 RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
+
+// Turn on TurboModule eager initialization
+RCT_EXTERN BOOL RCTTurboModuleEagerInitEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
 
 /**
  * Async batched bridge used to communicate with the JavaScript application.
@@ -162,8 +176,7 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
  * pre-initialized module instances if they require additional init parameters
  * or configuration.
  */
-- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
-                   launchOptions:(NSDictionary *)launchOptions;
+- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions;
 
 /**
  * DEPRECATED: Use initWithDelegate:launchOptions: instead
@@ -185,7 +198,10 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
  * with the JavaScript code. Safe to call from any thread.
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
-- (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion;
+- (void)enqueueJSCall:(NSString *)module
+               method:(NSString *)method
+                 args:(NSArray *)args
+           completion:(dispatch_block_t)completion;
 
 /**
  * This method registers the file path of an additional JS segment by its ID.
@@ -209,9 +225,9 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 
 /**
  * When a NativeModule performs a lookup for a TurboModule, we need to query
- * the lookupDelegate.
+ * the TurboModuleRegistry.
  */
-- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate;
+- (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry;
 
 /**
  * Convenience method for retrieving all modules conforming to a given protocol.
@@ -289,8 +305,15 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 - (void)requestReload __deprecated_msg("Use RCTReloadCommand instead");
 
 /**
- * Says whether bridge has started receiving calls from javascript.
+ * Says whether bridge has started receiving calls from JavaScript.
  */
 - (BOOL)isBatchActive;
+
+/**
+ * Loads and executes additional bundles in the VM for development.
+ */
+- (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
+                             onError:(RCTLoadAndExecuteErrorBlock)onError
+                          onComplete:(dispatch_block_t)onComplete;
 
 @end

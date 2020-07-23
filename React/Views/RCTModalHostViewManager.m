@@ -15,14 +15,18 @@
 
 @implementation RCTConvert (RCTModalHostView)
 
-RCT_ENUM_CONVERTER(UIModalPresentationStyle, (@{
-  @"fullScreen": @(UIModalPresentationFullScreen),
+RCT_ENUM_CONVERTER(
+    UIModalPresentationStyle,
+    (@{
+      @"fullScreen" : @(UIModalPresentationFullScreen),
 #if !TARGET_OS_TV
-  @"pageSheet": @(UIModalPresentationPageSheet),
-  @"formSheet": @(UIModalPresentationFormSheet),
+      @"pageSheet" : @(UIModalPresentationPageSheet),
+      @"formSheet" : @(UIModalPresentationFormSheet),
 #endif
-  @"overFullScreen": @(UIModalPresentationOverFullScreen),
-}), UIModalPresentationFullScreen, integerValue)
+      @"overFullScreen" : @(UIModalPresentationOverFullScreen),
+    }),
+    UIModalPresentationFullScreen,
+    integerValue)
 
 @end
 
@@ -46,8 +50,7 @@ RCT_ENUM_CONVERTER(UIModalPresentationStyle, (@{
 
 @end
 
-@implementation RCTModalHostViewManager
-{
+@implementation RCTModalHostViewManager {
   NSPointerArray *_hostViews;
 }
 
@@ -64,7 +67,9 @@ RCT_EXPORT_MODULE()
   return view;
 }
 
-- (void)presentModalHostView:(RCTModalHostView *)modalHostView withViewController:(RCTModalHostViewController *)viewController animated:(BOOL)animated
+- (void)presentModalHostView:(RCTModalHostView *)modalHostView
+          withViewController:(RCTModalHostViewController *)viewController
+                    animated:(BOOL)animated
 {
   dispatch_block_t completionBlock = ^{
     if (modalHostView.onShow) {
@@ -74,11 +79,15 @@ RCT_EXPORT_MODULE()
   if (_presentationBlock) {
     _presentationBlock([modalHostView reactViewController], viewController, animated, completionBlock);
   } else {
-    [[modalHostView reactViewController] presentViewController:viewController animated:animated completion:completionBlock];
+    [[modalHostView reactViewController] presentViewController:viewController
+                                                      animated:animated
+                                                    completion:completionBlock];
   }
 }
 
-- (void)dismissModalHostView:(RCTModalHostView *)modalHostView withViewController:(RCTModalHostViewController *)viewController animated:(BOOL)animated
+- (void)dismissModalHostView:(RCTModalHostView *)modalHostView
+          withViewController:(RCTModalHostViewController *)viewController
+                    animated:(BOOL)animated
 {
   if (_dismissalBlock) {
     _dismissalBlock([modalHostView reactViewController], viewController, animated, nil);
@@ -86,7 +95,6 @@ RCT_EXPORT_MODULE()
     [viewController.presentingViewController dismissViewControllerAnimated:animated completion:nil];
   }
 }
-
 
 - (RCTShadowView *)shadowView
 {

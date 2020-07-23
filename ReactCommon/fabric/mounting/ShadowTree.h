@@ -18,6 +18,7 @@
 #include <react/mounting/MountingCoordinator.h>
 #include <react/mounting/ShadowTreeDelegate.h>
 #include <react/mounting/ShadowTreeRevision.h>
+#include "MountingOverrideDelegate.h"
 
 namespace facebook {
 namespace react {
@@ -38,7 +39,8 @@ class ShadowTree final {
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext,
       RootComponentDescriptor const &rootComponentDescriptor,
-      ShadowTreeDelegate const &delegate);
+      ShadowTreeDelegate const &delegate,
+      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate);
 
   ~ShadowTree();
 
@@ -53,19 +55,38 @@ class ShadowTree final {
    * The `transaction` function can abort commit returning `nullptr`.
    * Returns `true` if the operation finished successfully.
    */
-  bool tryCommit(ShadowTreeCommitTransaction transaction) const;
+  bool tryCommit(
+      ShadowTreeCommitTransaction transaction,
+      bool enableStateReconciliation = false) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
-  void commit(ShadowTreeCommitTransaction transaction) const;
+  void commit(
+      ShadowTreeCommitTransaction transaction,
+      bool enableStateReconciliation = false) const;
 
   /*
    * Commit an empty tree (a new `RootShadowNode` with no children).
    */
   void commitEmptyTree() const;
 
+  /**
+   * Forces the ShadowTree to ping its delegate that an update is available.
+   * Useful for animations on Android.
+   * @return
+   */
+  void notifyDelegatesOfUpdates() const;
+
   MountingCoordinator::Shared getMountingCoordinator() const;
+
+  /*
+   * Temporary.
+   * Do not use.
+   */
+  void setEnableNewStateReconciliation(bool value) {
+    enableNewStateReconciliation_ = value;
+  }
 
  private:
   RootShadowNode::Unshared cloneRootShadowNode(
@@ -84,6 +105,7 @@ class ShadowTree final {
   mutable ShadowTreeRevision::Number revisionNumber_{
       0}; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
+  bool enableNewStateReconciliation_{false};
 };
 
 } // namespace react

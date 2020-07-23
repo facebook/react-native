@@ -15,10 +15,9 @@
 namespace facebook {
 namespace react {
 
-class YogaStylableProps {
+class YogaStylableProps : public Props {
  public:
   YogaStylableProps() = default;
-  YogaStylableProps(YGStyle const &yogaStyle);
   YogaStylableProps(
       YogaStylableProps const &sourceProps,
       RawProps const &rawProps);

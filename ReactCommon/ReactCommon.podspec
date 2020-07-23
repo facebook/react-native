@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   s.module_name            = "ReactCommon"
   s.version                = version
   s.summary                = "-"  # TODO
-  s.homepage               = "http://facebook.github.io/react-native/"
+  s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "10.0", :tvos => "10.0" }
@@ -36,17 +36,9 @@ Pod::Spec.new do |s|
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
 
-  s.subspec "callinvoker" do |ss|
-    ss.source_files = "callinvoker/**/*.{cpp,h}"
-
-    ss.dependency "React-cxxreact", version
-    ss.dependency "DoubleConversion"
-    ss.dependency "Folly", folly_version
-    ss.dependency "glog"
-  end
-
   s.subspec "turbomodule" do |ss|
-    ss.dependency "ReactCommon/callinvoker", version
+    ss.dependency "React-callinvoker", version
+    ss.dependency "React-perflogger", version
     ss.dependency "React-Core", version
     ss.dependency "React-cxxreact", version
     ss.dependency "React-jsi", version

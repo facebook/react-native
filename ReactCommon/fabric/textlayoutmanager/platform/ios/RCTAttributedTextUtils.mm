@@ -212,6 +212,93 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
     attributes[RCTAttributedStringIsHighlightedAttributeName] = @YES;
   }
 
+  if (textAttributes.accessibilityRole.hasValue()) {
+    auto accessibilityRole = textAttributes.accessibilityRole.value();
+    switch (accessibilityRole) {
+      case AccessibilityRole::None:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("none");
+        break;
+      case AccessibilityRole::Button:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("button");
+        break;
+      case AccessibilityRole::Link:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("link");
+        break;
+      case AccessibilityRole::Search:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("search");
+        break;
+      case AccessibilityRole::Image:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("image");
+        break;
+      case AccessibilityRole::Imagebutton:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("imagebutton");
+        break;
+      case AccessibilityRole::Keyboardkey:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("keyboardkey");
+        break;
+      case AccessibilityRole::Text:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("text");
+        break;
+      case AccessibilityRole::Adjustable:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("adjustable");
+        break;
+      case AccessibilityRole::Summary:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("summary");
+        break;
+      case AccessibilityRole::Header:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("header");
+        break;
+      case AccessibilityRole::Alert:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("alert");
+        break;
+      case AccessibilityRole::Checkbox:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("checkbox");
+        break;
+      case AccessibilityRole::Combobox:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("combobox");
+        break;
+      case AccessibilityRole::Menu:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("menu");
+        break;
+      case AccessibilityRole::Menubar:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("menubar");
+        break;
+      case AccessibilityRole::Menuitem:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("menuitem");
+        break;
+      case AccessibilityRole::Progressbar:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("progressbar");
+        break;
+      case AccessibilityRole::Radio:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("radio");
+        break;
+      case AccessibilityRole::Radiogroup:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("radiogroup");
+        break;
+      case AccessibilityRole::Scrollbar:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("scrollbar");
+        break;
+      case AccessibilityRole::Spinbutton:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("spinbutton");
+        break;
+      case AccessibilityRole::Switch:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("switch");
+        break;
+      case AccessibilityRole::Tab:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tab");
+        break;
+      case AccessibilityRole::Tablist:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tablist");
+        break;
+      case AccessibilityRole::Timer:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("timer");
+        break;
+      case AccessibilityRole::Toolbar:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("toolbar");
+        break;
+    };
+  }
+
   return [attributes copy];
 }
 
@@ -228,7 +315,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   [nsAttributedString beginEditing];
 
   for (auto fragment : attributedString.getFragments()) {
-    NSAttributedString *nsAttributedStringFragment;
+    NSMutableAttributedString *nsAttributedStringFragment;
 
     if (fragment.isAttachment()) {
       auto layoutMetrics = fragment.parentShadowView.layoutMetrics;
@@ -239,17 +326,14 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
       attachment.image = placeholderImage;
       attachment.bounds = bounds;
 
-      nsAttributedStringFragment = [NSAttributedString attributedStringWithAttachment:attachment];
+      nsAttributedStringFragment = [[NSMutableAttributedString attributedStringWithAttachment:attachment] mutableCopy];
     } else {
       NSString *string = [NSString stringWithCString:fragment.string.c_str() encoding:NSUTF8StringEncoding];
 
-      nsAttributedStringFragment =
-          [[NSAttributedString alloc] initWithString:string
-                                          attributes:RCTNSTextAttributesFromTextAttributes(fragment.textAttributes)];
+      nsAttributedStringFragment = [[NSMutableAttributedString alloc]
+          initWithString:string
+              attributes:RCTNSTextAttributesFromTextAttributes(fragment.textAttributes)];
     }
-
-    NSMutableAttributedString *nsMutableAttributedStringFragment =
-        [[NSMutableAttributedString alloc] initWithAttributedString:nsAttributedStringFragment];
 
     if (fragment.parentShadowView.componentHandle) {
       RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
@@ -258,11 +342,11 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
       NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes =
           @{RCTAttributedStringEventEmitterKey : eventEmitterWrapper};
 
-      [nsMutableAttributedStringFragment addAttributes:additionalTextAttributes
-                                                 range:NSMakeRange(0, nsMutableAttributedStringFragment.length)];
+      [nsAttributedStringFragment addAttributes:additionalTextAttributes
+                                          range:NSMakeRange(0, nsAttributedStringFragment.length)];
     }
 
-    [nsAttributedString appendAttributedString:nsMutableAttributedStringFragment];
+    [nsAttributedString appendAttributedString:nsAttributedStringFragment];
   }
 
   [nsAttributedString endEditing];

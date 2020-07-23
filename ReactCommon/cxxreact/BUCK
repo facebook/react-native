@@ -1,5 +1,5 @@
 load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "get_android_inspector_flags", "get_apple_compiler_flags", "get_apple_inspector_flags", "get_debug_preprocessor_flags", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "get_android_inspector_flags", "get_apple_compiler_flags", "get_apple_inspector_flags", "get_preprocessor_flags_for_build_mode", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 CXX_LIBRARY_COMPILER_FLAGS = [
     "-std=c++14",
@@ -19,13 +19,13 @@ rn_xplat_cxx_library(
     ),
     compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
     fbobjc_compiler_flags = get_apple_compiler_flags(),
-    fbobjc_labels = ["supermodule:ios/default/infra.react_native"],
     force_static = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        "fbsource//xplat/folly:molly",
+        "//xplat/folly:molly",
     ],
 )
 
@@ -44,8 +44,8 @@ rn_xplat_cxx_library(
         "-frtti",
     ],
     fbobjc_compiler_flags = get_apple_compiler_flags(),
-    fbobjc_labels = ["supermodule:ios/default/infra.react_native"],
     force_static = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     preprocessor_flags = [
         "-DWITH_FBREMAP=1",
     ],
@@ -53,9 +53,9 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/folly:scope_guard",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        "//xplat/folly:scope_guard",
     ],
 )
 
@@ -69,23 +69,24 @@ rn_xplat_cxx_library(
         "-fexceptions",
     ],
     fbobjc_compiler_flags = get_apple_compiler_flags(),
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     soname = "libxplat_react_module_samplemodule.$(ext)",
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/glog:glog",
         ":module",
+        "//third-party/glog:glog",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
     ],
 )
 
 CXXREACT_PUBLIC_HEADERS = [
     "CxxNativeModule.h",
+    "ErrorUtils.h",
     "Instance.h",
     "JSBundleType.h",
-    "JSDeltaBundleClient.h",
     "JSExecutor.h",
     "JSIndexedRAMBundle.h",
     "JSModulesUnbundle.h",
@@ -129,8 +130,8 @@ rn_xplat_cxx_library(
     fbandroid_preprocessor_flags = get_android_inspector_flags(),
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     fbobjc_force_static = True,
-    fbobjc_labels = ["supermodule:ios/default/infra.react_native"],
-    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
@@ -142,15 +143,19 @@ rn_xplat_cxx_library(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        "fbsource//xplat/fbsystrace:fbsystrace",
-        "fbsource//xplat/folly:headers_only",
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
         ":jsbigstring",
         ":module",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:headers_only",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        "//xplat/jsi:jsi",
+        react_native_xplat_target("callinvoker:callinvoker"),
         react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("microprofiler:microprofiler"),
-        "fbsource//xplat/folly:optional",
-        "fbsource//xplat/third-party/glog:glog",
+        react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
+        react_native_xplat_target("reactperflogger:reactperflogger"),
+        "//third-party/glog:glog",
+        "//xplat/folly:optional",
     ],
 )

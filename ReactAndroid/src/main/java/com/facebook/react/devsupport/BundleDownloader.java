@@ -7,7 +7,6 @@
 
 package com.facebook.react.devsupport;
 
-import android.util.Log;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -58,7 +57,7 @@ public class BundleDownloader {
         info.mUrl = obj.getString("url");
         info.mFilesChangedCount = obj.getInt("filesChangedCount");
       } catch (JSONException e) {
-        Log.e(TAG, "Invalid bundle info: ", e);
+        FLog.e(TAG, "Invalid bundle info: ", e);
         return null;
       }
 
@@ -72,7 +71,7 @@ public class BundleDownloader {
         obj.put("url", mUrl);
         obj.put("filesChangedCount", mFilesChangedCount);
       } catch (JSONException e) {
-        Log.e(TAG, "Can't serialize bundle info: ", e);
+        FLog.e(TAG, "Can't serialize bundle info: ", e);
         return null;
       }
 
@@ -108,10 +107,7 @@ public class BundleDownloader {
       Request.Builder requestBuilder) {
 
     final Request request =
-        requestBuilder
-            .url(formatBundleUrl(bundleURL))
-            .addHeader("Accept", "multipart/mixed")
-            .build();
+        requestBuilder.url(bundleURL).addHeader("Accept", "multipart/mixed").build();
     mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
     mDownloadBundleFromURLCall.enqueue(
         new Callback() {
@@ -166,10 +162,6 @@ public class BundleDownloader {
         });
   }
 
-  private String formatBundleUrl(String bundleURL) {
-    return bundleURL;
-  }
-
   private void processMultipartResponse(
       final String url,
       final Response response,
@@ -208,10 +200,8 @@ public class BundleDownloader {
 
                   try {
                     JSONObject progress = new JSONObject(body.readUtf8());
-                    String status = null;
-                    if (progress.has("status")) {
-                      status = progress.getString("status");
-                    }
+                    String status =
+                        progress.has("status") ? progress.getString("status") : "Bundling";
                     Integer done = null;
                     if (progress.has("done")) {
                       done = progress.getInt("done");
@@ -228,11 +218,9 @@ public class BundleDownloader {
               }
 
               @Override
-              public void onChunkProgress(Map<String, String> headers, long loaded, long total)
-                  throws IOException {
+              public void onChunkProgress(Map<String, String> headers, long loaded, long total) {
                 if ("application/javascript".equals(headers.get("Content-Type"))) {
-                  callback.onProgress(
-                      "Downloading JavaScript bundle", (int) (loaded / 1024), (int) (total / 1024));
+                  callback.onProgress("Downloading", (int) (loaded / 1024), (int) (total / 1024));
                 }
               }
             });

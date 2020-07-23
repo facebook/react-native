@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   s.name                   = "React-CoreModules"
   s.version                = version
   s.summary                = "-"  # TODO
-  s.homepage               = "http://facebook.github.io/react-native/"
+  s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "10.0", :tvos => "10.0" }
@@ -43,4 +43,5 @@ Pod::Spec.new do |s|
   s.dependency "React-Core/CoreModulesHeaders", version
   s.dependency "React-RCTImage", version
   s.dependency "ReactCommon/turbomodule/core", version
+  s.dependency "React-jsi", version
 end

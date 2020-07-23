@@ -9,11 +9,30 @@
 
 #include <react/components/view/ViewShadowNode.h>
 #include <react/core/ConcreteComponentDescriptor.h>
+#include "ViewProps.h"
+#include "ViewPropsInterpolation.h"
 
 namespace facebook {
 namespace react {
 
-using ViewComponentDescriptor = ConcreteComponentDescriptor<ViewShadowNode>;
+class ViewComponentDescriptor
+    : public ConcreteComponentDescriptor<ViewShadowNode> {
+ public:
+  ViewComponentDescriptor(ComponentDescriptorParameters const &parameters)
+      : ConcreteComponentDescriptor<ViewShadowNode>(parameters) {}
+
+  virtual SharedProps interpolateProps(
+      float animationProgress,
+      const SharedProps &props,
+      const SharedProps &newProps) const override {
+    SharedProps interpolatedPropsShared = cloneProps(newProps, {});
+
+    interpolateViewProps(
+        animationProgress, props, newProps, interpolatedPropsShared);
+
+    return interpolatedPropsShared;
+  };
+};
 
 } // namespace react
 } // namespace facebook

@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   textInputColor: {
-    marginLeft: 20,
+    color: '#00ff00',
   },
 });
 

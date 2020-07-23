@@ -17,9 +17,9 @@
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterStub.h>
 
+#import <ReactCommon/RuntimeExecutor.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
-#import <react/utils/RuntimeExecutor.h>
 
 using namespace facebook::react;
 

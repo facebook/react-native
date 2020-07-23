@@ -4,8 +4,10 @@ exports[`TextInput tests should render as expected: should deep render when mock
 <RCTSinglelineTextInputView
   accessible={true}
   allowFontScaling={true}
+  blurOnSubmit={true}
   focusable={true}
   forwardedRef={null}
+  mostRecentEventCount={0}
   onBlur={[Function]}
   onChange={[Function]}
   onClick={[Function]}
@@ -30,8 +32,10 @@ exports[`TextInput tests should render as expected: should deep render when not 
 <RCTSinglelineTextInputView
   accessible={true}
   allowFontScaling={true}
+  blurOnSubmit={true}
   focusable={true}
   forwardedRef={null}
+  mostRecentEventCount={0}
   onBlur={[Function]}
   onChange={[Function]}
   onClick={[Function]}

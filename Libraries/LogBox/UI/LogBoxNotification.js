@@ -12,7 +12,6 @@
 
 import * as React from 'react';
 import Image from '../../Image/Image';
-import LogBoxImageSource from './LogBoxImageSource';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import View from '../../Components/View/View';
@@ -104,11 +103,7 @@ function DismissButton(props) {
         onPress={props.onPress}
         style={dismissStyles.press}>
         <Image
-          source={{
-            width: 8,
-            height: 8,
-            uri: LogBoxImageSource.close,
-          }}
+          source={require('./LogBoxImages/close.png')}
           style={dismissStyles.image}
         />
       </LogBoxButton>
@@ -190,6 +185,8 @@ const dismissStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   image: {
+    height: 8,
+    width: 8,
     tintColor: LogBoxStyle.getBackgroundColor(1),
   },
 });

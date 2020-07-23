@@ -185,7 +185,7 @@ class JSCRuntime : public jsi::Runtime {
 
   // TODO: revisit this implementation
   jsi::WeakObject createWeakObject(const jsi::Object &) override;
-  jsi::Value lockWeakObject(const jsi::WeakObject &) override;
+  jsi::Value lockWeakObject(jsi::WeakObject &) override;
 
   jsi::Array createArray(size_t length) override;
   size_t size(const jsi::Array &) override;
@@ -276,6 +276,9 @@ class JSCRuntime : public jsi::Runtime {
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
 #define _JSC_FAST_IS_ARRAY
 #endif
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
+#define _JSC_NO_ARRAY_BUFFERS
+#endif
 #endif
 #if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 #if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_11
@@ -283,6 +286,9 @@ class JSCRuntime : public jsi::Runtime {
 // true, this will be a compile-time error and it can be resolved when
 // we understand why.
 #define _JSC_FAST_IS_ARRAY
+#endif
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_12
+#define _JSC_NO_ARRAY_BUFFERS
 #endif
 #endif
 
@@ -294,6 +300,7 @@ std::string JSStringToSTLString(JSStringRef str) {
   std::array<char, 20> stackBuffer;
   std::unique_ptr<char[]> heapBuffer;
   char *buffer;
+  // NOTE: By definition, maxBytes >= 1 since the null terminator is included.
   size_t maxBytes = JSStringGetMaximumUTF8CStringSize(str);
   if (maxBytes <= stackBuffer.size()) {
     buffer = stackBuffer.data();
@@ -302,7 +309,18 @@ std::string JSStringToSTLString(JSStringRef str) {
     buffer = heapBuffer.get();
   }
   size_t actualBytes = JSStringGetUTF8CString(str, buffer, maxBytes);
-  // NOTE: By definition, maxBytes >= actualBytes >= 1.
+  if (!actualBytes) {
+    // Happens if maxBytes == 0 (never the case here) or if str contains
+    // invalid UTF-16 data, since JSStringGetUTF8CString attempts a strict
+    // conversion.
+    // When converting an invalid string, JSStringGetUTF8CString writes a null
+    // terminator before returning. So we can reliably treat our buffer as a C
+    // string and return the truncated data to our caller. This is slightly
+    // slower than if we knew the length (like below) but better than crashing.
+    // TODO(T62295565): Perform a non-strict, best effort conversion of the
+    // full string instead, like we did before the JSI migration.
+    return std::string(buffer);
+  }
   return std::string(buffer, actualBytes - 1);
 }
 
@@ -432,10 +450,18 @@ bool JSCRuntime::isInspectable() {
 namespace {
 
 bool smellsLikeES6Symbol(JSGlobalContextRef ctx, JSValueRef ref) {
-  // Empirically, an es6 Symbol is not an object, but its type is
+  // Since iOS 13, JSValueGetType will return kJSTypeSymbol
+  // Before: Empirically, an es6 Symbol is not an object, but its type is
   // object.  This makes no sense, but we'll run with it.
-  return (
-      !JSValueIsObject(ctx, ref) && JSValueGetType(ctx, ref) == kJSTypeObject);
+  // https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSValueRef.cpp#L79-L82
+
+  JSType type = JSValueGetType(ctx, ref);
+
+  if (type == /* kJSTypeSymbol */ 6) {
+    return true;
+  }
+
+  return (!JSValueIsObject(ctx, ref) && type == kJSTypeObject);
 }
 
 } // namespace
@@ -902,24 +928,30 @@ bool JSCRuntime::isArray(const jsi::Object &obj) const {
 #endif
 }
 
-bool JSCRuntime::isArrayBuffer(const jsi::Object & /*obj*/) const {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
-  // auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj),
-  // nullptr);  return typedArrayType == kJSTypedArrayTypeArrayBuffer;
+bool JSCRuntime::isArrayBuffer(const jsi::Object &obj) const {
+#if defined(_JSC_NO_ARRAY_BUFFERS)
   throw std::runtime_error("Unsupported");
+#else
+  auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj), nullptr);
+  return typedArrayType == kJSTypedArrayTypeArrayBuffer;
+#endif
 }
 
-uint8_t *JSCRuntime::data(const jsi::ArrayBuffer & /*obj*/) {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
-  // return static_cast<uint8_t*>(
-  //    JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
+uint8_t *JSCRuntime::data(const jsi::ArrayBuffer &obj) {
+#if defined(_JSC_NO_ARRAY_BUFFERS)
   throw std::runtime_error("Unsupported");
+#else
+  return static_cast<uint8_t *>(
+      JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
+#endif
 }
 
-size_t JSCRuntime::size(const jsi::ArrayBuffer & /*obj*/) {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
-  // return JSObjectGetArrayBufferByteLength(ctx_, objectRef(obj), nullptr);
+size_t JSCRuntime::size(const jsi::ArrayBuffer &obj) {
+#if defined(_JSC_NO_ARRAY_BUFFERS)
   throw std::runtime_error("Unsupported");
+#else
+  return JSObjectGetArrayBufferByteLength(ctx_, objectRef(obj), nullptr);
+#endif
 }
 
 bool JSCRuntime::isFunction(const jsi::Object &obj) const {
@@ -956,7 +988,7 @@ jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object &obj) {
 #endif
 }
 
-jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject &obj) {
+jsi::Value JSCRuntime::lockWeakObject(jsi::WeakObject &obj) {
 #ifdef RN_FABRIC_ENABLED
   // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);
@@ -1327,27 +1359,37 @@ jsi::Object JSCRuntime::createObject(JSObjectRef obj) const {
 }
 
 jsi::Value JSCRuntime::createValue(JSValueRef value) const {
-  if (JSValueIsNumber(ctx_, value)) {
-    return jsi::Value(JSValueToNumber(ctx_, value, nullptr));
-  } else if (JSValueIsBoolean(ctx_, value)) {
-    return jsi::Value(JSValueToBoolean(ctx_, value));
-  } else if (JSValueIsNull(ctx_, value)) {
-    return jsi::Value(nullptr);
-  } else if (JSValueIsUndefined(ctx_, value)) {
-    return jsi::Value();
-  } else if (JSValueIsString(ctx_, value)) {
-    JSStringRef str = JSValueToStringCopy(ctx_, value, nullptr);
-    auto result = jsi::Value(createString(str));
-    JSStringRelease(str);
-    return result;
-  } else if (JSValueIsObject(ctx_, value)) {
-    JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
-    return jsi::Value(createObject(objRef));
-  } else if (smellsLikeES6Symbol(ctx_, value)) {
-    return jsi::Value(createSymbol(value));
-  } else {
-    // WHAT ARE YOU
-    abort();
+  JSType type = JSValueGetType(ctx_, value);
+
+  switch (type) {
+    case kJSTypeNumber:
+      return jsi::Value(JSValueToNumber(ctx_, value, nullptr));
+    case kJSTypeBoolean:
+      return jsi::Value(JSValueToBoolean(ctx_, value));
+    case kJSTypeNull:
+      return jsi::Value(nullptr);
+    case kJSTypeUndefined:
+      return jsi::Value();
+    case kJSTypeString: {
+      JSStringRef str = JSValueToStringCopy(ctx_, value, nullptr);
+      auto result = jsi::Value(createString(str));
+      JSStringRelease(str);
+      return result;
+    }
+    case kJSTypeObject: {
+      JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
+      return jsi::Value(createObject(objRef));
+    }
+      // TODO: Uncomment this when all supported JSC versions have this symbol
+      //    case kJSTypeSymbol:
+    default: {
+      if (smellsLikeES6Symbol(ctx_, value)) {
+        return jsi::Value(createSymbol(value));
+      } else {
+        // WHAT ARE YOU
+        abort();
+      }
+    }
   }
 }
 

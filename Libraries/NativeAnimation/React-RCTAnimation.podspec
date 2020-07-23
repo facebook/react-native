@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   s.name                   = "React-RCTAnimation"
   s.version                = version
   s.summary                = "A native driver for the Animated API."
-  s.homepage               = "http://facebook.github.io/react-native/"
+  s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "10.0", :tvos => "10.0" }
@@ -41,6 +41,7 @@ Pod::Spec.new do |s|
   s.dependency "Folly", folly_version
   s.dependency "RCTTypeSafety", version
   s.dependency "ReactCommon/turbomodule/core", version
+  s.dependency "React-jsi", version
   s.dependency "FBReactNativeSpec", version
   s.dependency "React-Core/RCTAnimationHeaders", version
 end

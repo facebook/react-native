@@ -37,7 +37,7 @@ class DebugStringConvertibleItem : public DebugStringConvertible {
  private:
   std::string name_;
   std::string value_;
-  SharedDebugStringConvertibleList props_;
+  SharedDebugStringConvertibleList debugProps_;
   SharedDebugStringConvertibleList children_;
 };
 

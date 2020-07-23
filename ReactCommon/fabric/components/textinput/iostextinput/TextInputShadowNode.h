@@ -33,10 +33,12 @@ class TextInputShadowNode : public ConcreteViewShadowNode<
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
-  /*
-   * Returns a `AttributedString` which represents text content of the node.
-   */
-  AttributedString getAttributedString() const;
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::TextKind);
+    traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    return traits;
+  }
 
   /*
    * Associates a shared `TextLayoutManager` with the node.
@@ -47,21 +49,30 @@ class TextInputShadowNode : public ConcreteViewShadowNode<
 
 #pragma mark - LayoutableShadowNode
 
-  Size measure(LayoutConstraints layoutConstraints) const override;
+  Size measureContent(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const override;
   void layout(LayoutContext layoutContext) override;
 
  private:
   /*
    * Creates a `State` object if needed.
    */
-  void updateStateIfNeeded();
+  void updateStateIfNeeded(LayoutContext const &layoutContext);
+
+  /*
+   * Returns a `AttributedString` which represents text content of the node.
+   */
+  AttributedString getAttributedString(
+      LayoutContext const &layoutContext) const;
 
   /*
    * Returns an `AttributedStringBox` which represents text content that should
    * be used for measuring purposes. It might contain actual text value,
    * placeholder value or some character that represents the size of the font.
    */
-  AttributedStringBox attributedStringBoxToMeasure() const;
+  AttributedStringBox attributedStringBoxToMeasure(
+      LayoutContext const &layoutContext) const;
 
   TextLayoutManager::Shared textLayoutManager_;
 };

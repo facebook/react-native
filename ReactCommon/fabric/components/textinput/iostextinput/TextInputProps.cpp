@@ -49,11 +49,33 @@ TextInputProps::TextInputProps(
           "underlineColorAndroid",
           sourceProps.underlineColorAndroid,
           {})),
-      text(convertRawProp(rawProps, "text", sourceProps.text, {})){};
+      text(convertRawProp(rawProps, "text", sourceProps.text, {})),
+      mostRecentEventCount(convertRawProp(
+          rawProps,
+          "mostRecentEventCount",
+          sourceProps.mostRecentEventCount,
+          {})),
+      autoFocus(
+          convertRawProp(rawProps, "autoFocus", sourceProps.autoFocus, {})),
+      inputAccessoryViewID(convertRawProp(
+          rawProps,
+          "inputAccessoryViewID",
+          sourceProps.inputAccessoryViewID,
+          {})){};
 
-TextAttributes TextInputProps::getEffectiveTextAttributes() const {
+TextAttributes TextInputProps::getEffectiveTextAttributes(
+    Float fontSizeMultiplier) const {
   auto result = TextAttributes::defaultTextAttributes();
+  result.fontSizeMultiplier = fontSizeMultiplier;
   result.apply(textAttributes);
+
+  /*
+   * These props are applied to `View`, therefore they must not be a part of
+   * base text attributes.
+   */
+  result.backgroundColor = clearColor();
+  result.opacity = 1;
+
   return result;
 }
 

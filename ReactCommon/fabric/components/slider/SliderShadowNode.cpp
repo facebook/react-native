@@ -66,24 +66,26 @@ void SliderShadowNode::updateStateIfNeeded() {
 }
 
 ImageSource SliderShadowNode::getTrackImageSource() const {
-  return getProps()->trackImage;
+  return getConcreteProps().trackImage;
 }
 
 ImageSource SliderShadowNode::getMinimumTrackImageSource() const {
-  return getProps()->minimumTrackImage;
+  return getConcreteProps().minimumTrackImage;
 }
 
 ImageSource SliderShadowNode::getMaximumTrackImageSource() const {
-  return getProps()->maximumTrackImage;
+  return getConcreteProps().maximumTrackImage;
 }
 
 ImageSource SliderShadowNode::getThumbImageSource() const {
-  return getProps()->thumbImage;
+  return getConcreteProps().thumbImage;
 }
 
 #pragma mark - LayoutableShadowNode
 
-Size SliderShadowNode::measure(LayoutConstraints layoutConstraints) const {
+Size SliderShadowNode::measureContent(
+    LayoutContext const &layoutContext,
+    LayoutConstraints const &layoutConstraints) const {
   if (SliderMeasurementsManager::shouldMeasureSlider()) {
     return measurementsManager_->measure(getSurfaceId(), layoutConstraints);
   }

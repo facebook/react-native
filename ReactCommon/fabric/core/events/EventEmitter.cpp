@@ -77,6 +77,20 @@ void EventEmitter::dispatchEvent(
       priority);
 }
 
+void EventEmitter::dispatchUniqueEvent(
+    const std::string &type,
+    const ValueFactory &payloadFactory) const {
+  SystraceSection s("EventEmitter::dispatchUniqueEvent");
+
+  auto eventDispatcher = eventDispatcher_.lock();
+  if (!eventDispatcher) {
+    return;
+  }
+
+  eventDispatcher->dispatchUniqueEvent(
+      RawEvent(normalizeEventType(type), payloadFactory, eventTarget_));
+}
+
 void EventEmitter::setEnabled(bool enabled) const {
   enableCounter_ += enabled ? 1 : -1;
 

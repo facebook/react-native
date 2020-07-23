@@ -41,6 +41,8 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"TVNavigationEventEmitter", RCTTVNavigationEventEmitterCls},
     {"WebSocketExecutor", RCTWebSocketExecutorCls},
     {"WebSocketModule", RCTWebSocketModuleCls},
+    {"DevLoadingView", RCTDevLoadingViewCls},
+    {"DevSplitBundleLoader", RCTDevSplitBundleLoaderCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);

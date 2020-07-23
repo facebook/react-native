@@ -87,11 +87,11 @@ function LogBoxInspector(props: Props): React.Node {
 }
 
 const headerTitleMap = {
-  warn: 'Warning',
-  error: 'Error',
-  fatal: 'Exception',
+  warn: 'Console Warning',
+  error: 'Console Error',
+  fatal: 'Uncaught Error',
   syntax: 'Syntax Error',
-  component: 'Component Exception',
+  component: 'Render Error',
 };
 
 function LogBoxInspectorBody(props) {
@@ -102,6 +102,7 @@ function LogBoxInspectorBody(props) {
   }, [props.log]);
 
   const headerTitle =
+    props.log.type ??
     headerTitleMap[props.log.isComponentError ? 'component' : props.log.level];
 
   if (collapsed) {

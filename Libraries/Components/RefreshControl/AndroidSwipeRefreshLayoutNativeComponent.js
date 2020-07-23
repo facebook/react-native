@@ -22,7 +22,7 @@ import type {
   Int32,
   WithDefault,
 } from '../../Types/CodegenTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 type NativeProps = $ReadOnly<{|

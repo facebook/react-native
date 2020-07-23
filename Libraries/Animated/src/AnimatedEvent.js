@@ -22,7 +22,6 @@ export type Mapping = {[key: string]: Mapping, ...} | AnimatedValue;
 export type EventConfig = {
   listener?: ?Function,
   useNativeDriver: boolean,
-  ...
 };
 
 function attachNativeEvent(
@@ -140,7 +139,7 @@ class AnimatedEvent {
 
     if (config == null) {
       console.warn('Animated.event now requires a second argument for options');
-      config = {};
+      config = {useNativeDriver: false};
     }
 
     if (config.listener) {
@@ -211,6 +210,9 @@ class AnimatedEvent {
           }
         } else if (typeof recMapping === 'object') {
           for (const mappingKey in recMapping) {
+            /* $FlowFixMe(>=0.120.0) This comment suppresses an error found
+             * when Flow v0.120 was deployed. To see the error, delete this
+             * comment and run Flow. */
             traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
           }
         }

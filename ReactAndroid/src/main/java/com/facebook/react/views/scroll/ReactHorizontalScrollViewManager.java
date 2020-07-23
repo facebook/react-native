@@ -12,11 +12,14 @@ import android.util.DisplayMetrics;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
@@ -60,6 +63,15 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @Override
   public ReactHorizontalScrollView createViewInstance(ThemedReactContext context) {
     return new ReactHorizontalScrollView(context, mFpsListener);
+  }
+
+  @Override
+  public Object updateState(
+      ReactHorizontalScrollView view,
+      ReactStylesDiffMap props,
+      @Nullable StateWrapper stateWrapper) {
+    view.updateState(stateWrapper);
+    return null;
   }
 
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
@@ -179,9 +191,9 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   public void scrollTo(
       ReactHorizontalScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
     if (data.mAnimated) {
-      scrollView.smoothScrollTo(data.mDestX, data.mDestY);
+      scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
     } else {
-      scrollView.scrollTo(data.mDestX, data.mDestY);
+      scrollView.reactScrollTo(data.mDestX, data.mDestY);
     }
   }
 
@@ -192,9 +204,9 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     // ScrollView always has one child - the scrollable area
     int right = scrollView.getChildAt(0).getWidth() + scrollView.getPaddingRight();
     if (data.mAnimated) {
-      scrollView.smoothScrollTo(right, scrollView.getScrollY());
+      scrollView.reactSmoothScrollTo(right, scrollView.getScrollY());
     } else {
-      scrollView.scrollTo(right, scrollView.getScrollY());
+      scrollView.reactScrollTo(right, scrollView.getScrollY());
     }
   }
 
@@ -286,6 +298,17 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     } else {
       view.setHorizontalFadingEdgeEnabled(false);
       view.setFadingEdgeLength(0);
+    }
+  }
+
+  @ReactProp(name = "contentOffset")
+  public void setContentOffset(ReactHorizontalScrollView view, ReadableMap value) {
+    if (value != null) {
+      double x = value.hasKey("x") ? value.getDouble("x") : 0;
+      double y = value.hasKey("y") ? value.getDouble("y") : 0;
+      view.reactScrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+    } else {
+      view.reactScrollTo(0, 0);
     }
   }
 }

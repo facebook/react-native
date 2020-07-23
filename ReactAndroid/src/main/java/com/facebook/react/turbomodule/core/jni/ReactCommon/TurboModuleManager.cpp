@@ -13,6 +13,7 @@
 
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
+#include <ReactCommon/TurboModulePerfLogger.h>
 #include <react/jni/JMessageQueueThread.h>
 
 #include "TurboModuleManager.h"
@@ -81,10 +82,18 @@ void TurboModuleManager::installJSIBindings() {
       return nullptr;
     }
 
+    const char *moduleName = name.c_str();
+
+    TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
+
     auto turboModuleLookup = turboModuleCache->find(name);
     if (turboModuleLookup != turboModuleCache->end()) {
+      TurboModulePerfLogger::moduleJSRequireBeginningCacheHit(moduleName);
+      TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
       return turboModuleLookup->second;
     }
+
+    TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
 
     auto cxxModule = delegate->cthis()->getTurboModule(name, jsCallInvoker);
     if (cxxModule) {
@@ -93,15 +102,19 @@ void TurboModuleManager::installJSIBindings() {
     }
 
     static auto getLegacyCxxModule =
-        delegate->getClass()
+        javaPart->getClass()
             ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
                 const std::string &)>("getLegacyCxxModule");
-    auto legacyCxxModule = getLegacyCxxModule(delegate.get(), name);
+    auto legacyCxxModule = getLegacyCxxModule(javaPart.get(), name);
 
     if (legacyCxxModule) {
+      TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
+
       auto turboModule = std::make_shared<react::TurboCxxModule>(
           legacyCxxModule->cthis()->getModule(), jsCallInvoker);
       turboModuleCache->insert({name, turboModule});
+
+      TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
       return turboModule;
     }
 
@@ -112,9 +125,15 @@ void TurboModuleManager::installJSIBindings() {
     auto moduleInstance = getJavaModule(javaPart.get(), name);
 
     if (moduleInstance) {
-      auto turboModule = delegate->cthis()->getTurboModule(
-          name, moduleInstance, jsCallInvoker, nativeCallInvoker);
+      TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
+      JavaTurboModule::InitParams params = {.moduleName = name,
+                                            .instance = moduleInstance,
+                                            .jsInvoker = jsCallInvoker,
+                                            .nativeInvoker = nativeCallInvoker};
+
+      auto turboModule = delegate->cthis()->getTurboModule(name, params);
       turboModuleCache->insert({name, turboModule});
+      TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
       return turboModule;
     }
 

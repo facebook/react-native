@@ -10,6 +10,7 @@
 
 'use strict';
 
+const View = require('../../Components/View/View');
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('react');
@@ -20,7 +21,18 @@ const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 export type AnimatedComponentType<
   Props: {+[string]: mixed, ...},
   Instance,
-> = React.AbstractComponent<$ObjMap<Props, () => any>, Instance>;
+> = React.AbstractComponent<
+  $ObjMap<
+    Props &
+      $ReadOnly<{
+        passthroughAnimatedPropExplicitValues?: React.ElementConfig<
+          typeof View,
+        >,
+      }>,
+    () => any,
+  >,
+  Instance,
+>;
 
 function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
   Component: React.AbstractComponent<Props, Instance>,
@@ -65,6 +77,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     // However, setNativeProps can only be implemented on leaf native
     // components. If you want to animate a composite component, you need to
     // re-render it. In this case, we have a fallback that uses forceUpdate.
+    // This fallback is also called in Fabric.
     _animatedPropsCallback = () => {
       if (this._component == null) {
         // AnimatedProps is created in will-mount because it's used in render.
@@ -79,7 +92,28 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
         typeof this._component.setNativeProps !== 'function' ||
         // In Fabric, force animations to go through forceUpdate and skip setNativeProps
         // eslint-disable-next-line dot-notation
-        this._component['_internalInstanceHandle']?.stateNode?.canonical != null
+        this._component['_internalInstanceHandle']?.stateNode?.canonical !=
+          null ||
+        // Some components have a setNativeProps function but aren't a host component
+        // such as lists like FlatList and SectionList. These should also use
+        // forceUpdate in Fabric since setNativeProps doesn't exist on the underlying
+        // host component. This crazy hack is essentially special casing those lists and
+        // ScrollView itself to use forceUpdate in Fabric.
+        // If these components end up using forwardRef then these hacks can go away
+        // as this._component would actually be the underlying host component and the above check
+        // would be sufficient.
+        (this._component.getNativeScrollRef != null &&
+          this._component.getNativeScrollRef() != null &&
+          // eslint-disable-next-line dot-notation
+          this._component.getNativeScrollRef()['_internalInstanceHandle']
+            ?.stateNode?.canonical != null) ||
+        (this._component.getScrollResponder != null &&
+          this._component.getScrollResponder().getNativeScrollRef != null &&
+          this._component.getScrollResponder().getNativeScrollRef() != null &&
+          this._component.getScrollResponder().getNativeScrollRef()[
+            // eslint-disable-next-line dot-notation
+            '_internalInstanceHandle'
+          ]?.stateNode?.canonical != null)
       ) {
         this.forceUpdate();
       } else if (!this._propsAnimated.__isNative) {
@@ -97,6 +131,10 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
 
     _attachProps(nextProps) {
       const oldPropsAnimated = this._propsAnimated;
+
+      if (nextProps === oldPropsAnimated) {
+        return;
+      }
 
       this._propsAnimated = new AnimatedProps(
         nextProps,
@@ -139,10 +177,15 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     });
 
     render() {
-      const props = this._propsAnimated.__getValue();
+      const {style = {}, ...props} = this._propsAnimated.__getValue() || {};
+      const {style: passthruStyle = {}, ...passthruProps} =
+        this.props.passthroughAnimatedPropExplicitValues || {};
+      const mergedStyle = {...style, ...passthruStyle};
       return (
         <Component
           {...props}
+          {...passthruProps}
+          style={mergedStyle}
           ref={this._setComponentRef}
           // The native driver updates views directly through the UI thread so we
           // have to make sure the view doesn't get optimized away because it cannot

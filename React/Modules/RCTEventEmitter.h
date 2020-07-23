@@ -15,6 +15,7 @@
 @interface RCTEventEmitter : NSObject <RCTBridgeModule, RCTJSInvokerModule>
 
 @property (nonatomic, weak) RCTBridge *bridge;
+@property (nonatomic, copy, nonnull) void (^invokeJS)(NSString *module, NSString *method, NSArray *args);
 
 /**
  * Override this method to return an array of supported event names. Attempting

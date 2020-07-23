@@ -5,24 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-const InteractionManager = require('../Interaction/InteractionManager');
-const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-const Platform = require('../Utilities/Platform');
-
-const invariant = require('invariant');
-
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import InteractionManager from '../Interaction/InteractionManager';
+import Platform from '../Utilities/Platform';
 import NativeLinking from './NativeLinking';
+import invariant from 'invariant';
 
 /**
  * `Linking` gives you a general interface to interact with both incoming
  * and outgoing app links.
  *
- * See https://facebook.github.io/react-native/docs/linking.html
+ * See https://reactnative.dev/docs/linking.html
  */
 class Linking extends NativeEventEmitter {
   constructor() {
@@ -33,27 +31,27 @@ class Linking extends NativeEventEmitter {
    * Add a handler to Linking changes by listening to the `url` event type
    * and providing the handler
    *
-   * See https://facebook.github.io/react-native/docs/linking.html#addeventlistener
+   * See https://reactnative.dev/docs/linking.html#addeventlistener
    */
-  addEventListener(type: string, handler: Function) {
+  addEventListener<T>(type: string, handler: T) {
     this.addListener(type, handler);
   }
 
   /**
    * Remove a handler by passing the `url` event type and the handler.
    *
-   * See https://facebook.github.io/react-native/docs/linking.html#removeeventlistener
+   * See https://reactnative.dev/docs/linking.html#removeeventlistener
    */
-  removeEventListener(type: string, handler: Function) {
+  removeEventListener<T>(type: string, handler: T) {
     this.removeListener(type, handler);
   }
 
   /**
    * Try to open the given `url` with any of the installed apps.
    *
-   * See https://facebook.github.io/react-native/docs/linking.html#openurl
+   * See https://reactnative.dev/docs/linking.html#openurl
    */
-  openURL(url: string): Promise<any> {
+  openURL(url: string): Promise<void> {
     this._validateURL(url);
     return NativeLinking.openURL(url);
   }
@@ -61,7 +59,7 @@ class Linking extends NativeEventEmitter {
   /**
    * Determine whether or not an installed app can handle a given URL.
    *
-   * See https://facebook.github.io/react-native/docs/linking.html#canopenurl
+   * See https://reactnative.dev/docs/linking.html#canopenurl
    */
   canOpenURL(url: string): Promise<boolean> {
     this._validateURL(url);
@@ -71,9 +69,9 @@ class Linking extends NativeEventEmitter {
   /**
    * Open app settings.
    *
-   * See https://facebook.github.io/react-native/docs/linking.html#opensettings
+   * See https://reactnative.dev/docs/linking.html#opensettings
    */
-  openSettings(): Promise<any> {
+  openSettings(): Promise<void> {
     return NativeLinking.openSettings();
   }
 
@@ -81,7 +79,7 @@ class Linking extends NativeEventEmitter {
    * If the app launch was triggered by an app link,
    * it will give the link url, otherwise it will give `null`
    *
-   * See https://facebook.github.io/react-native/docs/linking.html#getinitialurl
+   * See https://reactnative.dev/docs/linking.html#getinitialurl
    */
   getInitialURL(): Promise<?string> {
     return Platform.OS === 'android'
@@ -96,7 +94,7 @@ class Linking extends NativeEventEmitter {
    *
    * @platform android
    *
-   * See https://facebook.github.io/react-native/docs/linking.html#sendintent
+   * See https://reactnative.dev/docs/linking.html#sendintent
    */
   sendIntent(
     action: string,

@@ -113,6 +113,9 @@ static void testShadowNodeTreeLifeCycle(
 
         LOG(ERROR) << "Entropy seed: " << entropy.getSeed() << "\n";
 
+        // There are some issues getting `getDebugDescription` to compile
+        // under test on Android for now.
+#ifndef ANDROID
         LOG(ERROR) << "Shadow Tree before: \n"
                    << currentRootNode->getDebugDescription();
         LOG(ERROR) << "Shadow Tree after: \n"
@@ -127,6 +130,7 @@ static void testShadowNodeTreeLifeCycle(
         LOG(ERROR) << "Mutations:"
                    << "\n"
                    << getDebugDescription(mutations, {});
+#endif
 
         FAIL();
       }
@@ -143,12 +147,18 @@ static void testShadowNodeTreeLifeCycle(
 
 using namespace facebook::react;
 
-TEST(MountingTest, stableBiggerTreeFewerIterations) {
+TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMoves) {
   testShadowNodeTreeLifeCycle(
-      /* seed */ 1, /* size */ 512, /* repeats */ 32, /* stages */ 32);
+      /* seed */ 0,
+      /* size */ 512,
+      /* repeats */ 32,
+      /* stages */ 32);
 }
 
-TEST(MountingTest, stableSmallerTreeMoreIterations) {
+TEST(MountingTest, stableSmallerTreeMoreIterationsOptimizedMoves) {
   testShadowNodeTreeLifeCycle(
-      /* seed */ 1, /* size */ 16, /* repeats */ 512, /* stages */ 32);
+      /* seed */ 0,
+      /* size */ 16,
+      /* repeats */ 512,
+      /* stages */ 32);
 }

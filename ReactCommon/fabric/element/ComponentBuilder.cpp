@@ -30,11 +30,16 @@ ShadowNode::Unshared ComponentBuilder::build(
           elementFragment.tag, elementFragment.surfaceId, nullptr},
       nullptr);
 
+  auto state = elementFragment.state
+      ? elementFragment.state
+      : componentDescriptor.createInitialState(
+            ShadowNodeFragment{elementFragment.props}, family);
+
   auto constShadowNode = componentDescriptor.createShadowNode(
       ShadowNodeFragment{
           elementFragment.props,
           std::make_shared<ShadowNode::ListOfShared const>(children),
-          elementFragment.state},
+          state},
       family);
 
   auto shadowNode = std::const_pointer_cast<ShadowNode>(constShadowNode);

@@ -18,8 +18,10 @@ namespace react {
 
 extern char const TextInputComponentName[] = "TextInput";
 
-AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure() const {
-  bool hasMeaningfulState = getState() && getState()->getRevision() != 0;
+AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure(
+    LayoutContext const &layoutContext) const {
+  bool hasMeaningfulState =
+      getState() && getState()->getRevision() != State::initialRevisionValue;
 
   if (hasMeaningfulState) {
     auto attributedStringBox = getStateData().attributedStringBox;
@@ -30,30 +32,40 @@ AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure() const {
     }
   }
 
-  auto attributedString =
-      hasMeaningfulState ? AttributedString{} : getAttributedString();
+  auto attributedString = hasMeaningfulState
+      ? AttributedString{}
+      : getAttributedString(layoutContext);
 
   if (attributedString.isEmpty()) {
-    auto placeholder = getProps()->placeholder;
+    auto placeholder = getConcreteProps().placeholder;
     // Note: `zero-width space` is insufficient in some cases (e.g. when we need
     // to measure the "hight" of the font).
-    auto string = !placeholder.empty() ? placeholder : "I";
-    auto textAttributes = getProps()->getEffectiveTextAttributes();
+    // TODO T67606511: We will redefine the measurement of empty strings as part
+    // of T67606511
+    auto string = !placeholder.empty()
+        ? placeholder
+        : BaseTextShadowNode::getEmptyPlaceholder();
+    auto textAttributes = getConcreteProps().getEffectiveTextAttributes(
+        layoutContext.fontSizeMultiplier);
     attributedString.appendFragment({string, textAttributes, {}});
   }
 
   return AttributedStringBox{attributedString};
 }
 
-AttributedString TextInputShadowNode::getAttributedString() const {
-  auto textAttributes = getProps()->getEffectiveTextAttributes();
+AttributedString TextInputShadowNode::getAttributedString(
+    LayoutContext const &layoutContext) const {
+  auto textAttributes = getConcreteProps().getEffectiveTextAttributes(
+      layoutContext.fontSizeMultiplier);
   auto attributedString = AttributedString{};
 
   attributedString.appendFragment(
-      AttributedString::Fragment{getProps()->text, textAttributes});
+      AttributedString::Fragment{getConcreteProps().text, textAttributes});
 
-  attributedString.appendAttributedString(
-      BaseTextShadowNode::getAttributedString(textAttributes, *this));
+  auto attachments = Attachments{};
+  BaseTextShadowNode::buildAttributedString(
+      textAttributes, *this, attributedString, attachments);
+
   return attributedString;
 }
 
@@ -63,29 +75,47 @@ void TextInputShadowNode::setTextLayoutManager(
   textLayoutManager_ = textLayoutManager;
 }
 
-void TextInputShadowNode::updateStateIfNeeded() {
+void TextInputShadowNode::updateStateIfNeeded(
+    LayoutContext const &layoutContext) {
   ensureUnsealed();
 
-  if (!getState() || getState()->getRevision() == 0) {
-    auto state = TextInputState{};
-    state.attributedStringBox = AttributedStringBox{getAttributedString()};
-    state.paragraphAttributes = getProps()->paragraphAttributes;
-    state.layoutManager = textLayoutManager_;
-    setStateData(std::move(state));
+  auto reactTreeAttributedString = getAttributedString(layoutContext);
+  auto const &state = getStateData();
+
+  assert(textLayoutManager_);
+  assert(
+      (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
+      "`StateData` refers to a different `TextLayoutManager`");
+
+  if (state.reactTreeAttributedString == reactTreeAttributedString &&
+      state.layoutManager == textLayoutManager_) {
+    return;
   }
+
+  auto newState = TextInputState{};
+  newState.attributedStringBox = AttributedStringBox{reactTreeAttributedString};
+  newState.paragraphAttributes = getConcreteProps().paragraphAttributes;
+  newState.reactTreeAttributedString = reactTreeAttributedString;
+  newState.layoutManager = textLayoutManager_;
+  newState.mostRecentEventCount = getConcreteProps().mostRecentEventCount;
+  setStateData(std::move(newState));
 }
 
 #pragma mark - LayoutableShadowNode
 
-Size TextInputShadowNode::measure(LayoutConstraints layoutConstraints) const {
-  return textLayoutManager_->measure(
-      attributedStringBoxToMeasure(),
-      getProps()->getEffectiveParagraphAttributes(),
-      layoutConstraints);
+Size TextInputShadowNode::measureContent(
+    LayoutContext const &layoutContext,
+    LayoutConstraints const &layoutConstraints) const {
+  return textLayoutManager_
+      ->measure(
+          attributedStringBoxToMeasure(layoutContext),
+          getConcreteProps().getEffectiveParagraphAttributes(),
+          layoutConstraints)
+      .size;
 }
 
 void TextInputShadowNode::layout(LayoutContext layoutContext) {
-  updateStateIfNeeded();
+  updateStateIfNeeded(layoutContext);
   ConcreteViewShadowNode::layout(layoutContext);
 }
 

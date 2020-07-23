@@ -47,19 +47,6 @@ class RootShadowNode final
   RootShadowNode::Unshared clone(
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext) const;
-
-  /*
-   * Clones the node (and partially the tree starting from the node) by
-   * replacing a `oldShadowNode` (which corresponds to a given `shadowNode`)
-   * with a node that `callback` returns. `oldShadowNode` might not be the same
-   * as `shadowNode` but they must share the same family.
-   *
-   * Returns `nullptr` if the operation cannot be performed successfully.
-   */
-  RootShadowNode::Unshared clone(
-      ShadowNodeFamily const &shadowNodeFamily,
-      std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
-          callback) const;
 };
 
 } // namespace react

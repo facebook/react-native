@@ -25,6 +25,11 @@ allprojects {
         maven {
             url = uri("$rootDir/node_modules/jsc-android/dist")
         }
+        maven {
+            // https://github.com/wix/Detox/blob/master/docs/Introduction.Android.md
+            // All of Detox's artifacts are provided via the npm module
+            url = uri("$rootDir/node_modules/detox/Detox-android")
+        }
         mavenLocal()
         google()
         jcenter()

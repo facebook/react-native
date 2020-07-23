@@ -10,10 +10,10 @@
 #import "RCTAutoInsetsProtocol.h"
 #import "RCTBorderDrawing.h"
 #import "RCTConvert.h"
+#import "RCTI18nUtil.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
-#import "RCTI18nUtil.h"
 
 UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
 
@@ -98,8 +98,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   return str.length == 0 ? nil : str;
 }
 
-@implementation RCTView
-{
+@implementation RCTView {
   UIColor *_backgroundColor;
   NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsNameMap;
   NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsLabelMap;
@@ -132,7 +131,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 
 - (void)setReactLayoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
 {
@@ -142,160 +141,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
 
   if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
-    self.semanticContentAttribute =
-      layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
-        UISemanticContentAttributeForceLeftToRight :
-        UISemanticContentAttributeForceRightToLeft;
+    self.semanticContentAttribute = layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight
+        ? UISemanticContentAttributeForceLeftToRight
+        : UISemanticContentAttributeForceRightToLeft;
   }
 }
 
-- (NSString *)accessibilityLabel
-{
-  NSString *label = super.accessibilityLabel;
-  if (label) {
-    return label;
-  }
-  return RCTRecursiveAccessibilityLabel(self);
-}
-
-- (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
-{
-  if (!self.accessibilityActions.count) {
-    return nil;
-  }
-
-  accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
-  accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
-  NSMutableArray *actions = [NSMutableArray array];
-  for (NSDictionary *action in self.accessibilityActions) {
-    if (action[@"name"]) {
-      accessibilityActionsNameMap[action[@"name"]] = action;
-    }
-    if (action[@"label"]) {
-      accessibilityActionsLabelMap[action[@"label"]] = action;
-      [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action[@"label"]
-                                                                    target:self
-                                                                  selector:@selector(didActivateAccessibilityCustomAction:)]];
-    }
-  }
-
-  return [actions copy];
-}
-
-- (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
-{
-  if (!_onAccessibilityAction || !accessibilityActionsLabelMap) {
-    return NO;
-  }
-
-  // iOS defines the name as the localized label, so use our map to convert this back to the non-localized action namne when passing to JS. This allows for standard action names across platforms.
-
-  NSDictionary *actionObject = accessibilityActionsLabelMap[action.name];
-  if (actionObject) {
-    _onAccessibilityAction(@{
-      @"actionName": actionObject[@"name"],
-      @"actionTarget": self.reactTag
-    });
-  }
-  return YES;
-}
-
-- (NSString *)accessibilityValue
-{
-  if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
-    for (NSString *state in self.accessibilityState) {
-      id val = self.accessibilityState[state];
-      if (!val) {
-        continue;
-      }
-      if ([state isEqualToString:@"checked"] && [val isKindOfClass:[NSNumber class]]) {
-        return [val boolValue] ? @"1" : @"0";
-      }
-    }
-  }
-  NSMutableArray *valueComponents = [NSMutableArray new];
-  static NSDictionary<NSString *, NSString *> *roleDescriptions = nil;
-  static dispatch_once_t onceToken1;
-  dispatch_once(&onceToken1, ^{
-    roleDescriptions = @{
-                         @"alert" : @"alert",
-                         @"checkbox" : @"checkbox",
-                         @"combobox" : @"combo box",
-                         @"menu" : @"menu",
-                         @"menubar" : @"menu bar",
-                         @"menuitem" : @"menu item",
-                         @"progressbar" : @"progress bar",
-                         @"radio" : @"radio button",
-                         @"radiogroup" : @"radio group",
-                         @"scrollbar" : @"scroll bar",
-                         @"spinbutton" : @"spin button",
-                         @"switch" : @"switch",
-                         @"tab" : @"tab",
-                         @"tablist" : @"tab list",
-                         @"timer" : @"timer",
-                         @"toolbar" : @"tool bar",
-                         };
-  });
-  static NSDictionary<NSString *, NSString *> *stateDescriptions = nil;
-  static dispatch_once_t onceToken2;
-  dispatch_once(&onceToken2, ^{
-    stateDescriptions = @{
-                          @"checked" : @"checked",
-                          @"unchecked" : @"not checked",
-                          @"busy" : @"busy",
-                          @"expanded" : @"expanded",
-                          @"collapsed" : @"collapsed",
-                          @"mixed": @"mixed",
-                          };
-  });
-  NSString *roleDescription = self.accessibilityRole ? roleDescriptions[self.accessibilityRole]: nil;
-  if (roleDescription) {
-    [valueComponents addObject:roleDescription];
-  }
-  for (NSString *state in self.accessibilityState) {
-    id val = self.accessibilityState[state];
-    if (!val) {
-      continue;
-    }
-    if ([state isEqualToString:@"checked"]) {
-      if ([val isKindOfClass:[NSNumber class]]) {
-        [valueComponents addObject:stateDescriptions[[val boolValue] ? @"checked" : @"unchecked"]];
-      } else if ([val isKindOfClass:[NSString class]] && [val isEqualToString:@"mixed"]) {
-        [valueComponents addObject:stateDescriptions[@"mixed"]];
-      }
-    }
-    if ([state isEqualToString:@"expanded"] && [val isKindOfClass:[NSNumber class]]) {
-      [valueComponents addObject:stateDescriptions[[val boolValue] ? @"expanded" : @"collapsed"]];
-    }
-    if ([state isEqualToString:@"busy"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
-      [valueComponents addObject:stateDescriptions[@"busy"]];
-    }
-  }
-  
-  // handle accessibilityValue
-
-  if (self.accessibilityValueInternal) {
-    id min = self.accessibilityValueInternal[@"min"];
-    id now = self.accessibilityValueInternal[@"now"];
-    id max = self.accessibilityValueInternal[@"max"];
-    id text = self.accessibilityValueInternal[@"text"];
-    if (text && [text isKindOfClass:[NSString class]]) {
-      [valueComponents addObject:text];
-    } else if ([min isKindOfClass:[NSNumber class]] &&
-        [now isKindOfClass:[NSNumber class]] &&
-        [max isKindOfClass:[NSNumber class]] &&
-        ([min intValue] < [max intValue]) &&
-        ([min intValue] <= [now intValue] && [now intValue] <= [max intValue])) {
-      int val = ([now intValue]*100)/([max intValue]-[min intValue]);
-      [valueComponents addObject:[NSString stringWithFormat:@"%d percent", val]];
-    }
-  }
-
-  if (valueComponents.count > 0) {
-    return [valueComponents componentsJoinedByString:@", "];
-  }
-  return nil;
-}
+#pragma mark - Hit Testing
 
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
 {
@@ -309,7 +161,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
   BOOL canReceiveTouchEvents = ([self isUserInteractionEnabled] && ![self isHidden]);
-  if(!canReceiveTouchEvents) {
+  if (!canReceiveTouchEvents) {
     return nil;
   }
 
@@ -363,6 +215,166 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return CGRectContainsPoint(hitFrame, point);
 }
 
+#pragma mark - Accessibility
+
+- (NSString *)accessibilityLabel
+{
+  NSString *label = super.accessibilityLabel;
+  if (label) {
+    return label;
+  }
+  return RCTRecursiveAccessibilityLabel(self);
+}
+
+- (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
+{
+  if (!self.accessibilityActions.count) {
+    return nil;
+  }
+
+  accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
+  accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
+  NSMutableArray *actions = [NSMutableArray array];
+  for (NSDictionary *action in self.accessibilityActions) {
+    if (action[@"name"]) {
+      accessibilityActionsNameMap[action[@"name"]] = action;
+    }
+    if (action[@"label"]) {
+      accessibilityActionsLabelMap[action[@"label"]] = action;
+      [actions addObject:[[UIAccessibilityCustomAction alloc]
+                             initWithName:action[@"label"]
+                                   target:self
+                                 selector:@selector(didActivateAccessibilityCustomAction:)]];
+    }
+  }
+
+  return [actions copy];
+}
+
+- (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
+{
+  if (!_onAccessibilityAction || !accessibilityActionsLabelMap) {
+    return NO;
+  }
+  // iOS defines the name as the localized label, so use our map to convert this back to the non-localized action name
+  // when passing to JS. This allows for standard action names across platforms.
+  NSDictionary *actionObject = accessibilityActionsLabelMap[action.name];
+  if (actionObject) {
+    _onAccessibilityAction(@{@"actionName" : actionObject[@"name"], @"actionTarget" : self.reactTag});
+  }
+  return YES;
+}
+
+- (NSString *)accessibilityValue
+{
+  static dispatch_once_t onceToken;
+  static NSDictionary<NSString *, NSString *> *rolesAndStatesDescription = nil;
+
+  dispatch_once(&onceToken, ^{
+    NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"AccessibilityResources" ofType:@"bundle"];
+    NSBundle *bundle = [NSBundle bundleWithPath:bundlePath];
+
+    if (bundle) {
+      NSURL *url = [bundle URLForResource:@"Localizable" withExtension:@"strings"];
+      if (@available(iOS 11.0, *)) {
+        rolesAndStatesDescription = [NSDictionary dictionaryWithContentsOfURL:url error:nil];
+      } else {
+        // Fallback on earlier versions
+        rolesAndStatesDescription = [NSDictionary dictionaryWithContentsOfURL:url];
+      }
+    }
+    if (rolesAndStatesDescription == nil) {
+      // Falling back to hardcoded English list.
+      NSLog(@"Cannot load localized accessibility strings.");
+      rolesAndStatesDescription = @{
+        @"alert" : @"alert",
+        @"checkbox" : @"checkbox",
+        @"combobox" : @"combo box",
+        @"menu" : @"menu",
+        @"menubar" : @"menu bar",
+        @"menuitem" : @"menu item",
+        @"progressbar" : @"progress bar",
+        @"radio" : @"radio button",
+        @"radiogroup" : @"radio group",
+        @"scrollbar" : @"scroll bar",
+        @"spinbutton" : @"spin button",
+        @"switch" : @"switch",
+        @"tab" : @"tab",
+        @"tablist" : @"tab list",
+        @"timer" : @"timer",
+        @"toolbar" : @"tool bar",
+        @"checked" : @"checked",
+        @"unchecked" : @"not checked",
+        @"busy" : @"busy",
+        @"expanded" : @"expanded",
+        @"collapsed" : @"collapsed",
+        @"mixed" : @"mixed",
+      };
+    }
+  });
+
+  // Handle Switch.
+  if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
+    for (NSString *state in self.accessibilityState) {
+      id val = self.accessibilityState[state];
+      if (!val) {
+        continue;
+      }
+      if ([state isEqualToString:@"checked"] && [val isKindOfClass:[NSNumber class]]) {
+        return [val boolValue] ? @"1" : @"0";
+      }
+    }
+  }
+  NSMutableArray *valueComponents = [NSMutableArray new];
+  NSString *roleDescription = self.accessibilityRole ? rolesAndStatesDescription[self.accessibilityRole] : nil;
+  if (roleDescription) {
+    [valueComponents addObject:roleDescription];
+  }
+
+  // Handle states which haven't already been handled in RCTViewManager.
+  for (NSString *state in self.accessibilityState) {
+    id val = self.accessibilityState[state];
+    if (!val) {
+      continue;
+    }
+    if ([state isEqualToString:@"checked"]) {
+      if ([val isKindOfClass:[NSNumber class]]) {
+        [valueComponents addObject:rolesAndStatesDescription[[val boolValue] ? @"checked" : @"unchecked"]];
+      } else if ([val isKindOfClass:[NSString class]] && [val isEqualToString:@"mixed"]) {
+        [valueComponents addObject:rolesAndStatesDescription[@"mixed"]];
+      }
+    }
+    if ([state isEqualToString:@"expanded"] && [val isKindOfClass:[NSNumber class]]) {
+      [valueComponents addObject:rolesAndStatesDescription[[val boolValue] ? @"expanded" : @"collapsed"]];
+    }
+    if ([state isEqualToString:@"busy"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
+      [valueComponents addObject:rolesAndStatesDescription[@"busy"]];
+    }
+  }
+
+  // Handle accessibilityValue.
+  if (self.accessibilityValueInternal) {
+    id min = self.accessibilityValueInternal[@"min"];
+    id now = self.accessibilityValueInternal[@"now"];
+    id max = self.accessibilityValueInternal[@"max"];
+    id text = self.accessibilityValueInternal[@"text"];
+    if (text && [text isKindOfClass:[NSString class]]) {
+      [valueComponents addObject:text];
+    } else if (
+        [min isKindOfClass:[NSNumber class]] && [now isKindOfClass:[NSNumber class]] &&
+        [max isKindOfClass:[NSNumber class]] && ([min intValue] < [max intValue]) &&
+        ([min intValue] <= [now intValue] && [now intValue] <= [max intValue])) {
+      int val = ([now intValue] * 100) / ([max intValue] - [min intValue]);
+      [valueComponents addObject:[NSString stringWithFormat:@"%d percent", val]];
+    }
+  }
+
+  if (valueComponents.count > 0) {
+    return [valueComponents componentsJoinedByString:@", "];
+  }
+  return nil;
+}
+
 - (UIView *)reactAccessibilityElement
 {
   return self;
@@ -377,13 +389,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return NO;
 }
 
-- (BOOL)performAccessibilityAction:(NSString *) name
+- (BOOL)performAccessibilityAction:(NSString *)name
 {
   if (_onAccessibilityAction && accessibilityActionsNameMap[name]) {
-    _onAccessibilityAction(@{
-                             @"actionName" : name,
-                             @"actionTarget" : self.reactTag
-                             });
+    _onAccessibilityAction(@{@"actionName" : name, @"actionTarget" : self.reactTag});
     return YES;
   }
   return NO;
@@ -481,17 +490,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   while (view) {
     UIViewController *controller = view.reactViewController;
     if (controller) {
-      return (UIEdgeInsets){
-        controller.topLayoutGuide.length, 0,
-        controller.bottomLayoutGuide.length, 0
-      };
+      return (UIEdgeInsets){controller.topLayoutGuide.length, 0, controller.bottomLayoutGuide.length, 0};
     }
     view = view.superview;
   }
   return UIEdgeInsetsZero;
 }
 
-#pragma mark - View unmounting
+#pragma mark - View Unmounting
 
 - (void)react_remountAllSubviews
 {
@@ -550,7 +556,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
       }
 
     } else if (view.superview) {
-
       // View is completely outside the clipRect, so unmount it
       [view removeFromSuperview];
     }
@@ -597,6 +602,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+  if (@available(iOS 13.0, *)) {
+    if ([self.traitCollection hasDifferentColorAppearanceComparedToTraitCollection:previousTraitCollection]) {
+      [self.layer setNeedsDisplay];
+    }
+  }
+#endif
+}
+
 #pragma mark - Borders
 
 - (UIColor *)backgroundColor
@@ -614,7 +631,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   [self.layer setNeedsDisplay];
 }
 
-static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
+static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
+{
   return x >= 0 ? x : defaultValue;
 };
 
@@ -630,22 +648,22 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     const CGFloat directionAwareBorderLeftWidth = isRTL ? borderEndWidth : borderStartWidth;
     const CGFloat directionAwareBorderRightWidth = isRTL ? borderStartWidth : borderEndWidth;
 
-    return (UIEdgeInsets) {
-      RCTDefaultIfNegativeTo(borderWidth, _borderTopWidth),
-      RCTDefaultIfNegativeTo(borderWidth, directionAwareBorderLeftWidth),
-      RCTDefaultIfNegativeTo(borderWidth, _borderBottomWidth),
-      RCTDefaultIfNegativeTo(borderWidth, directionAwareBorderRightWidth),
+    return (UIEdgeInsets){
+        RCTDefaultIfNegativeTo(borderWidth, _borderTopWidth),
+        RCTDefaultIfNegativeTo(borderWidth, directionAwareBorderLeftWidth),
+        RCTDefaultIfNegativeTo(borderWidth, _borderBottomWidth),
+        RCTDefaultIfNegativeTo(borderWidth, directionAwareBorderRightWidth),
     };
   }
 
   const CGFloat directionAwareBorderLeftWidth = isRTL ? _borderEndWidth : _borderStartWidth;
   const CGFloat directionAwareBorderRightWidth = isRTL ? _borderStartWidth : _borderEndWidth;
 
-  return (UIEdgeInsets) {
-    RCTDefaultIfNegativeTo(borderWidth, _borderTopWidth),
-    RCTDefaultIfNegativeTo(borderWidth, RCTDefaultIfNegativeTo(_borderLeftWidth, directionAwareBorderLeftWidth)),
-    RCTDefaultIfNegativeTo(borderWidth, _borderBottomWidth),
-    RCTDefaultIfNegativeTo(borderWidth, RCTDefaultIfNegativeTo(_borderRightWidth, directionAwareBorderRightWidth)),
+  return (UIEdgeInsets){
+      RCTDefaultIfNegativeTo(borderWidth, _borderTopWidth),
+      RCTDefaultIfNegativeTo(borderWidth, RCTDefaultIfNegativeTo(_borderLeftWidth, directionAwareBorderLeftWidth)),
+      RCTDefaultIfNegativeTo(borderWidth, _borderBottomWidth),
+      RCTDefaultIfNegativeTo(borderWidth, RCTDefaultIfNegativeTo(_borderRightWidth, directionAwareBorderRightWidth)),
   };
 }
 
@@ -680,10 +698,14 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     const CGFloat directionAwareBottomLeftRadius = isRTL ? _borderBottomEndRadius : _borderBottomStartRadius;
     const CGFloat directionAwareBottomRightRadius = isRTL ? _borderBottomStartRadius : _borderBottomEndRadius;
 
-    topLeftRadius = RCTDefaultIfNegativeTo(radius, RCTDefaultIfNegativeTo(_borderTopLeftRadius, directionAwareTopLeftRadius));
-    topRightRadius = RCTDefaultIfNegativeTo(radius, RCTDefaultIfNegativeTo(_borderTopRightRadius, directionAwareTopRightRadius));
-    bottomLeftRadius = RCTDefaultIfNegativeTo(radius, RCTDefaultIfNegativeTo(_borderBottomLeftRadius, directionAwareBottomLeftRadius));
-    bottomRightRadius = RCTDefaultIfNegativeTo(radius, RCTDefaultIfNegativeTo(_borderBottomRightRadius, directionAwareBottomRightRadius));
+    topLeftRadius =
+        RCTDefaultIfNegativeTo(radius, RCTDefaultIfNegativeTo(_borderTopLeftRadius, directionAwareTopLeftRadius));
+    topRightRadius =
+        RCTDefaultIfNegativeTo(radius, RCTDefaultIfNegativeTo(_borderTopRightRadius, directionAwareTopRightRadius));
+    bottomLeftRadius =
+        RCTDefaultIfNegativeTo(radius, RCTDefaultIfNegativeTo(_borderBottomLeftRadius, directionAwareBottomLeftRadius));
+    bottomRightRadius = RCTDefaultIfNegativeTo(
+        radius, RCTDefaultIfNegativeTo(_borderBottomRightRadius, directionAwareBottomRightRadius));
   }
 
   // Get scale factors required to prevent radii from overlapping
@@ -695,10 +717,10 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
 
   // Return scaled radii
   return (RCTCornerRadii){
-    topLeftRadius * MIN(topScaleFactor, leftScaleFactor),
-    topRightRadius * MIN(topScaleFactor, rightScaleFactor),
-    bottomLeftRadius * MIN(bottomScaleFactor, leftScaleFactor),
-    bottomRightRadius * MIN(bottomScaleFactor, rightScaleFactor),
+      topLeftRadius * MIN(topScaleFactor, leftScaleFactor),
+      topRightRadius * MIN(topScaleFactor, rightScaleFactor),
+      bottomLeftRadius * MIN(bottomScaleFactor, leftScaleFactor),
+      bottomRightRadius * MIN(bottomScaleFactor, rightScaleFactor),
   };
 }
 
@@ -714,10 +736,10 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     const CGColorRef directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor;
 
     return (RCTBorderColors){
-      _borderTopColor ?: _borderColor,
-      directionAwareBorderLeftColor ?: _borderColor,
-      _borderBottomColor ?: _borderColor,
-      directionAwareBorderRightColor ?: _borderColor,
+        _borderTopColor ?: _borderColor,
+        directionAwareBorderLeftColor ?: _borderColor,
+        _borderBottomColor ?: _borderColor,
+        directionAwareBorderRightColor ?: _borderColor,
     };
   }
 
@@ -725,10 +747,10 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
   const CGColorRef directionAwareBorderRightColor = isRTL ? _borderStartColor : _borderEndColor;
 
   return (RCTBorderColors){
-    _borderTopColor ?: _borderColor,
-    directionAwareBorderLeftColor ?: _borderLeftColor ?: _borderColor,
-    _borderBottomColor ?: _borderColor,
-    directionAwareBorderRightColor ?: _borderRightColor ?: _borderColor,
+      _borderTopColor ?: _borderColor,
+      directionAwareBorderLeftColor ?: _borderLeftColor ?: _borderColor,
+      _borderBottomColor ?: _borderColor,
+      directionAwareBorderRightColor ?: _borderRightColor ?: _borderColor,
   };
 }
 
@@ -756,40 +778,43 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
   const UIEdgeInsets borderInsets = [self bordersAsInsets];
   const RCTBorderColors borderColors = [self borderColors];
 
-  BOOL useIOSBorderRendering =
-  RCTCornerRadiiAreEqual(cornerRadii) &&
-  RCTBorderInsetsAreEqual(borderInsets) &&
-  RCTBorderColorsAreEqual(borderColors) &&
-  _borderStyle == RCTBorderStyleSolid &&
+  BOOL useIOSBorderRendering = RCTCornerRadiiAreEqual(cornerRadii) && RCTBorderInsetsAreEqual(borderInsets) &&
+      RCTBorderColorsAreEqual(borderColors) && _borderStyle == RCTBorderStyleSolid &&
 
-  // iOS draws borders in front of the content whereas CSS draws them behind
-  // the content. For this reason, only use iOS border drawing when clipping
-  // or when the border is hidden.
+      // iOS draws borders in front of the content whereas CSS draws them behind
+      // the content. For this reason, only use iOS border drawing when clipping
+      // or when the border is hidden.
 
-  (borderInsets.top == 0 || (borderColors.top && CGColorGetAlpha(borderColors.top) == 0) || self.clipsToBounds);
+      (borderInsets.top == 0 || (borderColors.top && CGColorGetAlpha(borderColors.top) == 0) || self.clipsToBounds);
 
   // iOS clips to the outside of the border, but CSS clips to the inside. To
   // solve this, we'll need to add a container view inside the main view to
   // correctly clip the subviews.
 
+  CGColorRef backgroundColor;
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+  if (@available(iOS 13.0, *)) {
+    backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+  } else {
+    backgroundColor = _backgroundColor.CGColor;
+  }
+#else
+  backgroundColor = _backgroundColor.CGColor;
+#endif
+
   if (useIOSBorderRendering) {
     layer.cornerRadius = cornerRadii.topLeft;
     layer.borderColor = borderColors.left;
     layer.borderWidth = borderInsets.left;
-    layer.backgroundColor = _backgroundColor.CGColor;
+    layer.backgroundColor = backgroundColor;
     layer.contents = nil;
     layer.needsDisplayOnBoundsChange = NO;
     layer.mask = nil;
     return;
   }
 
-  UIImage *image = RCTGetBorderImage(_borderStyle,
-                                     layer.bounds.size,
-                                     cornerRadii,
-                                     borderInsets,
-                                     borderColors,
-                                     _backgroundColor.CGColor,
-                                     self.clipsToBounds);
+  UIImage *image = RCTGetBorderImage(
+      _borderStyle, layer.bounds.size, cornerRadii, borderInsets, borderColors, backgroundColor, self.clipsToBounds);
 
   layer.backgroundColor = NULL;
 
@@ -803,11 +828,7 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     CGSize size = image.size;
     UIEdgeInsets insets = image.capInsets;
     CGRectMake(
-      insets.left / size.width,
-      insets.top / size.height,
-      (CGFloat)1.0 / size.width,
-      (CGFloat)1.0 / size.height
-    );
+        insets.left / size.width, insets.top / size.height, (CGFloat)1.0 / size.width, (CGFloat)1.0 / size.height);
   });
 
   layer.contents = (id)image.CGImage;
@@ -834,7 +855,6 @@ static void RCTUpdateShadowPathForView(RCTView *view)
 {
   if (RCTLayerHasShadow(view.layer)) {
     if (CGColorGetAlpha(view.backgroundColor.CGColor) > 0.999) {
-
       // If view has a solid background color, calculate shadow path from border
       const RCTCornerRadii cornerRadii = [view cornerRadii];
       const RCTCornerInsets cornerInsets = RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero);
@@ -843,14 +863,15 @@ static void RCTUpdateShadowPathForView(RCTView *view)
       CGPathRelease(shadowPath);
 
     } else {
-
       // Can't accurately calculate box shadow, so fall back to pixel-based shadow
       view.layer.shadowPath = nil;
 
-      RCTLogAdvice(@"View #%@ of type %@ has a shadow set but cannot calculate "
-        "shadow efficiently. Consider setting a background color to "
-        "fix this, or apply the shadow to a more specific component.",
-        view.reactTag, [view class]);
+      RCTLogAdvice(
+          @"View #%@ of type %@ has a shadow set but cannot calculate "
+           "shadow efficiently. Consider setting a background color to "
+           "fix this, or apply the shadow to a more specific component.",
+          view.reactTag,
+          [view class]);
     }
   }
 }
@@ -861,16 +882,14 @@ static void RCTUpdateShadowPathForView(RCTView *view)
   CGFloat cornerRadius = 0;
 
   if (self.clipsToBounds) {
-
     const RCTCornerRadii cornerRadii = [self cornerRadii];
     if (RCTCornerRadiiAreEqual(cornerRadii)) {
-
       cornerRadius = cornerRadii.topLeft;
 
     } else {
-
       CAShapeLayer *shapeLayer = [CAShapeLayer layer];
-      CGPathRef path = RCTPathCreateWithRoundedRect(self.bounds, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL);
+      CGPathRef path =
+          RCTPathCreateWithRoundedRect(self.bounds, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL);
       shapeLayer.path = path;
       CGPathRelease(path);
       mask = shapeLayer;
@@ -884,7 +903,7 @@ static void RCTUpdateShadowPathForView(RCTView *view)
 #pragma mark Border Color
 
 #define setBorderColor(side)                                \
-  - (void)setBorder##side##Color:(CGColorRef)color          \
+  -(void)setBorder##side##Color : (CGColorRef)color         \
   {                                                         \
     if (CGColorEqualToColor(_border##side##Color, color)) { \
       return;                                               \
@@ -894,71 +913,55 @@ static void RCTUpdateShadowPathForView(RCTView *view)
     [self.layer setNeedsDisplay];                           \
   }
 
-setBorderColor()
-setBorderColor(Top)
-setBorderColor(Right)
-setBorderColor(Bottom)
-setBorderColor(Left)
-setBorderColor(Start)
-setBorderColor(End)
+setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom) setBorderColor(Left)
+        setBorderColor(Start) setBorderColor(End)
 
 #pragma mark - Border Width
 
-#define setBorderWidth(side)                    \
-  - (void)setBorder##side##Width:(CGFloat)width \
-  {                                             \
-    if (_border##side##Width == width) {        \
-      return;                                   \
-    }                                           \
-    _border##side##Width = width;               \
-    [self.layer setNeedsDisplay];               \
+#define setBorderWidth(side)                     \
+  -(void)setBorder##side##Width : (CGFloat)width \
+  {                                              \
+    if (_border##side##Width == width) {         \
+      return;                                    \
+    }                                            \
+    _border##side##Width = width;                \
+    [self.layer setNeedsDisplay];                \
   }
 
-setBorderWidth()
-setBorderWidth(Top)
-setBorderWidth(Right)
-setBorderWidth(Bottom)
-setBorderWidth(Left)
-setBorderWidth(Start)
-setBorderWidth(End)
+            setBorderWidth() setBorderWidth(Top) setBorderWidth(Right) setBorderWidth(Bottom) setBorderWidth(Left)
+                setBorderWidth(Start) setBorderWidth(End)
 
 #pragma mark - Border Radius
 
-#define setBorderRadius(side)                     \
-  - (void)setBorder##side##Radius:(CGFloat)radius \
-  {                                               \
-    if (_border##side##Radius == radius) {        \
-      return;                                     \
-    }                                             \
-    _border##side##Radius = radius;               \
-    [self.layer setNeedsDisplay];                 \
+#define setBorderRadius(side)                      \
+  -(void)setBorder##side##Radius : (CGFloat)radius \
+  {                                                \
+    if (_border##side##Radius == radius) {         \
+      return;                                      \
+    }                                              \
+    _border##side##Radius = radius;                \
+    [self.layer setNeedsDisplay];                  \
   }
 
-setBorderRadius()
-setBorderRadius(TopLeft)
-setBorderRadius(TopRight)
-setBorderRadius(TopStart)
-setBorderRadius(TopEnd)
-setBorderRadius(BottomLeft)
-setBorderRadius(BottomRight)
-setBorderRadius(BottomStart)
-setBorderRadius(BottomEnd)
+                    setBorderRadius() setBorderRadius(TopLeft) setBorderRadius(TopRight) setBorderRadius(TopStart)
+                        setBorderRadius(TopEnd) setBorderRadius(BottomLeft) setBorderRadius(BottomRight)
+                            setBorderRadius(BottomStart) setBorderRadius(BottomEnd)
 
 #pragma mark - Border Style
 
-#define setBorderStyle(side)                           \
-  - (void)setBorder##side##Style:(RCTBorderStyle)style \
-  {                                                    \
-    if (_border##side##Style == style) {               \
-      return;                                          \
-    }                                                  \
-    _border##side##Style = style;                      \
-    [self.layer setNeedsDisplay];                      \
+#define setBorderStyle(side)                            \
+  -(void)setBorder##side##Style : (RCTBorderStyle)style \
+  {                                                     \
+    if (_border##side##Style == style) {                \
+      return;                                           \
+    }                                                   \
+    _border##side##Style = style;                       \
+    [self.layer setNeedsDisplay];                       \
   }
 
-setBorderStyle()
+                                setBorderStyle()
 
-- (void)dealloc
+    - (void)dealloc
 {
   CGColorRelease(_borderColor);
   CGColorRelease(_borderTopColor);

@@ -22,7 +22,7 @@
 #include <react/graphics/conversions.h>
 #include <cmath>
 
-#include <Glog/logging.h>
+#include <glog/logging.h>
 
 namespace facebook {
 namespace react {
@@ -412,6 +412,178 @@ inline std::string toString(
   }
 }
 
+inline std::string toString(const AccessibilityRole &accessibilityRole) {
+  switch (accessibilityRole) {
+    case AccessibilityRole::None:
+      return "none";
+    case AccessibilityRole::Button:
+      return "button";
+    case AccessibilityRole::Link:
+      return "link";
+    case AccessibilityRole::Search:
+      return "search";
+    case AccessibilityRole::Image:
+      return "image";
+    case AccessibilityRole::Imagebutton:
+      return "imagebutton";
+    case AccessibilityRole::Keyboardkey:
+      return "keyboardkey";
+    case AccessibilityRole::Text:
+      return "text";
+    case AccessibilityRole::Adjustable:
+      return "adjustable";
+    case AccessibilityRole::Summary:
+      return "summary";
+    case AccessibilityRole::Header:
+      return "header";
+    case AccessibilityRole::Alert:
+      return "alert";
+    case AccessibilityRole::Checkbox:
+      return "checkbox";
+    case AccessibilityRole::Combobox:
+      return "combobox";
+    case AccessibilityRole::Menu:
+      return "menu";
+    case AccessibilityRole::Menubar:
+      return "menubar";
+    case AccessibilityRole::Menuitem:
+      return "menuitem";
+    case AccessibilityRole::Progressbar:
+      return "progressbar";
+    case AccessibilityRole::Radio:
+      return "radio";
+    case AccessibilityRole::Radiogroup:
+      return "radiogroup";
+    case AccessibilityRole::Scrollbar:
+      return "scrollbar";
+    case AccessibilityRole::Spinbutton:
+      return "spinbutton";
+    case AccessibilityRole::Switch:
+      return "switch";
+    case AccessibilityRole::Tab:
+      return "tab";
+    case AccessibilityRole::Tablist:
+      return "tablist";
+    case AccessibilityRole::Timer:
+      return "timer";
+    case AccessibilityRole::Toolbar:
+      return "toolbar";
+  }
+}
+
+inline void fromRawValue(const RawValue &value, AccessibilityRole &result) {
+  auto string = (std::string)value;
+  if (string == "none") {
+    result = AccessibilityRole::None;
+    return;
+  }
+  if (string == "button") {
+    result = AccessibilityRole::Button;
+    return;
+  }
+  if (string == "link") {
+    result = AccessibilityRole::Link;
+    return;
+  }
+  if (string == "search") {
+    result = AccessibilityRole::Search;
+    return;
+  }
+  if (string == "image") {
+    result = AccessibilityRole::Image;
+    return;
+  }
+  if (string == "imagebutton") {
+    result = AccessibilityRole::Imagebutton;
+    return;
+  }
+  if (string == "keyboardkey") {
+    result = AccessibilityRole::Keyboardkey;
+    return;
+  }
+  if (string == "text") {
+    result = AccessibilityRole::Text;
+    return;
+  }
+  if (string == "adjustable") {
+    result = AccessibilityRole::Adjustable;
+    return;
+  }
+  if (string == "summary") {
+    result = AccessibilityRole::Summary;
+    return;
+  }
+  if (string == "header") {
+    result = AccessibilityRole::Header;
+    return;
+  }
+  if (string == "alert") {
+    result = AccessibilityRole::Alert;
+    return;
+  }
+  if (string == "checkbox") {
+    result = AccessibilityRole::Checkbox;
+    return;
+  }
+  if (string == "combobox") {
+    result = AccessibilityRole::Combobox;
+    return;
+  }
+  if (string == "menu") {
+    result = AccessibilityRole::Menu;
+    return;
+  }
+  if (string == "menubar") {
+    result = AccessibilityRole::Menubar;
+    return;
+  }
+  if (string == "menuitem") {
+    result = AccessibilityRole::Menuitem;
+    return;
+  }
+  if (string == "progressbar") {
+    result = AccessibilityRole::Progressbar;
+    return;
+  }
+  if (string == "radio") {
+    result = AccessibilityRole::Radio;
+    return;
+  }
+  if (string == "radiogroup") {
+    result = AccessibilityRole::Radiogroup;
+    return;
+  }
+  if (string == "scrollbar") {
+    result = AccessibilityRole::Scrollbar;
+    return;
+  }
+  if (string == "spinbutton") {
+    result = AccessibilityRole::Spinbutton;
+    return;
+  }
+  if (string == "switch") {
+    result = AccessibilityRole::Switch;
+    return;
+  }
+  if (string == "tab") {
+    result = AccessibilityRole::Tab;
+    return;
+  }
+  if (string == "tablist") {
+    result = AccessibilityRole::Tablist;
+    return;
+  }
+  if (string == "timer") {
+    result = AccessibilityRole::Timer;
+    return;
+  }
+  if (string == "toolbar") {
+    result = AccessibilityRole::Toolbar;
+    return;
+  }
+  abort();
+}
+
 inline ParagraphAttributes convertRawProp(
     RawProps const &rawProps,
     ParagraphAttributes const &sourceParagraphAttributes,
@@ -448,6 +620,11 @@ inline ParagraphAttributes convertRawProp(
       "maximumFontSize",
       sourceParagraphAttributes.maximumFontSize,
       defaultParagraphAttributes.maximumFontSize);
+  paragraphAttributes.includeFontPadding = convertRawProp(
+      rawProps,
+      "includeFontPadding",
+      sourceParagraphAttributes.includeFontPadding,
+      defaultParagraphAttributes.includeFontPadding);
 
   return paragraphAttributes;
 }
@@ -481,7 +658,30 @@ inline folly::dynamic toDynamic(
   values("ellipsizeMode", toString(paragraphAttributes.ellipsizeMode));
   values("textBreakStrategy", toString(paragraphAttributes.textBreakStrategy));
   values("adjustsFontSizeToFit", paragraphAttributes.adjustsFontSizeToFit);
+  values("includeFontPadding", paragraphAttributes.includeFontPadding);
+
   return values;
+}
+
+inline folly::dynamic toDynamic(const FontVariant &fontVariant) {
+  auto result = folly::dynamic::array();
+  if ((int)fontVariant & (int)FontVariant::SmallCaps) {
+    result.push_back("small-caps");
+  }
+  if ((int)fontVariant & (int)FontVariant::OldstyleNums) {
+    result.push_back("oldstyle-nums");
+  }
+  if ((int)fontVariant & (int)FontVariant::LiningNums) {
+    result.push_back("lining-nums");
+  }
+  if ((int)fontVariant & (int)FontVariant::TabularNums) {
+    result.push_back("tabular-nums");
+  }
+  if ((int)fontVariant & (int)FontVariant::ProportionalNums) {
+    result.push_back("proportional-nums");
+  }
+
+  return result;
 }
 
 inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
@@ -513,7 +713,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes("fontStyle", toString(*textAttributes.fontStyle));
   }
   if (textAttributes.fontVariant.has_value()) {
-    _textAttributes("fontVariant", toString(*textAttributes.fontVariant));
+    _textAttributes("fontVariant", toDynamic(*textAttributes.fontVariant));
   }
   if (textAttributes.allowFontScaling.has_value()) {
     _textAttributes("allowFontScaling", *textAttributes.allowFontScaling);
@@ -579,6 +779,13 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
     dynamicFragment["string"] = fragment.string;
     if (fragment.parentShadowView.componentHandle) {
       dynamicFragment["reactTag"] = fragment.parentShadowView.tag;
+    }
+    if (fragment.isAttachment()) {
+      dynamicFragment["isAttachment"] = true;
+      dynamicFragment["width"] =
+          fragment.parentShadowView.layoutMetrics.frame.size.width;
+      dynamicFragment["height"] =
+          fragment.parentShadowView.layoutMetrics.frame.size.height;
     }
     dynamicFragment["textAttributes"] = toDynamic(fragment.textAttributes);
     fragments.push_back(dynamicFragment);

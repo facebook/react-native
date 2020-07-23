@@ -11,7 +11,7 @@
 'use strict';
 
 import type {SchemaType} from '../../CodegenSchema';
-
+const {getTypeAliasTypeAnnotation} = require('./ObjCppUtils/Utils');
 type FilesOutput = Map<string, string>;
 
 const propertyHeaderTemplate =
@@ -62,12 +62,27 @@ namespace react {
 } // namespace facebook
 `;
 
-function traverseArg(arg, index): string {
+function traverseArg(arg, index, aliases): string {
   function wrap(suffix) {
     return `args[${index}]${suffix}`;
   }
-  const type = arg.typeAnnotation.type;
-  switch (type) {
+  const {typeAnnotation} = arg;
+
+  const realTypeAnnotation =
+    typeAnnotation.type === 'TypeAliasTypeAnnotation'
+      ? getTypeAliasTypeAnnotation(typeAnnotation.name, aliases)
+      : typeAnnotation;
+  switch (realTypeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (realTypeAnnotation.name) {
+        case 'RootTag':
+          return wrap('.getNumber()');
+        default:
+          (realTypeAnnotation.name: empty);
+          throw new Error(
+            `Unknown prop type for "${arg.name}, found: ${realTypeAnnotation.name}"`,
+          );
+      }
     case 'StringTypeAnnotation':
       return wrap('.getString(rt)');
     case 'BooleanTypeAnnotation':
@@ -85,20 +100,22 @@ function traverseArg(arg, index): string {
       return wrap('.getObject(rt)');
     case 'AnyTypeAnnotation':
       throw new Error(`Any type is not allowed in params for "${arg.name}"`);
-
     default:
-      (type: empty);
-      throw new Error(`Unknown prop type for "${arg.name}, found: ${type}"`);
+      // TODO (T65847278): Figure out why this does not work.
+      // (type: empty);
+      throw new Error(
+        `Unknown prop type for "${arg.name}, found: ${realTypeAnnotation.type}"`,
+      );
   }
 }
 
-function traverseProprety(property): string {
+function traverseProperty(property, aliases): string {
   const propertyTemplate =
     property.typeAnnotation.returnTypeAnnotation.type === 'VoidTypeAnnotation'
       ? voidPropertyTemplate
       : nonvoidPropertyTemplate;
   const traversedArgs = property.typeAnnotation.params
-    .map(traverseArg)
+    .map((p, i) => traverseArg(p, i, aliases))
     .join(', ');
   return propertyTemplate
     .replace(/::_PROPERTY_NAME_::/g, property.name)
@@ -125,9 +142,9 @@ module.exports = {
 
     const modules = Object.keys(nativeModules)
       .map(name => {
-        const {properties} = nativeModules[name];
+        const {aliases, properties} = nativeModules[name];
         const traversedProperties = properties
-          .map(property => traverseProprety(property))
+          .map(property => traverseProperty(property, aliases))
           .join('\n');
         return moduleTemplate
           .replace(/::_MODULE_PROPERTIES_::/g, traversedProperties)

@@ -51,11 +51,16 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
    * "Private" (only used by TextInput.js) props
    */
   std::string const text{};
+  int const mostRecentEventCount{0};
+
+  bool autoFocus{false};
+
+  std::string const inputAccessoryViewID{};
 
   /*
    * Accessors
    */
-  TextAttributes getEffectiveTextAttributes() const;
+  TextAttributes getEffectiveTextAttributes(Float fontSizeMultiplier) const;
   ParagraphAttributes getEffectiveParagraphAttributes() const;
 
 #ifdef ANDROID

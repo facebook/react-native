@@ -20,9 +20,13 @@ import type {InterpolationConfigType} from './AnimatedInterpolation';
 class AnimatedDivision extends AnimatedWithChildren {
   _a: AnimatedNode;
   _b: AnimatedNode;
+  _warnedAboutDivideByZero: boolean = false;
 
   constructor(a: AnimatedNode | number, b: AnimatedNode | number) {
     super();
+    if (b === 0) {
+      console.error('Detected potential division by zero in AnimatedDivision');
+    }
     this._a = typeof a === 'number' ? new AnimatedValue(a) : a;
     this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
   }
@@ -37,8 +41,15 @@ class AnimatedDivision extends AnimatedWithChildren {
     const a = this._a.__getValue();
     const b = this._b.__getValue();
     if (b === 0) {
-      console.error('Detected division by zero in AnimatedDivision');
+      // Prevent spamming the console/LogBox
+      if (!this._warnedAboutDivideByZero) {
+        console.error('Detected division by zero in AnimatedDivision');
+        this._warnedAboutDivideByZero = true;
+      }
+      // Passing infinity/NaN to Fabric will cause a native crash
+      return 0;
     }
+    this._warnedAboutDivideByZero = false;
     return a / b;
   }
 

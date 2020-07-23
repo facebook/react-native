@@ -15,10 +15,13 @@
 #import <React/RCTBackedTextInputViewProtocol.h>
 #import <React/RCTUITextField.h>
 #import <React/RCTUITextView.h>
+#import <React/RCTUtils.h>
 
 #import "RCTConversions.h"
 #import "RCTTextInputNativeCommands.h"
 #import "RCTTextInputUtils.h"
+
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -28,8 +31,34 @@ using namespace facebook::react;
 @implementation RCTTextInputComponentView {
   TextInputShadowNode::ConcreteState::Shared _state;
   UIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
-  size_t _stateRevision;
+  NSUInteger _mostRecentEventCount;
+  NSAttributedString *_lastStringStateWasUpdatedWith;
+
+  /*
+   * UIKit uses either UITextField or UITextView as its UIKit element for <TextInput>. UITextField is for single line
+   * entry, UITextView is for multiline entry. There is a problem with order of events when user types a character. In
+   * UITextField (single line text entry), typing a character first triggers `onChange` event and then
+   * onSelectionChange. In UITextView (multi line text entry), typing a character first triggers `onSelectionChange` and
+   * then onChange. JavaScript depends on `onChange` to be called before `onSelectionChange`. This flag keeps state so
+   * if UITextView is backing text input view, inside `-[RCTTextInputComponentView textInputDidChangeSelection]` we make
+   * sure to call `onChange` before `onSelectionChange` and ignore next `-[RCTTextInputComponentView
+   * textInputDidChange]` call.
+   */
+  BOOL _ignoreNextTextInputCall;
+
+  /*
+   * A flag that when set to true, `_mostRecentEventCount` won't be incremented when `[self _updateState]`
+   * and delegate methods `textInputDidChange` and `textInputDidChangeSelection` will exit early.
+   *
+   * Setting `_backedTextInputView.attributedText` triggers delegate methods `textInputDidChange` and
+   * `textInputDidChangeSelection` for multiline text input only.
+   * In multiline text input this is undesirable as we don't want to be sending events for changes that JS triggered.
+   */
+  BOOL _comingFromJS;
+  BOOL _didMoveToWindow;
 }
+
+#pragma mark - UIView overrides
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -39,12 +68,34 @@ using namespace facebook::react;
     auto &props = *defaultProps;
 
     _backedTextInputView = props.traits.multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
-    _backedTextInputView.frame = self.bounds;
     _backedTextInputView.textInputDelegate = self;
+    _ignoreNextTextInputCall = NO;
+    _comingFromJS = NO;
+    _didMoveToWindow = NO;
     [self addSubview:_backedTextInputView];
   }
 
   return self;
+}
+
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+
+  if (self.window && !_didMoveToWindow) {
+    auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+    if (props.autoFocus) {
+      [_backedTextInputView becomeFirstResponder];
+    }
+    _didMoveToWindow = YES;
+  }
+}
+
+#pragma mark - RCTViewComponentView overrides
+
+- (NSObject *)accessibilityElement
+{
+  return _backedTextInputView;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -123,9 +174,7 @@ using namespace facebook::react;
   }
 
   if (newTextInputProps.traits.textContentType != oldTextInputProps.traits.textContentType) {
-    if (@available(iOS 10.0, *)) {
-      _backedTextInputView.textContentType = RCTUITextContentTypeFromString(newTextInputProps.traits.textContentType);
-    }
+    _backedTextInputView.textContentType = RCTUITextContentTypeFromString(newTextInputProps.traits.textContentType);
   }
 
   if (newTextInputProps.traits.passwordRules != oldTextInputProps.traits.passwordRules) {
@@ -143,13 +192,21 @@ using namespace facebook::react;
     _backedTextInputView.placeholder = RCTNSStringFromString(newTextInputProps.placeholder);
   }
 
+  if (newTextInputProps.placeholderTextColor != oldTextInputProps.placeholderTextColor) {
+    _backedTextInputView.placeholderColor = RCTUIColorFromSharedColor(newTextInputProps.placeholderTextColor);
+  }
+
   if (newTextInputProps.textAttributes != oldTextInputProps.textAttributes) {
     _backedTextInputView.defaultTextAttributes =
-        RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes());
+        RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
   }
 
   if (newTextInputProps.selectionColor != oldTextInputProps.selectionColor) {
     _backedTextInputView.tintColor = RCTUIColorFromSharedColor(newTextInputProps.selectionColor);
+  }
+
+  if (newTextInputProps.inputAccessoryViewID != oldTextInputProps.inputAccessoryViewID) {
+    _backedTextInputView.inputAccessoryViewID = RCTNSStringFromString(newTextInputProps.inputAccessoryViewID);
   }
 
   [super updateProps:props oldProps:oldProps];
@@ -165,10 +222,11 @@ using namespace facebook::react;
     return;
   }
 
-  if (_state->getRevision() != _stateRevision) {
+  if (_mostRecentEventCount == _state->getData().mostRecentEventCount) {
     auto data = _state->getData();
-    _stateRevision = _state->getRevision();
-    _backedTextInputView.attributedText = RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox);
+    _comingFromJS = YES;
+    [self _setAttributedString:RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox)];
+    _comingFromJS = NO;
   }
 }
 
@@ -186,22 +244,13 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  _backedTextInputView.attributedText = [[NSAttributedString alloc] init];
+  _backedTextInputView.attributedText = nil;
+  _mostRecentEventCount = 0;
   _state.reset();
-  _stateRevision = 0;
-}
-
-#pragma mark - RCTComponentViewProtocol
-
-- (void)_setMultiline:(BOOL)multiline
-{
-  [_backedTextInputView removeFromSuperview];
-  UIView<RCTBackedTextInputViewProtocol> *backedTextInputView =
-      multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
-  backedTextInputView.frame = _backedTextInputView.frame;
-  RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
-  _backedTextInputView = backedTextInputView;
-  [self addSubview:_backedTextInputView];
+  _comingFromJS = NO;
+  _lastStringStateWasUpdatedWith = nil;
+  _ignoreNextTextInputCall = NO;
+  _didMoveToWindow = NO;
 }
 
 #pragma mark - RCTBackedTextInputDelegate
@@ -216,7 +265,7 @@ using namespace facebook::react;
   auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
 
   if (props.traits.clearTextOnFocus) {
-    _backedTextInputView.attributedText = [NSAttributedString new];
+    _backedTextInputView.attributedText = nil;
     [self textInputDidChange];
   }
 
@@ -268,7 +317,10 @@ using namespace facebook::react;
 {
   if (!_backedTextInputView.textWasPasted) {
     if (_eventEmitter) {
-      std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onKeyPress([self _textInputMetrics]);
+      KeyPressMetrics keyPressMetrics;
+      keyPressMetrics.text = RCTStringFromNSString(text);
+      keyPressMetrics.eventCount = _mostRecentEventCount;
+      std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onKeyPress(keyPressMetrics);
     }
   }
 
@@ -293,6 +345,15 @@ using namespace facebook::react;
 
 - (void)textInputDidChange
 {
+  if (_comingFromJS) {
+    return;
+  }
+
+  if (_ignoreNextTextInputCall) {
+    _ignoreNextTextInputCall = NO;
+    return;
+  }
+
   [self _updateState];
 
   if (_eventEmitter) {
@@ -302,43 +363,18 @@ using namespace facebook::react;
 
 - (void)textInputDidChangeSelection
 {
+  if (_comingFromJS) {
+    return;
+  }
+  auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+  if (props.traits.multiline && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
+    [self textInputDidChange];
+    _ignoreNextTextInputCall = YES;
+  }
+
   if (_eventEmitter) {
     std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onSelectionChange([self _textInputMetrics]);
   }
-}
-
-#pragma mark - Other
-
-- (TextInputMetrics)_textInputMetrics
-{
-  TextInputMetrics metrics;
-  metrics.text = RCTStringFromNSString(_backedTextInputView.attributedText.string);
-  metrics.selectionRange = [self _selectionRange];
-  return metrics;
-}
-
-- (void)_updateState
-{
-  NSAttributedString *attributedString = _backedTextInputView.attributedText;
-
-  if (!_state) {
-    return;
-  }
-
-  auto data = _state->getData();
-  data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
-  _state->updateState(std::move(data), EventPriority::SynchronousUnbatched);
-  _stateRevision = _state->getRevision() + 1;
-}
-
-- (AttributedString::Range)_selectionRange
-{
-  UITextRange *selectedTextRange = _backedTextInputView.selectedTextRange;
-  NSInteger start = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
-                                                  toPosition:selectedTextRange.start];
-  NSInteger end = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
-                                                toPosition:selectedTextRange.end];
-  return AttributedString::Range{(int)start, (int)(end - start)};
 }
 
 #pragma mark - Native Commands
@@ -358,37 +394,99 @@ using namespace facebook::react;
   [_backedTextInputView resignFirstResponder];
 }
 
-- (void)setMostRecentEventCount:(NSInteger)eventCount
-{
-  // no-op. `eventCount` isn't used in Fabric's TextInput.
-  // We are keeping it so commands are backwards
-  // compatible with Paper's TextInput.
-}
-
 - (void)setTextAndSelection:(NSInteger)eventCount
                       value:(NSString *__nullable)value
                       start:(NSInteger)start
                         end:(NSInteger)end
 {
-  // `eventCount` is ignored, isn't used in Fabric's TextInput.
-  // We are keeping it so commands are
-  // backwards compatible with Paper's TextInput.
+  if (_mostRecentEventCount != eventCount) {
+    return;
+  }
+  _comingFromJS = YES;
+  if (![value isEqualToString:_backedTextInputView.attributedText.string]) {
+    NSMutableAttributedString *mutableString =
+        [[NSMutableAttributedString alloc] initWithAttributedString:_backedTextInputView.attributedText];
+    [mutableString replaceCharactersInRange:NSMakeRange(0, _backedTextInputView.attributedText.length)
+                                 withString:value];
+    [self _setAttributedString:mutableString];
+    [self _updateState];
+  }
+
   UITextPosition *startPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
                                                                       offset:start];
   UITextPosition *endPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
                                                                     offset:end];
-  UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
-  [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
 
-  NSMutableAttributedString *mutableString =
-      [[NSMutableAttributedString alloc] initWithAttributedString:_backedTextInputView.attributedText];
-
-  if (value) {
-    [mutableString replaceCharactersInRange:NSMakeRange(start, end - start) withString:value];
+  if (startPosition && endPosition) {
+    UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
+    [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
   }
+  _comingFromJS = NO;
+}
 
-  _backedTextInputView.attributedText = mutableString;
-  [self _updateState];
+#pragma mark - Other
+
+- (TextInputMetrics)_textInputMetrics
+{
+  TextInputMetrics metrics;
+  metrics.text = RCTStringFromNSString(_backedTextInputView.attributedText.string);
+  metrics.selectionRange = [self _selectionRange];
+  metrics.eventCount = _mostRecentEventCount;
+  return metrics;
+}
+
+- (void)_updateState
+{
+  if (!_state) {
+    return;
+  }
+  NSAttributedString *attributedString = _backedTextInputView.attributedText;
+  auto data = _state->getData();
+  _lastStringStateWasUpdatedWith = attributedString;
+  data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
+  _mostRecentEventCount += _comingFromJS ? 0 : 1;
+  data.mostRecentEventCount = _mostRecentEventCount;
+  _state->updateState(std::move(data));
+}
+
+- (AttributedString::Range)_selectionRange
+{
+  UITextRange *selectedTextRange = _backedTextInputView.selectedTextRange;
+  NSInteger start = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                  toPosition:selectedTextRange.start];
+  NSInteger end = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                toPosition:selectedTextRange.end];
+  return AttributedString::Range{(int)start, (int)(end - start)};
+}
+
+- (void)_setAttributedString:(NSAttributedString *)attributedString
+{
+  UITextRange *selectedRange = [_backedTextInputView selectedTextRange];
+  _backedTextInputView.attributedText = attributedString;
+  if (_lastStringStateWasUpdatedWith.length == attributedString.length) {
+    // Calling `[_backedTextInputView setAttributedText]` moves caret
+    // to the end of text input field. This cancels any selection as well
+    // as position in the text input field. In case the length of string
+    // doesn't change, selection and caret position is maintained.
+    [_backedTextInputView setSelectedTextRange:selectedRange notifyDelegate:NO];
+  }
+  _lastStringStateWasUpdatedWith = attributedString;
+}
+
+- (void)_setMultiline:(BOOL)multiline
+{
+  [_backedTextInputView removeFromSuperview];
+  UIView<RCTBackedTextInputViewProtocol> *backedTextInputView =
+      multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
+  backedTextInputView.frame = _backedTextInputView.frame;
+  RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
+  _backedTextInputView = backedTextInputView;
+  [self addSubview:_backedTextInputView];
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTTextInputCls(void)
+{
+  return RCTTextInputComponentView.class;
+}

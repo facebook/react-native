@@ -43,6 +43,8 @@ public interface BaseViewManagerInterface<T extends View> {
 
   void setElevation(T view, float elevation);
 
+  void setShadowColor(T view, int shadowColor);
+
   void setImportantForAccessibility(T view, @Nullable String importantForAccessibility);
 
   void setNativeId(T view, @Nullable String nativeId);

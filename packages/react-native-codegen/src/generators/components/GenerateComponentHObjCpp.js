@@ -102,7 +102,17 @@ NS_ASSUME_NONNULL_END
 `.trim();
 
 function getObjCParamType(param: CommandsFunctionTypeParamAnnotation): string {
-  switch (param.typeAnnotation.type) {
+  const {typeAnnotation} = param;
+
+  switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return 'double';
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
+      }
     case 'BooleanTypeAnnotation':
       return 'BOOL';
     case 'DoubleTypeAnnotation':
@@ -114,7 +124,7 @@ function getObjCParamType(param: CommandsFunctionTypeParamAnnotation): string {
     case 'StringTypeAnnotation':
       return 'NSString *';
     default:
-      (param.typeAnnotation.type: empty);
+      (typeAnnotation.type: empty);
       throw new Error('Received invalid param type annotation');
   }
 }
@@ -122,7 +132,17 @@ function getObjCParamType(param: CommandsFunctionTypeParamAnnotation): string {
 function getObjCExpectedKindParamType(
   param: CommandsFunctionTypeParamAnnotation,
 ): string {
-  switch (param.typeAnnotation.type) {
+  const {typeAnnotation} = param;
+
+  switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return '[NSNumber class]';
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
+      }
     case 'BooleanTypeAnnotation':
       return '[NSNumber class]';
     case 'DoubleTypeAnnotation':
@@ -134,7 +154,7 @@ function getObjCExpectedKindParamType(
     case 'StringTypeAnnotation':
       return '[NSString class]';
     default:
-      (param.typeAnnotation.type: empty);
+      (typeAnnotation.type: empty);
       throw new Error('Received invalid param type annotation');
   }
 }
@@ -142,7 +162,17 @@ function getObjCExpectedKindParamType(
 function getReadableExpectedKindParamType(
   param: CommandsFunctionTypeParamAnnotation,
 ): string {
-  switch (param.typeAnnotation.type) {
+  const {typeAnnotation} = param;
+
+  switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return 'double';
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
+      }
     case 'BooleanTypeAnnotation':
       return 'boolean';
     case 'DoubleTypeAnnotation':
@@ -154,7 +184,7 @@ function getReadableExpectedKindParamType(
     case 'StringTypeAnnotation':
       return 'string';
     default:
-      (param.typeAnnotation.type: empty);
+      (typeAnnotation.type: empty);
       throw new Error('Received invalid param type annotation');
   }
 }
@@ -163,7 +193,17 @@ function getObjCRightHandAssignmentParamType(
   param: CommandsFunctionTypeParamAnnotation,
   index: number,
 ): string {
-  switch (param.typeAnnotation.type) {
+  const {typeAnnotation} = param;
+
+  switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return `[(NSNumber *)arg${index} doubleValue]`;
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
+      }
     case 'BooleanTypeAnnotation':
       return `[(NSNumber *)arg${index} boolValue]`;
     case 'DoubleTypeAnnotation':
@@ -175,7 +215,7 @@ function getObjCRightHandAssignmentParamType(
     case 'StringTypeAnnotation':
       return `(NSString *)arg${index}`;
     default:
-      (param.typeAnnotation.type: empty);
+      (typeAnnotation.type: empty);
       throw new Error('Received invalid param type annotation');
   }
 }
@@ -297,7 +337,10 @@ module.exports = {
         return Object.keys(components)
           .filter(componentName => {
             const component = components[componentName];
-            return component.excludedPlatform !== 'iOS';
+            return !(
+              component.excludedPlatforms &&
+              component.excludedPlatforms.includes('iOS')
+            );
           })
           .map(componentName => {
             return [

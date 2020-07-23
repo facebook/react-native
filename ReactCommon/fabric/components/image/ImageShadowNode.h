@@ -30,6 +30,12 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    return traits;
+  }
+
   /*
    * Associates a shared `ImageManager` with the node.
    */
@@ -37,10 +43,10 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
 
   static ImageState initialStateData(
       ShadowNodeFragment const &fragment,
-      SurfaceId const surfaceId,
+      ShadowNodeFamilyFragment const &familyFragment,
       ComponentDescriptor const &componentDescriptor) {
     auto imageSource = ImageSource{ImageSource::Type::Invalid};
-    return {imageSource, {imageSource, nullptr}};
+    return {imageSource, {imageSource, nullptr}, 0};
   }
 
 #pragma mark - LayoutableShadowNode

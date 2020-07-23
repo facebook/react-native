@@ -18,7 +18,7 @@ const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type EmitterSubscription from '../../vendor/emitter/EmitterSubscription';
+import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
 import type {
   ViewProps,
   ViewLayout,
@@ -67,7 +67,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   };
 
   _frame: ?ViewLayout = null;
-  _subscriptions: Array<EmitterSubscription> = [];
+  _subscriptions: Array<EventSubscription> = [];
   viewRef: {current: React.ElementRef<any> | null, ...};
   _initialFrameHeight: number = 0;
 
@@ -170,10 +170,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
         return (
           <View
             ref={this.viewRef}
-            style={StyleSheet.compose(
-              style,
-              heightStyle,
-            )}
+            style={StyleSheet.compose(style, heightStyle)}
             onLayout={this._onLayout}
             {...props}>
             {children}
@@ -188,12 +185,9 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
             onLayout={this._onLayout}
             {...props}>
             <View
-              style={StyleSheet.compose(
-                contentContainerStyle,
-                {
-                  bottom: bottomHeight,
-                },
-              )}>
+              style={StyleSheet.compose(contentContainerStyle, {
+                bottom: bottomHeight,
+              })}>
               {children}
             </View>
           </View>
@@ -203,10 +197,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
         return (
           <View
             ref={this.viewRef}
-            style={StyleSheet.compose(
-              style,
-              {paddingBottom: bottomHeight},
-            )}
+            style={StyleSheet.compose(style, {paddingBottom: bottomHeight})}
             onLayout={this._onLayout}
             {...props}>
             {children}

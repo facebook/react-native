@@ -72,6 +72,9 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
   EXPECT_EQ(cloned->getTag(), 9);
   EXPECT_EQ(cloned->getSurfaceId(), 1);
   EXPECT_STREQ(cloned->getProps()->nativeId.c_str(), "abc");
+
+  auto clonedButSameProps = descriptor->cloneProps(props, RawProps());
+  EXPECT_NE(clonedButSameProps, props);
 }
 
 TEST(ComponentDescriptorTest, appendChild) {

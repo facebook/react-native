@@ -208,6 +208,7 @@ Map {
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTCommandNativeComponentViewProtocol <NSObject>
+- (void)handleRootTag:(double)rootTag;
 - (void)hotspotUpdate:(NSInteger)x y:(NSInteger)y;
 @end
 
@@ -216,7 +217,27 @@ RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
   NSString const *commandName,
   NSArray const *args)
 {
-  if ([commandName isEqualToString:@\\"hotspotUpdate\\"]) {
+  if ([commandName isEqualToString:@\\"handleRootTag\\"]) {
+#if RCT_DEBUG
+  if ([args count] != 1) {
+    RCTLogError(@\\"%@ command %@ received %d arguments, expected %d.\\", @\\"CommandNativeComponent\\", commandName, (int)[args count], 1);
+    return;
+  }
+#endif
+
+  NSObject *arg0 = args[0];
+#if RCT_DEBUG
+  if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @\\"double\\", @\\"CommandNativeComponent\\", commandName, @\\"1st\\")) {
+    return;
+  }
+#endif
+  double rootTag = [(NSNumber *)arg0 doubleValue];
+
+  [componentView handleRootTag:rootTag];
+  return;
+}
+
+if ([commandName isEqualToString:@\\"hotspotUpdate\\"]) {
 #if RCT_DEBUG
   if ([args count] != 2) {
     RCTLogError(@\\"%@ command %@ received %d arguments, expected %d.\\", @\\"CommandNativeComponent\\", commandName, (int)[args count], 2);
@@ -363,6 +384,27 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RCTExcludedAndroidComponentViewProtocol <NSObject>
 
 @end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture EXCLUDE_ANDROID_IOS 1`] = `
+Map {
+  "RCTComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+
 
 NS_ASSUME_NONNULL_END",
 }

@@ -31,8 +31,8 @@ public class VibrationModule extends NativeVibrationSpec {
   }
 
   @Override
-  public void vibrate(Double durationDouble) {
-    int duration = (int) durationDouble.doubleValue();
+  public void vibrate(double durationDouble) {
+    int duration = (int) durationDouble;
 
     Vibrator v = (Vibrator) getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
     if (v != null) {

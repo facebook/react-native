@@ -8,7 +8,10 @@
 #import "RCTModuleData.h"
 
 #import <objc/runtime.h>
-#include <mutex>
+#import <atomic>
+#import <mutex>
+
+#import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
@@ -17,8 +20,28 @@
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
-@implementation RCTModuleData
+using namespace facebook::react;
+
+namespace {
+int32_t getUniqueId()
 {
+  static std::atomic<int32_t> counter{0};
+  return counter++;
+}
+}
+static BOOL isMainQueueExecutionOfConstantToExportDisabled = NO;
+
+void RCTSetIsMainQueueExecutionOfConstantsToExportDisabled(BOOL val)
+{
+  isMainQueueExecutionOfConstantToExportDisabled = val;
+}
+
+BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
+{
+  return isMainQueueExecutionOfConstantToExportDisabled;
+}
+
+@implementation RCTModuleData {
   NSDictionary<NSString *, id> *_constantsToExport;
   NSString *_queueName;
   __weak RCTBridge *_bridge;
@@ -53,7 +76,8 @@
 
     // If a module overrides `init` then we must assume that it expects to be
     // initialized on the main thread, because it may need to access UIKit.
-    const BOOL hasCustomInit = !_instance && [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
+    const BOOL hasCustomInit =
+        !_instance && [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
 
     _requiresMainQueueSetup = _hasConstantsToExport || hasCustomInit;
     if (_requiresMainQueueSetup) {
@@ -63,18 +87,22 @@
       } else if (hasCustomInit) {
         methodName = "init";
       }
-      RCTLogWarn(@"Module %@ requires main queue setup since it overrides `%s` but doesn't implement "
-        "`requiresMainQueueSetup`. In a future release React Native will default to initializing all native modules "
-        "on a background thread unless explicitly opted-out of.", _moduleClass, methodName);
+      RCTLogWarn(
+          @"Module %@ requires main queue setup since it overrides `%s` but doesn't implement "
+           "`requiresMainQueueSetup`. In a future release React Native will default to initializing all native modules "
+           "on a background thread unless explicitly opted-out of.",
+          _moduleClass,
+          methodName);
     }
   }
 }
 
-- (instancetype)initWithModuleClass:(Class)moduleClass
-                             bridge:(RCTBridge *)bridge
+- (instancetype)initWithModuleClass:(Class)moduleClass bridge:(RCTBridge *)bridge
 {
   return [self initWithModuleClass:moduleClass
-                    moduleProvider:^id<RCTBridgeModule>{ return [moduleClass new]; }
+                    moduleProvider:^id<RCTBridgeModule> {
+                      return [moduleClass new];
+                    }
                             bridge:bridge];
 }
 
@@ -91,8 +119,7 @@
   return self;
 }
 
-- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
-                                bridge:(RCTBridge *)bridge
+- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance bridge:(RCTBridge *)bridge
 {
   if (self = [super init]) {
     _bridge = bridge;
@@ -103,41 +130,57 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init);
+RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 #pragma mark - private setup methods
 
-- (void)setUpInstanceAndBridge
+- (void)setUpInstanceAndBridge:(int32_t)requestId
 {
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge]", @{
-    @"moduleClass": NSStringFromClass(_moduleClass)
-  });
+  NSString *moduleName = [self name];
+
+  RCT_PROFILE_BEGIN_EVENT(
+      RCTProfileTagAlways,
+      @"[RCTModuleData setUpInstanceAndBridge]",
+      @{@"moduleClass" : NSStringFromClass(_moduleClass)});
   {
     std::unique_lock<std::mutex> lock(_instanceLock);
+    BOOL shouldSetup = !_setupComplete && _bridge.valid;
 
-    if (!_setupComplete && _bridge.valid) {
+    if (shouldSetup) {
       if (!_instance) {
         if (RCT_DEBUG && _requiresMainQueueSetup) {
           RCTAssertMainQueue();
         }
         RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] Create module", nil);
+
+        BridgeNativeModulePerfLogger::moduleCreateConstructStart([moduleName UTF8String], requestId);
         _instance = _moduleProvider ? _moduleProvider() : nil;
+        BridgeNativeModulePerfLogger::moduleCreateConstructEnd([moduleName UTF8String], requestId);
+
         RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
         if (!_instance) {
           // Module init returned nil, probably because automatic instantiation
           // of the module is not supported, and it is supposed to be passed in to
           // the bridge constructor. Mark setup complete to avoid doing more work.
           _setupComplete = YES;
-          RCTLogWarn(@"The module %@ is returning nil from its constructor. You "
-                     "may need to instantiate it yourself and pass it into the "
-                     "bridge.", _moduleClass);
+          RCTLogWarn(
+              @"The module %@ is returning nil from its constructor. You "
+               "may need to instantiate it yourself and pass it into the "
+               "bridge.",
+              _moduleClass);
         }
       }
 
       if (_instance && RCTProfileIsProfiling()) {
         RCTProfileHookInstance(_instance);
       }
+    }
 
+    if (_instance) {
+      BridgeNativeModulePerfLogger::moduleCreateSetUpStart([moduleName UTF8String], requestId);
+    }
+
+    if (shouldSetup) {
       // Bridge must be set before methodQueue is set up, as methodQueue
       // initialization requires it (View Managers get their queue by calling
       // self.bridge.uiManager.methodQueue)
@@ -165,6 +208,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     // thread.
     _requiresMainQueueSetup = NO;
   }
+
+  if (_instance) {
+    BridgeNativeModulePerfLogger::moduleCreateSetUpEnd([moduleName UTF8String], requestId);
+  }
 }
 
 - (void)setBridgeForInstance
@@ -173,11 +220,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setBridgeForInstance]", nil);
     @try {
       [(id)_instance setValue:_bridge forKey:@"bridge"];
-    }
-    @catch (NSException *exception) {
-      RCTLogError(@"%@ has no setter or ivar for its bridge, which is not "
-                  "permitted. You must either @synthesize the bridge property, "
-                  "or provide your own setter method.", self.name);
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its bridge, which is not "
+           "permitted. You must either @synthesize the bridge property, "
+           "or provide your own setter method.",
+          self.name);
     }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
@@ -189,9 +237,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData finishSetupForInstance]", nil);
     _setupComplete = YES;
     [_bridge registerModuleForFrameUpdates:_instance withModuleData:self];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
-                                                        object:_bridge
-                                                      userInfo:@{@"module": _instance, @"bridge": RCTNullIfNil(_bridge.parentBridge)}];
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:RCTDidInitializeModuleNotification
+                      object:_bridge
+                    userInfo:@{@"module" : _instance, @"bridge" : RCTNullIfNil(_bridge.parentBridge)}];
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 }
@@ -213,12 +262,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       if (implementsMethodQueue) {
         @try {
           [(id)_instance setValue:_methodQueue forKey:@"methodQueue"];
-        }
-        @catch (NSException *exception) {
-          RCTLogError(@"%@ is returning nil for its methodQueue, which is not "
-                      "permitted. You must either return a pre-initialized "
-                      "queue, or @synthesize the methodQueue to let the bridge "
-                      "create a queue for you.", self.name);
+        } @catch (NSException *exception) {
+          RCTLogError(
+              @"%@ is returning nil for its methodQueue, which is not "
+               "permitted. You must either return a pre-initialized "
+               "queue, or @synthesize the methodQueue to let the bridge "
+               "create a queue for you.",
+              self.name);
         }
       }
     }
@@ -226,45 +276,45 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   }
 }
 
-- (void) calculateMethods
+- (void)calculateMethods
 {
-    if (_methods && _methodsByName) {
-      return;
+  if (_methods && _methodsByName) {
+    return;
+  }
+
+  NSMutableArray<id<RCTBridgeMethod>> *moduleMethods = [NSMutableArray new];
+  NSMutableDictionary<NSString *, id<RCTBridgeMethod>> *moduleMethodsByName = [NSMutableDictionary new];
+
+  if ([_moduleClass instancesRespondToSelector:@selector(methodsToExport)]) {
+    [moduleMethods addObjectsFromArray:[self.instance methodsToExport]];
+  }
+
+  unsigned int methodCount;
+  Class cls = _moduleClass;
+  while (cls && cls != [NSObject class] && cls != [NSProxy class]) {
+    Method *methods = class_copyMethodList(object_getClass(cls), &methodCount);
+
+    for (unsigned int i = 0; i < methodCount; i++) {
+      Method method = methods[i];
+      SEL selector = method_getName(method);
+      if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
+        IMP imp = method_getImplementation(method);
+        auto exportedMethod = ((const RCTMethodInfo *(*)(id, SEL))imp)(_moduleClass, selector);
+        id<RCTBridgeMethod> moduleMethod = [[RCTModuleMethod alloc] initWithExportedMethod:exportedMethod
+                                                                               moduleClass:_moduleClass];
+
+        NSString *str = [NSString stringWithUTF8String:moduleMethod.JSMethodName];
+        [moduleMethodsByName setValue:moduleMethod forKey:str];
+        [moduleMethods addObject:moduleMethod];
+      }
     }
 
-    NSMutableArray<id<RCTBridgeMethod>> *moduleMethods = [NSMutableArray new];
-    NSMutableDictionary<NSString *, id<RCTBridgeMethod>> *moduleMethodsByName = [NSMutableDictionary new];
+    free(methods);
+    cls = class_getSuperclass(cls);
+  }
 
-    if ([_moduleClass instancesRespondToSelector:@selector(methodsToExport)]) {
-        [moduleMethods addObjectsFromArray:[self.instance methodsToExport]];
-    }
-
-    unsigned int methodCount;
-    Class cls = _moduleClass;
-    while (cls && cls != [NSObject class] && cls != [NSProxy class]) {
-        Method *methods = class_copyMethodList(object_getClass(cls), &methodCount);
-
-        for (unsigned int i = 0; i < methodCount; i++) {
-            Method method = methods[i];
-            SEL selector = method_getName(method);
-            if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
-                IMP imp = method_getImplementation(method);
-                auto exportedMethod = ((const RCTMethodInfo *(*)(id, SEL))imp)(_moduleClass, selector);
-                id<RCTBridgeMethod> moduleMethod = [[RCTModuleMethod alloc] initWithExportedMethod:exportedMethod
-                                                                                       moduleClass:_moduleClass];
-
-                NSString *str = [NSString stringWithUTF8String:moduleMethod.JSMethodName];
-                [moduleMethodsByName setValue:moduleMethod forKey:str];
-                [moduleMethods addObject:moduleMethod];
-            }
-        }
-
-        free(methods);
-        cls = class_getSuperclass(cls);
-    }
-
-    _methods = [moduleMethods copy];
-    _methodsByName = [moduleMethodsByName copy];
+  _methods = [moduleMethods copy];
+  _methodsByName = [moduleMethodsByName copy];
 }
 
 #pragma mark - public getters
@@ -277,8 +327,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (id<RCTBridgeModule>)instance
 {
+  NSString *moduleName = [self name];
+  int32_t requestId = getUniqueId();
+  BridgeNativeModulePerfLogger::moduleCreateStart([moduleName UTF8String], requestId);
+
   if (!_setupComplete) {
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData instanceForClass:%@]", _moduleClass]), nil);
+    RCT_PROFILE_BEGIN_EVENT(
+        RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData instanceForClass:%@]", _moduleClass]), nil);
     if (_requiresMainQueueSetup) {
       // The chances of deadlock here are low, because module init very rarely
       // calls out to other threads, however we can't control when a module might
@@ -291,13 +346,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       }
 
       RCTUnsafeExecuteOnMainQueueSync(^{
-        [self setUpInstanceAndBridge];
+        [self setUpInstanceAndBridge:requestId];
       });
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
     } else {
-      [self setUpInstanceAndBridge];
+      [self setUpInstanceAndBridge:requestId];
     }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  } else {
+    BridgeNativeModulePerfLogger::moduleCreateCacheHit([moduleName UTF8String], requestId);
+  }
+
+  if (_instance) {
+    BridgeNativeModulePerfLogger::moduleCreateEnd([moduleName UTF8String], requestId);
+  } else {
+    BridgeNativeModulePerfLogger::moduleCreateFail([moduleName UTF8String], requestId);
   }
   return _instance;
 }
@@ -309,22 +372,43 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (NSArray<id<RCTBridgeMethod>> *)methods
 {
-    [self calculateMethods];
-    return _methods;
+  [self calculateMethods];
+  return _methods;
 }
 
 - (NSDictionary<NSString *, id<RCTBridgeMethod>> *)methodsByName
 {
-    [self calculateMethods];
-    return _methodsByName;
+  [self calculateMethods];
+  return _methodsByName;
 }
 
 - (void)gatherConstants
 {
+  return [self gatherConstantsAndSignalJSRequireEnding:NO];
+}
+
+- (void)gatherConstantsAndSignalJSRequireEnding:(BOOL)startMarkers
+{
+  NSString *moduleName = [self name];
+
   if (_hasConstantsToExport && !_constantsToExport) {
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass]), nil);
+    RCT_PROFILE_BEGIN_EVENT(
+        RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass]), nil);
     (void)[self instance];
-    if (_requiresMainQueueSetup) {
+
+    if (startMarkers) {
+      /**
+       * Why do we instrument moduleJSRequireEndingStart here?
+       *  - NativeModule requires from JS go through ModuleRegistry::getConfig().
+       *  - ModuleRegistry::getConfig() calls NativeModule::getConstants() first.
+       *  - This delegates to RCTNativeModule::getConstants(), which calls RCTModuleData gatherConstants().
+       *  - Therefore, this is the first statement that executes after the NativeModule is created/initialized in a JS
+       *    require.
+       */
+      BridgeNativeModulePerfLogger::moduleJSRequireEndingStart([moduleName UTF8String]);
+    }
+
+    if (!RCTIsMainQueueExecutionOfConstantsToExportDisabled() && _requiresMainQueueSetup) {
       if (!RCTIsMainQueue()) {
         RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
       }
@@ -335,13 +419,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     } else {
       _constantsToExport = [_instance constantsToExport] ?: @{};
     }
+
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  } else if (startMarkers) {
+    /**
+     * If a NativeModule doesn't have constants, it isn't eagerly loaded until its methods are first invoked.
+     * Therefore, we should immediately start JSRequireEnding
+     */
+    BridgeNativeModulePerfLogger::moduleJSRequireEndingStart([moduleName UTF8String]);
   }
 }
 
 - (NSDictionary<NSString *, id> *)exportedConstants
 {
-  [self gatherConstants];
+  [self gatherConstantsAndSignalJSRequireEnding:YES];
   NSDictionary<NSString *, id> *constants = _constantsToExport;
   _constantsToExport = nil; // Not needed anymore
   return constants;
@@ -351,8 +442,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 {
   if (_bridge.valid) {
     id instance = self.instance;
-    RCTAssert(_methodQueue != nullptr, @"Module %@ has no methodQueue (instance: %@)",
-              self, instance);
+    RCTAssert(_methodQueue != nullptr, @"Module %@ has no methodQueue (instance: %@)", self, instance);
   }
   return _methodQueue;
 }

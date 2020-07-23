@@ -44,7 +44,8 @@ namespace {
 // the already-deallocated connection.
 class TestContext {
  public:
-  TestContext() : conn_(runtime_.runtime()) {}
+  TestContext(bool waitForDebugger = false)
+      : conn_(runtime_.runtime(), waitForDebugger) {}
   ~TestContext() {
     runtime_.wait();
   }
@@ -85,6 +86,7 @@ NotificationType expectNotification(SyncConnection &conn) {
       note = NotificationType(folly::parseJson(str));
     } catch (const std::exception &e) {
       parseError = e.what();
+      parseError += " (json: " + str + ")";
     }
 
     EXPECT_EQ(parseError, "");
@@ -748,6 +750,46 @@ TEST(ConnectionTests, testSetBreakpointById) {
   expectNotification<m::debugger::ResumedNotification>(conn);
 }
 
+TEST(ConnectionTests, testSetBreakpointByIdWithColumnInIndenting) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  asyncRuntime.executeScriptAsync(R"(
+    debugger;      // line 1
+    Math.random(); //      2
+  )");
+
+  send<m::debugger::EnableRequest>(conn, ++msgId);
+  expectExecutionContextCreated(conn);
+  auto script = expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  expectPaused(conn, "other", {{"global", 1, 1}});
+
+  m::debugger::SetBreakpointRequest req;
+  req.id = ++msgId;
+  req.location.scriptId = script.scriptId;
+  req.location.lineNumber = 2;
+  // Specify a column location *before* rather than *on* the actual location
+  req.location.columnNumber = 0;
+
+  conn.send(req.toJson());
+  auto resp = expectResponse<m::debugger::SetBreakpointResponse>(conn, req.id);
+  EXPECT_EQ(resp.actualLocation.scriptId, script.scriptId);
+  EXPECT_EQ(resp.actualLocation.lineNumber, 2);
+  // Check that we resolved the column to the first available location
+  EXPECT_EQ(resp.actualLocation.columnNumber.value(), 4);
+
+  send<m::debugger::ResumeRequest>(conn, ++msgId);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+
+  expectPaused(conn, "other", {{"global", 2, 1}});
+
+  send<m::debugger::ResumeRequest>(conn, ++msgId);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
 TEST(ConnectionTests, testSetLazyBreakpoint) {
   TestContext context;
   AsyncHermesRuntime &asyncRuntime = context.runtime();
@@ -1168,6 +1210,38 @@ TEST(ConnectionTests, testRuntimeEvaluate) {
   asyncRuntime.stop();
 }
 
+TEST(ConnectionTests, testRuntimeEvaluateReturnByValue) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  asyncRuntime.executeScriptAsync("while(!shouldStop());");
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // We expect this JSON object to be evaluated and return by value, so
+  // that JSON encoding the result will give the same string.
+  auto object = "{\"key\":[1,\"two\"]}";
+
+  m::runtime::EvaluateRequest req;
+  req.id = msgId;
+  req.expression = std::string("(") + object + ")";
+  req.returnByValue = true;
+  conn.send(req.toJson());
+
+  auto resp =
+      expectResponse<m::debugger::EvaluateOnCallFrameResponse>(conn, msgId);
+  EXPECT_EQ(resp.result.type, "object");
+  ASSERT_TRUE(resp.result.value.hasValue());
+  EXPECT_EQ(folly::toJson(resp.result.value.value()), object);
+
+  // [3] exit run loop
+  asyncRuntime.stop();
+}
+
 TEST(ConnectionTests, testEvalOnCallFrameException) {
   TestContext context;
   AsyncHermesRuntime &asyncRuntime = context.runtime();
@@ -1223,7 +1297,7 @@ TEST(ConnectionTests, testEvalOnCallFrameException) {
        // TODO: unsure why these frames are here, but they're in hdb tests
        // too. Ask Hermes about if they really should be there.
        FrameInfo("eval", 0, 0).setLineNumberMax(19),
-       FrameInfo("(native)", 0, 0),
+       FrameInfo("callme", 12, 2),
        FrameInfo("global", 0, 0).setLineNumberMax(19)});
   expectEvalResponse(conn, msgId + 2, 5);
   msgId += 3;
@@ -2195,6 +2269,122 @@ function foo(){x=1}debugger;foo();
       {FrameInfo("foo", 1, 2).setColumnNumber(16), FrameInfo("global", 1, 1)});
 
   // Resume execution
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
+TEST(ConnectionTests, canBreakOnScriptsWithSourceMap) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+
+  m::debugger::SetInstrumentationBreakpointRequest req;
+  req.id = msgId++;
+  req.instrumentation = "beforeScriptWithSourceMapExecution";
+
+  conn.send(req.toJson());
+  auto bpId = expectResponse<m::debugger::SetInstrumentationBreakpointResponse>(
+                  conn, req.id)
+                  .breakpointId;
+
+  asyncRuntime.executeScriptAsync(R"(
+      storeValue(42); debugger;
+      //# sourceURL=http://example.com/source.js
+      //# sourceMappingURL=http://example.com/source.map
+    )");
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // We should get a pause before the first statement
+  auto note = expectNotification<m::debugger::PausedNotification>(conn);
+  ASSERT_FALSE(asyncRuntime.hasStoredValue());
+  EXPECT_EQ(note.reason, "other");
+  ASSERT_TRUE(note.hitBreakpoints.hasValue());
+  ASSERT_EQ(note.hitBreakpoints->size(), 1);
+  EXPECT_EQ(note.hitBreakpoints->at(0), bpId);
+
+  // Continue and verify that the JS code has now executed
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+  expectNotification<m::debugger::PausedNotification>(conn);
+  EXPECT_EQ(asyncRuntime.awaitStoredValue().asNumber(), 42);
+
+  // Resume and exit
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
+TEST(ConnectionTests, wontStopOnFilesWithoutSourceMaps) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+
+  m::debugger::SetInstrumentationBreakpointRequest req;
+  req.id = msgId++;
+  req.instrumentation = "beforeScriptWithSourceMapExecution";
+
+  conn.send(req.toJson());
+  expectResponse<m::debugger::SetInstrumentationBreakpointResponse>(
+      conn, req.id);
+
+  // This script has no source map, so it should not trigger a break
+  asyncRuntime.executeScriptAsync(R"(
+      storeValue(42); debugger;
+      //# sourceURL=http://example.com/source.js
+    )");
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // Continue and verify that the JS code has now executed without first
+  // pausing on the script load.
+  expectNotification<m::debugger::PausedNotification>(conn);
+  EXPECT_EQ(asyncRuntime.awaitStoredValue().asNumber(), 42);
+
+  // Resume and exit
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
+TEST(ConnectionTests, runIfWaitingForDebugger) {
+  TestContext context(true);
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 0;
+
+  asyncRuntime.executeScriptAsync(R"(
+      storeValue(1); debugger;
+    )");
+
+  send<m::debugger::EnableRequest>(conn, ++msgId);
+  expectExecutionContextCreated(conn);
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+  expectNotification<m::debugger::PausedNotification>(conn);
+
+  // We should now be paused on load. Verify that we didn't run code.
+  ASSERT_FALSE(asyncRuntime.hasStoredValue());
+
+  // RunIfWaitingForDebugger should cause us to resume
+  send<m::runtime::RunIfWaitingForDebuggerRequest>(conn, ++msgId);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+
+  // We should immediately hit the 'debugger;' statement
+  expectNotification<m::debugger::PausedNotification>(conn);
+  EXPECT_EQ(1, asyncRuntime.awaitStoredValue().asNumber());
+
+  // RunIfWaitingForDebuggerResponse should be accepted but have no effect
+  send<m::runtime::RunIfWaitingForDebuggerRequest>(conn, ++msgId);
+
+  // Do a dummy call so we can expect something other than a ResumeRequest
+  sendRuntimeEvalRequest(conn, ++msgId, "true");
+  expectEvalResponse(conn, msgId, true);
+
+  // Finally explicitly continue and exit
   send<m::debugger::ResumeRequest>(conn, msgId++);
   expectNotification<m::debugger::ResumedNotification>(conn);
 }

@@ -6,7 +6,7 @@
  */
 
 #if __OBJC__
-#  import <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
 #endif
 
 /**
@@ -87,8 +87,8 @@
 #define RCT_METRO_PORT 8081
 #else
 // test if RCT_METRO_PORT is empty
-#define RCT_METRO_PORT_DO_EXPAND(VAL)  VAL ## 1
-#define RCT_METRO_PORT_EXPAND(VAL)     RCT_METRO_PORT_DO_EXPAND(VAL)
+#define RCT_METRO_PORT_DO_EXPAND(VAL) VAL##1
+#define RCT_METRO_PORT_EXPAND(VAL) RCT_METRO_PORT_DO_EXPAND(VAL)
 #if !defined(RCT_METRO_PORT) || (RCT_METRO_PORT_EXPAND(RCT_METRO_PORT) == 1)
 // Only here if RCT_METRO_PORT is not defined
 // OR RCT_METRO_PORT is the empty string
@@ -116,12 +116,12 @@
  * Concat two literals. Supports macro expansions,
  * e.g. RCT_CONCAT(foo, __FILE__).
  */
-#define RCT_CONCAT2(A, B) A ## B
+#define RCT_CONCAT2(A, B) A##B
 #define RCT_CONCAT(A, B) RCT_CONCAT2(A, B)
 
 /**
-  * This attribute is used for static analysis.
-  */
+ * This attribute is used for static analysis.
+ */
 #if !defined RCT_DYNAMIC
 #if __has_attribute(objc_dynamic)
 #define RCT_DYNAMIC __attribute__((objc_dynamic))
@@ -133,13 +133,15 @@
 /**
  * Throw an assertion for unimplemented methods.
  */
-#define RCT_NOT_IMPLEMENTED(method) \
-_Pragma("clang diagnostic push") \
-_Pragma("clang diagnostic ignored \"-Wmissing-method-return-type\"") \
-_Pragma("clang diagnostic ignored \"-Wunused-parameter\"") \
-RCT_EXTERN NSException *_RCTNotImplementedException(SEL, Class); \
-method NS_UNAVAILABLE { @throw _RCTNotImplementedException(_cmd, [self class]); } \
-_Pragma("clang diagnostic pop")
+#define RCT_NOT_IMPLEMENTED(method)                                                                     \
+  _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wmissing-method-return-type\"") \
+      _Pragma("clang diagnostic ignored \"-Wunused-parameter\"")                                        \
+          RCT_EXTERN NSException *_RCTNotImplementedException(SEL, Class);                              \
+  method NS_UNAVAILABLE                                                                                 \
+  {                                                                                                     \
+    @throw _RCTNotImplementedException(_cmd, [self class]);                                             \
+  }                                                                                                     \
+  _Pragma("clang diagnostic pop")
 
 /**
  * Check if WebKit iOS 10.0 APIs are available.

@@ -12,11 +12,11 @@
 
 import Pressability, {
   type PressabilityConfig,
-} from '../../Pressability/Pressability.js';
-import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet.js';
-import TVTouchable from './TVTouchable.js';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback.js';
+} from '../../Pressability/Pressability';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import TVTouchable from './TVTouchable';
+import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 import {Animated, Platform} from 'react-native';
 import * as React from 'react';
 
@@ -53,6 +53,7 @@ class TouchableBounce extends React.Component<Props, State> {
       delayLongPress: this.props.delayLongPress,
       delayPressIn: this.props.delayPressIn,
       delayPressOut: this.props.delayPressOut,
+      minPressDuration: 0,
       pressRectOffset: this.props.pressRetentionOffset,
       android_disableSound: this.props.touchSoundDisabled,
       onBlur: event => {
@@ -214,4 +215,4 @@ class TouchableBounce extends React.Component<Props, State> {
 
 module.exports = (React.forwardRef((props, hostRef) => (
   <TouchableBounce {...props} hostRef={hostRef} />
-)): React.ComponentType<$ReadOnly<$Diff<Props, {|hostRef: mixed|}>>>);
+)): React.AbstractComponent<$ReadOnly<$Diff<Props, {|hostRef: mixed|}>>>);

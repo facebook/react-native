@@ -362,7 +362,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   [super reset];
 
-  if (_activeTouches.size() != 0) {
+  if (!_activeTouches.empty()) {
     std::vector<ActiveTouch> activeTouches;
     activeTouches.reserve(_activeTouches.size());
 

@@ -29,10 +29,10 @@ using namespace facebook::react;
   UIImage *_maximumTrackImage;
   UIImage *_thumbImage;
 
-  const ImageResponseObserverCoordinator *_trackImageCoordinator;
-  const ImageResponseObserverCoordinator *_minimumTrackImageCoordinator;
-  const ImageResponseObserverCoordinator *_maximumTrackImageCoordinator;
-  const ImageResponseObserverCoordinator *_thumbImageCoordinator;
+  ImageResponseObserverCoordinator const *_trackImageCoordinator;
+  ImageResponseObserverCoordinator const *_minimumTrackImageCoordinator;
+  ImageResponseObserverCoordinator const *_maximumTrackImageCoordinator;
+  ImageResponseObserverCoordinator const *_thumbImageCoordinator;
 
   RCTImageResponseObserverProxy _trackImageResponseObserverProxy;
   RCTImageResponseObserverProxy _minimumTrackImageResponseObserverProxy;
@@ -81,20 +81,19 @@ using namespace facebook::react;
   // need to make sure that image properties are reset here
   [_sliderView setMinimumTrackImage:nil forState:UIControlStateNormal];
   [_sliderView setMaximumTrackImage:nil forState:UIControlStateNormal];
-  [_sliderView setThumbImage:nil forState:UIControlStateNormal];
+
+  if (_thumbImage) {
+    [_sliderView setThumbImage:nil forState:UIControlStateNormal];
+  }
 
   _trackImage = nil;
   _minimumTrackImage = nil;
   _maximumTrackImage = nil;
   _thumbImage = nil;
-}
 
-- (void)dealloc
-{
-  self.trackImageCoordinator = nullptr;
-  self.minimumTrackImageCoordinator = nullptr;
-  self.maximumTrackImageCoordinator = nullptr;
-  self.thumbImageCoordinator = nullptr;
+  const auto &props = *std::static_pointer_cast<const SliderProps>(_props);
+  _sliderView.value = props.value;
+  _previousValue = props.value;
 }
 
 #pragma mark - RCTComponentViewProtocol

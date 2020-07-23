@@ -40,6 +40,7 @@ exports[`LogBoxNotificationContainer should render both an error and warning not
             "stack": null,
             "status": "NONE",
           },
+          "type": undefined,
         }
       }
       onPressDismiss={[Function]}
@@ -76,6 +77,7 @@ exports[`LogBoxNotificationContainer should render both an error and warning not
             "stack": null,
             "status": "NONE",
           },
+          "type": undefined,
         }
       }
       onPressDismiss={[Function]}
@@ -134,6 +136,7 @@ exports[`LogBoxNotificationContainer should render the latest error notification
             "stack": null,
             "status": "NONE",
           },
+          "type": undefined,
         }
       }
       onPressDismiss={[Function]}
@@ -184,6 +187,7 @@ exports[`LogBoxNotificationContainer should render the latest warning notificati
             "stack": null,
             "status": "NONE",
           },
+          "type": undefined,
         }
       }
       onPressDismiss={[Function]}

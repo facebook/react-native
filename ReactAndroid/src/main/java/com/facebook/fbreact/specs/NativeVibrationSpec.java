@@ -31,5 +31,5 @@ public abstract class NativeVibrationSpec extends ReactContextBaseJavaModule imp
   public abstract void vibrateByPattern(ReadableArray pattern, double repeat);
 
   @ReactMethod
-  public abstract void vibrate(Double pattern);
+  public abstract void vibrate(double pattern);
 }

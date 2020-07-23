@@ -68,17 +68,11 @@ public class ReactEditText extends AppCompatEditText {
   // *TextChanged events should be triggered. This is less expensive than removing the text
   // listeners and adding them back again after the text change is completed.
   protected boolean mIsSettingTextFromJS;
-  // This component is controlled, so we want it to get focused only when JS ask it to do so.
-  // Whenever android requests focus, except for accessibility click, it will be ignored.
-  private boolean mShouldAllowFocus;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
 
   /** A count of events sent to JS or C++. */
   protected int mNativeEventCount;
-
-  /** The most recent event number acked by JavaScript. Should only be updated from JS, not C++. */
-  protected int mMostRecentEventCount;
 
   private static final int UNSET = -1;
 
@@ -125,9 +119,7 @@ public class ReactEditText extends AppCompatEditText {
         getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
     mNativeEventCount = 0;
-    mMostRecentEventCount = 0;
     mIsSettingTextFromJS = false;
-    mShouldAllowFocus = false;
     mBlurOnSubmit = null;
     mDisableFullscreen = false;
     mListeners = null;
@@ -152,10 +144,7 @@ public class ReactEditText extends AppCompatEditText {
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
-              mShouldAllowFocus = true;
-              requestFocus();
-              mShouldAllowFocus = false;
-              return true;
+              return requestFocusInternal();
             }
             return super.performAccessibilityAction(host, action, args);
           }
@@ -248,18 +237,18 @@ public class ReactEditText extends AppCompatEditText {
 
   @Override
   public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
-    // Always return true if we are already focused. This is used by android in certain places,
-    // such as text selection.
-    if (isFocused()) {
-      return true;
-    }
+    // This is a no-op so that when the OS calls requestFocus(), nothing will happen. ReactEditText
+    // is a controlled component, which means its focus is controlled by JS, with two exceptions:
+    // autofocus when it's attached to the window, and responding to accessibility events. In both
+    // of these cases, we call requestFocusInternal() directly.
+    return isFocused();
+  }
 
-    if (!mShouldAllowFocus) {
-      return false;
-    }
-
+  private boolean requestFocusInternal() {
     setFocusableInTouchMode(true);
-    boolean focused = super.requestFocus(direction, previouslyFocusedRect);
+    // We must explicitly call this method on the super class; if we call requestFocus() without
+    // any arguments, it will call into the overridden requestFocus(int, Rect) above, which no-ops.
+    boolean focused = super.requestFocus(View.FOCUS_DOWN, null);
     if (getShowSoftInputOnFocus()) {
       showSoftKeyboard();
     }
@@ -292,10 +281,6 @@ public class ReactEditText extends AppCompatEditText {
     mContentSizeWatcher = contentSizeWatcher;
   }
 
-  public void setMostRecentEventCount(int mostRecentEventCount) {
-    mMostRecentEventCount = mostRecentEventCount;
-  }
-
   public void setScrollWatcher(ScrollWatcher scrollWatcher) {
     mScrollWatcher = scrollWatcher;
   }
@@ -320,11 +305,6 @@ public class ReactEditText extends AppCompatEditText {
 
   @Override
   public void setSelection(int start, int end) {
-    // Skip setting the selection if the text wasn't set because of an out of date value.
-    if (mMostRecentEventCount < mNativeEventCount) {
-      return;
-    }
-
     super.setSelection(start, end);
   }
 
@@ -461,9 +441,7 @@ public class ReactEditText extends AppCompatEditText {
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void requestFocusFromJS() {
-    mShouldAllowFocus = true;
-    requestFocus();
-    mShouldAllowFocus = false;
+    requestFocusInternal();
   }
 
   /* package */ void clearFocusFromJS() {
@@ -498,8 +476,7 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     // Only set the text if it is up to date.
-    mMostRecentEventCount = reactTextUpdate.getJsEventCounter();
-    if (!canUpdateWithEventCount(mMostRecentEventCount)) {
+    if (!canUpdateWithEventCount(reactTextUpdate.getJsEventCounter())) {
       return;
     }
 
@@ -510,7 +487,7 @@ public class ReactEditText extends AppCompatEditText {
     // The current text gets replaced with the text received from JS. However, the spans on the
     // current text need to be adapted to the new text. Since TextView#setText() will remove or
     // reset some of these spans even if they are set directly, SpannableStringBuilder#replace() is
-    // used instead (this is also used by the the keyboard implementation underneath the covers).
+    // used instead (this is also used by the keyboard implementation underneath the covers).
     SpannableStringBuilder spannableStringBuilder =
         new SpannableStringBuilder(reactTextUpdate.getText());
     manageSpans(spannableStringBuilder);
@@ -632,7 +609,9 @@ public class ReactEditText extends AppCompatEditText {
       ReactContext reactContext = getReactContext(this);
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
-      uiManager.setViewLocalData(getId(), localData);
+      if (uiManager != null) {
+        uiManager.setViewLocalData(getId(), localData);
+      }
     }
   }
 
@@ -754,9 +733,7 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     if (mAutoFocus && !mDidAttachToWindow) {
-      mShouldAllowFocus = true;
-      requestFocus();
-      mShouldAllowFocus = false;
+      requestFocusInternal();
     }
 
     mDidAttachToWindow = true;

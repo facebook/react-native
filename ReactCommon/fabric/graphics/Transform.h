@@ -8,20 +8,69 @@
 #pragma once
 
 #include <array>
+#include <vector>
 
 #include <folly/Hash.h>
 #include <react/graphics/Float.h>
 #include <react/graphics/Geometry.h>
 
+#ifdef ANDROID
+#include <folly/dynamic.h>
+#endif
+
 namespace facebook {
 namespace react {
+
+inline bool isZero(Float n) {
+  // We use this ternary expression instead of abs, fabsf, etc, because
+  // Float can be double or float depending on compilation target.
+  return (n < 0 ? n * (-1) : n) < 0.00001;
+}
+
+/**
+ * Defines operations used to construct a transform matrix.
+ * An "Arbitrary" operation means that the transform was seeded with some
+ * arbitrary initial result.
+ */
+enum class TransformOperationType {
+  Arbitrary,
+  Identity,
+  Perspective,
+  Scale,
+  Translate,
+  Rotate,
+  Skew
+};
+struct TransformOperation {
+  TransformOperationType type;
+  Float x;
+  Float y;
+  Float z;
+};
 
 /*
  * Defines transform matrix to apply affine transformations.
  */
 struct Transform {
+  std::vector<TransformOperation> operations{};
+
   std::array<Float, 16> matrix{
       {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
+
+  /**
+   * For debugging only. Prints out the matrix.
+   */
+#ifdef RN_DEBUG_STRING_CONVERTIBLE
+  static void print(Transform const &t, std::string prefix);
+#endif
+
+  /*
+   * Given a TransformOperation, return the proper transform.
+   */
+  static Transform FromTransformOperation(
+      TransformOperation transformOperation);
+  static TransformOperation DefaultTransformOperation(
+      TransformOperationType type);
 
   /*
    * Returns the identity transform (`[1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1]`).
@@ -56,6 +105,22 @@ struct Transform {
   static Transform RotateZ(Float angle);
   static Transform Rotate(Float angleX, Float angleY, Float angleZ);
 
+  /**
+   * Perform an interpolation between lhs and rhs, given progress.
+   * This first decomposes the matrices into translation, scale, and rotation,
+   * performs slerp between the two rotations, and a linear interpolation
+   * of scale and translation.
+   *
+   * @param progress
+   * @param lhs
+   * @param rhs
+   * @return
+   */
+  static Transform Interpolate(
+      float animationProgress,
+      Transform const &lhs,
+      Transform const &rhs);
+
   /*
    * Equality operators.
    */
@@ -72,12 +137,50 @@ struct Transform {
    * Concatenates (multiplies) transform matrices.
    */
   Transform operator*(Transform const &rhs) const;
+
+  /**
+   * Convert to folly::dynamic.
+   */
+#ifdef ANDROID
+  operator folly::dynamic() const {
+    return folly::dynamic::array(
+        matrix[0],
+        matrix[1],
+        matrix[2],
+        matrix[3],
+        matrix[4],
+        matrix[5],
+        matrix[6],
+        matrix[7],
+        matrix[8],
+        matrix[9],
+        matrix[10],
+        matrix[11],
+        matrix[12],
+        matrix[13],
+        matrix[14],
+        matrix[15]);
+  }
+#endif
 };
 
 /*
  * Applies tranformation to the given point.
  */
 Point operator*(Point const &point, Transform const &transform);
+
+/*
+ * Applies tranformation to the given size.
+ */
+Size operator*(Size const &size, Transform const &transform);
+
+/*
+ * Applies tranformation to the given rect.
+ * ONLY SUPPORTS scale and translation transformation.
+ */
+Rect operator*(Rect const &rect, Transform const &transform);
+
+Vector operator*(Transform const &transform, Vector const &vector);
 
 } // namespace react
 } // namespace facebook

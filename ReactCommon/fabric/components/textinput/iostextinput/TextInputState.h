@@ -29,6 +29,15 @@ class TextInputState final {
   AttributedStringBox attributedStringBox;
 
   /*
+   * All content of <TextInput> component represented as an `AttributedString`.
+   * This stores the previous computed *from the React tree*. This usually
+   * doesn't change as the TextInput contents are being updated. If it does
+   * change, we need to wipe out current contents of the TextInput and replace
+   * with the new value from the tree.
+   */
+  AttributedString reactTreeAttributedString{};
+
+  /*
    * Represents all visual attributes of a paragraph of text represented as
    * a ParagraphAttributes.
    */
@@ -40,6 +49,8 @@ class TextInputState final {
    * `AttributedString`.
    */
   SharedTextLayoutManager layoutManager;
+
+  size_t mostRecentEventCount{0};
 };
 
 } // namespace react

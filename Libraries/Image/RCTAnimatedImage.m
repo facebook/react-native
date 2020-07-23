@@ -107,7 +107,7 @@
   NSDictionary *gifProperties = frameProperties[(NSString *)kCGImagePropertyGIFDictionary];
 
   NSNumber *delayTimeUnclampedProp = gifProperties[(NSString *)kCGImagePropertyGIFUnclampedDelayTime];
-  if (delayTimeUnclampedProp != nil) {
+  if (delayTimeUnclampedProp != nil && [delayTimeUnclampedProp floatValue] != 0.0f) {
     frameDuration = [delayTimeUnclampedProp floatValue];
   } else {
     NSNumber *delayTimeProp = gifProperties[(NSString *)kCGImagePropertyGIFDelayTime];

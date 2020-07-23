@@ -27,7 +27,7 @@ export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
 
 type RequiredProps<SectionT: SectionBase<any>> = {|
   /**
-   * The actual data to render, akin to the `data` prop in [`<FlatList>`](/react-native/docs/flatlist.html).
+   * The actual data to render, akin to the `data` prop in [`<FlatList>`](https://reactnative.dev/docs/flatlist.html).
    *
    * General shape:
    *
@@ -134,7 +134,7 @@ type DefaultProps = typeof defaultProps;
  *  - Scroll loading.
  *
  * If you don't need section support and want a simpler interface, use
- * [`<FlatList>`](/react-native/docs/flatlist.html).
+ * [`<FlatList>`](https://reactnative.dev/docs/flatlist.html).
  *
  * Simple Examples:
  *

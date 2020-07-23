@@ -23,12 +23,9 @@ class ViewProps;
 
 using SharedViewProps = std::shared_ptr<ViewProps const>;
 
-class ViewProps : public Props,
-                  public YogaStylableProps,
-                  public AccessibilityProps {
+class ViewProps : public YogaStylableProps, public AccessibilityProps {
  public:
   ViewProps() = default;
-  ViewProps(YGStyle const &yogaStyle);
   ViewProps(ViewProps const &sourceProps, RawProps const &rawProps);
 
 #pragma mark - Props
@@ -45,9 +42,9 @@ class ViewProps : public Props,
 
   // Shadow
   SharedColor shadowColor{};
-  Size shadowOffset{};
+  Size shadowOffset{0, -3};
   Float shadowOpacity{};
-  Float shadowRadius{};
+  Float shadowRadius{3};
 
   // Transform
   Transform transform{};
@@ -61,6 +58,8 @@ class ViewProps : public Props,
   bool onLayout{};
 
   bool collapsable{true};
+
+  Float elevation{}; /* Android-only */
 
 #pragma mark - Convenience Methods
 

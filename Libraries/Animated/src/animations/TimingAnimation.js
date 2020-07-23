@@ -19,7 +19,8 @@ const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
 
 import type {AnimationConfig, EndCallback} from './Animation';
 
-export type TimingAnimationConfig = AnimationConfig & {
+export type TimingAnimationConfig = {
+  ...AnimationConfig,
   toValue:
     | number
     | AnimatedValue
@@ -33,15 +34,14 @@ export type TimingAnimationConfig = AnimationConfig & {
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
-  ...
 };
 
-export type TimingAnimationConfigSingle = AnimationConfig & {
+export type TimingAnimationConfigSingle = {
+  ...AnimationConfig,
   toValue: number | AnimatedValue | AnimatedInterpolation,
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
-  ...
 };
 
 let _easeInOut;

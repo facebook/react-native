@@ -7,13 +7,14 @@
 
 #pragma once
 
+#ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/core/StateCoordinator.h>
+#endif
+
+#include <react/core/ShadowNodeFamily.h>
 
 namespace facebook {
 namespace react {
-
-class ShadowNode;
 
 /*
  * An abstract interface of State.
@@ -24,8 +25,19 @@ class State {
  public:
   using Shared = std::shared_ptr<const State>;
 
-  explicit State(State const &state);
-  explicit State(StateCoordinator::Shared const &stateCoordinator);
+  static size_t constexpr initialRevisionValue = 1;
+
+ protected:
+  /*
+   * Constructors are protected to make calling them directly with
+   * type-erasured arguments impossible.
+   */
+  explicit State(StateData::Shared const &data, State const &state);
+  explicit State(
+      StateData::Shared const &data,
+      ShadowNodeFamily::Shared const &family);
+
+ public:
   virtual ~State() = default;
 
   /*
@@ -34,6 +46,12 @@ class State {
    * Sequential calls might return different values.
    */
   State::Shared getMostRecentState() const;
+
+  /*
+   * Returns the most recent state (same as `getMostRecentState()` method)
+   * if this state is obsolete, otherwise returns `nullptr`.
+   */
+  State::Shared getMostRecentStateIfObsolete() const;
 
   /*
    * Returns a revision number of the `State` object.
@@ -50,13 +68,30 @@ class State {
   virtual void updateState(folly::dynamic data) const = 0;
 #endif
 
-  void commit(std::shared_ptr<ShadowNode const> const &shadowNode) const;
-
  protected:
-  StateCoordinator::Shared stateCoordinator_;
+  friend class ShadowNodeFamily;
+  friend class UIManager;
 
- private:
-  friend class StateCoordinator;
+  /*
+   * Returns a shared pointer to data.
+   * To be used by `UIManager` only.
+   */
+  StateData::Shared const &getDataPointer() const {
+    return data_;
+  }
+
+  /*
+   * A family of a node with this state is associated.
+   * Must be a weak pointer to avoid retain cycle among `State`, `ShadowNode`,
+   * and `ShadowNodeFamily` instances.
+   */
+  ShadowNodeFamily::Weak family_;
+
+  /*
+   * Type-erasured pointer to arbitrary component-specific data held by the
+   * `State`.
+   */
+  StateData::Shared data_;
 
   /*
    * Indicates that the state was committed once and then was replaced by a

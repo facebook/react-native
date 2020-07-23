@@ -61,7 +61,7 @@ if [ ! -e "$PLATFORM_DIR" ]; then
   echo "Error: could not find version $ANDROID_VERSION of the Android SDK."
   echo "Specifically, the directory $PLATFORM_DIR does not exist."
   echo "You probably need to specify the right version using the SDK Manager from within Android Studio."
-  echo "See https://facebook.github.io/react-native/docs/getting-started.html for details."
+  echo "See https://reactnative.dev/docs/getting-started.html for details."
   echo "If you are using Android SDK Tools from the command line, you may need to run:"
   echo
   echo "  sdkmanager \"platform-tools\" \"platform-tools;android-$MAJOR\""
@@ -76,7 +76,7 @@ if [ ! -e "$BT_DIR" ]; then
   echo "Error: could not find version $ANDROID_SDK_BUILD_TOOLS_REVISION of the Android build tools."
   echo "Specifically, the directory $BT_DIR does not exist."
   echo "You probably need to explicitly install the correct version of the Android SDK Build Tools from within Android Studio."
-  echo "See https://facebook.github.io/react-native/docs/getting-started.html for details."
+  echo "See https://reactnative.dev/docs/getting-started.html for details."
   echo "If you are using Android SDK Tools from the command line, you may need to run:"
   echo
   echo "  sdkmanager \"platform-tools\" \"build-tools;android-$ANDROID_SDK_BUILD_TOOLS_REVISION\""
@@ -115,5 +115,3 @@ if [ -z "$JAVA_HOME" ]; then
   echo "You will also want to add \$JAVA_HOME/bin to your path."
   exit 1
 fi
-
-

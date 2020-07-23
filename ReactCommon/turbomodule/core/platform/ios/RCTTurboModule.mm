@@ -9,6 +9,7 @@
 
 #import <objc/message.h>
 #import <objc/runtime.h>
+#import <atomic>
 #import <sstream>
 #import <vector>
 
@@ -21,9 +22,16 @@
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/LongLivedObject.h>
 #import <ReactCommon/TurboModule.h>
+#import <ReactCommon/TurboModulePerfLogger.h>
 #import <ReactCommon/TurboModuleUtils.h>
 
-using namespace facebook;
+using namespace facebook::react;
+
+static int32_t getUniqueId()
+{
+  static int32_t counter = 0;
+  return counter++;
+}
 
 /**
  * All static helper functions are ObjC++ specific.
@@ -90,17 +98,15 @@ static jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
   return jsi::Value::undefined();
 }
 
-static id convertJSIValueToObjCObject(
-    jsi::Runtime &runtime,
-    const jsi::Value &value,
-    std::shared_ptr<react::CallInvoker> jsInvoker);
+static id
+convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker);
 static NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::String &value)
 {
   return [NSString stringWithUTF8String:value.utf8(runtime).c_str()];
 }
 
 static NSArray *
-convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::shared_ptr<react::CallInvoker> jsInvoker)
+convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   size_t size = value.size(runtime);
   NSMutableArray *result = [NSMutableArray new];
@@ -112,10 +118,8 @@ convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::sh
   return [result copy];
 }
 
-static NSDictionary *convertJSIObjectToNSDictionary(
-    jsi::Runtime &runtime,
-    const jsi::Object &value,
-    std::shared_ptr<react::CallInvoker> jsInvoker)
+static NSDictionary *
+convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   jsi::Array propertyNames = value.getPropertyNames(runtime);
   size_t size = propertyNames.size(runtime);
@@ -131,14 +135,10 @@ static NSDictionary *convertJSIObjectToNSDictionary(
   return [result copy];
 }
 
-static RCTResponseSenderBlock convertJSIFunctionToCallback(
-    jsi::Runtime &runtime,
-    const jsi::Function &value,
-    std::shared_ptr<react::CallInvoker> jsInvoker);
-static id convertJSIValueToObjCObject(
-    jsi::Runtime &runtime,
-    const jsi::Value &value,
-    std::shared_ptr<react::CallInvoker> jsInvoker)
+static RCTResponseSenderBlock
+convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<CallInvoker> jsInvoker);
+static id
+convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   if (value.isUndefined() || value.isNull()) {
     return nil;
@@ -166,12 +166,10 @@ static id convertJSIValueToObjCObject(
   throw std::runtime_error("Unsupported jsi::jsi::Value kind");
 }
 
-static RCTResponseSenderBlock convertJSIFunctionToCallback(
-    jsi::Runtime &runtime,
-    const jsi::Function &value,
-    std::shared_ptr<react::CallInvoker> jsInvoker)
+static RCTResponseSenderBlock
+convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
-  auto weakWrapper = react::CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
+  auto weakWrapper = CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
   BOOL __block wrapperWasCalled = NO;
   return ^(NSArray *responses) {
     if (wrapperWasCalled) {
@@ -203,7 +201,7 @@ namespace react {
 
 jsi::Value ObjCTurboModule::createPromise(
     jsi::Runtime &runtime,
-    std::shared_ptr<react::CallInvoker> jsInvoker,
+    std::shared_ptr<CallInvoker> jsInvoker,
     PromiseInvocationBlock invoke)
 {
   if (!invoke) {
@@ -228,10 +226,8 @@ jsi::Value ObjCTurboModule::createPromise(
           return jsi::Value::undefined();
         }
 
-        auto weakResolveWrapper =
-            react::CallbackWrapper::createWeak(args[0].getObject(rt).getFunction(rt), rt, jsInvoker);
-        auto weakRejectWrapper =
-            react::CallbackWrapper::createWeak(args[1].getObject(rt).getFunction(rt), rt, jsInvoker);
+        auto weakResolveWrapper = CallbackWrapper::createWeak(args[0].getObject(rt).getFunction(rt), rt, jsInvoker);
+        auto weakRejectWrapper = CallbackWrapper::createWeak(args[1].getObject(rt).getFunction(rt), rt, jsInvoker);
 
         __block BOOL resolveWasCalled = NO;
         __block BOOL rejectWasCalled = NO;
@@ -303,14 +299,12 @@ jsi::Value ObjCTurboModule::createPromise(
           rejectWasCalled = YES;
         };
 
-        invokeCopy(rt, resolveBlock, rejectBlock);
+        invokeCopy(resolveBlock, rejectBlock);
         return jsi::Value::undefined();
       });
 
   return Promise.callAsConstructor(runtime, fn);
 }
-
-namespace {
 
 /**
  * Perform method invocation on a specific queue as configured by the module class.
@@ -321,84 +315,100 @@ namespace {
  * - ObjC module methods will be always be called from JS thread.
  *   They may decide to dispatch to a different queue as needed.
  */
-jsi::Value performMethodInvocation(
+jsi::Value ObjCTurboModule::performMethodInvocation(
     jsi::Runtime &runtime,
+    TurboModuleMethodValueKind returnType,
+    const char *methodName,
     NSInvocation *inv,
-    TurboModuleMethodValueKind valueKind,
-    const id<RCTTurboModule> module,
-    std::shared_ptr<CallInvoker> jsInvoker,
     NSMutableArray *retainedObjectsForInvocation)
 {
   __block id result;
   jsi::Runtime *rt = &runtime;
-  void (^block)() = ^{
-    [inv invokeWithTarget:module];
-    [retainedObjectsForInvocation removeAllObjects];
+  __weak id<RCTTurboModule> weakModule = instance_;
+  const char *moduleName = name_.c_str();
+  std::string methodNameStr{methodName};
+  __block int32_t asyncCallCounter = 0;
+  bool wasMethodSync = isMethodSync(returnType);
 
-    if (valueKind == VoidKind) {
+  void (^block)() = ^{
+    if (!weakModule) {
       return;
     }
+
+    id<RCTTurboModule> strongModule = weakModule;
+
+    if (wasMethodSync) {
+      TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodNameStr.c_str());
+    } else {
+      TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
+    }
+
+    // TODO(T66699874) Should we guard this with a try/catch?
+    [inv invokeWithTarget:strongModule];
+    [retainedObjectsForInvocation removeAllObjects];
+
+    if (!wasMethodSync) {
+      TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodNameStr.c_str(), asyncCallCounter);
+      return;
+    }
+
+    TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodNameStr.c_str());
+    TurboModulePerfLogger::syncMethodCallReturnConversionStart(moduleName, methodNameStr.c_str());
+
     void *rawResult;
     [inv getReturnValue:&rawResult];
     result = (__bridge id)rawResult;
   };
 
-  // Backward-compatibility layer for calling module methods on specific queue.
-  dispatch_queue_t methodQueue = NULL;
-  if ([module conformsToProtocol:@protocol(RCTBridgeModule)] && [module respondsToSelector:@selector(methodQueue)]) {
-    methodQueue = [module performSelector:@selector(methodQueue)];
-  }
-
-  if (methodQueue == NULL || methodQueue == RCTJSThread) {
-    // This is the default mode of execution: on JS thread.
+  if (wasMethodSync) {
     block();
-  } else if (methodQueue == dispatch_get_main_queue()) {
-    if (valueKind == VoidKind) {
-      // Void methods are treated as async for now, so there's no need to block here.
-      RCTExecuteOnMainQueue(block);
-    } else {
-      // This is not ideal, but provides the simplest mechanism for now.
-      // Eventually, methods should be responsible to queue things up to different queue if they need to.
-      // TODO: consider adding timer to warn if this method invocation takes too long.
-      RCTUnsafeExecuteOnMainQueueSync(block);
-    }
   } else {
-    if (valueKind == VoidKind) {
-      dispatch_async(methodQueue, block);
-    } else {
-      dispatch_sync(methodQueue, block);
-    }
+    asyncCallCounter = getUniqueId();
+    TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
+    nativeInvoker_->invokeAsync([block]() -> void { block(); });
+    return jsi::Value::undefined();
   }
 
-  // VoidKind can't be null
-  // PromiseKind, and FunctionKind must throw errors always
-  if (valueKind != VoidKind && valueKind != PromiseKind && valueKind != FunctionKind &&
-      (result == (id)kCFNull || result == nil)) {
+  if (result == (id)kCFNull || result == nil) {
     return jsi::Value::null();
   }
 
+  jsi::Value returnValue = jsi::Value::undefined();
+
   // TODO: Re-use value conversion logic from existing impl, if possible.
-  switch (valueKind) {
-    case VoidKind:
-      return jsi::Value::undefined();
-    case BooleanKind:
-      return convertNSNumberToJSIBoolean(*rt, (NSNumber *)result);
-    case NumberKind:
-      return convertNSNumberToJSINumber(*rt, (NSNumber *)result);
-    case StringKind:
-      return convertNSStringToJSIString(*rt, (NSString *)result);
-    case ObjectKind:
-      return convertNSDictionaryToJSIObject(*rt, (NSDictionary *)result);
-    case ArrayKind:
-      return convertNSArrayToJSIArray(*rt, (NSArray *)result);
+  switch (returnType) {
+    case VoidKind: {
+      break;
+    }
+    case BooleanKind: {
+      returnValue = convertNSNumberToJSIBoolean(*rt, (NSNumber *)result);
+      break;
+    }
+    case NumberKind: {
+      returnValue = convertNSNumberToJSINumber(*rt, (NSNumber *)result);
+      break;
+    }
+    case StringKind: {
+      returnValue = convertNSStringToJSIString(*rt, (NSString *)result);
+      break;
+    }
+    case ObjectKind: {
+      returnValue = convertNSDictionaryToJSIObject(*rt, (NSDictionary *)result);
+      break;
+    }
+    case ArrayKind: {
+      returnValue = convertNSArrayToJSIArray(*rt, (NSArray *)result);
+      break;
+    }
     case FunctionKind:
       throw std::runtime_error("convertInvocationResultToJSIValue: FunctionKind is not supported yet.");
     case PromiseKind:
       throw std::runtime_error("convertInvocationResultToJSIValue: PromiseKind wasn't handled properly.");
   }
-}
 
-} // namespace
+  TurboModulePerfLogger::syncMethodCallReturnConversionEnd(moduleName, methodName);
+  return returnValue;
+}
 
 /**
  * Given a method name, and an argument index, return type of that argument.
@@ -460,15 +470,22 @@ NSString *ObjCTurboModule::getArgumentTypeName(NSString *methodName, int argInde
 
 NSInvocation *ObjCTurboModule::getMethodInvocation(
     jsi::Runtime &runtime,
-    TurboModuleMethodValueKind valueKind,
-    const id<RCTTurboModule> module,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    const std::string &methodName,
+    TurboModuleMethodValueKind returnType,
+    const char *methodName,
     SEL selector,
     const jsi::Value *args,
     size_t count,
     NSMutableArray *retainedObjectsForInvocation)
 {
+  const char *moduleName = name_.c_str();
+  const id<RCTTurboModule> module = instance_;
+
+  if (isMethodSync(returnType)) {
+    TurboModulePerfLogger::syncMethodCallArgConversionStart(moduleName, methodName);
+  } else {
+    TurboModulePerfLogger::asyncMethodCallArgConversionStart(moduleName, methodName);
+  }
+
   NSInvocation *inv =
       [NSInvocation invocationWithMethodSignature:[[module class] instanceMethodSignatureForSelector:selector]];
   [inv setSelector:selector];
@@ -516,10 +533,10 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
     /**
      * Convert arg to ObjC objects.
      */
-    id objCArg = convertJSIValueToObjCObject(runtime, *arg, jsInvoker);
+    id objCArg = convertJSIValueToObjCObject(runtime, *arg, jsInvoker_);
 
     if (objCArg) {
-      NSString *methodNameNSString = @(methodName.c_str());
+      NSString *methodNameNSString = @(methodName);
 
       /**
        * Convert objects using RCTConvert.
@@ -570,46 +587,70 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
     }
   }
 
+  if (isMethodSync(returnType)) {
+    TurboModulePerfLogger::syncMethodCallArgConversionEnd(moduleName, methodName);
+  } else {
+    TurboModulePerfLogger::asyncMethodCallArgConversionEnd(moduleName, methodName);
+  }
+
   return inv;
 }
 
-ObjCTurboModule::ObjCTurboModule(
-    const std::string &name,
-    id<RCTTurboModule> instance,
-    std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(name, jsInvoker), instance_(instance)
+bool ObjCTurboModule::isMethodSync(TurboModuleMethodValueKind returnType)
+{
+  return isSyncModule_ || !(returnType == VoidKind || returnType == PromiseKind);
+}
+
+ObjCTurboModule::ObjCTurboModule(const InitParams &params)
+    : TurboModule(params.moduleName, params.jsInvoker),
+      instance_(params.instance),
+      nativeInvoker_(params.nativeInvoker),
+      isSyncModule_(params.isSyncModule)
 {
 }
 
 jsi::Value ObjCTurboModule::invokeObjCMethod(
     jsi::Runtime &runtime,
-    TurboModuleMethodValueKind valueKind,
-    const std::string &methodName,
+    TurboModuleMethodValueKind returnType,
+    const std::string &methodNameStr,
     SEL selector,
     const jsi::Value *args,
     size_t count)
 {
-  NSMutableArray *retainedObjectsForInvocation = [NSMutableArray arrayWithCapacity:count + 2];
-  NSInvocation *inv = getMethodInvocation(
-      runtime, valueKind, instance_, jsInvoker_, methodName, selector, args, count, retainedObjectsForInvocation);
+  const char *moduleName = name_.c_str();
+  const char *methodName = methodNameStr.c_str();
 
-  if (valueKind == PromiseKind) {
-    // Promise return type is special cased today, i.e. it needs extra 2 function args for resolve() and reject(), to
-    // be passed to the actual ObjC++ class method.
-    return createPromise(
-        runtime,
-        jsInvoker_,
-        ^(jsi::Runtime &rt, RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
-          [inv setArgument:(void *)&resolveBlock atIndex:count + 2];
-          [inv setArgument:(void *)&rejectBlock atIndex:count + 3];
-          [retainedObjectsForInvocation addObject:resolveBlock];
-          [retainedObjectsForInvocation addObject:rejectBlock];
-          // The return type becomes void in the ObjC side.
-          performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_, retainedObjectsForInvocation);
-        });
+  if (isMethodSync(returnType)) {
+    TurboModulePerfLogger::syncMethodCallStart(moduleName, methodName);
+  } else {
+    TurboModulePerfLogger::asyncMethodCallStart(moduleName, methodName);
   }
 
-  return performMethodInvocation(runtime, inv, valueKind, instance_, jsInvoker_, retainedObjectsForInvocation);
+  NSMutableArray *retainedObjectsForInvocation = [NSMutableArray arrayWithCapacity:count + 2];
+  NSInvocation *inv =
+      getMethodInvocation(runtime, returnType, methodName, selector, args, count, retainedObjectsForInvocation);
+
+  jsi::Value returnValue = returnType == PromiseKind
+      ? createPromise(
+            runtime,
+            jsInvoker_,
+            ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
+              [inv setArgument:(void *)&resolveBlock atIndex:count + 2];
+              [inv setArgument:(void *)&rejectBlock atIndex:count + 3];
+              [retainedObjectsForInvocation addObject:resolveBlock];
+              [retainedObjectsForInvocation addObject:rejectBlock];
+              // The return type becomes void in the ObjC side.
+              performMethodInvocation(runtime, VoidKind, methodName, inv, retainedObjectsForInvocation);
+            })
+      : performMethodInvocation(runtime, returnType, methodName, inv, retainedObjectsForInvocation);
+
+  if (isMethodSync(returnType)) {
+    TurboModulePerfLogger::syncMethodCallEnd(moduleName, methodName);
+  } else {
+    TurboModulePerfLogger::asyncMethodCallEnd(moduleName, methodName);
+  }
+
+  return returnValue;
 }
 
 BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, int argIndex)
