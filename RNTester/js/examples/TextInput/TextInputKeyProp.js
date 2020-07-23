@@ -23,7 +23,7 @@ function TextInputKeyProp() {
   }, [startKey]);
 
   const textInputs = [];
-  for (let i = 0; i < 1001; i++) {
+  for (let i = 0; i < 101; i++) {
     const key = (startKey + i).toString();
     console.log('Adding a TextInput with key ' + key);
     textInputs.push(
