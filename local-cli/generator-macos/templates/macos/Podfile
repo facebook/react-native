@@ -32,7 +32,7 @@ abstract_target 'Shared' do
   pod 'boost-for-react-native', :podspec => '../node_modules/react-native-macos/third-party-podspecs/boost-for-react-native.podspec'
   pod 'DoubleConversion', :podspec => '../node_modules/react-native-macos/third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../node_modules/react-native-macos/third-party-podspecs/glog.podspec'
-  pod 'Folly', :podspec => '../node_modules/react-native-macos/third-party-podspecs/Folly.podspec'
+  pod 'RCT-Folly', :podspec => '../node_modules/react-native-macos/third-party-podspecs/RCT-Folly.podspec'
 
   target 'HelloWorld-macOS' do
     platform :macos, '10.14'

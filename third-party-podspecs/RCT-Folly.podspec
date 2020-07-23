@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 Pod::Spec.new do |spec|
-  spec.name = 'Folly'
+  spec.name = 'RCT-Folly'
   spec.version = '2018.10.22.00'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
