@@ -71,46 +71,73 @@
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/statusbar.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">StatusBar</h1></header><article><div><span><p>Component to control the app status bar.</p>
 <h3><a class="anchor" aria-hidden="true" id="usage-with-navigator"></a><a href="#usage-with-navigator" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Usage with Navigator</h3>
 <p>It is possible to have multiple <code>StatusBar</code> components mounted at the same time. The props will be merged in the order the <code>StatusBar</code> components were mounted.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Button, Text, StyleSheet, StatusBar, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Button, Platform, SafeAreaView, StatusBar, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">"expo-constants"</span>;
+<span class="hljs-keyword">const</span> STYLES = [<span class="hljs-string">'default'</span>, <span class="hljs-string">'dark-content'</span>, <span class="hljs-string">'light-content'</span>];
+<span class="hljs-keyword">const</span> TRANSITIONS = [<span class="hljs-string">'fade'</span>, <span class="hljs-string">'slide'</span>, <span class="hljs-string">'none'</span>];
 
 <span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">const</span> styleTypes = [<span class="hljs-string">'default'</span>,<span class="hljs-string">'dark-content'</span>, <span class="hljs-string">'light-content'</span>];
-  <span class="hljs-keyword">const</span> [visibleStatusBar, setVisibleStatusBar] = useState(<span class="hljs-literal">false</span>);
-  <span class="hljs-keyword">const</span> [styleStatusBar, setStyleStatusBar] = useState(styleTypes[<span class="hljs-number">0</span>]);
+  <span class="hljs-keyword">const</span> [hidden, setHidden] = useState(<span class="hljs-literal">false</span>);
+  <span class="hljs-keyword">const</span> [statusBarStyle, setStatusBarStyle] = useState(STYLES[<span class="hljs-number">0</span>]);
+  <span class="hljs-keyword">const</span> [statusBarTransition, setStatusBarTransition] = useState(TRANSITIONS[<span class="hljs-number">0</span>]);
 
-  <span class="hljs-keyword">const</span> changeVisibilityStatusBar = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    setVisibleStatusBar(!visibleStatusBar);
+  <span class="hljs-keyword">const</span> changeStatusBarVisibility = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> setHidden(!hidden);
+
+  <span class="hljs-keyword">const</span> changeStatusBarStyle = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">const</span> styleId = STYLES.indexOf(statusBarStyle) + <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">if</span> (styleId === STYLES.length) {
+      setStatusBarStyle(STYLES[<span class="hljs-number">0</span>]);
+    } <span class="hljs-keyword">else</span> {
+      setStatusBarStyle(STYLES[styleId]);
+    }
   };
 
-  <span class="hljs-keyword">const</span> changeStyleStatusBar = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-keyword">const</span> styleId = styleTypes.indexOf(styleStatusBar) + <span class="hljs-number">1</span>;
-
-    <span class="hljs-keyword">if</span>(styleId === styleTypes.length){
-      <span class="hljs-keyword">return</span> setStyleStatusBar(styleTypes[<span class="hljs-number">0</span>]);
+  <span class="hljs-keyword">const</span> changeStatusBarTransition = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">const</span> transition = TRANSITIONS.indexOf(statusBarTransition) + <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">if</span> (transition === TRANSITIONS.length) {
+      setStatusBarTransition(TRANSITIONS[<span class="hljs-number">0</span>]);
+    } <span class="hljs-keyword">else</span> {
+      setStatusBarTransition(TRANSITIONS[transition]);
     }
-    <span class="hljs-keyword">return</span> setStyleStatusBar(styleTypes[styleId]);
   };
 
   <span class="hljs-keyword">return</span> (
-    &lt;View style={styles.container}&gt;
-      &lt;View&gt;
-        &lt;Text style={styles.textStyle}&gt;StatusBar Style: {styleStatusBar}&lt;/Text&gt;
-        &lt;Text style={styles.textStyle}&gt;StatusBar Visibility: {!visibleStatusBar ? 'Visible': 'Hidden'}&lt;/Text&gt;
+    &lt;SafeAreaView style={styles.container}&gt;
+      &lt;StatusBar
+        animated={true}
+        backgroundColor="#61dafb"
+        barStyle={statusBarStyle}
+        showHideTransition={statusBarTransition}
+        hidden={hidden} /&gt;
+      &lt;Text style={styles.textStyle}&gt;
+        StatusBar Visibility:{'\n'}
+        {hidden ? 'Hidden' : 'Visible'}
+      &lt;/Text&gt;
+      &lt;Text style={styles.textStyle}&gt;
+        StatusBar Style:{'\n'}
+        {statusBarStyle}
+      &lt;/Text&gt;
+      {Platform.OS === 'ios' ? (
+        &lt;Text style={styles.textStyle}&gt;
+          StatusBar Transition:{'\n'}
+          {statusBarTransition}
+        &lt;/Text&gt;
+      ) : null}
+      &lt;View style={styles.buttonsContainer}&gt;
+        &lt;Button
+          title="Toggle StatusBar"
+          onPress={changeStatusBarVisibility} /&gt;
+        &lt;Button
+          title="Change StatusBar Style"
+          onPress={changeStatusBarStyle} /&gt;
+        {Platform.OS === 'ios' ? (
+          &lt;Button
+            title="Change StatusBar Transition"
+            onPress={changeStatusBarTransition} /&gt;
+        ) : null}
       &lt;/View&gt;
-      &lt;StatusBar backgroundColor="blue" barStyle={styleStatusBar} /&gt;
-      &lt;View&gt;
-        &lt;StatusBar hidden={visibleStatusBar} /&gt;
-      &lt;/View&gt;
-      &lt;View style={styles.buttonContainer}&gt;
-        &lt;Button title="Toggle StatusBar" onPress={() =&gt; changeVisibilityStatusBar()} /&gt;
-      &lt;/View&gt;
-      &lt;View style={styles.buttonContainer}&gt;
-        &lt;Button title="Change StatusBar Style" onPress={() =&gt; changeStyleStatusBar()} /&gt;
-      &lt;/View&gt;
-    &lt;/View&gt;
+    &lt;/SafeAreaView&gt;
   );
 };
 
@@ -118,23 +145,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingTop: Constants.statusBarHeight,
-    backgroundColor: '#ECF0F1',
-    padding: 8
+    backgroundColor: '#ECF0F1'
   },
-  buttonContainer:{
+  buttonsContainer: {
     padding: 10
   },
-  textStyle:{
-    textAlign: 'center'
+  textStyle: {
+    textAlign: 'center',
+    marginBottom: 8
   }
 });
 
 export default App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
-        data-snack-name="StatusBar Android and iOS Component Example"
+        data-snack-name="StatusBar Component Example"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Button%2C%20Text%2C%20StyleSheet%2C%20StatusBar%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Aimport%20Constants%20from%20%22expo-constants%22%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20styleTypes%20%3D%20%5B'default'%2C'dark-content'%2C%20'light-content'%5D%3B%0A%20%20const%20%5BvisibleStatusBar%2C%20setVisibleStatusBar%5D%20%3D%20useState(false)%3B%0A%20%20const%20%5BstyleStatusBar%2C%20setStyleStatusBar%5D%20%3D%20useState(styleTypes%5B0%5D)%3B%0A%0A%20%20const%20changeVisibilityStatusBar%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20setVisibleStatusBar(!visibleStatusBar)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20changeStyleStatusBar%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20styleId%20%3D%20styleTypes.indexOf(styleStatusBar)%20%2B%201%3B%0A%0A%20%20%20%20if(styleId%20%3D%3D%3D%20styleTypes.length)%7B%0A%20%20%20%20%20%20return%20setStyleStatusBar(styleTypes%5B0%5D)%3B%0A%20%20%20%20%7D%0A%20%20%20%20return%20setStyleStatusBar(styleTypes%5BstyleId%5D)%3B%0A%20%20%7D%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.textStyle%7D%3EStatusBar%20Style%3A%20%7BstyleStatusBar%7D%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.textStyle%7D%3EStatusBar%20Visibility%3A%20%7B!visibleStatusBar%20%3F%20'Visible'%3A%20'Hidden'%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%3CStatusBar%20backgroundColor%3D%22blue%22%20barStyle%3D%7BstyleStatusBar%7D%20%2F%3E%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CStatusBar%20hidden%3D%7BvisibleStatusBar%7D%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.buttonContainer%7D%3E%0A%20%20%20%20%20%20%20%20%3CButton%20title%3D%22Toggle%20StatusBar%22%20onPress%3D%7B()%20%3D%3E%20changeVisibilityStatusBar()%7D%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.buttonContainer%7D%3E%0A%20%20%20%20%20%20%20%20%3CButton%20title%3D%22Change%20StatusBar%20Style%22%20onPress%3D%7B()%20%3D%3E%20changeStyleStatusBar()%7D%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20justifyContent%3A%20'center'%2C%0A%20%20%20%20paddingTop%3A%20Constants.statusBarHeight%2C%0A%20%20%20%20backgroundColor%3A%20'%23ECF0F1'%2C%0A%20%20%20%20padding%3A%208%0A%20%20%7D%2C%0A%20%20buttonContainer%3A%7B%0A%20%20%20%20padding%3A%2010%0A%20%20%7D%2C%0A%20%20textStyle%3A%7B%0A%20%20%20%20textAlign%3A%20'center'%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20App%3B%0A"
+        data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20'react'%3B%0Aimport%20%7B%20Button%2C%20Platform%2C%20SafeAreaView%2C%20StatusBar%2C%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20STYLES%20%3D%20%5B'default'%2C%20'dark-content'%2C%20'light-content'%5D%3B%0Aconst%20TRANSITIONS%20%3D%20%5B'fade'%2C%20'slide'%2C%20'none'%5D%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20%5Bhidden%2C%20setHidden%5D%20%3D%20useState(false)%3B%0A%20%20const%20%5BstatusBarStyle%2C%20setStatusBarStyle%5D%20%3D%20useState(STYLES%5B0%5D)%3B%0A%20%20const%20%5BstatusBarTransition%2C%20setStatusBarTransition%5D%20%3D%20useState(TRANSITIONS%5B0%5D)%3B%0A%0A%20%20const%20changeStatusBarVisibility%20%3D%20()%20%3D%3E%20setHidden(!hidden)%3B%0A%0A%20%20const%20changeStatusBarStyle%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20styleId%20%3D%20STYLES.indexOf(statusBarStyle)%20%2B%201%3B%0A%20%20%20%20if%20(styleId%20%3D%3D%3D%20STYLES.length)%20%7B%0A%20%20%20%20%20%20setStatusBarStyle(STYLES%5B0%5D)%3B%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20setStatusBarStyle(STYLES%5BstyleId%5D)%3B%0A%20%20%20%20%7D%0A%20%20%7D%3B%0A%0A%20%20const%20changeStatusBarTransition%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20const%20transition%20%3D%20TRANSITIONS.indexOf(statusBarTransition)%20%2B%201%3B%0A%20%20%20%20if%20(transition%20%3D%3D%3D%20TRANSITIONS.length)%20%7B%0A%20%20%20%20%20%20setStatusBarTransition(TRANSITIONS%5B0%5D)%3B%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20setStatusBarTransition(TRANSITIONS%5Btransition%5D)%3B%0A%20%20%20%20%7D%0A%20%20%7D%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CStatusBar%0A%20%20%20%20%20%20%20%20animated%3D%7Btrue%7D%0A%20%20%20%20%20%20%20%20backgroundColor%3D%22%2361dafb%22%0A%20%20%20%20%20%20%20%20barStyle%3D%7BstatusBarStyle%7D%0A%20%20%20%20%20%20%20%20showHideTransition%3D%7BstatusBarTransition%7D%0A%20%20%20%20%20%20%20%20hidden%3D%7Bhidden%7D%20%2F%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.textStyle%7D%3E%0A%20%20%20%20%20%20%20%20StatusBar%20Visibility%3A%7B'%5Cn'%7D%0A%20%20%20%20%20%20%20%20%7Bhidden%20%3F%20'Hidden'%20%3A%20'Visible'%7D%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.textStyle%7D%3E%0A%20%20%20%20%20%20%20%20StatusBar%20Style%3A%7B'%5Cn'%7D%0A%20%20%20%20%20%20%20%20%7BstatusBarStyle%7D%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%7BPlatform.OS%20%3D%3D%3D%20'ios'%20%3F%20(%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.textStyle%7D%3E%0A%20%20%20%20%20%20%20%20%20%20StatusBar%20Transition%3A%7B'%5Cn'%7D%0A%20%20%20%20%20%20%20%20%20%20%7BstatusBarTransition%7D%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20)%20%3A%20null%7D%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.buttonsContainer%7D%3E%0A%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20title%3D%22Toggle%20StatusBar%22%0A%20%20%20%20%20%20%20%20%20%20onPress%3D%7BchangeStatusBarVisibility%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20title%3D%22Change%20StatusBar%20Style%22%0A%20%20%20%20%20%20%20%20%20%20onPress%3D%7BchangeStatusBarStyle%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%7BPlatform.OS%20%3D%3D%3D%20'ios'%20%3F%20(%0A%20%20%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20%20%20title%3D%22Change%20StatusBar%20Transition%22%0A%20%20%20%20%20%20%20%20%20%20%20%20onPress%3D%7BchangeStatusBarTransition%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20)%20%3A%20null%7D%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20justifyContent%3A%20'center'%2C%0A%20%20%20%20backgroundColor%3A%20'%23ECF0F1'%0A%20%20%7D%2C%0A%20%20buttonsContainer%3A%20%7B%0A%20%20%20%20padding%3A%2010%0A%20%20%7D%2C%0A%20%20textStyle%3A%20%7B%0A%20%20%20%20textAlign%3A%20'center'%2C%0A%20%20%20%20marginBottom%3A%208%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20App%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=android,ios
         data-snack-preview="true"
@@ -151,28 +177,29 @@ export default App;
 <hr>
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="constants"></a><a href="#constants" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Constants</h2>
-<h4><a class="anchor" aria-hidden="true" id="currentheight-android-only"></a><a href="#currentheight-android-only" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>currentHeight</code> (Android only)</h4>
+<h3><a class="anchor" aria-hidden="true" id="currentheight-div-classlabel-androidandroiddiv"></a><a href="#currentheight-div-classlabel-androidandroiddiv" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>currentHeight</code> <div class="label android">Android</div></h3>
 <p>The height of the status bar, which includes the notch height, if present.</p>
+<hr>
 <h2><a class="anchor" aria-hidden="true" id="props"></a><a href="#props" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
 <h3><a class="anchor" aria-hidden="true" id="animated"></a><a href="#animated" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>animated</code></h3>
-<p>If the transition between status bar property changes should be animated. Supported for backgroundColor, barStyle and hidden.</p>
+<p>If the transition between status bar property changes should be animated. Supported for <code>backgroundColor</code>, <code>barStyle</code> and <code>hidden</code> properties.</p>
 <table>
 <thead>
-<tr><th>Type</th><th>Required</th></tr>
+<tr><th>Type</th><th>Required</th><th>Default</th></tr>
 </thead>
 <tbody>
-<tr><td>bool</td><td>No</td></tr>
+<tr><td>boolean</td><td>No</td><td><code>false</code></td></tr>
 </tbody>
 </table>
 <hr>
-<h3><a class="anchor" aria-hidden="true" id="backgroundcolor"></a><a href="#backgroundcolor" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>backgroundColor</code></h3>
+<h3><a class="anchor" aria-hidden="true" id="backgroundcolor-div-classlabel-androidandroiddiv"></a><a href="#backgroundcolor-div-classlabel-androidandroiddiv" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>backgroundColor</code> <div class="label android">Android</div></h3>
 <p>The background color of the status bar.</p>
 <table>
 <thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+<tr><th>Type</th><th>Required</th><th>Default</th></tr>
 </thead>
 <tbody>
-<tr><td><a href="/docs/next/colors">color</a></td><td>No</td><td>Android</td></tr>
+<tr><td><a href="colors">color</a></td><td>No</td><td>default system StatusBar background color, or <code>'black'</code> if not defined</td></tr>
 </tbody>
 </table>
 <hr>
@@ -181,10 +208,10 @@ export default App;
 <p>On Android, this will only have an impact on API versions 23 and above.</p>
 <table>
 <thead>
-<tr><th>Type</th><th>Required</th></tr>
+<tr><th>Type</th><th>Required</th><th>Default</th></tr>
 </thead>
 <tbody>
-<tr><td>enum('default', 'light-content', 'dark-content')</td><td>No</td></tr>
+<tr><td><a href="statusbar#statusbarstyle">StatusBarStyle</a></td><td>No</td><td><code>'default'</code></td></tr>
 </tbody>
 </table>
 <hr>
@@ -192,43 +219,43 @@ export default App;
 <p>If the status bar is hidden.</p>
 <table>
 <thead>
-<tr><th>Type</th><th>Required</th></tr>
+<tr><th>Type</th><th>Required</th><th>Default</th></tr>
 </thead>
 <tbody>
-<tr><td>bool</td><td>No</td></tr>
+<tr><td>boolean</td><td>No</td><td><code>false</code></td></tr>
 </tbody>
 </table>
 <hr>
-<h3><a class="anchor" aria-hidden="true" id="networkactivityindicatorvisible"></a><a href="#networkactivityindicatorvisible" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>networkActivityIndicatorVisible</code></h3>
+<h3><a class="anchor" aria-hidden="true" id="networkactivityindicatorvisible-div-classlabel-iosiosdiv"></a><a href="#networkactivityindicatorvisible-div-classlabel-iosiosdiv" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>networkActivityIndicatorVisible</code> <div class="label ios">iOS</div></h3>
 <p>If the network activity indicator should be visible.</p>
 <table>
 <thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+<tr><th>Type</th><th>Required</th><th>Default</th></tr>
 </thead>
 <tbody>
-<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+<tr><td>boolean</td><td>No</td><td><code>false</code></td></tr>
 </tbody>
 </table>
 <hr>
-<h3><a class="anchor" aria-hidden="true" id="showhidetransition"></a><a href="#showhidetransition" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>showHideTransition</code></h3>
-<p>The transition effect when showing and hiding the status bar using the <code>hidden</code> prop. Defaults to 'fade'.</p>
+<h3><a class="anchor" aria-hidden="true" id="showhidetransition-div-classlabel-iosiosdiv"></a><a href="#showhidetransition-div-classlabel-iosiosdiv" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>showHideTransition</code> <div class="label ios">iOS</div></h3>
+<p>The transition effect when showing and hiding the status bar using the <code>hidden</code> prop.</p>
 <table>
 <thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+<tr><th>Type</th><th>Required</th><th>Default</th></tr>
 </thead>
 <tbody>
-<tr><td>enum('fade', 'slide')</td><td>No</td><td>iOS</td></tr>
+<tr><td><a href="statusbar#statusbaranimation">StatusBarAnimation</a></td><td>No</td><td><code>'fade'</code></td></tr>
 </tbody>
 </table>
 <hr>
-<h3><a class="anchor" aria-hidden="true" id="translucent"></a><a href="#translucent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>translucent</code></h3>
-<p>If the status bar is translucent. When translucent is set to true, the app will draw under the status bar. This is useful when using a semi transparent status bar color.</p>
+<h3><a class="anchor" aria-hidden="true" id="translucent-div-classlabel-androidandroiddiv"></a><a href="#translucent-div-classlabel-androidandroiddiv" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>translucent</code> <div class="label android">Android</div></h3>
+<p>If the status bar is translucent. When translucent is set to <code>true</code>, the app will draw under the status bar. This is useful when using a semi transparent status bar color.</p>
 <table>
 <thead>
-<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+<tr><th>Type</th><th>Required</th><th>Default</th></tr>
 </thead>
 <tbody>
-<tr><td>bool</td><td>No</td><td>Android</td></tr>
+<tr><td>boolean</td><td>No</td><td><code>false</code></td></tr>
 </tbody>
 </table>
 <h2><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
@@ -275,10 +302,10 @@ export default App;
 </tbody>
 </table>
 <hr>
-<h3><a class="anchor" aria-hidden="true" id="setbackgroundcolor"></a><a href="#setbackgroundcolor" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setBackgroundColor()</code></h3>
+<h3><a class="anchor" aria-hidden="true" id="setbackgroundcolor-div-classlabel-androidandroiddiv"></a><a href="#setbackgroundcolor-div-classlabel-androidandroiddiv" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setBackgroundColor()</code> <div class="label android">Android</div></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">setBackgroundColor</span><span class="token punctuation">(</span>color<span class="token punctuation">:</span> string<span class="token punctuation">,</span> <span class="token punctuation">[</span>animated<span class="token punctuation">]</span><span class="token punctuation">:</span> boolean<span class="token punctuation">)</span>
 </code></pre>
-<p>Set the background color for the status bar. Android-only</p>
+<p>Set the background color for the status bar.</p>
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
@@ -293,14 +320,14 @@ export default App;
 <h3><a class="anchor" aria-hidden="true" id="setbarstyle"></a><a href="#setbarstyle" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setBarStyle()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">setBarStyle</span><span class="token punctuation">(</span>style<span class="token punctuation">:</span> StatusBarStyle<span class="token punctuation">,</span> <span class="token punctuation">[</span>animated<span class="token punctuation">]</span><span class="token punctuation">:</span> boolean<span class="token punctuation">)</span>
 </code></pre>
-<p>Set the status bar style</p>
+<p>Set the status bar style.</p>
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>style</td><td><a href="/docs/next/statusbar#statusbarstyle">StatusBarStyle</a></td><td>Yes</td><td>Status bar style to set</td></tr>
+<tr><td>style</td><td><a href="statusbar#statusbarstyle">StatusBarStyle</a></td><td>Yes</td><td>Status bar style to set.</td></tr>
 <tr><td>animated</td><td>boolean</td><td>No</td><td>Animate the style change.</td></tr>
 </tbody>
 </table>
@@ -308,7 +335,7 @@ export default App;
 <h3><a class="anchor" aria-hidden="true" id="sethidden"></a><a href="#sethidden" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setHidden()</code></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">setHidden</span><span class="token punctuation">(</span>hidden<span class="token punctuation">:</span> boolean<span class="token punctuation">,</span> <span class="token punctuation">[</span>animation<span class="token punctuation">]</span><span class="token punctuation">:</span> StatusBarAnimation<span class="token punctuation">)</span>
 </code></pre>
-<p>Show or hide the status bar</p>
+<p>Show or hide the status bar.</p>
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
@@ -316,14 +343,14 @@ export default App;
 </thead>
 <tbody>
 <tr><td>hidden</td><td>boolean</td><td>Yes</td><td>Hide the status bar.</td></tr>
-<tr><td>animation</td><td><a href="/docs/next/statusbar#statusbaranimation">StatusBarAnimation</a></td><td>No</td><td>Optional animation when changing the status bar hidden property.</td></tr>
+<tr><td>animation <div class="label ios">iOS</div></td><td><a href="statusbar#statusbaranimation">StatusBarAnimation</a></td><td>No</td><td>Animation when changing the status bar hidden property.</td></tr>
 </tbody>
 </table>
 <hr>
-<h3><a class="anchor" aria-hidden="true" id="setnetworkactivityindicatorvisible"></a><a href="#setnetworkactivityindicatorvisible" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setNetworkActivityIndicatorVisible()</code></h3>
+<h3><a class="anchor" aria-hidden="true" id="setnetworkactivityindicatorvisible-div-classlabel-iosiosdiv"></a><a href="#setnetworkactivityindicatorvisible-div-classlabel-iosiosdiv" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setNetworkActivityIndicatorVisible()</code> <div class="label ios">iOS</div></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">setNetworkActivityIndicatorVisible</span><span class="token punctuation">(</span>visible<span class="token punctuation">:</span> boolean<span class="token punctuation">)</span>
 </code></pre>
-<p>Control the visibility of the network activity indicator. iOS-only.</p>
+<p>Control the visibility of the network activity indicator.</p>
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
@@ -334,10 +361,10 @@ export default App;
 </tbody>
 </table>
 <hr>
-<h3><a class="anchor" aria-hidden="true" id="settranslucent"></a><a href="#settranslucent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setTranslucent()</code></h3>
+<h3><a class="anchor" aria-hidden="true" id="settranslucent-div-classlabel-androidandroiddiv"></a><a href="#settranslucent-div-classlabel-androidandroiddiv" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setTranslucent()</code> <div class="label android">Android</div></h3>
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">setTranslucent</span><span class="token punctuation">(</span>translucent<span class="token punctuation">:</span> boolean<span class="token punctuation">)</span>
 </code></pre>
-<p>Control the translucency of the status bar. Android-only.</p>
+<p>Control the translucency of the status bar.</p>
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
@@ -349,49 +376,49 @@ export default App;
 </table>
 <h2><a class="anchor" aria-hidden="true" id="type-definitions"></a><a href="#type-definitions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Type Definitions</h2>
 <h3><a class="anchor" aria-hidden="true" id="statusbaranimation"></a><a href="#statusbaranimation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>StatusBarAnimation</h3>
-<p>Status bar animation</p>
+<p>Status bar animation type for transitions on the iOS.</p>
 <table>
 <thead>
 <tr><th>Type</th></tr>
 </thead>
 <tbody>
-<tr><td>$Enum</td></tr>
+<tr><td>enum</td></tr>
 </tbody>
 </table>
 <p><strong>Constants:</strong></p>
 <table>
 <thead>
-<tr><th>Value</th><th>Description</th></tr>
+<tr><th>Value</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>none</td><td>No animation</td></tr>
-<tr><td>fade</td><td>Fade animation</td></tr>
-<tr><td>slide</td><td>Slide animation</td></tr>
+<tr><td><code>'fade'</code></td><td>string</td><td>Fade animation</td></tr>
+<tr><td><code>'slide'</code></td><td>string</td><td>Slide animation</td></tr>
+<tr><td><code>'none'</code></td><td>string</td><td>No animation</td></tr>
 </tbody>
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="statusbarstyle"></a><a href="#statusbarstyle" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>StatusBarStyle</h3>
-<p>Status bar style</p>
+<p>Status bar style type.</p>
 <table>
 <thead>
 <tr><th>Type</th></tr>
 </thead>
 <tbody>
-<tr><td>$Enum</td></tr>
+<tr><td>enum</td></tr>
 </tbody>
 </table>
 <p><strong>Constants:</strong></p>
 <table>
 <thead>
-<tr><th>Value</th><th>Description</th></tr>
+<tr><th>Value</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>default</td><td>Default status bar style (dark for iOS, light for Android)</td></tr>
-<tr><td>light-content</td><td>Dark background, white texts and icons</td></tr>
-<tr><td>dark-content</td><td>Light background, dark texts and icons (requires API&gt;=23 on Android)</td></tr>
+<tr><td><code>'default'</code></td><td>string</td><td>Default status bar style (dark for iOS, light for Android)</td></tr>
+<tr><td><code>'light-content'</code></td><td>string</td><td>Dark background, white texts and icons</td></tr>
+<tr><td><code>'dark-content'</code></td><td>string</td><td>Light background, dark texts and icons (requires API&gt;=23 on Android)</td></tr>
 </tbody>
 </table>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/sectionlist"><span class="arrow-prev">← </span><span class="function-name-prevnext">SectionList</span></a><a class="docs-next button" href="/docs/next/switch"><span>Switch</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#constants">Constants</a></li><li><a href="#props">Props</a><ul class="toc-headings"><li><a href="#animated"><code>animated</code></a></li><li><a href="#backgroundcolor"><code>backgroundColor</code></a></li><li><a href="#barstyle"><code>barStyle</code></a></li><li><a href="#hidden"><code>hidden</code></a></li><li><a href="#networkactivityindicatorvisible"><code>networkActivityIndicatorVisible</code></a></li><li><a href="#showhidetransition"><code>showHideTransition</code></a></li><li><a href="#translucent"><code>translucent</code></a></li></ul></li><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#popstackentry"><code>popStackEntry()</code></a></li><li><a href="#pushstackentry"><code>pushStackEntry()</code></a></li><li><a href="#replacestackentry"><code>replaceStackEntry()</code></a></li><li><a href="#setbackgroundcolor"><code>setBackgroundColor()</code></a></li><li><a href="#setbarstyle"><code>setBarStyle()</code></a></li><li><a href="#sethidden"><code>setHidden()</code></a></li><li><a href="#setnetworkactivityindicatorvisible"><code>setNetworkActivityIndicatorVisible()</code></a></li><li><a href="#settranslucent"><code>setTranslucent()</code></a></li></ul></li><li><a href="#type-definitions">Type Definitions</a><ul class="toc-headings"><li><a href="#statusbaranimation">StatusBarAnimation</a></li><li><a href="#statusbarstyle">StatusBarStyle</a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started">Getting Started</a><a href="/docs/tutorial">Tutorial</a><a href="/docs/components-and-apis">Components and APIs</a><a href="/docs/more-resources">More Resources</a></div><div><h5>Community</h5><a href="/help">The React Native Community</a><a href="/showcase">Who&#x27;s using React Native?</a><a href="https://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/sectionlist"><span class="arrow-prev">← </span><span class="function-name-prevnext">SectionList</span></a><a class="docs-next button" href="/docs/next/switch"><span>Switch</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#constants">Constants</a><ul class="toc-headings"><li><a href="#currentheight-div-classlabel-androidandroiddiv"><code>currentHeight</code> <div class="label android">Android</div></a></li></ul></li><li><a href="#props">Props</a><ul class="toc-headings"><li><a href="#animated"><code>animated</code></a></li><li><a href="#backgroundcolor-div-classlabel-androidandroiddiv"><code>backgroundColor</code> <div class="label android">Android</div></a></li><li><a href="#barstyle"><code>barStyle</code></a></li><li><a href="#hidden"><code>hidden</code></a></li><li><a href="#networkactivityindicatorvisible-div-classlabel-iosiosdiv"><code>networkActivityIndicatorVisible</code> <div class="label ios">iOS</div></a></li><li><a href="#showhidetransition-div-classlabel-iosiosdiv"><code>showHideTransition</code> <div class="label ios">iOS</div></a></li><li><a href="#translucent-div-classlabel-androidandroiddiv"><code>translucent</code> <div class="label android">Android</div></a></li></ul></li><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#popstackentry"><code>popStackEntry()</code></a></li><li><a href="#pushstackentry"><code>pushStackEntry()</code></a></li><li><a href="#replacestackentry"><code>replaceStackEntry()</code></a></li><li><a href="#setbackgroundcolor-div-classlabel-androidandroiddiv"><code>setBackgroundColor()</code> <div class="label android">Android</div></a></li><li><a href="#setbarstyle"><code>setBarStyle()</code></a></li><li><a href="#sethidden"><code>setHidden()</code></a></li><li><a href="#setnetworkactivityindicatorvisible-div-classlabel-iosiosdiv"><code>setNetworkActivityIndicatorVisible()</code> <div class="label ios">iOS</div></a></li><li><a href="#settranslucent-div-classlabel-androidandroiddiv"><code>setTranslucent()</code> <div class="label android">Android</div></a></li></ul></li><li><a href="#type-definitions">Type Definitions</a><ul class="toc-headings"><li><a href="#statusbaranimation">StatusBarAnimation</a></li><li><a href="#statusbarstyle">StatusBarStyle</a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started">Getting Started</a><a href="/docs/tutorial">Tutorial</a><a href="/docs/components-and-apis">Components and APIs</a><a href="/docs/more-resources">More Resources</a></div><div><h5>Community</h5><a href="/help">The React Native Community</a><a href="/showcase">Who&#x27;s using React Native?</a><a href="https://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
