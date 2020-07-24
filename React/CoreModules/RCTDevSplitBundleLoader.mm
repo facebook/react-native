@@ -12,6 +12,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
+#import <React/RCTDevSettings.h>
 #import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
@@ -23,10 +24,11 @@ using namespace facebook::react;
 
 #if RCT_DEV_MENU
 
-@implementation RCTDevSplitBundleLoader {
-}
+@implementation RCTDevSplitBundleLoader
 
 @synthesize bridge = _bridge;
+@synthesize loadScript = _loadScript;
+@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -46,13 +48,32 @@ RCT_EXPORT_METHOD(loadBundle
                   : (RCTPromiseRejectBlock)reject)
 {
   NSURL *sourceURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForSplitBundleRoot:bundlePath];
-  [_bridge loadAndExecuteSplitBundleURL:sourceURL
-      onError:^(NSError *error) {
-        reject(@"E_BUNDLE_LOAD_ERROR", [error localizedDescription], error);
-      }
-      onComplete:^() {
-        resolve(@YES);
-      }];
+  if (_bridge) {
+    [_bridge loadAndExecuteSplitBundleURL:sourceURL
+        onError:^(NSError *error) {
+          reject(@"E_BUNDLE_LOAD_ERROR", [error localizedDescription], error);
+        }
+        onComplete:^() {
+          resolve(@YES);
+        }];
+  } else {
+    __weak __typeof(self) weakSelf = self;
+    [RCTJavaScriptLoader loadBundleAtURL:sourceURL
+        onProgress:^(RCTLoadingProgress *progressData) {
+          // TODO: Setup loading bar.
+        }
+        onComplete:^(NSError *error, RCTSource *source) {
+          if (error) {
+            reject(@"E_BUNDLE_LOAD_ERROR", [error localizedDescription], error);
+            return;
+          }
+          __typeof(self) strongSelf = weakSelf;
+          strongSelf->_loadScript(source);
+          RCTDevSettings *devSettings = [strongSelf->_turboModuleRegistry moduleForName:"RCTDevSettings"];
+          [devSettings setupHMRClientWithAdditionalBundleURL:source.url];
+          resolve(@YES);
+        }];
+  }
 }
 
 - (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
@@ -65,6 +86,8 @@ RCT_EXPORT_METHOD(loadBundle
 #else
 
 @implementation RCTDevSplitBundleLoader
+
+@synthesize loadScript = _loadScript;
 
 + (NSString *)moduleName
 {
