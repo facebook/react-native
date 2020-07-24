@@ -20,7 +20,7 @@
   close: true
 "Resolution: Community Repo":
   comment: >
-    This issue can be better addressed in a different community repository. Please check out the list of [maintainers in the RNCommunity](https://github.com/react-native-community/.github/blob/master/MAINTAINERS.md) to find the best place to create this issue.
+    This issue refers to a problem covered by a community module that should be tracked in that community repository. This repository only tracks bugs in the core React Native library. Please check out the list of [maintainers in the RNCommunity](https://github.com/react-native-community/.github/blob/master/MAINTAINERS.md) to find the best place to create this issue.
   close: true
 "Needs: Issue Template":
   comment: >
