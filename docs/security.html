@@ -112,9 +112,12 @@
 <p>The <a href="https://developer.android.com/training/articles/keystore">Android Keystore</a> system lets you store cryptographic keys in a container to make it more difficult to extract from the device.</p>
 <p>In order to use iOS Keychain services or Android Secure Shared Preferences, you can either write a bridge yourself or use a library which wraps them for you and provides a unified API at your own risk. Some libraries to consider:</p>
 <ul>
+<li><a href="https://docs.expo.io/versions/latest/sdk/securestore/">expo-secure-store</a></li>
 <li><a href="https://github.com/oblador/react-native-keychain">react-native-keychain</a></li>
-<li><a href="https://github.com/mCodex/react-native-sensitive-info">react-native-sensitive-info</a> - secure for iOS, but uses Android Shared Preferences for Android (which is not secure by default). There is however a <a href="https://github.com/mCodex/react-native-sensitive-info/tree/keystore">fork</a>) that uses Android Keystore</li>
-<li><a href="https://github.com/CodingZeal/redux-persist-sensitive-storage">redux-persist-sensitive-storage</a> - wraps react-native-sensitive-info</li>
+<li><a href="https://github.com/mCodex/react-native-sensitive-info">react-native-sensitive-info</a> - secure for iOS, but uses Android Shared Preferences for Android (which is not secure by default). There is however a <a href="https://github.com/mCodex/react-native-sensitive-info/tree/keystore">branch</a> that uses Android Keystore.
+<ul>
+<li><a href="https://github.com/CodingZeal/redux-persist-sensitive-storage">redux-persist-sensitive-storage</a> - wraps react-native-sensitive-info for Redux.</li>
+</ul></li>
 </ul>
 <blockquote>
 <p><strong>Be mindful of unintentionally storing or exposing sensitive info.</strong> This could happen accidentally, for example saving sensitive form data in redux state and persisting the whole state tree in Async Storage. Or sending user tokens and personal info to an application monitoring service such as Sentry or Crashlytics.</p>
