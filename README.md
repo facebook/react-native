@@ -5,6 +5,10 @@
 </h1>
 
 <p align="center">
+  <img alt="React Native Logo" src="https://reactnative.dev/img/header_logo.svg" width="20%" />
+</p>
+
+<p align="center">
   <strong>Learn once, write anywhere:</strong><br>
   Build mobile apps with React.
 </p>
