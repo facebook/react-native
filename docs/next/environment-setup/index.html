@@ -172,13 +172,16 @@ brew <span class="token function">install</span> watchman
 <p><block class='native windows android' /></p>
 <p><h3>Node, Python2, JDK</h3></p>
 <p>We recommend installing Node and Python2 via <a href="https://chocolatey.org">Chocolatey</a>, a popular package manager for Windows.</p>
-<p>React Native also requires a recent version of the <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Java SE Development Kit (JDK)</a>, as well as Python 2. Both can be installed using Chocolatey.</p>
+<p>React Native also requires <a href="https://openjdk.java.net/projects/jdk8/">Java SE Development Kit (JDK)</a>, as well as Python2. Both can be installed using Chocolatey.</p>
 <p>Open an Administrator Command Prompt (right click Command Prompt and select &quot;Run as Administrator&quot;), then run the following command:</p>
-<pre><code class="hljs css language-powershell">choco install <span class="hljs-literal">-y</span> nodejs.install python2 jdk8
+<pre><code class="hljs css language-powershell">choco install <span class="hljs-literal">-y</span> nodejs.install python2 openjdk8 
 </code></pre>
 <p>If you have already installed Node on your system, make sure it is Node 10 or newer. If you already have a JDK on your system, make sure it is version 8 or newer.</p>
 <blockquote>
 <p>You can find additional installation options on <a href="https://nodejs.org/en/download/">Node's Downloads page</a>.</p>
+</blockquote>
+<blockquote>
+<p>If you're using the latest version of Java Development Kit, you'll need to change the Gradle version of your project so it can recognize the JDK. You can do that by going to <code>{project root folder}\android\gradle\wrapper\gradle-wrapper.properties</code> and changing the <code>distributionUrl</code> value to upgrade the Gradle version. You can check out <a href="https://gradle.org/releases/">here the lastest releases of Gradle</a>.</p>
 </blockquote>
 <p><block class="native mac ios" /></p>
 <p><h3>Xcode &amp; CocoaPods</h3></p>
@@ -197,13 +200,13 @@ brew <span class="token function">install</span> watchman
 <p>For more information, please visit <a href="https://guides.cocoapods.org/using/getting-started.html">CocoaPods Getting Started guide</a>.</p>
 <p><block class="native linux android" /></p>
 <p><h3>Java Development Kit</h3></p>
-<p>React Native requires version 8 of the Java SE Development Kit (JDK). You may download and install <a href="http://openjdk.java.net">OpenJDK</a> from <a href="https://adoptopenjdk.net/">AdoptOpenJDK</a> or your system packager. You may also <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Download and install Oracle JDK 8</a> if desired.</p>
+<p>React Native requires at least the version 8 of the Java SE Development Kit (JDK). You may download and install <a href="http://openjdk.java.net">OpenJDK</a> from <a href="https://adoptopenjdk.net/">AdoptOpenJDK</a> or your system packager. You may also <a href="https://www.oracle.com/java/technologies/javase-jdk14-downloads.html">Download and install Oracle JDK 14</a> if desired.</p>
 <p><block class="native mac linux windows android" /></p>
 <p><h3>Android development environment</h3></p>
 <p>Setting up your development environment can be somewhat tedious if you're new to Android development. If you're already familiar with Android development, there are a few things you may need to configure. In either case, please make sure to carefully follow the next few steps.</p>
 <p><block class="native mac windows linux android" /></p>
 <p><h4>1. Install Android Studio</h4></p>
-<p><a href="https://developer.android.com/studio/index.html">Download and install Android Studio</a>. Choose a &quot;Custom&quot; setup when prompted to select an installation type. Make sure the boxes next to all of the following are checked:</p>
+<p><a href="https://developer.android.com/studio/index.html">Download and install Android Studio</a>. While on Android Studio intallation wizard, make sure the boxes next to all of the following items are checked:</p>
 <p><block class="native mac windows android" /></p>
 <ul>
 <li><code>Android SDK</code></li>
@@ -225,7 +228,7 @@ brew <span class="token function">install</span> watchman
 <p>Once setup has finalized and you're presented with the Welcome screen, proceed to the next step.</p>
 <p><h4>2. Install the Android SDK</h4></p>
 <p>Android Studio installs the latest Android SDK by default. Building a React Native app with native code, however, requires the <code>Android 10 (Q)</code> SDK in particular. Additional Android SDKs can be installed through the SDK Manager in Android Studio.</p>
-<p>The SDK Manager can be accessed from the &quot;Welcome to Android Studio&quot; screen. Click on &quot;Configure&quot;, then select &quot;SDK Manager&quot;.</p>
+<p>To do that, open Android Studio, click on &quot;Configure&quot; button and select &quot;SDK Manager&quot;.</p>
 <p><block class="native mac android" /></p>
 <p><img src="/docs/assets/GettingStartedAndroidStudioWelcomeMacOS.png" alt="Android Studio Welcome"></p>
 <p><block class="native windows android" /></p>
