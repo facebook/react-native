@@ -1,9 +1,6 @@
-<p align="center">
-  <img alt="React Native Logo" src="https://reactnative.dev/img/header_logo.svg" width="15%"/>
-</p>
-
 <h1 align="center">
   <a href="https://reactnative.dev/">
+    <img alt="React Native Logo" src="https://reactnative.dev/img/header_logo.svg" width="15%"/><br />
     React Native
   </a>
 </h1>
