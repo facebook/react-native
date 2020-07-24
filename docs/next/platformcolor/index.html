@@ -70,7 +70,11 @@
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/platformcolor.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">PlatformColor</h1></header><article><div><span><pre><code class="hljs css language-js"><span class="token function">PlatformColor</span><span class="token punctuation">(</span>color1<span class="token punctuation">,</span> <span class="token punctuation">[</span>color2<span class="token punctuation">,</span> <span class="token operator">...</span>colorN<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
-<p>You can use the <code>PlatformColor</code> function to access native colors on the target platform by supplying the native color’s corresponding string value. You pass a string to the <code>PlatformColor</code> function, and provided it exists on that platform, that native color will be applied to the control or Javascript component specified in your style. All native color logic also translates if applicable, meaning if the native color specified is themes and/or high contrast sensitive, that logic will also transfer to the JavaScript component being colored.</p>
+<p>You can use the <code>PlatformColor</code> function to access native colors on the target platform by supplying the native color’s corresponding string value. You pass a string to the <code>PlatformColor</code> function and, provided it exists on that platform, it will return the corresponding native color, which you can apply in any part of your application.</p>
+<p>If you pass more than one string value to the <code>PlatformColor</code> function, it will treat the first value as the default and the rest as fallback.</p>
+<pre><code class="hljs css language-js"><span class="token function">PlatformColor</span><span class="token punctuation">(</span><span class="token string">'bogusName'</span><span class="token punctuation">,</span> <span class="token string">'linkColor'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Since native colors can be sensitive to themes and/or high contrast, this platform specific logic also translates inside your components.</p>
 <div class="toggler">
   <span>Developer Notes</span>
   <span role="tablist" class="toggle-devNotes">
@@ -123,7 +127,7 @@
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
-<p>The string value provided to the <code>PlatformColor</code> function must match and agree with the same string as it exists on the native platform the app is being run on. This means to avoid runtime errors the function should be wrapped in a platform check, either through a <code>Platform.OS === 'platform'</code> or a <code>Platform.Select()</code>.</p>
+<p>The string value provided to the <code>PlatformColor</code> function must match the string as it exists on the native platform where the app is running. In order to avoid runtime errors, the function should be wrapped in a platform check, either through a <code>Platform.OS === 'platform'</code> or a <code>Platform.Select()</code>, as shown on the example above.</p>
 <blockquote>
 <p><strong>Note:</strong> You can find a complete example that demonstrates proper, intended use of <code>PlatformColor</code> in <a href="https://github.com/facebook/react-native/blob/master/RNTester/js/examples/PlatformColor/PlatformColorExample.js">PlatformColorExample.js</a>.</p>
 </blockquote>
