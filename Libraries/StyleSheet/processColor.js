@@ -19,15 +19,30 @@ import type {NativeColorValue} from './PlatformColorValueTypes';
 
 export type ProcessedColorValue = number | NativeColorValue;
 
+type Color = number | ColorValue;
+
+const cachedColors: {
+  [Color]: ?ProcessedColorValue,
+} = {};
+
+function putCache(key: Color, value: ?ProcessedColorValue) {
+  cachedColors[key] = value;
+  return value;
+}
+
 /* eslint no-bitwise: 0 */
-function processColor(color?: ?(number | ColorValue)): ?ProcessedColorValue {
+function processColor(color?: ?Color): ?ProcessedColorValue {
   if (color === undefined || color === null) {
     return color;
   }
 
+  if (typeof color !== 'object' && cachedColors[color] !== undefined) {
+    return cachedColors[color];
+  }
+
   let normalizedColor = normalizeColor(color);
   if (normalizedColor === null || normalizedColor === undefined) {
-    return undefined;
+    return putCache(color, null);
   }
 
   if (typeof normalizedColor === 'object') {
@@ -42,7 +57,7 @@ function processColor(color?: ?(number | ColorValue)): ?ProcessedColorValue {
   }
 
   if (typeof normalizedColor !== 'number') {
-    return null;
+    return putCache(color, null);
   }
 
   // Converts 0xrrggbbaa into 0xaarrggbb
@@ -55,7 +70,8 @@ function processColor(color?: ?(number | ColorValue)): ?ProcessedColorValue {
     // *unsigned* to *signed* 32bit int that way.
     normalizedColor = normalizedColor | 0x0;
   }
-  return normalizedColor;
+
+  return putCache(color, normalizedColor);
 }
 
 module.exports = processColor;

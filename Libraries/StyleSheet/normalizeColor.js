@@ -15,17 +15,34 @@
 import type {ColorValue} from './StyleSheet';
 import type {ProcessedColorValue} from './processColor';
 
-function normalizeColor(
-  color: ?(ColorValue | ProcessedColorValue),
-): ?ProcessedColorValue {
+type Color = ColorValue | ProcessedColorValue;
+
+const cachedColors: {
+  [Color]: ?ProcessedColorValue,
+} = {};
+
+function putCache(key: Color, value: ?ProcessedColorValue) {
+  cachedColors[key] = value;
+  return value;
+}
+
+function normalizeColor(color: ?Color): ?ProcessedColorValue {
   const matchers = getMatchers();
   let match;
 
+  if (color === undefined || color === null) {
+    return color;
+  }
+
+  if (typeof color !== 'object' && cachedColors[color] !== undefined) {
+    return cachedColors[color];
+  }
+
   if (typeof color === 'number') {
     if (color >>> 0 === color && color >= 0 && color <= 0xffffffff) {
-      return color;
+      return putCache(color, color);
     }
-    return null;
+    return putCache(color, null);
   }
 
   if (typeof color === 'object' && color != null) {
@@ -33,49 +50,51 @@ function normalizeColor(
       .normalizeColorObject;
 
     const normalizedColorObj = normalizeColorObject(color);
-
     if (normalizedColorObj != null) {
       return color;
     }
   }
 
   if (typeof color !== 'string') {
-    return null;
+    return putCache(color, null);
   }
 
   // Ordered based on occurrences on Facebook codebase
   if ((match = matchers.hex6.exec(color))) {
-    return parseInt(match[1] + 'ff', 16) >>> 0;
+    return putCache(color, parseInt(match[1] + 'ff', 16) >>> 0);
   }
 
   if (names.hasOwnProperty(color)) {
-    return names[color];
+    return putCache(color, names[color]);
   }
 
   if ((match = matchers.rgb.exec(color))) {
-    return (
+    return putCache(
+      color,
       // b
       ((parse255(match[1]) << 24) | // r
       (parse255(match[2]) << 16) | // g
         (parse255(match[3]) << 8) |
         0x000000ff) >>> // a
-      0
+        0,
     );
   }
 
   if ((match = matchers.rgba.exec(color))) {
-    return (
+    return putCache(
+      color,
       // b
       ((parse255(match[1]) << 24) | // r
       (parse255(match[2]) << 16) | // g
         (parse255(match[3]) << 8) |
         parse1(match[4])) >>> // a
-      0
+        0,
     );
   }
 
   if ((match = matchers.hex3.exec(color))) {
-    return (
+    return putCache(
+      color,
       parseInt(
         match[1] +
         match[1] + // r
@@ -85,17 +104,18 @@ function normalizeColor(
         match[3] + // b
           'ff', // a
         16,
-      ) >>> 0
+      ) >>> 0,
     );
   }
 
   // https://drafts.csswg.org/css-color-4/#hex-notation
   if ((match = matchers.hex8.exec(color))) {
-    return parseInt(match[1], 16) >>> 0;
+    return putCache(color, parseInt(match[1], 16) >>> 0);
   }
 
   if ((match = matchers.hex4.exec(color))) {
-    return (
+    return putCache(
+      color,
       parseInt(
         match[1] +
         match[1] + // r
@@ -106,35 +126,37 @@ function normalizeColor(
           match[4] +
           match[4], // a
         16,
-      ) >>> 0
+      ) >>> 0,
     );
   }
 
   if ((match = matchers.hsl.exec(color))) {
-    return (
+    return putCache(
+      color,
       (hslToRgb(
         parse360(match[1]), // h
         parsePercentage(match[2]), // s
         parsePercentage(match[3]), // l
       ) |
         0x000000ff) >>> // a
-      0
+        0,
     );
   }
 
   if ((match = matchers.hsla.exec(color))) {
-    return (
+    return putCache(
+      color,
       (hslToRgb(
         parse360(match[1]), // h
         parsePercentage(match[2]), // s
         parsePercentage(match[3]), // l
       ) |
         parse1(match[4])) >>> // a
-      0
+        0,
     );
   }
 
-  return null;
+  return putCache(color, null);
 }
 
 function hue2rgb(p: number, q: number, t: number): number {
