@@ -39,7 +39,6 @@ void MountingCoordinator::push(ShadowTreeRevision &&revision) const {
   {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    assert(revision.getNumber() > baseRevision_.getNumber());
     assert(
         !lastRevision_.has_value() ||
         revision.getNumber() != lastRevision_->getNumber());

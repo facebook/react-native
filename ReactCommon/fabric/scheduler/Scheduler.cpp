@@ -79,6 +79,7 @@ Scheduler::Scheduler(
   rootComponentDescriptor_ = std::make_unique<const RootComponentDescriptor>(
       ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
 
+  uiManager->setBackgroundExecutor(schedulerToolbox.backgroundExecutor);
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
