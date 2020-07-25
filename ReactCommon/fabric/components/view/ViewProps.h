@@ -42,9 +42,9 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
 
   // Shadow
   SharedColor shadowColor{};
-  Size shadowOffset{};
+  Size shadowOffset{0, -3};
   Float shadowOpacity{};
-  Float shadowRadius{};
+  Float shadowRadius{3};
 
   // Transform
   Transform transform{};
@@ -58,6 +58,8 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
   bool onLayout{};
 
   bool collapsable{true};
+
+  Float elevation{}; /* Android-only */
 
 #pragma mark - Convenience Methods
 

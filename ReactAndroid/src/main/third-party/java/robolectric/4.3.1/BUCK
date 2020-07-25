@@ -1,0 +1,216 @@
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library", "rn_prebuilt_jar")
+
+rn_android_library(
+    name = "robolectric",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":android-all-4.1.2_r1-robolectric-r1",
+        ":bouncycastle",
+        ":guava",
+        ":javax-annotation-api",
+        ":javax-inject",
+        ":robolectric4-annotations-prebuilt",
+        ":robolectric4-junit-prebuilt",
+        ":robolectric4-pluginapi-prebuilt",
+        ":robolectric4-plugins-maven-dependency-resolver-prebuilt",
+        ":robolectric4-prebuilt",
+        ":robolectric4-resources-prebuilt",
+        ":robolectric4-sandbox-prebuilt",
+        ":robolectric4-shadowapi-prebuilt",
+        ":robolectric4-shadows-framework-prebuilt",
+        ":robolectric4-utils-prebuilt",
+        ":robolectric4-utils-reflector-prebuilt",
+        react_native_dep("third-party/java/asm:asm"),
+        react_native_dep("third-party/java/sqlite:sqlite"),
+        react_native_dep("third-party/java/junit:junit"),
+        react_native_dep("third-party/android/androidx:test-monitor"),
+    ],
+)
+
+rn_prebuilt_jar(
+    name = "android-all-4.1.2_r1-robolectric-r1",  # name defines filename used by robolectric in runtime
+    binary_jar = ":robolectric-android-all-binary.jar",
+    visibility = ["//ReactAndroid/..."],
+)
+
+# This new rule will make the .jar file appear in the "right" location,
+# though that may change in the future
+fb_native.export_file(
+    name = "robolectric-android-all-binary.jar",
+    src = ":robolectric-android-all-binary-remote.jar",
+    out = "../android-all-4.1.2_r1-robolectric-r1.jar",  # name defines filename used by robolectric in runtime
+)
+
+fb_native.remote_file(
+    name = "robolectric-android-all-binary-remote.jar",
+    sha1 = "8355a2da59fe0233ca45070ca32f08da98d0b806",
+    url = "mvn:org.robolectric:android-all:jar:4.1.2_r1-robolectric-r1",
+)
+
+rn_prebuilt_jar(
+    name = "bouncycastle",
+    binary_jar = ":bouncycastle-binary.jar",
+    visibility = ["//ReactAndroid/..."],
+)
+
+fb_native.remote_file(
+    name = "bouncycastle-binary.jar",
+    sha1 = "2507204241ab450456bdb8e8c0a8f986e418bd99",
+    url = "mvn:org.bouncycastle:bcprov-jdk15on:jar:1.59",
+)
+
+rn_prebuilt_jar(
+    name = "guava",
+    binary_jar = ":guava-binary.jar",
+    visibility = ["//ReactAndroid/..."],
+)
+
+fb_native.remote_file(
+    name = "guava-binary.jar",
+    sha1 = "ef69663836b339db335fde0df06fb3cd84e3742b",
+    url = "mvn:com.google.guava:guava:jar:26.0-android",
+)
+
+rn_prebuilt_jar(
+    name = "robolectric4-prebuilt",
+    binary_jar = ":robolectric4.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4.jar",
+    sha1 = "66e4550b96285eadcb5a45a21ad6fbe8842fa960",
+    url = "mvn:org.robolectric:robolectric:jar:4.3",
+)
+
+rn_prebuilt_jar(
+    name = "robolectric4-annotations-prebuilt",
+    binary_jar = ":robolectric4-annotations.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4-annotations.jar",
+    sha1 = "3db63d633be908a18db18615b594f824c034ae6d",
+    url = "mvn:org.robolectric:annotations:jar:4.3",
+)
+
+rn_prebuilt_jar(
+    name = "robolectric4-junit-prebuilt",
+    binary_jar = ":robolectric4-junit.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4-junit.jar",
+    sha1 = "fcafc9942e8748c8bab832b022672ca21808c492",
+    url = "mvn:org.robolectric:junit:jar:4.3",
+)
+
+rn_prebuilt_jar(
+    name = "robolectric4-pluginapi-prebuilt",
+    binary_jar = ":robolectric4-pluginapi.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4-pluginapi.jar",
+    sha1 = "128acea3aed3bbe36f8fde865f3a26b920237718",
+    url = "mvn:org.robolectric:pluginapi:jar:4.3",
+)
+
+rn_prebuilt_jar(
+    name = "robolectric4-plugins-maven-dependency-resolver-prebuilt",
+    binary_jar = ":robolectric4-plugins-maven-dependency-resolver.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4-plugins-maven-dependency-resolver.jar",
+    sha1 = "b1ea126cb80dbba0c2947be9234bbe2877ce2a09",
+    url = "mvn:org.robolectric:plugins-maven-dependency-resolver:jar:4.3",
+)
+
+rn_prebuilt_jar(
+    name = "robolectric4-resources-prebuilt",
+    binary_jar = ":robolectric4-resources.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4-resources.jar",
+    sha1 = "e40030b0f6808ca378bd2c803713157ee4287ea0",
+    url = "mvn:org.robolectric:resources:jar:4.3",
+)
+
+rn_prebuilt_jar(
+    name = "robolectric4-sandbox-prebuilt",
+    binary_jar = ":robolectric4-sandbox.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4-sandbox.jar",
+    sha1 = "2302e406aebab5f6843dbf6c2f21952fa86ec26f",
+    url = "mvn:org.robolectric:sandbox:jar:4.3",
+)
+
+rn_prebuilt_jar(
+    name = "robolectric4-shadowapi-prebuilt",
+    binary_jar = ":robolectric4-shadowapi.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4-shadowapi.jar",
+    sha1 = "81dfcf4a45b623b7744e46358d01c7ce054d0fff",
+    url = "mvn:org.robolectric:shadowapi:jar:4.3",
+)
+
+rn_prebuilt_jar(
+    name = "robolectric4-shadows-framework-prebuilt",
+    binary_jar = ":robolectric4-shadows-framework.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4-shadows-framework.jar",
+    sha1 = "150103d5732c432906f6130b734e7452855dd67b",
+    url = "mvn:org.robolectric:shadows-framework:jar:4.3",
+)
+
+rn_prebuilt_jar(
+    name = "robolectric4-utils-prebuilt",
+    binary_jar = ":robolectric4-utils.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4-utils.jar",
+    sha1 = "97b0331b67d0e1dc8bf50e570b6feb017f62aed1",
+    url = "mvn:org.robolectric:utils:jar:4.3",
+)
+
+rn_prebuilt_jar(
+    name = "robolectric4-utils-reflector-prebuilt",
+    binary_jar = ":robolectric4-utils-reflector.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4-utils-reflector.jar",
+    sha1 = "3428887d068b66e33026ac533ae4647355167658",
+    url = "mvn:org.robolectric:utils-reflector:jar:4.3",
+)
+
+rn_prebuilt_jar(
+    name = "javax-annotation-api",
+    binary_jar = ":javax-annotation-api.jar",
+)
+
+fb_native.remote_file(
+    name = "javax-annotation-api.jar",
+    sha1 = "934c04d3cfef185a8008e7bf34331b79730a9d43",
+    url = "mvn:javax.annotation:javax.annotation-api:jar:1.3.2",
+)
+
+rn_prebuilt_jar(
+    name = "javax-inject",
+    binary_jar = ":javax-inject.jar",
+)
+
+fb_native.remote_file(
+    name = "javax-inject.jar",
+    sha1 = "6975da39a7040257bd51d21a231b76c915872d38",
+    url = "mvn:javax.inject:javax.inject:jar:1",
+)

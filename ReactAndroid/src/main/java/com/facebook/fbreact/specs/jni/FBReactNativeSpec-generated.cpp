@@ -186,6 +186,10 @@ namespace facebook {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "createAnimatedNode", "(DLcom/facebook/react/bridge/ReadableMap;)V", args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "getValue", "(DLcom/facebook/react/bridge/Callback;)V", args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_startListeningToAnimatedNodeValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "startListeningToAnimatedNodeValue", "(D)V", args, count);
     }
@@ -263,6 +267,9 @@ namespace facebook {
       : JavaTurboModule(params) {
         
         methodMap_["createAnimatedNode"] = MethodMetadata {2, __hostFunction_NativeAnimatedModuleSpecJSI_createAnimatedNode};
+        
+        
+        methodMap_["getValue"] = MethodMetadata {2, __hostFunction_NativeAnimatedModuleSpecJSI_getValue};
         
         
         methodMap_["startListeningToAnimatedNodeValue"] = MethodMetadata {1, __hostFunction_NativeAnimatedModuleSpecJSI_startListeningToAnimatedNodeValue};
@@ -581,40 +588,6 @@ namespace facebook {
   namespace react {
 
     
-    static facebook::jsi::Value __hostFunction_NativeCameraRollManagerSpecJSI_getPhotos(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "getPhotos", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeCameraRollManagerSpecJSI_saveToCameraRoll(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "saveToCameraRoll", "(Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeCameraRollManagerSpecJSI_deletePhotos(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "deletePhotos", "(Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Promise;)V", args, count);
-    }
-
-
-    NativeCameraRollManagerSpecJSI::NativeCameraRollManagerSpecJSI(const JavaTurboModule::InitParams &params)
-      : JavaTurboModule(params) {
-        
-        methodMap_["getPhotos"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerSpecJSI_getPhotos};
-        
-        
-        methodMap_["saveToCameraRoll"] = MethodMetadata {2, __hostFunction_NativeCameraRollManagerSpecJSI_saveToCameraRoll};
-        
-        
-        methodMap_["deletePhotos"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerSpecJSI_deletePhotos};
-        
-        
-
-    }
-
-  } // namespace react
-} // namespace facebook
-namespace facebook {
-  namespace react {
-
-    
     static facebook::jsi::Value __hostFunction_NativeClipboardSpecJSI_getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "getString", "(Lcom/facebook/react/bridge/Promise;)V", args, count);
     }
@@ -816,6 +789,26 @@ namespace facebook {
         
         
         methodMap_["setIsShakeToShowDevMenuEnabled"] = MethodMetadata {1, __hostFunction_NativeDevSettingsSpecJSI_setIsShakeToShowDevMenuEnabled};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeDevSplitBundleLoaderSpecJSI_loadBundle(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "loadBundle", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count);
+    }
+
+
+    NativeDevSplitBundleLoaderSpecJSI::NativeDevSplitBundleLoaderSpecJSI(const JavaTurboModule::InitParams &params)
+      : JavaTurboModule(params) {
+        
+        methodMap_["loadBundle"] = MethodMetadata {1, __hostFunction_NativeDevSplitBundleLoaderSpecJSI_loadBundle};
         
         
 
@@ -2090,26 +2083,6 @@ namespace facebook {
         
         
         methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeTVNavigationEventEmitterSpecJSI_removeListeners};
-        
-        
-
-    }
-
-  } // namespace react
-} // namespace facebook
-namespace facebook {
-  namespace react {
-
-    
-    static facebook::jsi::Value __hostFunction_NativeTimePickerAndroidSpecJSI_open(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "open", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count);
-    }
-
-
-    NativeTimePickerAndroidSpecJSI::NativeTimePickerAndroidSpecJSI(const JavaTurboModule::InitParams &params)
-      : JavaTurboModule(params) {
-        
-        methodMap_["open"] = MethodMetadata {1, __hostFunction_NativeTimePickerAndroidSpecJSI_open};
         
         
 

@@ -10,6 +10,7 @@
 
 'use strict';
 
+const View = require('../../Components/View/View');
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('react');
@@ -20,7 +21,18 @@ const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 export type AnimatedComponentType<
   Props: {+[string]: mixed, ...},
   Instance,
-> = React.AbstractComponent<$ObjMap<Props, () => any>, Instance>;
+> = React.AbstractComponent<
+  $ObjMap<
+    Props &
+      $ReadOnly<{
+        passthroughAnimatedPropExplicitValues?: React.ElementConfig<
+          typeof View,
+        >,
+      }>,
+    () => any,
+  >,
+  Instance,
+>;
 
 function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
   Component: React.AbstractComponent<Props, Instance>,
@@ -65,6 +77,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     // However, setNativeProps can only be implemented on leaf native
     // components. If you want to animate a composite component, you need to
     // re-render it. In this case, we have a fallback that uses forceUpdate.
+    // This fallback is also called in Fabric.
     _animatedPropsCallback = () => {
       if (this._component == null) {
         // AnimatedProps is created in will-mount because it's used in render.
@@ -119,6 +132,10 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _attachProps(nextProps) {
       const oldPropsAnimated = this._propsAnimated;
 
+      if (nextProps === oldPropsAnimated) {
+        return;
+      }
+
       this._propsAnimated = new AnimatedProps(
         nextProps,
         this._animatedPropsCallback,
@@ -160,10 +177,15 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     });
 
     render() {
-      const props = this._propsAnimated.__getValue();
+      const {style = {}, ...props} = this._propsAnimated.__getValue() || {};
+      const {style: passthruStyle = {}, ...passthruProps} =
+        this.props.passthroughAnimatedPropExplicitValues || {};
+      const mergedStyle = {...style, ...passthruStyle};
       return (
         <Component
           {...props}
+          {...passthruProps}
+          style={mergedStyle}
           ref={this._setComponentRef}
           // The native driver updates views directly through the UI thread so we
           // have to make sure the view doesn't get optimized away because it cannot

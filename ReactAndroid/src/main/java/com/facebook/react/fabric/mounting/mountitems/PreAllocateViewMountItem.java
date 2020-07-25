@@ -31,7 +31,7 @@ public class PreAllocateViewMountItem implements MountItem {
   private final boolean mIsLayoutable;
 
   public PreAllocateViewMountItem(
-      @NonNull ThemedReactContext context,
+      @Nullable ThemedReactContext context,
       int rootTag,
       int reactTag,
       @NonNull String component,
@@ -47,10 +47,21 @@ public class PreAllocateViewMountItem implements MountItem {
     mIsLayoutable = isLayoutable;
   }
 
+  public int getRootTag() {
+    return mRootTag;
+  }
+
   @Override
   public void execute(@NonNull MountingManager mountingManager) {
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Executing pre-allocation of: " + toString());
+    }
+    if (mContext == null) {
+      throw new IllegalStateException(
+          "Cannot execute PreAllocateViewMountItem without Context for ReactTag: "
+              + mReactTag
+              + " and rootTag: "
+              + mRootTag);
     }
     mountingManager.preallocateView(
         mContext, mComponent, mReactTag, mProps, mStateWrapper, mIsLayoutable);

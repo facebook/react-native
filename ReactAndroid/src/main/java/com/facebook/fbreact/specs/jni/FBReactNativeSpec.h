@@ -174,20 +174,6 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * C++ class for module 'CameraRollManager'
-     */
-
-    class JSI_EXPORT NativeCameraRollManagerSpecJSI : public JavaTurboModule {
-    public:
-      NativeCameraRollManagerSpecJSI(const JavaTurboModule::InitParams &params);
-
-    };
-  } // namespace react
-} // namespace facebook
-
-namespace facebook {
-  namespace react {
-    /**
      * C++ class for module 'Clipboard'
      */
 
@@ -250,6 +236,20 @@ namespace facebook {
     class JSI_EXPORT NativeDevSettingsSpecJSI : public JavaTurboModule {
     public:
       NativeDevSettingsSpecJSI(const JavaTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    /**
+     * C++ class for module 'DevSplitBundleLoader'
+     */
+
+    class JSI_EXPORT NativeDevSplitBundleLoaderSpecJSI : public JavaTurboModule {
+    public:
+      NativeDevSplitBundleLoaderSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -740,20 +740,6 @@ namespace facebook {
     class JSI_EXPORT NativeTVNavigationEventEmitterSpecJSI : public JavaTurboModule {
     public:
       NativeTVNavigationEventEmitterSpecJSI(const JavaTurboModule::InitParams &params);
-
-    };
-  } // namespace react
-} // namespace facebook
-
-namespace facebook {
-  namespace react {
-    /**
-     * C++ class for module 'TimePickerAndroid'
-     */
-
-    class JSI_EXPORT NativeTimePickerAndroidSpecJSI : public JavaTurboModule {
-    public:
-      NativeTimePickerAndroidSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react

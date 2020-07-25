@@ -290,6 +290,11 @@ UIManagerDelegate *UIManager::getDelegate() {
   return delegate_;
 }
 
+void UIManager::setBackgroundExecutor(
+    BackgroundExecutor const &backgroundExecutor) {
+  backgroundExecutor_ = backgroundExecutor;
+}
+
 void UIManager::visitBinding(
     std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
     const {
@@ -318,8 +323,7 @@ void UIManager::shadowTreeDidFinishTransaction(
 
 #pragma mark - UIManagerAnimationDelegate
 
-void UIManager::setAnimationDelegate(
-    UIManagerAnimationDelegate *delegate) const {
+void UIManager::setAnimationDelegate(UIManagerAnimationDelegate *delegate) {
   animationDelegate_ = delegate;
 }
 

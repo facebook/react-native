@@ -21,10 +21,11 @@ namespace react {
 
 MountingCoordinator::MountingCoordinator(
     ShadowTreeRevision baseRevision,
-    MountingOverrideDelegate *delegate)
+    std::weak_ptr<MountingOverrideDelegate const> delegate)
     : surfaceId_(baseRevision.getRootShadowNode().getSurfaceId()),
       baseRevision_(baseRevision),
-      mountingOverrideDelegate_(delegate) {
+      mountingOverrideDelegate_(delegate),
+      telemetryController_(*this) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   stubViewTree_ = stubViewTreeFromShadowNode(baseRevision_.getRootShadowNode());
 #endif
@@ -38,7 +39,6 @@ void MountingCoordinator::push(ShadowTreeRevision &&revision) const {
   {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    assert(revision.getNumber() > baseRevision_.getNumber());
     assert(
         !lastRevision_.has_value() ||
         revision.getNumber() != lastRevision_->getNumber());
@@ -115,8 +115,10 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     const {
   std::lock_guard<std::mutex> lock(mutex_);
 
-  bool shouldOverridePullTransaction = mountingOverrideDelegate_ != nullptr &&
-      mountingOverrideDelegate_->shouldOverridePullTransaction();
+  auto mountingOverrideDelegate = mountingOverrideDelegate_.lock();
+
+  bool shouldOverridePullTransaction = mountingOverrideDelegate &&
+      mountingOverrideDelegate->shouldOverridePullTransaction();
 
   if (!shouldOverridePullTransaction && !lastRevision_.has_value()) {
     return {};
@@ -128,14 +130,18 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   auto telemetry =
       (lastRevision_.hasValue() ? lastRevision_->getTelemetry()
                                 : MountingTelemetry{});
+  if (!lastRevision_.hasValue()) {
+    telemetry.willLayout();
+    telemetry.didLayout();
+    telemetry.willCommit();
+    telemetry.didCommit();
+  }
+  telemetry.willDiff();
   if (lastRevision_.hasValue()) {
-    telemetry.willDiff();
-
     diffMutations = calculateShadowViewMutations(
         baseRevision_.getRootShadowNode(), lastRevision_->getRootShadowNode());
-
-    telemetry.didDiff();
   }
+  telemetry.didDiff();
 
   better::optional<MountingTransaction> transaction{};
 
@@ -143,7 +149,7 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   // even if there's no `lastRevision_`. Consider cases of animation frames
   // in between React tree updates.
   if (shouldOverridePullTransaction) {
-    transaction = mountingOverrideDelegate_->pullTransaction(
+    transaction = mountingOverrideDelegate->pullTransaction(
         surfaceId_, number_, telemetry, std::move(diffMutations));
   } else if (lastRevision_.hasValue()) {
     transaction = MountingTransaction{
@@ -164,6 +170,10 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   }
 
   return transaction;
+}
+
+TelemetryController const &MountingCoordinator::getTelemetryController() const {
+  return telemetryController_;
 }
 
 } // namespace react

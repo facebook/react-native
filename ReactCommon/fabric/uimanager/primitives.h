@@ -16,6 +16,9 @@
 namespace facebook {
 namespace react {
 
+using BackgroundExecutor =
+    std::function<void(std::function<void()> &&callback)>;
+
 struct EventHandlerWrapper : public EventHandler {
   EventHandlerWrapper(jsi::Function eventHandler)
       : callback(std::move(eventHandler)) {}

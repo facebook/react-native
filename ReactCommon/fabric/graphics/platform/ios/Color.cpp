@@ -17,7 +17,7 @@ SharedColor colorFromComponents(ColorComponents components) {
 
   auto color = CGColorCreate(CGColorSpaceCreateDeviceRGB(), componentsArray);
 
-  return SharedColor(color, CFRelease);
+  return SharedColor(color, CGColorRelease);
 }
 
 ColorComponents colorComponentsFromColor(SharedColor color) {

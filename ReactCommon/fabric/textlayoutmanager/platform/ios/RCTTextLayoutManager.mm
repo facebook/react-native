@@ -10,12 +10,14 @@
 #import "NSTextStorage+FontScaling.h"
 #import "RCTAttributedTextUtils.h"
 
+#import <React/RCTUtils.h>
+#import <react/utils/ManagedObjectWrapper.h>
 #import <react/utils/SimpleThreadSafeCache.h>
 
 using namespace facebook::react;
 
 @implementation RCTTextLayoutManager {
-  SimpleThreadSafeCache<AttributedString, std::shared_ptr<const void>, 256> _cache;
+  SimpleThreadSafeCache<AttributedString, std::shared_ptr<void>, 256> _cache;
 }
 
 static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsizeMode)
@@ -54,6 +56,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   [layoutManager ensureLayoutForTextContainer:textContainer];
 
   CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
+
+  size = (CGSize){RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height)};
 
   __block auto attachments = TextMeasurement::Attachments{};
 
@@ -171,12 +175,51 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
 - (NSAttributedString *)_nsAttributedStringFromAttributedString:(AttributedString)attributedString
 {
-  auto sharedNSAttributedString = _cache.get(attributedString, [](const AttributedString attributedString) {
-    return std::shared_ptr<void>(
-        (__bridge_retained void *)RCTNSAttributedStringFromAttributedString(attributedString), CFRelease);
+  auto sharedNSAttributedString = _cache.get(attributedString, [](AttributedString attributedString) {
+    return wrapManagedObject(RCTNSAttributedStringFromAttributedString(attributedString));
   });
 
-  return (__bridge NSAttributedString *)sharedNSAttributedString.get();
+  return unwrapManagedObject(sharedNSAttributedString);
+}
+
+- (void)getRectWithAttributedString:(AttributedString)attributedString
+                paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                 enumerateAttribute:(NSString *)enumerateAttribute
+                              frame:(CGRect)frame
+                         usingBlock:(RCTTextLayoutFragmentEnumerationBlock)block
+{
+  NSTextStorage *textStorage = [self
+      _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
+                                   paragraphAttributes:paragraphAttributes
+                                                  size:frame.size];
+
+  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
+  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
+  [layoutManager ensureLayoutForTextContainer:textContainer];
+
+  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+
+  [textStorage enumerateAttribute:enumerateAttribute
+                          inRange:characterRange
+                          options:0
+                       usingBlock:^(NSString *value, NSRange range, BOOL *pause) {
+                         if (!value) {
+                           return;
+                         }
+
+                         [layoutManager
+                             enumerateEnclosingRectsForGlyphRange:range
+                                         withinSelectedGlyphRange:range
+                                                  inTextContainer:textContainer
+                                                       usingBlock:^(CGRect enclosingRect, BOOL *_Nonnull stop) {
+                                                         block(
+                                                             enclosingRect,
+                                                             [textStorage attributedSubstringFromRange:range].string,
+                                                             value);
+                                                         *stop = YES;
+                                                       }];
+                       }];
 }
 
 @end

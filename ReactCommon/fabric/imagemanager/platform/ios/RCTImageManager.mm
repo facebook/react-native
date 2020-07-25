@@ -88,8 +88,9 @@ using namespace facebook::react;
         [self->_imageLoader loadImageWithURLRequest:request
                                                size:CGSizeMake(imageSource.size.width, imageSource.size.height)
                                               scale:imageSource.scale
-                                            clipped:YES
+                                            clipped:NO
                                          resizeMode:RCTResizeModeStretch
+                                           priority:RCTImageLoaderPriorityImmediate
                                         attribution:{
                                                         .surfaceId = surfaceId,
                                                     }

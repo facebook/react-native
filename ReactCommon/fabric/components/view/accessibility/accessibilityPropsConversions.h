@@ -9,6 +9,7 @@
 
 #include <folly/dynamic.h>
 #include <react/components/view/AccessibilityPrimitives.h>
+#include <react/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -106,6 +107,55 @@ inline void fromRawValue(const RawValue &value, AccessibilityTraits &result) {
     }
   }
 
+  abort();
+}
+
+inline void fromRawValue(const RawValue &value, AccessibilityState &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+  auto selected = map.find("selected");
+  if (selected != map.end()) {
+    fromRawValue(selected->second, result.selected);
+  }
+  auto disabled = map.find("disabled");
+  if (disabled != map.end()) {
+    fromRawValue(disabled->second, result.disabled);
+  }
+}
+
+inline std::string toString(
+    const ImportantForAccessibility &importantForAccessibility) {
+  switch (importantForAccessibility) {
+    case ImportantForAccessibility::Auto:
+      return "auto";
+    case ImportantForAccessibility::Yes:
+      return "yes";
+    case ImportantForAccessibility::No:
+      return "no";
+    case ImportantForAccessibility::NoHideDescendants:
+      return "no-hide-descendants";
+  }
+}
+
+inline void fromRawValue(
+    const RawValue &value,
+    ImportantForAccessibility &result) {
+  auto string = (std::string)value;
+  if (string == "auto") {
+    result = ImportantForAccessibility::Auto;
+    return;
+  }
+  if (string == "yes") {
+    result = ImportantForAccessibility::Yes;
+    return;
+  }
+  if (string == "no") {
+    result = ImportantForAccessibility::No;
+    return;
+  }
+  if (string == "no-hide-descendants") {
+    result = ImportantForAccessibility::NoHideDescendants;
+    return;
+  }
   abort();
 }
 

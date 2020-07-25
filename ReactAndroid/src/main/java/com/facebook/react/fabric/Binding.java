@@ -11,8 +11,8 @@ import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeMap;
+import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.uimanager.PixelUtil;
@@ -34,7 +34,7 @@ public class Binding {
   }
 
   private native void installFabricUIManager(
-      long jsContextNativePointer,
+      RuntimeExecutor runtimeExecutor,
       Object uiManager,
       EventBeatManager eventBeatManager,
       MessageQueueThread jsMessageQueueThread,
@@ -72,8 +72,9 @@ public class Binding {
 
   public native void driveCxxAnimations();
 
+  // TODO (T67721598) Remove the jsContext param once we've migrated to using RuntimeExecutor
   public void register(
-      @NonNull JavaScriptContextHolder jsContext,
+      @NonNull RuntimeExecutor runtimeExecutor,
       @NonNull FabricUIManager fabricUIManager,
       @NonNull EventBeatManager eventBeatManager,
       @NonNull MessageQueueThread jsMessageQueueThread,
@@ -81,7 +82,7 @@ public class Binding {
       @NonNull ReactNativeConfig reactNativeConfig) {
     fabricUIManager.setBinding(this);
     installFabricUIManager(
-        jsContext.get(),
+        runtimeExecutor,
         fabricUIManager,
         eventBeatManager,
         jsMessageQueueThread,

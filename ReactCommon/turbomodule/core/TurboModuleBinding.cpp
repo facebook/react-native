@@ -64,9 +64,9 @@ jsi::Value TurboModuleBinding::jsProxy(
     const jsi::Value &thisVal,
     const jsi::Value *args,
     size_t count) {
-  if (count != 1) {
+  if (count < 1) {
     throw std::invalid_argument(
-        "TurboModuleBinding::jsProxy arg count must be 1");
+        "__turboModuleProxy must be called with at least 1 argument");
   }
   std::string moduleName = args[0].getString(runtime).utf8(runtime);
   std::shared_ptr<TurboModule> module = getModule(moduleName);

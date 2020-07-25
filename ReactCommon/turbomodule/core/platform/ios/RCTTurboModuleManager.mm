@@ -21,6 +21,7 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTUtils.h>
+#import <ReactCommon/RuntimeExecutor.h>
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModuleBinding.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
@@ -147,7 +148,6 @@ static Class getFallbackClassFromName(const char *name)
 }
 
 @implementation RCTTurboModuleManager {
-  jsi::Runtime *_runtime;
   std::shared_ptr<CallInvoker> _jsInvoker;
   __weak id<RCTTurboModuleManagerDelegate> _delegate;
   __weak RCTBridge *_bridge;
@@ -181,9 +181,6 @@ static Class getFallbackClassFromName(const char *name)
     _delegate = delegate;
     _bridge = bridge;
     _invalidating = false;
-
-    // Necessary to allow NativeModules to lookup TurboModules
-    [bridge setRCTTurboModuleLookupDelegate:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeWillInvalidateModules:)
@@ -399,6 +396,17 @@ static Class getFallbackClassFromName(const char *name)
       };
 
       if ([self _requiresMainQueueSetup:moduleClass]) {
+        /**
+         * When TurboModule eager initialization is enabled, there shouldn't be any TurboModule initializations on the
+         * main queue.
+         * TODO(T69449176) Roll out TurboModule eager initialization, and remove this check.
+         */
+        if (RCTTurboModuleEagerInitEnabled() && !RCTIsMainQueue()) {
+          RCTLogWarn(
+              @"TurboModule \"%@\" requires synchronous dispatch onto the main queue to be initialized. This may lead to deadlock.",
+              moduleClass);
+        }
+
         RCTUnsafeExecuteOnMainQueueSync(work);
       } else {
         work();
@@ -463,8 +471,8 @@ static Class getFallbackClassFromName(const char *name)
 
   TurboModulePerfLogger::moduleCreateSetUpStart(moduleName, moduleId);
 
-  if ([module respondsToSelector:@selector(setTurboModuleLookupDelegate:)]) {
-    [module setTurboModuleLookupDelegate:self];
+  if ([module respondsToSelector:@selector(setTurboModuleRegistry:)]) {
+    [module setTurboModuleRegistry:self];
   }
 
   /**
@@ -640,18 +648,15 @@ static Class getFallbackClassFromName(const char *name)
   return requiresMainQueueSetup;
 }
 
-- (void)installJSBindingWithRuntime:(jsi::Runtime *)runtime
+- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor
 {
-  _runtime = runtime;
-
-  if (!_runtime) {
+  if (!runtimeExecutor) {
     // jsi::Runtime doesn't exist when attached to Chrome debugger.
     return;
   }
 
   __weak __typeof(self) weakSelf = self;
-
-  TurboModuleBinding::install(*_runtime, [weakSelf](const std::string &name) -> std::shared_ptr<TurboModule> {
+  auto turboModuleProvider = [weakSelf](const std::string &name) -> std::shared_ptr<react::TurboModule> {
     if (!weakSelf) {
       return nullptr;
     }
@@ -686,10 +691,14 @@ static Class getFallbackClassFromName(const char *name)
     }
 
     return turboModule;
+  };
+
+  runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
+    react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
   });
 }
 
-#pragma mark RCTTurboModuleLookupDelegate
+#pragma mark RCTTurboModuleRegistry
 
 - (id)moduleForName:(const char *)moduleName
 {
@@ -711,6 +720,24 @@ static Class getFallbackClassFromName(const char *name)
 {
   std::unique_lock<std::mutex> guard(_turboModuleHoldersMutex);
   return _turboModuleHolders.find(moduleName) != _turboModuleHolders.end();
+}
+
+- (NSArray<NSString *> *)eagerInitModuleNames
+{
+  if ([_delegate respondsToSelector:@selector(getEagerInitModuleNames)]) {
+    return [_delegate getEagerInitModuleNames];
+  }
+
+  return @[];
+}
+
+- (NSArray<NSString *> *)eagerInitMainQueueModuleNames
+{
+  if ([_delegate respondsToSelector:@selector(getEagerInitMainQueueModuleNames)]) {
+    return [_delegate getEagerInitMainQueueModuleNames];
+  }
+
+  return @[];
 }
 
 #pragma mark Invalidation logic

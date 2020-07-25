@@ -95,7 +95,7 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 };
 
 @implementation RCTScheduler {
-  std::shared_ptr<Scheduler> _scheduler;
+  std::unique_ptr<Scheduler> _scheduler;
   std::shared_ptr<LayoutAnimationDriver> _animationDriver;
   std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
   std::shared_ptr<LayoutAnimationDelegateProxy> _layoutAnimationDelegateProxy;
@@ -114,13 +114,13 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 
     if (_layoutAnimationsEnabled) {
       _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
-      _animationDriver = std::make_unique<LayoutAnimationDriver>(_layoutAnimationDelegateProxy.get());
+      _animationDriver = std::make_shared<LayoutAnimationDriver>(_layoutAnimationDelegateProxy.get());
       _uiRunLoopObserver =
           toolbox.mainRunLoopObserverFactory(RunLoopObserver::Activity::BeforeWaiting, _layoutAnimationDelegateProxy);
       _uiRunLoopObserver->setDelegate(_layoutAnimationDelegateProxy.get());
     }
 
-    _scheduler = std::make_shared<Scheduler>(
+    _scheduler = std::make_unique<Scheduler>(
         toolbox, (_animationDriver ? _animationDriver.get() : nullptr), _delegateProxy.get());
   }
 
@@ -138,8 +138,6 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
     _animationDriver->setLayoutAnimationStatusDelegate(nullptr);
   }
   _animationDriver = nullptr;
-
-  _scheduler->setDelegate(nullptr);
 }
 
 - (void)startSurfaceWithSurfaceId:(SurfaceId)surfaceId
@@ -152,12 +150,7 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 
   auto props = convertIdToFollyDynamic(initialProps);
   _scheduler->startSurface(
-      surfaceId,
-      RCTStringFromNSString(moduleName),
-      props,
-      layoutConstraints,
-      layoutContext,
-      (_animationDriver ? _animationDriver.get() : nullptr));
+      surfaceId, RCTStringFromNSString(moduleName), props, layoutConstraints, layoutContext, _animationDriver);
   _scheduler->renderTemplateToSurface(
       surfaceId, props.getDefault("navigationConfig").getDefault("initialUITemplate", "").getString());
 }

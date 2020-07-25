@@ -62,7 +62,9 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
 #pragma mark - LayoutableShadowNode
 
   void layout(LayoutContext layoutContext) override;
-  Size measure(LayoutConstraints layoutConstraints) const override;
+  Size measureContent(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const override;
 
   /*
    * Internal representation of the nested content of the node in a format
@@ -79,7 +81,7 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
   /*
    * Builds (if needed) and returns a reference to a `Content` object.
    */
-  Content const &getContent() const;
+  Content const &getContent(LayoutContext const &layoutContext) const;
 
   /*
    * Builds and returns a `Content` object with given `layoutConstraints`.

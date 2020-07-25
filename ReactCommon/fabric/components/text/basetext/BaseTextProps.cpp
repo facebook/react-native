@@ -143,6 +143,12 @@ static TextAttributes convertRawProp(
       sourceTextAttributes.isHighlighted,
       defaultTextAttributes.isHighlighted);
 
+  textAttributes.accessibilityRole = convertRawProp(
+      rawProps,
+      "accessibilityRole",
+      sourceTextAttributes.accessibilityRole,
+      defaultTextAttributes.accessibilityRole);
+
   return textAttributes;
 }
 

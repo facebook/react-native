@@ -79,6 +79,7 @@ Scheduler::Scheduler(
   rootComponentDescriptor_ = std::make_unique<const RootComponentDescriptor>(
       ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
 
+  uiManager->setBackgroundExecutor(schedulerToolbox.backgroundExecutor);
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
@@ -127,6 +128,7 @@ Scheduler::~Scheduler() {
 
   // The thread-safety of this operation is guaranteed by this requirement.
   uiManager_->setDelegate(nullptr);
+  uiManager_->setAnimationDelegate(nullptr);
 
   // Then, let's verify that the requirement was satisfied.
   auto surfaceIds = std::vector<SurfaceId>{};
@@ -173,7 +175,8 @@ void Scheduler::startSurface(
     const folly::dynamic &initialProps,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext,
-    MountingOverrideDelegate *mountingOverrideDelegate) const {
+    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate)
+    const {
   SystraceSection s("Scheduler::startSurface");
 
   auto shadowTree = std::make_unique<ShadowTree>(

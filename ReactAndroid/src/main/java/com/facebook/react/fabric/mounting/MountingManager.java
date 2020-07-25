@@ -28,6 +28,7 @@ import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
@@ -50,6 +51,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MountingManager {
   public static final String TAG = MountingManager.class.getSimpleName();
+  private static final boolean SHOW_CHANGED_VIEW_HIERARCHIES = ReactBuildConfig.DEBUG && false;
 
   @NonNull private final ConcurrentHashMap<Integer, ViewState> mTagToViewState;
   @NonNull private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
@@ -59,6 +61,21 @@ public class MountingManager {
   public MountingManager(@NonNull ViewManagerRegistry viewManagerRegistry) {
     mTagToViewState = new ConcurrentHashMap<>();
     mViewManagerRegistry = viewManagerRegistry;
+  }
+
+  private static void logViewHierarchy(ViewGroup parent) {
+    int parentTag = parent.getId();
+    FLog.e(TAG, "  <ViewGroup tag=" + parentTag + ">");
+    for (int i = 0; i < parent.getChildCount(); i++) {
+      FLog.e(
+          TAG,
+          "     <View tag="
+              + parent.getChildAt(i).getId()
+              + " toString="
+              + parent.getChildAt(i).toString()
+              + ">");
+    }
+    FLog.e(TAG, "  </ViewGroup tag=" + parentTag + ">");
   }
 
   /**
@@ -132,7 +149,20 @@ public class MountingManager {
       throw new IllegalStateException(
           "Unable to find view for viewState " + viewState + " and tag " + tag);
     }
+
+    // Display children before inserting
+    if (SHOW_CHANGED_VIEW_HIERARCHIES) {
+      FLog.e(TAG, "addViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " BEFORE");
+      logViewHierarchy(parentView);
+    }
+
     getViewGroupManager(parentViewState).addView(parentView, view, index);
+
+    // Display children after inserting
+    if (SHOW_CHANGED_VIEW_HIERARCHIES) {
+      FLog.e(TAG, "addViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " AFTER");
+      logViewHierarchy(parentView);
+    }
   }
 
   private @NonNull ViewState getViewState(int tag) {
@@ -224,7 +254,7 @@ public class MountingManager {
   }
 
   @UiThread
-  public void removeViewAt(int parentTag, int index) {
+  public void removeViewAt(int tag, int parentTag, int index) {
     UiThreadUtil.assertOnUiThread();
     ViewState viewState = getNullableViewState(parentTag);
 
@@ -242,7 +272,64 @@ public class MountingManager {
       throw new IllegalStateException("Unable to find view for tag " + parentTag);
     }
 
-    getViewGroupManager(viewState).removeViewAt(parentView, index);
+    if (SHOW_CHANGED_VIEW_HIERARCHIES) {
+      // Display children before deleting any
+      FLog.e(TAG, "removeViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " BEFORE");
+      logViewHierarchy(parentView);
+    }
+
+    ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(viewState);
+
+    // Verify that the view we're about to remove has the same tag we expect
+    View view = viewGroupManager.getChildAt(parentView, index);
+    if (view != null && view.getId() != tag) {
+      throw new IllegalStateException(
+          "Tried to delete view ["
+              + tag
+              + "] of parent ["
+              + parentTag
+              + "] at index "
+              + index
+              + ", but got view tag "
+              + view.getId());
+    }
+
+    try {
+      viewGroupManager.removeViewAt(parentView, index);
+    } catch (RuntimeException e) {
+      // Note: `getChildCount` may not always be accurate!
+      // We don't currently have a good explanation other than, in situations where you
+      // would empirically expect to see childCount > 0, the childCount is reported as 0.
+      // This is likely due to a ViewManager overriding getChildCount or some other methods
+      // in a way that is strictly incorrect, but potentially only visible here.
+      // The failure mode is actually that in `removeViewAt`, a NullPointerException is
+      // thrown when we try to perform an operation on a View that doesn't exist, and
+      // is therefore null.
+      // We try to add some extra diagnostics here, but we always try to remove the View
+      // from the hierarchy first because detecting by looking at childCount will not work.
+      //
+      // Note that the lesson here is that `getChildCount` is not /required/ to adhere to
+      // any invariants. If you add 9 children to a parent, the `getChildCount` of the parent
+      // may not be equal to 9. This apparently causes no issues with Android and is common
+      // enough that we shouldn't try to change this invariant, without a lot of thought.
+      int childCount = viewGroupManager.getChildCount(parentView);
+
+      throw new IllegalStateException(
+          "Cannot remove child at index "
+              + index
+              + " from parent ViewGroup ["
+              + parentView.getId()
+              + "], only "
+              + childCount
+              + " children in parent. Warning: childCount may be incorrect!",
+          e);
+    }
+
+    // Display children after deleting any
+    if (SHOW_CHANGED_VIEW_HIERARCHIES) {
+      FLog.e(TAG, "removeViewAt: [" + parentTag + "] idx: " + index + " AFTER");
+      logViewHierarchy(parentView);
+    }
   }
 
   @UiThread
@@ -366,6 +453,7 @@ public class MountingManager {
     }
 
     View view = viewState.mView;
+
     if (view != null) {
       dropView(view);
     } else {

@@ -20,6 +20,7 @@
 #include <react/mounting/ShadowTreeRegistry.h>
 #include <react/uimanager/UIManagerAnimationDelegate.h>
 #include <react/uimanager/UIManagerDelegate.h>
+#include <react/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -41,12 +42,14 @@ class UIManager final : public ShadowTreeDelegate {
   void setDelegate(UIManagerDelegate *delegate);
   UIManagerDelegate *getDelegate();
 
+  void setBackgroundExecutor(BackgroundExecutor const &backgroundExecutor);
+
   /**
    * Sets and gets the UIManager's Animation APIs delegate.
    * The delegate is stored as a raw pointer, so the owner must null
    * the pointer before being destroyed.
    */
-  void setAnimationDelegate(UIManagerAnimationDelegate *delegate) const;
+  void setAnimationDelegate(UIManagerAnimationDelegate *delegate);
 
   void animationTick();
 
@@ -140,9 +143,10 @@ class UIManager final : public ShadowTreeDelegate {
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
-  mutable UIManagerAnimationDelegate *animationDelegate_{nullptr};
+  UIManagerAnimationDelegate *animationDelegate_{nullptr};
   UIManagerBinding *uiManagerBinding_;
   ShadowTreeRegistry shadowTreeRegistry_{};
+  BackgroundExecutor backgroundExecutor_{};
 };
 
 } // namespace react

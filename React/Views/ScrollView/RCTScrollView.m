@@ -299,7 +299,6 @@
 #endif
 
     _automaticallyAdjustContentInsets = YES;
-    _DEPRECATED_sendUpdatedChildFrames = NO;
     _contentInset = UIEdgeInsetsZero;
     _contentSize = CGSizeZero;
     _lastClippedToRect = CGRectNull;
@@ -593,48 +592,12 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
    */
   if (_allowNextScrollNoMatterWhat ||
       (_scrollEventThrottle > 0 && _scrollEventThrottle < MAX(0.017, now - _lastScrollDispatchTime))) {
-    if (_DEPRECATED_sendUpdatedChildFrames) {
-      // Calculate changed frames
-      RCT_SEND_SCROLL_EVENT(onScroll, (@{@"updatedChildFrames" : [self calculateChildFramesData]}));
-    } else {
-      RCT_SEND_SCROLL_EVENT(onScroll, nil);
-    }
-
+    RCT_SEND_SCROLL_EVENT(onScroll, nil);
     // Update dispatch time
     _lastScrollDispatchTime = now;
     _allowNextScrollNoMatterWhat = NO;
   }
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidScroll : scrollView);
-}
-
-- (NSArray<NSDictionary *> *)calculateChildFramesData
-{
-  NSMutableArray<NSDictionary *> *updatedChildFrames = [NSMutableArray new];
-  [[_contentView reactSubviews] enumerateObjectsUsingBlock:^(UIView *subview, NSUInteger idx, __unused BOOL *stop) {
-    // Check if new or changed
-    CGRect newFrame = subview.frame;
-    BOOL frameChanged = NO;
-    if (self->_cachedChildFrames.count <= idx) {
-      frameChanged = YES;
-      [self->_cachedChildFrames addObject:[NSValue valueWithCGRect:newFrame]];
-    } else if (!CGRectEqualToRect(newFrame, [self->_cachedChildFrames[idx] CGRectValue])) {
-      frameChanged = YES;
-      self->_cachedChildFrames[idx] = [NSValue valueWithCGRect:newFrame];
-    }
-
-    // Create JS frame object
-    if (frameChanged) {
-      [updatedChildFrames addObject:@{
-        @"index" : @(idx),
-        @"x" : @(newFrame.origin.x),
-        @"y" : @(newFrame.origin.y),
-        @"width" : @(newFrame.size.width),
-        @"height" : @(newFrame.size.height),
-      }];
-    }
-  }];
-
-  return updatedChildFrames;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView

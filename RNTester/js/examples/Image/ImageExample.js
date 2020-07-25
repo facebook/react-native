@@ -36,7 +36,7 @@ type ImageSource = $ReadOnly<{|
 type NetworkImageCallbackExampleState = {|
   events: Array<string>,
   startLoadPrefetched: boolean,
-  mountTime: Date,
+  mountTime: number,
 |};
 
 type NetworkImageCallbackExampleProps = $ReadOnly<{|
@@ -51,11 +51,11 @@ class NetworkImageCallbackExample extends React.Component<
   state = {
     events: [],
     startLoadPrefetched: false,
-    mountTime: new Date(),
+    mountTime: Date.now(),
   };
 
   UNSAFE_componentWillMount() {
-    this.setState({mountTime: new Date()});
+    this.setState({mountTime: Date.now()});
   }
 
   _loadEventFired = (event: string) => {
@@ -72,43 +72,50 @@ class NetworkImageCallbackExample extends React.Component<
           source={this.props.source}
           style={[styles.base, {overflow: 'visible'}]}
           onLoadStart={() =>
-            this._loadEventFired(`✔ onLoadStart (+${new Date() - mountTime}ms)`)
+            this._loadEventFired(`✔ onLoadStart (+${Date.now() - mountTime}ms)`)
           }
+          onProgress={event => {
+            const {loaded, total} = event.nativeEvent;
+            const percent = Math.round((loaded / total) * 100);
+            this._loadEventFired(
+              `✔ onProgress ${percent}% (+${Date.now() - mountTime}ms)`,
+            );
+          }}
           onLoad={event => {
             if (event.nativeEvent.source) {
-              const url = event.nativeEvent.source.url;
+              const url = event.nativeEvent.source.uri;
               this._loadEventFired(
-                `✔ onLoad (+${new Date() - mountTime}ms) for URL ${url}`,
+                `✔ onLoad (+${Date.now() - mountTime}ms) for URL ${url}`,
               );
             } else {
-              this._loadEventFired(`✔ onLoad (+${new Date() - mountTime}ms)`);
+              this._loadEventFired(`✔ onLoad (+${Date.now() - mountTime}ms)`);
             }
           }}
           onLoadEnd={() => {
-            this._loadEventFired(`✔ onLoadEnd (+${new Date() - mountTime}ms)`);
+            this._loadEventFired(`✔ onLoadEnd (+${Date.now() - mountTime}ms)`);
             this.setState({startLoadPrefetched: true}, () => {
               prefetchTask.then(
                 () => {
                   this._loadEventFired(
-                    `✔ Prefetch OK (+${new Date() - mountTime}ms)`,
+                    `✔ Prefetch OK (+${Date.now() - mountTime}ms)`,
                   );
                   Image.queryCache([IMAGE_PREFETCH_URL]).then(map => {
                     const result = map[IMAGE_PREFETCH_URL];
                     if (result) {
                       this._loadEventFired(
-                        `✔ queryCache "${result}" (+${new Date() -
+                        `✔ queryCache "${result}" (+${Date.now() -
                           mountTime}ms)`,
                       );
                     } else {
                       this._loadEventFired(
-                        `✘ queryCache (+${new Date() - mountTime}ms)`,
+                        `✘ queryCache (+${Date.now() - mountTime}ms)`,
                       );
                     }
                   });
                 },
                 error => {
                   this._loadEventFired(
-                    `✘ Prefetch failed (+${new Date() - mountTime}ms)`,
+                    `✘ Prefetch failed (+${Date.now() - mountTime}ms)`,
                   );
                 },
               );
@@ -121,26 +128,26 @@ class NetworkImageCallbackExample extends React.Component<
             style={[styles.base, {overflow: 'visible'}]}
             onLoadStart={() =>
               this._loadEventFired(
-                `✔ (prefetched) onLoadStart (+${new Date() - mountTime}ms)`,
+                `✔ (prefetched) onLoadStart (+${Date.now() - mountTime}ms)`,
               )
             }
             onLoad={event => {
               // Currently this image source feature is only available on iOS.
               if (event.nativeEvent.source) {
-                const url = event.nativeEvent.source.url;
+                const url = event.nativeEvent.source.uri;
                 this._loadEventFired(
-                  `✔ (prefetched) onLoad (+${new Date() -
+                  `✔ (prefetched) onLoad (+${Date.now() -
                     mountTime}ms) for URL ${url}`,
                 );
               } else {
                 this._loadEventFired(
-                  `✔ (prefetched) onLoad (+${new Date() - mountTime}ms)`,
+                  `✔ (prefetched) onLoad (+${Date.now() - mountTime}ms)`,
                 );
               }
             }}
             onLoadEnd={() =>
               this._loadEventFired(
-                `✔ (prefetched) onLoadEnd (+${new Date() - mountTime}ms)`,
+                `✔ (prefetched) onLoadEnd (+${Date.now() - mountTime}ms)`,
               )
             }
           />
@@ -152,9 +159,9 @@ class NetworkImageCallbackExample extends React.Component<
 }
 
 type NetworkImageExampleState = {|
-  error: boolean,
+  error: ?string,
   loading: boolean,
-  progress: number,
+  progress: $ReadOnlyArray<number>,
 |};
 
 type NetworkImageExampleProps = $ReadOnly<{|
@@ -166,38 +173,38 @@ class NetworkImageExample extends React.Component<
   NetworkImageExampleState,
 > {
   state = {
-    error: false,
+    error: null,
     loading: false,
-    progress: 0,
+    progress: [],
   };
 
   render() {
-    const loader = this.state.loading ? (
-      <View style={styles.progress}>
-        <Text>{this.state.progress}%</Text>
-        <ActivityIndicator style={{marginLeft: 5}} />
-      </View>
-    ) : null;
-    return this.state.error ? (
+    return this.state.error != null ? (
       <Text>{this.state.error}</Text>
     ) : (
-      <ImageBackground
-        source={this.props.source}
-        style={[styles.base, {overflow: 'visible'}]}
-        onLoadStart={e => this.setState({loading: true})}
-        onError={e =>
-          this.setState({error: e.nativeEvent.error, loading: false})
-        }
-        onProgress={e =>
-          this.setState({
-            progress: Math.round(
-              (100 * e.nativeEvent.loaded) / e.nativeEvent.total,
-            ),
-          })
-        }
-        onLoad={() => this.setState({loading: false, error: false})}>
-        {loader}
-      </ImageBackground>
+      <>
+        <Image
+          source={this.props.source}
+          style={[styles.base, {overflow: 'visible'}]}
+          onLoadStart={e => this.setState({loading: true})}
+          onError={e =>
+            this.setState({error: e.nativeEvent.error, loading: false})
+          }
+          onProgress={e => {
+            const {loaded, total} = e.nativeEvent;
+            this.setState(prevState => ({
+              progress: [
+                ...prevState.progress,
+                Math.round((100 * loaded) / total),
+              ],
+            }));
+          }}
+          onLoad={() => this.setState({loading: false, error: null})}
+        />
+        <Text>
+          {this.state.progress.map(progress => `${progress}%`).join('\n')}
+        </Text>
+      </>
     );
   }
 }
@@ -346,12 +353,6 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
   },
-  progress: {
-    flex: 1,
-    alignItems: 'center',
-    flexDirection: 'row',
-    width: 100,
-  },
   leftMargin: {
     marginLeft: 10,
   },
@@ -465,7 +466,6 @@ exports.examples = [
         />
       );
     },
-    platform: 'ios',
   },
   {
     title: 'Image Download Progress',
@@ -478,7 +478,6 @@ exports.examples = [
         />
       );
     },
-    platform: 'ios',
   },
   {
     title: 'defaultSource',
