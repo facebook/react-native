@@ -82,4 +82,12 @@ import java.util.List;
 
     propsMap.putArray("transform", JavaOnlyArray.from(transforms));
   }
+
+  @Override
+  public String prettyPrint() {
+    return "TransformAnimatedNode["
+        + mTag
+        + "]: mTransformConfigs: "
+        + (mTransformConfigs != null ? mTransformConfigs.toString() : "null");
+  }
 }
