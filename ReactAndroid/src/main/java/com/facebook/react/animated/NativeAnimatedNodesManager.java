@@ -23,7 +23,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.Event;
@@ -54,7 +53,6 @@ import java.util.Queue;
 /*package*/ class NativeAnimatedNodesManager implements EventDispatcherListener {
 
   private static final String TAG = "NativeAnimatedNodesManager";
-  private static final int MAX_INCONSISTENT_FRAMES = 64;
 
   private final SparseArray<AnimatedNode> mAnimatedNodes = new SparseArray<>();
   private final SparseArray<AnimationDriver> mActiveAnimations = new SparseArray<>();
@@ -64,12 +62,13 @@ import java.util.Queue;
   private final Map<String, List<EventAnimationDriver>> mEventDrivers = new HashMap<>();
   private final ReactApplicationContext mReactApplicationContext;
   private int mAnimatedGraphBFSColor = 0;
-  private int mNumInconsistentFrames = 0;
   // Used to avoid allocating a new array on every frame in `runUpdates` and `onEventDispatch`.
   private final List<AnimatedNode> mRunUpdateNodeList = new LinkedList<>();
 
   private boolean mEventListenerInitializedForFabric = false;
   private boolean mEventListenerInitializedForNonFabric = false;
+
+  private boolean mWarnedAboutGraphTraversal = false;
 
   public NativeAnimatedNodesManager(ReactApplicationContext reactApplicationContext) {
     mReactApplicationContext = reactApplicationContext;
@@ -646,7 +645,7 @@ import java.util.Queue;
     }
 
     // Run main "update" loop
-    boolean errorsCaught = false;
+    int cyclesDetected = 0;
     while (!nodesQueue.isEmpty()) {
       AnimatedNode nextNode = nodesQueue.poll();
       try {
@@ -655,36 +654,15 @@ import java.util.Queue;
           // Send property updates to native view manager
           ((PropsAnimatedNode) nextNode).updateView();
         }
-      } catch (IllegalViewOperationException e) {
+      } catch (JSApplicationCausedNativeException e) {
         // An exception is thrown if the view hasn't been created yet. This can happen because
-        // views are
-        // created in batches. If this particular view didn't make it into a batch yet, the view
-        // won't
-        // exist and an exception will be thrown when attempting to start an animation on it.
+        // views are created in batches. If this particular view didn't make it into a batch yet,
+        // the view won't exist and an exception will be thrown when attempting to start an
+        // animation on it.
         //
         // Eat the exception rather than crashing. The impact is that we may drop one or more
-        // frames of the
-        // animation.
+        // frames of the animation.
         FLog.e(TAG, "Native animation workaround, frame lost as result of race condition", e);
-      } catch (JSApplicationCausedNativeException e) {
-        // In Fabric there can be race conditions between the JS thread setting up or tearing down
-        // animated nodes, and Fabric executing them on the UI thread, leading to temporary
-        // inconsistent
-        // states. We require that the inconsistency last for N frames before throwing these
-        // exceptions.
-        if (!errorsCaught) {
-          errorsCaught = true;
-          mNumInconsistentFrames++;
-        }
-        if (mNumInconsistentFrames > MAX_INCONSISTENT_FRAMES) {
-          throw new IllegalStateException(e);
-        } else {
-          FLog.e(
-              TAG,
-              "Swallowing exception due to potential race between JS and UI threads: inconsistent frame counter: "
-                  + mNumInconsistentFrames,
-              e);
-        }
       }
       if (nextNode instanceof ValueAnimatedNode) {
         // Potentially send events to JS when the node's value is updated
@@ -698,31 +676,54 @@ import java.util.Queue;
             child.mBFSColor = mAnimatedGraphBFSColor;
             updatedNodesCount++;
             nodesQueue.add(child);
+          } else if (child.mBFSColor == mAnimatedGraphBFSColor) {
+            cyclesDetected++;
           }
         }
       }
     }
 
-    // Verify that we've visited *all* active nodes. Throw otherwise as this would mean there is a
-    // cycle in animated node graph. We also take advantage of the fact that all active nodes are
-    // visited in the step above so that all the nodes properties `mActiveIncomingNodes` are set to
-    // zero.
+    // Verify that we've visited *all* active nodes. Throw otherwise as this could mean there is a
+    // cycle in animated node graph, or that the graph is only partially set up. We also take
+    // advantage of the fact that all active nodes are visited in the step above so that all the
+    // nodes properties `mActiveIncomingNodes` are set to zero.
     // In Fabric there can be race conditions between the JS thread setting up or tearing down
     // animated nodes, and Fabric executing them on the UI thread, leading to temporary inconsistent
-    // states. We require that the inconsistency last for 64 frames before throwing this exception.
+    // states.
     if (activeNodesCount != updatedNodesCount) {
-      if (!errorsCaught) {
-        mNumInconsistentFrames++;
+      if (mWarnedAboutGraphTraversal) {
+        return;
       }
-      if (mNumInconsistentFrames > MAX_INCONSISTENT_FRAMES) {
-        throw new IllegalStateException(
-            "Looks like animated nodes graph has cycles, there are "
-                + activeNodesCount
-                + " but toposort visited only "
-                + updatedNodesCount);
+      mWarnedAboutGraphTraversal = true;
+
+      // Before crashing or logging soft exception, log details about current graph setup
+      FLog.e(TAG, "Detected animation cycle or disconnected graph. ");
+      for (AnimatedNode node : nodes) {
+        FLog.e(TAG, node.prettyPrintWithChildren());
       }
-    } else if (!errorsCaught) {
-      mNumInconsistentFrames = 0;
+
+      // If we're running only in non-Fabric, we still throw an exception.
+      // In Fabric, it seems that animations enter an inconsistent state fairly often.
+      // We detect if the inconsistency is due to a cycle (a fatal error for which we must crash)
+      // or disconnected regions, indicating a partially-set-up animation graph, which is not
+      // fatal and can stay a warning.
+      String reason =
+          cyclesDetected > 0 ? "cycles (" + cyclesDetected + ")" : "disconnected regions";
+      IllegalStateException ex =
+          new IllegalStateException(
+              "Looks like animated nodes graph has "
+                  + reason
+                  + ", there are "
+                  + activeNodesCount
+                  + " but toposort visited only "
+                  + updatedNodesCount);
+      if (mEventListenerInitializedForFabric && cyclesDetected == 0) {
+        ReactSoftException.logSoftException(TAG, ex);
+      } else {
+        throw ex;
+      }
+    } else {
+      mWarnedAboutGraphTraversal = false;
     }
   }
 }
