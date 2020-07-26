@@ -37,5 +37,6 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onRefresh;
 @property (nonatomic, readonly, getter=isRefreshing) BOOL refreshing;
+@property (nonatomic, weak) UIScrollView *scrollView;
 
 @end

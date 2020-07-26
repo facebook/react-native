@@ -230,6 +230,10 @@
     [_customRefreshControl removeFromSuperview];
   }
   _customRefreshControl = refreshControl;
+  // We have to set this because we can't always guarantee the
+  // `RCTCustomRefreshContolProtocol`'s superview will always be of class
+  // `UIScrollView` like we were previously
+  _customRefreshControl.scrollView = self;
   if ([refreshControl isKindOfClass:UIRefreshControl.class]) {
     self.refreshControl = (UIRefreshControl *)refreshControl;
   } else {
