@@ -16,6 +16,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
+ @abstract Enumeration block for text fragments.
+*/
+
+using RCTTextLayoutFragmentEnumerationBlock =
+    void (^)(CGRect fragmentRect, NSString *_Nonnull fragmentText, NSString *value);
+
+/**
  * iOS-specific TextLayoutManager
  */
 @interface RCTTextLayoutManager : NSObject
@@ -37,6 +44,12 @@ NS_ASSUME_NONNULL_BEGIN
                    paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                                  frame:(CGRect)frame
                                atPoint:(CGPoint)point;
+
+- (void)getRectWithAttributedString:(facebook::react::AttributedString)attributedString
+                paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
+                 enumerateAttribute:(NSString *)enumerateAttribute
+                              frame:(CGRect)frame
+                         usingBlock:(RCTTextLayoutFragmentEnumerationBlock)block;
 
 @end
 

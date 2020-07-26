@@ -188,6 +188,15 @@ static void sliceChildShadowNodeViewPairsRecursively(
     ShadowNode const &shadowNode) {
   for (auto const &sharedChildShadowNode : shadowNode.getChildren()) {
     auto &childShadowNode = *sharedChildShadowNode;
+
+#ifndef ANDROID
+    // Temporary disabled on Android because the mounting infrastructure
+    // is not fully ready yet.
+    if (childShadowNode.getTraits().check(ShadowNodeTraits::Trait::Hidden)) {
+      continue;
+    }
+#endif
+
     auto shadowView = ShadowView(childShadowNode);
     auto origin = layoutOffset;
     if (shadowView.layoutMetrics != EmptyLayoutMetrics) {

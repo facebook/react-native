@@ -34,10 +34,9 @@ class ShadowTreeRegistry final {
   /*
    * Removes a `ShadowTree` instance with given `surfaceId` from the registry
    * and returns it as a result.
-   * The ownership of the instance is also transferred to the caller.
    * Can be called from any thread.
    */
-  std::unique_ptr<ShadowTree> remove(SurfaceId surfaceId) const;
+  void remove(SurfaceId surfaceId) const;
 
   /*
    * Finds a `ShadowTree` instance with a given `surfaceId` in the registry and

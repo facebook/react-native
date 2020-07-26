@@ -206,7 +206,6 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
     auto attachmentOrigin = roundToPixel<&round>(
         attachmentFrame.origin, layoutMetrics.pointScaleFactor);
     auto attachmentLayoutContext = layoutContext;
-    attachmentLayoutContext.absolutePosition += attachmentOrigin;
     auto attachmentLayoutConstrains = LayoutConstraints{
         attachmentSize, attachmentSize, layoutConstraints.layoutDirection};
 

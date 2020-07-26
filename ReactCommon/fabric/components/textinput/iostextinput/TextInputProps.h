@@ -55,6 +55,8 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
 
   bool autoFocus{false};
 
+  std::string const inputAccessoryViewID{};
+
   /*
    * Accessors
    */

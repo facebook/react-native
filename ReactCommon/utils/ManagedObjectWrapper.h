@@ -27,18 +27,7 @@ namespace detail {
  * A custom deleter used for the deallocation of Objective-C managed objects.
  * To be used only by `wrapManagedObject`.
  */
-static void wrappedManagedObjectDeleter(void *cfPointer) noexcept
-{
-  // A shared pointer does call custom deleter on `nullptr`s.
-  // This is somewhat counter-intuitively but makes sense considering the type-erasured nature of shared pointer and an
-  // aliasing constructor feature. `CFRelease` crashes on null pointer though. Therefore we must check for this case
-  // explicitly.
-  if (cfPointer == NULL) {
-    return;
-  }
-
-  CFRelease(cfPointer);
-}
+void wrappedManagedObjectDeleter(void *cfPointer) noexcept;
 
 }
 

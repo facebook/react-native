@@ -521,8 +521,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                      mutation.type == ShadowViewMutation::Type::Remove
                  ? mutation.oldChildShadowView
                  : mutation.newChildShadowView);
-        auto const &componentDescriptor =
-            getComponentDescriptorForShadowView(baselineShadowView);
+        bool haveComponentDescriptor =
+            hasComponentDescriptorForShadowView(baselineShadowView);
 
         auto mutationConfig =
             (mutation.type == ShadowViewMutation::Type::Delete
@@ -600,7 +600,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             mutation.type == ShadowViewMutation::Type::Insert) {
           // Indices for immediate INSERT mutations must be adjusted to insert
           // at higher indices if previous animations have deferred removals
-          // before the insertion indect
+          // before the insertion index
           // TODO: refactor to reduce code duplication
           if (mutation.type == ShadowViewMutation::Type::Insert) {
             int adjustedIndex = mutation.index;
@@ -660,8 +660,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           AnimationKeyFrame keyFrame{};
           if (mutation.type == ShadowViewMutation::Type::Insert) {
             if (mutationConfig->animationProperty ==
-                AnimationProperty::Opacity) {
-              auto props = componentDescriptor.cloneProps(viewStart.props, {});
+                    AnimationProperty::Opacity &&
+                haveComponentDescriptor) {
+              auto props =
+                  getComponentDescriptorForShadowView(baselineShadowView)
+                      .cloneProps(viewStart.props, {});
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
@@ -675,8 +678,10 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             bool isScaleY = mutationConfig->animationProperty ==
                     AnimationProperty::ScaleY ||
                 mutationConfig->animationProperty == AnimationProperty::ScaleXY;
-            if (isScaleX || isScaleY) {
-              auto props = componentDescriptor.cloneProps(viewStart.props, {});
+            if ((isScaleX || isScaleY) && haveComponentDescriptor) {
+              auto props =
+                  getComponentDescriptorForShadowView(baselineShadowView)
+                      .cloneProps(viewStart.props, {});
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
@@ -695,8 +700,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                                          0};
           } else if (mutation.type == ShadowViewMutation::Type::Delete) {
             if (mutationConfig->animationProperty ==
-                AnimationProperty::Opacity) {
-              auto props = componentDescriptor.cloneProps(viewFinal.props, {});
+                    AnimationProperty::Opacity &&
+                haveComponentDescriptor) {
+              auto props =
+                  getComponentDescriptorForShadowView(baselineShadowView)
+                      .cloneProps(viewFinal.props, {});
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
@@ -710,8 +718,10 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             bool isScaleY = mutationConfig->animationProperty ==
                     AnimationProperty::ScaleY ||
                 mutationConfig->animationProperty == AnimationProperty::ScaleXY;
-            if (isScaleX || isScaleY) {
-              auto props = componentDescriptor.cloneProps(viewFinal.props, {});
+            if ((isScaleX || isScaleY) && haveComponentDescriptor) {
+              auto props =
+                  getComponentDescriptorForShadowView(baselineShadowView)
+                      .cloneProps(viewFinal.props, {});
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
@@ -756,12 +766,14 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             // tree hierarchy).
             {
               int adjustedIndex = mutation.index;
+              int adjustment = 0;
               for (auto &otherMutation : mutations) {
                 if (otherMutation.type == ShadowViewMutation::Type::Insert &&
-                    otherMutation.parentShadowView.tag == parentTag) {
-                  if (otherMutation.index <= adjustedIndex &&
-                      !mutatedViewIsVirtual(otherMutation)) {
+                    otherMutation.parentShadowView.tag == parentTag &&
+                    !mutatedViewIsVirtual(otherMutation)) {
+                  if (otherMutation.index <= adjustedIndex) {
                     adjustedIndex++;
+                    adjustment++;
                   } else {
                     // If we are delaying this remove instruction, conversely,
                     // we must adjust upward the insertion index of any INSERT
@@ -792,9 +804,16 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                   }
                   const auto &delayedFinalMutation =
                       *animatedKeyFrame.finalMutationForKeyFrame;
+
+                  // Note: we add the "adjustment" we've accumulated to the
+                  // `delayedFinalMutation.index` before comparing. Since
+                  // "adjustment" is caused by Insert MountItems that we are
+                  // about to execute, but haven't yet, the delayed mutation's
+                  // index *will* be adjusted right after this.
                   if (delayedFinalMutation.type ==
                           ShadowViewMutation::Type::Remove &&
-                      delayedFinalMutation.index <= adjustedIndex) {
+                      (delayedFinalMutation.index + adjustment) <=
+                          adjustedIndex) {
                     adjustedIndex++;
                   }
                 }
@@ -983,6 +1002,12 @@ bool LayoutAnimationKeyFrameManager::mutatedViewIsVirtual(
   return viewIsVirtual;
 }
 
+bool LayoutAnimationKeyFrameManager::hasComponentDescriptorForShadowView(
+    ShadowView const &shadowView) const {
+  return componentDescriptorRegistry_->hasComponentDescriptorAt(
+      shadowView.componentHandle);
+}
+
 ComponentDescriptor const &
 LayoutAnimationKeyFrameManager::getComponentDescriptorForShadowView(
     ShadowView const &shadowView) const {
@@ -1008,6 +1033,9 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
     AnimationConfig const &animationConfig,
     ShadowView startingView,
     ShadowView finalView) const {
+  if (!hasComponentDescriptorForShadowView(startingView)) {
+    return finalView;
+  }
   ComponentDescriptor const &componentDescriptor =
       getComponentDescriptorForShadowView(startingView);
   auto mutatedShadowView = ShadowView(startingView);

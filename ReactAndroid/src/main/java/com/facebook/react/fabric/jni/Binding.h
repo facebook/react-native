@@ -53,7 +53,6 @@ class Binding : public jni::HybridClass<Binding>,
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
   void installFabricUIManager(
-      jlong jsContextNativePointer,
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
       jni::alias_ref<jobject> javaUIManager,
       EventBeatManager *eventBeatManager,
@@ -125,7 +124,6 @@ class Binding : public jni::HybridClass<Binding>,
   float pointScaleFactor_ = 1;
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
-  bool shouldCollateRemovesAndDeletes_{false};
   bool collapseDeleteCreateMountingInstructions_{false};
   bool disablePreallocateViews_{false};
   bool disableVirtualNodePreallocation_{false};

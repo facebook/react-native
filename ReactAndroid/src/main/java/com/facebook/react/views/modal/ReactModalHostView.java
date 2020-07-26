@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
@@ -347,24 +348,26 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     Assertions.assertNotNull(mDialog, "mDialog must exist when we call updateProperties");
 
     Activity currentActivity = getCurrentActivity();
-    if (currentActivity != null) {
-      int activityWindowFlags = currentActivity.getWindow().getAttributes().flags;
-      if ((activityWindowFlags & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
-        mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-      } else {
-        mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-      }
+
+    Window window = mDialog.getWindow();
+    if (currentActivity == null || currentActivity.isFinishing() || !window.isActive()) {
+      // If the activity has disappeared, then we shouldn't update the window associated to the
+      // Dialog.
+      return;
+    }
+    int activityWindowFlags = currentActivity.getWindow().getAttributes().flags;
+    if ((activityWindowFlags & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
+      window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    } else {
+      window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     if (mTransparent) {
-      mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+      window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
     } else {
-      mDialog.getWindow().setDimAmount(0.5f);
-      mDialog
-          .getWindow()
-          .setFlags(
-              WindowManager.LayoutParams.FLAG_DIM_BEHIND,
-              WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+      window.setDimAmount(0.5f);
+      window.setFlags(
+          WindowManager.LayoutParams.FLAG_DIM_BEHIND, WindowManager.LayoutParams.FLAG_DIM_BEHIND);
     }
   }
 

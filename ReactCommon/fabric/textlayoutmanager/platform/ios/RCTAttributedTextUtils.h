@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const RCTAttributedStringIsHighlightedAttributeName = @"IsHighlighted";
 NSString *const RCTAttributedStringEventEmitterKey = @"EventEmitter";
+NSString *const RCTTextAttributesAccessibilityRoleAttributeName = @"AccessibilityRole";
 
 /*
  * Creates `NSTextAttributes` from given `facebook::react::TextAttributes`

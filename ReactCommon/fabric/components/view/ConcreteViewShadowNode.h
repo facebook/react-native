@@ -103,7 +103,15 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
 
  private:
   void initialize() noexcept {
-    BaseShadowNode::orderIndex_ = BaseShadowNode::getConcreteProps().zIndex;
+    auto &props = BaseShadowNode::getConcreteProps();
+
+    BaseShadowNode::orderIndex_ = props.zIndex;
+
+    if (props.yogaStyle.display() == YGDisplayNone) {
+      BaseShadowNode::traits_.set(ShadowNodeTraits::Trait::Hidden);
+    } else {
+      BaseShadowNode::traits_.unset(ShadowNodeTraits::Trait::Hidden);
+    }
   }
 };
 

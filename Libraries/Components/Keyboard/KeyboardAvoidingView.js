@@ -18,7 +18,7 @@ const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type EmitterSubscription from '../../vendor/emitter/EmitterSubscription';
+import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
 import type {
   ViewProps,
   ViewLayout,
@@ -67,7 +67,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   };
 
   _frame: ?ViewLayout = null;
-  _subscriptions: Array<EmitterSubscription> = [];
+  _subscriptions: Array<EventSubscription> = [];
   viewRef: {current: React.ElementRef<any> | null, ...};
   _initialFrameHeight: number = 0;
 

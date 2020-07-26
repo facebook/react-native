@@ -93,9 +93,12 @@ class LayoutableShadowNode : public ShadowNode {
    * Computes layout recursively.
    * Additional environmental constraints might be provided via `layoutContext`
    * argument.
-   * Default implementation basically calls `layoutChildren()` and then
-   * `layout()` (recursively), and provides some obvious performance
-   * optimization.
+   *
+   * The typical concrete-layout-specific implementation of this method should:
+   * - Measure children with `LayoutConstraints` calculated from its size using
+   *   a particular layout approach;
+   * - Calculate and assign `LayoutMetrics` for the children;
+   * - Call itself recursively on every child if needed.
    */
   virtual void layout(LayoutContext layoutContext);
 
@@ -141,7 +144,6 @@ class LayoutableShadowNode : public ShadowNode {
       ShadowNode::Shared node,
       Point point);
 
- protected:
   /*
    * Clean or Dirty layout state:
    * Indicates whether all nodes (and possibly their subtrees) along the path
@@ -150,19 +152,6 @@ class LayoutableShadowNode : public ShadowNode {
   virtual void cleanLayout() = 0;
   virtual void dirtyLayout() = 0;
   virtual bool getIsLayoutClean() const = 0;
-
-  /*
-   * Indicates does the shadow node (or any descendand node of the node)
-   * get a new layout metrics during a previous layout pass.
-   */
-  virtual void setHasNewLayout(bool hasNewLayout) = 0;
-  virtual bool getHasNewLayout() const = 0;
-
-  /*
-   * Applies layout for all children;
-   * does not call anything in recursive manner *by desing*.
-   */
-  virtual void layoutChildren(LayoutContext layoutContext);
 
   /*
    * Unifed methods to access text layout metrics.
@@ -181,7 +170,6 @@ class LayoutableShadowNode : public ShadowNode {
   SharedDebugStringConvertibleList getDebugProps() const;
 #endif
 
- private:
   LayoutMetrics layoutMetrics_;
 };
 

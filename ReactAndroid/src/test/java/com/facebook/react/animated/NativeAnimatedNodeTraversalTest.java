@@ -183,6 +183,15 @@ public class NativeAnimatedNodeTraversalTest {
                 };
               }
             });
+    PowerMockito.when(mUIManagerMock.resolveCustomDirectEventName(any(String.class)))
+        .thenAnswer(
+            new Answer<String>() {
+              @Override
+              public String answer(InvocationOnMock invocation) throws Throwable {
+                String arg = invocation.getArguments()[0].toString();
+                return "on" + arg.substring(3);
+              }
+            });
     mNativeAnimatedNodesManager = new NativeAnimatedNodesManager(mReactApplicationContextMock);
   }
 
@@ -861,6 +870,19 @@ public class NativeAnimatedNodeTraversalTest {
   }
 
   @Test
+  public void testGetValue() {
+    int tag = 1;
+    mNativeAnimatedNodesManager.createAnimatedNode(
+        tag, JavaOnlyMap.of("type", "value", "value", 1d, "offset", 0d));
+
+    Callback saveValueCallbackMock = mock(Callback.class);
+
+    mNativeAnimatedNodesManager.getValue(tag, saveValueCallbackMock);
+
+    verify(saveValueCallbackMock, times(1)).invoke(1d);
+  }
+
+  @Test
   public void testInterpolationNode() {
     mNativeAnimatedNodesManager.createAnimatedNode(
         1, JavaOnlyMap.of("type", "value", "value", 10d, "offset", 0d));
@@ -933,7 +955,7 @@ public class NativeAnimatedNodeTraversalTest {
 
     mNativeAnimatedNodesManager.addAnimatedEventToView(
         viewTag,
-        "topScroll",
+        "onScroll",
         JavaOnlyMap.of(
             "animatedValueTag", 1, "nativeEventPath", JavaOnlyArray.of("contentOffset", "y")));
 
@@ -986,7 +1008,7 @@ public class NativeAnimatedNodeTraversalTest {
               public Object answer(InvocationOnMock invocation) throws Throwable {
                 return MapBuilder.of(
                     "customDirectEventTypes",
-                    MapBuilder.of("topScroll", MapBuilder.of("registrationName", "onScroll")));
+                    MapBuilder.of("onScroll", MapBuilder.of("registrationName", "onScroll")));
               }
             });
     mNativeAnimatedNodesManager = new NativeAnimatedNodesManager(mReactApplicationContextMock);
@@ -1011,7 +1033,7 @@ public class NativeAnimatedNodeTraversalTest {
 
   @Test
   public void testRestoreDefaultProps() {
-    int viewTag = 1000;
+    int viewTag = 1001; // restoreDefaultProps not called in Fabric, make sure it's a non-Fabric tag
     int propsNodeTag = 3;
     mNativeAnimatedNodesManager.createAnimatedNode(
         1, JavaOnlyMap.of("type", "value", "value", 1d, "offset", 0d));
