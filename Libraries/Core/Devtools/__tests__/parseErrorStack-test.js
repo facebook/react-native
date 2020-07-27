@@ -18,7 +18,7 @@ function getFakeError() {
 
 describe('parseErrorStack', function() {
   it('parses error stack', function() {
-    const stack = parseErrorStack(getFakeError());
+    const stack = parseErrorStack(getFakeError().stack);
     expect(stack.length).toBeGreaterThan(0);
 
     const firstFrame = stack[0];
@@ -33,12 +33,12 @@ describe('parseErrorStack', function() {
       return error;
     }
 
-    const stack = parseErrorStack(getWrappedError());
+    const stack = parseErrorStack(getWrappedError().stack);
     expect(stack[0].methodName).toEqual('getFakeError');
   });
 
   it('ignores bad inputs', function() {
-    expect(parseErrorStack({})).toEqual([]);
+    expect(parseErrorStack(undefined)).toEqual([]);
     expect(parseErrorStack(null)).toEqual([]);
   });
 });
