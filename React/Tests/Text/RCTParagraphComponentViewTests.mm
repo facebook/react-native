@@ -316,6 +316,38 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
   return sharedState;
 }
 
+- (void)testAttributedString
+{
+  ParagraphShadowNode::ConcreteState::Shared _stateA = stateWithShadowNode(ParagrahShadowNodeA_);
+  RCTParagraphComponentView *paragraphComponentViewA = [[RCTParagraphComponentView alloc] init];
+  [paragraphComponentViewA updateState:_stateA oldState:nil];
+
+  ParagraphShadowNode::ConcreteState::Shared _stateB = stateWithShadowNode(ParagrahShadowNodeB_);
+  RCTParagraphComponentView *paragraphComponentViewB = [[RCTParagraphComponentView alloc] init];
+  [paragraphComponentViewB updateState:_stateB oldState:nil];
+
+  ParagraphShadowNode::ConcreteState::Shared _stateC = stateWithShadowNode(ParagrahShadowNodeC_);
+  RCTParagraphComponentView *paragraphComponentViewC = [[RCTParagraphComponentView alloc] init];
+  [paragraphComponentViewC updateState:_stateC oldState:nil];
+
+  // Check the correctness of attributedString
+  XCTAssert([[paragraphComponentViewA.attributedText string]
+      isEqual:@"Please check out facebook and instagram for a full description."]);
+  XCTAssertEqual(_stateA->getData().attributedString.getFragments().size(), 5);
+
+  XCTAssert([[paragraphComponentViewB.attributedText string]
+      isEqual:
+          @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ut risus et sapien bibendum volutpat. Nulla facilisi. Cras imperdiet gravida tincidunt. In tempor, tellus et vestibulum venenatis, lorem nunc eleifend lectus, a consectetur magna augue at arcu."]);
+  XCTAssertEqual(_stateB->getData().attributedString.getFragments().size(), 2);
+
+  XCTAssert([[paragraphComponentViewC.attributedText string]
+      isEqual:
+          @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ut risus et sapien bibendum volutpat. Nulla facilisi. Cras imperdiet gravida tincidunt. In tempor, tellus et vestibulum venenatis, lorem nunc eleifend lectus, a consectetur magna augue at arcu. See Less"]);
+  XCTAssertEqual(_stateC->getData().attributedString.getFragments().size(), 3);
+}
+
+#pragma mark - Accessibility
+
 - (void)testAccessibilityMultipleLinks
 {
   // initialize the paragraphComponentView to get the accessibilityElements
