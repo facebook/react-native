@@ -308,4 +308,59 @@ using namespace facebook::react;
   rootShadowNode_->layoutIfNeeded();
 }
 
+static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
+    std::shared_ptr<ParagraphShadowNode> paragraphShadowNode)
+{
+  auto sharedState =
+      std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(paragraphShadowNode->getState());
+  return sharedState;
+}
+
+- (void)testAccessibilityMultipleLinks
+{
+  // initialize the paragraphComponentView to get the accessibilityElements
+  ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(ParagrahShadowNodeA_);
+  RCTParagraphComponentView *paragraphComponentView = [[RCTParagraphComponentView alloc] init];
+  [paragraphComponentView updateState:_state oldState:nil];
+
+  NSArray<UIAccessibilityElement *> *elements = [paragraphComponentView accessibilityElements];
+
+  // check the number of accessibilityElements
+  XCTAssert(
+      elements.count == 3, @"Expected 4 accessibilityElements - one for the whole string, and the rest for the links");
+  // check accessibility trait
+  XCTAssert(
+      elements[1].accessibilityTraits & UIAccessibilityTraitLink,
+      @"Expected the second accessibilityElement has link trait");
+  XCTAssert(
+      elements[2].accessibilityTraits & UIAccessibilityTraitLink,
+      @"Expected the second accessibilityElement has link trait");
+}
+
+- (void)testAccessibilityLinkWrappingMultipleLines
+{
+  ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(ParagrahShadowNodeB_);
+  RCTParagraphComponentView *paragraphComponentView = [[RCTParagraphComponentView alloc] init];
+  [paragraphComponentView updateState:_state oldState:nil];
+
+  NSArray<UIAccessibilityElement *> *elements = [paragraphComponentView accessibilityElements];
+  XCTAssert(elements.count == 2, @"Expected 2 accessibilityElements - one for the whole string, and one for the link");
+  XCTAssert(
+      elements[1].accessibilityTraits & UIAccessibilityTraitLink,
+      @"Expected the second accessibilityElement has link trait");
+}
+
+- (void)testAccessibilityTruncatedText
+{
+  ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(ParagrahShadowNodeC_);
+  RCTParagraphComponentView *paragraphComponentView = [[RCTParagraphComponentView alloc] init];
+  [paragraphComponentView updateState:_state oldState:nil];
+
+  NSArray<UIAccessibilityElement *> *elements = [paragraphComponentView accessibilityElements];
+  XCTAssert(elements.count == 2, @"Expected 2 accessibilityElements - one for the whole string, and one for the link");
+  XCTAssert(
+      elements[1].accessibilityTraits & UIAccessibilityTraitLink,
+      @"Expected the second accessibilityElement has link trait");
+}
+
 @end
