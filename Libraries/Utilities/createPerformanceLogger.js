@@ -24,7 +24,8 @@ type Timespan = {
 };
 
 export type IPerformanceLogger = {
-  addTimespan(string, number, string | void): void,
+  addTimeAnnotation(string, number, string | void): void,
+  addTimespan(string, number, number, string | void): void,
   startTimespan(string, string | void): void,
   stopTimespan(string, options?: {update?: boolean}): void,
   clear(): void,
@@ -34,7 +35,7 @@ export type IPerformanceLogger = {
   getTimespans(): {[key: string]: Timespan, ...},
   hasTimespan(string): boolean,
   logTimespans(): void,
-  addTimespans(Array<number>, Array<string>): void,
+  addTimeAnnotations(Array<number>, Array<string>): void,
   setExtra(string, mixed): void,
   getExtras(): {[key: string]: mixed, ...},
   removeExtra(string): ?mixed,
@@ -66,7 +67,7 @@ function createPerformanceLogger(): IPerformanceLogger {
     _extras: {},
     _points: {},
 
-    addTimespan(key: string, lengthInMs: number, description?: string) {
+    addTimeAnnotation(key: string, durationInMs: number, description?: string) {
       if (this._timespans[key]) {
         if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
@@ -79,7 +80,31 @@ function createPerformanceLogger(): IPerformanceLogger {
 
       this._timespans[key] = {
         description: description,
-        totalTime: lengthInMs,
+        totalTime: durationInMs,
+      };
+    },
+
+    addTimespan(
+      key: string,
+      startTime: number,
+      endTime: number,
+      description?: string,
+    ) {
+      if (this._timespans[key]) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
+          infoLog(
+            'PerformanceLogger: Attempting to add a timespan that already exists ',
+            key,
+          );
+        }
+        return;
+      }
+
+      this._timespans[key] = {
+        description,
+        startTime,
+        endTime,
+        totalTime: endTime - (startTime || 0),
       };
     },
 
@@ -199,10 +224,14 @@ function createPerformanceLogger(): IPerformanceLogger {
       }
     },
 
-    addTimespans(newTimespans: Array<number>, labels: Array<string>) {
-      for (let ii = 0, l = newTimespans.length; ii < l; ii += 2) {
+    addTimeAnnotations(durationsInMs: Array<number>, labels: Array<string>) {
+      for (let ii = 0, l = durationsInMs.length; ii < l; ii += 2) {
         const label = labels[ii / 2];
-        this.addTimespan(label, newTimespans[ii + 1] - newTimespans[ii], label);
+        this.addTimespan(
+          label,
+          durationsInMs[ii + 1] - durationsInMs[ii],
+          label,
+        );
       }
     },
 
