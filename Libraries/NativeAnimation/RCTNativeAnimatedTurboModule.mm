@@ -6,7 +6,7 @@
  */
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <React/RCTNativeAnimatedModule.h>
+#import <React/RCTNativeAnimatedTurboModule.h>
 #import <React/RCTNativeAnimatedNodesManager.h>
 
 #import <RCTTypeSafety/RCTConvertHelpers.h>
@@ -15,7 +15,10 @@
 
 typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
-@implementation RCTNativeAnimatedModule
+@interface RCTNativeAnimatedTurboModule() <NativeAnimatedModuleSpec>
+@end
+
+@implementation RCTNativeAnimatedTurboModule
 {
   RCTNativeAnimatedNodesManager *_nodesManager;
 
@@ -337,8 +340,13 @@ RCT_EXPORT_METHOD(getValue:(double)nodeTag saveValueCallback:(RCTResponseSenderB
   });
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeAnimatedModuleSpecJSI>(params);
+}
+
 @end
 
-Class RCTNativeAnimatedModuleCls(void) {
-  return RCTNativeAnimatedModule.class;
+Class RCTNativeAnimatedTurboModuleCls(void) {
+  return RCTNativeAnimatedTurboModule.class;
 }
