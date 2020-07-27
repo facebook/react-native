@@ -10,6 +10,25 @@
 
 using namespace facebook::react;
 
+/*
+ *┌─────────────────────────┐
+ *│nodeA_                   │
+ *│                         │
+ *│                         │
+ *│                         │
+ *│                         │
+ *│                         │
+ *│                         │
+ *│      ┌────────────────┐ │
+ *│      │nodeAA_         │ │
+ *│      │                │ │
+ *│      │     ┌───────┐  │ │
+ *│      │     │nodeAA_│  │ │
+ *│      │     │       │  │ │
+ *│      │     └───────┘  │ │
+ *│      └────────────────┘ │
+ *└─────────────────────────┘
+ */
 class FindNodeAtPointTest : public ::testing::Test {
  protected:
   FindNodeAtPointTest()
@@ -102,21 +121,19 @@ TEST_F(FindNodeAtPointTest, withoutTransform) {
       LayoutableShadowNode::findNodeAtPoint(nodeA_, {1001, 1001}), nullptr);
 }
 
-// Uncomment once T69368852 is resolved.
-// TEST_F(FindNodeAtPointTest, viewIsTranslated) {
-//   nodeA_->_transform =
-//       Transform::Identity() * Transform::Translate(-100, -100, 0);
+TEST_F(FindNodeAtPointTest, viewIsTranslated) {
+  nodeA_->_contentOriginOffset = {-100, -100};
 
-//   EXPECT_EQ(
-//       LayoutableShadowNode::findNodeAtPoint(nodeA_, {15, 15})->getTag(),
-//       nodeAAA_->getTag());
-//   EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(nodeA_, {5, 5}), nodeAA_);
-// }
+  EXPECT_EQ(
+      LayoutableShadowNode::findNodeAtPoint(nodeA_, {15, 15})->getTag(),
+      nodeAAA_->getTag());
+  EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(nodeA_, {5, 5}), nodeAA_);
+}
 
-// TEST_F(FindNodeAtPointTest, viewIsScaled) {
-//   nodeAAA_->_transform = Transform::Identity() * Transform::Scale(0.5, 0.5,
-//   0);
+TEST_F(FindNodeAtPointTest, viewIsScaled) {
+  nodeAAA_->_transform = Transform::Identity() * Transform::Scale(0.5, 0.5, 0);
 
-//   EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(nodeA_, {119,
-//   119})->getTag(), nodeAA_->getTag());
-// }
+  EXPECT_EQ(
+      LayoutableShadowNode::findNodeAtPoint(nodeA_, {119, 119})->getTag(),
+      nodeAA_->getTag());
+}
