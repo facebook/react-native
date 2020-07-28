@@ -20,6 +20,7 @@
 #include <react/mounting/ShadowTreeRegistry.h>
 #include <react/uimanager/UIManagerAnimationDelegate.h>
 #include <react/uimanager/UIManagerDelegate.h>
+#include <react/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -40,6 +41,8 @@ class UIManager final : public ShadowTreeDelegate {
    */
   void setDelegate(UIManagerDelegate *delegate);
   UIManagerDelegate *getDelegate();
+
+  void setBackgroundExecutor(BackgroundExecutor const &backgroundExecutor);
 
   /**
    * Sets and gets the UIManager's Animation APIs delegate.
@@ -143,6 +146,7 @@ class UIManager final : public ShadowTreeDelegate {
   UIManagerAnimationDelegate *animationDelegate_{nullptr};
   UIManagerBinding *uiManagerBinding_;
   ShadowTreeRegistry shadowTreeRegistry_{};
+  BackgroundExecutor backgroundExecutor_{};
 };
 
 } // namespace react

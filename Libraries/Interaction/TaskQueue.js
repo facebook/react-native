@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
@@ -16,14 +16,12 @@ const invariant = require('invariant');
 type SimpleTask = {
   name: string,
   run: () => void,
-  ...
 };
 type PromiseTask = {
   name: string,
-  gen: () => Promise<any>,
-  ...
+  gen: () => Promise<void>,
 };
-export type Task = Function | SimpleTask | PromiseTask;
+export type Task = SimpleTask | PromiseTask | (() => void);
 
 const DEBUG: false = false;
 
@@ -101,10 +99,10 @@ class TaskQueue {
     if (queue.length) {
       const task = queue.shift();
       try {
-        if (task.gen) {
+        if (typeof task === 'object' && task.gen) {
           DEBUG && infoLog('TaskQueue: genPromise for task ' + task.name);
-          this._genPromise((task: any)); // Rather than annoying tagged union
-        } else if (task.run) {
+          this._genPromise(task);
+        } else if (typeof task === 'object' && task.run) {
           DEBUG && infoLog('TaskQueue: run task ' + task.name);
           task.run();
         } else {

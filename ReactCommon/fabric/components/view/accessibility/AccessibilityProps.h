@@ -37,6 +37,8 @@ class AccessibilityProps {
   bool onAccessibilityMagicTap{};
   bool onAccessibilityEscape{};
   bool onAccessibilityAction{};
+  ImportantForAccessibility importantForAccessibility{
+      ImportantForAccessibility::Auto};
   std::string testId{""};
 
 #pragma mark - DebugStringConvertible

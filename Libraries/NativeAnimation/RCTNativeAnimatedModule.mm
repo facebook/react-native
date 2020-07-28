@@ -216,9 +216,9 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(double)viewTag
   }];
 }
 
-RCT_EXPORT_METHOD(getValue:(double)nodeTag saveCallback:(RCTResponseSenderBlock)saveCallback) {
+RCT_EXPORT_METHOD(getValue:(double)nodeTag saveValueCallback:(RCTResponseSenderBlock)saveValueCallback) {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager getValue:[NSNumber numberWithDouble:nodeTag] saveCallback:saveCallback];
+      [nodesManager getValue:[NSNumber numberWithDouble:nodeTag] saveCallback:saveValueCallback];
   }];
 }
 

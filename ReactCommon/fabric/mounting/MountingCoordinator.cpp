@@ -24,7 +24,8 @@ MountingCoordinator::MountingCoordinator(
     std::weak_ptr<MountingOverrideDelegate const> delegate)
     : surfaceId_(baseRevision.getRootShadowNode().getSurfaceId()),
       baseRevision_(baseRevision),
-      mountingOverrideDelegate_(delegate) {
+      mountingOverrideDelegate_(delegate),
+      telemetryController_(*this) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   stubViewTree_ = stubViewTreeFromShadowNode(baseRevision_.getRootShadowNode());
 #endif
@@ -38,7 +39,6 @@ void MountingCoordinator::push(ShadowTreeRevision &&revision) const {
   {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    assert(revision.getNumber() > baseRevision_.getNumber());
     assert(
         !lastRevision_.has_value() ||
         revision.getNumber() != lastRevision_->getNumber());
@@ -170,6 +170,10 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   }
 
   return transaction;
+}
+
+TelemetryController const &MountingCoordinator::getTelemetryController() const {
+  return telemetryController_;
 }
 
 } // namespace react

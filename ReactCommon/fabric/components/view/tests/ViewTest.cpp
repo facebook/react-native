@@ -109,7 +109,7 @@ TEST_F(YogaDirtyFlagTest, changingNonLayoutSubPropsMustNotDirtyYogaNode) {
         props.foregroundColor = whiteColor();
         props.backgroundColor = blackColor();
         props.opacity = props.opacity + 0.042;
-        props.zIndex = props.zIndex + 42;
+        props.zIndex = props.zIndex.value_or(0) + 42;
         props.shouldRasterize = !props.shouldRasterize;
         props.collapsable = !props.collapsable;
 

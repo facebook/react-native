@@ -77,7 +77,7 @@ class TextAttributes : public DebugStringConvertible {
   // Currently, it is intentionally *not* being set as part of BaseTextProps
   // construction.
   folly::Optional<LayoutDirection> layoutDirection{};
-  std::string accessibilityRole{""};
+  folly::Optional<AccessibilityRole> accessibilityRole{};
 
 #pragma mark - Operations
 

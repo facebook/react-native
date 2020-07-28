@@ -94,7 +94,7 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   layoutDirection = textAttributes.layoutDirection.hasValue()
       ? textAttributes.layoutDirection
       : layoutDirection;
-  accessibilityRole = !textAttributes.accessibilityRole.empty()
+  accessibilityRole = textAttributes.accessibilityRole.hasValue()
       ? textAttributes.accessibilityRole
       : accessibilityRole;
 }

@@ -10,6 +10,7 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/componentregistry/ComponentDescriptorFactory.h>
 #include <react/core/EventBeat.h>
+#include <react/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 #include <react/utils/RunLoopObserver.h>
 
@@ -49,6 +50,16 @@ struct SchedulerToolbox final {
    */
   EventBeat::Factory asynchronousEventBeatFactory;
   EventBeat::Factory synchronousEventBeatFactory;
+
+  /*
+   * General-purpose executor that is used to dispatch work on some utility
+   * queue (mostly) asynchronously to avoid unnecessary blocking the caller
+   * queue.
+   * The concrete implementation can use a serial or concurrent queue.
+   * Due to architectural constraints, the concrete implementation *must* call
+   * the call back synchronously if the executor is invoked on the main thread.
+   */
+  BackgroundExecutor backgroundExecutor;
 };
 
 } // namespace react

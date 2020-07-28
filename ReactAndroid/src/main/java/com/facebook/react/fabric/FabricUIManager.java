@@ -314,7 +314,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       @Nullable ReadableMap props,
       @Nullable Object stateWrapper,
       boolean isLayoutable) {
-    ThemedReactContext context = mReactContextForRootTag.get(rootTag);
+
+    // This could be null if teardown/navigation away from a surface on the main thread happens
+    // while a commit is being processed in a different thread. By contract we expect this to be
+    // possible at teardown, but this race should *never* happen at startup.
+    @Nullable ThemedReactContext context = mReactContextForRootTag.get(rootTag);
 
     String component = getFabricComponentName(componentName);
     synchronized (mPreMountItemsLock) {
@@ -342,10 +346,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int reactTag,
       boolean isLayoutable) {
     String component = getFabricComponentName(componentName);
-    ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
-    if (reactContext == null) {
-      throw new IllegalArgumentException("Unable to find ReactContext for root: " + reactRootTag);
-    }
+
+    // This could be null if teardown/navigation away from a surface on the main thread happens
+    // while a commit is being processed in a different thread. By contract we expect this to be
+    // possible at teardown, but this race should *never* happen at startup.
+    @Nullable ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
+
     return new CreateMountItem(
         reactContext,
         reactRootTag,
@@ -460,8 +466,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       float minHeight,
       float maxHeight,
       @Nullable float[] attachmentsPositions) {
+
+    // This could be null if teardown/navigation away from a surface on the main thread happens
+    // while a commit is being processed in a different thread. By contract we expect this to be
+    // possible at teardown, but this race should *never* happen at startup.
+    @Nullable
     ReactContext context =
         rootTag < 0 ? mReactApplicationContext : mReactContextForRootTag.get(rootTag);
+
+    // Don't both measuring if we can't get a context.
+    if (context == null) {
+      return 0;
+    }
+
     return mMountingManager.measure(
         context,
         componentName,
@@ -740,6 +757,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return mLastExecutedMountItemSurfaceIdActive;
   }
 
+  private static void printMountItem(MountItem mountItem, String prefix) {
+    // If a MountItem description is split across multiple lines, it's because it's a
+    // compound MountItem. Log each line separately.
+    String[] mountItemLines = mountItem.toString().split("\n");
+    for (String m : mountItemLines) {
+      FLog.e(TAG, prefix + ": " + m);
+    }
+  }
+
   @UiThread
   @ThreadConfined(UI)
   /** Nothing should call this directly except for `tryDispatchMountItems`. */
@@ -775,7 +801,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
               + viewCommandMountItemsToDispatch.size());
       for (DispatchCommandMountItem command : viewCommandMountItemsToDispatch) {
         if (ENABLE_FABRIC_LOGS) {
-          FLog.d(TAG, "dispatchMountItems: Executing viewCommandMountItem: " + command.toString());
+          printMountItem(command, "dispatchMountItems: Executing viewCommandMountItem");
         }
         try {
           command.execute(mMountingManager);
@@ -837,30 +863,37 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
       long batchedExecutionStartTime = SystemClock.uptimeMillis();
 
-      for (MountItem mountItem : mountItemsToDispatch) {
-        if (ENABLE_FABRIC_LOGS) {
-          // If a MountItem description is split across multiple lines, it's because it's a compound
-          // MountItem. Log each line separately.
-          String[] mountItemLines = mountItem.toString().split("\n");
-          for (String m : mountItemLines) {
-            FLog.d(TAG, "dispatchMountItems: Executing mountItem: " + m);
+      try {
+        for (MountItem mountItem : mountItemsToDispatch) {
+          if (ENABLE_FABRIC_LOGS) {
+            printMountItem(mountItem, "dispatchMountItems: Executing mountItem");
           }
+
+          // Make sure surface associated with this MountItem has been started, and not stopped.
+          // TODO T68118357: clean up this logic and simplify this method overall
+          if (mountItem instanceof BatchMountItem) {
+            BatchMountItem batchMountItem = (BatchMountItem) mountItem;
+            if (!surfaceActiveForExecution(
+                batchMountItem.getRootTag(), "dispatchMountItems BatchMountItem")) {
+              batchMountItem.executeDeletes(mMountingManager);
+              continue;
+            }
+          }
+
+          mountItem.execute(mMountingManager);
+        }
+        mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
+      } catch (Throwable e) {
+        // If there's an exception, we want to log diagnostics in prod and rethrow
+        // If a MountItem description is split across multiple lines, it's because it's a compound
+        // MountItem. Log each line separately.
+        FLog.e(TAG, "dispatchMountItems: caught exception, displaying all MountItems");
+        for (MountItem mountItem : mountItemsToDispatch) {
+          printMountItem(mountItem, "dispatchMountItems: mountItem");
         }
 
-        // Make sure surface associated with this MountItem has been started, and not stopped.
-        // TODO T68118357: clean up this logic and simplify this method overall
-        if (mountItem instanceof BatchMountItem) {
-          BatchMountItem batchMountItem = (BatchMountItem) mountItem;
-          if (!surfaceActiveForExecution(
-              batchMountItem.getRootTag(), "dispatchMountItems BatchMountItem")) {
-            batchMountItem.executeDeletes(mMountingManager);
-            continue;
-          }
-        }
-
-        mountItem.execute(mMountingManager);
+        throw e;
       }
-      mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
     }
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
@@ -1048,6 +1081,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void profileNextBatch() {
     // TODO T31905686: Remove this method and add support for multi-threading performance counters
+  }
+
+  @Override
+  @Deprecated
+  @Nullable
+  public String resolveCustomDirectEventName(@Nullable String eventName) {
+    if (eventName == null) {
+      return null;
+    }
+    if (eventName.substring(0, 3).equals("top")) {
+      return "on" + eventName.substring(3);
+    }
+    return eventName;
   }
 
   // Called from Binding.cpp

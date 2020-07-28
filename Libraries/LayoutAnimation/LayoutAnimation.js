@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -23,9 +23,11 @@ import Platform from '../Utilities/Platform';
 // Reexport type
 export type LayoutAnimationConfig = LayoutAnimationConfig_;
 
+type OnAnimationDidEndCallback = () => void;
+
 function configureNext(
   config: LayoutAnimationConfig,
-  onAnimationDidEnd?: Function,
+  onAnimationDidEnd?: OnAnimationDidEndCallback,
 ) {
   if (!Platform.isTesting) {
     if (UIManager?.configureNextLayoutAnimation) {
@@ -131,13 +133,13 @@ const LayoutAnimation = {
   },
   Presets,
   easeInEaseOut: (configureNext.bind(null, Presets.easeInEaseOut): (
-    onAnimationDidEnd?: any,
+    onAnimationDidEnd?: OnAnimationDidEndCallback,
   ) => void),
   linear: (configureNext.bind(null, Presets.linear): (
-    onAnimationDidEnd?: any,
+    onAnimationDidEnd?: OnAnimationDidEndCallback,
   ) => void),
   spring: (configureNext.bind(null, Presets.spring): (
-    onAnimationDidEnd?: any,
+    onAnimationDidEnd?: OnAnimationDidEndCallback,
   ) => void),
 };
 

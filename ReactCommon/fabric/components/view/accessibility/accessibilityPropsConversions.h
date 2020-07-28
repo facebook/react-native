@@ -122,5 +122,42 @@ inline void fromRawValue(const RawValue &value, AccessibilityState &result) {
   }
 }
 
+inline std::string toString(
+    const ImportantForAccessibility &importantForAccessibility) {
+  switch (importantForAccessibility) {
+    case ImportantForAccessibility::Auto:
+      return "auto";
+    case ImportantForAccessibility::Yes:
+      return "yes";
+    case ImportantForAccessibility::No:
+      return "no";
+    case ImportantForAccessibility::NoHideDescendants:
+      return "no-hide-descendants";
+  }
+}
+
+inline void fromRawValue(
+    const RawValue &value,
+    ImportantForAccessibility &result) {
+  auto string = (std::string)value;
+  if (string == "auto") {
+    result = ImportantForAccessibility::Auto;
+    return;
+  }
+  if (string == "yes") {
+    result = ImportantForAccessibility::Yes;
+    return;
+  }
+  if (string == "no") {
+    result = ImportantForAccessibility::No;
+    return;
+  }
+  if (string == "no-hide-descendants") {
+    result = ImportantForAccessibility::NoHideDescendants;
+    return;
+  }
+  abort();
+}
+
 } // namespace react
 } // namespace facebook

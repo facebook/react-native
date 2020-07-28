@@ -84,7 +84,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   // Step 3.
   // Iterating on a list of nodes computing compound offset.
   auto size = shadowNodeList.size();
-  for (int i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++) {
     auto currentShadowNode =
         traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
 
@@ -104,6 +104,10 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
     }
 
     resultFrame.origin += currentFrame.origin;
+
+    if (i != 0 && policy.includeTransform) {
+      resultFrame.origin += currentShadowNode->getContentOriginOffset();
+    }
   }
 
   return layoutMetrics;
@@ -145,6 +149,10 @@ bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
 
 Transform LayoutableShadowNode::getTransform() const {
   return Transform::Identity();
+}
+
+Point LayoutableShadowNode::getContentOriginOffset() const {
+  return {0, 0};
 }
 
 LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
@@ -217,13 +225,15 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     return nullptr;
   }
   auto frame = layoutableShadowNode->getLayoutMetrics().frame;
-  auto isPointInside = frame.containsPoint(point);
+  auto transformedFrame = frame * layoutableShadowNode->getTransform();
+  auto isPointInside = transformedFrame.containsPoint(point);
 
   if (!isPointInside) {
     return nullptr;
   }
 
-  auto newPoint = point - frame.origin * layoutableShadowNode->getTransform();
+  auto newPoint = point - transformedFrame.origin -
+      layoutableShadowNode->getContentOriginOffset();
   for (const auto &childShadowNode : node->getChildren()) {
     auto hitView = findNodeAtPoint(childShadowNode, newPoint);
     if (hitView) {

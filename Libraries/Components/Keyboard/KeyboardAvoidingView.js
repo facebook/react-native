@@ -67,6 +67,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   };
 
   _frame: ?ViewLayout = null;
+  _keyboardEvent: ?KeyboardEvent = null;
   _subscriptions: Array<EventSubscription> = [];
   viewRef: {current: React.ElementRef<any> | null, ...};
   _initialFrameHeight: number = 0;
@@ -91,12 +92,27 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   }
 
   _onKeyboardChange = (event: ?KeyboardEvent) => {
-    if (event == null) {
+    this._keyboardEvent = event;
+    this._updateBottomIfNecesarry();
+  };
+
+  _onLayout = (event: ViewLayoutEvent) => {
+    this._frame = event.nativeEvent.layout;
+    if (!this._initialFrameHeight) {
+      // save the initial frame height, before the keyboard is visible
+      this._initialFrameHeight = this._frame.height;
+    }
+
+    this._updateBottomIfNecesarry();
+  };
+
+  _updateBottomIfNecesarry = () => {
+    if (this._keyboardEvent == null) {
       this.setState({bottom: 0});
       return;
     }
 
-    const {duration, easing, endCoordinates} = event;
+    const {duration, easing, endCoordinates} = this._keyboardEvent;
     const height = this._relativeKeyboardHeight(endCoordinates);
 
     if (this.state.bottom === height) {
@@ -114,14 +130,6 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       });
     }
     this.setState({bottom: height});
-  };
-
-  _onLayout = (event: ViewLayoutEvent) => {
-    this._frame = event.nativeEvent.layout;
-    if (!this._initialFrameHeight) {
-      // save the initial frame height, before the keyboard is visible
-      this._initialFrameHeight = this._frame.height;
-    }
   };
 
   componentDidMount(): void {

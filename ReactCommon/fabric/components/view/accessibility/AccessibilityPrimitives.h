@@ -61,5 +61,12 @@ constexpr bool operator!=(
   return !(rhs == lhs);
 }
 
+enum class ImportantForAccessibility {
+  Auto,
+  Yes,
+  No,
+  NoHideDescendants,
+};
+
 } // namespace react
 } // namespace facebook

@@ -16,8 +16,8 @@ namespace facebook {
 namespace react {
 
 /*
- * Represent arbitrary telemetry data that can be associated with the
- * particular revision of `ShadowTree`.
+ * Represents telemetry data associated with a particular revision of
+ * `ShadowTree`.
  */
 class MountingTelemetry final {
  public:
