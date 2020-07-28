@@ -41,13 +41,13 @@ RCT_EXPORT_MODULE()
   return NO;
 }
 
- - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
-                                               size:(CGSize)size
-                                              scale:(CGFloat)scale
-                                         resizeMode:(RCTResizeMode)resizeMode
-                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
-                                 partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
-                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+ - (nullable RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                                        size:(CGSize)size
+                                                       scale:(CGFloat)scale
+                                                  resizeMode:(RCTResizeMode)resizeMode
+                                             progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                          partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
+                                           completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   UIImage *image = RCTImageFromLocalAssetURL(imageURL);
   if (image) {
@@ -60,7 +60,7 @@ RCT_EXPORT_MODULE()
     RCTLogWarn(@"%@", message);
     completionHandler(RCTErrorWithMessage(message), nil);
   }
-  
+
   return nil;
 }
 

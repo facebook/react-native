@@ -68,14 +68,14 @@ typedef NS_ENUM(NSUInteger, RCTImageLoaderPriority) {
  * Loads the specified image at the highest available resolution.
  * Can be called from any thread, will call back on an unspecified thread.
  */
-- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
-                                                  callback:(RCTImageLoaderCompletionBlock)callback;
+- (nullable RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                           callback:(RCTImageLoaderCompletionBlock)callback;
 /**
  * As above, but includes download `priority`.
  */
-- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
-                                                  priority:(RCTImageLoaderPriority)priority
-                                                  callback:(RCTImageLoaderCompletionBlock)callback;
+- (nullable RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                           priority:(RCTImageLoaderPriority)priority
+                                                           callback:(RCTImageLoaderCompletionBlock)callback;
 
 /**
 * As above, but includes target `size`, `scale` and `resizeMode`, which are used to
@@ -86,14 +86,14 @@ typedef NS_ENUM(NSUInteger, RCTImageLoaderPriority) {
 * It is meant to be called repeatedly while loading the image as higher quality versions are decoded,
 * for instance with progressive JPEGs.
 */
-- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
-                                                      size:(CGSize)size
-                                                     scale:(CGFloat)scale
-                                                   clipped:(BOOL)clipped
-                                                resizeMode:(RCTResizeMode)resizeMode
-                                             progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                          partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
-                                           completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+- (nullable RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                               size:(CGSize)size
+                                                              scale:(CGFloat)scale
+                                                            clipped:(BOOL)clipped
+                                                         resizeMode:(RCTResizeMode)resizeMode
+                                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                                   partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
+                                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
 /**
  * Finds an appropriate image decoder and passes the target `size`, `scale` and
