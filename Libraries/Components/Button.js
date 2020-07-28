@@ -32,8 +32,7 @@ type ButtonProps = $ReadOnly<{|
   title: string,
 
   /**
-    Handler to be called when the user taps the button. The first function
-    argument is an event in form of [PressEvent](pressevent).
+    Handler to be called when the user taps the button.
    */
   onPress: (event?: PressEvent) => mixed,
 
