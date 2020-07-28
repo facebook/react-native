@@ -26,7 +26,7 @@ inline void fromRawValue(const RawValue &value, SharedColor &result) {
 
   if (value.hasType<int>()) {
     auto argb = (int64_t)value;
-    auto ratio = 256.f;
+    auto ratio = 255.f;
     alpha = ((argb >> 24) & 0xFF) / ratio;
     red = ((argb >> 16) & 0xFF) / ratio;
     green = ((argb >> 8) & 0xFF) / ratio;
@@ -49,7 +49,7 @@ inline void fromRawValue(const RawValue &value, SharedColor &result) {
 
 inline folly::dynamic toDynamic(const SharedColor &color) {
   ColorComponents components = colorComponentsFromColor(color);
-  auto ratio = 256.f;
+  auto ratio = 255.f;
   return (
       ((int)(components.alpha * ratio) & 0xff) << 24 |
       ((int)(components.red * ratio) & 0xff) << 16 |
@@ -61,7 +61,7 @@ inline folly::dynamic toDynamic(const SharedColor &color) {
 
 inline std::string toString(const SharedColor &value) {
   ColorComponents components = colorComponentsFromColor(value);
-  auto ratio = 256.f;
+  auto ratio = 255.f;
   return "rgba(" + folly::to<std::string>(round(components.red * ratio)) +
       ", " + folly::to<std::string>(round(components.green * ratio)) + ", " +
       folly::to<std::string>(round(components.blue * ratio)) + ", " +
