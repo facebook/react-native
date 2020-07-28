@@ -10,6 +10,6 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "HelloWorld";
+    return "HelloWorld Welocme to React Native";
   }
 }
