@@ -18,7 +18,7 @@ React Native's current set of partners include Facebook, Callstack, Expo, Infini
 * **[Expo](https://expo.io/):** Builds [expo](https://github.com/expo/expo) on top of React Native to simplify app development
 * **[Facebook]():** Oversees the React Native product and maintains the [React Native core repo](https://reactnative.dev/) 
 * **[Infinite Red](https://infinite.red/):** Maintains the [ignite cli/boilerplate](https://github.com/infinitered/ignite), organizes [Chain React Conf](https://infinite.red/ChainReactConf)
-* **[Microsoft](http://aka.ms/reactnative):** Develops [React Native Windows](https://github.com/Microsoft/react-native-windows) for building Windows applications
+* **[Microsoft](http://aka.ms/reactnative):** Develops [React Native Windows](https://github.com/Microsoft/react-native-windows) and [React Native macOS](https://github.com/microsoft/react-native-macos) for building apps that target Windows and macOS
 * **[Software Mansion](https://swmansion.com/):** Maintain core infrastructure including JSC, Animated, and other popular third-party plugins.
 
 In terms of open source work, pull requests from partners are commonly prioritized. When you are contributing to React Native, you'll most likely meet somebody who works at one of the partner companies and who is a core contributor:
