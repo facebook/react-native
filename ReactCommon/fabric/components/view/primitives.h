@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <folly/Optional.h>
+#include <better/optional.h>
 #include <react/graphics/Color.h>
 #include <react/graphics/Geometry.h>
 #include <array>
@@ -25,7 +25,7 @@ enum class BorderStyle { Solid, Dotted, Dashed };
 template <typename T>
 struct CascadedRectangleEdges {
   using Counterpart = RectangleEdges<T>;
-  using OptionalT = folly::Optional<T>;
+  using OptionalT = better::optional<T>;
 
   OptionalT left{};
   OptionalT top{};
@@ -85,7 +85,7 @@ struct CascadedRectangleEdges {
 template <typename T>
 struct CascadedRectangleCorners {
   using Counterpart = RectangleCorners<T>;
-  using OptionalT = folly::Optional<T>;
+  using OptionalT = better::optional<T>;
 
   OptionalT topLeft{};
   OptionalT topRight{};

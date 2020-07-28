@@ -46,38 +46,38 @@ class TextAttributes : public DebugStringConvertible {
   std::string fontFamily{""};
   Float fontSize{std::numeric_limits<Float>::quiet_NaN()};
   Float fontSizeMultiplier{std::numeric_limits<Float>::quiet_NaN()};
-  folly::Optional<FontWeight> fontWeight{};
-  folly::Optional<FontStyle> fontStyle{};
-  folly::Optional<FontVariant> fontVariant{};
-  folly::Optional<bool> allowFontScaling{};
+  better::optional<FontWeight> fontWeight{};
+  better::optional<FontStyle> fontStyle{};
+  better::optional<FontVariant> fontVariant{};
+  better::optional<bool> allowFontScaling{};
   Float letterSpacing{std::numeric_limits<Float>::quiet_NaN()};
 
   // Paragraph Styles
   Float lineHeight{std::numeric_limits<Float>::quiet_NaN()};
-  folly::Optional<TextAlignment> alignment{};
-  folly::Optional<WritingDirection> baseWritingDirection{};
+  better::optional<TextAlignment> alignment{};
+  better::optional<WritingDirection> baseWritingDirection{};
 
   // Decoration
   SharedColor textDecorationColor{};
-  folly::Optional<TextDecorationLineType> textDecorationLineType{};
-  folly::Optional<TextDecorationLineStyle> textDecorationLineStyle{};
-  folly::Optional<TextDecorationLinePattern> textDecorationLinePattern{};
+  better::optional<TextDecorationLineType> textDecorationLineType{};
+  better::optional<TextDecorationLineStyle> textDecorationLineStyle{};
+  better::optional<TextDecorationLinePattern> textDecorationLinePattern{};
 
   // Shadow
   // TODO: Use `Point` type instead of `Size` for `textShadowOffset` attribute.
-  folly::Optional<Size> textShadowOffset{};
+  better::optional<Size> textShadowOffset{};
   Float textShadowRadius{std::numeric_limits<Float>::quiet_NaN()};
   SharedColor textShadowColor{};
 
   // Special
-  folly::Optional<bool> isHighlighted{};
+  better::optional<bool> isHighlighted{};
 
   // TODO T59221129: document where this value comes from and how it is set.
   // It's not clear if this is being used properly, or if it's being set at all.
   // Currently, it is intentionally *not* being set as part of BaseTextProps
   // construction.
-  folly::Optional<LayoutDirection> layoutDirection{};
-  folly::Optional<AccessibilityRole> accessibilityRole{};
+  better::optional<LayoutDirection> layoutDirection{};
+  better::optional<AccessibilityRole> accessibilityRole{};
 
 #pragma mark - Operations
 
