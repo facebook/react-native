@@ -2,11 +2,14 @@ parameters:
   apply_office_patches: ''
 
 steps:
+  - script: 'brew update'
+    displayName: 'brew update'
+
   - script: 'brew bundle'
     displayName: 'brew bundle'
 
-  - script: brew link node@10 --overwrite --force
-    displayName: 'ensure node 10'
+  - script: brew link node@12 --overwrite --force
+    displayName: 'ensure node 12'
 
   - template: apple-xcode-select.yml
 

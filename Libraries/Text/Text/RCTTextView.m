@@ -63,6 +63,25 @@
 }
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+- (void)dealloc
+{
+  [self removeAllTextStorageLayoutManagers];
+}
+
+- (void)removeAllTextStorageLayoutManagers
+{
+  // On macOS AppKit can throw an uncaught exception
+  // (-[NSConcretePointerArray pointerAtIndex:]: attempt to access pointer at index ...)
+  // during the dealloc of NSLayoutManager.  The _textStorage and its
+  // associated NSLayoutManager dealloc later in an autorelease pool.
+  // Manually removing the layout managers from _textStorage prior to release
+  // works around this issue in AppKit.
+  NSArray<NSLayoutManager *> *managers = [[_textStorage layoutManagers] copy];
+  for (NSLayoutManager *manager in managers) {
+    [_textStorage removeLayoutManager:manager];
+  }
+}
+
 - (BOOL)canBecomeKeyView
 {
 	// RCTText should not get any keyboard focus unless its `selectable` prop is true
@@ -132,17 +151,7 @@
        descendantViews:(NSArray<RCTUIView *> *)descendantViews // TODO(macOS ISS#3536887)
 {
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-  // On macOS when a large number of flex layouts are being performed, such
-  // as when a window is being resized, AppKit can throw an uncaught exception
-  // (-[NSConcretePointerArray pointerAtIndex:]: attempt to access pointer at index ...)
-  // during the dealloc of NSLayoutManager.  The _textStorage and its
-  // associated NSLayoutManager dealloc later in an autorelease pool.
-  // Manually removing the layout manager from _textStorage prior to release
-  // works around this issue in AppKit.
-  NSArray<NSLayoutManager *> *managers = [_textStorage layoutManagers];
-  for (NSLayoutManager *manager in managers) {
-    [_textStorage removeLayoutManager:manager];
-  }
+  [self removeAllTextStorageLayoutManagers];
 #endif // ]TODO(macOS ISS#2323203)
 
   _textStorage = textStorage;
