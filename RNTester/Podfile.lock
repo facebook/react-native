@@ -59,7 +59,11 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - glog (0.3.5)
   - hermes (0.4.1)
-  - libevent (2.1.11)
+  - libevent (2.1.11):
+    - libevent/core (= 2.1.11)
+  - libevent/core (2.1.11):
+    - libevent/event2-headers
+  - libevent/event2-headers (2.1.11)
   - OpenSSL-Universal (1.0.2.19):
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
@@ -391,7 +395,7 @@ DEPENDENCIES:
   - Yoga (from `../ReactCommon/yoga`)
 
 SPEC REPOS:
-  trunk:
+  https://cdn.cocoapods.org/:
     - CocoaAsyncSocket
     - CocoaLibEvent
     - Flipper
@@ -490,9 +494,9 @@ SPEC CHECKSUMS:
   FlipperKit: 88b7f0d0cf907ddc2137b85eeb7f3d4d8d9395c8
   glog: b3f6d74f3e2d33396addc0ee724d2b2b79fc3e00
   hermes: ea5308401c53c1352fcb566548f2a45605c36f15
-  libevent: 52af31075d5ade81f97298a56c0656a5618ccc23
+  libevent: c2d56c8554ac18101d9c5f4c66ef762798209682
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
-  RCT-Folly: 682592cfa82cadeab5944c4478d81c330020b581
+  RCT-Folly: 73721d08b1a712fffa7afbfb96f1d43453d76075
   RCTRequired: 66250bf27479214eb5c530ca2d8c772ebe4d7e71
   RCTTypeSafety: 4e66a550e8f4d69f045dc4180cb8cfea0b982ed6
   React: bacecd5320c8bb453aa396179b93061ebd9d34bf
@@ -520,4 +524,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 3cfdde26e08d043498daa8442c611eb479f77fb0
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3
