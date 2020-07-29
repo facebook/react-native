@@ -13,7 +13,8 @@
 const Systrace = require('../Performance/Systrace');
 
 const infoLog = require('./infoLog');
-const performanceNow = global.nativeQPLTimestamp ?? global.performance.now;
+const performanceNow =
+  global.nativeQPLTimestamp ?? global.performance.now.bind(global.performance);
 
 type Timespan = {
   description?: string,
