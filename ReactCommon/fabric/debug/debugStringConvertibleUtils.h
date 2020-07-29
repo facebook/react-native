@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <better/optional.h>
 #include <limits>
 #include <memory>
 #include <string>
@@ -33,7 +34,7 @@ debugStringConvertibleItem(std::string name, T value, T defaultValue = {}) {
 template <typename T>
 inline SharedDebugStringConvertible debugStringConvertibleItem(
     std::string name,
-    folly::Optional<T> value,
+    better::optional<T> value,
     T defaultValue = {}) {
   if (!value.hasValue()) {
     return nullptr;

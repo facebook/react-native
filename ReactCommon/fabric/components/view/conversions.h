@@ -8,6 +8,7 @@
 #pragma once
 
 #include <better/map.h>
+#include <better/optional.h>
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
 #include <glog/logging.h>
@@ -95,9 +96,9 @@ inline YGValue yogaStyleValueFromFloat(
   return {(float)value, unit};
 }
 
-inline folly::Optional<Float> optionalFloatFromYogaValue(
+inline better::optional<Float> optionalFloatFromYogaValue(
     const YGValue value,
-    folly::Optional<Float> base = {}) {
+    better::optional<Float> base = {}) {
   switch (value.unit) {
     case YGUnitUndefined:
       return {};
@@ -105,9 +106,9 @@ inline folly::Optional<Float> optionalFloatFromYogaValue(
       return floatFromYogaFloat(value.value);
     case YGUnitPercent:
       return base.has_value()
-          ? folly::Optional<Float>(
+          ? better::optional<Float>(
                 base.value() * floatFromYogaFloat(value.value))
-          : folly::Optional<Float>();
+          : better::optional<Float>();
     case YGUnitAuto:
       return {};
   }
