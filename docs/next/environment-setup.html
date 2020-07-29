@@ -174,7 +174,7 @@ brew <span class="token function">install</span> watchman
 <p>We recommend installing Node and Python2 via <a href="https://chocolatey.org">Chocolatey</a>, a popular package manager for Windows.</p>
 <p>React Native also requires <a href="https://openjdk.java.net/projects/jdk8/">Java SE Development Kit (JDK)</a>, as well as Python2. Both can be installed using Chocolatey.</p>
 <p>Open an Administrator Command Prompt (right click Command Prompt and select &quot;Run as Administrator&quot;), then run the following command:</p>
-<pre><code class="hljs css language-powershell">choco install <span class="hljs-literal">-y</span> nodejs.install python2 openjdk8 
+<pre><code class="hljs css language-powershell">choco install <span class="hljs-literal">-y</span> nodejs.install python2 openjdk8
 </code></pre>
 <p>If you have already installed Node on your system, make sure it is Node 10 or newer. If you already have a JDK on your system, make sure it is version 8 or newer.</p>
 <blockquote>
@@ -281,7 +281,7 @@ brew <span class="token function">install</span> watchman
 <p>The SDK is installed, by default, at the following location:</p>
 <pre><code class="hljs css language-powershell">%LOCALAPPDATA%\Android\Sdk
 </code></pre>
-<p>You can find the actual location of the SDK in the Android Studio &quot;Preferences&quot; dialog, under <strong>Appearance &amp; Behavior</strong> → <strong>System Settings</strong> → <strong>Android SDK</strong>.</p>
+<p>You can find the actual location of the SDK in the Android Studio &quot;Settings&quot; dialog, under <strong>Appearance &amp; Behavior</strong> → <strong>System Settings</strong> → <strong>Android SDK</strong>.</p>
 <p>Open a new Command Prompt window to ensure the new environment variable is loaded before proceeding to the next step.</p>
 <ol>
 <li>Open powershell</li>
@@ -379,15 +379,9 @@ brew <span class="token function">install</span> watchman
 <blockquote>
 <p>If you use the Yarn package manager, you can use <code>yarn</code> instead of <code>npx</code> when running React Native commands inside an existing project.</p>
 </blockquote>
-<p><block class="webNote devNotes" /></p>
 <blockquote>
-<p>Metro is a lot like webpack—for React Native apps.</p>
+<p>If you're familiar with web development, Metro is a lot like webpack—for React Native apps. Unlike Kotlin or Java, JavaScript isn't compiled—and neither is React Native. Bundling isn't the same as compiling, but it can help improve startup performance and translate some platform-specific JavaScript into more JavaScript.</p>
 </blockquote>
-<p><block class="androidNote devNotes" /></p>
-<blockquote>
-<p>Unlike Kotlin or Java, JavaScript isn't compiled—and neither is React Native. Bundling isn't the same as compiling, but it can help improve startup performance and translate some platform-specific JavaScript into more JavaScript.</p>
-</blockquote>
-<p><block class="endBlock devNotes" /></p>
 <p><h3>Step 2: Start your application</h3></p>
 <p>Let Metro Bundler run in its own terminal. Open a new terminal inside your React Native project folder. Run the following:</p>
 <pre><code class="hljs css language-sh">npx react-native run-ios
@@ -411,15 +405,9 @@ brew <span class="token function">install</span> watchman
 <blockquote>
 <p>If you use the Yarn package manager, you can use <code>yarn</code> instead of <code>npx</code> when running React Native commands inside an existing project.</p>
 </blockquote>
-<p><block class="webNote devNotes" /></p>
 <blockquote>
-<p>Metro is a lot like webpack—for React Native apps.</p>
+<p>If you're familiar with web development, Metro is a lot like webpack—for React Native apps. Unlike Kotlin or Java, JavaScript isn't compiled—and neither is React Native. Bundling isn't the same as compiling, but it can help improve startup performance and translate some platform-specific JavaScript into more JavaScript.</p>
 </blockquote>
-<p><block class="androidNote devNotes" /></p>
-<blockquote>
-<p>Unlike Kotlin or Java, JavaScript isn't compiled—and neither is React Native. Bundling isn't the same as compiling, but it can help improve startup performance and translate some platform-specific JavaScript into more JavaScript.</p>
-</blockquote>
-<p><block class="endBlock devNotes" /></p>
 <p><h3>Step 2: Start your application</h3></p>
 <p>Let Metro Bundler run in its own terminal. Open a new terminal inside your React Native project folder. Run the following:</p>
 <pre><code class="hljs css language-sh">npx react-native run-android

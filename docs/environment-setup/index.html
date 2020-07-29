@@ -158,7 +158,7 @@
 <pre><code class="hljs css language-sh">brew <span class="token function">install</span> node
 brew <span class="token function">install</span> watchman
 </code></pre>
-<p>If you have already installed Node on your system, make sure it is Node 8.3 or newer.</p>
+<p>If you have already installed Node on your system, make sure it is Node 10 or newer.</p>
 <p><a href="https://facebook.github.io/watchman">Watchman</a> is a tool by Facebook for watching changes in the filesystem. It is highly recommended you install it for better performance.</p>
 <p><block class="native mac android" /></p>
 <p><h3>Java Development Kit</h3></p>
@@ -168,17 +168,20 @@ brew <span class="token function">install</span> watchman
 <p>If you have already installed JDK on your system, make sure it is JDK 8 or newer.</p>
 <p><block class="native linux android" /></p>
 <p><h3>Node</h3></p>
-<p>Follow the <a href="https://nodejs.org/en/download/package-manager/">installation instructions for your Linux distribution</a> to install Node 8.3 or newer.</p>
+<p>Follow the <a href="https://nodejs.org/en/download/package-manager/">installation instructions for your Linux distribution</a> to install Node 10 or newer.</p>
 <p><block class='native windows android' /></p>
 <p><h3>Node, Python2, JDK</h3></p>
 <p>We recommend installing Node and Python2 via <a href="https://chocolatey.org">Chocolatey</a>, a popular package manager for Windows.</p>
-<p>React Native also requires a recent version of the <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Java SE Development Kit (JDK)</a>, as well as Python 2. Both can be installed using Chocolatey.</p>
+<p>React Native also requires <a href="https://openjdk.java.net/projects/jdk8/">Java SE Development Kit (JDK)</a>, as well as Python2. Both can be installed using Chocolatey.</p>
 <p>Open an Administrator Command Prompt (right click Command Prompt and select &quot;Run as Administrator&quot;), then run the following command:</p>
-<pre><code class="hljs css language-powershell">choco install <span class="hljs-literal">-y</span> nodejs.install python2 jdk8
+<pre><code class="hljs css language-powershell">choco install <span class="hljs-literal">-y</span> nodejs.install python2 openjdk8
 </code></pre>
-<p>If you have already installed Node on your system, make sure it is Node 8.3 or newer. If you already have a JDK on your system, make sure it is version 8 or newer.</p>
+<p>If you have already installed Node on your system, make sure it is Node 10 or newer. If you already have a JDK on your system, make sure it is version 8 or newer.</p>
 <blockquote>
 <p>You can find additional installation options on <a href="https://nodejs.org/en/download/">Node's Downloads page</a>.</p>
+</blockquote>
+<blockquote>
+<p>If you're using the latest version of Java Development Kit, you'll need to change the Gradle version of your project so it can recognize the JDK. You can do that by going to <code>{project root folder}\android\gradle\wrapper\gradle-wrapper.properties</code> and changing the <code>distributionUrl</code> value to upgrade the Gradle version. You can check out <a href="https://gradle.org/releases/">here the lastest releases of Gradle</a>.</p>
 </blockquote>
 <p><block class="native mac ios" /></p>
 <p><h3>Xcode &amp; CocoaPods</h3></p>
@@ -197,13 +200,13 @@ brew <span class="token function">install</span> watchman
 <p>For more information, please visit <a href="https://guides.cocoapods.org/using/getting-started.html">CocoaPods Getting Started guide</a>.</p>
 <p><block class="native linux android" /></p>
 <p><h3>Java Development Kit</h3></p>
-<p>React Native requires version 8 of the Java SE Development Kit (JDK). You may download and install <a href="http://openjdk.java.net">OpenJDK</a> from <a href="https://adoptopenjdk.net/">AdoptOpenJDK</a> or your system packager. You may also <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Download and install Oracle JDK 8</a> if desired.</p>
+<p>React Native requires at least the version 8 of the Java SE Development Kit (JDK). You may download and install <a href="http://openjdk.java.net">OpenJDK</a> from <a href="https://adoptopenjdk.net/">AdoptOpenJDK</a> or your system packager. You may also <a href="https://www.oracle.com/java/technologies/javase-jdk14-downloads.html">Download and install Oracle JDK 14</a> if desired.</p>
 <p><block class="native mac linux windows android" /></p>
 <p><h3>Android development environment</h3></p>
 <p>Setting up your development environment can be somewhat tedious if you're new to Android development. If you're already familiar with Android development, there are a few things you may need to configure. In either case, please make sure to carefully follow the next few steps.</p>
 <p><block class="native mac windows linux android" /></p>
 <p><h4>1. Install Android Studio</h4></p>
-<p><a href="https://developer.android.com/studio/index.html">Download and install Android Studio</a>. Choose a &quot;Custom&quot; setup when prompted to select an installation type. Make sure the boxes next to all of the following are checked:</p>
+<p><a href="https://developer.android.com/studio/index.html">Download and install Android Studio</a>. While on Android Studio intallation wizard, make sure the boxes next to all of the following items are checked:</p>
 <p><block class="native mac windows android" /></p>
 <ul>
 <li><code>Android SDK</code></li>
@@ -225,7 +228,7 @@ brew <span class="token function">install</span> watchman
 <p>Once setup has finalized and you're presented with the Welcome screen, proceed to the next step.</p>
 <p><h4>2. Install the Android SDK</h4></p>
 <p>Android Studio installs the latest Android SDK by default. Building a React Native app with native code, however, requires the <code>Android 10 (Q)</code> SDK in particular. Additional Android SDKs can be installed through the SDK Manager in Android Studio.</p>
-<p>The SDK Manager can be accessed from the &quot;Welcome to Android Studio&quot; screen. Click on &quot;Configure&quot;, then select &quot;SDK Manager&quot;.</p>
+<p>To do that, open Android Studio, click on &quot;Configure&quot; button and select &quot;SDK Manager&quot;.</p>
 <p><block class="native mac android" /></p>
 <p><img src="/docs/assets/GettingStartedAndroidStudioWelcomeMacOS.png" alt="Android Studio Welcome"></p>
 <p><block class="native windows android" /></p>
@@ -263,7 +266,7 @@ brew <span class="token function">install</span> watchman
 <blockquote>
 <p><code>.bash_profile</code> is specific to <code>bash</code>. If you're using another shell, you will need to edit the appropriate shell-specific config file.</p>
 </blockquote>
-<p>Type <code>source $HOME/.bash_profile</code> to load the config into your current shell. Verify that ANDROID_HOME has been added to your path by running <code>echo $PATH</code>.</p>
+<p>Type <code>source $HOME/.bash_profile</code> for <code>bash</code> or <code>source $HOME/.zprofile</code> to load the config into your current shell. Verify that ANDROID_HOME has been set by running <code>echo $ANDROID_HOME</code> and the appropriate directories have been added to your path by running <code>echo $PATH</code>.</p>
 <blockquote>
 <p>Please make sure you use the correct Android SDK path. You can find the actual location of the SDK in the Android Studio &quot;Preferences&quot; dialog, under <strong>Appearance &amp; Behavior</strong> → <strong>System Settings</strong> → <strong>Android SDK</strong>.</p>
 </blockquote>
@@ -276,9 +279,9 @@ brew <span class="token function">install</span> watchman
 </ol>
 <p><img src="/docs/assets/GettingStartedAndroidEnvironmentVariableANDROID_HOME.png" alt="ANDROID_HOME Environment Variable"></p>
 <p>The SDK is installed, by default, at the following location:</p>
-<pre><code class="hljs css language-powershell">c:\Android\tools\bin
+<pre><code class="hljs css language-powershell">%LOCALAPPDATA%\Android\Sdk
 </code></pre>
-<p>You can find the actual location of the SDK in the Android Studio &quot;Preferences&quot; dialog, under <strong>Appearance &amp; Behavior</strong> → <strong>System Settings</strong> → <strong>Android SDK</strong>.</p>
+<p>You can find the actual location of the SDK in the Android Studio &quot;Settings&quot; dialog, under <strong>Appearance &amp; Behavior</strong> → <strong>System Settings</strong> → <strong>Android SDK</strong>.</p>
 <p>Open a new Command Prompt window to ensure the new environment variable is loaded before proceeding to the next step.</p>
 <ol>
 <li>Open powershell</li>
@@ -295,7 +298,7 @@ brew <span class="token function">install</span> watchman
 <li>Click <strong>New</strong> and add the path to platform-tools to the list.</li>
 </ol>
 <p>The default location for this folder is:</p>
-<pre><code class="hljs css language-powershell">C:\Android\tools\bin\platform<span class="hljs-literal">-tools</span>
+<pre><code class="hljs css language-powershell">%LOCALAPPDATA%\Android\Sdk\platform<span class="hljs-literal">-tools</span>
 </code></pre>
 <p><block class="native linux android" /></p>
 <p><h3>Watchman</h3></p>
@@ -376,15 +379,9 @@ brew <span class="token function">install</span> watchman
 <blockquote>
 <p>If you use the Yarn package manager, you can use <code>yarn</code> instead of <code>npx</code> when running React Native commands inside an existing project.</p>
 </blockquote>
-<p><block class="webNote devNotes" /></p>
 <blockquote>
-<p>Metro is a lot like webpack—for React Native apps.</p>
+<p>If you're familiar with web development, Metro is a lot like webpack—for React Native apps. Unlike Kotlin or Java, JavaScript isn't compiled—and neither is React Native. Bundling isn't the same as compiling, but it can help improve startup performance and translate some platform-specific JavaScript into more JavaScript.</p>
 </blockquote>
-<p><block class="androidNote devNotes" /></p>
-<blockquote>
-<p>Unlike Kotlin or Java, JavaScript isn't compiled—and neither is React Native. Bundling isn't the same as compiling, but it can help improve startup performance and translate some platform-specific JavaScript into more JavaScript.</p>
-</blockquote>
-<p><block class="endBlock devNotes" /></p>
 <p><h3>Step 2: Start your application</h3></p>
 <p>Let Metro Bundler run in its own terminal. Open a new terminal inside your React Native project folder. Run the following:</p>
 <pre><code class="hljs css language-sh">npx react-native run-ios
@@ -408,15 +405,9 @@ brew <span class="token function">install</span> watchman
 <blockquote>
 <p>If you use the Yarn package manager, you can use <code>yarn</code> instead of <code>npx</code> when running React Native commands inside an existing project.</p>
 </blockquote>
-<p><block class="webNote devNotes" /></p>
 <blockquote>
-<p>Metro is a lot like webpack—for React Native apps.</p>
+<p>If you're familiar with web development, Metro is a lot like webpack—for React Native apps. Unlike Kotlin or Java, JavaScript isn't compiled—and neither is React Native. Bundling isn't the same as compiling, but it can help improve startup performance and translate some platform-specific JavaScript into more JavaScript.</p>
 </blockquote>
-<p><block class="androidNote devNotes" /></p>
-<blockquote>
-<p>Unlike Kotlin or Java, JavaScript isn't compiled—and neither is React Native. Bundling isn't the same as compiling, but it can help improve startup performance and translate some platform-specific JavaScript into more JavaScript.</p>
-</blockquote>
-<p><block class="endBlock devNotes" /></p>
 <p><h3>Step 2: Start your application</h3></p>
 <p>Let Metro Bundler run in its own terminal. Open a new terminal inside your React Native project folder. Run the following:</p>
 <pre><code class="hljs css language-sh">npx react-native run-android
