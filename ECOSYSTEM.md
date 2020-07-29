@@ -12,7 +12,7 @@ There are three types of stakeholders:
 
 Partners are companies that are significantly invested in React Native and have been for years. Informed by their use of React Native, they push for improvements of the core and/or the ecosystem around it. Partners think of React Native as a product: they understand the trade offs that the project makes as well as future plans and goals. Together we shape the vision for React Native to make it the best way to build applications.
 
-React Native's current set of partners include Facebook, Callstack, Expo, Infinite Red, Microsoft and Software Mansion. Many engineers from these companies are core contributors, and their partner responsibilities also include:
+React Native's current set of partners include Callstack, Expo, Facebook, Infinite Red, Microsoft and Software Mansion. Many engineers from these companies are core contributors, and their partner responsibilities also include:
 
 * **[Callstack](https://callstack.com/):** Manages releases, maintains the [React Native CLI](https://github.com/react-native-community/react-native-cli) and organizes [React Native EU](https://react-native.eu/)
 * **[Expo](https://expo.io/):** Builds [expo](https://github.com/expo/expo) on top of React Native to simplify app development
