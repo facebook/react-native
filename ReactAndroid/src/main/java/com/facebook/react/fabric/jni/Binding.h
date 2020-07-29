@@ -19,6 +19,7 @@
 #include <mutex>
 #include "ComponentFactoryDelegate.h"
 #include "EventBeatManager.h"
+#include "JBackgroundExecutor.h"
 
 namespace facebook {
 namespace react {
@@ -115,6 +116,7 @@ class Binding : public jni::HybridClass<Binding>,
   virtual void onAllAnimationsComplete() override;
   LayoutAnimationDriver *getAnimationDriver();
   std::shared_ptr<LayoutAnimationDriver> animationDriver_;
+  std::unique_ptr<JBackgroundExecutor> backgroundExecutor_;
 
   std::shared_ptr<Scheduler> scheduler_;
   std::mutex schedulerMutex_;

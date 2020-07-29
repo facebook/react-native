@@ -278,6 +278,12 @@ void Binding::installFabricUIManager(
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
+  if (reactNativeConfig_->getBool(
+          "react_fabric:enable_background_executor_android")) {
+    backgroundExecutor_ = std::make_unique<JBackgroundExecutor>();
+    toolbox.backgroundExecutor = backgroundExecutor_->get();
+  }
+
   if (enableLayoutAnimations) {
     animationDriver_ = std::make_shared<LayoutAnimationDriver>(this);
   }
