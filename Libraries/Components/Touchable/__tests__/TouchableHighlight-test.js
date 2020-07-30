@@ -82,4 +82,8 @@ describe('TouchableHighlight with disabled state', () => {
       ),
     ).toMatchSnapshot();
   });
+
+  it('has displayName', () => {
+    expect(TouchableHighlight.displayName).toEqual('TouchableHighlight');
+  });
 });
