@@ -15,6 +15,7 @@
 
 const Platform = require('./Platform');
 const TVEventHandler = require('../Components/AppleTV/TVEventHandler');
+const invariant = require('invariant')
 
 type BackPressEventName = 'backPress' | 'hardwareBackPress';
 
@@ -95,7 +96,10 @@ if (Platform.isTV) {
       eventName: BackPressEventName,
       handler: () => ?boolean,
     ): {remove: () => void, ...} {
+      invariant(handler != null, 'Cannot register nullish callback to BackHandler')
+      
       _backPressSubscriptions.add(handler);
+
       return {
         remove: () => BackHandler.removeEventListener(eventName, handler),
       };

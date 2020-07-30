@@ -12,6 +12,7 @@
 
 import NativeDeviceEventManager from '../../Libraries/NativeModules/specs/NativeDeviceEventManager';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
+import invariant from 'invariant'
 
 const DEVICE_BACK_EVENT = 'hardwareBackPress';
 
@@ -89,9 +90,13 @@ const BackHandler: TBackHandler = {
     eventName: BackPressEventName,
     handler: () => ?boolean,
   ): {remove: () => void, ...} {
+    
+    invariant(handler != null, 'Cannot register nullish callback to BackHandler')
+
     if (_backPressSubscriptions.indexOf(handler) === -1) {
       _backPressSubscriptions.push(handler);
     }
+
     return {
       remove: (): void => BackHandler.removeEventListener(eventName, handler),
     };
