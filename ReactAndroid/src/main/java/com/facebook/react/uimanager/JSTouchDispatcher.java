@@ -31,6 +31,8 @@ public class JSTouchDispatcher {
   private final ViewGroup mRootViewGroup;
   private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
       new TouchEventCoalescingKeyHelper();
+  private final float[] mLastTouchStartCoordinates = new float[2];
+  private boolean mTouchMoveStarted = false;
 
   public JSTouchDispatcher(ViewGroup viewGroup) {
     mRootViewGroup = viewGroup;
@@ -65,12 +67,7 @@ public class JSTouchDispatcher {
             ReactConstants.TAG, "Got DOWN touch before receiving UP or CANCEL from last gesture");
       }
 
-      // First event for this gesture. We expect tag to be set to -1, and we use helper method
-      // {@link #findTargetTagForTouch} to find react view ID that will be responsible for handling
-      // this gesture
-      mChildIsHandlingNativeGesture = false;
-      mGestureStartTime = ev.getEventTime();
-      mTargetTag = findTargetTagAndSetCoordinates(ev);
+      this.markTouchStarted(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
               mTargetTag,
@@ -104,20 +101,23 @@ public class JSTouchDispatcher {
               mTargetCoordinates[0],
               mTargetCoordinates[1],
               mTouchEventCoalescingKeyHelper));
-      mTargetTag = -1;
-      mGestureStartTime = TouchEvent.UNSET;
+      this.markTouchEnded();
     } else if (action == MotionEvent.ACTION_MOVE) {
       // Update pointer position for current gesture
       findTargetTagAndSetCoordinates(ev);
-      eventDispatcher.dispatchEvent(
+      // Only dispatch the event if we've already started a move or the move is at least some
+      // number of pixels away from the starting point
+      if (this.shouldDispatchTouchMoveEvent()) {
+        eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              mTargetTag,
-              TouchEventType.MOVE,
-              ev,
-              mGestureStartTime,
-              mTargetCoordinates[0],
-              mTargetCoordinates[1],
-              mTouchEventCoalescingKeyHelper));
+            mTargetTag,
+            TouchEventType.MOVE,
+            ev,
+            mGestureStartTime,
+            mTargetCoordinates[0],
+            mTargetCoordinates[1],
+            mTouchEventCoalescingKeyHelper));
+      }
     } else if (action == MotionEvent.ACTION_POINTER_DOWN) {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
       eventDispatcher.dispatchEvent(
@@ -148,8 +148,7 @@ public class JSTouchDispatcher {
             ReactConstants.TAG,
             "Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN");
       }
-      mTargetTag = -1;
-      mGestureStartTime = TouchEvent.UNSET;
+      this.markTouchEnded();
     } else {
       FLog.w(
           ReactConstants.TAG,
@@ -161,6 +160,60 @@ public class JSTouchDispatcher {
     // This method updates `mTargetCoordinates` with coordinates for the motion event.
     return TouchTargetHelper.findTargetTagAndCoordinatesForTouch(
         ev.getX(), ev.getY(), mRootViewGroup, mTargetCoordinates, null);
+  }
+
+  private void markTouchStarted(MotionEvent ev) {
+    // First event for this gesture. We expect tag to be set to -1, and we use helper method
+    // {@link #findTargetTagForTouch} to find react view ID that will be responsible for handling
+    // this gesture
+    mChildIsHandlingNativeGesture = false;
+    mGestureStartTime = ev.getEventTime();
+    mTargetTag = findTargetTagAndSetCoordinates(ev);
+
+    // Track the last touch start coordinates to prevent touch moves that are too close to the
+    // start coordinates from being emitted. See {@link #shouldDispatchTouchMoveEvent} for
+    // more details
+    mTouchMoveStarted = false;
+    mLastTouchStartCoordinates[0] = mTargetCoordinates[0];
+    mLastTouchStartCoordinates[1] = mTargetCoordinates[1];
+  }
+
+  private void markTouchEnded() {
+    mTargetTag = -1;
+    mGestureStartTime = TouchEvent.UNSET;
+  }
+
+  /**
+   * This function prevents `topTouchMove` events from being dispatched if the user hasn't moved
+   * their finger from the start of the last touch, to match the iOS behaviour.
+   *
+   * On Android, `MotionEvent.ACTION_MOVE` events are dispatched even if the user had moved
+   * their finger 0 pixels from the starting point. This is unlike on iOS, where move events
+   * are only dispatched after some distance.
+   *
+   * This causes a problem in the following case:
+   *
+   * - A parent component has a `PanResponder` that responds to all move events
+   * - The parent has a child `Pressable` (or `Touchable`)
+   *
+   * Because the move event is emitted even without any real move, the parent would take over
+   * immediately on press down and no presses would ever register on the child.
+   */
+  private boolean shouldDispatchTouchMoveEvent() {
+    if (mTouchMoveStarted) {
+      return true;
+    }
+
+    // Logic based on https://github.com/facebook/react-native/blob/v0.63.2/Libraries/Pressability/Pressability.js#L516
+    // which recognizes only moves of >10 pixels as moves that should cancel a long press. This
+    // matches the behaviour on iOS and prevents move events that aren't really moves from
+    // canceling touches on child pressables.
+    mTouchMoveStarted = Math.hypot(
+      mLastTouchStartCoordinates[0] - mTargetCoordinates[0],
+      mLastTouchStartCoordinates[1] - mTargetCoordinates[1]
+    ) > 10;
+
+    return mTouchMoveStarted;
   }
 
   private void dispatchCancelEvent(MotionEvent androidEvent, EventDispatcher eventDispatcher) {

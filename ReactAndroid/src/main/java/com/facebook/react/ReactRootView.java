@@ -197,53 +197,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    if (this.shouldDispatchTouchEvent(ev)) {
-      dispatchJSTouchEvent(ev);
-    }
+    dispatchJSTouchEvent(ev);
     return super.onInterceptTouchEvent(ev);
-  }
-
-  /**
-   * This function prevents `topTouchMove` events from being dispatched if the user hasn't moved
-   * their finger from the start of the last touch, to match the iOS behaviour.
-   *
-   * On Android, `MotionEvent.ACTION_MOVE` events are dispatched even if the user had moved
-   * their finger 0 pixels from the starting point. This is unlike on iOS, where move events
-   * are only dispatched after some distance.
-   *
-   * This causes a problem in the following case:
-   *
-   * - A parent component has a `PanResponder` that responds to all move events
-   * - The parent has a child `Pressable` (or `Touchable`)
-   *
-   * Because the move event is emitted even without any real move, the parent would take over
-   * immediately on press down and no presses would ever register on the child.
-   */
-  private boolean shouldDispatchTouchEvent(MotionEvent ev) {
-    int action = ev.getAction() & MotionEvent.ACTION_MASK;
-    if (action == MotionEvent.ACTION_DOWN) {
-      mLastTouchStartX = ev.getX();
-      mLastTouchStartY = ev.getY();
-    }
-
-    boolean shouldDispatchTouchEvent = true;
-    if (action == MotionEvent.ACTION_MOVE && mTouchMoveStarted == false) {
-      float moveX = ev.getX();
-      float moveY = ev.getY();
-      // Logic based on https://github.com/facebook/react-native/blob/v0.63.2/Libraries/Pressability/Pressability.js#L516
-      // which recognizes only moves of >10 pixels as moves that should
-      // cancel a long press. This matches the behaviour on iOS and prevents
-      // move events that aren't really moves from canceling touches on
-      // child pressables.
-      mTouchMoveStarted = Math.hypot(moveX - mLastTouchStartX, moveY - mLastTouchStartY) > 10;
-      shouldDispatchTouchEvent = mTouchMoveStarted;
-    }
-
-    if (action == MotionEvent.ACTION_UP) {
-      mTouchMoveStarted = false;
-    }
-
-    return shouldDispatchTouchEvent;
   }
 
   @Override

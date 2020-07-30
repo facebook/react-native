@@ -259,8 +259,8 @@ function PressableInPanResponder() {
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
   const appendMessage = (message: string) => {
-    const lastMessage = messages.current.length
-      && messages.current[messages.current.length - 1];
+    const lastMessage =
+      messages.current.length && messages.current[messages.current.length - 1];
     if (message === lastMessage) return;
     messages.current = [...messages.current, message];
     forceUpdate();
@@ -297,8 +297,7 @@ function PressableInPanResponder() {
         <Pressable
           onPress={() => appendMessage('Pressable onPress')}
           onPressIn={() => appendMessage('Pressable onPressIn')}
-          style={[styles.row, styles.block]}
-        >
+          style={[styles.row, styles.block]}>
           <Text style={styles.button}>Pressable</Text>
         </Pressable>
       </View>
@@ -539,7 +538,7 @@ exports.examples = [
     title: 'Pressable in PanResponder',
     description: ('<Pressable> components should be pressable within ' +
       'PanResponders that only handle touch moves. onPress should trigger' +
-      'if you press and don\'t move your finger.': string),
+      "if you press and don't move your finger.": string),
     render: function(): React.Node {
       return <PressableInPanResponder />;
     },
