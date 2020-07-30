@@ -47,12 +47,17 @@ constexpr enum AccessibilityTraits operator&(
 struct AccessibilityState {
   bool disabled{false};
   bool selected{false};
+  enum { Unchecked, Checked, Mixed } checked{Unchecked};
+  bool busy{false};
+  bool expanded{false};
 };
 
 constexpr bool operator==(
     AccessibilityState const &lhs,
     AccessibilityState const &rhs) {
-  return lhs.disabled == rhs.disabled && lhs.selected == rhs.selected;
+  return lhs.disabled == rhs.disabled && lhs.selected == rhs.selected &&
+      lhs.checked == rhs.checked && lhs.busy == rhs.busy &&
+      lhs.expanded == rhs.expanded;
 }
 
 constexpr bool operator!=(

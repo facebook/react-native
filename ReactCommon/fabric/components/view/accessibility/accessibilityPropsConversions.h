@@ -120,6 +120,28 @@ inline void fromRawValue(const RawValue &value, AccessibilityState &result) {
   if (disabled != map.end()) {
     fromRawValue(disabled->second, result.disabled);
   }
+  auto checked = map.find("checked");
+  if (checked != map.end()) {
+    if (checked->second.hasType<std::string>()) {
+      if ((std::string)checked->second == "mixed") {
+        result.checked = AccessibilityState::Mixed;
+      }
+    } else if (checked->second.hasType<bool>()) {
+      if ((bool)checked->second == true) {
+        result.checked = AccessibilityState::Checked;
+      } else {
+        result.checked = AccessibilityState::Unchecked;
+      }
+    }
+  }
+  auto busy = map.find("busy");
+  if (busy != map.end()) {
+    fromRawValue(busy->second, result.busy);
+  }
+  auto expanded = map.find("expanded");
+  if (expanded != map.end()) {
+    fromRawValue(expanded->second, result.expanded);
+  }
 }
 
 inline std::string toString(
