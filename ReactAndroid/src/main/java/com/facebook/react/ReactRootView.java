@@ -95,9 +95,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private int mLastWidth = 0;
   private int mLastHeight = 0;
   private @UIManagerType int mUIManagerType = DEFAULT;
-  private float mLastTouchStartX = 0;
-  private float mLastTouchStartY = 0;
-  private boolean mTouchMoveStarted = false;
 
   public ReactRootView(Context context) {
     super(context);
