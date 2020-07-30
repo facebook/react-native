@@ -261,35 +261,39 @@ function PressableInPanResponder() {
   const appendMessage = (message: string) => {
     const lastMessage =
       messages.current.length && messages.current[messages.current.length - 1];
-    if (message === lastMessage) return;
+    if (message === lastMessage) {
+      return; // Reduce duplicate touchMove messages
+    }
     messages.current = [...messages.current, message];
     forceUpdate();
   };
 
-  const panResponder = useMemo(() => {
-    return PanResponder.create({
-      onStartShouldSetPanResponder: (): boolean => {
-        appendMessage('onStartShouldSetPanResponder, returning false');
-        return false;
-      },
-      onStartShouldSetPanResponderCapture: (): boolean => {
-        appendMessage('onStartShouldSetPanResponderCapture, returning false');
-        return false;
-      },
-      onMoveShouldSetPanResponder: (): boolean => {
-        appendMessage('onMoveShouldSetPanResponder, returning true');
-        return true;
-      },
-      onMoveShouldSetPanResponderCapture: (): boolean => {
-        appendMessage('onMoveShouldSetPanResponderCapture, returning false');
-        return false;
-      },
-      onPanResponderGrant: () => appendMessage('onPanResponderGrant'),
-      onPanResponderMove: () => appendMessage('onPanResponderMove'),
-      onPanResponderRelease: () => appendMessage('onPanResponderRelease'),
-      onPanResponderTerminate: () => appendMessage('onPanResponderTerminate'),
-    });
-  });
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: (): boolean => {
+          appendMessage('onStartShouldSetPanResponder, returning false');
+          return false;
+        },
+        onStartShouldSetPanResponderCapture: (): boolean => {
+          appendMessage('onStartShouldSetPanResponderCapture, returning false');
+          return false;
+        },
+        onMoveShouldSetPanResponder: (): boolean => {
+          appendMessage('onMoveShouldSetPanResponder, returning true');
+          return true;
+        },
+        onMoveShouldSetPanResponderCapture: (): boolean => {
+          appendMessage('onMoveShouldSetPanResponderCapture, returning false');
+          return false;
+        },
+        onPanResponderGrant: () => appendMessage('onPanResponderGrant'),
+        onPanResponderMove: () => appendMessage('onPanResponderMove'),
+        onPanResponderRelease: () => appendMessage('onPanResponderRelease'),
+        onPanResponderTerminate: () => appendMessage('onPanResponderTerminate'),
+      }),
+    [],
+  );
 
   return (
     <>
