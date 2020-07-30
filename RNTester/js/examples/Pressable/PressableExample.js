@@ -18,9 +18,10 @@ import {
   Text,
   Platform,
   View,
+  PanResponder,
 } from 'react-native';
 
-const {useEffect, useRef, useState} = React;
+const {useEffect, useRef, useState, useReducer, useMemo} = React;
 
 const forceTouchAvailable =
   (Platform.OS === 'ios' && Platform.constants.forceTouchAvailable) || false;
@@ -250,6 +251,64 @@ function PressableDisabled() {
   );
 }
 
+function PressableInPanResponder() {
+  // We don't put messages in state since it might be updated multiple times
+  // before a render and older messages would get clobbered. Instead, we rely
+  // on forceUpdate.
+  const messages = useRef<string[]>([]);
+  const [, forceUpdate] = useReducer(x => x + 1, 0);
+
+  const appendMessage = (message: string) => {
+    const lastMessage = messages.current.length
+      && messages.current[messages.current.length - 1];
+    if (message === lastMessage) return;
+    messages.current = [...messages.current, message];
+    forceUpdate();
+  };
+
+  const panResponder = useMemo(() => {
+    return PanResponder.create({
+      onStartShouldSetPanResponder: (): boolean => {
+        appendMessage('onStartShouldSetPanResponder, returning false');
+        return false;
+      },
+      onStartShouldSetPanResponderCapture: (): boolean => {
+        appendMessage('onStartShouldSetPanResponderCapture, returning false');
+        return false;
+      },
+      onMoveShouldSetPanResponder: (): boolean => {
+        appendMessage('onMoveShouldSetPanResponder, returning true');
+        return true;
+      },
+      onMoveShouldSetPanResponderCapture: (): boolean => {
+        appendMessage('onMoveShouldSetPanResponderCapture, returning false');
+        return false;
+      },
+      onPanResponderGrant: () => appendMessage('onPanResponderGrant'),
+      onPanResponderMove: () => appendMessage('onPanResponderMove'),
+      onPanResponderRelease: () => appendMessage('onPanResponderRelease'),
+      onPanResponderTerminate: () => appendMessage('onPanResponderTerminate'),
+    });
+  });
+
+  return (
+    <>
+      <View {...panResponder.panHandlers}>
+        <Pressable
+          onPress={() => appendMessage('Pressable onPress')}
+          onPressIn={() => appendMessage('Pressable onPressIn')}
+          style={[styles.row, styles.block]}
+        >
+          <Text style={styles.button}>Pressable</Text>
+        </Pressable>
+      </View>
+      <View style={styles.logBox}>
+        <Text>{messages.current.join('\n')}</Text>
+      </View>
+    </>
+  );
+}
+
 const styles = StyleSheet.create({
   row: {
     justifyContent: 'center',
@@ -474,6 +533,15 @@ exports.examples = [
       'any interaction with component': string),
     render: function(): React.Node {
       return <PressableDisabled />;
+    },
+  },
+  {
+    title: 'Pressable in PanResponder',
+    description: ('<Pressable> components should be pressable within ' +
+      'PanResponders that only handle touch moves. onPress should trigger' +
+      'if you press and don\'t move your finger.': string),
+    render: function(): React.Node {
+      return <PressableInPanResponder />;
     },
   },
 ];
