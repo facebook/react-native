@@ -670,10 +670,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     if (ANIMATED_MODULE_DEBUG) {
       FLog.d(
           NAME,
-          "queue connectAnimatedNodeToView: disconnectAnimatedNodeFromView: "
-              + animatedNodeTag
-              + " viewTag: "
-              + viewTag);
+          "queue: disconnectAnimatedNodeFromView: " + animatedNodeTag + " viewTag: " + viewTag);
     }
 
     decrementInFlightAnimationsForViewTag(viewTag);
@@ -685,7 +682,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  "execute connectAnimatedNodeToView: disconnectAnimatedNodeFromView: "
+                  "execute: disconnectAnimatedNodeFromView: "
                       + animatedNodeTag
                       + " viewTag: "
                       + viewTag);
@@ -762,7 +759,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     if (ANIMATED_MODULE_DEBUG) {
       FLog.d(
           NAME,
-          "queue addAnimatedEventToView: removeAnimatedEventFromView: "
+          "queue removeAnimatedEventFromView: viewTag: "
               + viewTag
               + " eventName: "
               + eventName
@@ -779,7 +776,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  "execute addAnimatedEventToView: removeAnimatedEventFromView: "
+                  "execute removeAnimatedEventFromView: viewTag: "
                       + viewTag
                       + " eventName: "
                       + eventName
