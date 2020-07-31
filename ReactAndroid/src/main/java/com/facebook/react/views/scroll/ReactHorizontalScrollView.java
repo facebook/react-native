@@ -17,7 +17,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.FocusFinder;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -960,50 +959,46 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     // of the animation. This means that, for example, if the user is scrolling rapidly, multiple
     // pages could be considered part of one animation, causing some page animations to be animated
     // very rapidly - looking like they're not animated at all.
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      if (mScrollAnimator != null) {
-        mScrollAnimator.cancel();
-      }
-
-      mFinalAnimatedPositionScrollX = x;
-      mFinalAnimatedPositionScrollY = y;
-      PropertyValuesHolder scrollX = PropertyValuesHolder.ofInt("scrollX", getScrollX(), x);
-      PropertyValuesHolder scrollY = PropertyValuesHolder.ofInt("scrollY", getScrollY(), y);
-      mScrollAnimator = ObjectAnimator.ofPropertyValuesHolder(scrollX, scrollY);
-      mScrollAnimator.setDuration(
-          ReactScrollViewHelper.getDefaultScrollAnimationDuration(getContext()));
-      mScrollAnimator.addUpdateListener(
-          new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-              int scrollValueX = (Integer) valueAnimator.getAnimatedValue("scrollX");
-              int scrollValueY = (Integer) valueAnimator.getAnimatedValue("scrollY");
-              scrollTo(scrollValueX, scrollValueY);
-            }
-          });
-      mScrollAnimator.addListener(
-          new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {}
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-              mFinalAnimatedPositionScrollX = -1;
-              mFinalAnimatedPositionScrollY = -1;
-              mScrollAnimator = null;
-              updateStateOnScroll();
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {}
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {}
-          });
-      mScrollAnimator.start();
-    } else {
-      smoothScrollTo(x, y);
+    if (mScrollAnimator != null) {
+      mScrollAnimator.cancel();
     }
+
+    mFinalAnimatedPositionScrollX = x;
+    mFinalAnimatedPositionScrollY = y;
+    PropertyValuesHolder scrollX = PropertyValuesHolder.ofInt("scrollX", getScrollX(), x);
+    PropertyValuesHolder scrollY = PropertyValuesHolder.ofInt("scrollY", getScrollY(), y);
+    mScrollAnimator = ObjectAnimator.ofPropertyValuesHolder(scrollX, scrollY);
+    mScrollAnimator.setDuration(
+        ReactScrollViewHelper.getDefaultScrollAnimationDuration(getContext()));
+    mScrollAnimator.addUpdateListener(
+        new ValueAnimator.AnimatorUpdateListener() {
+          @Override
+          public void onAnimationUpdate(ValueAnimator valueAnimator) {
+            int scrollValueX = (Integer) valueAnimator.getAnimatedValue("scrollX");
+            int scrollValueY = (Integer) valueAnimator.getAnimatedValue("scrollY");
+            scrollTo(scrollValueX, scrollValueY);
+          }
+        });
+    mScrollAnimator.addListener(
+        new Animator.AnimatorListener() {
+          @Override
+          public void onAnimationStart(Animator animator) {}
+
+          @Override
+          public void onAnimationEnd(Animator animator) {
+            mFinalAnimatedPositionScrollX = -1;
+            mFinalAnimatedPositionScrollY = -1;
+            mScrollAnimator = null;
+            updateStateOnScroll();
+          }
+
+          @Override
+          public void onAnimationCancel(Animator animator) {}
+
+          @Override
+          public void onAnimationRepeat(Animator animator) {}
+        });
+    mScrollAnimator.start();
     updateStateOnScroll(x, y);
     setPendingContentOffsets(x, y);
   }
