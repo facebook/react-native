@@ -191,6 +191,9 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   // enter/return
   if (commandSelector == @selector(insertNewline:) || commandSelector == @selector(insertNewlineIgnoringFieldEditor:)) {
     [self textFieldDidEndEditingOnExit];
+    if ([[_backedTextInputView textInputDelegate] textInputShouldReturn]) {
+      [[_backedTextInputView window] makeFirstResponder:nil];
+    }
     commandHandled = YES;
     //backspace
   } else if (commandSelector == @selector(deleteBackward:)) {
@@ -298,18 +301,16 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (BOOL)textView:(__unused UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   // Custom implementation of `textInputShouldReturn` and `textInputDidReturn` pair for `UITextView`.
   if (!_backedTextInputView.textWasPasted && [text isEqualToString:@"\n"]) {
     if ([_backedTextInputView.textInputDelegate textInputShouldReturn]) {
       [_backedTextInputView.textInputDelegate textInputDidReturn];
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       [_backedTextInputView endEditing:NO];
-#else // [TODO(macOS ISS#2323203)
-      [[_backedTextInputView window] endEditingFor:nil];
-#endif // ]TODO(macOS ISS#2323203)
       return NO;
     }
   }
+#endif // ]TODO(macOS ISS#2323203)
 
   NSString *newText =
     [_backedTextInputView.textInputDelegate textInputShouldChangeText:text inRange:range];
@@ -399,9 +400,11 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   BOOL commandHandled = NO;
   id<RCTBackedTextInputDelegate> textInputDelegate = [_backedTextInputView textInputDelegate];
   // enter/return
-  if (textInputDelegate.textInputShouldReturn && (commandSelector == @selector(insertNewline:) || commandSelector == @selector(insertNewlineIgnoringFieldEditor:))) {
-    [_backedTextInputView.window makeFirstResponder:nil];
-    commandHandled = YES;
+  if ((commandSelector == @selector(insertNewline:) || commandSelector == @selector(insertNewlineIgnoringFieldEditor:))) {
+    if (textInputDelegate.textInputShouldReturn) {
+      [_backedTextInputView.window makeFirstResponder:nil];
+      commandHandled = YES;
+    }
     //backspace
   } else if (commandSelector == @selector(deleteBackward:)) {
     commandHandled = textInputDelegate != nil && ![textInputDelegate textInputShouldHandleDeleteBackward:_backedTextInputView];

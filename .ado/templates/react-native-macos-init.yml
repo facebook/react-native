@@ -70,8 +70,7 @@ steps:
     displayName: Publish react-native-macos to verdaccio
 
   - script: |
-      cd packages/react-native-macos-init
-      npx --no-install beachball publish --branch origin/$(System.PullRequest.TargetBranch) --no-push --registry http://localhost:4873 --yes --access public
+      npx beachball publish --branch origin/$(System.PullRequest.TargetBranch) --no-push --registry http://localhost:4873 --yes --access public
     displayName: Publish react-native-macos-init to verdaccio
 
   - task: CmdLine@2
@@ -90,12 +89,6 @@ steps:
     inputs:
       script: npx react-native-macos-init --version latest --overwrite --prerelease
       workingDirectory: $(Agent.BuildDirectory)/testcli
-
-  - task: CmdLine@2
-    displayName: Install pods
-    inputs:
-      script: pod install
-      workingDirectory: $(Agent.BuildDirectory)/testcli/macos
 
   - task: CmdLine@2
     displayName: Run macos

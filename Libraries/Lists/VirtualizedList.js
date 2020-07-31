@@ -2163,6 +2163,7 @@ class CellRenderer extends React.Component<
       return renderItem({
         item,
         index,
+        isSelected, // TODO(macOS ISS#2323203)
         separators: this._separators,
       });
     }

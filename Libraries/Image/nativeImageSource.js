@@ -47,6 +47,7 @@ function nativeImageSource(spec: NativeImageSourceSpec): ImageURISource {
     android: spec.android,
     default: spec.default,
     ios: spec.ios,
+    macos: spec.macos, // TODO(macOS ISS#2323203)
   });
   if (uri == null) {
     console.warn(

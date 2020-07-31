@@ -23,6 +23,8 @@
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
+@property (nonatomic, readonly) RCTBridge *bridge;
+
 /**
  * The `RCTScrollView` may have at most one single subview. This will ensure
  * that the scroll view's `contentSize` will be efficiently set to the size of

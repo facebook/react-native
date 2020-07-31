@@ -52,6 +52,7 @@ function copyProjectTemplateAndReplace(
 
   [
     { from: path.join(srcRootPath, macOSDir, 'Podfile'), to: path.join(macOSDir, 'Podfile') },
+    { from: path.join(srcRootPath, macOSDir, '_gitignore'), to: path.join(macOSDir, '.gitignore') },
     { from: path.join(srcRootPath, srcDirPath(oldProjectName, 'iOS')), to: srcDirPath(newProjectName, 'iOS') },
     { from: path.join(srcRootPath, srcDirPath(oldProjectName, 'macOS')), to: srcDirPath(newProjectName, 'macOS') },
     { from: path.join(srcRootPath, pbxprojPath(oldProjectName)), to: pbxprojPath(newProjectName) },
@@ -143,12 +144,18 @@ function installDependencies(options) {
   childProcess.execSync(isYarn ? 'yarn' : 'npm i', execOptions);
 }
 
+/**
+ * @param {{ verbose?: boolean }=} options
+ */
 function installPods(options) {
   const cwd = path.join(process.cwd(), macOSDir);
   const quietFlag = options && options.verbose ? '' : '--quiet';
-  childProcess.execSync(`npx pod-install --non-interactive ${quietFlag}`, { stdio: 'inherit', cwd });
+  childProcess.execSync(`npx ${quietFlag} pod-install --non-interactive ${quietFlag}`, { stdio: 'inherit', cwd });
 }
 
+/**
+ * @param {string} newProjectName
+ */
 function printFinishMessage(newProjectName) {
   console.log(`
   ${chalk.blue(`Run instructions for ${chalk.bold('macOS')}`)}:

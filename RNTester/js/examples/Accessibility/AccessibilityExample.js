@@ -733,7 +733,101 @@ class ScreenReaderStatusExample extends React.Component<{}> {
     );
   }
 }
+// [TODO(OSS Candidate ISS#2710739)
+class DisplayOptionsStatusExample extends React.Component<{}> {
+  state = {};
 
+  componentDidMount() {
+    AccessibilityInfo.addEventListener(
+      'invertColorsChanged',
+      this._handleInvertColorsToggled,
+    );
+    AccessibilityInfo.isInvertColorsEnabled().done(isEnabled => {
+      this.setState({
+        invertColorsEnabled: isEnabled,
+      });
+    });
+
+    AccessibilityInfo.addEventListener(
+      'reduceMotionChanged',
+      this._handleReduceMotionToggled,
+    );
+    AccessibilityInfo.isReduceMotionEnabled().done(isEnabled => {
+      this.setState({
+        reduceMotionEnabled: isEnabled,
+      });
+    });
+
+    AccessibilityInfo.addEventListener(
+      'reduceTransparencyChanged',
+      this._handleReduceTransparencyToggled,
+    );
+    AccessibilityInfo.isReduceTransparencyEnabled().done(isEnabled => {
+      this.setState({
+        reduceTransparencyEnabled: isEnabled,
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    AccessibilityInfo.removeEventListener(
+      'invertColorsChanged',
+      this._handleInvertColorsToggled,
+    );
+    AccessibilityInfo.removeEventListener(
+      'reduceMotionChanged',
+      this._handleReduceMotionToggled,
+    );
+    AccessibilityInfo.removeEventListener(
+      'reduceTransparencyChanged',
+      this._handleReduceTransparencyToggled,
+    );
+  }
+
+  _handleInvertColorsToggled = isEnabled => {
+    this.setState({
+      invertColorsEnabled: isEnabled,
+    });
+  };
+
+  _handleReduceMotionToggled = isEnabled => {
+    this.setState({
+      reduceMotionEnabled: isEnabled,
+    });
+  };
+
+  _handleReduceTransparencyToggled = isEnabled => {
+    this.setState({
+      reduceTransparencyEnabled: isEnabled,
+    });
+  };
+
+  render() {
+    return (
+      <View>
+        <View>
+          <Text>
+            Invert colors is{' '}
+            {this.state.invertColorsEnabled ? 'enabled' : 'disabled'}.
+          </Text>
+        </View>
+        <View>
+          <Text>
+            Reduce motion is{' '}
+            {this.state.reduceMotionEnabled ? 'enabled' : 'disabled'}.
+          </Text>
+        </View>
+        <View>
+          <Text>
+            Reduce transparency is{' '}
+            {this.state.reduceTransparencyEnabled ? 'enabled' : 'disabled'}.
+          </Text>
+        </View>
+      </View>
+    );
+  }
+}
+// ]TODO(OSS Candidate ISS#2710739)
 class AnnounceForAccessibility extends React.Component<{}> {
   _handleOnPress = () =>
     AccessibilityInfo.announceForAccessibility('Announcement Test');
@@ -745,6 +839,26 @@ class AnnounceForAccessibility extends React.Component<{}> {
           onPress={this._handleOnPress}
           title="Announce for Accessibility"
         />
+      </View>
+    );
+  }
+}
+
+class SetAccessibilityFocus extends React.Component<{}> {
+  _handleOnPress = () => {
+    if (findNodeHandle(this.focusRef.current)) {
+      const reactTag = findNodeHandle(this.focusRef.current);
+      AccessibilityInfo.setAccessibilityFocus(reactTag);
+    }
+  };
+  render() {
+    this.focusRef = React.createRef();
+    return (
+      <View>
+        <Button onPress={this._handleOnPress} title="Set Accessibility Focus" />
+        <Text ref={this.focusRef} accessible={true}>
+          Move focus here on button press.
+        </Text>
       </View>
     );
   }
@@ -783,10 +897,24 @@ exports.examples = [
       return <ScreenReaderStatusExample />;
     },
   },
+  // [TODO(OSS Candidate ISS#2710739)
+  {
+    title: 'Check if the display options are enabled',
+    render(): React.Element<typeof DisplayOptionsStatusExample> {
+      return <DisplayOptionsStatusExample />;
+    },
+  },
+  // ]TODO(OSS Candidate ISS#2710739)
   {
     title: 'Check if the screen reader announces',
     render(): React.Element<typeof AnnounceForAccessibility> {
       return <AnnounceForAccessibility />;
+    },
+  },
+  {
+    title: 'Check if the screen reader focus sets ',
+    render(): React.Element<typeof SetAccessibilityFocus> {
+      return <SetAccessibilityFocus />;
     },
   },
 ];

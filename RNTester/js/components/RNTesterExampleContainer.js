@@ -23,10 +23,19 @@ class RNTesterExampleContainer extends React.Component {
     const {description, platform} = example;
     let {title} = example;
     if (platform) {
-      if (Platform.OS !== platform) {
-        return null;
-      }
-      title += ' (' + platform + ' only)';
+      // [TODO(macOS ISS#2323203)
+      if (platform instanceof Array) {
+        if (!platform.includes(Platform.OS)) {
+          return null;
+        }
+        title += ' (' + platform.join() + ' only)';
+      } else {
+        // ]TODO(macOS ISS#2323203)
+        if (Platform.OS !== platform) {
+          return null;
+        }
+        title += ' (' + platform + ' only)';
+      } // TODO(macOS ISS#2323203)
     }
     return (
       <RNTesterBlock key={i} title={title} description={description}>

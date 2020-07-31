@@ -13,7 +13,7 @@
 var React = require('react');
 var ReactNative = require('react-native');
 import {Platform} from 'react-native';
-var {StyleSheet, Text, View, TextInput} = ReactNative;
+var {Button, StyleSheet, Text, View, TextInput} = ReactNative;
 
 type State = {
   eventStream: string,
@@ -110,33 +110,103 @@ class FocusEventExample extends React.Component<{}, State> {
 
           {// Only test View on MacOS, since canBecomeFirstResponder is false on all iOS, therefore we can't focus
           Platform.OS === 'macos' ? (
-            <View
-              onFocus={() => {
-                this.setState(prevState => ({
-                  eventStream:
-                    prevState.eventStream + '\nNested View Parent Focus',
-                }));
-              }}
-              onBlur={() => {
-                this.setState(prevState => ({
-                  eventStream:
-                    prevState.eventStream + '\nNested View Parent Blur',
-                }));
-              }}>
+            <View>
               <View
-                acceptsKeyboardFocus={true}
-                enableFocusRing={true}
                 onFocus={() => {
                   this.setState(prevState => ({
-                    eventStream: prevState.eventStream + '\nNested View Focus',
+                    eventStream:
+                      prevState.eventStream + '\nDescendent Button Focus',
                   }));
                 }}
                 onBlur={() => {
                   this.setState(prevState => ({
-                    eventStream: prevState.eventStream + '\nNested View Blur',
+                    eventStream:
+                      prevState.eventStream + '\nDescendent Button Blur',
                   }));
                 }}>
-                <Text>Nested Focusable View</Text>
+                <View>
+                  <Button
+                    title="Button whose ancestor has onFocus/onBlur"
+                    onPress={() => {}}
+                  />
+                </View>
+              </View>
+              <View
+                onFocus={() => {
+                  this.setState(prevState => ({
+                    eventStream:
+                      prevState.eventStream + '\nDescendent Button Focus',
+                  }));
+                }}
+                onBlur={() => {
+                  this.setState(prevState => ({
+                    eventStream:
+                      prevState.eventStream + '\nDescendent Button Blur',
+                  }));
+                }}>
+                <View>
+                  <Button
+                    title="Button with onFocus/onBlur and ancestor has onFocus/onBlur"
+                    onPress={() => {}}
+                    onFocus={() => {
+                      this.setState(prevState => ({
+                        eventStream: prevState.eventStream + '\nButton Focus',
+                      }));
+                    }}
+                    onBlur={() => {
+                      this.setState(prevState => ({
+                        eventStream: prevState.eventStream + '\nButton Blur',
+                      }));
+                    }}
+                  />
+                </View>
+              </View>
+              <View
+                onFocus={() => {
+                  this.setState(prevState => ({
+                    eventStream:
+                      prevState.eventStream + '\nDescendent Text Focus',
+                  }));
+                }}
+                onBlur={() => {
+                  this.setState(prevState => ({
+                    eventStream:
+                      prevState.eventStream + '\nDescendent Text Blur',
+                  }));
+                }}>
+                <View>
+                  <Text selectable={true}>Selectable text</Text>
+                </View>
+              </View>
+              <View
+                onFocus={() => {
+                  this.setState(prevState => ({
+                    eventStream:
+                      prevState.eventStream + '\nNested View Parent Focus',
+                  }));
+                }}
+                onBlur={() => {
+                  this.setState(prevState => ({
+                    eventStream:
+                      prevState.eventStream + '\nNested View Parent Blur',
+                  }));
+                }}>
+                <View
+                  acceptsKeyboardFocus={true}
+                  enableFocusRing={true}
+                  onFocus={() => {
+                    this.setState(prevState => ({
+                      eventStream:
+                        prevState.eventStream + '\nNested View Focus',
+                    }));
+                  }}
+                  onBlur={() => {
+                    this.setState(prevState => ({
+                      eventStream: prevState.eventStream + '\nNested View Blur',
+                    }));
+                  }}>
+                  <Text>Nested Focusable View</Text>
+                </View>
               </View>
             </View>
           ) : null}

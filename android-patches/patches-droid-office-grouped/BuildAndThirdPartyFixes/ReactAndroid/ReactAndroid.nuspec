@@ -115,7 +115,7 @@
 +    <file src="..\ReactCommon\cxxreact\**\*.h" target="inc\cxxreact"/>
 +    <file src="..\ReactCommon\jsi\**\*.h" target="inc\jsi"/>
 +    <file src="..\ReactCommon\yoga\yoga\**\*.h" target="inc\Yoga"/>
-+    <file src="..\folly\**\*.*" target="inc" />
++    <file src="..\Folly\**\*.*" target="inc" />
 +    <file src="..\glog\src\glog\*.h" target="inc\glog" />
 +    <file src="..\jsc\jsc-headers\*.h" target="inc\jsc"/>
 +  </files>

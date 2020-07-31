@@ -89,7 +89,7 @@ RCT_EXPORT_MODULE()
 #if TARGET_OS_TV
   return [RCTTVView new];
 #else
-  return [RCTView new];
+  return [[RCTView alloc] initWithEventDispatcher:self.bridge.eventDispatcher]; // TODO(OSS Candidate ISS#2710739)
 #endif
 }
 

@@ -12,10 +12,29 @@
 
 'use strict';
 
+const Promise = require('../../Promise');
+const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
+
+import NativeAccessibilityManager from './NativeAccessibilityManager';
+
 const warning = require('fbjs/lib/warning');
 
-type ChangeEventName = $Keys<{}>;
+const CHANGE_EVENT_NAME = {
+  invertColorsChanged: 'invertColorsChanged',
+  reduceMotionChanged: 'reduceMotionChanged',
+  reduceTransparencyChanged: 'reduceTransparencyChanged',
+  screenReaderChanged: 'screenReaderChanged',
+};
 
+type ChangeEventName = $Keys<{
+  change: string,
+  invertColorsChanged: string,
+  reduceMotionChanged: string,
+  reduceTransparencyChanged: string,
+  screenReaderChanged: string,
+}>;
+
+const _subscriptions = new Map();
 const AccessibilityInfo = {
   /**
    * iOS only
@@ -32,31 +51,78 @@ const AccessibilityInfo = {
   },
 
   /**
-   * iOS only
+   * Query whether inverted colors are currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when invert color is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isInvertColorsEnabled
    */
   isInvertColorsEnabled: function(): Promise<boolean> {
-    return Promise.resolve(false);
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentInvertColorsState(resolve, reject);
+      } else {
+        reject(reject);
+      }
+    });
   },
 
   /**
-   * Android and iOS only
+   * Query whether reduced motion is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when a reduce motion is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isReduceMotionEnabled
    */
   isReduceMotionEnabled: function(): Promise<boolean> {
-    return Promise.resolve(false);
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentReduceMotionState(resolve, reject);
+      } else {
+        reject(reject);
+      }
+    });
   },
 
   /**
-   * iOS only
+   * Query whether reduced transparency is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when a reduce transparency is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isReduceTransparencyEnabled
    */
   isReduceTransparencyEnabled: function(): Promise<boolean> {
-    return Promise.resolve(false);
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentReduceTransparencyState(
+          resolve,
+          reject,
+        );
+      } else {
+        reject(reject);
+      }
+    });
   },
 
   /**
-   * Android and iOS only
+   * Query whether a screen reader is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when a screen reader is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isScreenReaderEnabled
    */
   isScreenReaderEnabled: function(): Promise<boolean> {
-    return Promise.resolve(false);
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentVoiceOverState(resolve, reject);
+      } else {
+        reject(reject);
+      }
+    });
   },
 
   /**
@@ -71,15 +137,38 @@ const AccessibilityInfo = {
   addEventListener: function(
     eventName: ChangeEventName,
     handler: Function,
-  ): void {
-    warning(false, 'AccessibilityInfo is not supported on this platform.');
+  ): Object {
+    let listener;
+
+    if (eventName === 'change') {
+      listener = RCTDeviceEventEmitter.addListener(
+        CHANGE_EVENT_NAME.screenReaderChanged,
+        handler,
+      );
+    } else if (CHANGE_EVENT_NAME[eventName]) {
+      listener = RCTDeviceEventEmitter.addListener(eventName, handler);
+    }
+
+    _subscriptions.set(handler, listener);
+    return {
+      remove: AccessibilityInfo.removeEventListener.bind(
+        null,
+        eventName,
+        handler,
+      ),
+    };
   },
 
   removeEventListener: function(
     eventName: ChangeEventName,
     handler: Function,
   ): void {
-    warning(false, 'AccessibilityInfo is not supported on this platform.');
+    const listener = _subscriptions.get(handler);
+    if (!listener) {
+      return;
+    }
+    listener.remove();
+    _subscriptions.delete(handler);
   },
 
   /**
@@ -88,7 +177,9 @@ const AccessibilityInfo = {
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#setaccessibilityfocus
    */
   setAccessibilityFocus: function(reactTag: number): void {
-    warning(false, 'AccessibilityInfo is not supported on this platform.');
+    if (NativeAccessibilityManager) {
+      NativeAccessibilityManager.setAccessibilityFocus(reactTag);
+    }
   },
 
   /**
@@ -97,7 +188,9 @@ const AccessibilityInfo = {
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
    */
   announceForAccessibility: function(announcement: string): void {
-    warning(false, 'AccessibilityInfo is not supported on this platform.');
+    if (NativeAccessibilityManager) {
+      NativeAccessibilityManager.announceForAccessibility(announcement);
+    }
   },
 };
 

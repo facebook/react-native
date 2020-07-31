@@ -16,6 +16,7 @@
 #import <React/RCTAssert.h> // TODO(macOS ISS#2323203)
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
+#import <React/RCTFocusChangeEvent.h> // TODO(OSS Candidate ISS#2710739)
 
 #import <React/RCTTextShadowView.h>
 
@@ -26,12 +27,25 @@
   CAShapeLayer *_highlightLayer;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
-#endif // TODO(macOS ISS#2323203)
+#else // [TODO(macOS ISS#2323203)
+  NSString * _accessibilityLabel;
+#endif // ]TODO(macOS ISS#2323203)
 
+  RCTEventDispatcher *_eventDispatcher; // TODO(OSS Candidate ISS#2710739)
   NSArray<RCTUIView *> *_Nullable _descendantViews; // TODO(macOS ISS#3536887)
   NSTextStorage *_Nullable _textStorage;
   CGRect _contentFrame;
 }
+
+// [TODO(OSS Candidate ISS#2710739)
+- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+{
+  if ((self = [self initWithFrame:CGRectZero])) {
+    _eventDispatcher = eventDispatcher;
+  }
+  return self;
+}
+// ]TODO(OSS Candidate ISS#2710739)
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -49,6 +63,25 @@
 }
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+- (void)dealloc
+{
+  [self removeAllTextStorageLayoutManagers];
+}
+
+- (void)removeAllTextStorageLayoutManagers
+{
+  // On macOS AppKit can throw an uncaught exception
+  // (-[NSConcretePointerArray pointerAtIndex:]: attempt to access pointer at index ...)
+  // during the dealloc of NSLayoutManager.  The _textStorage and its
+  // associated NSLayoutManager dealloc later in an autorelease pool.
+  // Manually removing the layout managers from _textStorage prior to release
+  // works around this issue in AppKit.
+  NSArray<NSLayoutManager *> *managers = [[_textStorage layoutManagers] copy];
+  for (NSLayoutManager *manager in managers) {
+    [_textStorage removeLayoutManager:manager];
+  }
+}
+
 - (BOOL)canBecomeKeyView
 {
 	// RCTText should not get any keyboard focus unless its `selectable` prop is true
@@ -118,17 +151,7 @@
        descendantViews:(NSArray<RCTUIView *> *)descendantViews // TODO(macOS ISS#3536887)
 {
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-  // On macOS when a large number of flex layouts are being performed, such
-  // as when a window is being resized, AppKit can throw an uncaught exception
-  // (-[NSConcretePointerArray pointerAtIndex:]: attempt to access pointer at index ...)
-  // during the dealloc of NSLayoutManager.  The _textStorage and its
-  // associated NSLayoutManager dealloc later in an autorelease pool.
-  // Manually removing the layout manager from _textStorage prior to release
-  // works around this issue in AppKit.
-  NSArray<NSLayoutManager *> *managers = [_textStorage layoutManagers];
-  for (NSLayoutManager *manager in managers) {
-    [_textStorage removeLayoutManager:manager];
-  }
+  [self removeAllTextStorageLayoutManagers];
 #endif // ]TODO(macOS ISS#2323203)
 
   _textStorage = textStorage;
@@ -273,6 +296,28 @@
 
 #pragma mark - Accessibility
 
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+
+// This code is here to cover for a mismatch in the what accessibilityLabels and accessibilityValues mean in iOS versus macOS.
+// In macOS a text element will always read its accessibilityValue, but will only read it's accessibilityLabel if it's value is set.
+// In iOS a text element will only read it's accessibilityValue if it has no accessibilityLabel, and will always read its accessibilityLabel.
+// This code replicates the expected behavior in macOS by:
+// 1) Setting the accessibilityValue = the react-native accessibilityLabel prop if one exists and setting it equal to the text's contents otherwise.
+// 2) Making sure that its accessibilityLabel is always nil, so that it doesn't read out the label twice.
+
+- (void)setAccessibilityLabel:(NSString *)label
+{
+  _accessibilityLabel = [label copy];
+}
+
+- (NSString *)accessibilityValue
+{
+  if (_accessibilityLabel) {
+    return _accessibilityLabel;
+  }
+  return _textStorage.string;
+}
+#else // ]TODO(macOS ISS#2323203)
 - (NSString *)accessibilityLabel
 {
   NSString *superAccessibilityLabel = [super accessibilityLabel];
@@ -281,6 +326,7 @@
   }
   return _textStorage.string;
 }
+#endif // TODO(macOS ISS#2323203)
 
 #pragma mark - Context Menu
 
@@ -349,6 +395,31 @@
     }
   }
 }
+
+- (BOOL)becomeFirstResponder
+{
+  if (![super becomeFirstResponder]) {
+    return NO;
+  }
+
+  // If we've gained focus, notify listeners
+  [_eventDispatcher sendEvent:[RCTFocusChangeEvent focusEventWithReactTag:self.reactTag]];
+
+  return YES;
+}
+
+- (BOOL)resignFirstResponder
+{
+  if (![super resignFirstResponder]) {
+    return NO;
+  }
+
+  // If we've lost focus, notify listeners
+  [_eventDispatcher sendEvent:[RCTFocusChangeEvent blurEventWithReactTag:self.reactTag]];
+
+  return YES;
+}
+
 #endif // ]TODO(macOS ISS#2323203)
 
 - (BOOL)canBecomeFirstResponder

@@ -83,15 +83,9 @@
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 @dynamic delegate;
 
-static UIFont *defaultPlaceholderFont()
-{
-  return [UIFont systemFontOfSize:17];
-}
-
 static RCTUIColor *defaultPlaceholderTextColor()
 {
-  // Default placeholder color from UITextField.
-  return [RCTUIColor colorWithRed:0 green:0 blue:0.0980392 alpha:0.22];
+  return [NSColor placeholderTextColor];
 }
 
 #endif // ]TODO(macOS ISS#2323203)
@@ -106,8 +100,10 @@ static RCTUIColor *defaultPlaceholderTextColor()
                                                object:self];
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-    self.bordered = NO;
-    self.accessibilityRole = NSAccessibilityTextFieldRole;
+    [self setBordered:NO];
+    [self setAllowsEditingTextAttributes:YES];
+    [self setAccessibilityRole:NSAccessibilityTextFieldRole];
+    [self setBackgroundColor:[NSColor clearColor]];
 #endif // ]TODO(macOS ISS#2323203)
 
     _textInputDelegateAdapter = [[RCTBackedTextFieldDelegateAdapter alloc] initWithTextField:self];
@@ -119,6 +115,10 @@ static RCTUIColor *defaultPlaceholderTextColor()
 - (void)_textDidChange
 {
   _textWasPasted = NO;
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  [self setAttributedText:[[NSAttributedString alloc] initWithString:[self text]
+                                                          attributes:[self defaultTextAttributes]]];
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 #pragma mark - Accessibility
@@ -243,6 +243,11 @@ static RCTUIColor *defaultPlaceholderTextColor()
   [super setDefaultTextAttributes:defaultTextAttributes];
 #endif // TODO(macOS ISS#2323203)
   [self _updatePlaceholder];
+
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  [self setAttributedText:[[NSAttributedString alloc] initWithString:[self text]
+                                                          attributes:[self defaultTextAttributes]]];
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 - (NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes

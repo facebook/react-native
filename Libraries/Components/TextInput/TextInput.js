@@ -1129,6 +1129,8 @@ function InternalTextInput(props: Props): React.Node {
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={_onPress}
+        onFocus={_onFocus} // TODO(macOS ISS#2323203)
+        onBlur={_onBlur} // TODO(macOS ISS#2323203)
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}

@@ -57,7 +57,6 @@
     self.scrollEnabled = YES;
     self.hasHorizontalScroller = YES;
     self.hasVerticalScroller = YES;
-    self.autohidesScrollers = YES;
     self.panGestureRecognizer = [[NSPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleCustomPan:)];
 #else // ]TODO(macOS ISS#2323203)
     [self.panGestureRecognizer addTarget:self action:@selector(handleCustomPan:)];
@@ -436,6 +435,11 @@
   }
 }
 
+- (RCTBridge *)bridge
+{
+  return [_eventDispatcher bridge];
+}
+
 - (RCTUIView *)contentView // TODO(macOS ISS#3536887)
 {
   return _scrollView.documentView;
@@ -621,6 +625,11 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(RCTPlatformVie
     [self react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
     _lastClippedToRect = bounds;
   }
+
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  [[self scrollView] setHasHorizontalScroller:[self isHorizontal:_scrollView]];
+  [[self scrollView] setHasVerticalScroller:[self isVertical:_scrollView]];
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
@@ -677,6 +686,13 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(RCTPlatformVie
 {
   return scrollView.contentSize.width > self.frame.size.width;
 }
+
+#if TARGET_OS_OSX // [TODO(macOS Candidate ISS#2710739)
+- (BOOL)isVertical:(RCTCustomScrollView *)scrollView
+{
+  return scrollView.contentSize.height > self.frame.size.height;
+}
+#endif // ]TODO(macOS Candidate ISS#2710739)
 
 - (void)scrollToOffset:(CGPoint)offset
 {

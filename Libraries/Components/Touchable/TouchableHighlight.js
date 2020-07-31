@@ -339,6 +339,8 @@ class TouchableHighlight extends React.Component<Props, State> {
         onDragEnter={this.props.onDragEnter}
         onDragLeave={this.props.onDragLeave}
         onDrop={this.props.onDrop}
+        onFocus={this.props.onFocus}
+        onBlur={this.props.onBlur}
         draggedTypes={this.props.draggedTypes} // ]TODO(macOS/win ISS#2323203)
         nativeID={this.props.nativeID}
         testID={this.props.testID}
