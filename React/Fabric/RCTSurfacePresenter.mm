@@ -25,14 +25,14 @@
 
 #import <React/RCTScrollViewComponentView.h>
 
-#import <react/componentregistry/ComponentDescriptorFactory.h>
-#import <react/components/root/RootShadowNode.h>
 #import <react/config/ReactNativeConfig.h>
-#import <react/core/LayoutConstraints.h>
-#import <react/core/LayoutContext.h>
-#import <react/scheduler/AsynchronousEventBeat.h>
-#import <react/scheduler/SchedulerToolbox.h>
-#import <react/scheduler/SynchronousEventBeat.h>
+#import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#import <react/renderer/components/root/RootShadowNode.h>
+#import <react/renderer/core/LayoutConstraints.h>
+#import <react/renderer/core/LayoutContext.h>
+#import <react/renderer/scheduler/AsynchronousEventBeat.h>
+#import <react/renderer/scheduler/SchedulerToolbox.h>
+#import <react/renderer/scheduler/SynchronousEventBeat.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
 

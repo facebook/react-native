@@ -7,10 +7,10 @@
 
 #import "RCTTextInputComponentView.h"
 
-#import <react/components/iostextinput/TextInputComponentDescriptor.h>
-#import <react/graphics/Geometry.h>
-#import <react/textlayoutmanager/RCTAttributedTextUtils.h>
-#import <react/textlayoutmanager/TextLayoutManager.h>
+#import <react/renderer/components/iostextinput/TextInputComponentDescriptor.h>
+#import <react/renderer/graphics/Geometry.h>
+#import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
+#import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 #import <React/RCTBackedTextInputViewProtocol.h>
 #import <React/RCTUITextField.h>

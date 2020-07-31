@@ -8,13 +8,13 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <react/animations/LayoutAnimationDriver.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/ReadableNativeMap.h>
-#include <react/scheduler/Scheduler.h>
-#include <react/scheduler/SchedulerDelegate.h>
-#include <react/uimanager/LayoutAnimationStatusDelegate.h>
+#include <react/renderer/animations/LayoutAnimationDriver.h>
+#include <react/renderer/scheduler/Scheduler.h>
+#include <react/renderer/scheduler/SchedulerDelegate.h>
+#include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
 #include <memory>
 #include <mutex>
 #include "ComponentFactoryDelegate.h"

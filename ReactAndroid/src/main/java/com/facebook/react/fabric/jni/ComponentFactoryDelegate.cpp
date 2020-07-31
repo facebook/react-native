@@ -9,7 +9,7 @@
 #include <android/log.h>
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
-#include <react/componentregistry/ComponentDescriptorRegistry.h>
+#include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 
 using namespace facebook::jsi;
 

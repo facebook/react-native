@@ -11,12 +11,12 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTScrollEvent.h>
 
-#import <react/components/scrollview/RCTComponentViewHelpers.h>
-#import <react/components/scrollview/ScrollViewComponentDescriptor.h>
-#import <react/components/scrollview/ScrollViewEventEmitter.h>
-#import <react/components/scrollview/ScrollViewProps.h>
-#import <react/components/scrollview/ScrollViewState.h>
-#import <react/graphics/Geometry.h>
+#import <react/renderer/components/scrollview/RCTComponentViewHelpers.h>
+#import <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
+#import <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
+#import <react/renderer/components/scrollview/ScrollViewProps.h>
+#import <react/renderer/components/scrollview/ScrollViewState.h>
+#import <react/renderer/graphics/Geometry.h>
 
 #import "RCTConversions.h"
 #import "RCTEnhancedScrollView.h"
