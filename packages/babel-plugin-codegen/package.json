@@ -1,7 +1,7 @@
 {
   "version": "0.0.5",
-  "name": "babel-plugin-inline-view-configs",
-  "description": "Babel plugin to inline view configs for React Native",
+  "name": "@react-native/babel-plugin-codegen",
+  "description": "Babel plugin to generate native module and view manager code for React Native.",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
