@@ -61,7 +61,8 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             jsContext.get(),
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (CallInvokerHolderImpl) nativeCallInvokerHolder,
-            delegate);
+            delegate,
+            false);
     installJSIBindings();
 
     mEagerInitModuleNames =
@@ -278,7 +279,8 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       long jsContext,
       CallInvokerHolderImpl jsCallInvokerHolder,
       CallInvokerHolderImpl nativeCallInvokerHolder,
-      TurboModuleManagerDelegate tmmDelegate);
+      TurboModuleManagerDelegate tmmDelegate,
+      boolean enablePromiseAsyncDispatch);
 
   private native void installJSIBindings();
 

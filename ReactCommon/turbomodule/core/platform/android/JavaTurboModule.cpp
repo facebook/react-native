@@ -28,6 +28,11 @@ JavaTurboModule::JavaTurboModule(const InitParams &params)
       instance_(jni::make_global(params.instance)),
       nativeInvoker_(params.nativeInvoker) {}
 
+bool JavaTurboModule::isPromiseAsyncDispatchEnabled_ = false;
+void JavaTurboModule::enablePromiseAsyncDispatch(bool enable) {
+  isPromiseAsyncDispatchEnabled_ = enable;
+}
+
 namespace {
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
@@ -227,7 +232,8 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
 
   auto makeGlobalIfNecessary =
       [&globalRefs, env, valueKind](jobject obj) -> jobject {
-    if (valueKind == VoidKind) {
+    if (valueKind == VoidKind ||
+        (valueKind == PromiseKind && isPromiseAsyncDispatchEnabled_)) {
       jobject globalObj = env->NewGlobalRef(obj);
       globalRefs.push_back(globalObj);
       env->DeleteLocalRef(obj);
@@ -586,7 +592,13 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
           runtime,
           jsi::PropNameID::forAscii(runtime, "fn"),
           2,
-          [this, &jargs, argCount, instance, methodID, env](
+          [this,
+           &jargs,
+           &globalRefs,
+           argCount,
+           instance_ = instance_,
+           methodID,
+           env](
               jsi::Runtime &runtime,
               const jsi::Value &thisVal,
               const jsi::Value *promiseConstructorArgs,
@@ -619,8 +631,37 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             jobject promise = env->NewObject(
                 jPromiseImpl, jPromiseImplConstructor, resolve, reject);
 
-            jargs[argCount].l = promise;
-            env->CallVoidMethodA(instance, methodID, jargs.data());
+            if (isPromiseAsyncDispatchEnabled_) {
+              jobject globalPromise = env->NewGlobalRef(promise);
+
+              globalRefs.push_back(globalPromise);
+              env->DeleteLocalRef(promise);
+
+              jargs[argCount].l = globalPromise;
+
+              nativeInvoker_->invokeAsync(
+                  [jargs, globalRefs, methodID, instance_ = instance_]() mutable
+                  -> void {
+                    /**
+                     * TODO(ramanpreet): Why do we have to require the
+                     * environment again? Why does JNI crash when we use the env
+                     * from the upper scope?
+                     */
+                    JNIEnv *env = jni::Environment::current();
+
+                    env->CallVoidMethodA(
+                        instance_.get(), methodID, jargs.data());
+                    FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
+
+                    for (auto globalRef : globalRefs) {
+                      env->DeleteGlobalRef(globalRef);
+                    }
+                  });
+
+            } else {
+              jargs[argCount].l = promise;
+              env->CallVoidMethodA(instance_.get(), methodID, jargs.data());
+            }
 
             return jsi::Value::undefined();
           });
