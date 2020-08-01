@@ -75,20 +75,26 @@
 <span class="hljs-keyword">import</span> { View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">const</span> FixedDimensionsBasics = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-keyword">return</span> (
-      &lt;View&gt;
-        &lt;View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} /&gt;
-        &lt;View style={{width: 100, height: 100, backgroundColor: 'skyblue'}} /&gt;
-        &lt;View style={{width: 150, height: 150, backgroundColor: 'steelblue'}} /&gt;
-      &lt;/View&gt;
-    );
+  <span class="hljs-keyword">return</span> (
+    &lt;View&gt;
+      &lt;View style={{
+        width: 50, height: 50, backgroundColor: 'powderblue'
+      }} /&gt;
+      &lt;View style={{
+        width: 100, height: 100, backgroundColor: 'skyblue'
+      }} /&gt;
+      &lt;View style={{
+        width: 150, height: 150, backgroundColor: 'steelblue'
+      }} /&gt;
+    &lt;/View&gt;
+  );
 };
 
 export default FixedDimensionsBasics;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Height and Width"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20FixedDimensionsBasics%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7Bwidth%3A%2050%2C%20height%3A%2050%2C%20backgroundColor%3A%20'powderblue'%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7Bwidth%3A%20100%2C%20height%3A%20100%2C%20backgroundColor%3A%20'skyblue'%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7Bwidth%3A%20150%2C%20height%3A%20150%2C%20backgroundColor%3A%20'steelblue'%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%7D%3B%0A%0Aexport%20default%20FixedDimensionsBasics%3B%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20FixedDimensionsBasics%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20width%3A%2050%2C%20height%3A%2050%2C%20backgroundColor%3A%20'powderblue'%0A%20%20%20%20%20%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20width%3A%20100%2C%20height%3A%20100%2C%20backgroundColor%3A%20'skyblue'%0A%20%20%20%20%20%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20width%3A%20150%2C%20height%3A%20150%2C%20backgroundColor%3A%20'steelblue'%0A%20%20%20%20%20%20%7D%7D%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aexport%20default%20FixedDimensionsBasics%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -104,29 +110,29 @@ export default FixedDimensionsBasics;
 <h2><a class="anchor" aria-hidden="true" id="flex-dimensions"></a><a href="#flex-dimensions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Flex Dimensions</h2>
 <p>Use <code>flex</code> in a component's style to have the component expand and shrink dynamically based on available space. Normally you will use <code>flex: 1</code>, which tells a component to fill all available space, shared evenly amongst other components with the same parent. The larger the <code>flex</code> given, the higher the ratio of space a component will take compared to its siblings.</p>
 <blockquote>
-<p>A component can only expand to fill available space if its parent has dimensions greater than 0. If a parent does not have either a fixed <code>width</code> and <code>height</code> or <code>flex</code>, the parent will have dimensions of 0 and the <code>flex</code> children will not be visible.</p>
+<p>A component can only expand to fill available space if its parent has dimensions greater than <code>0</code>. If a parent does not have either a fixed <code>width</code> and <code>height</code> or <code>flex</code>, the parent will have dimensions of <code>0</code> and the <code>flex</code> children will not be visible.</p>
 </blockquote>
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">const</span> FlexDimensionsBasics = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-keyword">return</span> (
-      <span class="hljs-comment">// Try removing the `flex: 1` on the parent View.</span>
-      <span class="hljs-comment">// The parent will not have dimensions, so the children can't expand.</span>
-      <span class="hljs-comment">// What if you add `height: 300` instead of `flex: 1`?</span>
-      &lt;View style={{flex: 1}}&gt;
-        &lt;View style={{flex: 1, backgroundColor: 'powderblue'}} /&gt;
-        &lt;View style={{flex: 2, backgroundColor: 'skyblue'}} /&gt;
-        &lt;View style={{flex: 3, backgroundColor: 'steelblue'}} /&gt;
-      &lt;/View&gt;
-    );
+  <span class="hljs-keyword">return</span> (
+    <span class="hljs-comment">// Try removing the `flex: 1` on the parent View.</span>
+    <span class="hljs-comment">// The parent will not have dimensions, so the children can't expand.</span>
+    <span class="hljs-comment">// What if you add `height: 300` instead of `flex: 1`?</span>
+    &lt;View style={{ flex: 1 }}&gt;
+      &lt;View style={{ flex: 1, backgroundColor: 'powderblue' }} /&gt;
+      &lt;View style={{ flex: 2, backgroundColor: 'skyblue' }} /&gt;
+      &lt;View style={{ flex: 3, backgroundColor: 'steelblue' }} /&gt;
+    &lt;/View&gt;
+  );
 };
 
 export default FlexDimensionsBasics;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Flex Dimensions"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20FlexDimensionsBasics%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%2F%2F%20Try%20removing%20the%20%60flex%3A%201%60%20on%20the%20parent%20View.%0A%20%20%20%20%20%20%2F%2F%20The%20parent%20will%20not%20have%20dimensions%2C%20so%20the%20children%20can't%20expand.%0A%20%20%20%20%20%20%2F%2F%20What%20if%20you%20add%20%60height%3A%20300%60%20instead%20of%20%60flex%3A%201%60%3F%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20backgroundColor%3A%20'powderblue'%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%202%2C%20backgroundColor%3A%20'skyblue'%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%203%2C%20backgroundColor%3A%20'steelblue'%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%7D%3B%0A%0Aexport%20default%20FlexDimensionsBasics%3B%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20FlexDimensionsBasics%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%2F%2F%20Try%20removing%20the%20%60flex%3A%201%60%20on%20the%20parent%20View.%0A%20%20%20%20%2F%2F%20The%20parent%20will%20not%20have%20dimensions%2C%20so%20the%20children%20can't%20expand.%0A%20%20%20%20%2F%2F%20What%20if%20you%20add%20%60height%3A%20300%60%20instead%20of%20%60flex%3A%201%60%3F%0A%20%20%20%20%3CView%20style%3D%7B%7B%20flex%3A%201%20%7D%7D%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7B%20flex%3A%201%2C%20backgroundColor%3A%20'powderblue'%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7B%20flex%3A%202%2C%20backgroundColor%3A%20'skyblue'%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7B%20flex%3A%203%2C%20backgroundColor%3A%20'steelblue'%20%7D%7D%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aexport%20default%20FlexDimensionsBasics%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -139,7 +145,46 @@ export default FlexDimensionsBasics;
           width: 100%;
         "
       ></div></div></div><p>After you can control a component's size, the next step is to <a href="/docs/next/flexbox">learn how to lay it out on the screen</a>.</p>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/style"><span class="arrow-prev">← </span><span>Style</span></a><a class="docs-next button" href="/docs/next/flexbox"><span>Layout with Flexbox</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#fixed-dimensions">Fixed Dimensions</a></li><li><a href="#flex-dimensions">Flex Dimensions</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started">Getting Started</a><a href="/docs/tutorial">Tutorial</a><a href="/docs/components-and-apis">Components and APIs</a><a href="/docs/more-resources">More Resources</a></div><div><h5>Community</h5><a href="/help">The React Native Community</a><a href="/showcase">Who&#x27;s using React Native?</a><a href="https://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+<h2><a class="anchor" aria-hidden="true" id="percentage-dimensions"></a><a href="#percentage-dimensions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Percentage Dimensions</h2>
+<p>If you want to fill a certain portion of the screen, but you <em>don't</em> want to use the <code>flex</code> layout, you <em>can</em> use <strong>percentage values</strong> in the component's style. Similar to flex dimensions, percentage dimensions require parent with a defined size.</p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">const</span> PercentageDimensionsBasics = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-comment">// Try removing the `height: '100%'` on the parent View.</span>
+  <span class="hljs-comment">// The parent will not have dimensions, so the children can't expand.</span>
+  <span class="hljs-keyword">return</span> (
+    &lt;View style={{ height: '100%' }}&gt;
+      &lt;View style={{
+        height: '15%', backgroundColor: 'powderblue'
+      }} /&gt;
+      &lt;View style={{
+        width: '66%', height: '35%', backgroundColor: 'skyblue'
+      }} /&gt;
+      &lt;View style={{
+        width: '33%', height: '50%', backgroundColor: 'steelblue'
+      }} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default PercentageDimensionsBasics;
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Percentage Dimensions"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20PercentageDimensionsBasics%20%3D%20()%20%3D%3E%20%7B%0A%20%20%2F%2F%20Try%20removing%20the%20%60height%3A%20'100%25'%60%20on%20the%20parent%20View.%0A%20%20%2F%2F%20The%20parent%20will%20not%20have%20dimensions%2C%20so%20the%20children%20can't%20expand.%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7B%7B%20height%3A%20'100%25'%20%7D%7D%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20height%3A%20'15%25'%2C%20backgroundColor%3A%20'powderblue'%0A%20%20%20%20%20%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20width%3A%20'66%25'%2C%20height%3A%20'35%25'%2C%20backgroundColor%3A%20'skyblue'%0A%20%20%20%20%20%20%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20width%3A%20'33%25'%2C%20height%3A%20'50%25'%2C%20backgroundColor%3A%20'steelblue'%0A%20%20%20%20%20%20%7D%7D%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aexport%20default%20PercentageDimensionsBasics%3B%0A"
+        data-snack-platform="web"
+        data-snack-supported-platforms=ios,android,web
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div></span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/next/style"><span class="arrow-prev">← </span><span>Style</span></a><a class="docs-next button" href="/docs/next/flexbox"><span>Layout with Flexbox</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#fixed-dimensions">Fixed Dimensions</a></li><li><a href="#flex-dimensions">Flex Dimensions</a></li><li><a href="#percentage-dimensions">Percentage Dimensions</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/docs/getting-started">Getting Started</a><a href="/docs/tutorial">Tutorial</a><a href="/docs/components-and-apis">Components and APIs</a><a href="/docs/more-resources">More Resources</a></div><div><h5>Community</h5><a href="/help">The React Native Community</a><a href="/showcase">Who&#x27;s using React Native?</a><a href="https://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="https://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
