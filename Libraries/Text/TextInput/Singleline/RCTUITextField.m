@@ -317,16 +317,11 @@ static RCTUIColor *defaultPlaceholderTextColor()
 {
   NSMutableDictionary<NSAttributedStringKey, id> *textAttributes = [_defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (self.placeholderColor) {
     [textAttributes setValue:self.placeholderColor forKey:NSForegroundColorAttributeName];
   } else {
     [textAttributes removeObjectForKey:NSForegroundColorAttributeName];
   }
-#else // [TODO(macOS ISS#2323203)
-  textAttributes[NSForegroundColorAttributeName] = _placeholderColor ?: defaultPlaceholderTextColor();
-  textAttributes[NSFontAttributeName] = self.font ?: defaultPlaceholderFont();
-#endif // ]TODO(macOS ISS#2323203)
 
   return textAttributes;
 }
