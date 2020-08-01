@@ -8,10 +8,10 @@
 #import "RCTModalHostViewComponentView.h"
 
 #import <React/UIView+React.h>
-#import <react/components/modal/ModalHostViewComponentDescriptor.h>
-#import <react/components/modal/ModalHostViewState.h>
-#import <react/components/rncore/EventEmitters.h>
-#import <react/components/rncore/Props.h>
+#import <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
+#import <react/renderer/components/modal/ModalHostViewState.h>
+#import <react/renderer/components/rncore/EventEmitters.h>
+#import <react/renderer/components/rncore/Props.h>
 
 #import "FBRCTFabricComponentsPlugins.h"
 #import "RCTConversions.h"

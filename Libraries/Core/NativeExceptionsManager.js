@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -47,7 +47,6 @@ export interface Spec extends TurboModule {
     stack: Array<StackFrame>,
     exceptionId: number,
   ) => void;
-  // TODO(T53311281): This is a noop on iOS now. Implement it.
   +reportException?: (data: ExceptionData) => void;
   +updateExceptionMessage: (
     message: string,

@@ -84,7 +84,7 @@ describe('Android Test App', function() {
     };
 
     // React Native in dev mode often starts with Red Box "Can't fibd variable __fbBatchedBridge..."
-    // This is fixed by clicking Reload JS which will trigger a request to packager server
+    // This is fixed by clicking Reload JS which will trigger a request to Metro
     return driver
       .init(desired)
       .setImplicitWaitTimeout(5000)

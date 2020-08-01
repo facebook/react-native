@@ -122,7 +122,7 @@ const APIExamples: Array<RNTesterExample> = [
   },
   {
     key: 'AlertExample',
-    module: require('../examples/Alert/AlertExample').AlertExample,
+    module: require('../examples/Alert/AlertExample'),
   },
   {
     key: 'AnimatedExample',
@@ -143,6 +143,10 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'BorderExample',
     module: require('../examples/Border/BorderExample'),
+  },
+  {
+    key: 'BoxShadowExample',
+    module: require('../examples/BoxShadow/BoxShadowExample'),
   },
   {
     key: 'ClipboardExample',

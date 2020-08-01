@@ -8,8 +8,8 @@
 #import "RCTImageResponseObserverProxy.h"
 
 #import <React/RCTUtils.h>
-#import <react/imagemanager/ImageResponse.h>
-#import <react/imagemanager/ImageResponseObserver.h>
+#import <react/renderer/imagemanager/ImageResponse.h>
+#import <react/renderer/imagemanager/ImageResponseObserver.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 namespace facebook {

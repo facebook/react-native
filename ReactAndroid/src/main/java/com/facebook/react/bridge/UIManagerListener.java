@@ -14,8 +14,6 @@ public interface UIManagerListener {
    * module needs to add UIBlocks to the queue before it is flushed.
    */
   void willDispatchViewUpdates(UIManager uiManager);
-  /** Called on the UI thread right before normal mount items are executed. */
-  void willDispatchMountItems();
-  /** Called on the UI thread right before premount items are executed. */
-  void willDispatchPreMountItems();
+  /* Called right after view updates are dispatched for a frame. */
+  void didDispatchMountItems(UIManager uiManager);
 }

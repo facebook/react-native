@@ -10,9 +10,9 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <objc/runtime.h>
-#import <react/components/view/ViewComponentDescriptor.h>
-#import <react/components/view/ViewEventEmitter.h>
-#import <react/components/view/ViewProps.h>
+#import <react/renderer/components/view/ViewComponentDescriptor.h>
+#import <react/renderer/components/view/ViewEventEmitter.h>
+#import <react/renderer/components/view/ViewProps.h>
 
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
@@ -51,18 +51,6 @@ using namespace facebook::react;
     [self addSubview:_contentView];
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
   }
-}
-
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-  // Consider whether using `updateLayoutMetrics:oldLayoutMetrics`
-  // isn't more appropriate for your use case. `layoutSubviews` is called
-  // by UIKit while `updateLayoutMetrics:oldLayoutMetrics` is called
-  // by React Native Renderer within `CATransaction`.
-  // If you are calling `setFrame:` or other methods that cause
-  // `layoutSubviews` to be triggered, `_contentView`'s and `_borderLayout`'s
-  // frames might get out of sync with `self.bounds`.
 }
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
@@ -228,9 +216,21 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityElementsHidden = newViewProps.accessibilityElementsHidden;
   }
 
+  // `accessibilityTraits`
   if (oldViewProps.accessibilityTraits != newViewProps.accessibilityTraits) {
     self.accessibilityElement.accessibilityTraits =
         RCTUIAccessibilityTraitsFromAccessibilityTraits(newViewProps.accessibilityTraits);
+  }
+
+  // `accessibilityState`
+  if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {
+    self.accessibilityTraits &= ~(UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected);
+    if (newViewProps.accessibilityState.selected) {
+      self.accessibilityTraits |= UIAccessibilityTraitSelected;
+    }
+    if (newViewProps.accessibilityState.disabled) {
+      self.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+    }
   }
 
   // `accessibilityIgnoresInvertColors`

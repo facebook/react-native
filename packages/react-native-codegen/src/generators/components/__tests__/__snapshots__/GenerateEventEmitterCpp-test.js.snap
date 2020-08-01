@@ -10,7 +10,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/ARRAY_PROPS/EventEmitters.h>
+#include <react/renderer/components/ARRAY_PROPS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -33,7 +33,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/ARRAY_PROPS_WITH_NESTED_OBJECT/EventEmitters.h>
+#include <react/renderer/components/ARRAY_PROPS_WITH_NESTED_OBJECT/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -56,7 +56,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/BOOLEAN_PROP/EventEmitters.h>
+#include <react/renderer/components/BOOLEAN_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -79,7 +79,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/COLOR_PROP/EventEmitters.h>
+#include <react/renderer/components/COLOR_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -102,7 +102,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/COMMANDS/EventEmitters.h>
+#include <react/renderer/components/COMMANDS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -125,7 +125,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/COMMANDS_AND_PROPS/EventEmitters.h>
+#include <react/renderer/components/COMMANDS_AND_PROPS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -148,7 +148,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/DOUBLE_PROPS/EventEmitters.h>
+#include <react/renderer/components/DOUBLE_PROPS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -171,7 +171,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/EVENT_NESTED_OBJECT_PROPS/EventEmitters.h>
+#include <react/renderer/components/EVENT_NESTED_OBJECT_PROPS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -212,7 +212,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/EVENT_PROPS/EventEmitters.h>
+#include <react/renderer/components/EVENT_PROPS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -261,7 +261,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/EVENTS_WITH_PAPER_NAME/EventEmitters.h>
+#include <react/renderer/components/EVENTS_WITH_PAPER_NAME/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -297,7 +297,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/EXCLUDE_ANDROID/EventEmitters.h>
+#include <react/renderer/components/EXCLUDE_ANDROID/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -320,7 +320,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/EXCLUDE_ANDROID_IOS/EventEmitters.h>
+#include <react/renderer/components/EXCLUDE_ANDROID_IOS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -343,7 +343,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/FLOAT_PROPS/EventEmitters.h>
+#include <react/renderer/components/FLOAT_PROPS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -366,7 +366,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/IMAGE_PROP/EventEmitters.h>
+#include <react/renderer/components/IMAGE_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -389,7 +389,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/INSETS_PROP/EventEmitters.h>
+#include <react/renderer/components/INSETS_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -412,7 +412,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/INT32_ENUM_PROP/EventEmitters.h>
+#include <react/renderer/components/INT32_ENUM_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -435,7 +435,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/INTEGER_PROPS/EventEmitters.h>
+#include <react/renderer/components/INTEGER_PROPS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -458,7 +458,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/INTERFACE_ONLY/EventEmitters.h>
+#include <react/renderer/components/INTERFACE_ONLY/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -487,7 +487,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/MULTI_NATIVE_PROP/EventEmitters.h>
+#include <react/renderer/components/MULTI_NATIVE_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -510,7 +510,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/NO_PROPS_NO_EVENTS/EventEmitters.h>
+#include <react/renderer/components/NO_PROPS_NO_EVENTS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -533,7 +533,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/OBJECT_PROPS/EventEmitters.h>
+#include <react/renderer/components/OBJECT_PROPS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -556,7 +556,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/POINT_PROP/EventEmitters.h>
+#include <react/renderer/components/POINT_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -579,7 +579,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/STRING_ENUM_PROP/EventEmitters.h>
+#include <react/renderer/components/STRING_ENUM_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -602,7 +602,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/STRING_PROP/EventEmitters.h>
+#include <react/renderer/components/STRING_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -625,7 +625,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/TWO_COMPONENTS_DIFFERENT_FILES/EventEmitters.h>
+#include <react/renderer/components/TWO_COMPONENTS_DIFFERENT_FILES/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -649,7 +649,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/TWO_COMPONENTS_SAME_FILE/EventEmitters.h>
+#include <react/renderer/components/TWO_COMPONENTS_SAME_FILE/EventEmitters.h>
 
 namespace facebook {
 namespace react {

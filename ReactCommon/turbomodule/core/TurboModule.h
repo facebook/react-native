@@ -64,8 +64,8 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  * An app/platform-specific provider function to get an instance of a module
  * given a name.
  */
-using TurboModuleProviderFunctionType =
-    std::function<std::shared_ptr<TurboModule>(const std::string &name)>;
+using TurboModuleProviderFunctionType = std::function<std::shared_ptr<
+    TurboModule>(const std::string &name, const jsi::Value *schema)>;
 
 } // namespace react
 } // namespace facebook

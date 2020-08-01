@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<356df52df2a053b5254f0e039cc36a7b>>
+// @generated SignedSource<<0563169b47d73a70d7540528f28d1d13>>
 
 #pragma once
 
@@ -38,6 +38,7 @@ struct SetBreakpointByUrlRequest;
 struct SetBreakpointByUrlResponse;
 struct SetBreakpointRequest;
 struct SetBreakpointResponse;
+struct SetBreakpointsActiveRequest;
 struct SetInstrumentationBreakpointRequest;
 struct SetInstrumentationBreakpointResponse;
 struct SetPauseOnExceptionsRequest;
@@ -89,6 +90,7 @@ struct RequestHandler {
   virtual void handle(const debugger::ResumeRequest &req) = 0;
   virtual void handle(const debugger::SetBreakpointRequest &req) = 0;
   virtual void handle(const debugger::SetBreakpointByUrlRequest &req) = 0;
+  virtual void handle(const debugger::SetBreakpointsActiveRequest &req) = 0;
   virtual void handle(
       const debugger::SetInstrumentationBreakpointRequest &req) = 0;
   virtual void handle(const debugger::SetPauseOnExceptionsRequest &req) = 0;
@@ -116,6 +118,7 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const debugger::ResumeRequest &req) override {}
   void handle(const debugger::SetBreakpointRequest &req) override {}
   void handle(const debugger::SetBreakpointByUrlRequest &req) override {}
+  void handle(const debugger::SetBreakpointsActiveRequest &req) override {}
   void handle(
       const debugger::SetInstrumentationBreakpointRequest &req) override {}
   void handle(const debugger::SetPauseOnExceptionsRequest &req) override {}
@@ -352,6 +355,16 @@ struct debugger::SetBreakpointByUrlRequest : public Request {
   folly::Optional<std::string> scriptHash;
   folly::Optional<int> columnNumber;
   folly::Optional<std::string> condition;
+};
+
+struct debugger::SetBreakpointsActiveRequest : public Request {
+  SetBreakpointsActiveRequest();
+  explicit SetBreakpointsActiveRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  bool active{};
 };
 
 struct debugger::SetInstrumentationBreakpointRequest : public Request {

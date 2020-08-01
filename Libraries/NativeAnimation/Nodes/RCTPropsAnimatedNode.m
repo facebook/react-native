@@ -75,6 +75,11 @@
 
 - (void)restoreDefaultValues
 {
+  if (_managedByFabric) {
+    // Restoring to default values causes render of inconsistent state
+    // to the user because it isn't synchonised with Fabric's UIManager.
+    return;
+  }
   // Restore the default value for all props that were modified by this node.
   for (NSString *key in _propsDictionary.allKeys) {
     _propsDictionary[key] = [NSNull null];

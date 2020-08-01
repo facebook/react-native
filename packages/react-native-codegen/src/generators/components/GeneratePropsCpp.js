@@ -24,7 +24,7 @@ const template = `
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/::_LIBRARY_::/Props.h>
+#include <react/renderer/components/::_LIBRARY_::/Props.h>
 ::_IMPORTS_::
 
 namespace facebook {
@@ -87,7 +87,7 @@ module.exports = {
   ): FilesOutput {
     const fileName = 'Props.cpp';
     const allImports: Set<string> = new Set([
-      '#include <react/core/propsConversions.h>',
+      '#include <react/renderer/core/propsConversions.h>',
     ]);
 
     const componentProps = Object.keys(schema.modules)

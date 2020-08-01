@@ -7,7 +7,7 @@
 
 #import <React/RCTPrimitives.h>
 #import <React/RCTSurfaceStage.h>
-#import <react/mounting/MountingCoordinator.h>
+#import <react/renderer/mounting/MountingCoordinator.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -71,9 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
  * A Surface object can be stopped and then restarted.
  * The starting process includes initializing all underlying React Native
  * infrastructure and running React app.
- * Just initialized Surface object starts automatically, there is no need
- * to call `start` explicitly. Surface also stops itself on deallocation
- * automatically.
+ * Surface stops itself on deallocation automatically.
  * Returns YES in case of success. Returns NO if the Surface is already
  * started or stopped.
  */

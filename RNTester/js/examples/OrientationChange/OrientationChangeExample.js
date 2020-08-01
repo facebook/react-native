@@ -14,10 +14,10 @@ const React = require('react');
 
 const {DeviceEventEmitter, Text, View} = require('react-native');
 
-import type EmitterSubscription from '../../../../Libraries/vendor/emitter/EmitterSubscription';
+import {type EventSubscription} from '../../../../Libraries/vendor/emitter/EventEmitter';
 
 class OrientationChangeExample extends React.Component<{...}, $FlowFixMeState> {
-  _orientationSubscription: EmitterSubscription;
+  _orientationSubscription: EventSubscription;
 
   state = {
     currentOrientation: '',

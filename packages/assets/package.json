@@ -1,0 +1,10 @@
+{
+  "name": "@react-native/assets",
+  "version": "1.0.0",
+  "description": "Asset support code for React Native.",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git"
+  },
+  "license": "MIT"
+}

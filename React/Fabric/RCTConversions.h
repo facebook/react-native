@@ -7,12 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import <react/components/view/AccessibilityPrimitives.h>
-#import <react/components/view/primitives.h>
-#import <react/core/LayoutPrimitives.h>
-#import <react/graphics/Color.h>
-#import <react/graphics/Geometry.h>
-#import <react/graphics/Transform.h>
+#import <react/renderer/components/view/AccessibilityPrimitives.h>
+#import <react/renderer/components/view/primitives.h>
+#import <react/renderer/core/LayoutPrimitives.h>
+#import <react/renderer/graphics/Color.h>
+#import <react/renderer/graphics/Geometry.h>
+#import <react/renderer/graphics/Transform.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,9 +30,9 @@ inline NSString *_Nullable RCTNSStringFromStringNilIfEmpty(
   return string.empty() ? nil : RCTNSStringFromString(string, encoding);
 }
 
-inline std::string RCTStringFromNSString(NSString *string, const NSStringEncoding &encoding = NSUTF8StringEncoding)
+inline std::string RCTStringFromNSString(NSString *string)
 {
-  return [string cStringUsingEncoding:encoding];
+  return std::string([string UTF8String]);
 }
 
 inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)

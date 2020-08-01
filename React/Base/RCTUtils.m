@@ -304,6 +304,30 @@ CGFloat RCTScreenScale()
   return scale;
 }
 
+CGFloat RCTFontSizeMultiplier()
+{
+  static NSDictionary<NSString *, NSNumber *> *mapping;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    mapping = @{
+      UIContentSizeCategoryExtraSmall : @0.823,
+      UIContentSizeCategorySmall : @0.882,
+      UIContentSizeCategoryMedium : @0.941,
+      UIContentSizeCategoryLarge : @1.0,
+      UIContentSizeCategoryExtraLarge : @1.118,
+      UIContentSizeCategoryExtraExtraLarge : @1.235,
+      UIContentSizeCategoryExtraExtraExtraLarge : @1.353,
+      UIContentSizeCategoryAccessibilityMedium : @1.786,
+      UIContentSizeCategoryAccessibilityLarge : @2.143,
+      UIContentSizeCategoryAccessibilityExtraLarge : @2.643,
+      UIContentSizeCategoryAccessibilityExtraExtraLarge : @3.143,
+      UIContentSizeCategoryAccessibilityExtraExtraExtraLarge : @3.571
+    };
+  });
+
+  return mapping[RCTSharedApplication().preferredContentSizeCategory].floatValue;
+}
+
 CGSize RCTScreenSize()
 {
   // FIXME: this caches the bounds at app start, whatever those were, and then

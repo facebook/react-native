@@ -467,7 +467,9 @@ function getExtendsImports(
       case 'ReactNativeBuiltInType':
         switch (extendProps.knownTypeName) {
           case 'ReactNativeCoreViewProps':
-            imports.add('#include <react/components/view/ViewProps.h>');
+            imports.add(
+              '#include <react/renderer/components/view/ViewProps.h>',
+            );
             return;
           default:
             (extendProps.knownTypeName: empty);
@@ -490,16 +492,16 @@ function getLocalImports(
   function addImportsForNativeName(name) {
     switch (name) {
       case 'ColorPrimitive':
-        imports.add('#include <react/graphics/Color.h>');
+        imports.add('#include <react/renderer/graphics/Color.h>');
         return;
       case 'ImageSourcePrimitive':
-        imports.add('#include <react/imagemanager/primitives.h>');
+        imports.add('#include <react/renderer/imagemanager/primitives.h>');
         return;
       case 'PointPrimitive':
-        imports.add('#include <react/graphics/Geometry.h>');
+        imports.add('#include <react/renderer/graphics/Geometry.h>');
         return;
       case 'EdgeInsetsPrimitive':
-        imports.add('#include <react/graphics/Geometry.h>');
+        imports.add('#include <react/renderer/graphics/Geometry.h>');
         return;
       default:
         (name: empty);
@@ -540,7 +542,7 @@ function getLocalImports(
     }
 
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
-      imports.add('#include <react/core/propsConversions.h>');
+      imports.add('#include <react/renderer/core/propsConversions.h>');
       const objectImports = getImports(typeAnnotation.properties);
       const localImports = getLocalImports(typeAnnotation.properties);
       objectImports.forEach(imports.add, imports);

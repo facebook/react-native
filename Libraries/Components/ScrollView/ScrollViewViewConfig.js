@@ -69,8 +69,6 @@ const ScrollViewViewConfig = {
     snapToOffsets: true,
     snapToStart: true,
     zoomScale: true,
-
-    DEPRECATED_sendUpdatedChildFrames: true,
   },
 };
 

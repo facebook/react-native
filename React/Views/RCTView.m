@@ -147,162 +147,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   }
 }
 
-- (NSString *)accessibilityLabel
-{
-  NSString *label = super.accessibilityLabel;
-  if (label) {
-    return label;
-  }
-  return RCTRecursiveAccessibilityLabel(self);
-}
-
-- (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
-{
-  if (!self.accessibilityActions.count) {
-    return nil;
-  }
-
-  accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
-  accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
-  NSMutableArray *actions = [NSMutableArray array];
-  for (NSDictionary *action in self.accessibilityActions) {
-    if (action[@"name"]) {
-      accessibilityActionsNameMap[action[@"name"]] = action;
-    }
-    if (action[@"label"]) {
-      accessibilityActionsLabelMap[action[@"label"]] = action;
-      [actions addObject:[[UIAccessibilityCustomAction alloc]
-                             initWithName:action[@"label"]
-                                   target:self
-                                 selector:@selector(didActivateAccessibilityCustomAction:)]];
-    }
-  }
-
-  return [actions copy];
-}
-
-- (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
-{
-  if (!_onAccessibilityAction || !accessibilityActionsLabelMap) {
-    return NO;
-  }
-
-  // iOS defines the name as the localized label, so use our map to convert this back to the non-localized action namne
-  // when passing to JS. This allows for standard action names across platforms.
-
-  NSDictionary *actionObject = accessibilityActionsLabelMap[action.name];
-  if (actionObject) {
-    _onAccessibilityAction(@{@"actionName" : actionObject[@"name"], @"actionTarget" : self.reactTag});
-  }
-  return YES;
-}
-
-- (NSString *)accessibilityValue
-{
-  static dispatch_once_t onceToken;
-  static NSDictionary<NSString *, NSString *> *rolesAndStatesDescription = nil;
-
-  dispatch_once(&onceToken, ^{
-    NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"AccessibilityResources" ofType:@"bundle"];
-    NSBundle *bundle = [NSBundle bundleWithPath:bundlePath];
-
-    if (bundle) {
-      NSURL *url = [bundle URLForResource:@"Localizable" withExtension:@"strings"];
-      if (@available(iOS 11.0, *)) {
-        rolesAndStatesDescription = [NSDictionary dictionaryWithContentsOfURL:url error:nil];
-      } else {
-        // Fallback on earlier versions
-        rolesAndStatesDescription = [NSDictionary dictionaryWithContentsOfURL:url];
-      }
-    }
-    if (rolesAndStatesDescription == nil) {
-      NSLog(@"Cannot load localized accessibility strings.");
-      rolesAndStatesDescription = @{
-        @"alert" : @"alert",
-        @"checkbox" : @"checkbox",
-        @"combobox" : @"combo box",
-        @"menu" : @"menu",
-        @"menubar" : @"menu bar",
-        @"menuitem" : @"menu item",
-        @"progressbar" : @"progress bar",
-        @"radio" : @"radio button",
-        @"radiogroup" : @"radio group",
-        @"scrollbar" : @"scroll bar",
-        @"spinbutton" : @"spin button",
-        @"switch" : @"switch",
-        @"tab" : @"tab",
-        @"tablist" : @"tab list",
-        @"timer" : @"timer",
-        @"toolbar" : @"tool bar",
-        @"checked" : @"checked",
-        @"unchecked" : @"not checked",
-        @"busy" : @"busy",
-        @"expanded" : @"expanded",
-        @"collapsed" : @"collapsed",
-        @"mixed" : @"mixed",
-      };
-    }
-  });
-
-  if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
-    for (NSString *state in self.accessibilityState) {
-      id val = self.accessibilityState[state];
-      if (!val) {
-        continue;
-      }
-      if ([state isEqualToString:@"checked"] && [val isKindOfClass:[NSNumber class]]) {
-        return [val boolValue] ? @"1" : @"0";
-      }
-    }
-  }
-  NSMutableArray *valueComponents = [NSMutableArray new];
-  NSString *roleDescription = self.accessibilityRole ? rolesAndStatesDescription[self.accessibilityRole] : nil;
-  if (roleDescription) {
-    [valueComponents addObject:roleDescription];
-  }
-  for (NSString *state in self.accessibilityState) {
-    id val = self.accessibilityState[state];
-    if (!val) {
-      continue;
-    }
-    if ([state isEqualToString:@"checked"]) {
-      if ([val isKindOfClass:[NSNumber class]]) {
-        [valueComponents addObject:rolesAndStatesDescription[[val boolValue] ? @"checked" : @"unchecked"]];
-      } else if ([val isKindOfClass:[NSString class]] && [val isEqualToString:@"mixed"]) {
-        [valueComponents addObject:rolesAndStatesDescription[@"mixed"]];
-      }
-    }
-    if ([state isEqualToString:@"expanded"] && [val isKindOfClass:[NSNumber class]]) {
-      [valueComponents addObject:rolesAndStatesDescription[[val boolValue] ? @"expanded" : @"collapsed"]];
-    }
-    if ([state isEqualToString:@"busy"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
-      [valueComponents addObject:rolesAndStatesDescription[@"busy"]];
-    }
-  }
-
-  // handle accessibilityValue
-
-  if (self.accessibilityValueInternal) {
-    id min = self.accessibilityValueInternal[@"min"];
-    id now = self.accessibilityValueInternal[@"now"];
-    id max = self.accessibilityValueInternal[@"max"];
-    id text = self.accessibilityValueInternal[@"text"];
-    if (text && [text isKindOfClass:[NSString class]]) {
-      [valueComponents addObject:text];
-    } else if (
-        [min isKindOfClass:[NSNumber class]] && [now isKindOfClass:[NSNumber class]] &&
-        [max isKindOfClass:[NSNumber class]] && ([min intValue] < [max intValue]) &&
-        ([min intValue] <= [now intValue] && [now intValue] <= [max intValue])) {
-      int val = ([now intValue] * 100) / ([max intValue] - [min intValue]);
-      [valueComponents addObject:[NSString stringWithFormat:@"%d percent", val]];
-    }
-  }
-
-  if (valueComponents.count > 0) {
-    return [valueComponents componentsJoinedByString:@", "];
-  }
-  return nil;
-}
+#pragma mark - Hit Testing
 
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
 {
@@ -368,6 +213,166 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   }
   CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
   return CGRectContainsPoint(hitFrame, point);
+}
+
+#pragma mark - Accessibility
+
+- (NSString *)accessibilityLabel
+{
+  NSString *label = super.accessibilityLabel;
+  if (label) {
+    return label;
+  }
+  return RCTRecursiveAccessibilityLabel(self);
+}
+
+- (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
+{
+  if (!self.accessibilityActions.count) {
+    return nil;
+  }
+
+  accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
+  accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
+  NSMutableArray *actions = [NSMutableArray array];
+  for (NSDictionary *action in self.accessibilityActions) {
+    if (action[@"name"]) {
+      accessibilityActionsNameMap[action[@"name"]] = action;
+    }
+    if (action[@"label"]) {
+      accessibilityActionsLabelMap[action[@"label"]] = action;
+      [actions addObject:[[UIAccessibilityCustomAction alloc]
+                             initWithName:action[@"label"]
+                                   target:self
+                                 selector:@selector(didActivateAccessibilityCustomAction:)]];
+    }
+  }
+
+  return [actions copy];
+}
+
+- (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
+{
+  if (!_onAccessibilityAction || !accessibilityActionsLabelMap) {
+    return NO;
+  }
+  // iOS defines the name as the localized label, so use our map to convert this back to the non-localized action name
+  // when passing to JS. This allows for standard action names across platforms.
+  NSDictionary *actionObject = accessibilityActionsLabelMap[action.name];
+  if (actionObject) {
+    _onAccessibilityAction(@{@"actionName" : actionObject[@"name"], @"actionTarget" : self.reactTag});
+  }
+  return YES;
+}
+
+- (NSString *)accessibilityValue
+{
+  static dispatch_once_t onceToken;
+  static NSDictionary<NSString *, NSString *> *rolesAndStatesDescription = nil;
+
+  dispatch_once(&onceToken, ^{
+    NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"AccessibilityResources" ofType:@"bundle"];
+    NSBundle *bundle = [NSBundle bundleWithPath:bundlePath];
+
+    if (bundle) {
+      NSURL *url = [bundle URLForResource:@"Localizable" withExtension:@"strings"];
+      if (@available(iOS 11.0, *)) {
+        rolesAndStatesDescription = [NSDictionary dictionaryWithContentsOfURL:url error:nil];
+      } else {
+        // Fallback on earlier versions
+        rolesAndStatesDescription = [NSDictionary dictionaryWithContentsOfURL:url];
+      }
+    }
+    if (rolesAndStatesDescription == nil) {
+      // Falling back to hardcoded English list.
+      NSLog(@"Cannot load localized accessibility strings.");
+      rolesAndStatesDescription = @{
+        @"alert" : @"alert",
+        @"checkbox" : @"checkbox",
+        @"combobox" : @"combo box",
+        @"menu" : @"menu",
+        @"menubar" : @"menu bar",
+        @"menuitem" : @"menu item",
+        @"progressbar" : @"progress bar",
+        @"radio" : @"radio button",
+        @"radiogroup" : @"radio group",
+        @"scrollbar" : @"scroll bar",
+        @"spinbutton" : @"spin button",
+        @"switch" : @"switch",
+        @"tab" : @"tab",
+        @"tablist" : @"tab list",
+        @"timer" : @"timer",
+        @"toolbar" : @"tool bar",
+        @"checked" : @"checked",
+        @"unchecked" : @"not checked",
+        @"busy" : @"busy",
+        @"expanded" : @"expanded",
+        @"collapsed" : @"collapsed",
+        @"mixed" : @"mixed",
+      };
+    }
+  });
+
+  // Handle Switch.
+  if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
+    for (NSString *state in self.accessibilityState) {
+      id val = self.accessibilityState[state];
+      if (!val) {
+        continue;
+      }
+      if ([state isEqualToString:@"checked"] && [val isKindOfClass:[NSNumber class]]) {
+        return [val boolValue] ? @"1" : @"0";
+      }
+    }
+  }
+  NSMutableArray *valueComponents = [NSMutableArray new];
+  NSString *roleDescription = self.accessibilityRole ? rolesAndStatesDescription[self.accessibilityRole] : nil;
+  if (roleDescription) {
+    [valueComponents addObject:roleDescription];
+  }
+
+  // Handle states which haven't already been handled in RCTViewManager.
+  for (NSString *state in self.accessibilityState) {
+    id val = self.accessibilityState[state];
+    if (!val) {
+      continue;
+    }
+    if ([state isEqualToString:@"checked"]) {
+      if ([val isKindOfClass:[NSNumber class]]) {
+        [valueComponents addObject:rolesAndStatesDescription[[val boolValue] ? @"checked" : @"unchecked"]];
+      } else if ([val isKindOfClass:[NSString class]] && [val isEqualToString:@"mixed"]) {
+        [valueComponents addObject:rolesAndStatesDescription[@"mixed"]];
+      }
+    }
+    if ([state isEqualToString:@"expanded"] && [val isKindOfClass:[NSNumber class]]) {
+      [valueComponents addObject:rolesAndStatesDescription[[val boolValue] ? @"expanded" : @"collapsed"]];
+    }
+    if ([state isEqualToString:@"busy"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
+      [valueComponents addObject:rolesAndStatesDescription[@"busy"]];
+    }
+  }
+
+  // Handle accessibilityValue.
+  if (self.accessibilityValueInternal) {
+    id min = self.accessibilityValueInternal[@"min"];
+    id now = self.accessibilityValueInternal[@"now"];
+    id max = self.accessibilityValueInternal[@"max"];
+    id text = self.accessibilityValueInternal[@"text"];
+    if (text && [text isKindOfClass:[NSString class]]) {
+      [valueComponents addObject:text];
+    } else if (
+        [min isKindOfClass:[NSNumber class]] && [now isKindOfClass:[NSNumber class]] &&
+        [max isKindOfClass:[NSNumber class]] && ([min intValue] < [max intValue]) &&
+        ([min intValue] <= [now intValue] && [now intValue] <= [max intValue])) {
+      int val = ([now intValue] * 100) / ([max intValue] - [min intValue]);
+      [valueComponents addObject:[NSString stringWithFormat:@"%d percent", val]];
+    }
+  }
+
+  if (valueComponents.count > 0) {
+    return [valueComponents componentsJoinedByString:@", "];
+  }
+  return nil;
 }
 
 - (UIView *)reactAccessibilityElement
@@ -492,7 +497,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   return UIEdgeInsetsZero;
 }
 
-#pragma mark - View unmounting
+#pragma mark - View Unmounting
 
 - (void)react_remountAllSubviews
 {

@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<f251363b69dd291d2c70e893c3fed04d>>
+// @generated SignedSource<<addf39d6b92b8dc857e6e5ffe2a441d4>>
 
 #include "MessageTypes.h"
 
@@ -35,6 +35,8 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.setBreakpoint", makeUnique<debugger::SetBreakpointRequest>},
       {"Debugger.setBreakpointByUrl",
        makeUnique<debugger::SetBreakpointByUrlRequest>},
+      {"Debugger.setBreakpointsActive",
+       makeUnique<debugger::SetBreakpointsActiveRequest>},
       {"Debugger.setInstrumentationBreakpoint",
        makeUnique<debugger::SetInstrumentationBreakpointRequest>},
       {"Debugger.setPauseOnExceptions",
@@ -505,6 +507,35 @@ dynamic debugger::SetBreakpointByUrlRequest::toDynamic() const {
 }
 
 void debugger::SetBreakpointByUrlRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+debugger::SetBreakpointsActiveRequest::SetBreakpointsActiveRequest()
+    : Request("Debugger.setBreakpointsActive") {}
+
+debugger::SetBreakpointsActiveRequest::SetBreakpointsActiveRequest(
+    const dynamic &obj)
+    : Request("Debugger.setBreakpointsActive") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(active, params, "active");
+}
+
+dynamic debugger::SetBreakpointsActiveRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "active", active);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void debugger::SetBreakpointsActiveRequest::accept(
     RequestHandler &handler) const {
   handler.handle(*this);
 }

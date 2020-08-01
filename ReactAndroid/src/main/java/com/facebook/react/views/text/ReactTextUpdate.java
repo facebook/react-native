@@ -142,7 +142,6 @@ public class ReactTextUpdate {
   public static ReactTextUpdate buildReactTextUpdateFromState(
       Spannable text,
       int jsEventCounter,
-      boolean containsImages,
       int textAlign,
       int textBreakStrategy,
       int justificationMode,
@@ -150,7 +149,7 @@ public class ReactTextUpdate {
 
     ReactTextUpdate textUpdate =
         new ReactTextUpdate(
-            text, jsEventCounter, containsImages, textAlign, textBreakStrategy, justificationMode);
+            text, jsEventCounter, false, textAlign, textBreakStrategy, justificationMode);
 
     textUpdate.mAttributedString = attributedString;
     return textUpdate;

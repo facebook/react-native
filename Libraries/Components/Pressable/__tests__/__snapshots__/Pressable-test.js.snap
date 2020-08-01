@@ -3,6 +3,7 @@
 exports[`<Pressable /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
 <View
   accessible={true}
+  collapsable={false}
   focusable={true}
   onBlur={[Function]}
   onClick={[Function]}
@@ -21,6 +22,7 @@ exports[`<Pressable /> should render as expected: should deep render when mocked
 exports[`<Pressable /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
 <View
   accessible={true}
+  collapsable={false}
   focusable={true}
   onBlur={[Function]}
   onClick={[Function]}

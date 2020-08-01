@@ -55,6 +55,9 @@ public abstract class BaseViewManagerAdapter<T extends View>
   public void setElevation(@NonNull T view, float elevation) {}
 
   @Override
+  public void setShadowColor(@NonNull T view, int shadowColor) {}
+
+  @Override
   public void setImportantForAccessibility(
       @NonNull T view, @Nullable String importantForAccessibility) {}
 

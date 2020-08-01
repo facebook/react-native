@@ -13,8 +13,8 @@
 #import <better/map.h>
 #import <better/mutex.h>
 
-#import <react/componentregistry/ComponentDescriptorProviderRegistry.h>
-#import <react/core/ReactPrimitives.h>
+#import <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#import <react/renderer/core/ReactPrimitives.h>
 
 #ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTFabricComponentPlugin/RCTFabricPluginProvider.h>

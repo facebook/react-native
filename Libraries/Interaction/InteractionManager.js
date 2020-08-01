@@ -5,18 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 const BatchedBridge = require('../BatchedBridge/BatchedBridge');
-const EventEmitter = require('../vendor/emitter/EventEmitter');
 const TaskQueue = require('./TaskQueue');
 
 const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
-const keyMirror = require('fbjs/lib/keyMirror');
+
+import EventEmitter from '../vendor/emitter/EventEmitter';
 
 export type Handle = number;
 import type {Task} from './TaskQueue';
@@ -76,10 +76,10 @@ const DEBUG: false = false;
  * from executing, making apps more responsive.
  */
 const InteractionManager = {
-  Events: keyMirror({
-    interactionStart: true,
-    interactionComplete: true,
-  }),
+  Events: {
+    interactionStart: 'interactionStart',
+    interactionComplete: 'interactionComplete',
+  },
 
   /**
    * Schedule a function to run after all interactions have completed. Returns a cancellable
@@ -88,13 +88,16 @@ const InteractionManager = {
   runAfterInteractions(
     task: ?Task,
   ): {
-    then: Function,
-    done: Function,
-    cancel: Function,
+    then: <U>(
+      onFulfill?: ?(void) => ?(Promise<U> | U),
+      onReject?: ?(error: mixed) => ?(Promise<U> | U),
+    ) => Promise<U>,
+    done: () => void,
+    cancel: () => void,
     ...
   } {
-    const tasks = [];
-    const promise = new Promise(resolve => {
+    const tasks: Array<Task> = [];
+    const promise = new Promise((resolve: () => void) => {
       _scheduleUpdate();
       if (task) {
         tasks.push(task);
@@ -163,8 +166,6 @@ const _taskQueue = new TaskQueue({onMoreTasks: _scheduleUpdate});
 let _nextUpdateHandle = 0;
 let _inc = 0;
 let _deadline = -1;
-
-declare function setImmediate(callback: any, ...args: Array<any>): number;
 
 /**
  * Schedule an asynchronous update to the interaction state.

@@ -45,7 +45,7 @@ public class ReactQueueConfigurationSpec {
 
   public static ReactQueueConfigurationSpec createDefault() {
     MessageQueueThreadSpec spec =
-        Build.VERSION.SDK_INT < 21
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
             ? MessageQueueThreadSpec.newBackgroundThreadSpec(
                 "native_modules", LEGACY_STACK_SIZE_BYTES)
             : MessageQueueThreadSpec.newBackgroundThreadSpec("native_modules");

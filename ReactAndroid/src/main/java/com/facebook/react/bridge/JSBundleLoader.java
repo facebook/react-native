@@ -74,6 +74,25 @@ public abstract class JSBundleLoader {
   }
 
   /**
+   * Same as {{@link JSBundleLoader#createCachedBundleFromNetworkLoader(String, String)}}, but for
+   * split bundles in development.
+   */
+  public static JSBundleLoader createCachedSplitBundleFromNetworkLoader(
+      final String sourceURL, final String cachedFileLocation) {
+    return new JSBundleLoader() {
+      @Override
+      public String loadScript(JSBundleLoaderDelegate delegate) {
+        try {
+          delegate.loadSplitBundleFromFile(cachedFileLocation, sourceURL);
+          return sourceURL;
+        } catch (Exception e) {
+          throw DebugServerException.makeGeneric(sourceURL, e.getMessage(), e);
+        }
+      }
+    };
+  }
+
+  /**
    * This loader is used when proxy debugging is enabled. In that case there is no point in fetching
    * the bundle from device as remote executor will have to do it anyway.
    */

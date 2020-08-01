@@ -13,6 +13,8 @@ import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,14 +27,11 @@ import java.util.Map;
 
   private int mConnectedViewTag = -1;
   private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
-  private final UIManager mUIManager;
   private final Map<String, Integer> mPropNodeMapping;
   private final JavaOnlyMap mPropMap;
+  @Nullable private UIManager mUIManager;
 
-  PropsAnimatedNode(
-      ReadableMap config,
-      NativeAnimatedNodesManager nativeAnimatedNodesManager,
-      UIManager uiManager) {
+  PropsAnimatedNode(ReadableMap config, NativeAnimatedNodesManager nativeAnimatedNodesManager) {
     ReadableMap props = config.getMap("props");
     ReadableMapKeySetIterator iter = props.keySetIterator();
     mPropNodeMapping = new HashMap<>();
@@ -43,28 +42,44 @@ import java.util.Map;
     }
     mPropMap = new JavaOnlyMap();
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
+  }
+
+  public void connectToView(int viewTag, UIManager uiManager) {
+    if (mConnectedViewTag != -1) {
+      throw new JSApplicationIllegalArgumentException(
+          "Animated node " + mTag + " is " + "already attached to a view: " + mConnectedViewTag);
+    }
+    mConnectedViewTag = viewTag;
     mUIManager = uiManager;
   }
 
-  public void connectToView(int viewTag) {
-    if (mConnectedViewTag != -1) {
-      throw new JSApplicationIllegalArgumentException(
-          "Animated node " + mTag + " is " + "already attached to a view");
-    }
-    mConnectedViewTag = viewTag;
-  }
-
   public void disconnectFromView(int viewTag) {
-    if (mConnectedViewTag != viewTag) {
+    if (mConnectedViewTag != viewTag && mConnectedViewTag != -1) {
       throw new JSApplicationIllegalArgumentException(
           "Attempting to disconnect view that has "
-              + "not been connected with the given animated node");
+              + "not been connected with the given animated node: "
+              + viewTag
+              + " but is connected to view "
+              + mConnectedViewTag);
     }
 
     mConnectedViewTag = -1;
   }
 
   public void restoreDefaultValues() {
+    // Cannot restore default values if this view has already been disconnected.
+    if (mConnectedViewTag == -1) {
+      return;
+    }
+    // Don't restore default values in Fabric.
+    // In Non-Fabric this had the effect of "restore the value to whatever the value was on the
+    // ShadowNode instead of in the View hierarchy". However, "synchronouslyUpdateViewOnUIThread"
+    // will not have that impact on Fabric, because the FabricUIManager doesn't have access to the
+    // ShadowNode layer.
+    if (ViewUtil.getUIManagerType(mConnectedViewTag) == UIManagerType.FABRIC) {
+      return;
+    }
+
     ReadableMapKeySetIterator it = mPropMap.keySetIterator();
     while (it.hasNextKey()) {
       mPropMap.putNull(it.nextKey());
@@ -97,5 +112,16 @@ import java.util.Map;
     }
 
     mUIManager.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, mPropMap);
+  }
+
+  public String prettyPrint() {
+    return "PropsAnimatedNode["
+        + mTag
+        + "] connectedViewTag: "
+        + mConnectedViewTag
+        + " mPropNodeMapping: "
+        + (mPropNodeMapping != null ? mPropNodeMapping.toString() : "null")
+        + " mPropMap: "
+        + (mPropMap != null ? mPropMap.toString() : "null");
   }
 }

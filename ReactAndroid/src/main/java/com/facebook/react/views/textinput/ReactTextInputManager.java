@@ -31,7 +31,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
@@ -58,7 +57,6 @@ import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -1088,7 +1086,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         });
   }
 
-  private class ReactContentSizeWatcher implements ContentSizeWatcher {
+  private static class ReactContentSizeWatcher implements ContentSizeWatcher {
     private ReactEditText mEditText;
     private @Nullable EventDispatcher mEventDispatcher;
     private int mPreviousContentWidth = 0;
@@ -1097,8 +1095,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     public ReactContentSizeWatcher(ReactEditText editText) {
       mEditText = editText;
       ReactContext reactContext = getReactContext(editText);
-      UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
-      mEventDispatcher = uiManager != null ? uiManager.getEventDispatcher() : null;
+      mEventDispatcher = getEventDispatcher(reactContext, editText);
     }
 
     @Override
@@ -1170,7 +1167,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  private class ReactScrollWatcher implements ScrollWatcher {
+  private static class ReactScrollWatcher implements ScrollWatcher {
 
     private ReactEditText mReactEditText;
     private EventDispatcher mEventDispatcher;
@@ -1228,7 +1225,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   /**
-   * May be overriden by subclasses that would like to provide their own instance of the internal
+   * May be overridden by subclasses that would like to provide their own instance of the internal
    * {@code EditText} this class uses to determine the expected size of the view.
    */
   protected EditText createInternalEditText(ThemedReactContext themedReactContext) {
@@ -1238,44 +1235,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Override
   public Object updateState(
       ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    ReadableNativeMap state = stateWrapper.getState();
-
-    // Do we need to communicate theme back to C++?
-    // If so, this should only need to be done once per surface.
-    if (!state.getBoolean("hasThemeData")) {
-      WritableNativeMap update = new WritableNativeMap();
-
-      ReactContext reactContext = UIManagerHelper.getReactContext(view);
-      if (reactContext instanceof ThemedReactContext) {
-        ThemedReactContext themedReactContext = (ThemedReactContext) reactContext;
-        EditText editText = createInternalEditText(themedReactContext);
-
-        // Even though we check `data["textChanged"].empty()` before using the value in C++,
-        // state updates crash without this value on key exception. It's unintuitive why
-        // folly::dynamic is crashing there and if there's any way to fix on the native side,
-        // so leave this here until we can figure out a better way of key-existence-checking in C++.
-        update.putNull("textChanged");
-
-        update.putDouble(
-            "themePaddingStart", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingStart(editText)));
-        update.putDouble(
-            "themePaddingEnd", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingEnd(editText)));
-        update.putDouble("themePaddingTop", PixelUtil.toDIPFromPixel(editText.getPaddingTop()));
-        update.putDouble(
-            "themePaddingBottom", PixelUtil.toDIPFromPixel(editText.getPaddingBottom()));
-
-        stateWrapper.updateState(update);
-      } else {
-        ReactSoftException.logSoftException(
-            TAG,
-            new IllegalStateException(
-                "ReactContext is not a ThemedReactContent: "
-                    + (reactContext != null ? reactContext.getClass().getName() : "null")));
-      }
+    if (stateWrapper == null) {
+      throw new IllegalArgumentException("Unable to update a NULL state.");
     }
+    ReadableNativeMap state = stateWrapper.getState();
 
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
+
+    if (attributedString == null || paragraphAttributes == null) {
+      throw new IllegalArgumentException("Invalid TextInput State was received as a parameters");
+    }
 
     Spannable spanned =
         TextLayoutManager.getOrCreateSpannableForText(
@@ -1285,11 +1255,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
     view.mStateWrapper = stateWrapper;
-
     return ReactTextUpdate.buildReactTextUpdateFromState(
         spanned,
         state.getInt("mostRecentEventCount"),
-        false, // TODO add this into local Data
         TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props),

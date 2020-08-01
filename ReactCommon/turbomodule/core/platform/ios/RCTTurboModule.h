@@ -40,7 +40,6 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
     id<RCTTurboModule> instance;
     std::shared_ptr<CallInvoker> jsInvoker;
     std::shared_ptr<CallInvoker> nativeInvoker;
-    // Does the NativeModule dispatch async methods to the JS thread?
     bool isSyncModule;
   };
 
@@ -61,16 +60,20 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   void setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName);
 
  private:
+  // Does the NativeModule dispatch async methods to the JS thread?
+  const bool isSyncModule_;
+
   /**
    * TODO(ramanpreet):
    * Investigate an optimization that'll let us get rid of this NSMutableDictionary.
    */
   NSMutableDictionary<NSString *, NSMutableArray *> *methodArgConversionSelectors_;
   NSDictionary<NSString *, NSArray<NSString *> *> *methodArgumentTypeNames_;
-  const bool isSyncModule_;
-  bool isMethodSync(TurboModuleMethodValueKind returnType);
-  NSString *getArgumentTypeName(NSString *methodName, int argIndex);
 
+  bool isMethodSync(TurboModuleMethodValueKind returnType);
+  BOOL hasMethodArgConversionSelector(NSString *methodName, int argIndex);
+  SEL getMethodArgConversionSelector(NSString *methodName, int argIndex);
+  NSString *getArgumentTypeName(NSString *methodName, int argIndex);
   NSInvocation *getMethodInvocation(
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind returnType,
@@ -86,9 +89,6 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       NSInvocation *inv,
       NSMutableArray *retainedObjectsForInvocation);
 
-  BOOL hasMethodArgConversionSelector(NSString *methodName, int argIndex);
-  SEL getMethodArgConversionSelector(NSString *methodName, int argIndex);
-
   using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper);
   jsi::Value
   createPromise(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> jsInvoker, PromiseInvocationBlock invoke);
@@ -103,10 +103,10 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
  * Used by TurboModules to get access to other TurboModules.
  *
  * Usage:
- * Place `@synthesize turboModuleLookupDelegate = _turboModuleLookupDelegate`
+ * Place `@synthesize turboModuleRegistry = _turboModuleRegistry`
  * in the @implementation section of your TurboModule.
  */
-@property (nonatomic, weak) id<RCTTurboModuleLookupDelegate> turboModuleLookupDelegate;
+@property (nonatomic, weak) id<RCTTurboModuleRegistry> turboModuleRegistry;
 
 @optional
 // This should be required, after migration is done.

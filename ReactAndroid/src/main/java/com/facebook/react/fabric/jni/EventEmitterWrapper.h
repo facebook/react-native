@@ -8,8 +8,8 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <react/core/EventEmitter.h>
 #include <react/jni/ReadableNativeMap.h>
+#include <react/renderer/core/EventEmitter.h>
 
 namespace facebook {
 namespace react {

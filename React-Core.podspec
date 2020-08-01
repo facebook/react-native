@@ -21,7 +21,6 @@ folly_version = '2020.01.13.00'
 boost_compiler_flags = '-Wno-documentation'
 
 header_subspecs = {
-  'ARTHeaders'                  => 'Libraries/ART/**/*.h',
   'CoreModulesHeaders'          => 'React/CoreModules/**/*.h',
   'RCTActionSheetHeaders'       => 'Libraries/ActionSheetIOS/*.h',
   'RCTAnimationHeaders'         => 'Libraries/NativeAnimation/{Drivers/*,Nodes/*,*}.{h}',
@@ -58,6 +57,7 @@ Pod::Spec.new do |s|
     ss.exclude_files          = "React/CoreModules/**/*",
                                 "React/DevSupport/**/*",
                                 "React/Fabric/**/*",
+                                "React/Tests/**/*",
                                 "React/Inspector/**/*"
     ss.ios.exclude_files      = "React/**/RCTTV*.*"
     ss.tvos.exclude_files     = "React/Modules/RCTClipboard*",

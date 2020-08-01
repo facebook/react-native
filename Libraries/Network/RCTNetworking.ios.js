@@ -5,17 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-
-const convertRequestBody = require('./convertRequestBody');
-
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeNetworkingIOS from './NativeNetworkingIOS';
 import type {NativeResponseType} from './XMLHttpRequest';
+import convertRequestBody from './convertRequestBody';
 import type {RequestBody} from './convertRequestBody';
 
 class RCTNetworking extends NativeEventEmitter {
@@ -27,7 +25,7 @@ class RCTNetworking extends NativeEventEmitter {
     method: string,
     trackingName: string,
     url: string,
-    headers: Object,
+    headers: {...},
     data: RequestBody,
     responseType: NativeResponseType,
     incrementalUpdates: boolean,

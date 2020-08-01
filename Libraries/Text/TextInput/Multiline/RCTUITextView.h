@@ -37,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 // it's declared here only to conform to the interface.
 @property (nonatomic, assign) BOOL caretHidden;
 
+@property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
+
 @end
 
 NS_ASSUME_NONNULL_END

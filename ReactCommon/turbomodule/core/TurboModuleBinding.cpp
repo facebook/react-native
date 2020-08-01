@@ -50,11 +50,12 @@ TurboModuleBinding::~TurboModuleBinding() {
 }
 
 std::shared_ptr<TurboModule> TurboModuleBinding::getModule(
-    const std::string &name) {
+    const std::string &name,
+    const jsi::Value *schema) {
   std::shared_ptr<TurboModule> module = nullptr;
   {
     SystraceSection s("TurboModuleBinding::getModule", "module", name);
-    module = moduleProvider_(name);
+    module = moduleProvider_(name, schema);
   }
   return module;
 }
@@ -64,12 +65,16 @@ jsi::Value TurboModuleBinding::jsProxy(
     const jsi::Value &thisVal,
     const jsi::Value *args,
     size_t count) {
-  if (count != 1) {
+  if (count < 1) {
     throw std::invalid_argument(
-        "TurboModuleBinding::jsProxy arg count must be 1");
+        "__turboModuleProxy must be called with at least 1 argument");
   }
   std::string moduleName = args[0].getString(runtime).utf8(runtime);
-  std::shared_ptr<TurboModule> module = getModule(moduleName);
+  jsi::Value nullSchema = jsi::Value::undefined();
+
+  std::shared_ptr<TurboModule> module =
+      (count >= 2 ? getModule(moduleName, &args[1])
+                  : getModule(moduleName, &nullSchema));
 
   if (module == nullptr) {
     return jsi::Value::null();

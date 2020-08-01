@@ -154,12 +154,54 @@ type Num2 = Num;
 export type Void = void;
 export type A = number;
 export type B = number;
+export type ObjectAlias = {|
+  x: number,
+  y: number,
+  label: string,
+  truthy: boolean,
+|}
 
 export interface Spec extends TurboModule {
   // Exported methods.
   +getNumber: Num2;
   +getVoid: () => Void;
   +getArray: (a: Array<A>) => {| a: B |};
+  +getStringFromAlias: (a: ObjectAlias) => string;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_NESTED_ALIASES = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+type Bar = {|
+  z: number
+|};
+
+type Foo = {|
+  bar1: Bar,
+  bar2: Bar,
+|};
+
+export interface Spec extends TurboModule {
+  // Exported methods.
+  foo1: (x: Foo) => void;
+  foo2: (x: Foo) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -459,6 +501,7 @@ module.exports = {
   NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE,
   NATIVE_MODULE_WITH_FLOAT_AND_INT32,
   NATIVE_MODULE_WITH_ALIASES,
+  NATIVE_MODULE_WITH_NESTED_ALIASES,
   NATIVE_MODULE_WITH_PROMISE,
   NATIVE_MODULE_WITH_COMPLEX_OBJECTS,
   NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY,

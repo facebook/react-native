@@ -8,8 +8,8 @@
 #pragma once
 
 #include <jsi/jsi.h>
-#include <react/core/EventBeat.h>
-#include <react/uimanager/primitives.h>
+#include <react/renderer/core/EventBeat.h>
+#include <react/renderer/uimanager/primitives.h>
 
 #include "EventBeatManager.h"
 

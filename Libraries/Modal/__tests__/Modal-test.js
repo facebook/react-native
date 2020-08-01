@@ -27,7 +27,7 @@ describe('<Modal />', () => {
     expect(instance).toMatchSnapshot();
   });
 
-  it('should shallow render as <Component> when mocked', () => {
+  it('should shallow render as <Modal> when mocked', () => {
     const output = render.shallow(
       <Modal>
         <View />

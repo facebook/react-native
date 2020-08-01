@@ -21,8 +21,6 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   @Retention(RetentionPolicy.SOURCE)
   @interface ImageEventType {}
 
-  // Currently ON_PROGRESS is not implemented, these can be added
-  // easily once support exists in fresco.
   public static final int ON_ERROR = 1;
   public static final int ON_LOAD = 2;
   public static final int ON_LOAD_END = 3;
@@ -30,41 +28,61 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   public static final int ON_PROGRESS = 5;
 
   private final int mEventType;
-  private final @Nullable String mImageUri;
+  private final @Nullable String mErrorMessage;
+  private final @Nullable String mSourceUri;
   private final int mWidth;
   private final int mHeight;
-  private final @Nullable String mImageError;
+  private final int mLoaded;
+  private final int mTotal;
 
-  public ImageLoadEvent(int viewId, @ImageEventType int eventType) {
-    this(viewId, eventType, null);
+  public static final ImageLoadEvent createLoadStartEvent(int viewId) {
+    return new ImageLoadEvent(viewId, ON_LOAD_START);
   }
 
-  public ImageLoadEvent(int viewId, @ImageEventType int eventType, boolean error, String message) {
-    this(viewId, eventType, null, 0, 0, message);
+  /**
+   * @param loaded Amount of the image that has been loaded. It should be number of bytes, but
+   *     Fresco does not currently provides that information.
+   * @param total Amount that `loaded` will be when the image is fully loaded.
+   */
+  public static final ImageLoadEvent createProgressEvent(
+      int viewId, @Nullable String imageUri, int loaded, int total) {
+    return new ImageLoadEvent(viewId, ON_PROGRESS, null, imageUri, 0, 0, loaded, total);
   }
 
-  public ImageLoadEvent(int viewId, @ImageEventType int eventType, String imageUri) {
-    this(viewId, eventType, imageUri, 0, 0, null);
+  public static final ImageLoadEvent createLoadEvent(
+      int viewId, @Nullable String imageUri, int width, int height) {
+    return new ImageLoadEvent(viewId, ON_LOAD, null, imageUri, width, height, 0, 0);
   }
 
-  public ImageLoadEvent(
-      int viewId, @ImageEventType int eventType, @Nullable String imageUri, int width, int height) {
-    this(viewId, eventType, imageUri, width, height, null);
+  public static final ImageLoadEvent createErrorEvent(int viewId, Throwable throwable) {
+    return new ImageLoadEvent(viewId, ON_ERROR, throwable.getMessage(), null, 0, 0, 0, 0);
   }
 
-  public ImageLoadEvent(
+  public static final ImageLoadEvent createLoadEndEvent(int viewId) {
+    return new ImageLoadEvent(viewId, ON_LOAD_END);
+  }
+
+  private ImageLoadEvent(int viewId, @ImageEventType int eventType) {
+    this(viewId, eventType, null, null, 0, 0, 0, 0);
+  }
+
+  private ImageLoadEvent(
       int viewId,
       @ImageEventType int eventType,
-      @Nullable String imageUri,
+      @Nullable String errorMessage,
+      @Nullable String sourceUri,
       int width,
       int height,
-      @Nullable String message) {
+      int loaded,
+      int total) {
     super(viewId);
     mEventType = eventType;
-    mImageUri = imageUri;
+    mErrorMessage = errorMessage;
+    mSourceUri = sourceUri;
     mWidth = width;
     mHeight = height;
-    mImageError = message;
+    mLoaded = loaded;
+    mTotal = total;
   }
 
   public static String eventNameForType(@ImageEventType int eventType) {
@@ -100,26 +118,30 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     WritableMap eventData = null;
 
-    if (mImageUri != null || (mEventType == ON_LOAD || mEventType == ON_ERROR)) {
-      eventData = Arguments.createMap();
-
-      if (mImageUri != null) {
-        eventData.putString("uri", mImageUri);
-      }
-
-      if (mEventType == ON_LOAD) {
-        WritableMap source = Arguments.createMap();
-        source.putDouble("width", mWidth);
-        source.putDouble("height", mHeight);
-        if (mImageUri != null) {
-          source.putString("url", mImageUri);
-        }
-        eventData.putMap("source", source);
-      } else if (mEventType == ON_ERROR) {
-        eventData.putString("error", mImageError);
-      }
+    switch (mEventType) {
+      case ON_PROGRESS:
+        eventData = Arguments.createMap();
+        eventData.putInt("loaded", mLoaded);
+        eventData.putInt("total", mTotal);
+        break;
+      case ON_LOAD:
+        eventData = Arguments.createMap();
+        eventData.putMap("source", createEventDataSource());
+        break;
+      case ON_ERROR:
+        eventData = Arguments.createMap();
+        eventData.putString("error", mErrorMessage);
+        break;
     }
 
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), eventData);
+  }
+
+  private WritableMap createEventDataSource() {
+    WritableMap source = Arguments.createMap();
+    source.putString("uri", mSourceUri);
+    source.putDouble("width", mWidth);
+    source.putDouble("height", mHeight);
+    return source;
   }
 }

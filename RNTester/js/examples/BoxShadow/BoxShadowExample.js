@@ -46,6 +46,29 @@ const styles = StyleSheet.create({
     margin: 8,
     backgroundColor: 'red',
   },
+
+  elevation1: {
+    elevation: 1,
+  },
+  elevation2: {
+    elevation: 3,
+  },
+  elevation3: {
+    elevation: 10,
+  },
+  shadowColor1: {
+    shadowColor: 'red',
+  },
+  shadowColor2: {
+    shadowColor: 'blue',
+  },
+  shadowColor3: {
+    shadowColor: '#00FF0080',
+  },
+  border: {
+    borderWidth: 5,
+    borderColor: '#EEE',
+  },
 });
 
 exports.title = 'Box Shadow';
@@ -93,6 +116,77 @@ exports.examples = [
       return (
         <View style={[styles.box, styles.shadow1, styles.shadowChild]}>
           <View style={[styles.box, styles.shadowChildBox]} />
+        </View>
+      );
+    },
+  },
+
+  {
+    title: 'Basic elevation',
+    description: 'elevation: 1, 3, 6',
+    platform: 'android',
+    render() {
+      return (
+        <View style={styles.wrapper}>
+          <View style={[styles.box, styles.elevation1]} />
+          <View style={[styles.box, styles.elevation2]} />
+          <View style={[styles.box, styles.elevation3]} />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Fractional elevation',
+    description: 'elevation: 0.1, 0.5, 1.5',
+    platform: 'android',
+    render() {
+      return (
+        <View style={styles.wrapper}>
+          <View style={[styles.box, {elevation: 0.1}]} />
+          <View style={[styles.box, {elevation: 0.5}]} />
+          <View style={[styles.box, {elevation: 1.5}]} />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Colored shadow',
+    description: "shadowColor: 'red', 'blue', '#00FF0080'",
+    platform: 'android',
+    render() {
+      return (
+        <View style={styles.wrapper}>
+          <View style={[styles.box, styles.elevation1, styles.shadowColor1]} />
+          <View style={[styles.box, styles.elevation2, styles.shadowColor2]} />
+          <View style={[styles.box, styles.elevation3, styles.shadowColor3]} />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Shaped shadow',
+    description: 'borderRadius: 50',
+    platform: 'android',
+    render() {
+      return (
+        <View style={styles.wrapper}>
+          <View style={[styles.box, styles.elevation1, styles.shadowShaped]} />
+          <View style={[styles.box, styles.elevation2, styles.shadowShaped]} />
+          <View style={[styles.box, styles.elevation3, styles.shadowShaped]} />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Borders',
+    description: 'borderWidth: 5',
+    platform: 'android',
+    render() {
+      return (
+        <View style={styles.wrapper}>
+          <View style={[styles.box, styles.elevation1, styles.border]} />
+          <View style={[styles.box, styles.elevation2, styles.border]} />
+          <View style={[styles.box, styles.elevation3, styles.border]} />
         </View>
       );
     },

@@ -15,6 +15,7 @@
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
+#import "RCTDevLoadingViewProtocol.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
@@ -22,10 +23,10 @@
 #import "RCTReloadCommand.h"
 #import "RCTUtils.h"
 
-NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
-NSString *const RCTJavaScriptWillStartExecutingNotification = @"RCTJavaScriptWillStartExecutingNotification";
-NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
+NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
+NSString *const RCTJavaScriptWillStartExecutingNotification = @"RCTJavaScriptWillStartExecutingNotification";
+NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
 NSString *const RCTDidSetupModuleNotification = @"RCTDidSetupModuleNotification";
 NSString *const RCTDidSetupModuleNotificationModuleNameKey = @"moduleName";
@@ -113,6 +114,17 @@ void RCTEnableTurboModule(BOOL enabled)
   turboModuleEnabled = enabled;
 }
 
+static BOOL turboModuleEagerInitEnabled = NO;
+BOOL RCTTurboModuleEagerInitEnabled(void)
+{
+  return turboModuleEagerInitEnabled;
+}
+
+void RCTEnableTurboModuleEagerInit(BOOL enabled)
+{
+  turboModuleEagerInitEnabled = enabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 
@@ -188,9 +200,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self invalidate];
 }
 
-- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate
+- (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
 {
-  [self.batchedBridge setRCTTurboModuleLookupDelegate:turboModuleLookupDelegate];
+  [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
 }
 
 - (void)didReceiveReloadCommand
@@ -386,6 +398,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
   [self.batchedBridge registerSegmentWithId:segmentId path:path];
+}
+
+- (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
+                             onError:(RCTLoadAndExecuteErrorBlock)onError
+                          onComplete:(dispatch_block_t)onComplete
+{
+  [self.batchedBridge loadAndExecuteSplitBundleURL:bundleURL onError:onError onComplete:onComplete];
 }
 
 @end

@@ -36,7 +36,9 @@ class TurboModuleBinding {
   /**
    * Get an TurboModule instance for the given module name.
    */
-  std::shared_ptr<TurboModule> getModule(const std::string &name);
+  std::shared_ptr<TurboModule> getModule(
+      const std::string &name,
+      const jsi::Value *schema);
 
  private:
   /**
