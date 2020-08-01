@@ -12,9 +12,9 @@
 'use strict';
 
 const fixtures = require('../__test_fixtures__/fixtures.js');
-const generator = require('../GenerateModuleMm.js');
+const generator = require('../GenerateModuleJavaSpec.js');
 
-describe('GenerateModuleMm', () => {
+describe('GenerateModuleJavaSpec', () => {
   Object.keys(fixtures)
     .sort()
     .forEach(fixtureName => {
