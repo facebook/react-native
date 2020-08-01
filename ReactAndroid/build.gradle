@@ -468,3 +468,8 @@ dependencies {
 }
 
 apply(from: "release.gradle")
+apply(from: "../architecture.gradle");
+generateNativeArtifactsFromJavaScript([
+    enableCodegen: System.getenv("USE_CODEGEN"),
+    jsRootDir: "${file('../Libraries')}",
+])
