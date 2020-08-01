@@ -12,12 +12,6 @@
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
 
-@interface RCTScrollView (Private)
-
-- (NSArray<NSDictionary *> *)calculateChildFramesData;
-
-@end
-
 @implementation RCTConvert (UIScrollView)
 
 RCT_ENUM_CONVERTER(
@@ -137,22 +131,6 @@ RCT_EXPORT_METHOD(getContentSize : (nonnull NSNumber *)reactTag callback : (RCTR
 
         CGSize size = view.scrollView.contentSize;
         callback(@[ @{@"width" : @(size.width), @"height" : @(size.height)} ]);
-      }];
-}
-
-RCT_EXPORT_METHOD(calculateChildFrames : (nonnull NSNumber *)reactTag callback : (RCTResponseSenderBlock)callback)
-{
-  [self.bridge.uiManager
-      addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
-        RCTScrollView *view = viewRegistry[reactTag];
-        if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
-          return;
-        }
-
-        NSArray<NSDictionary *> *childFrames = [view calculateChildFramesData];
-        if (childFrames) {
-          callback(@[ childFrames ]);
-        }
       }];
 }
 

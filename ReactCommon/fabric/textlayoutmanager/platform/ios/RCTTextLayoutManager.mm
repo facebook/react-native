@@ -10,6 +10,7 @@
 #import "NSTextStorage+FontScaling.h"
 #import "RCTAttributedTextUtils.h"
 
+#import <React/RCTUtils.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import <react/utils/SimpleThreadSafeCache.h>
 
@@ -55,6 +56,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   [layoutManager ensureLayoutForTextContainer:textContainer];
 
   CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
+
+  size = (CGSize){RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height)};
 
   __block auto attachments = TextMeasurement::Attachments{};
 
@@ -177,6 +180,46 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   });
 
   return unwrapManagedObject(sharedNSAttributedString);
+}
+
+- (void)getRectWithAttributedString:(AttributedString)attributedString
+                paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                 enumerateAttribute:(NSString *)enumerateAttribute
+                              frame:(CGRect)frame
+                         usingBlock:(RCTTextLayoutFragmentEnumerationBlock)block
+{
+  NSTextStorage *textStorage = [self
+      _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
+                                   paragraphAttributes:paragraphAttributes
+                                                  size:frame.size];
+
+  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
+  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
+  [layoutManager ensureLayoutForTextContainer:textContainer];
+
+  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+
+  [textStorage enumerateAttribute:enumerateAttribute
+                          inRange:characterRange
+                          options:0
+                       usingBlock:^(NSString *value, NSRange range, BOOL *pause) {
+                         if (!value) {
+                           return;
+                         }
+
+                         [layoutManager
+                             enumerateEnclosingRectsForGlyphRange:range
+                                         withinSelectedGlyphRange:range
+                                                  inTextContainer:textContainer
+                                                       usingBlock:^(CGRect enclosingRect, BOOL *_Nonnull stop) {
+                                                         block(
+                                                             enclosingRect,
+                                                             [textStorage attributedSubstringFromRange:range].string,
+                                                             value);
+                                                         *stop = YES;
+                                                       }];
+                       }];
 }
 
 @end

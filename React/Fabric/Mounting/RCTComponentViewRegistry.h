@@ -27,8 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
  * for given `componentHandle` and with given `tag`.
  * #RefuseSingleUse
  */
-- (RCTComponentViewDescriptor)dequeueComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle
-                                                                  tag:(facebook::react::Tag)tag;
+- (RCTComponentViewDescriptor const &)dequeueComponentViewWithComponentHandle:
+                                          (facebook::react::ComponentHandle)componentHandle
+                                                                          tag:(facebook::react::Tag)tag;
 
 /**
  * Puts a given native component view to the recycle pool.

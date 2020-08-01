@@ -28,6 +28,11 @@ AccessibilityProps::AccessibilityProps(
           "accessibilityRole",
           sourceProps.accessibilityTraits,
           AccessibilityTraits::None)),
+      accessibilityState(convertRawProp(
+          rawProps,
+          "accessibilityState",
+          sourceProps.accessibilityState,
+          {})),
       accessibilityLabel(convertRawProp(
           rawProps,
           "accessibilityLabel",
@@ -78,6 +83,11 @@ AccessibilityProps::AccessibilityProps(
           "onAccessibilityAction",
           sourceProps.onAccessibilityAction,
           {})),
+      importantForAccessibility(convertRawProp(
+          rawProps,
+          "importantForAccessibility",
+          sourceProps.importantForAccessibility,
+          ImportantForAccessibility::Auto)),
       testId(convertRawProp(rawProps, "testId", sourceProps.testId, "")) {}
 
 #pragma mark - DebugStringConvertible

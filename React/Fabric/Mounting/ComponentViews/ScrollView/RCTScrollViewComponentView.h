@@ -7,9 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTDefines.h>
 #import <React/RCTGenericDelegateSplitter.h>
+#import <React/RCTMountingTransactionObserving.h>
 #import <React/RCTScrollableProtocol.h>
 #import <React/RCTViewComponentView.h>
+
+/*
+ * Allows to enable or disable on-demand view mounting feature of ScrollView.
+ * It's an experimental feature that improves performance and memory footprint of huge lists inside ScrollView.
+ */
+RCT_EXTERN void RCTSetEnableOnDemandViewMounting(BOOL value);
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
  * keyboard-avoiding functionality and so on. All that complexity must be implemented inside those components in order
  * to keep the complexity of this component manageable.
  */
-@interface RCTScrollViewComponentView : RCTViewComponentView
+@interface RCTScrollViewComponentView : RCTViewComponentView <RCTMountingTransactionObserving>
 
 /*
  * Finds and returns the closet RCTScrollViewComponentView component to the given view

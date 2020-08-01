@@ -26,6 +26,7 @@ class AccessibilityProps {
 
   bool accessible{false};
   AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
+  AccessibilityState accessibilityState;
   std::string accessibilityLabel{""};
   std::string accessibilityHint{""};
   std::vector<std::string> accessibilityActions{};
@@ -36,6 +37,8 @@ class AccessibilityProps {
   bool onAccessibilityMagicTap{};
   bool onAccessibilityEscape{};
   bool onAccessibilityAction{};
+  ImportantForAccessibility importantForAccessibility{
+      ImportantForAccessibility::Auto};
   std::string testId{""};
 
 #pragma mark - DebugStringConvertible

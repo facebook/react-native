@@ -333,7 +333,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
-                                     text:self.backedTextInputView.attributedText.string
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 }
@@ -347,13 +347,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
                                  reactTag:self.reactTag
-                                     text:self.backedTextInputView.attributedText.string
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
                                  reactTag:self.reactTag
-                                     text:self.backedTextInputView.attributedText.string
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 }
@@ -367,7 +367,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // (no connection to any specific "submitting" process).
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
                                  reactTag:self.reactTag
-                                     text:self.backedTextInputView.attributedText.string
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 
@@ -422,7 +422,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     }
   }
 
-  NSString *previousText = backedTextInputView.attributedText.string ?: @"";
+  NSString *previousText = [backedTextInputView.attributedText.string copy] ?: @"";
 
   if (range.location + range.length > backedTextInputView.attributedText.string.length) {
     _predictedText = backedTextInputView.attributedText.string;
@@ -468,7 +468,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   if (_onChange) {
     _onChange(@{
-       @"text": self.attributedText.string,
+       @"text": [self.attributedText.string copy],
        @"target": self.reactTag,
        @"eventCount": @(_nativeEventCount),
     });

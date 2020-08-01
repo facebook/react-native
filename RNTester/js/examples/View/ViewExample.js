@@ -442,6 +442,79 @@ exports.examples = [
     },
   },
   {
+    title: '`display: none` style',
+    render(): React.Node {
+      type Props = $ReadOnly<{||}>;
+      type State = {|
+        index: number,
+      |};
+
+      class DisplayNoneStyle extends React.Component<Props, State> {
+        state = {
+          index: 0,
+        };
+
+        render() {
+          return (
+            <TouchableWithoutFeedback onPress={this._handlePress}>
+              <View>
+                <Text style={{paddingBottom: 10}}>
+                  Press to toggle `display: none`
+                </Text>
+                <View
+                  style={{
+                    height: 50,
+                    width: 50,
+                    backgroundColor: 'red',
+                    display: this.state.index % 2 === 0 ? 'none' : 'flex',
+                  }}
+                />
+                <View
+                  style={{
+                    height: 50,
+                    width: 50,
+                    backgroundColor: 'blue',
+                    display: this.state.index % 3 === 0 ? 'none' : 'flex',
+                  }}
+                />
+                <View
+                  style={{
+                    height: 50,
+                    width: 50,
+                    backgroundColor: 'yellow',
+                    display: this.state.index % 5 === 0 ? 'none' : 'flex',
+                  }}>
+                  <View
+                    style={{
+                      height: 30,
+                      width: 30,
+                      backgroundColor: 'salmon',
+                      display: this.state.index % 11 === 0 ? 'none' : 'flex',
+                    }}
+                  />
+                </View>
+                <View
+                  style={{
+                    height: 50,
+                    width: 50,
+                    backgroundColor: 'magenta',
+                    display: this.state.index % 7 === 0 ? 'none' : 'flex',
+                  }}
+                />
+              </View>
+            </TouchableWithoutFeedback>
+          );
+        }
+
+        _handlePress = () => {
+          this.setState({index: this.state.index + 1});
+        };
+      }
+
+      return <DisplayNoneStyle />;
+    },
+  },
+  {
     title: 'BackfaceVisibility',
     render: function(): React.Node {
       return (

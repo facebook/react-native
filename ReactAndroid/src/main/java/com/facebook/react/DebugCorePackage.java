@@ -10,7 +10,6 @@ package com.facebook.react;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.devsupport.JSCHeapCapture;
-import com.facebook.react.devsupport.JSDevSupport;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
@@ -38,7 +37,7 @@ public class DebugCorePackage extends TurboReactPackage {
         return new JSCHeapCapture(reactContext);
       default:
         throw new IllegalArgumentException(
-            "In CoreModulesPackage, could not find Native module for " + name);
+            "In DebugCorePackage, could not find Native module for " + name);
     }
   }
 
@@ -50,10 +49,7 @@ public class DebugCorePackage extends TurboReactPackage {
       return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
     } catch (ClassNotFoundException e) {
       // In OSS case, the annotation processor does not run. We fall back on creating this by hand
-      Class<? extends NativeModule>[] moduleList =
-          new Class[] {
-            JSCHeapCapture.class, JSDevSupport.class,
-          };
+      Class<? extends NativeModule>[] moduleList = new Class[] {JSCHeapCapture.class};
 
       final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
       for (Class<? extends NativeModule> moduleClass : moduleList) {

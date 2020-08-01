@@ -412,6 +412,178 @@ inline std::string toString(
   }
 }
 
+inline std::string toString(const AccessibilityRole &accessibilityRole) {
+  switch (accessibilityRole) {
+    case AccessibilityRole::None:
+      return "none";
+    case AccessibilityRole::Button:
+      return "button";
+    case AccessibilityRole::Link:
+      return "link";
+    case AccessibilityRole::Search:
+      return "search";
+    case AccessibilityRole::Image:
+      return "image";
+    case AccessibilityRole::Imagebutton:
+      return "imagebutton";
+    case AccessibilityRole::Keyboardkey:
+      return "keyboardkey";
+    case AccessibilityRole::Text:
+      return "text";
+    case AccessibilityRole::Adjustable:
+      return "adjustable";
+    case AccessibilityRole::Summary:
+      return "summary";
+    case AccessibilityRole::Header:
+      return "header";
+    case AccessibilityRole::Alert:
+      return "alert";
+    case AccessibilityRole::Checkbox:
+      return "checkbox";
+    case AccessibilityRole::Combobox:
+      return "combobox";
+    case AccessibilityRole::Menu:
+      return "menu";
+    case AccessibilityRole::Menubar:
+      return "menubar";
+    case AccessibilityRole::Menuitem:
+      return "menuitem";
+    case AccessibilityRole::Progressbar:
+      return "progressbar";
+    case AccessibilityRole::Radio:
+      return "radio";
+    case AccessibilityRole::Radiogroup:
+      return "radiogroup";
+    case AccessibilityRole::Scrollbar:
+      return "scrollbar";
+    case AccessibilityRole::Spinbutton:
+      return "spinbutton";
+    case AccessibilityRole::Switch:
+      return "switch";
+    case AccessibilityRole::Tab:
+      return "tab";
+    case AccessibilityRole::Tablist:
+      return "tablist";
+    case AccessibilityRole::Timer:
+      return "timer";
+    case AccessibilityRole::Toolbar:
+      return "toolbar";
+  }
+}
+
+inline void fromRawValue(const RawValue &value, AccessibilityRole &result) {
+  auto string = (std::string)value;
+  if (string == "none") {
+    result = AccessibilityRole::None;
+    return;
+  }
+  if (string == "button") {
+    result = AccessibilityRole::Button;
+    return;
+  }
+  if (string == "link") {
+    result = AccessibilityRole::Link;
+    return;
+  }
+  if (string == "search") {
+    result = AccessibilityRole::Search;
+    return;
+  }
+  if (string == "image") {
+    result = AccessibilityRole::Image;
+    return;
+  }
+  if (string == "imagebutton") {
+    result = AccessibilityRole::Imagebutton;
+    return;
+  }
+  if (string == "keyboardkey") {
+    result = AccessibilityRole::Keyboardkey;
+    return;
+  }
+  if (string == "text") {
+    result = AccessibilityRole::Text;
+    return;
+  }
+  if (string == "adjustable") {
+    result = AccessibilityRole::Adjustable;
+    return;
+  }
+  if (string == "summary") {
+    result = AccessibilityRole::Summary;
+    return;
+  }
+  if (string == "header") {
+    result = AccessibilityRole::Header;
+    return;
+  }
+  if (string == "alert") {
+    result = AccessibilityRole::Alert;
+    return;
+  }
+  if (string == "checkbox") {
+    result = AccessibilityRole::Checkbox;
+    return;
+  }
+  if (string == "combobox") {
+    result = AccessibilityRole::Combobox;
+    return;
+  }
+  if (string == "menu") {
+    result = AccessibilityRole::Menu;
+    return;
+  }
+  if (string == "menubar") {
+    result = AccessibilityRole::Menubar;
+    return;
+  }
+  if (string == "menuitem") {
+    result = AccessibilityRole::Menuitem;
+    return;
+  }
+  if (string == "progressbar") {
+    result = AccessibilityRole::Progressbar;
+    return;
+  }
+  if (string == "radio") {
+    result = AccessibilityRole::Radio;
+    return;
+  }
+  if (string == "radiogroup") {
+    result = AccessibilityRole::Radiogroup;
+    return;
+  }
+  if (string == "scrollbar") {
+    result = AccessibilityRole::Scrollbar;
+    return;
+  }
+  if (string == "spinbutton") {
+    result = AccessibilityRole::Spinbutton;
+    return;
+  }
+  if (string == "switch") {
+    result = AccessibilityRole::Switch;
+    return;
+  }
+  if (string == "tab") {
+    result = AccessibilityRole::Tab;
+    return;
+  }
+  if (string == "tablist") {
+    result = AccessibilityRole::Tablist;
+    return;
+  }
+  if (string == "timer") {
+    result = AccessibilityRole::Timer;
+    return;
+  }
+  if (string == "toolbar") {
+    result = AccessibilityRole::Toolbar;
+    return;
+  }
+  abort();
+}
+
 inline ParagraphAttributes convertRawProp(
     RawProps const &rawProps,
     ParagraphAttributes const &sourceParagraphAttributes,

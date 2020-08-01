@@ -50,6 +50,7 @@ static better::optional<AnimationType> parseAnimationType(std::string param) {
     return better::optional<AnimationType>(AnimationType::Keyboard);
   }
 
+  LOG(ERROR) << "Error parsing animation type: " << param;
   return {};
 }
 
@@ -68,6 +69,7 @@ static better::optional<AnimationProperty> parseAnimationProperty(
     return better::optional<AnimationProperty>(AnimationProperty::ScaleXY);
   }
 
+  LOG(ERROR) << "Error parsing animation property: " << param;
   return {};
 }
 
@@ -87,14 +89,19 @@ static better::optional<AnimationConfig> parseAnimationConfig(
 
   auto const typeIt = config.find("type");
   if (typeIt == config.items().end()) {
+    LOG(ERROR) << "Error parsing animation config: could not find field `type`";
     return {};
   }
   auto const animationTypeParam = typeIt->second;
   if (animationTypeParam.empty() || !animationTypeParam.isString()) {
+    LOG(ERROR)
+        << "Error parsing animation config: could not unwrap field `type`";
     return {};
   }
   const auto animationType = parseAnimationType(animationTypeParam.asString());
   if (!animationType) {
+    LOG(ERROR)
+        << "Error parsing animation config: could not parse field `type`";
     return {};
   }
 
@@ -102,15 +109,21 @@ static better::optional<AnimationConfig> parseAnimationConfig(
   if (parsePropertyType) {
     auto const propertyIt = config.find("property");
     if (propertyIt == config.items().end()) {
+      LOG(ERROR)
+          << "Error parsing animation config: could not find field `property`";
       return {};
     }
     auto const animationPropertyParam = propertyIt->second;
     if (animationPropertyParam.empty() || !animationPropertyParam.isString()) {
+      LOG(ERROR)
+          << "Error parsing animation config: could not unwrap field `property`";
       return {};
     }
     const auto animationPropertyParsed =
         parseAnimationProperty(animationPropertyParam.asString());
     if (!animationPropertyParsed) {
+      LOG(ERROR)
+          << "Error parsing animation config: could not parse field `property`";
       return {};
     }
     animationProperty = *animationPropertyParsed;
@@ -126,6 +139,8 @@ static better::optional<AnimationConfig> parseAnimationConfig(
     if (durationIt->second.isDouble()) {
       duration = durationIt->second.asDouble();
     } else {
+      LOG(ERROR)
+          << "Error parsing animation config: field `duration` must be a number";
       return {};
     }
   }
@@ -135,6 +150,8 @@ static better::optional<AnimationConfig> parseAnimationConfig(
     if (delayIt->second.isDouble()) {
       delay = delayIt->second.asDouble();
     } else {
+      LOG(ERROR)
+          << "Error parsing animation config: field `delay` must be a number";
       return {};
     }
   }
@@ -145,6 +162,8 @@ static better::optional<AnimationConfig> parseAnimationConfig(
     if (springDampingIt->second.isDouble()) {
       springDamping = springDampingIt->second.asDouble();
     } else {
+      LOG(ERROR)
+          << "Error parsing animation config: field `springDamping` must be a number";
       return {};
     }
   }
@@ -154,6 +173,8 @@ static better::optional<AnimationConfig> parseAnimationConfig(
     if (initialVelocityIt->second.isDouble()) {
       initialVelocity = initialVelocityIt->second.asDouble();
     } else {
+      LOG(ERROR)
+          << "Error parsing animation config: field `initialVelocity` must be a number";
       return {};
     }
   }
@@ -173,27 +194,28 @@ static better::optional<LayoutAnimationConfig> parseLayoutAnimationConfig(
     return {};
   }
 
-  auto const durationIt = config.find("duration");
+  const auto durationIt = config.find("duration");
   if (durationIt == config.items().end() || !durationIt->second.isDouble()) {
     return {};
   }
   const double duration = durationIt->second.asDouble();
 
-  const auto createConfig =
-      parseAnimationConfig(config["create"], duration, true);
-  if (!createConfig) {
-    return {};
-  }
+  const auto createConfigIt = config.find("create");
+  const auto createConfig = createConfigIt == config.items().end()
+      ? better::optional<AnimationConfig>(AnimationConfig{})
+      : parseAnimationConfig(createConfigIt->second, duration, true);
 
-  const auto updateConfig =
-      parseAnimationConfig(config["update"], duration, false);
-  if (!updateConfig) {
-    return {};
-  }
+  const auto updateConfigIt = config.find("update");
+  const auto updateConfig = updateConfigIt == config.items().end()
+      ? better::optional<AnimationConfig>(AnimationConfig{})
+      : parseAnimationConfig(updateConfigIt->second, duration, false);
 
-  const auto deleteConfig =
-      parseAnimationConfig(config["delete"], duration, true);
-  if (!deleteConfig) {
+  const auto deleteConfigIt = config.find("delete");
+  const auto deleteConfig = deleteConfigIt == config.items().end()
+      ? better::optional<AnimationConfig>(AnimationConfig{})
+      : parseAnimationConfig(deleteConfigIt->second, duration, true);
+
+  if (!createConfig || !updateConfig || !deleteConfig) {
     return {};
   }
 
@@ -255,6 +277,10 @@ LayoutAnimationKeyFrameManager::calculateAnimationProgress(
     uint64_t now,
     const LayoutAnimation &animation,
     const AnimationConfig &mutationConfig) const {
+  if (mutationConfig.animationType == AnimationType::None) {
+    return {1, 1};
+  }
+
   uint64_t startTime = animation.startTime;
   uint64_t delay = mutationConfig.delay;
   uint64_t endTime = startTime + delay + mutationConfig.duration;
@@ -345,11 +371,14 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
       }
 
       // Do we need to adjust the index of this operation?
-      if (isRemoveMutation && mutation.index <= finalAnimationMutation.index) {
-        finalAnimationMutation.index--;
-      } else if (
-          isInsertMutation && mutation.index <= finalAnimationMutation.index) {
-        finalAnimationMutation.index++;
+      if (isRemoveMutation) {
+        if (mutation.index <= finalAnimationMutation.index) {
+          finalAnimationMutation.index--;
+        }
+      } else if (isInsertMutation) {
+        if (mutation.index <= finalAnimationMutation.index) {
+          finalAnimationMutation.index++;
+        }
       }
     }
   }
@@ -492,8 +521,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                      mutation.type == ShadowViewMutation::Type::Remove
                  ? mutation.oldChildShadowView
                  : mutation.newChildShadowView);
-        auto const &componentDescriptor =
-            getComponentDescriptorForShadowView(baselineShadowView);
+        bool haveComponentDescriptor =
+            hasComponentDescriptorForShadowView(baselineShadowView);
 
         auto mutationConfig =
             (mutation.type == ShadowViewMutation::Type::Delete
@@ -569,6 +598,38 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         if (isRemoveReinserted || !haveConfiguration || isReparented ||
             mutation.type == ShadowViewMutation::Type::Create ||
             mutation.type == ShadowViewMutation::Type::Insert) {
+          // Indices for immediate INSERT mutations must be adjusted to insert
+          // at higher indices if previous animations have deferred removals
+          // before the insertion indect
+          // TODO: refactor to reduce code duplication
+          if (mutation.type == ShadowViewMutation::Type::Insert) {
+            int adjustedIndex = mutation.index;
+            for (const auto &inflightAnimation : inflightAnimations_) {
+              if (inflightAnimation.surfaceId != surfaceId) {
+                continue;
+              }
+              for (auto it = inflightAnimation.keyFrames.begin();
+                   it != inflightAnimation.keyFrames.end();
+                   it++) {
+                const auto &animatedKeyFrame = *it;
+                if (!animatedKeyFrame.finalMutationForKeyFrame.has_value() ||
+                    animatedKeyFrame.parentView.tag !=
+                        mutation.parentShadowView.tag ||
+                    animatedKeyFrame.type != AnimationConfigurationType::Noop) {
+                  continue;
+                }
+                const auto &delayedFinalMutation =
+                    *animatedKeyFrame.finalMutationForKeyFrame;
+                if (delayedFinalMutation.type ==
+                        ShadowViewMutation::Type::Remove &&
+                    delayedFinalMutation.index <= adjustedIndex) {
+                  adjustedIndex++;
+                }
+              }
+            }
+            mutation.index = adjustedIndex;
+          }
+
           immediateMutations.push_back(mutation);
 
           // Adjust indices for any non-directly-conflicting animations that
@@ -599,8 +660,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           AnimationKeyFrame keyFrame{};
           if (mutation.type == ShadowViewMutation::Type::Insert) {
             if (mutationConfig->animationProperty ==
-                AnimationProperty::Opacity) {
-              auto props = componentDescriptor.cloneProps(viewStart.props, {});
+                    AnimationProperty::Opacity &&
+                haveComponentDescriptor) {
+              auto props =
+                  getComponentDescriptorForShadowView(baselineShadowView)
+                      .cloneProps(viewStart.props, {});
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
@@ -614,8 +678,10 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             bool isScaleY = mutationConfig->animationProperty ==
                     AnimationProperty::ScaleY ||
                 mutationConfig->animationProperty == AnimationProperty::ScaleXY;
-            if (isScaleX || isScaleY) {
-              auto props = componentDescriptor.cloneProps(viewStart.props, {});
+            if ((isScaleX || isScaleY) && haveComponentDescriptor) {
+              auto props =
+                  getComponentDescriptorForShadowView(baselineShadowView)
+                      .cloneProps(viewStart.props, {});
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
@@ -634,8 +700,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                                          0};
           } else if (mutation.type == ShadowViewMutation::Type::Delete) {
             if (mutationConfig->animationProperty ==
-                AnimationProperty::Opacity) {
-              auto props = componentDescriptor.cloneProps(viewFinal.props, {});
+                    AnimationProperty::Opacity &&
+                haveComponentDescriptor) {
+              auto props =
+                  getComponentDescriptorForShadowView(baselineShadowView)
+                      .cloneProps(viewFinal.props, {});
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
@@ -649,8 +718,10 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             bool isScaleY = mutationConfig->animationProperty ==
                     AnimationProperty::ScaleY ||
                 mutationConfig->animationProperty == AnimationProperty::ScaleXY;
-            if (isScaleX || isScaleY) {
-              auto props = componentDescriptor.cloneProps(viewFinal.props, {});
+            if ((isScaleX || isScaleY) && haveComponentDescriptor) {
+              auto props =
+                  getComponentDescriptorForShadowView(baselineShadowView)
+                      .cloneProps(viewFinal.props, {});
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
@@ -690,13 +761,50 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             // instruction will be delayed and therefore may execute outside of
             // otherwise-expected order, other views may be inserted before the
             // Remove is executed, requiring index adjustment.
+            // To be clear: when executed synchronously, REMOVE operations
+            // always come before INSERT operations (at the same level of the
+            // tree hierarchy).
             {
               int adjustedIndex = mutation.index;
-              for (const auto &otherMutation : mutations) {
+              for (auto &otherMutation : mutations) {
                 if (otherMutation.type == ShadowViewMutation::Type::Insert &&
                     otherMutation.parentShadowView.tag == parentTag) {
                   if (otherMutation.index <= adjustedIndex &&
                       !mutatedViewIsVirtual(otherMutation)) {
+                    adjustedIndex++;
+                  } else {
+                    // If we are delaying this remove instruction, conversely,
+                    // we must adjust upward the insertion index of any INSERT
+                    // instructions if the View is insert *after* this view in
+                    // the hierarchy.
+                    otherMutation.index++;
+                  }
+                }
+              }
+
+              // We also need to account for delayed mutations that have already
+              // been queued, such that their ShadowNodes are not accounted for
+              // in mutation instructions, but they are still in the platform's
+              // View hierarchy.
+              for (const auto &inflightAnimation : inflightAnimations_) {
+                if (inflightAnimation.surfaceId != surfaceId) {
+                  continue;
+                }
+                for (auto it = inflightAnimation.keyFrames.begin();
+                     it != inflightAnimation.keyFrames.end();
+                     it++) {
+                  const auto &animatedKeyFrame = *it;
+                  if (!animatedKeyFrame.finalMutationForKeyFrame.has_value() ||
+                      animatedKeyFrame.parentView.tag != parentTag ||
+                      animatedKeyFrame.type !=
+                          AnimationConfigurationType::Noop) {
+                    continue;
+                  }
+                  const auto &delayedFinalMutation =
+                      *animatedKeyFrame.finalMutationForKeyFrame;
+                  if (delayedFinalMutation.type ==
+                          ShadowViewMutation::Type::Remove &&
+                      delayedFinalMutation.index <= adjustedIndex) {
                     adjustedIndex++;
                   }
                 }
@@ -776,12 +884,17 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       }
 
       {
-        std::stringstream ss(getDebugDescription(mutationsToAnimate, {}));
-        std::string to;
-        while (std::getline(ss, to, '\n')) {
-          LOG(ERROR)
-              << "LayoutAnimationKeyFrameManager.cpp: got FINAL list: Line: "
-              << to;
+        for (const auto &keyframe : keyFramesToAnimate) {
+          if (keyframe.finalMutationForKeyFrame) {
+            std::stringstream ss(
+                getDebugDescription(*keyframe.finalMutationForKeyFrame, {}));
+            std::string to;
+            while (std::getline(ss, to, '\n')) {
+              LOG(ERROR)
+                  << "LayoutAnimationKeyFrameManager.cpp: got FINAL list: Line: "
+                  << to;
+            }
+          }
         }
       }
 #endif
@@ -835,8 +948,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
   // another that has not yet been executed because it is a part of an ongoing
   // animation, its index may need to be adjusted.
   for (auto const &animatedMutation : mutationsForAnimation) {
-    if (animatedMutation.type == ShadowViewMutation::Type::Insert ||
-        animatedMutation.type == ShadowViewMutation::Type::Remove) {
+    if (animatedMutation.type == ShadowViewMutation::Type::Remove) {
       adjustDelayedMutationIndicesForMutation(surfaceId, animatedMutation);
     }
   }
@@ -861,9 +973,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     }
   }
 
-  // TODO: fill in telemetry
   return MountingTransaction{
-      surfaceId, transactionNumber, std::move(mutations), {}};
+      surfaceId, transactionNumber, std::move(mutations), telemetry};
 }
 
 bool LayoutAnimationKeyFrameManager::mutatedViewIsVirtual(
@@ -880,6 +991,12 @@ bool LayoutAnimationKeyFrameManager::mutatedViewIsVirtual(
 #endif
 
   return viewIsVirtual;
+}
+
+bool LayoutAnimationKeyFrameManager::hasComponentDescriptorForShadowView(
+    ShadowView const &shadowView) const {
+  return componentDescriptorRegistry_->hasComponentDescriptorAt(
+      shadowView.componentHandle);
 }
 
 ComponentDescriptor const &
@@ -907,6 +1024,9 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
     AnimationConfig const &animationConfig,
     ShadowView startingView,
     ShadowView finalView) const {
+  if (!hasComponentDescriptorForShadowView(startingView)) {
+    return finalView;
+  }
   ComponentDescriptor const &componentDescriptor =
       getComponentDescriptorForShadowView(startingView);
   auto mutatedShadowView = ShadowView(startingView);
