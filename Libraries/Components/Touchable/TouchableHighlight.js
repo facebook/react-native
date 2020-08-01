@@ -309,15 +309,14 @@ class TouchableHighlight extends React.Component<Props, State> {
         accessibilityElementsHidden={this.props.accessibilityElementsHidden}
         acceptsKeyboardFocus={
           (this.props.acceptsKeyboardFocus === undefined ||
-            this.props.acceptsKeyboardFocus) &&
+            this.props.acceptsKeyboardFocus === true) &&
           !this.props.disabled
         } // TODO(macOS/win ISS#2323203)
         enableFocusRing={
           (this.props.enableFocusRing === undefined ||
-            this.props.enableFocusRing) &&
+            this.props.enableFocusRing === true) &&
           !this.props.disabled
         } // TODO(macOS/win ISS#2323203)
-        tabIndex={this.props.tabIndex} // TODO(win ISS#2323203)
         style={StyleSheet.compose(
           this.props.style,
           this.state.extraStyles?.underlay,

@@ -26,6 +26,7 @@ import type {
   FocusEvent,
   LayoutEvent,
   PressEvent,
+  MouseEvent, // TODO(macOS ISS#2323203)
 } from '../../Types/CoreEventTypes';
 
 // [TODO(macOS ISS#2323203)
@@ -67,13 +68,13 @@ type Props = $ReadOnly<{|
   onPressIn?: ?(event: PressEvent) => mixed,
   onPressOut?: ?(event: PressEvent) => mixed,
   acceptsKeyboardFocus?: ?boolean, // [TODO(macOS ISS#2323203)
-  onMouseEnter?: ?Function,
-  onMouseLeave?: ?Function,
-  onDragEnter?: ?Function,
-  onMouseLeave?: ?Function,
-  onDragEnter?: ?Function,
-  onDragLeave?: ?Function,
-  onDrop?: ?Function,
+  enableFocusRing?: ?boolean,
+  tooltip?: ?string,
+  onMouseEnter?: (event: MouseEvent) => void,
+  onMouseLeave?: (event: MouseEvent) => void,
+  onDragEnter?: (event: MouseEvent) => void,
+  onDragLeave?: (event: MouseEvent) => void,
+  onDrop?: (event: MouseEvent) => void,
   draggedTypes?: ?DraggedTypesType, // ]TODO(macOS ISS#2323203)
   pressRetentionOffset?: ?EdgeInsetsProp,
   rejectResponderTermination?: ?boolean,

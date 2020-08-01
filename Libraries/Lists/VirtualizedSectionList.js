@@ -18,7 +18,7 @@ const Platform = require('../Utilities/Platform'); // TODO(macOS ISS#2323203)
 const invariant = require('invariant');
 
 import type {ViewToken} from './ViewabilityHelper';
-import type {SelectedRowIndexPathType} from './VirtualList'; // TODO(macOS ISS#2323203)
+import type {SelectedRowIndexPathType} from './VirtualizedList'; // TODO(macOS ISS#2323203)
 import type {ScrollEvent} from '../Types/CoreEventTypes'; // TODO(macOS ISS#2323203)
 
 type Item = any;
@@ -114,13 +114,19 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    *
    * @platform macos
    */
-  onSelectionChanged?: ?Function, // TODO(macOS ISS#2323203)
+  onSelectionChanged?: ?(info: {
+    previousSelection: Object,
+    newSelection: Object,
+    item: ?Item,
+  }) => void, // TODO(macOS ISS#2323203)
   /**
    * If provided, called when 'Enter' key is pressed on an item.
    *
    * @platform macos
    */
-  onSelectionEntered?: ?Function, // TODO(macOS ISS#2323203)
+  onSelectionEntered?: ?(
+    item: ?Item,
+  ) => void, // TODO(macOS ISS#2323203)
 |};
 
 type VirtualizedListProps = React.ElementProps<typeof VirtualizedList>;

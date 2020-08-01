@@ -167,10 +167,9 @@ class TouchableBounce extends React.Component<Props, State> {
         } // TODO(macOS/win ISS#2323203)
         enableFocusRing={
           (this.props.enableFocusRing === undefined ||
-            this.props.enableFocusRing) &&
+            this.props.enableFocusRing === true) &&
           !this.props.disabled
         } // TODO(macOS/win ISS#2323203)
-        tabIndex={this.props.tabIndex} // TODO(win ISS#2323203)
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}

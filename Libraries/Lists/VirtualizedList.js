@@ -50,7 +50,7 @@ export type Separators = {
 export type RenderItemProps<ItemT> = {
   item: ItemT,
   index: number,
-  isSelected: boolean, // TODO(macOS ISS#2323203)
+  isSelected: ?boolean, // TODO(macOS ISS#2323203)
   separators: Separators,
   ...
 };
@@ -252,13 +252,20 @@ type OptionalProps = {|
    *
    * @platform macos
    */
-  onSelectionChanged?: ?Function, // TODO(macOS ISS#2323203)
+  onSelectionChanged?: ?(info: {
+    previousSelection: number,
+    newSelection: number,
+    item: ?Item,
+  }) => void, // TODO(macOS ISS#2323203)
   /**
    * If provided, called when 'Enter' key is pressed on an item.
    *
    * @platform macos
    */
-  onSelectionEntered?: ?Function, // TODO(macOS ISS#2323203)
+  onSelectionEntered?: ?(
+    item: ?Item,
+  ) => void, // TODO(macOS ISS#2323203)
+
   /**
    * Called when the viewability of rows changes, as defined by the
    * `viewabilityConfig` prop.
@@ -326,18 +333,6 @@ type Props = {|
   ...React.ElementConfig<typeof ScrollView>,
   ...RequiredProps,
   ...OptionalProps,
-|};
-
-type DefaultProps = {|
-  disableVirtualization: boolean,
-  horizontal: boolean,
-  initialNumToRender: number,
-  keyExtractor: (item: Item, index: number) => string,
-  maxToRenderPerBatch: number,
-  onEndReachedThreshold: number,
-  scrollEventThrottle: number,
-  updateCellsBatchingPeriod: number,
-  windowSize: number,
 |};
 
 type DefaultProps = {|
@@ -525,7 +520,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   // [TODO(macOS ISS#2323203)
-  ensureItemAtIndexIsVisible = (rowIndex: number) => {
+  ensureItemAtIndexIsVisible(rowIndex: number) {
     const frame = this._getFrameMetricsApprox(rowIndex);
     const visTop = this._scrollMetrics.offset;
     const visLen = this._scrollMetrics.visibleLength;
@@ -540,7 +535,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       const newOffset = Math.max(0, visTop - frame.length);
       this.scrollToOffset({offset: newOffset});
     }
-  };
+  }
   // ]TODO(macOS ISS#2323203)
 
   recordInteraction() {
@@ -1508,8 +1503,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _handleKeyDown = (e: ScrollEvent) => {
-    if (this.props.onKeyDown) {
-      this.props.onKeyDown(e);
+    if (this.props.onScrollKeyDown) {
+      this.props.onScrollKeyDown(e);
     } else {
       if (Platform.OS === 'macos') {
         // $FlowFixMe Cannot get e.nativeEvent because property nativeEvent is missing in Event
@@ -1527,30 +1522,36 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           newIndex = this._selectRowBelowIndex(prevIndex);
           this.ensureItemAtIndexIsVisible(newIndex);
 
-          if (this.props.onSelectionChanged && prevIndex !== newIndex) {
+          if (prevIndex !== newIndex) {
             const item = getItem(data, newIndex);
-            this.props.onSelectionChanged({
-              previousSelection: prevIndex,
-              newSelection: newIndex,
-              item: item,
-            });
+            if (this.props.onSelectionChanged) {
+              this.props.onSelectionChanged({
+                previousSelection: prevIndex,
+                newSelection: newIndex,
+                item: item,
+              });
+            }
           }
         } else if (key === 'UP_ARROW') {
           newIndex = this._selectRowAboveIndex(prevIndex);
           this.ensureItemAtIndexIsVisible(newIndex);
 
-          if (this.props.onSelectionChanged && prevIndex !== newIndex) {
+          if (prevIndex !== newIndex) {
             const item = getItem(data, newIndex);
-            this.props.onSelectionChanged({
-              previousSelection: prevIndex,
-              newSelection: newIndex,
-              item: item,
-            });
+            if (this.props.onSelectionChanged) {
+              this.props.onSelectionChanged({
+                previousSelection: prevIndex,
+                newSelection: newIndex,
+                item: item,
+              });
+            }
           }
         } else if (key === 'ENTER') {
           if (this.props.onSelectionEntered) {
             const item = getItem(data, prevIndex);
-            this.props.onSelectionEntered(item);
+            if (this.props.onSelectionEntered) {
+              this.props.onSelectionEntered(item);
+            }
           }
         }
       }

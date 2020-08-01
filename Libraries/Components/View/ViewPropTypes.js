@@ -77,8 +77,6 @@ type DirectEventProps = $ReadOnly<{|
    */
   onScrollKeyDown?: ?(event: ScrollEvent) => mixed, // TODO(macOS ISS#2323203)
 
-  onMouseEnter?: (event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
-
   /**
    * Invoked on mount and layout changes with:
    *
@@ -522,8 +520,6 @@ export type ViewProps = $ReadOnly<{|
    */
   nativeID?: ?string,
 
-  tabIndex?: ?number, // TODO(win ISS#2323203)
-
   /**
    * This defines how far a touch event can start away from the view.
    * Typical interface guidelines recommend touch targets that are at least
@@ -557,32 +553,25 @@ export type ViewProps = $ReadOnly<{|
   removeClippedSubviews?: ?boolean,
 
   /**
-   * Fired when a pointing device is moved out the view
-   *
-   * @platform macos
-   */
-  onMouseLeave?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
-
-  /**
    * Fired when a dragged element enters a valid drop target
    *
    * @platform macos
    */
-  onDragEnter?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
+  onDragEnter?: (event: MouseEvent) => void, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when a dragged element leaves a valid drop target
    *
    * @platform macos
    */
-  onDragLeave?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
+  onDragLeave?: (event: MouseEvent) => void, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when an element is dropped on a valid drop target
    *
    * @platform macos
    */
-  onDrop?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
+  onDrop?: (event: MouseEvent) => void, // TODO(macOS ISS#2323203)
 
   /**
    * Specifies the Tooltip for the view
@@ -600,22 +589,6 @@ export type ViewProps = $ReadOnly<{|
    * Specifies whether focus ring should be drawn when the view has the first responder status.
    */
   enableFocusRing?: ?boolean, // TODO(macOS ISS#2323203)
-
-  /**
-   * Fired when an element is focused
-   *
-   * @platform macos
-   * @platform ios
-   */
-  onFocus?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
-
-  /**
-   * Fired when an element loses focus
-   *
-   * @platform macos
-   * @platform ios
-   */
-  onBlur?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Enables Dran'n'Drop Support for certain types of dragged types
