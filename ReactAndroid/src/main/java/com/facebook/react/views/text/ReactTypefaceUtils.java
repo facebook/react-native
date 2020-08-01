@@ -8,6 +8,7 @@
 package com.facebook.react.views.text;
 
 import android.content.res.AssetManager;
+import android.os.Build;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
@@ -102,7 +103,7 @@ public class ReactTypefaceUtils {
       newStyle = (newStyle == Typeface.BOLD) ? Typeface.BOLD_ITALIC : Typeface.ITALIC;
       typeface = Typeface.create(typeface, newStyle);
     }
-    if(weight > Typeface.BOLD_ITALIC) {
+    if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1 && weight > Typeface.BOLD_ITALIC) {
       typeface = Typeface.create(typeface, weight, italic);
     }
     if (family != null) {
