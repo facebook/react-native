@@ -225,28 +225,45 @@ static better::optional<LayoutAnimationConfig> parseLayoutAnimationConfig(
 
 /**
  * Globally configure next LayoutAnimation.
+ * This is guaranteed to be called only on the JS thread.
  */
 void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
+    jsi::Runtime &runtime,
     RawValue const &config,
-    std::shared_ptr<const EventTarget> successCallback,
-    std::shared_ptr<const EventTarget> errorCallback) const {
+    const jsi::Value &successCallbackValue,
+    const jsi::Value &failureCallbackValue) const {
+  bool hasSuccessCallback = successCallbackValue.isObject() &&
+      successCallbackValue.getObject(runtime).isFunction(runtime);
+  bool hasFailureCallback = failureCallbackValue.isObject() &&
+      failureCallbackValue.getObject(runtime).isFunction(runtime);
+  LayoutAnimationCallbackWrapper successCallback = hasSuccessCallback
+      ? LayoutAnimationCallbackWrapper(
+            successCallbackValue.getObject(runtime).getFunction(runtime))
+      : LayoutAnimationCallbackWrapper();
+  LayoutAnimationCallbackWrapper failureCallback = hasFailureCallback
+      ? LayoutAnimationCallbackWrapper(
+            failureCallbackValue.getObject(runtime).getFunction(runtime))
+      : LayoutAnimationCallbackWrapper();
+
   auto layoutAnimationConfig =
       parseLayoutAnimationConfig((folly::dynamic)config);
 
   if (layoutAnimationConfig) {
     std::lock_guard<std::mutex> lock(currentAnimationMutex_);
+
     currentAnimation_ = better::optional<LayoutAnimation>{
         LayoutAnimation{-1,
                         0,
                         false,
                         *layoutAnimationConfig,
                         successCallback,
-                        errorCallback,
+                        failureCallback,
                         {}}};
   } else {
-    // TODO: call errorCallback
     LOG(ERROR) << "Parsing LayoutAnimationConfig failed: "
                << (folly::dynamic)config;
+
+    callCallback(failureCallback);
   }
 }
 
@@ -472,13 +489,14 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     {
       std::lock_guard<std::mutex> lock(currentAnimationMutex_);
       if (currentAnimation_) {
-        currentAnimation = currentAnimation_;
+        currentAnimation = std::move(currentAnimation_);
         currentAnimation_ = {};
       }
     }
 
     if (currentAnimation) {
-      LayoutAnimation animation = currentAnimation.value();
+      LayoutAnimation animation = std::move(currentAnimation.value());
+      currentAnimation = {};
       animation.surfaceId = surfaceId;
       animation.startTime = now;
 
@@ -909,7 +927,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 #endif
 
       animation.keyFrames = keyFramesToAnimate;
-      inflightAnimations_.push_back(animation);
+      inflightAnimations_.push_back(std::move(animation));
 
       // These will be executed immediately.
       mutations = immediateMutations;
@@ -1067,6 +1085,42 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   mutatedShadowView.layoutMetrics = interpolatedLayoutMetrics;
 
   return mutatedShadowView;
+}
+
+void LayoutAnimationKeyFrameManager::callCallback(
+    const LayoutAnimationCallbackWrapper &callback) const {
+  if (callback.readyForCleanup()) {
+    return;
+  }
+
+  // Callbacks can only be called once. Replace the callsite with an empty
+  // CallbackWrapper. We use a unique_ptr to avoid copying into the vector.
+  std::unique_ptr<LayoutAnimationCallbackWrapper> copiedCallback(
+      std::make_unique<LayoutAnimationCallbackWrapper>(callback));
+
+  // Call the callback that is being retained in the vector
+  copiedCallback->call(runtimeExecutor_);
+
+  // Protect with a mutex: this can be called on failure callbacks in the JS
+  // thread and success callbacks on the UI thread
+  {
+    std::lock_guard<std::mutex> lock(callbackWrappersPendingMutex_);
+
+    // Clean any stale data in the retention vector
+    callbackWrappersPending_.erase(
+        std::remove_if(
+            callbackWrappersPending_.begin(),
+            callbackWrappersPending_.end(),
+            [](const std::unique_ptr<LayoutAnimationCallbackWrapper> &wrapper) {
+              return wrapper->readyForCleanup();
+            }),
+        callbackWrappersPending_.end());
+
+    // Hold onto a reference to the callback, only while
+    // LayoutAnimationKeyFrameManager is alive and the callback hasn't completed
+    // yet.
+    callbackWrappersPending_.push_back(std::move(copiedCallback));
+  }
 }
 
 } // namespace react

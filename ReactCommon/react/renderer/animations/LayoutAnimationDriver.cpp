@@ -179,6 +179,8 @@ void LayoutAnimationDriver::animationMutationsForFrame(
        it != inflightAnimations_.end();) {
     const auto &animation = *it;
     if (animation.completed) {
+      callCallback(animation.successCallback);
+
       // Queue up "final" mutations for all keyframes in the completed animation
       for (auto const &keyframe : animation.keyFrames) {
         if (keyframe.finalMutationForKeyFrame.hasValue()) {

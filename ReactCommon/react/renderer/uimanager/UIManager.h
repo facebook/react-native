@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <folly/Optional.h>
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
 
@@ -135,9 +134,10 @@ class UIManager final : public ShadowTreeDelegate {
    * This API configures a global LayoutAnimation starting from the root node.
    */
   void configureNextLayoutAnimation(
+      jsi::Runtime &runtime,
       RawValue const &config,
-      SharedEventTarget successCallback,
-      SharedEventTarget errorCallback) const;
+      const jsi::Value &successCallback,
+      const jsi::Value &failureCallback) const;
 
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 
