@@ -17,8 +17,6 @@ const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter'
 
 import NativeAccessibilityManager from './NativeAccessibilityManager';
 
-const warning = require('fbjs/lib/warning');
-
 const CHANGE_EVENT_NAME = {
   invertColorsChanged: 'invertColorsChanged',
   reduceMotionChanged: 'reduceMotionChanged',
@@ -35,6 +33,16 @@ type ChangeEventName = $Keys<{
 }>;
 
 const _subscriptions = new Map();
+
+/**
+ * Sometimes it's useful to know whether or not the device has a screen reader
+ * that is currently active. The `AccessibilityInfo` API is designed for this
+ * purpose. You can use it to query the current state of the screen reader as
+ * well as to register to be notified when the state of the screen reader
+ * changes.
+ *
+ * See http://facebook.github.io/react-native/docs/accessibilityinfo.html
+ */
 const AccessibilityInfo = {
   /**
    * iOS only
@@ -130,7 +138,10 @@ const AccessibilityInfo = {
    *
    * Same as `isScreenReaderEnabled`
    */
-  get fetch() {
+  get fetch(): $FlowFixMe {
+    console.warn(
+      'AccessibilityInfo.fetch is deprecated, call Accessibility.isScreenReaderEnabled instead',
+    );
     return this.isScreenReaderEnabled;
   },
 
@@ -159,18 +170,6 @@ const AccessibilityInfo = {
     };
   },
 
-  removeEventListener: function(
-    eventName: ChangeEventName,
-    handler: Function,
-  ): void {
-    const listener = _subscriptions.get(handler);
-    if (!listener) {
-      return;
-    }
-    listener.remove();
-    _subscriptions.delete(handler);
-  },
-
   /**
    * Set accessibility focus to a react component.
    *
@@ -191,6 +190,23 @@ const AccessibilityInfo = {
     if (NativeAccessibilityManager) {
       NativeAccessibilityManager.announceForAccessibility(announcement);
     }
+  },
+
+  /**
+   * Remove an event handler.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#removeeventlistener
+   */
+  removeEventListener: function(
+    eventName: ChangeEventName,
+    handler: Function,
+  ): void {
+    const listener = _subscriptions.get(handler);
+    if (!listener) {
+      return;
+    }
+    listener.remove();
+    _subscriptions.delete(handler);
   },
 };
 
