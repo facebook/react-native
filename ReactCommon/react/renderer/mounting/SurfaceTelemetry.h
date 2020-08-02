@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include <better/small_vector.h>
+#include <vector>
+
 #include <react/renderer/mounting/MountingTelemetry.h>
 #include <react/utils/Telemetry.h>
 
@@ -19,6 +22,8 @@ namespace react {
  */
 class SurfaceTelemetry final {
  public:
+  constexpr static size_t kMaxNumberOfRecordedCommitTelemetries = 16;
+
   /*
    * Metrics
    */
@@ -29,6 +34,8 @@ class SurfaceTelemetry final {
 
   int getNumberOfTransactions() const;
   int getNumberOfMutations() const;
+
+  std::vector<MountingTelemetry> getRecentCommitTelemetries() const;
 
   /*
    * Incorporate data from given transaction telemetry into aggregated data
@@ -44,6 +51,9 @@ class SurfaceTelemetry final {
 
   int numberOfTransactions_{};
   int numberOfMutations_{};
+
+  better::small_vector<MountingTelemetry, kMaxNumberOfRecordedCommitTelemetries>
+      recentCommitTelemetries_{};
 };
 
 } // namespace react
