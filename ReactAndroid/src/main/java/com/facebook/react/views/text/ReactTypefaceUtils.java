@@ -13,10 +13,12 @@ import android.graphics.Typeface;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.common.logging.FLog;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ReactTypefaceUtils {
+  private static final String TAG = "ReactTypefaceUtils";
   public static final int UNSET = -1;
 
   public static int parseFontWeight(@Nullable String fontWeightString) {
@@ -91,6 +93,10 @@ public class ReactTypefaceUtils {
     boolean italic = false;
     if(weight == UNSET) weight = Typeface.NORMAL;
     if(style == Typeface.ITALIC) italic = true;
+    boolean UNDER_SDK_28 = Build.VERSION.SDK_INT < Build.VERSION_CODES.P; 
+    boolean applyNumericValues = !(weight < (Typeface.BOLD_ITALIC + 1) || family != null);
+    boolean numericBold = UNDER_SDK_28 && weight > 699 && applyNumericValues;
+    boolean numericNormal = UNDER_SDK_28 && weight < 700 && applyNumericValues;
     if (weight == Typeface.BOLD) {
       newStyle = (newStyle == Typeface.ITALIC) ? Typeface.BOLD_ITALIC : Typeface.BOLD;
       typeface = Typeface.create(typeface, newStyle);
@@ -106,8 +112,16 @@ public class ReactTypefaceUtils {
     if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1 && weight > Typeface.BOLD_ITALIC) {
       typeface = Typeface.create(typeface, weight, italic);
     }
+    if(family != null && UNDER_SDK_28 && weight > Typeface.BOLD_ITALIC) {
+      FLog.w(TAG, "Support for numeric font weight numeric values with custom fonts under Android API 28 Pie is not yet supported in ReactNative.");
+    }
     if (family != null) {
       typeface = ReactFontManager.getInstance().getTypeface(family, newStyle, weight, assetManager);
+    }
+    if (numericBold || numericNormal) {
+      newStyle = numericBold ? Typeface.BOLD : Typeface.NORMAL;
+      typeface = Typeface.create(typeface, newStyle);
+      FLog.w(TAG, "Support for numeric font weight numeric values available only from Android API 28 Pie. Android device lower then API 28 will use normal or bold.");
     }
     return typeface;
   }
