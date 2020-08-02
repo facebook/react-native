@@ -33,7 +33,9 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
   onScrollEndDrag={[Function]}
   onScrollKeyDown={null}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   stickyHeaderIndices={
     Array [
       0,
@@ -97,7 +99,9 @@ exports[`SectionList renders a footer when there is no data 1`] = `
   onScrollEndDrag={[Function]}
   onScrollKeyDown={null}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   stickyHeaderIndices={
     Array [
       0,
@@ -153,7 +157,9 @@ exports[`SectionList renders a footer when there is no data and no header 1`] = 
   onScrollEndDrag={[Function]}
   onScrollKeyDown={null}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   stickyHeaderIndices={
     Array [
       0,
@@ -248,7 +254,9 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   }
   refreshing={false}
   renderItem={[Function]}
+  rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   stickyHeaderIndices={
     Array [
       1,
@@ -435,6 +443,7 @@ exports[`SectionList renders empty list 1`] = `
   renderItem={[Function]}
   rowIndex={-1}
   scrollEventThrottle={50}
+  sectionIndex={0}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}

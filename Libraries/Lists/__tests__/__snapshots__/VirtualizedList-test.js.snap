@@ -852,6 +852,7 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  onScrollKeyDown={null}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -953,6 +954,7 @@ exports[`VirtualizedList warns if both renderItem or ListItemComponent are speci
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  onScrollKeyDown={null}
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
