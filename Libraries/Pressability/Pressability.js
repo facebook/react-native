@@ -519,7 +519,9 @@ export default class Pressability {
     };
 
     const mouseEventHandlers =
-      Platform.OS === 'ios' || Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */ || Platform.OS === 'android' 
+      Platform.OS === 'ios' ||
+      Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */ ||
+      Platform.OS === 'android'
         ? null
         : {
             onMouseEnter: (event: MouseEvent): void => {

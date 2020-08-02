@@ -17,4 +17,4 @@ export interface Spec extends TurboModule {
   +getConstants: () => {||};
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('ImageLoader');
+export default (TurboModuleRegistry.getEnforcing<Spec>('ImageLoader'): Spec);

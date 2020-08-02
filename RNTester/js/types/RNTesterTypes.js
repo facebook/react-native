@@ -12,6 +12,7 @@
 
 import type {ComponentType} from 'react';
 import * as React from 'react';
+import {string} from 'yargs';
 
 export type RNTesterProps = $ReadOnly<{|
   navigator?: ?$ReadOnlyArray<
@@ -26,7 +27,7 @@ export type RNTesterProps = $ReadOnly<{|
 
 export type RNTesterExampleModuleItem = $ReadOnly<{|
   title: string,
-  platform?: string,
+  platform?: string | Array<string>, // TODO(OSS Candidate ISS#2710739)
   description?: string,
   render: () => React.Node,
 |}>;
@@ -44,5 +45,9 @@ export type RNTesterExample = $ReadOnly<{|
   key: string,
   module: RNTesterExampleModule,
   supportsTVOS?: boolean,
-  skipTest?: {[string]: string}, // TODO(OSS Candidate ISS#2710739)
+  skipTest?: {
+    ios?: string,
+    macos?: string,
+    default?: string,
+  }, // TODO(OSS Candidate ISS#2710739)
 |}>;

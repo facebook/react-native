@@ -124,9 +124,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    *
    * @platform macos
    */
-  onSelectionEntered?: ?(
-    item: ?Item,
-  ) => void, // TODO(macOS ISS#2323203)
+  onSelectionEntered?: ?(item: ?Item) => void, // TODO(macOS ISS#2323203)
 |};
 
 type VirtualizedListProps = React.ElementProps<typeof VirtualizedList>;

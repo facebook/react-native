@@ -165,11 +165,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     /* $FlowFixMe TODO(macOS ISS#2323203): allow macOS to share iOS test */
     module: require('../examples/Text/TextExample.ios'),
     supportsTVOS: true,
-    // [TODO(macOS ISS#2323203)
-    skipTest: {
-      macos:
-        'Reason: Intermittent failure: crash deallocating NSTextStorage of a TextView: tracked by https://github.com/microsoft/react-native-macos/issues/357',
-    }, // ]TODO(macOS ISS#2323203)
   },
   {
     key: 'TextInputExample',
@@ -334,11 +329,6 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'RTLExample',
     module: require('../examples/RTL/RTLExample'),
     supportsTVOS: true,
-    // [TODO(macOS ISS#2323203)
-    skipTest: {
-      macos:
-        'Reason: Intermittent failure: crash deallocating NSTextStorage of a TextView: tracked by https://github.com/microsoft/react-native-macos/issues/357',
-    }, // ]TODO(macOS ISS#2323203)
   },
   {
     key: 'ShareExample',

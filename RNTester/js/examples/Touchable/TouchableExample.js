@@ -721,8 +721,7 @@ exports.examples = [
   {
     // [TODO(macOS ISS#2323203)
     title: 'Touchable Hover',
-    description:
-      ('<Touchable*> components reacts to mouse events ' +
+    description: ('<Touchable*> components reacts to mouse events ' +
       'onMouseEnter and onMouseLeave': string),
     render: function(): React.Element<any> {
       return <TouchableHover />;
@@ -730,8 +729,7 @@ exports.examples = [
   },
   {
     title: 'Touchable feedback mouse events',
-    description:
-      ('<Touchable*> components reacts to mouse events ' +
+    description: ('<Touchable*> components reacts to mouse events ' +
       'onPressIn, onPressOut, onDragEnter, onDragLeave, and onDrop': string),
     render: function(): React.Element<any> {
       return <TouchableMouseEvents />;

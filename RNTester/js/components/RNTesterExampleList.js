@@ -163,11 +163,11 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
                     automaticallyAdjustContentInsets={false}
                     keyboardDismissMode="on-drag"
                     renderSectionHeader={renderSectionHeader}
-                    backgroundColor={Platform.select({
-                      macos: 'transparent',
-                      ios: 'transparent',
-                      default: undefined,
-                    })} // TODO(macOS ISS#2323203)
+                    // TODO 62 backgroundColor={Platform.select({
+                    //  macos: 'transparent',
+                    //  ios: 'transparent',
+                    //  default: undefined,
+                    // })} // TODO(macOS ISS#2323203)
                   />
                 )}
               />
@@ -178,11 +178,12 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
     );
   }
 
-  _handleOnSelectionEntered = item => {
-    // [TODO(macOS ISS#2323203)
+  // [TODO(macOS ISS#2323203)
+  _handleOnSelectionEntered = (item: any) => {
     const {key} = item;
     this.props.onNavigate(RNTesterActions.ExampleAction(key));
-  }; // ]TODO(macOS ISS#2323203)
+  };
+  // ]TODO(macOS ISS#2323203)
 
   _renderItem = (
     {item, isSelected, separators}, // TODO(macOS ISS#2323203)

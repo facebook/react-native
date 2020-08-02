@@ -12,14 +12,15 @@
 const React = require('react');
 const {
   AccessibilityInfo,
+  Alert,
   Button,
+  findNodeHandle,
   Image,
+  StyleSheet,
   Text,
-  View,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  Alert,
-  StyleSheet,
+  View,
 } = require('react-native');
 
 const RNTesterBlock = require('../../components/RNTesterBlock');

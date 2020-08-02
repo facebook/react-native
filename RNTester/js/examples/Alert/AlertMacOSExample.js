@@ -22,7 +22,7 @@ exports.description = 'macOS alerts';
 exports.examples = [
   {
     title: 'Alerts',
-    render() {
+    render(): React.Node {
       return <SimpleAlertExampleBlock />;
     },
   },
@@ -34,7 +34,7 @@ exports.examples = [
   },
   {
     title: 'Prompt Types',
-    render() {
+    render(): React.Node {
       return (
         <View>
           <TouchableHighlight
@@ -77,7 +77,7 @@ exports.examples = [
   },
   {
     title: 'Prompt Presentation',
-    render() {
+    render(): React.Node {
       return (
         <View>
           <TouchableHighlight
@@ -118,7 +118,7 @@ exports.examples = [
   },
   {
     title: 'Prompt Style',
-    render() {
+    render(): React.Node {
       return (
         <View>
           <TouchableHighlight

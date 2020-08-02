@@ -262,9 +262,10 @@ type OptionalProps = {|
    *
    * @platform macos
    */
-  onSelectionEntered?: ?(
-    item: ?Item,
-  ) => void, // TODO(macOS ISS#2323203)
+  onSelectionEntered?: ?(item: ?Item) => void, // TODO(macOS ISS#2323203)
+
+  sectionIndex?: number, // TODO(macOS ISS#2323203)
+  rowIndex?: number, // TODO(macOS ISS#2323203)
 
   /**
    * Called when the viewability of rows changes, as defined by the
@@ -2140,8 +2141,13 @@ class CellRenderer extends React.Component<
     this.props.onUnmount(this.props.cellKey);
   }
 
-  _renderElement(renderItem, ListItemComponent, item, index, isSelected) {
-    // TODO(macOS ISS#2323203)
+  _renderElement(
+    renderItem,
+    ListItemComponent,
+    item,
+    index,
+    isSelected /* TODO(macOS ISS#2323203 */,
+  ) {
     if (renderItem && ListItemComponent) {
       console.warn(
         'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take' +
