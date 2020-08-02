@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   Text,
   TextInput,
@@ -20,223 +21,9 @@ const {
   Switch,
 } = require('react-native');
 
-class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
-  state = {
-    curText: '<No Event>',
-    prevText: '<No Event>',
-    prev2Text: '<No Event>',
-    prev3Text: '<No Event>',
-  };
+const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 
-  updateText = text => {
-    this.setState(state => {
-      return {
-        curText: text,
-        prevText: state.curText,
-        prev2Text: state.prevText,
-        prev3Text: state.prev2Text,
-      };
-    });
-  };
-
-  render() {
-    return (
-      <View>
-        <TextInput
-          autoCapitalize="none"
-          placeholder="Enter text to see events"
-          autoCorrect={false}
-          multiline
-          onFocus={() => this.updateText('onFocus')}
-          onBlur={() => this.updateText('onBlur')}
-          onChange={event =>
-            this.updateText('onChange text: ' + event.nativeEvent.text)
-          }
-          onContentSizeChange={event =>
-            this.updateText(
-              'onContentSizeChange size: ' +
-                JSON.stringify(event.nativeEvent.contentSize),
-            )
-          }
-          onEndEditing={event =>
-            this.updateText('onEndEditing text: ' + event.nativeEvent.text)
-          }
-          onSubmitEditing={event =>
-            this.updateText('onSubmitEditing text: ' + event.nativeEvent.text)
-          }
-          onKeyPress={event =>
-            this.updateText('onKeyPress key: ' + event.nativeEvent.key)
-          }
-          style={styles.singleLine}
-        />
-        <Text style={styles.eventLabel}>
-          {this.state.curText}
-          {'\n'}
-          (prev: {this.state.prevText}){'\n'}
-          (prev2: {this.state.prev2Text}){'\n'}
-          (prev3: {this.state.prev3Text})
-        </Text>
-      </View>
-    );
-  }
-}
-
-class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_android_fb) This comment suppresses
-   * an error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
-  constructor(props) {
-    super(props);
-    this.state = {text: ''};
-  }
-  render() {
-    const limit = 20;
-    const remainder = limit - this.state.text.length;
-    const remainderColor = remainder > 5 ? 'blue' : 'red';
-    return (
-      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-       * when making Flow check .android.js files. */
-      <View style={styles.rewriteContainer}>
-        <TextInput
-          multiline={false}
-          maxLength={limit}
-          onChangeText={text => {
-            text = text.replace(/ /g, '_');
-            this.setState({text});
-          }}
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          style={styles.default}
-          value={this.state.text}
-        />
-        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-         * found when making Flow check .android.js files. */}
-        <Text style={[styles.remainder, {color: remainderColor}]}>
-          {remainder}
-        </Text>
-      </View>
-    );
-  }
-}
-
-class TokenizedTextExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_android_fb) This comment suppresses
-   * an error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
-  constructor(props) {
-    super(props);
-    this.state = {text: 'Hello #World'};
-  }
-  render() {
-    //define delimiter
-    let delimiter = /\s+/;
-
-    //split string
-    let _text = this.state.text;
-    let token,
-      index,
-      parts = [];
-    while (_text) {
-      delimiter.lastIndex = 0;
-      token = delimiter.exec(_text);
-      if (token === null) {
-        break;
-      }
-      index = token.index;
-      if (token[0].length === 0) {
-        index = 1;
-      }
-      parts.push(_text.substr(0, index));
-      parts.push(token[0]);
-      index = index + token[0].length;
-      _text = _text.slice(index);
-    }
-    parts.push(_text);
-
-    //highlight hashtags
-    parts = parts.map(text => {
-      if (/^#/.test(text)) {
-        return (
-          <Text key={text} style={styles.hashtag}>
-            {text}
-          </Text>
-        );
-      } else {
-        return text;
-      }
-    });
-
-    return (
-      <View>
-        <TextInput
-          multiline={true}
-          style={styles.multiline}
-          onChangeText={text => {
-            this.setState({text});
-          }}>
-          <Text>{parts}</Text>
-        </TextInput>
-      </View>
-    );
-  }
-}
-
-class BlurOnSubmitExample extends React.Component<{}> {
-  focusNextField = nextField => {
-    this.refs[nextField].focus();
-  };
-
-  render() {
-    return (
-      <View>
-        <TextInput
-          ref="1"
-          style={styles.singleLine}
-          placeholder="blurOnSubmit = false"
-          returnKeyType="next"
-          blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('2')}
-        />
-        <TextInput
-          ref="2"
-          style={styles.singleLine}
-          keyboardType="email-address"
-          placeholder="blurOnSubmit = false"
-          returnKeyType="next"
-          blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('3')}
-        />
-        <TextInput
-          ref="3"
-          style={styles.singleLine}
-          keyboardType="url"
-          placeholder="blurOnSubmit = false"
-          returnKeyType="next"
-          blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('4')}
-        />
-        <TextInput
-          ref="4"
-          style={styles.singleLine}
-          keyboardType="numeric"
-          placeholder="blurOnSubmit = false"
-          blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('5')}
-        />
-        <TextInput
-          ref="5"
-          style={styles.singleLine}
-          keyboardType="numbers-and-punctuation"
-          placeholder="blurOnSubmit = true"
-          returnKeyType="done"
-        />
-      </View>
-    );
-  }
-}
+import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
 
 class ToggleDefaultPaddingExample extends React.Component<
   $FlowFixMeProps,
@@ -259,90 +46,7 @@ class ToggleDefaultPaddingExample extends React.Component<
   }
 }
 
-type SelectionExampleState = {
-  selection: $ReadOnly<{|
-    start: number,
-    end?: number,
-  |}>,
-  value: string,
-};
-
-class SelectionExample extends React.Component<
-  $FlowFixMeProps,
-  SelectionExampleState,
-> {
-  _textInput: any;
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      selection: {start: 0, end: 0},
-      value: props.value,
-    };
-  }
-
-  onSelectionChange({nativeEvent: {selection}}) {
-    this.setState({selection});
-  }
-
-  getRandomPosition() {
-    const length = this.state.value.length;
-    return Math.round(Math.random() * length);
-  }
-
-  select(start, end) {
-    this._textInput.focus();
-    this.setState({selection: {start, end}});
-  }
-
-  selectRandom() {
-    const positions = [
-      this.getRandomPosition(),
-      this.getRandomPosition(),
-    ].sort();
-    this.select(...positions);
-  }
-
-  placeAt(position) {
-    this.select(position, position);
-  }
-
-  placeAtRandom() {
-    this.placeAt(this.getRandomPosition());
-  }
-
-  render() {
-    const length = this.state.value.length;
-
-    return (
-      <View>
-        <TextInput
-          multiline={this.props.multiline}
-          onChangeText={value => this.setState({value})}
-          onSelectionChange={this.onSelectionChange.bind(this)}
-          ref={textInput => (this._textInput = textInput)}
-          selection={this.state.selection}
-          style={this.props.style}
-          value={this.state.value}
-        />
-        <View>
-          <Text>selection = {JSON.stringify(this.state.selection)}</Text>
-          <Text onPress={this.placeAt.bind(this, 0)}>
-            Place at Start (0, 0)
-          </Text>
-          <Text onPress={this.placeAt.bind(this, length)}>
-            Place at End ({length}, {length})
-          </Text>
-          <Text onPress={this.placeAtRandom.bind(this)}>Place at Random</Text>
-          <Text onPress={this.select.bind(this, 0, length)}>Select All</Text>
-          <Text onPress={this.selectRandom.bind(this)}>Select Random</Text>
-        </View>
-      </View>
-    );
-  }
-}
-
-class AutogrowingTextInputExample extends React.Component<{}> {
+class AutogrowingTextInputExample extends React.Component<{...}> {
   constructor(props) {
     super(props);
 
@@ -429,119 +133,21 @@ const styles = StyleSheet.create({
     height: 60,
     fontSize: 16,
   },
-  eventLabel: {
-    margin: 3,
-    fontSize: 12,
-  },
   singleLine: {
     fontSize: 16,
   },
   singleLineWithHeightTextInput: {
     height: 30,
   },
-  hashtag: {
-    color: 'blue',
-    fontWeight: 'bold',
-  },
 });
 
 exports.title = '<TextInput>';
 exports.description = 'Single and multi-line text inputs.';
-exports.examples = [
-  {
-    title: 'Auto-focus',
-    render: function() {
-      return (
-        <TextInput
-          autoFocus={true}
-          multiline={true}
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          style={styles.input}
-          accessibilityLabel="I am the accessibility label for text input"
-        />
-      );
-    },
-  },
-  {
-    title: "Live Re-Write (<sp>  ->  '_')",
-    render: function() {
-      return <RewriteExample />;
-    },
-  },
-  {
-    title: 'Auto-capitalize',
-    render: function() {
-      const autoCapitalizeTypes = ['none', 'sentences', 'words', 'characters'];
-      const examples = autoCapitalizeTypes.map(type => {
-        return (
-          <TextInput
-            key={type}
-            autoCapitalize={type}
-            placeholder={'autoCapitalize: ' + type}
-            style={styles.singleLine}
-          />
-        );
-      });
-      return <View>{examples}</View>;
-    },
-  },
-  {
-    title: 'Auto-correct',
-    render: function() {
-      return (
-        <View>
-          <TextInput
-            autoCorrect={true}
-            placeholder="This has autoCorrect"
-            style={styles.singleLine}
-          />
-          <TextInput
-            autoCorrect={false}
-            placeholder="This does not have autoCorrect"
-            style={styles.singleLine}
-          />
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Keyboard types',
-    render: function() {
-      const keyboardTypes = [
-        'default',
-        'email-address',
-        'numeric',
-        'phone-pad',
-      ];
-      const examples = keyboardTypes.map(type => {
-        return (
-          <TextInput
-            key={type}
-            keyboardType={type}
-            placeholder={'keyboardType: ' + type}
-            style={styles.singleLine}
-          />
-        );
-      });
-      return <View>{examples}</View>;
-    },
-  },
-  {
-    title: 'Blur on submit',
-    render: function(): React.Element<any> {
-      return <BlurOnSubmitExample />;
-    },
-  },
-  {
-    title: 'Event handling',
-    render: function(): React.Element<any> {
-      return <TextEventsExample />;
-    },
-  },
+exports.examples = ([
+  ...TextInputSharedExamples,
   {
     title: 'Colors and text inputs',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -591,7 +197,7 @@ exports.examples = [
   },
   {
     title: 'Text input, themes and heights',
-    render: function() {
+    render: function(): React.Node {
       return (
         <TextInput
           placeholder="If you set height, beware of padding set from themes"
@@ -601,39 +207,8 @@ exports.examples = [
     },
   },
   {
-    title: 'fontFamily, fontWeight and fontStyle',
-    render: function() {
-      return (
-        <View>
-          <TextInput
-            style={[styles.singleLine, {fontFamily: 'sans-serif'}]}
-            placeholder="Custom fonts like Sans-Serif are supported"
-          />
-          <TextInput
-            style={[
-              styles.singleLine,
-              {fontFamily: 'sans-serif', fontWeight: 'bold'},
-            ]}
-            placeholder="Sans-Serif bold"
-          />
-          <TextInput
-            style={[
-              styles.singleLine,
-              {fontFamily: 'sans-serif', fontStyle: 'italic'},
-            ]}
-            placeholder="Sans-Serif italic"
-          />
-          <TextInput
-            style={[styles.singleLine, {fontFamily: 'serif'}]}
-            placeholder="Serif"
-          />
-        </View>
-      );
-    },
-  },
-  {
     title: 'letterSpacing',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -658,7 +233,7 @@ exports.examples = [
   },
   {
     title: 'Passwords',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -678,7 +253,7 @@ exports.examples = [
   },
   {
     title: 'Editable',
-    render: function() {
+    render: function(): React.Node {
       return (
         <TextInput
           defaultValue="Can't touch this! (>'-')> ^(' - ')^ <('-'<) (>'-')> ^(' - ')^"
@@ -690,7 +265,7 @@ exports.examples = [
   },
   {
     title: 'Multiline',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -732,7 +307,7 @@ exports.examples = [
   {
     title: 'Fixed number of lines',
     platform: 'android',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -751,7 +326,7 @@ exports.examples = [
   },
   {
     title: 'Auto-expanding',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <AutogrowingTextInputExample
@@ -774,14 +349,8 @@ exports.examples = [
     },
   },
   {
-    title: 'Attributed text',
-    render: function() {
-      return <TokenizedTextExample />;
-    },
-  },
-  {
     title: 'Return key',
-    render: function() {
+    render: function(): React.Node {
       const returnKeyTypes = [
         'none',
         'go',
@@ -822,7 +391,7 @@ exports.examples = [
   },
   {
     title: 'Inline Images',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -846,28 +415,8 @@ exports.examples = [
   },
   {
     title: 'Toggle Default Padding',
-    render: function(): React.Element<any> {
+    render: function(): React.Node {
       return <ToggleDefaultPaddingExample />;
     },
   },
-  {
-    title: 'Text selection & cursor placement',
-    render: function() {
-      return (
-        <View>
-          <SelectionExample
-            /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-             * found when making Flow check .android.js files. */
-            style={styles.default}
-            value="text selection can be changed"
-          />
-          <SelectionExample
-            multiline
-            style={styles.multiline}
-            value={'multiline text selection\ncan also be changed'}
-          />
-        </View>
-      );
-    },
-  },
-];
+]: Array<RNTesterExampleModuleItem>);
