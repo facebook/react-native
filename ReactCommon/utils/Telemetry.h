@@ -8,6 +8,7 @@
 #pragma once
 
 #include <chrono>
+#include <type_traits>
 
 namespace facebook {
 namespace react {
@@ -50,6 +51,55 @@ static inline int64_t telemetryTimePointToMilliseconds(
   return std::chrono::duration_cast<std::chrono::milliseconds>(
              timePoint - TelemetryTimePoint{})
       .count();
+}
+
+/*
+ * Returns a number of seconds that passed from "Steady Clock" epoch starting
+ * time point to a given time point.
+ */
+static inline double telemetryTimePointToSteadyClockSeconds(
+    TelemetryTimePoint timePoint) {
+  static_assert(
+      std::is_same<decltype(timePoint), std::chrono::steady_clock::time_point>::
+          value,
+      "`TelemetryClock` must be `std::chrono::steady_clock` to make the "
+      "following implementation work correctly.");
+
+  auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                         timePoint.time_since_epoch())
+                         .count();
+  return nanoseconds / 1.0e9;
+}
+
+/*
+ * Converts a time point on one clock to a time point on a different clock.
+ */
+template <
+    typename DestinationTimePointT,
+    typename SourceTimePointT,
+    typename DestnationClockT = typename DestinationTimePointT::clock,
+    typename SourceClockT = typename SourceTimePointT::clock>
+DestinationTimePointT clockCast(SourceTimePointT timePoint) {
+  auto sourseClockNow = SourceClockT::now();
+  auto destinationClockNow = DestnationClockT::now();
+  return std::chrono::time_point_cast<typename DestnationClockT::duration>(
+      timePoint - sourseClockNow + destinationClockNow);
+}
+
+/*
+ * Returns a number of seconds that passed from the UNIX Epoch starting time
+ * point to a given time point.
+ * Also known as POSIX time or UNIX Timestamp.
+ */
+static inline double telemetryTimePointToSecondsSinceEpoch(
+    TelemetryTimePoint timePoint) {
+  auto systemClockTimePoint =
+      clockCast<std::chrono::system_clock::time_point, TelemetryTimePoint>(
+          timePoint);
+  return std::chrono::duration_cast<std::chrono::microseconds>(
+             systemClockTimePoint.time_since_epoch())
+             .count() /
+      1000000.0;
 }
 
 /*
