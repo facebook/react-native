@@ -45,18 +45,17 @@ RCT_EXPORT_MODULE()
 #endif // ]TODO(macOS ISS#2323203)
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    UIView *view = viewRegistry[viewTag];
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) {
+    RCTUIView *view = viewRegistry[viewTag];
     
-    if ([view isKindOfClass:[UISwitch class]]) {
-      [(UISwitch *)view setOn:value animated:NO];
+    if ([view isKindOfClass:[RCTSwitch class]]) {
+      [(RCTSwitch *)view setOn:value animated:NO];
     } else {
-      UIView *subview = view.subviews.firstObject;
-      if ([subview isKindOfClass:[UISwitch class]]) {
-        [(UISwitch *)subview setOn:value animated:NO];
+      RCTUIView *subview = view.subviews.firstObject;
+      if ([subview isKindOfClass:[RCTSwitch class]]) {
+        [(RCTSwitch *)subview setOn:value animated:NO];
       } else {
         RCTLogError(@"view type must be UISwitch");
       }
@@ -64,6 +63,7 @@ RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)
   }];
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 RCT_EXPORT_VIEW_PROPERTY(onTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(thumbTintColor, UIColor);
