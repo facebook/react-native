@@ -513,8 +513,10 @@ UIApplication *__nullable RCTSharedApplication(void)
   if (RCTRunningInAppExtension()) {
     return nil;
   }
-#endif // TODO(macOS ISS#2323203)
   return [[UIApplication class] performSelector:@selector(sharedApplication)];
+#else // [TODO(macOS ISS#2323203)
+  return NSApp;
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
