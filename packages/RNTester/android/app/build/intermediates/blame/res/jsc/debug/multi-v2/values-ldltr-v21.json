@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/incremental/mergeJscDebugResources/merged.dir/values-ldltr-v21/values-ldltr-v21.xml",
+            "map": [
+                {
+                    "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/values-ldltr-v21/values-ldltr-v21.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "112",
+                        "endOffsets": "163"
+                    }
+                }
+            ]
+        }
+    ]
+}

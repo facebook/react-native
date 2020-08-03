@@ -1,0 +1,36 @@
+{
+    "logs": [
+        {
+            "outputFile": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/incremental/mergeJscDebugResources/merged.dir/values-uz/values-uz.xml",
+            "map": [
+                {
+                    "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/values-uz/values-uz.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    },
+                    "to": {
+                        "startLines": "30",
+                        "startColumns": "4",
+                        "startOffsets": "2859",
+                        "endColumns": "100",
+                        "endOffsets": "2955"
+                    }
+                },
+                {
+                    "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/values-uz/values-uz.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "105,210,305,405,487,587,704,789,868,959,1051,1146,1240,1335,1428,1523,1618,1709,1801,1884,1994,2100,2200,2308,2414,2516,2677,2776",
+                        "endColumns": "104,94,99,81,99,116,84,78,90,91,94,93,94,92,94,94,90,91,82,109,105,99,107,105,101,160,98,82",
+                        "endOffsets": "205,300,400,482,582,699,784,863,954,1046,1141,1235,1330,1423,1518,1613,1704,1796,1879,1989,2095,2195,2303,2409,2511,2672,2771,2854"
+                    }
+                }
+            ]
+        }
+    ]
+}

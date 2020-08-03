@@ -1,0 +1,1750 @@
+[
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-hdpi-v17_abc_ic_menu_cut_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-hdpi-v17/abc_ic_menu_cut_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_search_view.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_search_view.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_text_select_handle_middle_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_text_select_handle_middle_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_notification_tile_bg.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable/notification_tile_bg.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_tooltip_frame_dark.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/tooltip_frame_dark.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_btn_colored_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_btn_colored_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-v21_abc_action_bar_item_background_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-v21/abc_action_bar_item_background_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_btn_check_to_on_mtrl_015.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_btn_check_to_on_mtrl_015.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_textfield_default_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_textfield_default_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_notification_bg_normal.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-mdpi-v4/notification_bg_normal.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_text_select_handle_right_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_text_select_handle_right_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_spinner_mtrl_am_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_spinner_mtrl_am_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_spinner_mtrl_am_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_spinner_mtrl_am_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_notification_bg_low_pressed.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-xhdpi-v4/notification_bg_low_pressed.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_abc_popup_exit.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/abc_popup_exit.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-v21_abc_list_divider_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-v21/abc_list_divider_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_list_focused_holo.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_list_focused_holo.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_ic_menu_selectall_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_menu_selectall_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_primary_text_material_light.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_primary_text_material_light.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_tint_spinner.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_tint_spinner.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_vector_test.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/60faff0bf379135f6195d635ba682cca/appcompat-resources-1.1.0/res/drawable/abc_vector_test.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_btn_checkbox_unchecked_mtrl.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/btn_checkbox_unchecked_mtrl.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_select_dialog_item_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/select_dialog_item_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_text_select_handle_left_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_text_select_handle_left_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-xxhdpi-v17_abc_spinner_mtrl_am_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-xxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_ratingbar_small_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_ratingbar_small_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_seekbar_thumb_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_seekbar_thumb_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_abc_slide_out_top.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/abc_slide_out_top.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_list_longpressed_holo.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_list_longpressed_holo.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_catalyst_fade_out.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/packaged_res/debug/anim/catalyst_fade_out.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_edit_text_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_edit_text_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_tab_indicator_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_list_selector_disabled_holo_dark.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_list_selector_disabled_holo_dark.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_btn_radio_to_on_mtrl_015.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_btn_radio_to_on_mtrl_015.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_ic_menu_paste_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_ic_menu_paste_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_hint_foreground_material_light.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_hint_foreground_material_light.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_abc_grow_fade_in_from_bottom.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/abc_grow_fade_in_from_bottom.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/interpolator_btn_checkbox_unchecked_mtrl_animation_interpolator_0.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/interpolator/btn_checkbox_unchecked_mtrl_animation_interpolator_0.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_btn_radio_off_mtrl.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/btn_radio_off_mtrl.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_tab_indicator_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_tab_indicator_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_text_select_handle_left_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_text_select_handle_left_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_btn_radio_to_on_mtrl_ring_outer_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/btn_radio_to_on_mtrl_ring_outer_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_btn_default_mtrl_shape.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_btn_default_mtrl_shape.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_btn_check_material_anim.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_btn_check_material_anim.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_select_dialog_singlechoice_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/select_dialog_singlechoice_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_text_select_handle_middle_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_text_select_handle_middle_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_catalyst_push_up_in.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/packaged_res/debug/anim/catalyst_push_up_in.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_launcher_icon.png.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/res/drawable/launcher_icon.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-mdpi-v17_abc_spinner_mtrl_am_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-mdpi-v17/abc_spinner_mtrl_am_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_abc_fade_in.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/abc_fade_in.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_btn_check_to_on_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_btn_check_to_on_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_btn_checkbox_to_checked_box_outer_merged_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/btn_checkbox_to_checked_box_outer_merged_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_list_pressed_holo_light.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_list_pressed_holo_light.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_switch_thumb_material_dark.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/switch_thumb_material_dark.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_btn_check_to_on_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_btn_check_to_on_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_btn_check_to_on_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_btn_check_to_on_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_list_divider_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_list_divider_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_btn_check_to_on_mtrl_015.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_btn_check_to_on_mtrl_015.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_redbox_top_border_background.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/packaged_res/debug/drawable/redbox_top_border_background.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_btn_radio_to_on_mtrl_015.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_btn_radio_to_on_mtrl_015.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_ic_menu_cut_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_menu_cut_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_notify_panel_notification_icon_bg.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-hdpi-v4/notify_panel_notification_icon_bg.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_text_select_handle_right_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_text_select_handle_right_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color-v23_abc_tint_default.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color-v23/abc_tint_default.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_scrubber_track_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_scrubber_track_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_switch_track_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_switch_track_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_seekbar_track_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_seekbar_track_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_btn_radio_to_on_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_btn_radio_to_on_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_textfield_search_default_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-mdpi-v17_abc_ic_menu_cut_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-mdpi-v17/abc_ic_menu_cut_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_list_menu_item_icon.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_list_menu_item_icon.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_scrubber_primary_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_list_menu_item_layout.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_list_menu_item_layout.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_abc_tooltip_exit.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/abc_tooltip_exit.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_ic_star_black_16dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ic_star_black_16dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_scrubber_control_to_pressed_mtrl_005.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_textfield_default_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_textfield_default_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_spinner_mtrl_am_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_spinner_mtrl_am_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_btn_checkbox_checked_to_unchecked_mtrl_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/btn_checkbox_checked_to_unchecked_mtrl_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-v21_abc_btn_colored_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-v21/abc_btn_colored_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_scrubber_control_off_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_scrubber_control_off_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_ic_clear_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_ic_clear_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_ic_star_black_48dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_ic_star_black_48dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color-v23_abc_btn_colored_text_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color-v23/abc_btn_colored_text_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-xhdpi-v17_abc_ic_menu_cut_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-xhdpi-v17/abc_ic_menu_cut_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_btn_radio_to_on_mtrl_015.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_btn_radio_to_on_mtrl_015.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_textfield_activated_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_textfield_activated_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_ic_menu_selectall_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ic_menu_selectall_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_btn_switch_to_on_mtrl_00012.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_btn_checkbox_checked_mtrl.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/btn_checkbox_checked_mtrl.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_tooltip.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_tooltip.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_btn_check_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_btn_check_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_ic_arrow_drop_right_black_24dp.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_ic_arrow_drop_right_black_24dp.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-xhdpi-v17_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-xhdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_ratingbar_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_ratingbar_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_btn_switch_to_on_mtrl_00012.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-xhdpi-v17_abc_spinner_mtrl_am_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-xhdpi-v17/abc_spinner_mtrl_am_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_cab_background_top_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_cab_background_top_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_notify_panel_notification_icon_bg.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-xhdpi-v4/notify_panel_notification_icon_bg.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_list_focused_holo.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_list_focused_holo.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_notification_template_part_chronometer.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/layout/notification_template_part_chronometer.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_ic_star_black_36dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_ic_star_black_36dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_menu_hardkey_panel_mtrl_mult.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_list_longpressed_holo.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_list_longpressed_holo.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_list_longpressed_holo.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_list_longpressed_holo.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_seekbar_tick_mark_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_seekbar_tick_mark_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_notification_bg.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable/notification_bg.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_notification_bg_low_pressed.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-mdpi-v4/notification_bg_low_pressed.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_textfield_search_activated_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_textfield_search_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_textfield_search_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_primary_text_material_dark.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_primary_text_material_dark.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_legacy_image.png.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/res/drawable/legacy_image.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_text_select_handle_middle_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_text_select_handle_middle_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_tint_edittext.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_tint_edittext.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_abc_slide_in_top.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/abc_slide_in_top.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_text_select_handle_left_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_text_select_handle_left_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_list_divider_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_list_divider_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color-v21_abc_btn_colored_borderless_text_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color-v21/abc_btn_colored_borderless_text_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/font_rubik_regular.ttf.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/res/font/rubik_regular.ttf"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_ic_star_black_48dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ic_star_black_48dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-hdpi-v17_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-hdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_text_select_handle_right_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_text_select_handle_right_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_ic_star_half_black_36dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ic_star_half_black_36dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_list_selector_disabled_holo_light.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_list_selector_disabled_holo_light.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_ic_menu_share_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_menu_share_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-mdpi-v17_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-mdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_tooltip_frame_light.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/tooltip_frame_light.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_activity_main.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/res/layout/activity_main.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_tab_indicator_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_tab_indicator_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_text_select_handle_left_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_text_select_handle_left_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_abc_shrink_fade_out_from_bottom.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/abc_shrink_fade_out_from_bottom.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_notification_bg_low_pressed.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-hdpi-v4/notification_bg_low_pressed.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/interpolator_btn_checkbox_checked_mtrl_animation_interpolator_0.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/interpolator/btn_checkbox_checked_mtrl_animation_interpolator_0.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_btn_borderless_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_btn_borderless_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_switch_thumb_material_light.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/switch_thumb_material_light.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_notification_template_icon_group.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/layout/notification_template_icon_group.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_hint_foreground_material_dark.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_hint_foreground_material_dark.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/interpolator_btn_checkbox_checked_mtrl_animation_interpolator_1.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/interpolator/btn_checkbox_checked_mtrl_animation_interpolator_1.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_btn_radio_on_mtrl.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/btn_radio_on_mtrl.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color-v23_abc_tint_seek_thumb.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color-v23/abc_tint_seek_thumb.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_expanded_menu_layout.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_expanded_menu_layout.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_popup_background_mtrl_mult.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_popup_background_mtrl_mult.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_btn_switch_to_on_mtrl_00001.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_ic_star_black_16dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_star_black_16dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-xxhdpi-v17_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-xxhdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_ic_star_black_36dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ic_star_black_36dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_ic_menu_cut_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_menu_cut_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_btn_radio_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_btn_radio_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_scrubber_control_to_pressed_mtrl_005.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_ic_menu_share_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ic_menu_share_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_ic_star_black_16dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_star_black_16dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/interpolator_btn_radio_to_off_mtrl_animation_interpolator_0.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/interpolator/btn_radio_to_off_mtrl_animation_interpolator_0.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_action_menu_item_layout.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_action_menu_item_layout.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_ic_menu_cut_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_ic_menu_cut_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_action_bar_title_item.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_action_bar_title_item.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_switch_track_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_switch_track_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/font_rubik_light.ttf.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/res/font/rubik_light.ttf"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_select_dialog_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_select_dialog_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_ic_voice_search_api_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_ic_voice_search_api_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_scrubber_control_off_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_scrubber_control_off_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_text_select_handle_right_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_text_select_handle_right_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_menu_hardkey_panel_mtrl_mult.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_textfield_default_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_textfield_default_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_btn_checkbox_unchecked_to_checked_mtrl_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/btn_checkbox_unchecked_to_checked_mtrl_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_tab_indicator_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_list_selector_disabled_holo_light.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_list_selector_disabled_holo_light.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout-watch-v20_abc_alert_dialog_title_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout-watch-v20/abc_alert_dialog_title_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color-v23_abc_tint_switch_track.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color-v23/abc_tint_switch_track.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_notification_bg_normal_pressed.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-mdpi-v4/notification_bg_normal_pressed.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_ic_menu_share_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_menu_share_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_ic_menu_cut_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ic_menu_cut_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_ab_share_pack_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_ic_commit_search_api_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_spinner_textfield_background_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_spinner_textfield_background_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_scrubber_primary_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_ic_star_half_black_16dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_star_half_black_16dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/font_rubik_bold.ttf.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/res/font/rubik_bold.ttf"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_btn_checkbox_to_checked_icon_null_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/btn_checkbox_to_checked_icon_null_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_text_select_handle_middle_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_text_select_handle_middle_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_text_select_handle_right_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_text_select_handle_right_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_select_dialog_multichoice_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/select_dialog_multichoice_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_notification_icon_background.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable/notification_icon_background.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_activity_chooser_view.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_activity_chooser_view.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_text_select_handle_right_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_text_select_handle_right_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_tint_seek_thumb.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_tint_seek_thumb.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-xxhdpi-v17_abc_ic_menu_cut_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-xxhdpi-v17/abc_ic_menu_cut_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_switch_track_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_switch_track_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_list_pressed_holo_light.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_list_pressed_holo_light.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_scrubber_control_off_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_scrubber_control_off_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_popup_background_mtrl_mult.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_popup_background_mtrl_mult.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_btn_checkbox_to_unchecked_box_inner_merged_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/btn_checkbox_to_unchecked_box_inner_merged_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_activity_chooser_view_list_item.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_activity_chooser_view_list_item.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_btn_switch_to_on_mtrl_00001.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_btn_radio_to_on_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_btn_radio_to_on_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_list_focused_holo.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_list_focused_holo.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout-v21_notification_action.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/layout-v21/notification_action.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_btn_checkbox_to_unchecked_check_path_merged_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/btn_checkbox_to_unchecked_check_path_merged_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_alert_dialog_title_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_alert_dialog_title_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_ic_menu_overflow_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_ic_menu_overflow_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_ic_star_black_36dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_star_black_36dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_ic_star_half_black_16dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_ic_star_half_black_16dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_ic_star_half_black_48dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_star_half_black_48dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_scrubber_control_off_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_scrubber_control_off_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color-v23_abc_tint_edittext.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color-v23/abc_tint_edittext.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_support_simple_spinner_dropdown_item.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/support_simple_spinner_dropdown_item.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_ab_share_pack_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_cab_background_top_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_cab_background_top_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_ic_star_half_black_16dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_star_half_black_16dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_text_select_handle_left_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_text_select_handle_left_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_item_background_holo_light.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_item_background_holo_light.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_secondary_text_material_light.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_secondary_text_material_light.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_btn_radio_on_to_off_mtrl_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/btn_radio_on_to_off_mtrl_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_list_selector_disabled_holo_light.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_list_selector_disabled_holo_light.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_abc_popup_enter.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/abc_popup_enter.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_notification_action.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/layout/notification_action.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-xxxhdpi-v17_abc_ic_menu_cut_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_cut_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_menu_hardkey_panel_mtrl_mult.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_cascading_menu_item_layout.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_cascading_menu_item_layout.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_catalyst_fade_in.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/packaged_res/debug/anim/catalyst_fade_in.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_abc_fade_out.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/abc_fade_out.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_list_pressed_holo_light.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_list_pressed_holo_light.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_scrubber_control_to_pressed_mtrl_005.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color-v23_abc_btn_colored_borderless_text_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color-v23/abc_btn_colored_borderless_text_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_list_selector_background_transition_holo_dark.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_list_selector_background_transition_holo_dark.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_notification_bg_normal_pressed.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-hdpi-v4/notification_bg_normal_pressed.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_btn_switch_to_on_mtrl_00012.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_scrubber_control_to_pressed_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_ic_star_black_48dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_star_black_48dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_list_pressed_holo_light.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_list_pressed_holo_light.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout-v21_notification_template_custom_big.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/layout-v21/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_textfield_default_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_textfield_default_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/interpolator_btn_radio_to_on_mtrl_animation_interpolator_0.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/interpolator/btn_radio_to_on_mtrl_animation_interpolator_0.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_list_menu_item_radio.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_list_menu_item_radio.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-v21_abc_dialog_material_background.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-v21/abc_dialog_material_background.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_screen_simple_overlay_action_mode.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_screen_simple_overlay_action_mode.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_text_select_handle_left_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_text_select_handle_left_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_dev_loading_view.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/packaged_res/debug/layout/dev_loading_view.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_notification_template_part_time.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/layout/notification_template_part_time.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/interpolator_fast_out_slow_in.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/interpolator/fast_out_slow_in.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_ic_star_black_36dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_star_black_36dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_tint_switch_track.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_tint_switch_track.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_ic_menu_paste_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_menu_paste_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_list_pressed_holo_dark.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_list_pressed_holo_dark.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_notification_bg_low_normal.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-mdpi-v4/notification_bg_low_normal.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_action_mode_bar.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_action_mode_bar.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout-v21_notification_action_tombstone.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/layout-v21/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_btn_switch_to_on_mtrl_00012.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_btn_radio_to_on_mtrl_dot_group_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/btn_radio_to_on_mtrl_dot_group_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_ic_star_black_16dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ic_star_black_16dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_list_menu_item_checkbox.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_list_menu_item_checkbox.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_scrubber_control_to_pressed_mtrl_005.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_btn_radio_to_off_mtrl_ring_outer_path_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/btn_radio_to_off_mtrl_ring_outer_path_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_btn_radio_to_on_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_btn_radio_to_on_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color-v23_abc_tint_spinner.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color-v23/abc_tint_spinner.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_screen_toolbar.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_screen_toolbar.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout-v26_abc_screen_toolbar.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout-v26/abc_screen_toolbar.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_ic_commit_search_api_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_btn_checkbox_to_unchecked_icon_null_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/btn_checkbox_to_unchecked_icon_null_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_ic_star_black_16dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_ic_star_black_16dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_ic_search_api_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_ic_search_api_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_ic_star_half_black_36dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_ic_star_half_black_36dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-v21_notification_action_background.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-v21/notification_action_background.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_textfield_search_activated_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_ab_share_pack_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_text_cursor_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_text_cursor_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_ic_menu_share_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ic_menu_share_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_ic_star_half_black_36dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_star_half_black_36dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_list_selector_holo_light.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_list_selector_holo_light.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/font_rubik_medium_italic.ttf.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/res/font/rubik_medium_italic.ttf"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_ic_star_half_black_48dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ic_star_half_black_48dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_background_cache_hint_selector_material_light.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_background_cache_hint_selector_material_light.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_scrubber_track_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_scrubber_track_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_item_background_holo_dark.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_item_background_holo_dark.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_btn_check_to_on_mtrl_015.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_btn_check_to_on_mtrl_015.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_ic_menu_paste_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_menu_paste_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_background_cache_hint_selector_material_dark.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_background_cache_hint_selector_material_dark.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_text_select_handle_right_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_text_select_handle_right_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_ic_create_black_48dp.png.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/res/drawable/ic_create_black_48dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_text_select_handle_left_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_text_select_handle_left_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_btn_radio_off_to_on_mtrl_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/btn_radio_off_to_on_mtrl_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_ic_star_half_black_36dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_star_half_black_36dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_notification_bg_normal.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-xhdpi-v4/notification_bg_normal.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_tint_btn_checkable.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_tint_btn_checkable.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_popup_menu_header_item_layout.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_popup_menu_header_item_layout.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-xxxhdpi-v17_abc_spinner_mtrl_am_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-xxxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_search_url_text.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_search_url_text.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_list_selector_background_transition_holo_light.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_list_selector_background_transition_holo_light.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_scrubber_primary_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_ab_share_pack_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_redbox_view.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/packaged_res/debug/layout/redbox_view.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_notification_bg_low_normal.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-xhdpi-v4/notification_bg_low_normal.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_ic_ab_back_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_ic_ab_back_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_tint_default.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_tint_default.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_btn_radio_material_anim.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_btn_radio_material_anim.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_ic_commit_search_api_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_text_select_handle_middle_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_text_select_handle_middle_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_custom_dialog.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/layout/custom_dialog.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_ic_menu_selectall_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ic_menu_selectall_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/xml_rn_dev_preferences.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/packaged_res/debug/xml/rn_dev_preferences.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_text_select_handle_left_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_text_select_handle_left_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_textfield_activated_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_textfield_activated_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_ic_star_black_48dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_star_black_48dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_btn_checkbox_to_checked_box_inner_merged_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/btn_checkbox_to_checked_box_inner_merged_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_spinner_mtrl_am_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_spinner_mtrl_am_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_ic_menu_paste_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ic_menu_paste_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_btn_switch_to_on_mtrl_00001.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/interpolator_btn_checkbox_unchecked_mtrl_animation_interpolator_1.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/interpolator/btn_checkbox_unchecked_mtrl_animation_interpolator_1.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_scrubber_control_to_pressed_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_notification_bg_low_normal.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-hdpi-v4/notification_bg_low_normal.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_action_mode_close_item_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_action_mode_close_item_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_ic_star_black_48dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ic_star_black_48dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_cab_background_top_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_cab_background_top_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-v23_abc_control_background_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-v23/abc_control_background_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_catalyst_slide_up.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/packaged_res/debug/anim/catalyst_slide_up.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_dialog_material_background.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_dialog_material_background.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_fps_view.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/packaged_res/debug/layout/fps_view.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_notification_bg_normal_pressed.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-xhdpi-v4/notification_bg_normal_pressed.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_switch_thumb_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_switch_thumb_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_dialog_title_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_dialog_title_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_popup_background_mtrl_mult.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_popup_background_mtrl_mult.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/font_rubik_medium.ttf.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/res/font/rubik_medium.ttf"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_tv_banner.png.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/res/drawable/tv_banner.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_btn_check_to_on_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_btn_check_to_on_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_scrubber_track_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_scrubber_track_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_textfield_search_activated_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_popup_background_mtrl_mult.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_popup_background_mtrl_mult.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_switch_track_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_switch_track_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_tab_indicator_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_list_focused_holo.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_list_focused_holo.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/font_rubik.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/res/font/rubik.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_text_select_handle_right_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_text_select_handle_right_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_ic_star_black_36dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ic_star_black_36dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_ic_commit_search_api_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_btn_radio_to_off_mtrl_dot_group_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/btn_radio_to_off_mtrl_dot_group_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_btn_radio_to_on_mtrl_015.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_btn_radio_to_on_mtrl_015.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_ic_star_half_black_36dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ic_star_half_black_36dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout-v21_notification_template_icon_group.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/layout-v21/notification_template_icon_group.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_list_selector_holo_dark.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_list_selector_holo_dark.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_redbox_item_title.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/packaged_res/debug/layout/redbox_item_title.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_scrubber_control_to_pressed_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_switch_track_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_switch_track_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_secondary_text_material_dark.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_secondary_text_material_dark.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_text_select_handle_left_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_text_select_handle_left_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout-watch-v20_abc_alert_dialog_button_bar_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout-watch-v20/abc_alert_dialog_button_bar_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_alert_dialog_button_bar_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_alert_dialog_button_bar_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_list_divider_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_list_divider_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_ic_settings_black_48dp.png.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/res/drawable/ic_settings_black_48dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_ic_star_half_black_48dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_ic_star_half_black_48dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_abc_tooltip_enter.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/abc_tooltip_enter.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_ic_menu_share_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_ic_menu_share_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_cab_background_top_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_cab_background_top_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_list_pressed_holo_dark.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_list_pressed_holo_dark.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_notification_action_tombstone.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/layout/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_btn_radio_to_on_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_btn_radio_to_on_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_textfield_activated_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_textfield_activated_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_cab_background_top_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_cab_background_top_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_list_selector_disabled_holo_dark.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_list_selector_disabled_holo_dark.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_ic_menu_black_24dp.png.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/res/drawable/ic_menu_black_24dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color-v23_abc_tint_btn_checkable.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color-v23/abc_tint_btn_checkable.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_text_select_handle_left_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_text_select_handle_left_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_text_select_handle_middle_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_text_select_handle_middle_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_screen_simple.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_screen_simple.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_text_select_handle_right_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_text_select_handle_right_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-xxxhdpi-v17_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_btn_switch_to_on_mtrl_00001.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_btn_colored_borderless_text_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_btn_colored_borderless_text_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_ic_menu_selectall_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_menu_selectall_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_notification_bg_normal.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-hdpi-v4/notification_bg_normal.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_list_divider_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_list_divider_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_spinner_mtrl_am_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_spinner_mtrl_am_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_textfield_search_default_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_action_bar_up_container.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_action_bar_up_container.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_text_select_handle_middle_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_text_select_handle_middle_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_search_dropdown_item_icons_2line.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_search_dropdown_item_icons_2line.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-watch-v20_abc_dialog_material_background.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-watch-v20/abc_dialog_material_background.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_scrubber_control_to_pressed_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_btn_check_to_on_mtrl_015.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_btn_check_to_on_mtrl_015.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_ratingbar_indicator_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_ratingbar_indicator_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_btn_radio_to_on_mtrl_015.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_btn_radio_to_on_mtrl_015.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_abc_slide_out_bottom.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/abc_slide_out_bottom.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_btn_radio_to_on_mtrl_ring_outer_path_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/btn_radio_to_on_mtrl_ring_outer_path_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxxhdpi-v4_abc_ic_menu_selectall_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxxhdpi-v4/abc_ic_menu_selectall_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_menu_hardkey_panel_mtrl_mult.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_notify_panel_notification_icon_bg.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable-mdpi-v4/notify_panel_notification_icon_bg.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_scrubber_control_to_pressed_mtrl_005.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_popup_menu_item_layout.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_popup_menu_item_layout.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_list_pressed_holo_dark.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_list_pressed_holo_dark.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_btn_switch_to_on_mtrl_00001.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_alert_dialog_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_alert_dialog_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_btn_colored_text_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_btn_colored_text_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color-v23_abc_color_highlight_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color-v23/abc_color_highlight_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_textfield_search_default_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-v21_abc_edit_text_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-v21/abc_edit_text_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_ic_star_half_black_16dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ic_star_half_black_16dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_ic_star_half_black_48dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ic_star_half_black_48dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_scrubber_primary_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_ic_star_half_black_16dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ic_star_half_black_16dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_catalyst_slide_down.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/packaged_res/debug/anim/catalyst_slide_down.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_textfield_search_default_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_redbox_item_frame.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/packaged_res/debug/layout/redbox_item_frame.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_btn_check_to_on_mtrl_015.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_btn_check_to_on_mtrl_015.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_list_selector_disabled_holo_dark.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_list_selector_disabled_holo_dark.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_scrubber_control_to_pressed_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_ic_go_search_api_material.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_ic_go_search_api_material.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_abc_cab_background_internal_bg.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable/abc_cab_background_internal_bg.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_list_divider_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_list_divider_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_list_longpressed_holo.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_list_longpressed_holo.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_catalyst_push_up_out.xml.flat",
+        "source": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/packaged_res/debug/anim/catalyst_push_up_out.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_text_select_handle_right_mtrl_dark.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_text_select_handle_right_mtrl_dark.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_text_select_handle_middle_mtrl_light.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_text_select_handle_middle_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_ic_menu_paste_mtrl_am_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ic_menu_paste_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_screen_content_include.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_screen_content_include.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_abc_slide_in_bottom.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/abc_slide_in_bottom.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_scrubber_track_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_scrubber_track_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_btn_radio_to_on_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_btn_radio_to_on_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/anim_btn_radio_to_off_mtrl_ring_outer_animation.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/anim/btn_radio_to_off_mtrl_ring_outer_animation.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_primary_text_disable_only_material_dark.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_primary_text_disable_only_material_dark.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_textfield_search_activated_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_textfield_activated_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_textfield_activated_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_ic_star_half_black_48dp.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_star_half_black_48dp.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_btn_switch_to_on_mtrl_00012.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-mdpi-v4_abc_tab_indicator_mtrl_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-mdpi-v4/abc_tab_indicator_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout_abc_action_menu_layout.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/layout/abc_action_menu_layout.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/layout-v16_notification_template_custom_big.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/layout-v16/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xxhdpi-v4_abc_list_selector_disabled_holo_light.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_list_selector_disabled_holo_light.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable_notification_bg_low.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/res/drawable/notification_bg_low.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-ldrtl-hdpi-v17_abc_spinner_mtrl_am_alpha.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-ldrtl-hdpi-v17/abc_spinner_mtrl_am_alpha.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_ic_menu_cut_mtrl_alpha.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ic_menu_cut_mtrl_alpha.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/color_abc_primary_text_disable_only_material_light.xml.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/color/abc_primary_text_disable_only_material_light.xml"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-hdpi-v4_abc_btn_check_to_on_mtrl_000.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-hdpi-v4/abc_btn_check_to_on_mtrl_000.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_list_pressed_holo_dark.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_list_pressed_holo_dark.9.png"
+    },
+    {
+        "merged": "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/res/merged/jsc/debug/drawable-xhdpi-v4_abc_list_selector_disabled_holo_dark.9.png.flat",
+        "source": "/Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_list_selector_disabled_holo_dark.9.png"
+    }
+]

@@ -1,0 +1,124 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.facebook.react.uiapp"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="18"
+9        android:targetSdkVersion="29" />
+10
+11    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+11-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml:5:5-77
+11-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml:5:22-75
+12
+13    <uses-feature
+13-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:6:3-8:32
+14        android:name="android.software.leanback"
+14-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:7:5-45
+15        android:required="false" />
+15-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:8:5-29
+16    <uses-feature
+16-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:9:3-11:32
+17        android:name="android.hardware.touchscreen"
+17-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:10:5-48
+18        android:required="false" />
+18-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:11:5-29
+19
+20    <uses-permission android:name="android.permission.INTERNET" />
+20-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:13:3-65
+20-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:13:20-62
+21    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+21-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:14:3-76
+21-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:14:20-74
+22    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+22-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:15:3-76
+22-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:15:20-74
+23    <uses-permission android:name="android.permission.VIBRATE" />
+23-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:16:3-63
+23-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:16:20-61
+24    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Just to show permissions example -->
+24-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:17:3-77
+24-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:17:20-75
+25    <uses-permission android:name="android.permission.CAMERA" />
+25-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:20:3-62
+25-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:20:20-60
+26    <uses-permission android:name="android.permission.READ_CALENDAR" />
+26-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:21:3-69
+26-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:21:20-67
+27    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+27-->[com.facebook.flipper:flipper:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/8d123127adf05fd1480fa6eb1ab4ab72/flipper-0.37.0/AndroidManifest.xml:16:5-76
+27-->[com.facebook.flipper:flipper:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/8d123127adf05fd1480fa6eb1ab4ab72/flipper-0.37.0/AndroidManifest.xml:16:22-73
+28
+29    <application
+29-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:27:3-55:17
+30        android:name="com.facebook.react.uiapp.RNTesterApplication"
+30-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:28:7-42
+31        android:allowBackup="true"
+31-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:29:7-33
+32        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+32-->[androidx.core:core:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/AndroidManifest.xml:24:18-86
+33        android:banner="@drawable/tv_banner"
+33-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:30:7-43
+34        android:debuggable="true"
+35        android:icon="@drawable/launcher_icon"
+35-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:31:7-45
+36        android:label="@string/app_name"
+36-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:32:7-39
+37        android:theme="@style/Theme.ReactNative.AppCompat.Light"
+37-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:33:7-63
+38        android:usesCleartextTraffic="true" >
+38-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml:7:18-53
+39        <activity
+39-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:34:5-53:16
+40            android:name="com.facebook.react.uiapp.RNTesterActivity"
+40-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:35:9-41
+41            android:configChanges="orientation|screenSize|uiMode"
+41-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:39:9-62
+42            android:label="@string/app_name"
+42-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:36:9-41
+43            android:launchMode="singleTask"
+43-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:38:9-40
+44            android:screenOrientation="fullSensor" >
+44-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:37:9-47
+45            <intent-filter>
+45-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:40:7-45:23
+46                <action android:name="android.intent.action.MAIN" />
+46-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:41:9-61
+46-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:41:17-58
+47
+48                <category android:name="android.intent.category.LAUNCHER" />
+48-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:42:9-69
+48-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:42:19-66
+49                <!-- Needed to properly create a launch intent when running on Android TV -->
+50                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+50-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:44:9-78
+50-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:44:19-75
+51            </intent-filter>
+52            <intent-filter>
+52-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:46:7-52:23
+53                <action android:name="android.intent.action.VIEW" />
+53-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:47:9-61
+53-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:47:17-58
+54
+55                <category android:name="android.intent.category.DEFAULT" />
+55-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:48:9-68
+55-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:48:19-65
+56                <category android:name="android.intent.category.BROWSABLE" />
+56-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:49:9-70
+56-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:49:19-67
+57                <!-- Accepts URIs that begin with "rntester://example” -->
+58                <data
+58-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:51:9-66
+59                    android:host="example"
+59-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:51:41-63
+60                    android:scheme="rntester" />
+60-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:51:15-40
+61            </intent-filter>
+62        </activity>
+63        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+63-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:54:5-82
+63-->/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:54:15-79
+64    </application>
+65
+66</manifest>

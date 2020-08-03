@@ -7,5 +7,5 @@
 
 include(
     ":ReactAndroid",
-    ":RNTester:android:app"
+    ":packages:RNTester:android:app"
 )

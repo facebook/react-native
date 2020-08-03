@@ -75,7 +75,7 @@ project.ext.react = [
     enableHermesForVariant: { def v -> v.name.contains("hermes") }
 ]
 
-apply from: "../../../react.gradle"
+apply from: "../../../../react.gradle"
 
 /**
  * Set this to true to create three separate APKs instead of one:

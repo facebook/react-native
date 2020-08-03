@@ -1,0 +1,311 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:2:1-57:12
+INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:2:1-57:12
+INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:2:1-57:12
+INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:2:1-57:12
+MERGED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:2:1-57:12
+MERGED from [com.facebook.flipper:flipper:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/8d123127adf05fd1480fa6eb1ab4ab72/flipper-0.37.0/AndroidManifest.xml:8:1-18:12
+MERGED from [com.facebook.flipper:flipper-network-plugin:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/795ddedf3f13e7b7157c266a68c0c00e/flipper-network-plugin-0.37.0/AndroidManifest.xml:8:1-15:12
+MERGED from [com.facebook.flipper:flipper-fresco-plugin:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/fa000464f1d9bcc949c62d8b09e5d5bf/flipper-fresco-plugin-0.37.0/AndroidManifest.xml:8:1-15:12
+MERGED from [:ReactAndroid] /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-13:12
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/aa97b7750b8d23c0fb37b18d4ba326e4/swiperefreshlayout-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [org.webkit:android-jsc:r245459] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/e04047addbdbdf0d6be81317b9c0392d/android-jsc-r245459/AndroidManifest.xml:2:1-11:12
+MERGED from [com.facebook.fresco:flipper:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/51b7c8b91398bd0ce0128967f4e41ebb/flipper-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:stetho:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/57e992f426275f8d2fd3e4143c2a1dba/stetho-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:fresco:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/2a6b1dfb02b85ffefb7fc997ce72602b/fresco-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:imagepipeline-okhttp3:2.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/a5aa68dc749981bb1f6ebac32f992bde/imagepipeline-okhttp3-2.0.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:drawee:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/78ed595c3fe72a953c17e064cf292f52/drawee-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:nativeimagefilters:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/0b46ead6a0d65426218f8bac01ac5299/nativeimagefilters-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:memory-type-native:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/6be4746d1d95e7649dab2e6d4ff9db58/memory-type-native-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:memory-type-java:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/412a98e7e7a53e802ac36a26d9bedd3f/memory-type-java-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:imagepipeline-native:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/bf9555646c3c5d0e3e01f55ba144efb9/imagepipeline-native-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:memory-type-ashmem:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/96f2c0384209c614ebca33021082de45/memory-type-ashmem-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:imagepipeline:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/fcd71154b7a838ffb1a4bdb7316f3cd7/imagepipeline-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:nativeimagetranscoder:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/faad2626b99145d1b6ae52a4de42b675/nativeimagetranscoder-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:imagepipeline-base:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3dd90273d76541459452a1caa78ba1b9/imagepipeline-base-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:soloader:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/f1ab74fda3ab7de58be678fbbb3571e0/soloader-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.soloader:soloader:0.8.2] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/973054a7411f85303f0c8c0e8c7669de/soloader-0.8.2/AndroidManifest.xml:2:1-13:12
+MERGED from [androidx.appcompat:appcompat:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.appcompat:appcompat-resources:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/60faff0bf379135f6195d635ba682cca/appcompat-resources-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/9dd86ebaee7edf7f04127dbb002b30ec/vectordrawable-animated-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/2e892b2cf02b042b700c42ba4b82c2ae/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.fragment:fragment:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/bf91d225b570d7b13ddb398082a2623a/fragment-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/8728b0f2bd7dd65b5bf302959602e49a/drawerlayout-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/068c245fb8204aba2d94207ef463b18b/viewpager-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/cadeef9910ee6dbaf295c1026a41ca4d/loader-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/96e6833f0cdb5c265fb0d99ec5a1e8f2/activity-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/002e234b78ad6fc392bebc93e7619b6c/vectordrawable-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.customview:customview:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3936a3944e48a745a885ad6c3f8677be/customview-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/AndroidManifest.xml:17:1-26:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/08a575d0ddb62d5716b5a263913b043f/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/cc591ccfb078bdbf6477dc87130ec630/versionedparcelable-1.1.0/AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/42fdbf23bd73878c2f6f95bb96a3ed07/lifecycle-runtime-2.1.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/ea78ede7f9be7a3e8af972afb42220ee/lifecycle-viewmodel-2.1.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/f74aa590ca18758d88507eb1882584f9/savedstate-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/52fb2ca8baaa865d389db5e6e3b1f56b/lifecycle-livedata-2.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/bb216d9d0d8e528a232126a30ae6bf41/lifecycle-livedata-core-2.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.arch.core:core-runtime:2.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/35b4eed5f5da145560579f5e57967e0e/core-runtime-2.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.facebook.soloader:annotation:0.8.2] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/81541797d3837430e01f25ad2b0f73cb/annotation-0.8.2/AndroidManifest.xml:2:1-13:12
+MERGED from [com.facebook.fresco:fbcore:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/735fbb3fd875a72f8c851f703368c6d0/jetified-fbcore-2.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.facebook.fresco:ui-common:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/6b054160369c70245e1065af67745d2d/ui-common-2.2.0/AndroidManifest.xml:2:1-9:12
+INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml:2:1-8:12
+INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml:2:1-8:12
+INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml:2:1-8:12
+	package
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:4:3-37
+		INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:4:3-37
+		INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:2:1-57:12
+		INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml
+	xmlns:tools
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml:3:5-51
+	android:versionCode
+		INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:2:1-57:12
+		INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:3:3-61
+uses-feature#android.software.leanback
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:6:3-8:32
+	android:required
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:8:5-29
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:7:5-45
+uses-feature#android.hardware.touchscreen
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:9:3-11:32
+	android:required
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:11:5-29
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:10:5-48
+uses-permission#android.permission.INTERNET
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:13:3-65
+MERGED from [com.facebook.flipper:flipper:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/8d123127adf05fd1480fa6eb1ab4ab72/flipper-0.37.0/AndroidManifest.xml:15:5-67
+MERGED from [com.facebook.flipper:flipper:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/8d123127adf05fd1480fa6eb1ab4ab72/flipper-0.37.0/AndroidManifest.xml:15:5-67
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:13:20-62
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:14:3-76
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:14:20-74
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:15:3-76
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:15:20-74
+uses-permission#android.permission.VIBRATE
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:16:3-63
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:16:20-61
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:17:3-77
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:17:20-75
+uses-permission#android.permission.CAMERA
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:20:3-62
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:20:20-60
+uses-permission#android.permission.READ_CALENDAR
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:21:3-69
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:21:20-67
+application
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:27:3-55:17
+MERGED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:27:3-55:17
+MERGED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:27:3-55:17
+MERGED from [:ReactAndroid] /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/library_manifest/debug/AndroidManifest.xml:11:5-20
+MERGED from [:ReactAndroid] /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/library_manifest/debug/AndroidManifest.xml:11:5-20
+MERGED from [com.facebook.soloader:soloader:0.8.2] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/973054a7411f85303f0c8c0e8c7669de/soloader-0.8.2/AndroidManifest.xml:11:5-20
+MERGED from [com.facebook.soloader:soloader:0.8.2] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/973054a7411f85303f0c8c0e8c7669de/soloader-0.8.2/AndroidManifest.xml:11:5-20
+MERGED from [androidx.core:core:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/AndroidManifest.xml:24:5-89
+MERGED from [androidx.core:core:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/AndroidManifest.xml:24:5-89
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/cc591ccfb078bdbf6477dc87130ec630/versionedparcelable-1.1.0/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/cc591ccfb078bdbf6477dc87130ec630/versionedparcelable-1.1.0/AndroidManifest.xml:24:5-25:19
+MERGED from [com.facebook.soloader:annotation:0.8.2] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/81541797d3837430e01f25ad2b0f73cb/annotation-0.8.2/AndroidManifest.xml:11:5-20
+MERGED from [com.facebook.soloader:annotation:0.8.2] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/81541797d3837430e01f25ad2b0f73cb/annotation-0.8.2/AndroidManifest.xml:11:5-20
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/AndroidManifest.xml:24:18-86
+	android:label
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:32:7-39
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:32:7-39
+	tools:ignore
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml:7:75-114
+	tools:targetApi
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml:7:54-74
+	android:icon
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:31:7-45
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:31:7-45
+	android:allowBackup
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:29:7-33
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:29:7-33
+	android:banner
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:30:7-43
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:30:7-43
+	android:theme
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:33:7-63
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:33:7-63
+	android:usesCleartextTraffic
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml:7:18-53
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:28:7-42
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:28:7-42
+activity#com.facebook.react.uiapp.RNTesterActivity
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:34:5-53:16
+	android:screenOrientation
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:37:9-47
+	android:label
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:36:9-41
+	android:launchMode
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:38:9-40
+	android:configChanges
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:39:9-62
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:35:9-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER+category:name:android.intent.category.LEANBACK_LAUNCHER
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:40:7-45:23
+action#android.intent.action.MAIN
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:41:9-61
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:41:17-58
+category#android.intent.category.LAUNCHER
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:42:9-69
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:42:19-66
+category#android.intent.category.LEANBACK_LAUNCHER
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:44:9-78
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:44:19-75
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:example+data:scheme:rntester
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:46:7-52:23
+action#android.intent.action.VIEW
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:47:9-61
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:47:17-58
+category#android.intent.category.DEFAULT
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:48:9-68
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:48:19-65
+category#android.intent.category.BROWSABLE
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:49:9-70
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:49:19-67
+data
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:51:9-66
+	android:host
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:51:41-63
+	android:scheme
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:51:15-40
+activity#com.facebook.react.devsupport.DevSettingsActivity
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:54:5-82
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml:54:15-79
+uses-sdk
+INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml
+INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml
+MERGED from [com.facebook.flipper:flipper:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/8d123127adf05fd1480fa6eb1ab4ab72/flipper-0.37.0/AndroidManifest.xml:11:5-13:41
+MERGED from [com.facebook.flipper:flipper:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/8d123127adf05fd1480fa6eb1ab4ab72/flipper-0.37.0/AndroidManifest.xml:11:5-13:41
+MERGED from [com.facebook.flipper:flipper-network-plugin:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/795ddedf3f13e7b7157c266a68c0c00e/flipper-network-plugin-0.37.0/AndroidManifest.xml:11:5-13:41
+MERGED from [com.facebook.flipper:flipper-network-plugin:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/795ddedf3f13e7b7157c266a68c0c00e/flipper-network-plugin-0.37.0/AndroidManifest.xml:11:5-13:41
+MERGED from [com.facebook.flipper:flipper-fresco-plugin:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/fa000464f1d9bcc949c62d8b09e5d5bf/flipper-fresco-plugin-0.37.0/AndroidManifest.xml:11:5-13:41
+MERGED from [com.facebook.flipper:flipper-fresco-plugin:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/fa000464f1d9bcc949c62d8b09e5d5bf/flipper-fresco-plugin-0.37.0/AndroidManifest.xml:11:5-13:41
+MERGED from [:ReactAndroid] /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [:ReactAndroid] /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/ReactAndroid/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/aa97b7750b8d23c0fb37b18d4ba326e4/swiperefreshlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/aa97b7750b8d23c0fb37b18d4ba326e4/swiperefreshlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [org.webkit:android-jsc:r245459] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/e04047addbdbdf0d6be81317b9c0392d/android-jsc-r245459/AndroidManifest.xml:7:5-9:41
+MERGED from [org.webkit:android-jsc:r245459] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/e04047addbdbdf0d6be81317b9c0392d/android-jsc-r245459/AndroidManifest.xml:7:5-9:41
+MERGED from [com.facebook.fresco:flipper:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/51b7c8b91398bd0ce0128967f4e41ebb/flipper-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:flipper:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/51b7c8b91398bd0ce0128967f4e41ebb/flipper-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:stetho:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/57e992f426275f8d2fd3e4143c2a1dba/stetho-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:stetho:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/57e992f426275f8d2fd3e4143c2a1dba/stetho-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:fresco:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/2a6b1dfb02b85ffefb7fc997ce72602b/fresco-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:fresco:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/2a6b1dfb02b85ffefb7fc997ce72602b/fresco-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline-okhttp3:2.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/a5aa68dc749981bb1f6ebac32f992bde/imagepipeline-okhttp3-2.0.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline-okhttp3:2.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/a5aa68dc749981bb1f6ebac32f992bde/imagepipeline-okhttp3-2.0.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:drawee:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/78ed595c3fe72a953c17e064cf292f52/drawee-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:drawee:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/78ed595c3fe72a953c17e064cf292f52/drawee-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:nativeimagefilters:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/0b46ead6a0d65426218f8bac01ac5299/nativeimagefilters-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:nativeimagefilters:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/0b46ead6a0d65426218f8bac01ac5299/nativeimagefilters-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:memory-type-native:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/6be4746d1d95e7649dab2e6d4ff9db58/memory-type-native-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:memory-type-native:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/6be4746d1d95e7649dab2e6d4ff9db58/memory-type-native-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:memory-type-java:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/412a98e7e7a53e802ac36a26d9bedd3f/memory-type-java-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:memory-type-java:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/412a98e7e7a53e802ac36a26d9bedd3f/memory-type-java-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline-native:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/bf9555646c3c5d0e3e01f55ba144efb9/imagepipeline-native-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline-native:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/bf9555646c3c5d0e3e01f55ba144efb9/imagepipeline-native-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:memory-type-ashmem:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/96f2c0384209c614ebca33021082de45/memory-type-ashmem-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:memory-type-ashmem:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/96f2c0384209c614ebca33021082de45/memory-type-ashmem-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/fcd71154b7a838ffb1a4bdb7316f3cd7/imagepipeline-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/fcd71154b7a838ffb1a4bdb7316f3cd7/imagepipeline-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:nativeimagetranscoder:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/faad2626b99145d1b6ae52a4de42b675/nativeimagetranscoder-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:nativeimagetranscoder:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/faad2626b99145d1b6ae52a4de42b675/nativeimagetranscoder-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline-base:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3dd90273d76541459452a1caa78ba1b9/imagepipeline-base-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:imagepipeline-base:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3dd90273d76541459452a1caa78ba1b9/imagepipeline-base-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:soloader:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/f1ab74fda3ab7de58be678fbbb3571e0/soloader-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:soloader:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/f1ab74fda3ab7de58be678fbbb3571e0/soloader-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.soloader:soloader:0.8.2] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/973054a7411f85303f0c8c0e8c7669de/soloader-0.8.2/AndroidManifest.xml:7:5-9:41
+MERGED from [com.facebook.soloader:soloader:0.8.2] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/973054a7411f85303f0c8c0e8c7669de/soloader-0.8.2/AndroidManifest.xml:7:5-9:41
+MERGED from [androidx.appcompat:appcompat:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3ca7f11114885db0f02f81dac29c4388/appcompat-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat-resources:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/60faff0bf379135f6195d635ba682cca/appcompat-resources-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat-resources:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/60faff0bf379135f6195d635ba682cca/appcompat-resources-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/9dd86ebaee7edf7f04127dbb002b30ec/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/9dd86ebaee7edf7f04127dbb002b30ec/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/2e892b2cf02b042b700c42ba4b82c2ae/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/2e892b2cf02b042b700c42ba4b82c2ae/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.fragment:fragment:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/bf91d225b570d7b13ddb398082a2623a/fragment-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/bf91d225b570d7b13ddb398082a2623a/fragment-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/8728b0f2bd7dd65b5bf302959602e49a/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/8728b0f2bd7dd65b5bf302959602e49a/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/068c245fb8204aba2d94207ef463b18b/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/068c245fb8204aba2d94207ef463b18b/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/cadeef9910ee6dbaf295c1026a41ca4d/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/cadeef9910ee6dbaf295c1026a41ca4d/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/96e6833f0cdb5c265fb0d99ec5a1e8f2/activity-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.activity:activity:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/96e6833f0cdb5c265fb0d99ec5a1e8f2/activity-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/002e234b78ad6fc392bebc93e7619b6c/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/002e234b78ad6fc392bebc93e7619b6c/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.customview:customview:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3936a3944e48a745a885ad6c3f8677be/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/3936a3944e48a745a885ad6c3f8677be/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/d55466c8c7f3592ea6f75800aae8ec22/core-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/08a575d0ddb62d5716b5a263913b043f/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/08a575d0ddb62d5716b5a263913b043f/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/cc591ccfb078bdbf6477dc87130ec630/versionedparcelable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/cc591ccfb078bdbf6477dc87130ec630/versionedparcelable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/42fdbf23bd73878c2f6f95bb96a3ed07/lifecycle-runtime-2.1.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/42fdbf23bd73878c2f6f95bb96a3ed07/lifecycle-runtime-2.1.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/ea78ede7f9be7a3e8af972afb42220ee/lifecycle-viewmodel-2.1.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/ea78ede7f9be7a3e8af972afb42220ee/lifecycle-viewmodel-2.1.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/f74aa590ca18758d88507eb1882584f9/savedstate-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.savedstate:savedstate:1.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/f74aa590ca18758d88507eb1882584f9/savedstate-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/52fb2ca8baaa865d389db5e6e3b1f56b/lifecycle-livedata-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/52fb2ca8baaa865d389db5e6e3b1f56b/lifecycle-livedata-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/bb216d9d0d8e528a232126a30ae6bf41/lifecycle-livedata-core-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/bb216d9d0d8e528a232126a30ae6bf41/lifecycle-livedata-core-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/35b4eed5f5da145560579f5e57967e0e/core-runtime-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.0.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/35b4eed5f5da145560579f5e57967e0e/core-runtime-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.facebook.soloader:annotation:0.8.2] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/81541797d3837430e01f25ad2b0f73cb/annotation-0.8.2/AndroidManifest.xml:7:5-9:41
+MERGED from [com.facebook.soloader:annotation:0.8.2] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/81541797d3837430e01f25ad2b0f73cb/annotation-0.8.2/AndroidManifest.xml:7:5-9:41
+MERGED from [com.facebook.fresco:fbcore:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/735fbb3fd875a72f8c851f703368c6d0/jetified-fbcore-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:fbcore:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/735fbb3fd875a72f8c851f703368c6d0/jetified-fbcore-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:ui-common:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/6b054160369c70245e1065af67745d2d/ui-common-2.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.facebook.fresco:ui-common:2.2.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/6b054160369c70245e1065af67745d2d/ui-common-2.2.0/AndroidManifest.xml:5:5-7:41
+INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml
+INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml
+uses-permission#android.permission.SYSTEM_ALERT_WINDOW
+ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml:5:5-77
+	android:name
+		ADDED from /Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/src/debug/AndroidManifest.xml:5:22-75
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from [com.facebook.flipper:flipper:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/8d123127adf05fd1480fa6eb1ab4ab72/flipper-0.37.0/AndroidManifest.xml:16:5-76
+	android:name
+		ADDED from [com.facebook.flipper:flipper:0.37.0] /Users/sakshijethi/.gradle/caches/transforms-2/files-2.1/8d123127adf05fd1480fa6eb1ab4ab72/flipper-0.37.0/AndroidManifest.xml:16:22-73

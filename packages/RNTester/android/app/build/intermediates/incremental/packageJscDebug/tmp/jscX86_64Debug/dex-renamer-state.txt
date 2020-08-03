@@ -1,0 +1,4 @@
+#Mon Aug 03 19:47:50 IST 2020
+base.0=/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/android/app/build/intermediates/dex/jscDebug/mergeDexJscDebug/out/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
