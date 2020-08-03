@@ -150,7 +150,16 @@ ScrollViewProps::ScrollViewProps(
           rawProps,
           "disableIntervalMomentum",
           sourceProps.disableIntervalMomentum,
-          {})) {}
+          {})),
+      snapToOffsets(convertRawProp(
+          rawProps,
+          "snapToOffsets",
+          sourceProps.snapToOffsets,
+          {})),
+      snapToStart(
+          convertRawProp(rawProps, "snapToStart", sourceProps.snapToStart, {})),
+      snapToEnd(
+          convertRawProp(rawProps, "snapToEnd", sourceProps.snapToEnd, {})) {}
 
 #pragma mark - DebugStringConvertible
 
@@ -261,7 +270,11 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
           debugStringConvertibleItem(
               "disableIntervalMomentum",
               disableIntervalMomentum,
-              defaultScrollViewProps.disableIntervalMomentum)};
+              defaultScrollViewProps.disableIntervalMomentum),
+          debugStringConvertibleItem(
+              "snapToStart", snapToStart, defaultScrollViewProps.snapToStart),
+          debugStringConvertibleItem(
+              "snapToEnd", snapToEnd, defaultScrollViewProps.snapToEnd)};
 }
 #endif
 
