@@ -16,6 +16,7 @@
 #import <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
 #import <react/renderer/components/scrollview/ScrollViewProps.h>
 #import <react/renderer/components/scrollview/ScrollViewState.h>
+#import <react/renderer/components/scrollview/conversions.h>
 #import <react/renderer/graphics/Geometry.h>
 
 #import "RCTConversions.h"
@@ -190,9 +191,15 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
     _scrollView.contentOffset = RCTCGPointFromPoint(newScrollViewProps.contentOffset);
   }
 
+  if (oldScrollViewProps.snapToAlignment != newScrollViewProps.snapToAlignment) {
+    ((RCTEnhancedScrollView *)_scrollView).snapToAlignment =
+        RCTNSStringFromString(toString(newScrollViewProps.snapToAlignment));
+  }
+
+  MAP_SCROLL_VIEW_PROP(disableIntervalMomentum);
+  MAP_SCROLL_VIEW_PROP(snapToInterval);
+
   // MAP_SCROLL_VIEW_PROP(scrollIndicatorInsets);
-  // MAP_SCROLL_VIEW_PROP(snapToInterval);
-  // MAP_SCROLL_VIEW_PROP(snapToAlignment);
 
   [super updateProps:props oldProps:oldProps];
 }

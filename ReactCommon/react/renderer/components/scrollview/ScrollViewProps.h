@@ -47,6 +47,7 @@ class ScrollViewProps final : public ViewProps {
   EdgeInsets scrollIndicatorInsets{};
   Float snapToInterval{};
   ScrollViewSnapToAlignment snapToAlignment{};
+  bool disableIntervalMomentum{false};
 
 #pragma mark - DebugStringConvertible
 

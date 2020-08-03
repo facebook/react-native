@@ -145,6 +145,11 @@ ScrollViewProps::ScrollViewProps(
           rawProps,
           "snapToAlignment",
           sourceProps.snapToAlignment,
+          {})),
+      disableIntervalMomentum(convertRawProp(
+          rawProps,
+          "disableIntervalMomentum",
+          sourceProps.disableIntervalMomentum,
           {})) {}
 
 #pragma mark - DebugStringConvertible
@@ -253,7 +258,10 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
               "snapToAlignment",
               snapToAlignment,
               defaultScrollViewProps.snapToAlignment),
-      };
+          debugStringConvertibleItem(
+              "disableIntervalMomentum",
+              disableIntervalMomentum,
+              defaultScrollViewProps.disableIntervalMomentum)};
 }
 #endif
 
