@@ -55,6 +55,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'ImageExample',
     module: require('../examples/Image/ImageExample'),
     supportsTVOS: true,
+    skipTest: {
+      // [TODO(OSS Candidate ISS#2710739)
+      ios:
+        'Reason: -[NSURLResponse allHeaderFields]: unrecognized selector exception. Occurs upstream also.',
+    }, // ]TODO(OSS Candidate ISS#2710739)
   },
   {
     key: 'JSResponderHandlerExample',
@@ -139,6 +144,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'SectionListExample',
     module: require('../examples/SectionList/SectionListExample'),
     supportsTVOS: true,
+    skipTest: {
+      // [TODO(OSS Candidate ISS#2710739)
+      ios: 'Reason: RedBox shown on failure to load an image.',
+    }, // ]TODO(OSS Candidate ISS#2710739)
   },
   {
     key: 'SegmentedControlIOSExample',
