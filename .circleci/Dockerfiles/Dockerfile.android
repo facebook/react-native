@@ -27,6 +27,7 @@ ADD .buckconfig /app/.buckconfig
 ADD .buckjavaargs /app/.buckjavaargs
 ADD tools /app/tools
 ADD ReactAndroid /app/ReactAndroid
+ADD android /app/android
 ADD ReactCommon /app/ReactCommon
 ADD React /app/React
 ADD keystores /app/keystores

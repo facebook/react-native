@@ -437,6 +437,9 @@ android {
 }
 
 dependencies {
+    api(project(':react-native-annotations'))
+    annotationProcessor(project(':react-native-annotations-compiler'))
+
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
     api("com.facebook.yoga:proguard-annotations:1.14.1")
     api("javax.inject:javax.inject:1")
