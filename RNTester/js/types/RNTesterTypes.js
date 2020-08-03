@@ -12,7 +12,6 @@
 
 import type {ComponentType} from 'react';
 import * as React from 'react';
-import {string} from 'yargs';
 
 export type RNTesterProps = $ReadOnly<{|
   navigator?: ?$ReadOnlyArray<

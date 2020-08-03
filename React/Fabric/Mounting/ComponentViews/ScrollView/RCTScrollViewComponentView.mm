@@ -217,12 +217,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   [super prepareForRecycle];
 }
 
-- (void)prepareForRecycle
-{
-  _scrollView.contentOffset = CGPointZero;
-  [super prepareForRecycle];
-}
-
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
