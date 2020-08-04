@@ -54,8 +54,8 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
 }
 
 UIManagerBinding::~UIManagerBinding() {
-  LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
-               << ").";
+  LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "
+               << this << ").";
 
   // We must detach the `UIBinding` on deallocation to prevent accessing
   // deallocated `UIManagerBinding`.
