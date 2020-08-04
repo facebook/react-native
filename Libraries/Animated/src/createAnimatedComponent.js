@@ -101,6 +101,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
           this._component.getNativeScrollRef()['_internalInstanceHandle']
             ?.stateNode?.canonical != null) ||
         (this._component.getScrollResponder != null &&
+          this._component.getScrollResponder() != null &&
           this._component.getScrollResponder().getNativeScrollRef != null &&
           this._component.getScrollResponder().getNativeScrollRef() != null &&
           this._component.getScrollResponder().getNativeScrollRef()[
