@@ -26,7 +26,7 @@ public class RNTesterApplication extends Application implements ReactApplication
       new ReactNativeHost(this) {
         @Override
         public String getJSMainModuleName() {
-          return "RNTester/js/RNTesterApp.android";
+          return "packages/RNTester/js/RNTesterApp.android";
         }
 
         @Override
