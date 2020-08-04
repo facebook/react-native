@@ -27,7 +27,8 @@ function requireModule<T: TurboModule>(name: string, schema?: ?$FlowFixMe): ?T {
   }
 
   if (turboModuleProxy != null) {
-    const module: ?T = turboModuleProxy(name, schema);
+    const module: ?T =
+      schema != null ? turboModuleProxy(name, schema) : turboModuleProxy(name);
     return module;
   }
 
