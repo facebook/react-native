@@ -21,6 +21,7 @@ import android.view.FocusFinder;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.OverScroller;
 import androidx.annotation.Nullable;
@@ -47,7 +48,8 @@ import java.util.Locale;
 
 /** Similar to {@link ReactScrollView} but only supports horizontal scrolling. */
 public class ReactHorizontalScrollView extends HorizontalScrollView
-    implements ReactClippingViewGroup {
+    implements ReactClippingViewGroup, ViewGroup.OnHierarchyChangeListener,
+        View.OnLayoutChangeListener {
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
@@ -80,6 +82,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private @Nullable List<Integer> mSnapOffsets;
   private boolean mSnapToStart = true;
   private boolean mSnapToEnd = true;
+  private View mContentView;
   private ReactViewBackgroundManager mReactBackgroundManager;
   private boolean mPagedArrowScrolling = false;
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
@@ -105,6 +108,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mFpsListener = fpsListener;
 
     mScroller = getOverScrollerFromParent();
+    setOnHierarchyChangeListener(this);
   }
 
   @Nullable
@@ -565,6 +569,51 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
 
     super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
+  }
+
+  private int getMaxScrollX() {
+    int contentWidth = mContentView.getWidth();
+    int viewportWidth = getWidth() - getPaddingLeft() - getPaddingRight();
+    return Math.max(0, contentWidth - viewportWidth);
+  }
+
+  @Override
+  public void onChildViewAdded(View parent, View child) {
+    mContentView = child;
+    mContentView.addOnLayoutChangeListener(this);
+  }
+
+  @Override
+  public void onChildViewRemoved(View parent, View child) {
+    mContentView.removeOnLayoutChangeListener(this);
+    mContentView = null;
+  }
+
+  /**
+   * Called when a mContentView's layout has changed. Fixes the scroll position if it's too large
+   * after the content resizes. Without this, the user would see a blank ScrollView when the scroll
+   * position is larger than the ScrollView's max scroll position after the content shrinks.
+   */
+  @Override
+  public void onLayoutChange(
+          View v,
+          int left,
+          int top,
+          int right,
+          int bottom,
+          int oldLeft,
+          int oldTop,
+          int oldRight,
+          int oldBottom) {
+    if (mContentView == null) {
+      return;
+    }
+
+    int currentScrollX = getScrollX();
+    int maxScrollX = getMaxScrollX();
+    if (currentScrollX > maxScrollX) {
+      scrollTo(maxScrollX, getScrollY());
+    }
   }
 
   private void enableFpsListener() {
