@@ -189,6 +189,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         .put(
             ScrollEventType.getJSEventName(ScrollEventType.SCROLL),
             MapBuilder.of("registrationName", "onScroll"))
+        .put("topImageInput", MapBuilder.of("registrationName", "onImageInput"))
         .build();
   }
 
@@ -387,6 +388,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "onKeyPress", defaultBoolean = false)
   public void setOnKeyPress(final ReactEditText view, boolean onKeyPress) {
     view.setOnKeyPress(onKeyPress);
+  }
+
+  @ReactProp(name = "onImageInput", defaultBoolean = false)
+  public void setOnImageInput(final ReactEditText view, boolean onImageInput) {
+    if (onImageInput) {
+      view.setImageInputWatcher(new ReactImageInputWatcher(view));
+    } else {
+      view.setImageInputWatcher(null);
+    }
   }
 
   // Sets the letter spacing as an absolute point size.
@@ -1200,6 +1210,32 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         mPreviousHoriz = horiz;
         mPreviousVert = vert;
+      }
+    }
+  }
+
+  private class ReactImageInputWatcher implements ImageInputWatcher {
+
+    private ReactEditText mReactEditText;
+    private EventDispatcher mEventDispatcher;
+
+    public ReactImageInputWatcher(ReactEditText editText) {
+      mReactEditText = editText;
+      ReactContext reactContext = (ReactContext) editText.getContext();
+      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    }
+
+    @Override
+    public void onImageInput(String uri, String linkUri, String data, String mime) {
+      if (uri != null) {
+        ReactTextInputImageEvent event = new ReactTextInputImageEvent(
+          mReactEditText.getId(),
+          uri,
+          linkUri,
+          data,
+          mime);
+
+        mEventDispatcher.dispatchEvent(event);
       }
     }
   }

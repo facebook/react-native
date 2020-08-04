@@ -10,9 +10,11 @@ package com.facebook.react.views.textinput;
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 
 import android.content.Context;
+import android.content.ClipDescription;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -32,10 +34,16 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
+import android.util.Base64;
+import android.util.Base64OutputStream;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
+import androidx.core.os.BuildCompat;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.inputmethod.EditorInfoCompat;
+import androidx.core.view.inputmethod.InputContentInfoCompat;
+import androidx.core.view.inputmethod.InputConnectionCompat;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
@@ -47,6 +55,11 @@ import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -86,6 +99,7 @@ public class ReactEditText extends AppCompatEditText {
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
   private @Nullable ScrollWatcher mScrollWatcher;
+  private @Nullable ImageInputWatcher mImageInputWatcher;
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
   private boolean mOnKeyPress = false;
@@ -127,6 +141,7 @@ public class ReactEditText extends AppCompatEditText {
     mStagedInputType = getInputType();
     mKeyListener = new InternalKeyListener();
     mScrollWatcher = null;
+    mImageInputWatcher = null;
     mTextAttributes = new TextAttributes();
 
     applyTextAttributes();
@@ -212,13 +227,83 @@ public class ReactEditText extends AppCompatEditText {
     }
   }
 
-  @Override
+    @Override
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-    ReactContext reactContext = getReactContext(this);
-    InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
+
+    final ReactContext reactContext = getReactContext(this);
+    InputConnection ic = super.onCreateInputConnection(outAttrs);
+
+    EditorInfoCompat.setContentMimeTypes(outAttrs, new String [] {"image/png",
+      "image/gif",
+      "image/jpg",
+      "image/jpeg",
+      "image/webp"});
+
+    final InputConnectionCompat.OnCommitContentListener callback =
+      new InputConnectionCompat.OnCommitContentListener() {
+        @Override
+        public boolean onCommitContent(InputContentInfoCompat inputContentInfo, int flags, Bundle opts) {
+          // read and display inputContentInfo asynchronously
+          if (BuildCompat.isAtLeastNMR1() && (flags &
+            InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0) {
+            try {
+              inputContentInfo.requestPermission();
+            }
+            catch (Exception e) {
+              return false;
+            }
+          }
+
+          // Avoid loading the image into memory if its not going to be used
+          if (mImageInputWatcher == null) {
+            return false;
+          }
+
+          String uri = null;
+          String linkUri = null;
+          String mime = null;
+          String data = null;
+
+          Uri contentUri = inputContentInfo.getContentUri();
+          if (contentUri != null) {
+            uri = contentUri.toString();
+
+            // Load the data, we have to do this now otherwise we cannot release permissions
+            try {
+              data = loadFile(reactContext, contentUri);
+            }
+            catch(IOException e) {
+              inputContentInfo.releasePermission();
+              return false;
+            }
+          }
+
+          // Get the optional uri to web link
+          Uri link = inputContentInfo.getLinkUri();
+          if (link != null) {
+            linkUri = link.toString();
+          }
+
+          ClipDescription description = inputContentInfo.getDescription();
+          if (description != null && description.getMimeTypeCount() > 0) {
+            mime = description.getMimeType(0);
+          }
+
+          if (mImageInputWatcher != null) {
+            mImageInputWatcher.onImageInput(uri, linkUri, data, mime);
+          }
+
+          // Releasing the permission means that the content at the uri is probably no longer accessible
+          inputContentInfo.releasePermission();
+
+          return true;
+        }
+      };
+
+    InputConnection inputConnection = InputConnectionCompat.createWrapper(ic, outAttrs, callback);
+
     if (inputConnection != null && mOnKeyPress) {
-      inputConnection =
-          new ReactEditTextInputConnectionWrapper(inputConnection, reactContext, this);
+      inputConnection = new ReactEditTextInputConnectionWrapper(inputConnection, reactContext, this);
     }
 
     if (isMultiline() && getBlurOnSubmit()) {
@@ -283,6 +368,10 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setScrollWatcher(ScrollWatcher scrollWatcher) {
     mScrollWatcher = scrollWatcher;
+  }
+
+  public void setImageInputWatcher(ImageInputWatcher imageInputWatcher) {
+    mImageInputWatcher = imageInputWatcher;
   }
 
   /**
@@ -818,6 +907,24 @@ public class ReactEditText extends AppCompatEditText {
         setLetterSpacing(effectiveLetterSpacing);
       }
     }
+  }
+
+  private static String loadFile(Context context, Uri contentUri) throws IOException {
+    InputStream inputStream = context.getContentResolver().openInputStream(contentUri);
+    byte[] buffer = new byte[8192];
+    int bytesRead;
+    ByteArrayOutputStream output = new ByteArrayOutputStream();
+    Base64OutputStream output64 = new Base64OutputStream(output, Base64.DEFAULT);
+    try {
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            output64.write(buffer, 0, bytesRead);
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    output64.close();
+
+    return output.toString();
   }
 
   /**
