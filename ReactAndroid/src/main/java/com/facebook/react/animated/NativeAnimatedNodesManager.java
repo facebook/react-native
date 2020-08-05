@@ -719,6 +719,9 @@ import java.util.Queue;
                   + updatedNodesCount);
       if (mEventListenerInitializedForFabric && cyclesDetected == 0) {
         ReactSoftException.logSoftException(TAG, new ReactNoCrashSoftException(ex));
+      } else if (mEventListenerInitializedForFabric) {
+        // Crashes in Debug, but not in Production
+        ReactSoftException.logSoftException(TAG, ex);
       } else {
         throw ex;
       }
