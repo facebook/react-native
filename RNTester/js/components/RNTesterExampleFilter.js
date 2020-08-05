@@ -11,8 +11,8 @@
 'use strict';
 
 const React = require('react');
-
-const {StyleSheet, TextInput, View} = require('react-native');
+const RNTesterListFilters = require('./RNTesterListFilters');
+const {StyleSheet, TextInput, View, ScrollView} = require('react-native');
 import {RNTesterThemeContext} from './RNTesterTheme';
 
 type Props = {
@@ -21,13 +21,15 @@ type Props = {
   sections: Object,
   disableSearch?: boolean,
   testID?: string,
+  hideFilterPills?: boolean,
+  page: string, // possible values -> examples_page, components_page, bookmarks_page
   ...
 };
 
-type State = {filter: string, ...};
+type State = {filter: string, category: string, ...};
 
 class RNTesterExampleFilter extends React.Component<Props, State> {
-  state: State = {filter: ''};
+  state: State = {filter: '', category: ''};
 
   render(): React.Node {
     const filterText = this.state.filter;
@@ -43,8 +45,13 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
       );
     }
 
-    const filter = example =>
-      this.props.disableSearch || this.props.filter({example, filterRegex});
+    const filter = example => {
+      const category = this.state.category;
+      return (
+        this.props.disableSearch ||
+        this.props.filter({example, filterRegex, category})
+      );
+    };
 
     const filteredSections = this.props.sections.map(section => ({
       ...section,
@@ -54,9 +61,26 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
     return (
       <View style={styles.container}>
         {this._renderTextInput()}
-        {this.props.render({filteredSections})}
+        {this._renderFilteredSections(filteredSections)}
       </View>
     );
+  }
+
+  _renderFilteredSections(filteredSections): ?React.Element<any> {
+    if (this.props.page === 'examples_page') {
+      return (
+        <ScrollView>
+          {this.props.render({filteredSections})}
+          {/**
+           * This is a fake list item. It is needed to provide the ScrollView some bottom padding.
+           * The height of this item is basically ScreenHeight - the height of (Header + bottom navbar)
+           * */}
+          <View style={{height: 280}} />
+        </ScrollView>
+      );
+    } else {
+      return this.props.render({filteredSections});
+    }
   }
 
   _renderTextInput(): ?React.Element<any> {
@@ -67,11 +91,7 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
       <RNTesterThemeContext.Consumer>
         {theme => {
           return (
-            <View
-              style={[
-                styles.searchRow,
-                {backgroundColor: theme.GroupedBackgroundColor},
-              ]}>
+            <View style={[styles.searchRow, {backgroundColor: '#F3F8FF'}]}>
               <TextInput
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -93,6 +113,13 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
                 testID={this.props.testID}
                 value={this.state.filter}
               />
+              {!this.props.hideFilterPills && (
+                <RNTesterListFilters
+                  onFilterButtonPress={filterLabel =>
+                    this.setState({category: filterLabel})
+                  }
+                />
+              )}
             </View>
           );
         }}

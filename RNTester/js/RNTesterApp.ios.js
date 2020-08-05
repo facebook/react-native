@@ -13,11 +13,14 @@
 const RNTesterActions = require('./utils/RNTesterActions');
 const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
 const RNTesterExampleList = require('./components/RNTesterExampleList');
+const RNTesterBookmarkList = require('./components/RNTesterBookmarkList');
 const RNTesterList = require('./utils/RNTesterList.ios');
 const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
 const React = require('react');
 const SnapshotViewIOS = require('./examples/Snapshot/SnapshotViewIOS.ios');
 const URIActionMap = require('./utils/URIActionMap');
+const RNTesterNavbar = require('./components/RNTesterNavbar');
+const RNTesterHeader = require('./components/RNTesterHeader');
 
 const {
   AppRegistry,
@@ -38,11 +41,14 @@ import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterAction} from './utils/RNTesterActions';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
-import type {ColorSchemeName} from '../../Libraries/Utilities/NativeAppearance';
-
+import type {ColorSchemeName} from 'react-native/Libraries/Utilities/NativeAppearance';
+import {
+  RNTesterBookmarkContext,
+  bookmarks,
+} from './components/RNTesterBookmark';
 type Props = {exampleFromAppetizeParams?: ?string, ...};
 
-LogBox.ignoreLogs(['Module RCTImagePickerManager requires main queue setup']);
+// LogBox.ignoreLogs(['Module RCTImagePickerManager requires main queue setup']);
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
@@ -105,7 +111,7 @@ const RNTesterExampleContainerViaHook = ({
   return (
     <RNTesterThemeContext.Provider value={theme}>
       <View style={styles.exampleContainer}>
-        <Header onBack={onBack} title={title} />
+        <RNTesterHeader title="Examples" backButton={true} />
         <RNTesterExampleContainer module={module} />
       </View>
     </RNTesterThemeContext.Provider>
@@ -114,7 +120,9 @@ const RNTesterExampleContainerViaHook = ({
 
 const RNTesterExampleListViaHook = ({
   onNavigate,
+  bookmark,
   list,
+  screen,
 }: {
   onNavigate?: () => mixed,
   list: {
@@ -126,18 +134,96 @@ const RNTesterExampleListViaHook = ({
 }) => {
   const colorScheme: ?ColorSchemeName = useColorScheme();
   const theme = colorScheme === 'dark' ? themes.dark : themes.light;
+  const exampleTitle = screen == 'component' ? "Component Store" : "API Store"
   return (
     <RNTesterThemeContext.Provider value={theme}>
-      <View style={styles.exampleContainer}>
-        <Header title="RNTester" />
-        <RNTesterExampleList onNavigate={onNavigate} list={list} />
-      </View>
+      <RNTesterBookmarkContext.Provider value={bookmark}>
+        <View style={styles.exampleContainer}>
+        <RNTesterHeader title={exampleTitle} backButton={false} />
+          <RNTesterExampleList
+            onNavigate={onNavigate}
+            list={list}
+            screen={screen}
+          />
+        </View>
+      </RNTesterBookmarkContext.Provider>
+    </RNTesterThemeContext.Provider>
+  );
+};
+
+const RNTesterBookmarkListViaHook = ({
+  bookmark,
+  onNavigate,
+}: {
+  title: string,
+  onPressDrawer?: () => mixed,
+  onNavigate?: () => mixed,
+  ...
+}) => {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? themes.dark : themes.light;
+  return (
+    <RNTesterThemeContext.Provider value={theme}>
+      <RNTesterBookmarkContext.Provider value={bookmark}>
+        <View style={styles.container}>
+          <RNTesterHeader title="Bookmarks" backButton={true} />
+          <RNTesterBookmarkList onNavigate={onNavigate} />
+        </View>
+      </RNTesterBookmarkContext.Provider>
     </RNTesterThemeContext.Provider>
   );
 };
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   _mounted: boolean;
+
+  constructor() {
+    super();
+    this.state = {
+      openExample: null,
+      screen: 'component',
+      Components: bookmarks.Components,
+      Api: bookmarks.Api,
+      AddApi: (apiName, api) => {
+        const stateApi = Object.assign({}, this.state.Api);
+        stateApi[apiName] = api;
+        this.setState({
+          Api: stateApi,
+        });
+        AsyncStorage.setItem('Api', JSON.stringify(stateApi));
+      },
+      AddComponent: (componentName, component) => {
+        const stateComponent = Object.assign({}, this.state.Components);
+        stateComponent[componentName] = component;
+        this.setState({
+          Components: stateComponent,
+        });
+        AsyncStorage.setItem('Components', JSON.stringify(stateComponent));
+      },
+      RemoveApi: apiName => {
+        const stateApi = Object.assign({}, this.state.Api);
+        delete stateApi[apiName];
+        this.setState({
+          Api: stateApi,
+        });
+        AsyncStorage.setItem('Api', JSON.stringify(stateApi));
+      },
+      RemoveComponent: componentName => {
+        const stateComponent = Object.assign({}, this.state.Components);
+        delete stateComponent[componentName];
+        this.setState({
+          Components: stateComponent,
+        });
+        AsyncStorage.setItem('Components', JSON.stringify(stateComponent));
+      },
+      checkBookmark: (title, key) => {
+        if (key === 'APIS') {
+          return this.state.Api[title] === undefined;
+        }
+        return this.state.Components[title] === undefined;
+      },
+    };
+  }
 
   UNSAFE_componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this._handleBack);
@@ -155,13 +241,32 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         );
         const urlAction = URIActionMap(url);
         const launchAction = exampleAction || urlAction;
-        const initialAction = launchAction || {type: 'InitialAction'};
+        const initialAction = launchAction || {type: 'RNTesterListAction'};
         this.setState(RNTesterNavigationReducer(undefined, initialAction));
       });
     });
 
     Linking.addEventListener('url', url => {
       this._handleAction(URIActionMap(url));
+    });
+
+    AsyncStorage.getItem('Components', (err, storedString) => {
+      if (err || !storedString) {
+        return;
+      }
+      const components = JSON.parse(storedString);
+      this.setState({
+        Components: components,
+      });
+    });
+    AsyncStorage.getItem('Api', (err, storedString) => {
+      if (err || !storedString) {
+        return;
+      }
+      const api = JSON.parse(storedString);
+      this.setState({
+        Api: api,
+      });
     });
   }
 
@@ -186,6 +291,15 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   };
 
   render(): React.Node | null {
+    const bookmark = {
+      Components: this.state.Components,
+      Api: this.state.Api,
+      AddApi: this.state.AddApi,
+      AddComponent: this.state.AddComponent,
+      RemoveApi: this.state.RemoveApi,
+      RemoveComponent: this.state.RemoveComponent,
+      checkBookmark: this.state.checkBookmark,
+    };
     if (!this.state) {
       return null;
     }
@@ -195,24 +309,52 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         return <Component onExampleExit={this._handleBack} />;
       } else {
         return (
-          <RNTesterExampleContainerViaHook
-            onBack={this._handleBack}
-            title={Component.title}
-            module={Component}
-          />
+          <>
+            <RNTesterExampleContainerViaHook
+              onBack={this._handleBack}
+              title={Component.title}
+              module={Component}
+            />
+            <View style={styles.bottomNavbar}>
+              <RNTesterNavbar onNavigate={this._handleAction} />
+            </View>
+          </>
         );
       }
+    } else if (this.state.screen === 'bookmark') {
+      return (
+        <>
+          <RNTesterBookmarkListViaHook
+            title={'RNTester'}
+            bookmark={bookmark}
+            onNavigate={this._handleAction}
+          />
+          <View style={styles.bottomNavbar}>
+            <RNTesterNavbar onNavigate={this._handleAction} />
+          </View>
+        </>
+      );
     }
     return (
-      <RNTesterExampleListViaHook
-        onNavigate={this._handleAction}
-        list={RNTesterList}
-      />
+      <>
+        <RNTesterExampleListViaHook
+          onNavigate={this._handleAction}
+          bookmark={bookmark}
+          list={RNTesterList}
+          screen={this.state.screen}
+        />
+        <View style={styles.bottomNavbar}>
+          <RNTesterNavbar onNavigate={this._handleAction} />
+        </View>
+      </>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   headerContainer: {
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
@@ -235,6 +377,13 @@ const styles = StyleSheet.create({
   },
   exampleContainer: {
     flex: 1,
+  },
+  bottomNavbar: {
+    bottom: 0,
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'absolute',
   },
 });
 

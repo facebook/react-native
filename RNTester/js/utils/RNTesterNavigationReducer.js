@@ -27,21 +27,29 @@ function RNTesterNavigationReducer(
     (state.openExample && action.type === 'RNTesterBackAction')
   ) {
     return {
+      screen: action.screen ?? "component",
       // A null openExample will cause the views to display the RNTester example list
       openExample: null,
     };
   }
 
+  if (action.screen === "bookmark" && action.type === 'RNTesterBackAction') { 
+    return { 
+      screen: 'component', 
+      openExample: null
+    }
+  }
+
   if (action.type === 'RNTesterExampleAction') {
     // Make sure we see the module before returning the new state
     const ExampleModule = RNTesterList.Modules[action.openExample];
-
     if (ExampleModule) {
       return {
         openExample: action.openExample,
       };
     }
   }
+
 
   return state;
 }
