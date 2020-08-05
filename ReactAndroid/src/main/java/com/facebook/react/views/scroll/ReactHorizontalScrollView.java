@@ -32,11 +32,11 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
-import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
@@ -47,7 +47,7 @@ import java.util.Locale;
 
 /** Similar to {@link ReactScrollView} but only supports horizontal scrolling. */
 public class ReactHorizontalScrollView extends HorizontalScrollView
-    implements ReactClippingViewGroup {
+    implements ReactClippingViewGroup, FabricViewStateManager.HasFabricViewStateManager {
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
@@ -84,7 +84,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private boolean mPagedArrowScrolling = false;
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
-  private @Nullable StateWrapper mStateWrapper;
+  private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
 
   private @Nullable ValueAnimator mScrollAnimator;
   private int mFinalAnimatedPositionScrollX = 0;
@@ -1033,18 +1033,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
   }
 
-  public void updateState(@Nullable StateWrapper stateWrapper) {
-    mStateWrapper = stateWrapper;
-  }
-
   /**
    * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
    */
-  private void updateStateOnScroll(int scrollX, int scrollY) {
-    if (mStateWrapper == null) {
-      return;
-    }
-
+  private void updateStateOnScroll(final int scrollX, final int scrollY) {
     // Dedupe events to reduce JNI traffic
     if (scrollX == mLastStateUpdateScrollX && scrollY == mLastStateUpdateScrollY) {
       return;
@@ -1053,14 +1045,24 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mLastStateUpdateScrollX = scrollX;
     mLastStateUpdateScrollY = scrollY;
 
-    WritableMap map = new WritableNativeMap();
-    map.putDouble(CONTENT_OFFSET_LEFT, PixelUtil.toDIPFromPixel(scrollX));
-    map.putDouble(CONTENT_OFFSET_TOP, PixelUtil.toDIPFromPixel(scrollY));
-
-    mStateWrapper.updateState(map);
+    mFabricViewStateManager.setState(
+        new FabricViewStateManager.StateUpdateCallback() {
+          @Override
+          public WritableMap getStateUpdate() {
+            WritableMap map = new WritableNativeMap();
+            map.putDouble(CONTENT_OFFSET_LEFT, PixelUtil.toDIPFromPixel(scrollX));
+            map.putDouble(CONTENT_OFFSET_TOP, PixelUtil.toDIPFromPixel(scrollY));
+            return map;
+          }
+        });
   }
 
   private void updateStateOnScroll() {
     updateStateOnScroll(getScrollX(), getScrollY());
+  }
+
+  @Override
+  public FabricViewStateManager getFabricViewStateManager() {
+    return mFabricViewStateManager;
   }
 }
