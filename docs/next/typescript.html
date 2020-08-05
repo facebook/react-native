@@ -74,7 +74,11 @@
 <pre><code class="hljs css language-sh">npx react-native init MyApp --template react-native-template-typescript
 </code></pre>
 <blockquote>
-<p><strong>Note</strong> If the above command is failing, you may have old version of <code>react-native</code> or <code>react-native-cli</code> installed globally on your pc. Try uninstalling the cli and run the cli using <code>npx</code>.</p>
+<p><strong>Note:</strong> If the above command is failing, you may have old version of <code>react-native</code> or <code>react-native-cli</code> installed globally on your system. To fix the issue try uninstalling the CLI:</p>
+<ul>
+<li><code>npm uninstall -g react-native-cli</code> or <code>yarn global remove react-native-cli</code></li>
+</ul>
+<p>and then run the <code>npx</code> command again.</p>
 </blockquote>
 <p>You can use <a href="https://expo.io">Expo</a> which has two TypeScript templates:</p>
 <pre><code class="hljs css language-sh"><span class="token function">npm</span> <span class="token function">install</span> -g expo-cli
