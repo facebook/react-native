@@ -365,9 +365,9 @@ PODS:
     - Yoga (~> 1.14)
 
 DEPENDENCIES:
-  - DoubleConversion (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../third-party-podspecs/DoubleConversion.podspec`)
-  - FBLazyVector (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/FBLazyVector`)
-  - FBReactNativeSpec (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/FBReactNativeSpec`)
+  - DoubleConversion (from `../../third-party-podspecs/DoubleConversion.podspec`)
+  - FBLazyVector (from `../../Libraries/FBLazyVector`)
+  - FBReactNativeSpec (from `../../Libraries/FBReactNativeSpec`)
   - Flipper (~> 0.41.1)
   - Flipper-DoubleConversion (= 1.1.7)
   - Flipper-Folly (~> 2.2)
@@ -387,37 +387,37 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitReactPlugin (~> 0.41.1)
   - FlipperKit/FlipperKitUserDefaultsPlugin (~> 0.41.1)
   - FlipperKit/SKIOSNetworkPlugin (~> 0.41.1)
-  - Folly (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../third-party-podspecs/Folly.podspec`)
-  - glog (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../third-party-podspecs/glog.podspec`)
-  - RCTRequired (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/RCTRequired`)
-  - RCTTypeSafety (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/TypeSafety`)
-  - React (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../`)
-  - React-ART (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/ART`)
-  - React-callinvoker (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/callinvoker`)
-  - React-Core (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../`)
-  - React-Core/DevSupport (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../`)
-  - React-Core/RCTWebSocket (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../`)
-  - React-CoreModules (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../React/CoreModules`)
-  - React-cxxreact (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/cxxreact`)
-  - React-jsi (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/jsi`)
-  - React-jsiexecutor (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/jsiexecutor`)
-  - React-jsinspector (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/jsinspector`)
-  - React-perflogger (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/reactperflogger`)
-  - React-RCTActionSheet (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/ActionSheetIOS`)
-  - React-RCTAnimation (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/NativeAnimation`)
-  - React-RCTBlob (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/Blob`)
-  - React-RCTImage (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/Image`)
-  - React-RCTLinking (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/LinkingIOS`)
-  - React-RCTNetwork (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/Network`)
-  - React-RCTPushNotification (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/PushNotificationIOS`)
-  - React-RCTSettings (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/Settings`)
+  - Folly (from `../../third-party-podspecs/Folly.podspec`)
+  - glog (from `../../third-party-podspecs/glog.podspec`)
+  - RCTRequired (from `../../Libraries/RCTRequired`)
+  - RCTTypeSafety (from `../../Libraries/TypeSafety`)
+  - React (from `../../`)
+  - React-ART (from `../../Libraries/ART`)
+  - React-callinvoker (from `../../ReactCommon/callinvoker`)
+  - React-Core (from `../../`)
+  - React-Core/DevSupport (from `../../`)
+  - React-Core/RCTWebSocket (from `../../`)
+  - React-CoreModules (from `../../React/CoreModules`)
+  - React-cxxreact (from `../../ReactCommon/cxxreact`)
+  - React-jsi (from `../../ReactCommon/jsi`)
+  - React-jsiexecutor (from `../../ReactCommon/jsiexecutor`)
+  - React-jsinspector (from `../../ReactCommon/jsinspector`)
+  - React-perflogger (from `../../ReactCommon/reactperflogger`)
+  - React-RCTActionSheet (from `../../Libraries/ActionSheetIOS`)
+  - React-RCTAnimation (from `../../Libraries/NativeAnimation`)
+  - React-RCTBlob (from `../../Libraries/Blob`)
+  - React-RCTImage (from `../../Libraries/Image`)
+  - React-RCTLinking (from `../../Libraries/LinkingIOS`)
+  - React-RCTNetwork (from `../../Libraries/Network`)
+  - React-RCTPushNotification (from `../../Libraries/PushNotificationIOS`)
+  - React-RCTSettings (from `../../Libraries/Settings`)
   - React-RCTTest (from `./RCTTest`)
-  - React-RCTText (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/Text`)
-  - React-RCTVibration (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/Vibration`)
-  - React-runtimeexecutor (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/runtimeexecutor`)
-  - ReactCommon/turbomodule/core (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon`)
-  - ReactCommon/turbomodule/samples (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon`)
-  - Yoga (from `/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/yoga`)
+  - React-RCTText (from `../../Libraries/Text`)
+  - React-RCTVibration (from `../../Libraries/Vibration`)
+  - React-runtimeexecutor (from `../../ReactCommon/runtimeexecutor`)
+  - ReactCommon/turbomodule/core (from `../../ReactCommon`)
+  - ReactCommon/turbomodule/samples (from `../../ReactCommon`)
+  - Yoga (from `../../ReactCommon/yoga`)
 
 SPEC REPOS:
   trunk:
@@ -436,75 +436,75 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   DoubleConversion:
-    :podspec: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../third-party-podspecs/DoubleConversion.podspec"
+    :podspec: "../../third-party-podspecs/DoubleConversion.podspec"
   FBLazyVector:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/FBLazyVector"
+    :path: "../../Libraries/FBLazyVector"
   FBReactNativeSpec:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/FBReactNativeSpec"
+    :path: "../../Libraries/FBReactNativeSpec"
   Folly:
-    :podspec: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../third-party-podspecs/Folly.podspec"
+    :podspec: "../../third-party-podspecs/Folly.podspec"
   glog:
-    :podspec: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../third-party-podspecs/glog.podspec"
+    :podspec: "../../third-party-podspecs/glog.podspec"
   RCTRequired:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/RCTRequired"
+    :path: "../../Libraries/RCTRequired"
   RCTTypeSafety:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/TypeSafety"
+    :path: "../../Libraries/TypeSafety"
   React:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../"
+    :path: "../../"
   React-ART:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/ART"
+    :path: "../../Libraries/ART"
   React-callinvoker:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/callinvoker"
+    :path: "../../ReactCommon/callinvoker"
   React-Core:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../"
+    :path: "../../"
   React-CoreModules:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../React/CoreModules"
+    :path: "../../React/CoreModules"
   React-cxxreact:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/cxxreact"
+    :path: "../../ReactCommon/cxxreact"
   React-jsi:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/jsi"
+    :path: "../../ReactCommon/jsi"
   React-jsiexecutor:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/jsiexecutor"
+    :path: "../../ReactCommon/jsiexecutor"
   React-jsinspector:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/jsinspector"
+    :path: "../../ReactCommon/jsinspector"
   React-perflogger:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/reactperflogger"
+    :path: "../../ReactCommon/reactperflogger"
   React-RCTActionSheet:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/ActionSheetIOS"
+    :path: "../../Libraries/ActionSheetIOS"
   React-RCTAnimation:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/NativeAnimation"
+    :path: "../../Libraries/NativeAnimation"
   React-RCTBlob:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/Blob"
+    :path: "../../Libraries/Blob"
   React-RCTImage:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/Image"
+    :path: "../../Libraries/Image"
   React-RCTLinking:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/LinkingIOS"
+    :path: "../../Libraries/LinkingIOS"
   React-RCTNetwork:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/Network"
+    :path: "../../Libraries/Network"
   React-RCTPushNotification:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/PushNotificationIOS"
+    :path: "../../Libraries/PushNotificationIOS"
   React-RCTSettings:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/Settings"
+    :path: "../../Libraries/Settings"
   React-RCTTest:
     :path: "./RCTTest"
   React-RCTText:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/Text"
+    :path: "../../Libraries/Text"
   React-RCTVibration:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../Libraries/Vibration"
+    :path: "../../Libraries/Vibration"
   React-runtimeexecutor:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/runtimeexecutor"
+    :path: "../../ReactCommon/runtimeexecutor"
   ReactCommon:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon"
+    :path: "../../ReactCommon"
   Yoga:
-    :path: "/Users/sakshijethi/Desktop/yarn-migration/ios-new-way/react-native-push-final-skkk/packages/RNTester/../../ReactCommon/yoga"
+    :path: "../../ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  FBLazyVector: 9feebfd5d5e9fb5ad99b266712c44bd5686a18ca
-  FBReactNativeSpec: fa5604a38da8f8e037051c9933976ec5cf66bdbb
+  FBLazyVector: cb847267a08f8d5b7d87622394ca6ca6d7a28947
+  FBReactNativeSpec: 676a6c260952b16286cd405ab024e89c1db283a8
   Flipper: 33585e2d9810fe5528346be33bcf71b37bb7ae13
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: c12092ea368353b58e992843a990a3225d4533c3
@@ -515,34 +515,34 @@ SPEC CHECKSUMS:
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
-  RCTRequired: df28270820bf3de566e9829dd56217fcedbff02a
-  RCTTypeSafety: ff18e5f9eec0993eb9c16d2da01562e8525b7379
-  React: 54a508c3e34bbf99fd23feb407de8f982bcc086d
-  React-ART: b1ada7cc7e0027d441e1ccbb196b2c33bf8dd366
-  React-callinvoker: 8134f907331754b0eb846cff3fb20da07ba4eea6
-  React-Core: e1c801afdf088c6ea0b81386d3ccf7fc01ba4c8c
-  React-CoreModules: caf3e87633b257761c6191c2800bd5a3468641ac
-  React-cxxreact: 7f462cc1e0b2e51ec29d2e0331d159f4727e7e89
-  React-jsi: 9bcc9b6b0098cafbb3ff737be71cad5c9cf2ffa4
-  React-jsiexecutor: 48c4c9142ae5a99e9552f99f140d6e8056f9798d
-  React-jsinspector: 716fad12c53b8dcfc23e170d2f2a51bd9e9cf070
-  React-perflogger: 652deff0be79a21e8a98964bd5993e72c4d2da0f
-  React-RCTActionSheet: 57df44b9dde091533546e240af8693e03cf03ab1
-  React-RCTAnimation: 21dbf65f6fb3964d88829689dc6029049085f085
-  React-RCTBlob: c6d02dc108169bc1fa002bf41f598208e7c55130
-  React-RCTImage: b778184768fb1b73766394adf80ba41289c50413
-  React-RCTLinking: 18581d7ecf48a4c307dadf274d801aaa08b76a65
-  React-RCTNetwork: f14ca57e07e9073a0571738c1bbb495d66a7d599
-  React-RCTPushNotification: 089e82aa95bb01640de29b66ab9396b8dc314ffd
-  React-RCTSettings: 51788d517e7d78da7f7a4fd38fc5e2462efa20d7
-  React-RCTTest: e5ad576a4a1ea385b8d619a4570b6129ef2625cf
-  React-RCTText: f7aa04c65faa1d64870da64e117e1db869e34940
-  React-RCTVibration: a65e4a3a79b05603d6a4c92a2a3ed41294b45822
-  React-runtimeexecutor: d4e853a40cc24879b0b1f1ecdda6fac35911a8bd
-  ReactCommon: 31d38102f092dbe2650bd928bd7cbda076a03845
-  Yoga: d4aa16914a905c6a5de884c5b67fef406a7fe120
+  RCTRequired: bf609b17565759da845241008c29e9b771730fe9
+  RCTTypeSafety: 6483fd8433705aa328f14974b40c51781a21df0b
+  React: a9b7c08b3d9b5a023c9501676d544ff5608a5261
+  React-ART: 5eac9e1d5d96aecda83249811ffd167e4abc660c
+  React-callinvoker: 777badc324355f5d89d14230e4101ecea5bc4299
+  React-Core: 80f22cc2c553f83f95a558f8ea2196f9a5694812
+  React-CoreModules: a5d359924fcc201c4f4538df3497ac17a1257953
+  React-cxxreact: a0bac855bb3a3af24d17e2fe2fe7493d1a4315dc
+  React-jsi: edeaca7cf9c55b6d798a8d490ea2c31b3023bef7
+  React-jsiexecutor: 689e1319b9686f3603f44266e848dff2286890d4
+  React-jsinspector: 219e98080faf3509281468e4f7bb89163ea1b25c
+  React-perflogger: d82f1390c8f3391aaa1c14cd5520e940a19299ca
+  React-RCTActionSheet: 276672d97771b38342fd59f4b2ea49c4bf7f019a
+  React-RCTAnimation: 099c54d4ef63096a648045aa53a08b763800631c
+  React-RCTBlob: faaa027cc84d02a6e673186b6d219171039ec500
+  React-RCTImage: 213ab389d60a684b19db9701349e621ec61892f1
+  React-RCTLinking: 0d82f49bdf877abb09da5d594e912c4aac123d31
+  React-RCTNetwork: 22afaecc0e21b7a6393843bcb02cd6f4a42ab38e
+  React-RCTPushNotification: 43859c34ad723fd5df2686f126001e71013c4754
+  React-RCTSettings: 32ff7e13a3081162486e8922901a64dffd25f140
+  React-RCTTest: 55c23be554ecef4f02cbeec3f34b929c4ecbdb62
+  React-RCTText: 6b6e0067dc6263f6dc69003ecc183abce13d1f08
+  React-RCTVibration: fbbfdb66a72da331652e5e475d481fa062bd5762
+  React-runtimeexecutor: db5944c7d30cdb14d86ca22b30e83b07e2fe675c
+  ReactCommon: b246f048677be2360b4070ffb50e2003c030c43d
+  Yoga: c6be2b6fe2fb110f75706367ff54a2adc6da5bab
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 37cbb89e75dc49fb58f913c0bda95f0a764d3418
+PODFILE CHECKSUM: fb20f43a26909d013c7ed983a0c2366105984338
 
 COCOAPODS: 1.8.4
