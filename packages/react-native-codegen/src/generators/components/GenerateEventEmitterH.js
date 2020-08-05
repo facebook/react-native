@@ -43,7 +43,7 @@ const template = `
  */
 #pragma once
 
-#include <react/components/view/ViewEventEmitter.h>
+#include <react/renderer/components/view/ViewEventEmitter.h>
 
 namespace facebook {
 namespace react {

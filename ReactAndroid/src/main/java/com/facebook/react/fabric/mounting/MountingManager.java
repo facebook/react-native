@@ -156,7 +156,19 @@ public class MountingManager {
       logViewHierarchy(parentView);
     }
 
-    getViewGroupManager(parentViewState).addView(parentView, view, index);
+    try {
+      getViewGroupManager(parentViewState).addView(parentView, view, index);
+    } catch (IllegalStateException e) {
+      // Wrap error with more context for debugging
+      throw new IllegalStateException(
+          "addViewAt: failed to insert view ["
+              + tag
+              + "] into parent ["
+              + parentTag
+              + "] at index "
+              + index,
+          e);
+    }
 
     // Display children after inserting
     if (SHOW_CHANGED_VIEW_HIERARCHIES) {

@@ -23,7 +23,7 @@ const template = `
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/::_LIBRARY_::/ShadowNodes.h>
+#include <react/renderer/components/::_LIBRARY_::/ShadowNodes.h>
 
 namespace facebook {
 namespace react {

@@ -89,7 +89,7 @@ try {
 
   const METRO_CONFIG = path.join(ROOT, 'metro.config.js');
   const RN_GET_POLYFILLS = path.join(ROOT, 'rn-get-polyfills.js');
-  const RN_POLYFILLS_PATH = 'Libraries/polyfills/';
+  const RN_POLYFILLS_PATH = 'packages/polyfills/';
   exec(`mkdir -p ${RN_POLYFILLS_PATH}`);
 
   cp(METRO_CONFIG, '.');

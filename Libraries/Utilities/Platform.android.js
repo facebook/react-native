@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
@@ -22,9 +22,11 @@ export type PlatformSelectSpec<A, N, D> = {
 const Platform = {
   __constants: null,
   OS: 'android',
+  // $FlowFixMe[unsafe-getters-setters]
   get Version(): number {
     return this.constants.Version;
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get constants(): {|
     isTesting: boolean,
     reactNativeVersion: {|
@@ -46,12 +48,14 @@ const Platform = {
     }
     return this.__constants;
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get isTesting(): boolean {
     if (__DEV__) {
       return this.constants.isTesting;
     }
     return false;
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get isTV(): boolean {
     return this.constants.uiMode === 'tv';
   },

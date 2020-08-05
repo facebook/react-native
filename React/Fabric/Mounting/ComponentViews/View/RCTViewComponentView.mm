@@ -10,9 +10,9 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <objc/runtime.h>
-#import <react/components/view/ViewComponentDescriptor.h>
-#import <react/components/view/ViewEventEmitter.h>
-#import <react/components/view/ViewProps.h>
+#import <react/renderer/components/view/ViewComponentDescriptor.h>
+#import <react/renderer/components/view/ViewEventEmitter.h>
+#import <react/renderer/components/view/ViewProps.h>
 
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"

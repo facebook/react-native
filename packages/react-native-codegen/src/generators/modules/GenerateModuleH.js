@@ -18,7 +18,7 @@ import type {
   ObjectTypeAliasTypeShape,
 } from '../../CodegenSchema';
 
-const {getTypeAliasTypeAnnotation} = require('./ObjCppUtils/Utils');
+const {getTypeAliasTypeAnnotation} = require('./Utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -32,8 +32,7 @@ public:
 
 };`;
 
-const template = `
-/**
+const template = `/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the

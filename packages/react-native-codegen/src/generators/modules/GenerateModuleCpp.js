@@ -11,7 +11,7 @@
 'use strict';
 
 import type {SchemaType} from '../../CodegenSchema';
-const {getTypeAliasTypeAnnotation} = require('./ObjCppUtils/Utils');
+const {getTypeAliasTypeAnnotation} = require('./Utils');
 type FilesOutput = Map<string, string>;
 
 const propertyHeaderTemplate =

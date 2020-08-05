@@ -9,8 +9,8 @@
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
-#include <react/componentregistry/ComponentDescriptorRegistry.h>
-#include <react/scheduler/Scheduler.h>
+#include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
+#include <react/renderer/scheduler/Scheduler.h>
 #include <react/utils/ContextContainer.h>
 #include <mutex>
 #include <unordered_set>

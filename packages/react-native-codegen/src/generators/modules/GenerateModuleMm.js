@@ -13,10 +13,8 @@
 import type {SchemaType, NativeModuleShape} from '../../CodegenSchema';
 
 const {capitalizeFirstLetter} = require('./ObjCppUtils/GenerateStructs');
-const {
-  flatObjects,
-  getTypeAliasTypeAnnotation,
-} = require('./ObjCppUtils/Utils');
+const {flatObjects} = require('./ObjCppUtils/Utils');
+const {getTypeAliasTypeAnnotation} = require('./Utils');
 
 type FilesOutput = Map<string, string>;
 
