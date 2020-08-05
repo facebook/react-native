@@ -170,7 +170,9 @@ export default App;
 <li><code>subject</code> (string) - a subject for the message</li>
 <li><code>excludedActivityTypes</code> (array) - the activities to exclude from the ActionSheet</li>
 </ul>
-<p>NOTE: if <code>url</code> points to a local file, or is a base64-encoded uri, the file it points to will be loaded and shared directly. In this way, you can share images, videos, PDF files, etc.</p>
+<blockquote>
+<p><strong>Note:</strong> If <code>url</code> points to a local file, or is a base64-encoded uri, the file it points to will be loaded and shared directly. In this way, you can share images, videos, PDF files, etc. If <code>url</code> points to a remote file or address it must conform to URL format as described in <a href="https://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>. For example, a web URL without a proper protocol (HTTP/HTTPS) will not be shared.</p>
+</blockquote>
 <p>The 'failureCallback' function takes one parameter, an error object. The only property defined on this object is an optional <code>stack</code> property of type <code>string</code>.</p>
 <p>The 'successCallback' function takes two parameters:</p>
 <ul>
