@@ -1,40 +1,27 @@
 import React, {useState} from 'react';
 import {Text, View, StyleSheet, Image, TouchableOpacity} from 'react-native';
-const APP_COLOR = '#F3F8FF';
 const RNTesterActions = require('../utils/RNTesterActions');
 
-const BottomTabNavigation = ({onNavigate}) => {
+const APP_COLOR = '#F3F8FF';
+
+const BottomTabNavigation = ({onNavigate, screen}) => {
   /** to be attached to navigation framework */
   const [apiActive, setApiActive] = useState(false);
-  const [componentActive, setComponentActive] = useState(true);
+  const [componentActive, setComponentActive] = useState(screen == 'component');
   const [bookmarkActive, setBookmarkActive] = useState(false);
+
+  React.useEffect(() => {
+    if(screen === 'component')
+      setComponentActive(true);
+      if(screen === 'api')
+        setApiActive(true);
+      else
+        setBookmarkActive(true);
+  });
 
   return (
     <View>
       {/** Bottom Navbar code */}
-      <View style={{zIndex:2}}>
-        {/** floating button in center  */}
-        <View style={styles.floatContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              setApiActive(false);
-              setComponentActive(false);
-              setBookmarkActive(true);
-              onNavigate(RNTesterActions.OpenList('bookmark'));
-            }}>
-            <View style={styles.floatingButton} >
-            <Image
-              style={styles.bookmarkIcon}
-              source={
-                bookmarkActive
-                  ? require('../assets/bottom-nav-bookmark-fill.png')
-                  : require('../assets/bottom-nav-bookmark-outline.png')
-              }
-            />
-            </View>
-          </TouchableOpacity>
-        </View>
-
         {/** component and APIs tab  */}
         <View style={styles.buttonContainer}>
           {/** left tab with Components  */}
@@ -68,28 +55,49 @@ const BottomTabNavigation = ({onNavigate}) => {
             </TouchableOpacity>
           </View>
 
-          {/** central tab with frame  */}
+          {/** central tab with bookmark icon  */}
           <View style={styles.centerBox}>
             <Image
               style={styles.centralBoxCutout}
               source={require('./../assets/bottom-nav-center-box.png')}
             />
+
+          {/** floating button in center  */}
+          <View style={styles.floatContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                setApiActive(false);
+                setComponentActive(false);
+                setBookmarkActive(true);
+                onNavigate(RNTesterActions.OpenList('bookmark'));
+              }}>
+                <View style={styles.floatingButton} >
+                <Image
+                    style={styles.bookmarkIcon}
+                    source={
+                    bookmarkActive
+                        ? require('../assets/bottom-nav-bookmark-fill.png')
+                        : require('../assets/bottom-nav-bookmark-outline.png')
+                    }
+                />
+                </View>
+            </TouchableOpacity>
+            </View>
           </View>
 
           {/** right tab with Components  */}
-          <View style={styles.rightBox}>
-            {/** @attention attach navigation endpoints here */}
-            <TouchableOpacity
-              onPress={() => {
-                onNavigate(RNTesterActions.OpenList('api'));
-                if (apiActive) {
-                  return;
-                } else {
-                  setComponentActive(false);
-                  setApiActive(true);
-                  setBookmarkActive(false);
-                }
-              }}>
+         <TouchableOpacity onPress={() => {
+            onNavigate(RNTesterActions.OpenList('api'));
+            if (apiActive) {
+              return;
+            } else {
+              setComponentActive(false);
+              setApiActive(true);
+              setBookmarkActive(false);
+            }
+          }}
+
+          style={styles.rightBox}>
               <Image
                 style={styles.apiIcon}
                 source={
@@ -101,10 +109,8 @@ const BottomTabNavigation = ({onNavigate}) => {
               <Text style={apiActive ? styles.activeText : styles.inactiveText}>
                 APIs
               </Text>
-            </TouchableOpacity>
-          </View>
+         </TouchableOpacity>
         </View>
-      </View>
     </View>
   );
 };
@@ -112,8 +118,7 @@ const BottomTabNavigation = ({onNavigate}) => {
 const styles = StyleSheet.create({
   floatContainer: {
     flex: 1,
-    zIndex: 1,
-    bottom: -36,
+    zIndex: 2,
     alignItems: 'center',
   },
   buttonContainer: {
@@ -121,6 +126,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   floatingButton: {
+    top: -20,
     width: 50,
     height: 50,
     borderRadius: 500,
