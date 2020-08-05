@@ -60,11 +60,13 @@ class ConcreteState : public State {
    */
   void updateState(
       Data &&newData,
+      std::function<void()> failureCallback = nullptr,
       EventPriority priority = EventPriority::AsynchronousUnbatched) const {
     updateState(
         [data = std::move(newData)](Data const &oldData) mutable -> Data && {
           return std::move(data);
         },
+        failureCallback,
         priority);
   }
 
@@ -78,6 +80,7 @@ class ConcreteState : public State {
    */
   void updateState(
       std::function<Data(Data const &oldData)> callback,
+      std::function<void()> failureCallback = nullptr,
       EventPriority priority = EventPriority::AsynchronousBatched) const {
     auto family = family_.lock();
 
@@ -88,11 +91,13 @@ class ConcreteState : public State {
     }
 
     auto stateUpdate = StateUpdate{
-        family, [=](StateData::Shared const &oldData) -> StateData::Shared {
+        family,
+        [=](StateData::Shared const &oldData) -> StateData::Shared {
           assert(oldData);
           return std::make_shared<Data const>(
               callback(*std::static_pointer_cast<Data const>(oldData)));
-        }};
+        },
+        failureCallback};
 
     family->dispatchRawState(std::move(stateUpdate), priority);
   }
@@ -102,8 +107,9 @@ class ConcreteState : public State {
     return getData().getDynamic();
   }
 
-  void updateState(folly::dynamic data) const override {
-    updateState(std::move(Data(getData(), data)));
+  void updateState(folly::dynamic data, std::function<void()> failureCallback)
+      const override {
+    updateState(std::move(Data(getData(), data)), failureCallback);
   }
 #endif
 };

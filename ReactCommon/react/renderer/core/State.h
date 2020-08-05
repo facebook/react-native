@@ -65,7 +65,9 @@ class State {
 
 #ifdef ANDROID
   virtual folly::dynamic getDynamic() const = 0;
-  virtual void updateState(folly::dynamic data) const = 0;
+  virtual void updateState(
+      folly::dynamic data,
+      std::function<void()> failureCallback) const = 0;
 #endif
 
  protected:

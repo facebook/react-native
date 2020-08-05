@@ -21,9 +21,11 @@ class StateUpdate {
  public:
   using Callback =
       std::function<StateData::Shared(StateData::Shared const &data)>;
+  using FailureCallback = std::function<void()>;
 
   SharedShadowNodeFamily family;
   Callback callback;
+  FailureCallback failureCallback;
 };
 
 } // namespace react
