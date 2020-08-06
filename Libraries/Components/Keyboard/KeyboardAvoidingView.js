@@ -6,6 +6,7 @@
  *
  * @format
  * @flow
+ * @generate-docs
  */
 
 'use strict';
@@ -32,23 +33,30 @@ type Props = $ReadOnly<{|
   /**
     Specify how to react to the presence of the keyboard.
 
-    > Android and iOS both interact with this prop differently. On both iOS and Android, setting `behavior` is recommended.
+    > Android and iOS both interact with this prop differently. On both iOS and
+    > Android, setting `behavior` is recommended.
    */
   behavior?: ?('height' | 'position' | 'padding'),
 
   /**
     The style of the content container(View) when behavior is 'position'.
+
+    @type View.style
    */
   contentContainerStyle?: ?ViewStyleProp,
 
   /**
-    Enabled or disabled KeyboardAvoidingView. The default is `true`.
+    Enabled or disabled KeyboardAvoidingView.
+
+    @default true
    */
   enabled: ?boolean,
 
   /**
-    This is the distance between the top of the user screen and the react native view,
-    may be non-zero in some use cases. Defaults to 0.
+    This is the distance between the top of the user screen and the react native
+    view, may be non-zero in some use cases.
+
+    @default 0
    */
   keyboardVerticalOffset: number,
 |}>;
@@ -58,10 +66,11 @@ type State = {|
 |};
 
 /**
-  It is a component to solve the common problem of views that need to move out of the way of the virtual keyboard.
-  It can automatically adjust either its height, position, or bottom padding based on the keyboard height.
+  It is a component to solve the common problem of views that need to move out
+  of the way of the virtual keyboard. It can automatically adjust either its
+  height, position, or bottom padding based on the keyboard height.
 
-  @example ```SnackPlayer name=KeyboardAvoidingView&supportedPlatforms=android,ios
+  ```SnackPlayer name=KeyboardAvoidingView&supportedPlatforms=android,ios
   import React from 'react';
   import { View, KeyboardAvoidingView, TextInput, StyleSheet, Text, Platform, TouchableWithoutFeedback, Button, Keyboard  } from 'react-native';
 
@@ -110,8 +119,6 @@ type State = {|
   });
 
   export default KeyboardAvoidingComponent;
-
-  @inherits [View Props](view.md#props).
   ```
  */
 class KeyboardAvoidingView extends React.Component<Props, State> {
