@@ -84,7 +84,7 @@ project.ext.react = [
     composeSourceMapsPath: "$rootDir/scripts/compose-source-maps.js",
     hermesCommand: "../../../node_modules/hermes-engine/%OS-BIN%/hermesc",
     enableHermesForVariant: { def v -> v.name.contains("hermes") },
-    jsRootDir: "$rootDir/RNTester",
+    jsRootDir: "$rootDir/packages/rn-tester",
     enableCodegen: System.getenv('USE_CODEGEN'),
 ]
 
