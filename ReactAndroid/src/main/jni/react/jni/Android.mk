@@ -22,7 +22,7 @@ LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 LOCAL_LDLIBS += -landroid
 
 # The dynamic libraries (.so files) that this module depends on.
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libglog_init libyoga
+LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libglog_init libyoga libreact_utils libreact_render_debug libreact_render_graphics libreact_render_core libreact_render_mapbuffer react_render_componentregistry libreact_render_components_view libreact_render_components_view libreact_render_components_unimplementedview libreact_render_components_root libreact_render_components_scrollview libbetter libreact_render_attributedstring
 
 # The static libraries (.a files) that this module depends on.
 LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder libruntimeexecutor
@@ -59,6 +59,7 @@ include $(BUILD_SHARED_LIBRARY)
 #   Whenever you encounter an include <dir>/<module-dir>/Android.mk, you
 #   tell andorid-ndk to compile the module in <dir>/<module-dir> according
 #   to the specification inside <dir>/<module-dir>/Android.mk.
+$(call import-module,better)
 $(call import-module,folly)
 $(call import-module,fb)
 $(call import-module,fbjni)
@@ -72,6 +73,20 @@ $(call import-module,callinvoker)
 $(call import-module,reactperflogger)
 $(call import-module,hermes)
 $(call import-module,runtimeexecutor)
+
+# Fabric:
+$(call import-module,react/utils)
+$(call import-module,react/renderer/attributedstring)
+$(call import-module,react/renderer/componentregistry)
+$(call import-module,react/renderer/core)
+$(call import-module,react/renderer/components/root)
+$(call import-module,react/renderer/components/scrollview)
+$(call import-module,react/renderer/components/unimplementedview)
+$(call import-module,react/renderer/components/view)
+$(call import-module,react/renderer/debug)
+$(call import-module,react/renderer/graphics)
+$(call import-module,react/renderer/mapbuffer)
+$(call import-module,react/renderer/mounting)
 
 include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
 include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
