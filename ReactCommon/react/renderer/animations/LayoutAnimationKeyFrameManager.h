@@ -186,6 +186,10 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable std::mutex layoutAnimationStatusDelegateMutex_;
   mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
 
+  void adjustImmediateMutationIndicesForDelayedMutations(
+      SurfaceId surfaceId,
+      ShadowViewMutation &mutation) const;
+
   void adjustDelayedMutationIndicesForMutation(
       SurfaceId surfaceId,
       ShadowViewMutation const &mutation) const;
