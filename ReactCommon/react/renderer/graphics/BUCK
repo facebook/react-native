@@ -41,24 +41,24 @@ rn_xplat_cxx_library(
     ],
     cxx_exported_headers = subdir_glob(
         [
-            ("platform/cxx", "**/*.h"),
+            ("platform/cxx/react/renderer/graphics", "**/*.h"),
         ],
         prefix = "react/renderer/graphics",
     ),
     cxx_srcs = glob(
         [
-            "platform/cxx/**/*.cpp",
+            "platform/cxx/react/renderer/graphics/**/*.cpp",
         ],
     ),
     fbandroid_exported_headers = subdir_glob(
         [
-            ("platform/cxx", "**/*.h"),
+            ("platform/cxx/react/renderer/graphics", "**/*.h"),
         ],
         prefix = "react/renderer/graphics",
     ),
     fbandroid_srcs = glob(
         [
-            "platform/cxx/**/*.cpp",
+            "platform/cxx/react/renderer/graphics/**/*.cpp",
         ],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
