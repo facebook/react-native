@@ -7,7 +7,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := reactview
+LOCAL_MODULE := react_render_view
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
@@ -21,5 +21,14 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
+LOCAL_SHARED_LIBRARIES := libyoga glog libfolly_json libglog_init libreact_render_core libreact_render_debug libreact_render_graphics
 
 include $(BUILD_SHARED_LIBRARY)
+
+$(call import-module,glog)
+$(call import-module,folly)
+$(call import-module,fbgloginit)
+$(call import-module,react/renderer/core)
+$(call import-module,react/renderer/debug)
+$(call import-module,react/renderer/graphics)
+$(call import-module,yogajni)
