@@ -109,7 +109,7 @@
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
   NSString *bundlePrefix = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"];
-  NSString *bundleRoot = [NSString stringWithFormat:@"%@packages/RNTester/js/RNTesterApp.ios", bundlePrefix];
+  NSString *bundleRoot = [NSString stringWithFormat:@"%@packages/rn-tester/js/RNTesterApp.ios", bundlePrefix];
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot
                                                         fallbackResource:nil];
 }

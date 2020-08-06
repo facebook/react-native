@@ -5744,7 +5744,12 @@ react-devtools-core@^4.6.0:
     shell-quote "^1.6.1"
     ws "^7"
 
-react-is@^16.12.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6:
+react-is@0.0.0-experimental-aae83a4b9:
+  version "0.0.0-experimental-aae83a4b9"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-0.0.0-experimental-aae83a4b9.tgz#9dde6f4ac1da013398bf990706af2d4f59774d2b"
+  integrity sha512-0AZ4lHKqoXzYZ5RhNtj7ODYhQ6fXLDRn9lRapoVxYd2rgfe6LLrrf7ob5lweuo/krb7heBGINZ479FdQIvNLfg==
+
+react-is@^16.12.0, react-is@^16.8.1, react-is@^16.8.4:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==

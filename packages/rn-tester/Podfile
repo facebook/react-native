@@ -17,7 +17,6 @@ def pods()
   pod 'ReactCommon/turbomodule/samples', :path => "#{prefix_path}/ReactCommon"
 
   # Additional Pods which aren't included in the default Podfile
-  pod 'React-ART', :path => "#{prefix_path}/Libraries/ART"
   pod 'React-RCTPushNotification', :path => "#{prefix_path}/Libraries/PushNotificationIOS"
   pod 'Yoga',:path => "#{prefix_path}/ReactCommon/yoga", :modular_headers => true
   # Additional Pods which are classed as unstable
