@@ -15,6 +15,7 @@
 #import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
+#import "RCTAlertController.h"
 
 @implementation RCTConvert (UIAlertViewStyle)
 
@@ -99,29 +100,9 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
     }
   }
 
-  UIViewController *presentingController = RCTPresentedViewController();
-  if (presentingController == nil) {
-    RCTLogError(@"Tried to display alert view but there is no application window. args: %@", @{
-      @"title" : args.title() ?: [NSNull null],
-      @"message" : args.message() ?: [NSNull null],
-      @"buttons" : RCTConvertOptionalVecToArray(
-          args.buttons(),
-          ^id(id<NSObject> element) {
-            return element;
-          })
-          ?: [NSNull null],
-      @"type" : args.type() ?: [NSNull null],
-      @"defaultValue" : args.defaultValue() ?: [NSNull null],
-      @"cancelButtonKey" : args.cancelButtonKey() ?: [NSNull null],
-      @"destructiveButtonKey" : args.destructiveButtonKey() ?: [NSNull null],
-      @"keyboardType" : args.keyboardType() ?: [NSNull null],
-    });
-    return;
-  }
-
-  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
-                                                                           message:nil
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
+  RCTAlertController *alertController = [RCTAlertController alertControllerWithTitle:title
+                                                                             message:nil
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
   switch (type) {
     case RCTAlertViewStylePlainTextInput: {
       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
@@ -170,7 +151,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
     } else if ([buttonKey isEqualToString:destructiveButtonKey]) {
       buttonStyle = UIAlertActionStyleDestructive;
     }
-    __weak UIAlertController *weakAlertController = alertController;
+    __weak RCTAlertController *weakAlertController = alertController;
     [alertController
         addAction:[UIAlertAction
                       actionWithTitle:buttonTitle
@@ -202,7 +183,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
   [_alertControllers addObject:alertController];
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    [presentingController presentViewController:alertController animated:YES completion:nil];
+    [alertController show:YES completion:nil];
   });
 }
 
