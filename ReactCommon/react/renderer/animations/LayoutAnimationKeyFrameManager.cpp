@@ -30,6 +30,50 @@
 namespace facebook {
 namespace react {
 
+#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
+static void PrintMutationInstruction(
+    std::string message,
+    ShadowViewMutation const &mutation) {
+  bool mutationIsRemove = mutation.type == ShadowViewMutation::Type::Remove;
+  bool mutationIsInsert = mutation.type == ShadowViewMutation::Type::Insert;
+  LOG(ERROR) << message << " Mutation: "
+             << (mutationIsInsert ? "INSERT"
+                                  : (mutationIsRemove ? "REMOVE" : "OTHER"))
+             << (mutationIsInsert ? mutation.newChildShadowView.tag
+                                  : mutation.oldChildShadowView.tag)
+             << "->" << mutation.parentShadowView.tag << " " << mutation.index;
+}
+static void PrintMutationInstructionRelative(
+    std::string message,
+    ShadowViewMutation const &mutation,
+    ShadowViewMutation const &relativeMutation) {
+  bool mutationIsRemove = mutation.type == ShadowViewMutation::Type::Remove;
+  bool mutationIsInsert = mutation.type == ShadowViewMutation::Type::Insert;
+  bool relativeMutationIsRemove =
+      relativeMutation.type == ShadowViewMutation::Type::Remove;
+  bool relativeMutationIsInsert =
+      relativeMutation.type == ShadowViewMutation::Type::Insert;
+  LOG(ERROR) << message << " Mutation: "
+             << (mutationIsInsert ? "INSERT"
+                                  : (mutationIsRemove ? "REMOVE" : "OTHER"))
+             << (mutationIsInsert ? mutation.newChildShadowView.tag
+                                  : mutation.oldChildShadowView.tag)
+             << "->" << mutation.parentShadowView.tag << " " << mutation.index
+             << " RelativeMutation: "
+             << (relativeMutationIsInsert
+                     ? "INSERT"
+                     : (relativeMutationIsRemove ? "REMOVE" : "OTHER"))
+             << (relativeMutationIsInsert
+                     ? relativeMutation.newChildShadowView.tag
+                     : relativeMutation.oldChildShadowView.tag)
+             << "->" << relativeMutation.parentShadowView.tag << " "
+             << relativeMutation.index;
+}
+#else
+#define PrintMutationInstruction(a, b)
+#define PrintMutationInstructionRelative(a, b, c)
+#endif
+
 static better::optional<AnimationType> parseAnimationType(std::string param) {
   if (param == "spring") {
     return better::optional<AnimationType>(AnimationType::Spring);
@@ -357,6 +401,9 @@ void LayoutAnimationKeyFrameManager::
 
   // TODO: turn all of this into a lambda and share code?
   if (mutatedViewIsVirtual(mutation)) {
+    PrintMutationInstruction(
+        "[IndexAdjustment] Not calling adjustImmediateMutationIndicesForDelayedMutations, is virtual, for:",
+        mutation);
     return;
   }
 
@@ -391,6 +438,10 @@ void LayoutAnimationKeyFrameManager::
 
       if (finalAnimationMutation.index < mutation.index) {
         mutation.index++;
+        PrintMutationInstructionRelative(
+            "[IndexAdjustment] adjustImmediateMutationIndicesForDelayedMutations: Adjusting mutation UPWARD",
+            mutation,
+            finalAnimationMutation);
       }
     }
   }
@@ -404,6 +455,9 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
   assert(isRemoveMutation || isInsertMutation);
 
   if (mutatedViewIsVirtual(mutation)) {
+    PrintMutationInstruction(
+        "[IndexAdjustment] Not calling adjustDelayedMutationIndicesForMutation, is virtual, for:",
+        mutation);
     return;
   }
 
@@ -440,10 +494,18 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
       if (isRemoveMutation) {
         if (mutation.index <= finalAnimationMutation.index) {
           finalAnimationMutation.index--;
+          PrintMutationInstructionRelative(
+              "[IndexAdjustment] adjustImmediateMutationIndicesForDelayedMutations: Adjusting mutation DOWNWARD",
+              mutation,
+              finalAnimationMutation);
         }
       } else if (isInsertMutation) {
         if (mutation.index <= finalAnimationMutation.index) {
           finalAnimationMutation.index++;
+          PrintMutationInstructionRelative(
+              "[IndexAdjustment] adjustImmediateMutationIndicesForDelayedMutations: Adjusting mutation UPWARD",
+              mutation,
+              finalAnimationMutation);
         }
       }
     }
@@ -674,6 +736,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 surfaceId, mutation);
           }
 
+          if (mutation.type == ShadowViewMutation::Remove) {
+            PrintMutationInstruction(
+                "Queueing immediate execution of Remove mutation", mutation);
+          }
+
           immediateMutations.push_back(mutation);
 
           // Adjust indices for any non-directly-conflicting animations that
@@ -818,12 +885,20 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                   if (otherMutation.index <= adjustedIndex) {
                     adjustedIndex++;
                     adjustment++;
+                    PrintMutationInstructionRelative(
+                        "[IndexAdjustment][2] Adjusting index upward for delayed remove",
+                        mutation,
+                        otherMutation);
                   } else {
                     // If we are delaying this remove instruction, conversely,
                     // we must adjust upward the insertion index of any INSERT
                     // instructions if the View is insert *after* this view in
                     // the hierarchy.
                     otherMutation.index++;
+                    PrintMutationInstructionRelative(
+                        "[IndexAdjustment][3] Adjusting index upward for other (Insert)",
+                        mutation,
+                        otherMutation);
                   }
                 }
               }
