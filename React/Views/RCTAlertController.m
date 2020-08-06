@@ -10,7 +10,7 @@
 
 - (UIWindow *)alertWindow {
     if (_alertWindow == nil) {
-        _alertWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        _alertWindow = [[UIWindow alloc] initWithFrame:[[UIApplication sharedApplication] keyWindow].bounds];
         _alertWindow.rootViewController = [UIViewController new];
         _alertWindow.windowLevel = UIWindowLevelAlert + 1;
     }
