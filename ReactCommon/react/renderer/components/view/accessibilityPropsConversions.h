@@ -125,6 +125,8 @@ inline void fromRawValue(const RawValue &value, AccessibilityState &result) {
     if (checked->second.hasType<std::string>()) {
       if ((std::string)checked->second == "mixed") {
         result.checked = AccessibilityState::Mixed;
+      } else {
+        result.checked = AccessibilityState::None;
       }
     } else if (checked->second.hasType<bool>()) {
       if ((bool)checked->second == true) {
@@ -132,6 +134,8 @@ inline void fromRawValue(const RawValue &value, AccessibilityState &result) {
       } else {
         result.checked = AccessibilityState::Unchecked;
       }
+    } else {
+      result.checked = AccessibilityState::None;
     }
   }
   auto busy = map.find("busy");

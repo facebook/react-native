@@ -47,7 +47,7 @@ constexpr enum AccessibilityTraits operator&(
 struct AccessibilityState {
   bool disabled{false};
   bool selected{false};
-  enum { Unchecked, Checked, Mixed } checked{Unchecked};
+  enum { Unchecked, Checked, Mixed, None } checked{None};
   bool busy{false};
   bool expanded{false};
 };

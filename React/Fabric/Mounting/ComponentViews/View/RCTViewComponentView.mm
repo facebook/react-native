@@ -516,6 +516,30 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
+- (NSString *)accessibilityValue
+{
+  auto const &props = *std::static_pointer_cast<ViewProps const>(_props);
+
+  // Handle states which haven't already been handled.
+  if (props.accessibilityState.checked == AccessibilityState::Checked) {
+    return @"checked";
+  }
+  if (props.accessibilityState.checked == AccessibilityState::Unchecked) {
+    return @"unchecked";
+  }
+  if (props.accessibilityState.checked == AccessibilityState::Mixed) {
+    return @"mixed";
+  }
+  if (props.accessibilityState.expanded) {
+    return @"expanded";
+  }
+  if (props.accessibilityState.busy) {
+    return @"busy";
+  }
+
+  return nil;
+}
+
 #pragma mark - Accessibility Events
 
 - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
