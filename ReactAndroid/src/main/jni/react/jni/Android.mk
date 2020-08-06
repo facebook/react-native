@@ -22,7 +22,7 @@ LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 LOCAL_LDLIBS += -landroid
 
 # The dynamic libraries (.so files) that this module depends on.
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libglog_init libyoga
+LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libglog_init libyoga libreact_utils libreact_render_debug
 
 # The static libraries (.a files) that this module depends on.
 LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder libruntimeexecutor
@@ -72,6 +72,11 @@ $(call import-module,callinvoker)
 $(call import-module,reactperflogger)
 $(call import-module,hermes)
 $(call import-module,runtimeexecutor)
+
+# Fabric:
+$(call import-module,react/utils)
+$(call import-module,react/renderer/debug)
+
 
 include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
 include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
