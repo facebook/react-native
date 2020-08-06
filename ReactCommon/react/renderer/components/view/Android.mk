@@ -12,7 +12,7 @@ LOCAL_MODULE := react_render_components_view
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../../
 
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
