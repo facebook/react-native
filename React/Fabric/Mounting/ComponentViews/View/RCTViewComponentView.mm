@@ -520,6 +520,15 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   auto const &props = *std::static_pointer_cast<ViewProps const>(_props);
 
+  // Handle Switch.
+  if ((self.accessibilityTraits & AccessibilityTraitSwitch) == AccessibilityTraitSwitch) {
+    if (props.accessibilityState.checked == AccessibilityState::Checked) {
+      return @"1";
+    } else if (props.accessibilityState.checked == AccessibilityState::Unchecked) {
+      return @"0";
+    }
+  }
+
   // Handle states which haven't already been handled.
   if (props.accessibilityState.checked == AccessibilityState::Checked) {
     return @"checked";

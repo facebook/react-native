@@ -30,6 +30,7 @@ enum class AccessibilityTraits : uint32_t {
   AllowsDirectInteraction = (1 << 13),
   CausesPageTurn = (1 << 14),
   Header = (1 << 15),
+  Switch = (1 << 16),
 };
 
 constexpr enum AccessibilityTraits operator|(

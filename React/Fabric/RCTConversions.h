@@ -71,6 +71,8 @@ inline UIEdgeInsets RCTUIEdgeInsetsFromEdgeInsets(const facebook::react::EdgeIns
   return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
 }
 
+UIAccessibilityTraits const AccessibilityTraitSwitch = 0x20000000000001;
+
 inline UIAccessibilityTraits RCTUIAccessibilityTraitsFromAccessibilityTraits(
     facebook::react::AccessibilityTraits accessibilityTraits)
 {
@@ -123,6 +125,9 @@ inline UIAccessibilityTraits RCTUIAccessibilityTraitsFromAccessibilityTraits(
   }
   if ((accessibilityTraits & AccessibilityTraits::Header) != AccessibilityTraits::None) {
     result |= UIAccessibilityTraitHeader;
+  }
+  if ((accessibilityTraits & AccessibilityTraits::Switch) != AccessibilityTraits::None) {
+    result |= AccessibilityTraitSwitch;
   }
   return result;
 };

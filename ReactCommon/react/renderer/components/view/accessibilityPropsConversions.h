@@ -87,7 +87,10 @@ inline void fromString(const std::string &string, AccessibilityTraits &result) {
     result = AccessibilityTraits::SummaryElement;
     return;
   }
-
+  if (string == "switch") {
+    result = AccessibilityTraits::Switch;
+    return;
+  }
   result = AccessibilityTraits::None;
 }
 
