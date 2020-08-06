@@ -7,19 +7,23 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := fabricgraphics
+LOCAL_MODULE := react_render_graphics
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp $(LOCAL_PATH)/platform/cxx/react/renderer/graphics/*.cpp)
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../ $(LOCAL_PATH)/platform/cxx/
+LOCAL_SHARED_LIBRARIES := libfolly_json
+
+LOCAL_STATIC_LIBRARIES :=
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../ $(LOCAL_PATH)/platform/cxx/
+
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../ $(LOCAL_PATH)/platform/cxx/
 
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
 
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 
-LOCAL_STATIC_LIBRARIES :=
-
-
 include $(BUILD_SHARED_LIBRARY)
+
+$(call import-module,folly)
