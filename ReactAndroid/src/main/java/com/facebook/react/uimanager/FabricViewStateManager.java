@@ -78,8 +78,12 @@ public class FabricViewStateManager {
             }
           };
     }
+    @Nullable WritableMap stateUpdate = stateUpdateCallback.getStateUpdate();
+    if (stateUpdate == null) {
+      return;
+    }
     stateWrapper.updateState(
-        stateUpdateCallback.getStateUpdate(),
+        stateUpdate,
         // Failure callback - this is run if the updateState call fails
         failureRunnable);
   }
