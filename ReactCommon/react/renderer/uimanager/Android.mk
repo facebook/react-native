@@ -7,7 +7,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := react_render_mounting
+LOCAL_MODULE := react_render_uimanager
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
@@ -21,17 +21,19 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_SHARED_LIBRARIES := libbetter libyoga libfolly_futures glog libfolly_json libglog_init libreact_render_core libreact_render_debug libreact_render_components_view libreact_render_components_root libreact_utils
+LOCAL_SHARED_LIBRARIES := libreact_render_graphics libfolly_futures libruntimeexecutor libreact_render_componentregistry glog libreactconfig libfolly_json libjsi libreact_render_core libreact_render_debug libreact_render_components_view libreact_render_components_root libreact_render_mounting
 
 include $(BUILD_SHARED_LIBRARY)
 
-$(call import-module,better)
 $(call import-module,glog)
+$(call import-module,jsi)
 $(call import-module,folly)
-$(call import-module,fbgloginit)
+$(call import-module,react/config)
 $(call import-module,react/renderer/components/root)
 $(call import-module,react/renderer/components/view)
+$(call import-module,react/renderer/componentregistry)
 $(call import-module,react/renderer/core)
 $(call import-module,react/renderer/debug)
-$(call import-module,react/utils)
-$(call import-module,yogajni)
+$(call import-module,react/renderer/graphics)
+$(call import-module,react/renderer/mounting)
+$(call import-module,runtimeexecutor)
