@@ -212,6 +212,7 @@ export type ReactFaricEvent = {
   ...
 };
 
+//
 // Imperative LayoutAnimation API types
 //
 export type LayoutAnimationType =
