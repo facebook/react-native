@@ -108,7 +108,7 @@ source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
 [ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
 
-[ -z "$HERMES_PATH" ] && HERMES_PATH="$PODS_ROOT/hermes/destroot/bin/hermes"
+[ -z "$HERMES_PATH" ] && HERMES_PATH="$PROJECT_ROOT/node_modules/hermes-engine-darwin/destroot/bin/hermesc"
 
 [ -z "$COMPOSE_SOURCEMAP_PATH" ] && COMPOSE_SOURCEMAP_PATH="$REACT_NATIVE_DIR/scripts/compose-source-maps.js"
 

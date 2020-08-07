@@ -63,8 +63,7 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-Core/Hermes', :path => "#{prefix}/"
-    pod 'hermes', :http => 'https://github.com/alloy/hermes/releases/download/v0.4.1-macOS/hermes-v0.4.1.zip',
-                  :sha256 => 'd33c7eafded94d8113a3bb74f56aef3ec1cd3df513e99df7fa3c7c34b867d379'
+    pod 'hermes', :path => "../node_modules/hermes-engine-darwin"
     pod 'libevent', :podspec => "#{prefix}/third-party-podspecs/libevent.podspec"
   end
 end
