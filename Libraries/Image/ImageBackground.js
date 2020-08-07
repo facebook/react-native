@@ -6,6 +6,7 @@
  *
  * @flow
  * @format
+ * @generate-docs
  */
 
 'use strict';
@@ -16,28 +17,54 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
 /**
- * Very simple drop-in replacement for <Image> which supports nesting views.
- *
- * ```ReactNativeWebPlayer
- * import React, { Component } from 'react';
- * import { AppRegistry, View, ImageBackground, Text } from 'react-native';
- *
- * class DisplayAnImageBackground extends Component {
- *   render() {
- *     return (
- *       <ImageBackground
- *         style={{width: 50, height: 50}}
- *         source={{uri: 'https://reactnative.dev/img/opengraph.png'}}
- *       >
- *         <Text>React</Text>
- *       </ImageBackground>
- *     );
- *   }
- * }
- *
- * // App registration and rendering
- * AppRegistry.registerComponent('DisplayAnImageBackground', () => DisplayAnImageBackground);
- * ```
+  A common feature request from developers familiar with the web is
+  `background-image`. To handle this use case, you can use the
+  `<ImageBackground>` component, which has the same props as `<Image>`, and add
+  whatever children to it you would like to layer on top of it.
+
+  You might not want to use `<ImageBackground>` in some cases, since the
+  implementation is basic. Refer to `<ImageBackground>`'s
+  [source code][react-native:ImageBackground] for more insight, and create your
+  own custom component when needed.
+
+  [react-native:ImageBackground]:
+  https://github.com/facebook/react-native/blob/master/Libraries/Image/ImageBackground.js
+
+  Note that you must specify some width and height style attributes.
+
+  ```SnackPlayer name=ImageBackground
+  import React from "react";
+  import { ImageBackground, StyleSheet, Text, View } from "react-native";
+
+  const image = { uri: "https://reactjs.org/logo-og.png" };
+
+  const App = () => (
+    <View style={styles.container}>
+      <ImageBackground source={image} style={styles.image}>
+        <Text style={styles.text}>Inside</Text>
+      </ImageBackground>
+    </View>
+  );
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      flexDirection: "column"
+    },
+    image: {
+      flex: 1,
+      resizeMode: "cover",
+      justifyContent: "center"
+    },
+    text: {
+      color: "grey",
+      fontSize: 30,
+      fontWeight: "bold"
+    }
+  });
+
+  export default App;
+  ```
  */
 class ImageBackground extends React.Component<$FlowFixMeProps> {
   setNativeProps(props: Object) {
