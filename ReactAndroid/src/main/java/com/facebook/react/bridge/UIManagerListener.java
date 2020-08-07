@@ -16,4 +16,6 @@ public interface UIManagerListener {
   void willDispatchViewUpdates(UIManager uiManager);
   /* Called right after view updates are dispatched for a frame. */
   void didDispatchMountItems(UIManager uiManager);
+  /* Called right after scheduleMountItems is called in Fabric, after a new tree is committed. */
+  void didScheduleMountItems(UIManager uiManager);
 }
