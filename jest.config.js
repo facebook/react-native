@@ -43,6 +43,7 @@ module.exports = {
     'testEnvironment': 'node',
     'moduleNameMapper': {
       'react-native-codegen/(.*)': '<rootDir>/packages/react-native-codegen/$1',
+      'eslint/lib/rules/(.*)': '<rootDir>/node_modules/eslint/lib/rules/$1',
       'react-native(.*)': '<rootDir>$1',
     },
     'collectCoverageFrom': [
