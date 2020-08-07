@@ -183,6 +183,12 @@ class AnimatedValue extends AnimatedWithChildren {
   resetAnimation(callback?: ?(value: number) => void): void {
     this.stopAnimation(callback);
     this._value = this._startingValue;
+    if (this.__isNative) {
+      NativeAnimatedAPI.setAnimatedNodeValue(
+        this.__getNativeTag(),
+        this._startingValue,
+      );
+    }
   }
 
   _onAnimatedValueUpdateReceived(value: number): void {
