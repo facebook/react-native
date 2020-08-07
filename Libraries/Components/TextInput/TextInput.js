@@ -875,7 +875,7 @@ function InternalTextInput(props: Props): React.Node {
     let eventTag = mostRecentEventCount;
 
     // In iOS, if multiline prop has changed, uiManager will create a new nativeTag(RCTMultilineTextInputView or RCTSinglelineTextInputView)
-    // With a new nativeTag, we need to mostRecentEventCount to 0.
+    // With a new nativeTag, we need to set mostRecentEventCount to 0.
     if (Platform.OS === 'ios') {
       if (props.multiline !== lastMultiline) {
         setLastMultiline(props.multiline);
