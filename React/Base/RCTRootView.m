@@ -463,7 +463,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                                       RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey: self.traitCollection,
                                                     }];
 }
-#endif // TODO(macOS ISS#2323203)
+#else // [TODO(macOS ISS#2323203)
+- (void)viewDidChangeEffectiveAppearance {
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTUserInterfaceStyleDidChangeNotification
+                                                      object:self
+                                                    userInfo:@{
+                                                      RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey: self.effectiveAppearance,
+                                                    }];
+
+}
+#endif // ]TODO(macOS ISS#2323203)
 
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)

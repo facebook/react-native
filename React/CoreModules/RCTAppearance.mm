@@ -23,6 +23,7 @@ void RCTEnableAppearancePreference(BOOL enabled) {
   sAppearancePreferenceEnabled = enabled;
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 static NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
@@ -50,6 +51,34 @@ static NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
   // Default to light on older OS version - same behavior as Android.
   return RCTAppearanceColorSchemeLight;
 }
+#else // [TODO(macOS ISS#2323203)
+static NSString *RCTColorSchemePreference(NSAppearance *appearance)
+{
+  if (@available(macOS 10.14, *)) {
+    static NSDictionary *appearances;
+    static dispatch_once_t onceToken;
+
+    dispatch_once(&onceToken, ^{
+      appearances = @{
+                      NSAppearanceNameAqua: RCTAppearanceColorSchemeLight,
+                      NSAppearanceNameDarkAqua: RCTAppearanceColorSchemeDark
+                      };
+    });
+
+    if (!sAppearancePreferenceEnabled) {
+      // Return the default if the app doesn't allow different color schemes.
+      return RCTAppearanceColorSchemeLight;
+    }
+
+    appearance = appearance ?: [NSAppearance currentAppearance];
+    NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+    return appearances[appearanceName] ?: RCTAppearanceColorSchemeLight;
+  }
+
+  // Default to light on older OS version - same behavior as Android.
+  return RCTAppearanceColorSchemeLight;
+}
+#endif // ]TODO(macOS ISS#2323203)
 
 @interface RCTAppearance () <NativeAppearanceSpec>
 @end
@@ -85,11 +114,19 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 - (void)appearanceChanged:(NSNotification *)notification
 {
   NSDictionary *userInfo = [notification userInfo];
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UITraitCollection *traitCollection = nil;
   if (userInfo) {
     traitCollection = userInfo[RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey];
   }
   NSString *newColorScheme = RCTColorSchemePreference(traitCollection);
+#else // [TODO(macOS ISS#2323203)
+  NSAppearance *appearance = nil;
+  if (userInfo) {
+    appearance = userInfo[RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey];
+  }
+  NSString *newColorScheme = RCTColorSchemePreference(appearance);
+#endif // ]TODO(macOS ISS#2323203)
   if (![_currentColorScheme isEqualToString:newColorScheme]) {
     _currentColorScheme = newColorScheme;
     [self sendEventWithName:@"appearanceChanged" body:@{@"colorScheme": newColorScheme}];
@@ -105,7 +142,7 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 
 - (void)startObserving
 {
-  if (@available(iOS 13.0, *)) {
+  if (@available(macOS 10.14, iOS 13.0, *)) { // TODO(macOS ISS#2323203)
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)
                                                  name:RCTUserInterfaceStyleDidChangeNotification
@@ -115,7 +152,7 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 
 - (void)stopObserving
 {
-  if (@available(iOS 13.0, *)) {
+  if (@available(macOS 10.14, iOS 13.0, *)) { // TODO(macOS ISS#2323203)
     [[NSNotificationCenter defaultCenter] removeObserver:self];
   }
 }
