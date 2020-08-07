@@ -19,7 +19,6 @@ const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
 const React = require('react');
 const URIActionMap = require('./utils/URIActionMap');
 const RNTesterNavBar = require('./components/RNTesterNavbar');
-const RNTesterHeader = require('./components/RNTesterHeader');
 
 // const nativeImageSource = require('react-native');
 
@@ -27,13 +26,9 @@ const {
   AppRegistry,
   AsyncStorage,
   BackHandler,
-  Dimensions,
-  Image,
   Linking,
-  StatusBar,
   StyleSheet,
   Text,
-  TouchableWithoutFeedback,
   UIManager,
   useColorScheme,
   View,
@@ -63,7 +58,7 @@ const Header = ({
   <RNTesterThemeContext.Consumer>
     {theme => {
       return (
-        <View style={[styles.toolbar, {backgroundColor: theme.ToolbarColor}]}>
+        <View style={[styles.toolbar, {backgroundColor: '#F3F8FF'}]}>
           <View style={styles.toolbarCenter}>
             <Text style={[styles.title, {color: theme.LabelColor}]}>
               {title}
@@ -90,7 +85,7 @@ const RNTesterExampleContainerViaHook = ({
   return (
     <RNTesterThemeContext.Provider value={theme}>
       <View style={styles.container}>
-        <RNTesterHeader title="Examples" backButton={true} />
+        <Header title={title} />
         <RNTesterExampleContainer module={module} ref={exampleRef} />
       </View>
     </RNTesterThemeContext.Provider>
@@ -120,7 +115,7 @@ const RNTesterExampleListViaHook = ({
     <RNTesterThemeContext.Provider value={theme}>
       <RNTesterBookmarkContext.Provider value={bookmark}>
         <View style={styles.container}>
-          <RNTesterHeader title={exampleTitle} backButton={false} />
+          <Header title={exampleTitle} />
           <RNTesterExampleList
             onNavigate={onNavigate}
             list={list}
@@ -147,7 +142,7 @@ const RNTesterBookmarkListViaHook = ({
     <RNTesterThemeContext.Provider value={theme}>
       <RNTesterBookmarkContext.Provider value={bookmark}>
         <View style={styles.container}>
-          <RNTesterHeader title="Bookmarks" backButton={true} />
+          <Header title="Bookmarks" />
           <RNtesterBookmarkList onNavigate={onNavigate} />
         </View>
       </RNTesterBookmarkContext.Provider>
@@ -269,7 +264,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
           checkBookmark: this.state.checkBookmark,
         })}
           <View style={styles.bottomNavbar}>
-              <RNTesterNavBar onNavigate={this._handleAction} />
+            <RNTesterNavBar screen={this.state.screen} onNavigate={this._handleAction} />
           </View>
       </View>
     );

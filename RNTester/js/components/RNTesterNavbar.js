@@ -1,23 +1,14 @@
-import React, {useState} from 'react';
-import {Text, View, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import React from 'react';
+import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
 const RNTesterActions = require('../utils/RNTesterActions');
 
 const APP_COLOR = '#F3F8FF';
 
-const BottomTabNavigation = ({onNavigate, screen}) => {
+const RNTesterNavbar = ({onNavigate, screen}) => {
   /** to be attached to navigation framework */
-  const [apiActive, setApiActive] = useState(false);
-  const [componentActive, setComponentActive] = useState(screen == 'component');
-  const [bookmarkActive, setBookmarkActive] = useState(false);
-
-  React.useEffect(() => {
-    if(screen === 'component')
-      setComponentActive(true);
-      if(screen === 'api')
-        setApiActive(true);
-      else
-        setBookmarkActive(true);
-  });
+  const isAPIActive =  screen === 'api';
+  const isComponentActive =   screen === 'component';
+  const isBookmarkActive =   screen === 'bookmark';
 
   return (
     <View>
@@ -27,32 +18,23 @@ const BottomTabNavigation = ({onNavigate, screen}) => {
           {/** left tab with Components  */}
           <View style={styles.leftBox}>
             {/** @attention attach navigation endpoints here */}
-            <TouchableOpacity
-              onPress={() => {
-                onNavigate(RNTesterActions.OpenList('component'));
-                if (componentActive) {
-                  return;
-                } else {
-                  setComponentActive(true);
-                  setApiActive(false);
-                  setBookmarkActive(false);
-                }
-              }}>
+            <Pressable
+              onPress={() =>  onNavigate(RNTesterActions.OpenList('component'))}>
               <Image
                 style={styles.componentIcon}
                 source={
-                  componentActive
+                  isComponentActive
                     ? require('./../assets/bottom-nav-components-icon-active.png')
                     : require('./../assets/bottom-nav-components-icon-inactive.png')
                 }
               />
               <Text
                 style={
-                  componentActive ? styles.activeText : styles.inactiveText
+                  isComponentActive ? styles.activeText : styles.inactiveText
                 }>
                 Components
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/** central tab with bookmark icon  */}
@@ -64,52 +46,38 @@ const BottomTabNavigation = ({onNavigate, screen}) => {
 
           {/** floating button in center  */}
           <View style={styles.floatContainer}>
-            <TouchableOpacity
-              onPress={() => {
-                setApiActive(false);
-                setComponentActive(false);
-                setBookmarkActive(true);
-                onNavigate(RNTesterActions.OpenList('bookmark'));
-              }}>
+            <Pressable
+              onPress={() => { onNavigate(RNTesterActions.OpenList('bookmark')) }}>
                 <View style={styles.floatingButton} >
                 <Image
                     style={styles.bookmarkIcon}
                     source={
-                    bookmarkActive
+                    isBookmarkActive
                         ? require('../assets/bottom-nav-bookmark-fill.png')
                         : require('../assets/bottom-nav-bookmark-outline.png')
                     }
                 />
                 </View>
-            </TouchableOpacity>
+            </Pressable>
             </View>
           </View>
 
           {/** right tab with Components  */}
-         <TouchableOpacity onPress={() => {
-            onNavigate(RNTesterActions.OpenList('api'));
-            if (apiActive) {
-              return;
-            } else {
-              setComponentActive(false);
-              setApiActive(true);
-              setBookmarkActive(false);
-            }
-          }}
+         <Pressable onPress={() => { onNavigate(RNTesterActions.OpenList('api')) }}
 
           style={styles.rightBox}>
               <Image
                 style={styles.apiIcon}
                 source={
-                  apiActive
+                  isAPIActive
                     ? require('./../assets/bottom-nav-apis-icon-active.png')
                     : require('./../assets/bottom-nav-apis-icon-inactive.png')
                 }
               />
-              <Text style={apiActive ? styles.activeText : styles.inactiveText}>
+              <Text style={isAPIActive ? styles.activeText : styles.inactiveText}>
                 APIs
               </Text>
-         </TouchableOpacity>
+         </Pressable>
         </View>
     </View>
   );
@@ -188,4 +156,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = BottomTabNavigation;
+module.exports = RNTesterNavbar;

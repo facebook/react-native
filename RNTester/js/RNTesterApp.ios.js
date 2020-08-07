@@ -20,7 +20,6 @@ const React = require('react');
 const SnapshotViewIOS = require('./examples/Snapshot/SnapshotViewIOS.ios');
 const URIActionMap = require('./utils/URIActionMap');
 const RNTesterNavbar = require('./components/RNTesterNavbar');
-const RNTesterHeader = require('./components/RNTesterHeader');
 
 const {
   AppRegistry,
@@ -111,7 +110,7 @@ const RNTesterExampleContainerViaHook = ({
   return (
     <RNTesterThemeContext.Provider value={theme}>
       <View style={styles.exampleContainer}>
-        <RNTesterHeader title="Examples" backButton={true} />
+        <Header title={title} onBack={onBack} />
         <RNTesterExampleContainer module={module} />
       </View>
     </RNTesterThemeContext.Provider>
@@ -139,7 +138,7 @@ const RNTesterExampleListViaHook = ({
     <RNTesterThemeContext.Provider value={theme}>
       <RNTesterBookmarkContext.Provider value={bookmark}>
         <View style={styles.exampleContainer}>
-        <RNTesterHeader title={exampleTitle} backButton={false} />
+        <Header title={exampleTitle} />
           <RNTesterExampleList
             onNavigate={onNavigate}
             list={list}
@@ -152,6 +151,7 @@ const RNTesterExampleListViaHook = ({
 };
 
 const RNTesterBookmarkListViaHook = ({
+  onBack,
   bookmark,
   onNavigate,
 }: {
@@ -166,7 +166,7 @@ const RNTesterBookmarkListViaHook = ({
     <RNTesterThemeContext.Provider value={theme}>
       <RNTesterBookmarkContext.Provider value={bookmark}>
         <View style={styles.container}>
-          <RNTesterHeader title="Bookmarks" backButton={true} />
+          <Header title="Bookmarks" onBack={onBack} />
           <RNTesterBookmarkList onNavigate={onNavigate} />
         </View>
       </RNTesterBookmarkContext.Provider>
@@ -275,7 +275,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   }
 
   _handleBack = () => {
-    this._handleAction(RNTesterActions.Back());
+    this._handleAction(RNTesterActions.Back(this.state.screen));
   };
 
   _handleAction = (action: ?RNTesterAction) => {
@@ -325,12 +325,13 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
       return (
         <>
           <RNTesterBookmarkListViaHook
+            onBack={this._handleBack}
             title={'RNTester'}
             bookmark={bookmark}
             onNavigate={this._handleAction}
           />
           <View style={styles.bottomNavbar}>
-            <RNTesterNavbar onNavigate={this._handleAction} />
+            <RNTesterNavbar screen={this.state.screen} onNavigate={this._handleAction} />
           </View>
         </>
       );
@@ -344,7 +345,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
           screen={this.state.screen}
         />
         <View style={styles.bottomNavbar}>
-          <RNTesterNavbar onNavigate={this._handleAction} />
+          <RNTesterNavbar screen={this.state.screen} onNavigate={this._handleAction} />
         </View>
       </>
     );

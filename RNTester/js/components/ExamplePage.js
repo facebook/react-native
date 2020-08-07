@@ -13,7 +13,6 @@
 import * as React from 'react';
 import {StyleSheet, View, Text, Dimensions, Image} from 'react-native';
 
-import HeadingText from './HeadingText';
 import Background from './Background';
 
 type Props = $ReadOnly<{|
@@ -28,8 +27,6 @@ const ScreenHeight = Dimensions.get('window').height;
 const ScreenWidth = Dimensions.get('window').width;
 
 export default function ExamplePage(props: Props): React.Node {
-  const title = props.title ? <HeadingText text={props.title} /> : null;
-
   const description = props.description ?? '';
   const androidImage = !props.android ? (
     <Image
@@ -54,7 +51,6 @@ export default function ExamplePage(props: Props): React.Node {
       <View style={styles.titleView}>
         <View style={styles.container}>
           <View style={styles.headingContainer}>
-            <Text style={styles.titleContainer}>{title} </Text>
             <Text>{description}</Text>
             <View style={styles.iconContainer}>
               {appleImage}
@@ -89,10 +85,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  titleContainer: {
-    justifyContent: 'space-between',
-    fontWeight: 'bold',
   },
   iconContainer: {
     flexDirection: 'row',
