@@ -75,7 +75,7 @@ class Scheduler final : public UIManagerDelegate {
   /*
    * This is broken. Please do not use.
    * `ComponentDescriptor`s are not designed to be used outside of `UIManager`,
-   * there is no any garantees about their lifetime.
+   * there is no any guarantees about their lifetime.
    */
   ComponentDescriptor const *
   findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(

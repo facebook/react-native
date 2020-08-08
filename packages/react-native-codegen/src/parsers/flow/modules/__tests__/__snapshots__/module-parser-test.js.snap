@@ -15,7 +15,7 @@ exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_UNN
 exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"Found two types extending \\"TurboModule\\" is one file. Split them into separated files."`;
 
 exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `
-"Default export for module specified incorrectly. It should containts
+"Default export for module specified incorrectly. It should contains
     either type extending \\"TurboModule\\" or \\"codegenNativeComponent\\"."
 `;
 

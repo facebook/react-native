@@ -38,7 +38,7 @@ class RuntimeAdapter {
   /// the ability to force the process to enter the Hermes interpreter loop
   /// soon. This is important because the inspector can only do a number of
   /// important operations (like manipulating breakpoints) within the context of
-  /// a Hermes interperter loop.
+  /// a Hermes interpreter loop.
   ///
   /// The default implementation does nothing.
   virtual void tickleJs();
