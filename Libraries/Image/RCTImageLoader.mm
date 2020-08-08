@@ -1100,34 +1100,39 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
 - (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
-  __block RCTImageLoaderCancellationBlock requestToken;
-  requestToken = [self loadImageWithURLRequest:request callback:^(NSError *error, UIImage *image) {
-    if (error) {
-      [delegate URLRequest:requestToken didCompleteWithError:error];
-      return;
-    }
+  @synchronized(self) {
+    __block RCTImageLoaderCancellationBlock requestToken = ^{};
+    requestToken = [self loadImageWithURLRequest:request callback:^(NSError *error, UIImage *image) {
+      @synchronized(self) {
 
-    NSString *mimeType = nil;
-    NSData *imageData = nil;
-    if (RCTImageHasAlpha(image.CGImage)) {
-      mimeType = @"image/png";
-      imageData = UIImagePNGRepresentation(image);
-    } else {
-      mimeType = @"image/jpeg";
-      imageData = UIImageJPEGRepresentation(image, 1.0);
-    }
+        if (error) {
+          [delegate URLRequest:requestToken didCompleteWithError:error];
+          return;
+        }
 
-    NSURLResponse *response = [[NSURLResponse alloc] initWithURL:request.URL
-                                                        MIMEType:mimeType
-                                           expectedContentLength:imageData.length
-                                                textEncodingName:nil];
+        NSString *mimeType = nil;
+        NSData *imageData = nil;
+        if (RCTImageHasAlpha(image.CGImage)) {
+          mimeType = @"image/png";
+          imageData = UIImagePNGRepresentation(image);
+        } else {
+          mimeType = @"image/jpeg";
+          imageData = UIImageJPEGRepresentation(image, 1.0);
+        }
 
-    [delegate URLRequest:requestToken didReceiveResponse:response];
-    [delegate URLRequest:requestToken didReceiveData:imageData];
-    [delegate URLRequest:requestToken didCompleteWithError:nil];
-  }];
+        NSURLResponse *response = [[NSURLResponse alloc] initWithURL:request.URL
+                                                            MIMEType:mimeType
+                                               expectedContentLength:imageData.length
+                                                    textEncodingName:nil];
 
-  return requestToken;
+        [delegate URLRequest:requestToken didReceiveResponse:response];
+        [delegate URLRequest:requestToken didReceiveData:imageData];
+        [delegate URLRequest:requestToken didCompleteWithError:nil];
+      }
+    }];
+
+    return requestToken;
+  }
 }
 
 - (void)cancelRequest:(id)requestToken
