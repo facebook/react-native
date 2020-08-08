@@ -16,6 +16,11 @@
 #import "RCTModuleData.h"
 #import "RCTProfile.h"
 
+#if TARGET_OS_OSX // TODO(macOS, https://github.com/microsoft/react-native-macos/issues/533)
+// To compile in Xcode 12 beta 4 on macOS, we need to explicitly pull in the framework to get the definition for CACurrentMediaTime()
+#import <Quartz/Quartz.h>
+#endif // TODO(macOS, https://github.com/microsoft/react-native-macos/issues/533)
+
 #define RCTAssertRunLoop() \
   RCTAssert(_runLoop == [NSRunLoop currentRunLoop], \
   @"This method must be called on the CADisplayLink run loop")
