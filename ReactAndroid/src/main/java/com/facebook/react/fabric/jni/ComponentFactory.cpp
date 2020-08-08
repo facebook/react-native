@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ComponentFactoryDelegate.h"
+#include "ComponentFactory.h"
 #include <android/log.h>
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -16,14 +16,14 @@ using namespace facebook::jsi;
 namespace facebook {
 namespace react {
 
-jni::local_ref<ComponentFactoryDelegate::jhybriddata>
-ComponentFactoryDelegate::initHybrid(jni::alias_ref<jclass>) {
+jni::local_ref<ComponentFactory::jhybriddata> ComponentFactory::initHybrid(
+    jni::alias_ref<jclass>) {
   return makeCxxInstance();
 }
 
-void ComponentFactoryDelegate::registerNatives() {
+void ComponentFactory::registerNatives() {
   registerHybrid({
-      makeNativeMethod("initHybrid", ComponentFactoryDelegate::initHybrid),
+      makeNativeMethod("initHybrid", ComponentFactory::initHybrid),
   });
 }
 

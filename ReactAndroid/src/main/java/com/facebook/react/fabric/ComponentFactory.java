@@ -12,7 +12,7 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public class ComponentFactoryDelegate {
+public class ComponentFactory {
 
   static {
     FabricSoLoader.staticInit();
@@ -23,7 +23,7 @@ public class ComponentFactoryDelegate {
   @DoNotStrip
   private static native HybridData initHybrid();
 
-  public ComponentFactoryDelegate() {
+  public ComponentFactory() {
     mHybridData = initHybrid();
   }
 }
