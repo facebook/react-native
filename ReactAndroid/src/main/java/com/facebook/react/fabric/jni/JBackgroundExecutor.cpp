@@ -27,7 +27,7 @@ BackgroundExecutor JBackgroundExecutor::get() {
             ->getMethod<void(Runnable::javaobject)>("queueRunnable");
 
     auto jrunnable = JNativeRunnable::newObjectCxxArgs(std::move(runnable));
-    method(self, static_ref_cast<Runnable>(jrunnable).get());
+    method(self, static_ref_cast<Runnable::javaobject>(jrunnable).get());
   };
 }
 
