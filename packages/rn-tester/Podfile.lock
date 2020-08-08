@@ -501,33 +501,6 @@ SPEC CHECKSUMS:
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
-<<<<<<< HEAD:packages/rn-tester/Podfile.lock
-  RCTRequired: 5a6f37c83f8fd132aafcc5b4f2c59d9cce0ce351
-  RCTTypeSafety: b169d158c55b293c77d1d22bfab85f8e431b0600
-  React: 241be1cc119e7c7d37dfc2968bf2b2e4069003be
-  React-callinvoker: 5a8b50ca51688ca566fefef0098dad4cab1fa1d4
-  React-Core: f8bebf498f44d25d2650438a91a589c3d13f0c6a
-  React-CoreModules: 40e1e8f48c11e726f09d20f91983c8e3939f0085
-  React-cxxreact: a59a71f6f9d3808230890d7cc777648a8145bfad
-  React-jsi: 4888923dcd4d0469c786423c0187b1b7388d8bc8
-  React-jsiexecutor: bc73de9048933d68fb8c639f09c068cb52c16d18
-  React-jsinspector: 7ad8e7e04dc954833061553a5cb23aafa5a1939b
-  React-perflogger: 04328c0fb88d23892f047067e66776cb487f9114
-  React-RCTActionSheet: 564d45550682ed569b327c4466c02f542a873189
-  React-RCTAnimation: 392117748e2dc1b68a3211ccc1c0ab61af47527f
-  React-RCTBlob: f7e75db3de927094781677aef20a4739cd06fcc2
-  React-RCTImage: be590f89119114d3d45b3e111a7bb5eb1207515a
-  React-RCTLinking: d83e670fbcc7b213f8b9d5d249ea9724dd5a9ab8
-  React-RCTNetwork: da768278371220d96fbf046fe22e4e8e3370e4fd
-  React-RCTPushNotification: 8abfab25afefc7412098076c2e80415873ea6362
-  React-RCTSettings: ccbf13ac2d56ce7b312b100f8139c88598ae1b58
-  React-RCTTest: 3260d7f060a62d65778b2194573c3101256ddfc9
-  React-RCTText: dc95fa14ea9fb4ecd3b76ad915f27833994bcefa
-  React-RCTVibration: 71cda9c6dcd285610b55eca6de971938995919ab
-  React-runtimeexecutor: 7cc3c61b84f77304fc7b07360d39420d1e5060c7
-  ReactCommon: 506518b24cacc722817bad41f6d02ff781751906
-  Yoga: 340eab5a03083014ada4d71f973b26175aff8d24
-=======
   RCTRequired: 34582e9b3ebe69f244e091f37218d318406d5c4a
   RCTTypeSafety: 1ade47a69b092cddf1e4ea21e0c5bdc65cc950b4
   React: cafb3c2321f7df55ce90dbf29d513799a79e4418
@@ -553,7 +526,6 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 60dd6204a13f68a1aa1118870edcc604a791df2b
   ReactCommon: 511b4a9ea129c129c6dbc982942007d195903a9a
   Yoga: f7fa200d8c49f97b54c9421079e781fb900b5cae
->>>>>>> 499b021b7862587cb36c0fc06c2ec1be13a6f3f2:RNTester/Podfile.lock
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: 3045d3456f0f2268f15db9a527839e6a19e6071c
