@@ -182,6 +182,14 @@ namespace facebook {
   namespace react {
 
     
+    static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_startOperationBatch(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "startOperationBatch", "()V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_finishOperationBatch(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "finishOperationBatch", "()V", args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_createAnimatedNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "createAnimatedNode", "(DLcom/facebook/react/bridge/ReadableMap;)V", args, count);
     }
@@ -266,6 +274,12 @@ namespace facebook {
     NativeAnimatedModuleSpecJSI::NativeAnimatedModuleSpecJSI(const JavaTurboModule::InitParams &params)
       : JavaTurboModule(params) {
         
+        methodMap_["startOperationBatch"] = MethodMetadata {0, __hostFunction_NativeAnimatedModuleSpecJSI_startOperationBatch};
+        
+        
+        methodMap_["finishOperationBatch"] = MethodMetadata {0, __hostFunction_NativeAnimatedModuleSpecJSI_finishOperationBatch};
+        
+        
         methodMap_["createAnimatedNode"] = MethodMetadata {2, __hostFunction_NativeAnimatedModuleSpecJSI_createAnimatedNode};
         
         
@@ -335,6 +349,14 @@ namespace facebook {
   namespace react {
 
     
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_startOperationBatch(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "startOperationBatch", "()V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_finishOperationBatch(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "finishOperationBatch", "()V", args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_createAnimatedNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "createAnimatedNode", "(DLcom/facebook/react/bridge/ReadableMap;)V", args, count);
     }
@@ -418,6 +440,12 @@ namespace facebook {
 
     NativeAnimatedTurboModuleSpecJSI::NativeAnimatedTurboModuleSpecJSI(const JavaTurboModule::InitParams &params)
       : JavaTurboModule(params) {
+        
+        methodMap_["startOperationBatch"] = MethodMetadata {0, __hostFunction_NativeAnimatedTurboModuleSpecJSI_startOperationBatch};
+        
+        
+        methodMap_["finishOperationBatch"] = MethodMetadata {0, __hostFunction_NativeAnimatedTurboModuleSpecJSI_finishOperationBatch};
+        
         
         methodMap_["createAnimatedNode"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_createAnimatedNode};
         
