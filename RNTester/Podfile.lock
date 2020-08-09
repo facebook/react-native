@@ -59,7 +59,11 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - glog (0.3.5)
   - hermes (0.4.3)
-  - libevent (2.1.11)
+  - libevent (2.1.11):
+    - libevent/core (= 2.1.11)
+  - libevent/core (2.1.11):
+    - libevent/event2-headers
+  - libevent/event2-headers (2.1.11)
   - OpenSSL-Universal (1.0.2.19):
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
@@ -484,7 +488,7 @@ SPEC CHECKSUMS:
   FlipperKit: 88b7f0d0cf907ddc2137b85eeb7f3d4d8d9395c8
   glog: b3f6d74f3e2d33396addc0ee724d2b2b79fc3e00
   hermes: e6c81c75290bb87d1d62d594c269fba09b84e216
-  libevent: 52af31075d5ade81f97298a56c0656a5618ccc23
+  libevent: c2d56c8554ac18101d9c5f4c66ef762798209682
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   RCT-Folly: 73721d08b1a712fffa7afbfb96f1d43453d76075
   RCTRequired: 66250bf27479214eb5c530ca2d8c772ebe4d7e71
@@ -514,4 +518,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 0e2c0cafaedd257c0e62d6125ab016426ed6da18
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3

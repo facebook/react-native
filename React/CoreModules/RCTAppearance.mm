@@ -105,9 +105,21 @@ RCT_EXPORT_MODULE(Appearance)
   return std::make_shared<NativeAppearanceSpecJSI>(self, jsInvoker);
 }
 
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203): on macOS don't lazy init _currentColorScheme because [NSAppearance currentAppearance] cannot be executed on background thread.
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _currentColorScheme =  RCTColorSchemePreference(nil);
+  }
+  return self;
+}
+#endif // ]TODO(macOS ISS#2323203)
+
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   _currentColorScheme =  RCTColorSchemePreference(nil);
+#endif // ]TODO(macOS ISS#2323203)
   return _currentColorScheme;
 }
 
