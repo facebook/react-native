@@ -372,10 +372,12 @@
 
 - (void)setSize:(CGSize)size
 {
-  [self setMinimumSize:size maximumSize:size];
+  // `viewportOffset` is intentionally zero because `RCTSurface` ignores it.
+  // However, it is needed in `RCTFabricSurface`.
+  [self setMinimumSize:size maximumSize:size viewportOffset:CGPointZero];
 }
 
-- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize viewportOffset:(CGPoint)viewportOffset
 {
   {
     std::lock_guard<std::mutex> lock(_mutex);
@@ -399,6 +401,11 @@
     [rootShadowView setMinimumSize:minimumSize maximumSize:maximumSize];
     [uiManager setNeedsLayout];
   });
+}
+
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+{
+  [self setMinimumSize:minimumSize maximumSize:maximumSize viewportOffset:CGPointZero];
 }
 
 - (CGSize)minimumSize

@@ -31,6 +31,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize;
 
+/**
+ * Sets `minimumSize`, `maximumSize`, and `viewportOffset`  layout constraints for the Surface.
+ * `viewportOffset` is ignored in `RCTSurface` but used in `RCTFabricSurface`.
+ */
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize viewportOffset:(CGPoint)viewportOffset;
+
 #pragma mark - Dealing with UIView representation, the Main thread only access
 
 /**

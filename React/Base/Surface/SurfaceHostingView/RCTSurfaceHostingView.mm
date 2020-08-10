@@ -79,8 +79,9 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 
   RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
       self.bounds.size, _sizeMeasureMode, &minimumSize, &maximumSize);
+  CGRect windowFrame = [self.window convertRect:self.frame fromView:self.superview];
 
-  [_surface setMinimumSize:minimumSize maximumSize:maximumSize];
+  [_surface setMinimumSize:minimumSize maximumSize:maximumSize viewportOffset:windowFrame.origin];
 }
 
 - (CGSize)intrinsicContentSize

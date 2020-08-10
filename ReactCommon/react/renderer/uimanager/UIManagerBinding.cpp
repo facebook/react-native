@@ -601,7 +601,8 @@ jsi::Value UIManagerBinding::get(
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               nullptr,
-              {/* .includeTransform = */ true});
+              {/* .includeTransform = */ true,
+               /* includeViewportOffset = */ true});
 
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);

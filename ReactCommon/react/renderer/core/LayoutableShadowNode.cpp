@@ -98,7 +98,12 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
       currentFrame.origin = {0, 0};
     }
 
-    if (policy.includeTransform) {
+    auto isRootNode = currentShadowNode->getTraits().check(
+        ShadowNodeTraits::Trait::RootNodeKind);
+    auto shouldApplyTransformation = (policy.includeTransform && !isRootNode) ||
+        (policy.includeViewportOffset && isRootNode);
+
+    if (shouldApplyTransformation) {
       resultFrame.size = resultFrame.size * currentShadowNode->getTransform();
       currentFrame = currentFrame * currentShadowNode->getTransform();
     }

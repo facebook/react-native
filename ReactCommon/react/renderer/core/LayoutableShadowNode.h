@@ -43,9 +43,9 @@ class LayoutableShadowNode : public ShadowNode {
 
   static ShadowNodeTraits BaseTraits();
 
-  class LayoutInspectingPolicy final {
-   public:
+  struct LayoutInspectingPolicy {
     bool includeTransform{true};
+    bool includeViewportOffset{false};
   };
 
   using UnsharedList = better::

@@ -85,6 +85,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, assign, readonly) CGSize maximumSize;
 
 /**
+ * Previously set `viewportOffset` layout constraint.
+ * Defaults to `{0, 0}`.
+ */
+@property (atomic, assign, readonly) CGPoint viewportOffset;
+
+/**
  * Simple shortcut to `-[RCTSurface setMinimumSize:size maximumSize:size]`.
  */
 - (void)setSize:(CGSize)size;

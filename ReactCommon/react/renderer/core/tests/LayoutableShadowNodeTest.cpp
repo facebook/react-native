@@ -376,13 +376,49 @@ TEST(
             })
           })
       });
-  
+
   auto parentShadowNode = builder.build(element);
-  
+
   auto relativeLayoutMetrics = childShadowNode->getRelativeLayoutMetrics(*parentShadowNode, {});
 
   // relativeLayoutMetrics do not include offsset of nodeAA_ because it is a
   // RootKindNode.
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 10);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 10);
+}
+
+TEST(LayoutableShadowNodeTest, includeViewportOffset) {
+  auto builder = simpleComponentBuilder();
+
+  auto viewShadowNode = std::shared_ptr<ViewShadowNode>{};
+
+  // clang-format off
+  auto element =
+      Element<RootShadowNode>()
+        .props([] {
+          auto sharedProps = std::make_shared<RootProps>();
+          sharedProps->layoutContext.viewportOffset = {10, 20};
+          return sharedProps;
+        })
+        .children({
+          Element<ViewShadowNode>()
+          .reference(viewShadowNode)
+        });
+  // clang-format on
+
+  auto rootShadowNode = builder.build(element);
+
+  // `includeViewportOffset` has to work with `includeTransform` enabled and
+  // disabled.
+  auto layoutMetrics = viewShadowNode->getRelativeLayoutMetrics(
+      *rootShadowNode,
+      {/* includeTransform = */ false, /* includeViewportOffset = */ true});
+  EXPECT_EQ(layoutMetrics.frame.origin.x, 10);
+  EXPECT_EQ(layoutMetrics.frame.origin.y, 20);
+
+  layoutMetrics = viewShadowNode->getRelativeLayoutMetrics(
+      *rootShadowNode,
+      {/* includeTransform = */ true, /* includeViewportOffset = */ true});
+  EXPECT_EQ(layoutMetrics.frame.origin.x, 10);
+  EXPECT_EQ(layoutMetrics.frame.origin.y, 20);
 }
