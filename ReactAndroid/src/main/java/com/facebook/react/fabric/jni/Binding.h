@@ -17,7 +17,7 @@
 #include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
 #include <memory>
 #include <mutex>
-#include "ComponentFactoryDelegate.h"
+#include "ComponentFactory.h"
 #include "EventBeatManager.h"
 #include "JBackgroundExecutor.h"
 
@@ -58,7 +58,7 @@ class Binding : public jni::HybridClass<Binding>,
       jni::alias_ref<jobject> javaUIManager,
       EventBeatManager *eventBeatManager,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
-      ComponentFactoryDelegate *componentsRegistry,
+      ComponentFactory *componentsRegistry,
       jni::alias_ref<jobject> reactNativeConfig);
 
   void startSurface(

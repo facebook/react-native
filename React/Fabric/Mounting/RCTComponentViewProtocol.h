@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTPrimitives.h>
 #import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #import <react/renderer/core/EventEmitter.h>
 #import <react/renderer/core/LayoutMetrics.h>

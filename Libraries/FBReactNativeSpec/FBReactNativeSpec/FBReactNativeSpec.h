@@ -269,6 +269,8 @@ namespace JS {
 @end
 @protocol NativeAnimatedModuleSpec <RCTBridgeModule, RCTTurboModule>
 
+- (void)startOperationBatch;
+- (void)finishOperationBatch;
 - (void)createAnimatedNode:(double)tag
                     config:(NSDictionary *)config;
 - (void)getValue:(double)tag
@@ -354,6 +356,8 @@ namespace JS {
 @end
 @protocol NativeAnimatedTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
+- (void)startOperationBatch;
+- (void)finishOperationBatch;
 - (void)createAnimatedNode:(double)tag
                     config:(NSDictionary *)config;
 - (void)getValue:(double)tag

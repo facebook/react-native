@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 #import <memory>
 
-#import <React/RCTPrimitives.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/core/ComponentDescriptor.h>
 #import <react/renderer/core/LayoutConstraints.h>

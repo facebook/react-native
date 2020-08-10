@@ -26,11 +26,6 @@ class ScrollViewMetrics {
   Float zoomScale;
 };
 
-class ScrollViewEventEmitter;
-
-using SharedScrollViewEventEmitter =
-    std::shared_ptr<const ScrollViewEventEmitter>;
-
 class ScrollViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;

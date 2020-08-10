@@ -63,6 +63,16 @@ RCT_EXPORT_MODULE();
 
 #pragma mark -- API
 
+RCT_EXPORT_METHOD(startOperationBatch)
+{
+  // TODO T71377585
+}
+
+RCT_EXPORT_METHOD(finishOperationBatch)
+{
+  // TODO T71377585
+}
+
 RCT_EXPORT_METHOD(createAnimatedNode:(double)tag
                   config:(NSDictionary<NSString *, id> *)config)
 {

@@ -16,6 +16,17 @@
 namespace facebook {
 namespace react {
 
+struct LineMeasurement {
+  std::string text;
+  Rect frame;
+  Float descender;
+  Float capHeight;
+  Float ascender;
+  Float xHeight;
+};
+
+using LinesMeasurements = std::vector<LineMeasurement>;
+
 /*
  * Describes a result of text measuring.
  */

@@ -55,6 +55,12 @@ struct LayoutContext {
    * Multiplier used to change size of the font in surface.
    */
   Float fontSizeMultiplier{1.0};
+
+  /*
+   * Viewport offset is offset of the React Native's root view.
+   * If React Native takes up entire screen, it will be {0, 0}.
+   */
+  Point viewportOffset{};
 };
 
 } // namespace react

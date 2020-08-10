@@ -57,6 +57,9 @@ public abstract class NativeAnimatedTurboModuleSpec extends ReactContextBaseJava
   public abstract void setAnimatedNodeValue(double nodeTag, double value);
 
   @ReactMethod
+  public abstract void startOperationBatch();
+
+  @ReactMethod
   public abstract void setAnimatedNodeOffset(double nodeTag, double offset);
 
   @ReactMethod
@@ -78,6 +81,9 @@ public abstract class NativeAnimatedTurboModuleSpec extends ReactContextBaseJava
 
   @ReactMethod
   public abstract void createAnimatedNode(double tag, ReadableMap config);
+
+  @ReactMethod
+  public abstract void finishOperationBatch();
 
   @ReactMethod
   public abstract void startListeningToAnimatedNodeValue(double tag);

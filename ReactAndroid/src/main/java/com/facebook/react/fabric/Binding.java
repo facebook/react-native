@@ -38,7 +38,7 @@ public class Binding {
       Object uiManager,
       EventBeatManager eventBeatManager,
       MessageQueueThread jsMessageQueueThread,
-      ComponentFactoryDelegate componentsRegistry,
+      ComponentFactory componentsRegistry,
       Object reactNativeConfig);
 
   public native void startSurface(
@@ -78,7 +78,7 @@ public class Binding {
       @NonNull FabricUIManager fabricUIManager,
       @NonNull EventBeatManager eventBeatManager,
       @NonNull MessageQueueThread jsMessageQueueThread,
-      @NonNull ComponentFactoryDelegate componentFactoryDelegate,
+      @NonNull ComponentFactory componentFactory,
       @NonNull ReactNativeConfig reactNativeConfig) {
     fabricUIManager.setBinding(this);
     installFabricUIManager(
@@ -86,7 +86,7 @@ public class Binding {
         fabricUIManager,
         eventBeatManager,
         jsMessageQueueThread,
-        componentFactoryDelegate,
+        componentFactory,
         reactNativeConfig);
     setPixelDensity(PixelUtil.getDisplayMetricDensity());
   }

@@ -65,19 +65,19 @@ rn_xplat_cxx_library(
     ],
     fbandroid_exported_headers = subdir_glob(
         [
-            ("platform/android", "*.h"),
+            ("platform/android/react/renderer/textlayoutmanager", "**/*.h"),
         ],
         prefix = "react/renderer/textlayoutmanager",
     ),
     fbandroid_headers = subdir_glob(
         [
-            ("platform/android", "**/*.h"),
+            ("platform/android/react/renderer/textlayoutmanager", "**/*.h"),
         ],
         prefix = "",
     ),
     fbandroid_srcs = glob(
         [
-            "platform/android/**/*.cpp",
+            "platform/android/react/renderer/textlayoutmanager/**/*.cpp",
         ],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
