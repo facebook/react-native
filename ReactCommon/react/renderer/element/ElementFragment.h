@@ -30,6 +30,7 @@ class ElementFragment final {
   using ReferenceCallback =
       std::function<void(ShadowNode::Unshared const &shadowNode)>;
   using FinalizeCallback = std::function<void(ShadowNode &shadowNode)>;
+  using StateCallback = std::function<StateData::Shared()>;
 
   /*
    * ComponentDescriptor part (describes the type)
@@ -47,7 +48,6 @@ class ElementFragment final {
    * ShadowNode part (describes the instance)
    */
   Props::Shared props;
-  State::Shared state;
   List children;
 
   /*
@@ -55,6 +55,7 @@ class ElementFragment final {
    */
   ReferenceCallback referenceCallback;
   FinalizeCallback finalizeCallback;
+  StateCallback stateCallback;
 };
 
 } // namespace react
