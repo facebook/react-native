@@ -8,6 +8,7 @@
 #pragma once
 
 #include <folly/Optional.h>
+#include <react/renderer/components/text/ParagraphEventEmitter.h>
 #include <react/renderer/components/text/ParagraphProps.h>
 #include <react/renderer/components/text/ParagraphState.h>
 #include <react/renderer/components/text/TextShadowNode.h>
@@ -21,8 +22,6 @@ namespace facebook {
 namespace react {
 
 extern char const ParagraphComponentName[];
-
-using ParagraphEventEmitter = ViewEventEmitter;
 
 /*
  * `ShadowNode` for <Paragraph> component, represents <View>-like component
