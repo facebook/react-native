@@ -18,7 +18,7 @@ import {PanResponder, ScrollView} from 'react-native';
 
 exports.displayName = 'JSResponderHandlerExample';
 exports.framework = 'React';
-exports.title = '<JSResponderHandler>';
+exports.title = 'JSResponderHandler';
 exports.description = 'Simple example to test JSResponderHandler.';
 
 const _gesture = PanResponder.create({

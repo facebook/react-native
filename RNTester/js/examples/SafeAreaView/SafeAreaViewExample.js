@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
-exports.title = '<SafeAreaView>';
+exports.title = 'SafeAreaView';
 exports.description =
   'SafeAreaView automatically applies paddings reflect the portion of the view that is not covered by other (special) ancestor views.';
 exports.examples = [

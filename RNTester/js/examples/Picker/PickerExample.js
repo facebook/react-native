@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = '<Picker>';
+exports.title = 'Picker';
 exports.description =
   'Provides multiple options to choose from, using either a dropdown menu or a dialog.';
 exports.examples = [

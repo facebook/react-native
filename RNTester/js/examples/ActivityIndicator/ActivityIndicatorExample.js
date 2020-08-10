@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
-exports.title = '<ActivityIndicator>';
+exports.title = 'ActivityIndicator';
 exports.description = 'Animated loading indicators.';
 
 exports.examples = [

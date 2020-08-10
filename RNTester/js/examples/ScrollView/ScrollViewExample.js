@@ -26,7 +26,7 @@ const nullthrows = require('nullthrows');
 import type {ViewStyleProp} from '../../../../Libraries/StyleSheet/StyleSheet';
 
 exports.displayName = 'ScrollViewExample';
-exports.title = '<ScrollView>';
+exports.title = 'ScrollView';
 exports.description =
   'Component that enables scrolling through child components';
 exports.examples = [

@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = '<Slider>';
+exports.title = 'Slider';
 exports.displayName = 'SliderExample';
 exports.description = 'Slider input for numeric values';
 exports.examples = [

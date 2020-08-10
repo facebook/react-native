@@ -27,7 +27,7 @@ const Item = Picker.Item;
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
-exports.title = '<Modal>';
+exports.title = 'Modal';
 exports.description = 'Component for presenting modal views.';
 
 class Button extends React.Component<$FlowFixMeProps, $FlowFixMeState> {

@@ -432,7 +432,7 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
 }
 
 exports.framework = 'React';
-exports.title = '<StatusBar>';
+exports.title = 'StatusBar';
 exports.description = 'Component for controlling the status bar';
 exports.examples = [
   {

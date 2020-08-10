@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = '<MaskedViewIOS>';
+exports.title = 'MaskedViewIOS';
 exports.description =
   'Renders the child view with a mask specified in the `renderMask` prop.';
 exports.examples = [

@@ -19,7 +19,7 @@ const {
   View,
 } = require('react-native');
 
-exports.title = '<View>';
+exports.title = 'View';
 exports.description = ('Basic building block of all UI, examples that ' +
   'demonstrate some of the many styles available.': string);
 

@@ -479,7 +479,7 @@ class TextWithCapBaseBox extends React.Component<*, *> {
   }
 }
 
-exports.title = '<Text>';
+exports.title = 'Text';
 exports.description = 'Base component for rendering styled text.';
 exports.displayName = 'TextExample';
 exports.examples = [
