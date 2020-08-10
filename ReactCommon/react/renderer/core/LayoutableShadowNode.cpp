@@ -136,15 +136,14 @@ LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {
   return layoutMetrics_;
 }
 
-bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
+void LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
   ensureUnsealed();
 
   if (layoutMetrics_ == layoutMetrics) {
-    return false;
+    return;
   }
 
   layoutMetrics_ = layoutMetrics;
-  return true;
 }
 
 Transform LayoutableShadowNode::getTransform() const {

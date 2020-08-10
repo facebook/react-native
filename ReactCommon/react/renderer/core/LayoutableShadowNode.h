@@ -139,9 +139,8 @@ class LayoutableShadowNode : public ShadowNode {
 
   /*
    * Sets layout metrics for the shadow node.
-   * Returns true if the metrics are different from previous ones.
    */
-  bool setLayoutMetrics(LayoutMetrics layoutMetrics);
+  void setLayoutMetrics(LayoutMetrics layoutMetrics);
 
   /*
    * Returns the ShadowNode that is rendered at the Point received as a

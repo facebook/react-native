@@ -398,9 +398,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
       auto newLayoutMetrics = layoutMetricsFromYogaNode(*childYogaNode);
       newLayoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
 
-      // Adding the node to `affectedNodes` if the node's `frame` was changed.
-      if (layoutContext.affectedNodes &&
-          newLayoutMetrics.frame != childNode.getLayoutMetrics().frame) {
+      if (layoutContext.affectedNodes) {
         layoutContext.affectedNodes->push_back(&childNode);
       }
 
