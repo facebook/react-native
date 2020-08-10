@@ -16,6 +16,8 @@ const RNTesterComponentTitle = require('./RNTesterComponentTitle');
 const RNTesterBookmarkButton = require('./RNTesterBookmarkButton');
 const React = require('react');
 
+import {AsyncStorage} from 'react-native';
+
 const {
   Platform,
   SectionList,
@@ -52,6 +54,7 @@ type ButtonProps = {
   onPress?: Function,
   onShowUnderlay?: Function,
   onHideUnderlay?: Function,
+  updateSectionsList?: Function,
   ...
 };
 
@@ -99,13 +102,13 @@ class RowComponent extends React.PureComponent<ButtonProps, ButtonState> {
       active: !this.state.active,
     });
     if (!this.state.active) {
-      if (this.state.key === 'APIS') {
+      if (this.state.key === 'APIS' || this.state.key === 'RECENT_APIS') {
         bookmark.AddApi(this.props.item.module.title, this.props.item);
       } else {
         bookmark.AddComponent(this.props.item.module.title, this.props.item);
       }
     } else {
-      if (this.state.key === 'APIS') {
+      if (this.state.key === 'APIS' || this.state.key === 'RECENT_APIS') {
         bookmark.RemoveApi(this.props.item.module.title);
       } else {
         bookmark.RemoveComponent(this.props.item.module.title);
@@ -114,7 +117,8 @@ class RowComponent extends React.PureComponent<ButtonProps, ButtonState> {
   };
 
   _onPress = () => {
-      if (this.props.onPress) {
+    this.props.updateSectionsList();
+    if (this.props.onPress) {
       this.props.onPress();
       return;
     }
@@ -124,7 +128,7 @@ class RowComponent extends React.PureComponent<ButtonProps, ButtonState> {
     const {item} = this.props;
     return (
       <RNTesterThemeContext.Consumer>
-        {(theme) => {
+        {theme => {
           return (
             <TouchableHighlight
               onShowUnderlay={this.props.onShowUnderlay}
@@ -146,7 +150,7 @@ class RowComponent extends React.PureComponent<ButtonProps, ButtonState> {
 
                   <View style={{flexDirection: 'row', marginBottom: 5}}>
                     <Text style={{color: 'blue'}}>Category: </Text>
-                    <Text>{item.module.category || 'Components/Basic'}</Text>
+                    <Text>{item.category || 'Components/Basic'}</Text>
                   </View>
 
                   <Text
@@ -188,7 +192,7 @@ class RowComponent extends React.PureComponent<ButtonProps, ButtonState> {
 
 const renderSectionHeader = ({section}) => (
   <RNTesterThemeContext.Consumer>
-    {(theme) => {
+    {theme => {
       return (
         <Text
           style={[
@@ -207,36 +211,126 @@ const renderSectionHeader = ({section}) => (
 
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   static contextType = RNTesterBookmarkContext;
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      components: props.list.ComponentExamples,
+      api: props.list.APIExamples,
+      recentComponents: [],
+      recentApis: [],
+    };
+  }
+
+  componentDidMount() {
+    AsyncStorage.getItem('RecentComponents', (err, storedString) => {
+      if (err || !storedString) {
+        return;
+      }
+      const recentComponents = JSON.parse(storedString);
+      this.setState({
+        recentComponents: recentComponents,
+      });
+    });
+    AsyncStorage.getItem('RecentApi', (err, storedString) => {
+      if (err || !storedString) {
+        return;
+      }
+      const recentApis = JSON.parse(storedString);
+      this.setState({
+        recentApis: recentApis,
+      });
+    });
+  }
+
+  updateSectionsList = (index, key) => {
+    if (key === 'Components') {
+      let openedItem = this.state.components[index];
+      let componentsCopy = [...this.state.recentComponents];
+      const ind = componentsCopy.findIndex(component => component.key === openedItem.key);
+      if(ind != -1) {
+        componentsCopy.splice(ind, 1);
+      }
+      if (this.state.recentComponents.length >= 5) {
+        componentsCopy.pop();
+      }
+      componentsCopy.unshift(openedItem);
+      AsyncStorage.setItem('RecentComponents', JSON.stringify(componentsCopy));
+    } else {
+      let openedItem = this.state.api[index];
+      let apisCopy = [...this.state.recentApis];
+      const ind = apisCopy.findIndex(api => api.key === openedItem.key);
+      if(ind != -1) {
+        apisCopy.splice(ind, 1);
+      }
+      if (this.state.recentApis.length >= 5) {
+        apisCopy.pop();
+      }
+      apisCopy.unshift(openedItem);
+      AsyncStorage.setItem('RecentApi', JSON.stringify(apisCopy));
+    }
+  };
+
   render(): React.Node {
     const filter = ({example, filterRegex, category}) =>
       filterRegex.test(example.module.title) &&
       (!category || example.category === category) &&
       (!Platform.isTV || example.supportsTVOS);
 
-      const {screen} = this.props; 
-      let sections = []; 
-      if (screen === "component"){ 
+    const {screen} = this.props;
+    let sections = [];
+    if (screen === 'component') {
+      if (this.state.recentComponents.length > 0) {
         sections = [
           {
-            data: this.props.list.ComponentExamples,
+            data: this.state.recentComponents,
+            key: 'RECENT_COMPONENTS',
+            title: 'Recently viewed'
+          },
+          {
+            data: this.state.components,
+            key: 'COMPONENTS',
+            title: 'Components'
+          },
+        ];
+      } else {
+        sections = [
+          {
+            data: this.state.components,
             key: 'Components',
-          }
+          },
         ];
-      } else if (screen === "api") { 
+      }
+    } else if (screen === 'api') {
+      if (this.state.recentApis.length > 0) {
         sections = [
           {
-            data: this.props.list.APIExamples,
+            data: this.state.recentApis,
+            key: 'RECENT_APIS',
+            title: 'Recently viewed'
+          },
+          {
+            data: this.state.api,
             key: 'APIS',
-          }
+            title: 'APIS',
+          },
         ];
-      } else { 
-        sections = []; 
+      } else {
+        sections = [
+          {
+            data: this.state.api,
+            key: 'APIS',
+            title: 'APIS',
+          },
+        ];
       }
-      
-
+    } else {
+      sections = [];
+    }
+    
     return (
       <RNTesterThemeContext.Consumer>
-        {(theme) => {
+        {theme => {
           return (
             <View
               style={[
@@ -252,13 +346,14 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
                 render={({filteredSections}) => (
                   <SectionList
                     sections={filteredSections}
+                    extraData={filteredSections}
                     renderItem={this._renderItem}
                     keyboardShouldPersistTaps="handled"
                     automaticallyAdjustContentInsets={false}
                     keyboardDismissMode="on-drag"
                     renderSectionHeader={renderSectionHeader}
                     ListFooterComponent={() => (
-                        <View style={{ height: 80 }}></View>
+                      <View style={{height: 80}}></View>
                     )}
                   />
                 )}
@@ -270,7 +365,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
     );
   }
 
-  _renderItem = ({item, section, separators}) => {
+  _renderItem = ({item, section, separators, index}) => {
     let bookmark = this.context;
     return (
       <RowComponent
@@ -280,10 +375,10 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
         onNavigate={this.props.onNavigate}
         onShowUnderlay={separators.highlight}
         onHideUnderlay={separators.unhighlight}
+        updateSectionsList={() => this.updateSectionsList(index, section.key)}
       />
     );
   };
-
 
   _handleRowPress(exampleKey: string): void {
     this.props.onNavigate(RNTesterActions.ExampleAction(exampleKey));
@@ -292,7 +387,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
 
 const ItemSeparator = ({highlighted}) => (
   <RNTesterThemeContext.Consumer>
-    {(theme) => {
+    {theme => {
       return (
         <View
           style={

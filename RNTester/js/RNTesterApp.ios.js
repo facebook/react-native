@@ -217,7 +217,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         AsyncStorage.setItem('Components', JSON.stringify(stateComponent));
       },
       checkBookmark: (title, key) => {
-        if (key === 'APIS') {
+        if (key === 'APIS' || key === 'RECENT_APIS') {
           return this.state.Api[title] === undefined;
         }
         return this.state.Components[title] === undefined;
