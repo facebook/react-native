@@ -40,6 +40,9 @@ using namespace facebook::react;
   RCTSurfaceTouchHandler *_Nullable _touchHandler;
 }
 
+@synthesize delegate = _delegate;
+@synthesize rootTag = _rootTag;
+
 - (instancetype)initWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
                               moduleName:(NSString *)moduleName
                        initialProperties:(NSDictionary *)initialProperties

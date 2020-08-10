@@ -58,6 +58,8 @@
   atomic_bool _waitingForMountingStageOnMainQueue;
 }
 
+@synthesize delegate = _delegate;
+
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
@@ -587,6 +589,11 @@
                  method:@"unmountApplicationComponentAtRootTag"
                    args:@[ rootViewTag ]
              completion:NULL];
+}
+
+- (NSInteger)rootTag
+{
+  return _rootViewTag.integerValue;
 }
 
 @end
