@@ -222,8 +222,13 @@ using namespace facebook::react;
     return;
   }
 
+  auto data = _state->getData();
+
+  if (!oldState) {
+    _mostRecentEventCount = _state->getData().mostRecentEventCount;
+  }
+
   if (_mostRecentEventCount == _state->getData().mostRecentEventCount) {
-    auto data = _state->getData();
     _comingFromJS = YES;
     [self _setAttributedString:RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox)];
     _comingFromJS = NO;
