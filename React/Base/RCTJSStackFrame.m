@@ -100,7 +100,7 @@ static NSRegularExpression *RCTJSStackFrameRegex()
                                      file:file
                                lineNumber:[lineNumber integerValue]
                                    column:[column integerValue]
-                                 collapse:@NO];
+                                 collapse:@NO.integerValue];
 }
 
 + (instancetype)stackFrameWithDictionary:(NSDictionary *)dict
