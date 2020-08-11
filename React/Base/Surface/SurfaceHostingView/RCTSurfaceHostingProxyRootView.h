@@ -36,6 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDelay;
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;
 
+- (instancetype)initWithSurface:(RCTSurface *)surface
+                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode NS_UNAVAILABLE;
+
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
