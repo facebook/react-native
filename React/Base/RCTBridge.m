@@ -207,7 +207,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)didReceiveReloadCommand
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [self reloadWithReason:@"Command"];
+#pragma clang diagnostic pop
 }
 
 - (NSArray<Class> *)moduleClasses

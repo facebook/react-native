@@ -378,7 +378,10 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 
 + (void)reload
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [RCTProfilingBridge() reloadWithReason:@"Profiling controls"];
+#pragma clang diagnostic pop
 }
 
 + (void)toggle:(UIButton *)target

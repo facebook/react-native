@@ -1105,6 +1105,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
 {
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+
 - (void)reload
 {
   if (!_valid) {
@@ -1124,6 +1127,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
   }
   RCTTriggerReloadCommandListeners(reason);
 }
+
+#pragma clang diagnostic pop
 
 - (Class)executorClass
 {
