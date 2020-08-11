@@ -107,7 +107,7 @@
 
 #if TARGET_OS_MACCATALYST
   CGContextRef context = UIGraphicsGetCurrentContext();
-  UIGraphicsPushContext(context);
+  CGContextSaveGState(context);
   // NSLayoutManager tries to draw text with sub-pixel anti-aliasing by default on
   // macOS, but rendering SPAA onto a transparent background produces poor results.
   // CATextLayer disables font smoothing by default now on macOS; we follow suit.
@@ -159,7 +159,7 @@
   }
   
 #if TARGET_OS_MACCATALYST
-  UIGraphicsPopContext();
+  CGContextRestoreGState();
 #endif
 }
 
