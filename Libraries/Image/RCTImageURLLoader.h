@@ -10,9 +10,11 @@
 #import <React/RCTBridge.h>
 #import <React/RCTResizeMode.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
 typedef void (^RCTImageLoaderPartialLoadBlock)(UIImage *image);
-typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image);
+typedef void (^RCTImageLoaderCompletionBlock)(NSError * _Nullable error, UIImage * _Nullable image);
 typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 /**
@@ -71,3 +73,5 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 - (BOOL)shouldCacheLoadedImages;
 
 @end
+
+NS_ASSUME_NONNULL_END
