@@ -92,7 +92,7 @@ class Element final {
   /*
    * Sets `state` using callback.
    */
-  Element &stateData(std::function<void(ConcreteStateData&)> callback) {
+  Element &stateData(std::function<void(ConcreteStateData &)> callback) {
     fragment_.stateCallback = [&]() -> StateData::Shared {
       auto stateData = ConcreteStateData();
       callback(stateData);
