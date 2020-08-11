@@ -7,19 +7,25 @@
 
 package com.facebook.react.fabric;
 
+import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
 public class CoreComponentsRegistry extends ComponentRegistry {
+
   static {
-    SoLoader.loadLibrary("fabricjni");
+    FabricSoLoader.staticInit();
   }
 
+  @DoNotStrip
+  private static native HybridData initHybrid();
+
+  @DoNotStrip
   private CoreComponentsRegistry(ComponentFactory componentFactory) {
     super(componentFactory);
   }
 
+  @DoNotStrip
   public static CoreComponentsRegistry register(ComponentFactory componentFactory) {
     return new CoreComponentsRegistry(componentFactory);
   }
