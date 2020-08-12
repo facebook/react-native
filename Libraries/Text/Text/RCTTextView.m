@@ -159,7 +159,7 @@
   }
   
 #if TARGET_OS_MACCATALYST
-  CGContextRestoreGState();
+  CGContextRestoreGState(context);
 #endif
 }
 
