@@ -123,7 +123,7 @@ android {
     }
 
     dexOptions {
-       javaMaxHeapSize "4g"
+        javaMaxHeapSize "4g"
     }
 
     flavorDimensions "vm"
@@ -221,4 +221,10 @@ dependencies {
     // Use detox test library
     androidTestImplementation('com.wix:detox:+') { transitive = true }
     androidTestImplementation 'junit:junit:4.12'
+}
+
+react {
+    enableCodegen = System.getenv("USE_CODEGEN") ?: false
+    jsRootDir = file("$rootDir/RNTester")
+    reactNativeRootDir = file("$rootDir")
 }

@@ -7,9 +7,9 @@
 
 plugins {
     id("com.android.library")
+    id("com.facebook.react.codegen")
     id("maven")
     id("de.undercouch.download")
-    id("com.facebook.react.codegen")
 }
 
 import java.nio.file.Paths
@@ -465,8 +465,9 @@ dependencies {
 }
 
 apply(from: "release.gradle")
-apply(from: "../architecture.gradle");
-generateNativeArtifactsFromJavaScript([
-    enableCodegen: System.getenv("USE_CODEGEN"),
-    jsRootDir: "${file('../Libraries')}",
-])
+
+react {
+    enableCodegen = System.getenv("USE_CODEGEN") ?: false
+    jsRootDir = file("../Libraries")
+    reactNativeRootDir = file("$rootDir")
+}
