@@ -122,6 +122,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    dexOptions {
+       javaMaxHeapSize "4g"
+    }
+
     flavorDimensions "vm"
     productFlavors {
         hermes {
