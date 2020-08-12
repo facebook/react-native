@@ -18,26 +18,27 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
         {/** component and APIs tab  */}
         <View style={styles.buttonContainer}>
           {/** left tab with Components  */}
-          <View style={[styles.leftBox, {backgroundColor: theme.BackgroundColor}]}>
             {/** @attention attach navigation endpoints here */}
             <Pressable
-              onPress={() =>  onNavigate(RNTesterActions.OpenList('component'))}>
-              <Image
-                style={styles.componentIcon}
-                source={
-                  isComponentActive
-                    ? require('./../assets/bottom-nav-components-icon-active.png')
-                    : require('./../assets/bottom-nav-components-icon-inactive.png')
-                }
-              />
-              <Text
-                style={
-                  isComponentActive ? styles.activeText : styles.inactiveText
-                }>
-                Components
-              </Text>
+              onPress={() =>  onNavigate(RNTesterActions.OpenList('component'))}
+              style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
+              <View style={styles.pressableContent} collapsable={false}>
+                <Image
+                  style={styles.componentIcon}
+                  source={
+                    isComponentActive
+                      ? require('./../assets/bottom-nav-components-icon-active.png')
+                      : require('./../assets/bottom-nav-components-icon-inactive.png')
+                  }
+                />
+                <Text
+                  style={
+                    isComponentActive ? styles.activeText : styles.inactiveText
+                  }>
+                  Components
+                </Text>
+              </View>
             </Pressable>
-          </View>
 
           {/** central tab with bookmark icon  */}
           <View style={styles.centerBox}>
@@ -65,9 +66,10 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
           </View>
 
           {/** right tab with Components  */}
-         <Pressable onPress={() => { onNavigate(RNTesterActions.OpenList('api')) }}
-
-          style={[styles.rightBox, {backgroundColor: theme.BackgroundColor}]}>
+         <Pressable 
+          onPress={() => { onNavigate(RNTesterActions.OpenList('api')) }}
+          style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
+            <View style={styles.pressableContent} collapsable={false}>
               <Image
                 style={styles.apiIcon}
                 source={
@@ -79,6 +81,7 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
               <Text style={isAPIActive ? styles.activeText : styles.inactiveText}>
                 APIs
               </Text>
+            </View>
          </Pressable>
         </View>
     </View>
@@ -137,22 +140,22 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
   },
-  leftBox: {
-    flex: 1,
-    height: 65,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   centerBox: {
     flex: 1,
     height: 65,
   },
-  rightBox: {
+  navButton: {
     flex: 1,
     height: 65,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  pressableContent: {
+    flex: 1,
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 module.exports = RNTesterNavbar;
