@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = '<TextInput>';
+exports.title = 'TextInput';
 exports.description = 'Single and multi-line text inputs.';
 exports.examples = ([
   ...TextInputSharedExamples,

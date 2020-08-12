@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = '<FlatList>';
+exports.title = 'FlatList';
 exports.description = 'Performant, scrollable list of data.';
 exports.simpleExampleContainer = true;
 exports.examples = [

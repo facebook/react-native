@@ -20,7 +20,7 @@ const {
   EventSegmentedControlExample,
 } = require('./SegmentedControlExampleComponents');
 
-exports.title = '<SegmentedControlIOS>';
+exports.title = 'SegmentedControlIOS';
 exports.displayName = 'SegmentedControlExample';
 exports.description = 'Native segmented control';
 exports.examples = [

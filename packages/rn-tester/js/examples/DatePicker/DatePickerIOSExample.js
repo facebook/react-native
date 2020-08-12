@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = '<DatePickerIOS>';
+exports.title = 'DatePickerIOS';
 exports.description = 'Select dates and times using the native UIDatePicker.';
 exports.examples = [
   {

@@ -82,7 +82,7 @@ class ProgressBarAndroidExample extends React.Component<{...}> {
   }
 }
 
-exports.title = '<ProgressBarAndroid>';
+exports.title = 'ProgressBarAndroid';
 exports.description = 'Horizontal bar to show the progress of some operation.';
 exports.examples = [
   {
