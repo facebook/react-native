@@ -89,13 +89,13 @@
     <span class="token keyword">const</span> granted <span class="token operator">=</span> <span class="token keyword">await</span> PermissionsAndroid<span class="token punctuation">.</span><span class="token function">request</span><span class="token punctuation">(</span>
       PermissionsAndroid<span class="token punctuation">.</span><span class="token constant">PERMISSIONS</span><span class="token punctuation">.</span><span class="token constant">CAMERA</span><span class="token punctuation">,</span>
       <span class="token punctuation">{</span>
-        title<span class="token punctuation">:</span> <span class="token string">'Cool Photo App Camera Permission'</span><span class="token punctuation">,</span>
-        message<span class="token punctuation">:</span>
+        title<span class="token operator">:</span> <span class="token string">'Cool Photo App Camera Permission'</span><span class="token punctuation">,</span>
+        message<span class="token operator">:</span>
           <span class="token string">'Cool Photo App needs access to your camera '</span> <span class="token operator">+</span>
           <span class="token string">'so you can take awesome pictures.'</span><span class="token punctuation">,</span>
-        buttonNeutral<span class="token punctuation">:</span> <span class="token string">'Ask Me Later'</span><span class="token punctuation">,</span>
-        buttonNegative<span class="token punctuation">:</span> <span class="token string">'Cancel'</span><span class="token punctuation">,</span>
-        buttonPositive<span class="token punctuation">:</span> <span class="token string">'OK'</span>
+        buttonNeutral<span class="token operator">:</span> <span class="token string">'Ask Me Later'</span><span class="token punctuation">,</span>
+        buttonNegative<span class="token operator">:</span> <span class="token string">'Cancel'</span><span class="token punctuation">,</span>
+        buttonPositive<span class="token operator">:</span> <span class="token string">'OK'</span>
       <span class="token punctuation">}</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span>granted <span class="token operator">===</span> PermissionsAndroid<span class="token punctuation">.</span><span class="token constant">RESULTS</span><span class="token punctuation">.</span><span class="token constant">GRANTED</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>

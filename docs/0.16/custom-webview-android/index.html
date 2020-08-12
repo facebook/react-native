@@ -174,7 +174,7 @@
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">WebView</span></span>
         <span class="token spread"><span class="token punctuation">{</span><span class="token punctuation">...</span><span class="token attr-value">this</span><span class="token punctuation">.</span><span class="token attr-value">props</span><span class="token punctuation">}</span></span>
-        <span class="token attr-name">nativeConfig</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> component<span class="token punctuation">:</span> RCTCustomWebView <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
+        <span class="token attr-name">nativeConfig</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> component<span class="token operator">:</span> RCTCustomWebView <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
       <span class="token punctuation">/></span></span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
@@ -192,12 +192,12 @@
 <pre><code class="hljs css language-jsx"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">CustomWebView</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
   <span class="token keyword">static</span> propTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
     <span class="token operator">...</span>WebView<span class="token punctuation">.</span>propTypes<span class="token punctuation">,</span>
-    finalUrl<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>string<span class="token punctuation">,</span>
-    onNavigationCompleted<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>func
+    finalUrl<span class="token operator">:</span> PropTypes<span class="token punctuation">.</span>string<span class="token punctuation">,</span>
+    onNavigationCompleted<span class="token operator">:</span> PropTypes<span class="token punctuation">.</span>func
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token keyword">static</span> defaultProps <span class="token operator">=</span> <span class="token punctuation">{</span>
-    finalUrl<span class="token punctuation">:</span> <span class="token string">'about:blank'</span>
+    finalUrl<span class="token operator">:</span> <span class="token string">'about:blank'</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function-variable function">_onNavigationCompleted</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
@@ -210,10 +210,10 @@
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">WebView</span></span>
         <span class="token spread"><span class="token punctuation">{</span><span class="token punctuation">...</span><span class="token attr-value">this</span><span class="token punctuation">.</span><span class="token attr-value">props</span><span class="token punctuation">}</span></span>
         <span class="token attr-name">nativeConfig</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
-          component<span class="token punctuation">:</span> RCTCustomWebView<span class="token punctuation">,</span>
-          props<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-            finalUrl<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>finalUrl<span class="token punctuation">,</span>
-            onNavigationCompleted<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_onNavigationCompleted
+          component<span class="token operator">:</span> RCTCustomWebView<span class="token punctuation">,</span>
+          props<span class="token operator">:</span> <span class="token punctuation">{</span>
+            finalUrl<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>finalUrl<span class="token punctuation">,</span>
+            onNavigationCompleted<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_onNavigationCompleted
           <span class="token punctuation">}</span>
         <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
       <span class="token punctuation">/></span></span>
@@ -228,9 +228,9 @@
   CustomWebView<span class="token punctuation">,</span>
   <span class="token punctuation">{</span>
     <span class="token operator">...</span>WebView<span class="token punctuation">.</span>extraNativeComponentConfig<span class="token punctuation">,</span>
-    nativeOnly<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    nativeOnly<span class="token operator">:</span> <span class="token punctuation">{</span>
       <span class="token operator">...</span>WebView<span class="token punctuation">.</span>extraNativeComponentConfig<span class="token punctuation">.</span>nativeOnly<span class="token punctuation">,</span>
-      onScrollToBottom<span class="token punctuation">:</span> <span class="token boolean">true</span>
+      onScrollToBottom<span class="token operator">:</span> <span class="token boolean">true</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">)</span><span class="token punctuation">;</span>

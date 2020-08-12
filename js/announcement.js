@@ -23,9 +23,9 @@ window.onscroll = () => {
       document.body.scrollTop > scrollStartBoundary ||
       document.documentElement.scrollTop > scrollStartBoundary
     ) {
-      fixedHeaderContainer.style.top = '-100px';
-      navPusher.style.top = '-100px';
-      navPusher.style.marginBottom = '-100px';
+      fixedHeaderContainer.style.top = '-60px';
+      navPusher.style.top = '-60px';
+      navPusher.style.marginBottom = '-60px';
     } else {
       fixedHeaderContainer.style.top = '0';
       navPusher.style.top = '0';
