@@ -11,10 +11,10 @@
 
 'use strict';
 
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
+import Platform from '../../Utilities/Platform';
+import * as React from 'react';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import View from '../View/View'
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
