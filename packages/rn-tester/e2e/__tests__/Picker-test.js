@@ -18,8 +18,8 @@ describe('Picker', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
     await openComponentWithLabel(
-      '<Picker>',
-      '<Picker> Provides multiple options to choose from, using either a dropdown menu or a dialog.',
+      'Picker',
+      'Picker Provides multiple options to choose from, using either a dropdown menu or a dialog.',
     );
   });
 
