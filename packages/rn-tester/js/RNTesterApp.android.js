@@ -319,6 +319,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
 
     return (
       <RNTesterExampleListViaHook
+        key={screen}
         title={'RNTester'}
         /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
          * when making Flow check .android.js files. */
