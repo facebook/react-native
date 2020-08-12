@@ -114,15 +114,15 @@
 <span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 <span class="token keyword">const</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  labelCell<span class="token operator">:</span> <span class="token punctuation">{</span>
-    flex<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
-    alignItems<span class="token operator">:</span> <span class="token string">'stretch'</span><span class="token punctuation">,</span>
+  labelCell<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    alignItems<span class="token punctuation">:</span> <span class="token string">'stretch'</span><span class="token punctuation">,</span>
     <span class="token operator">...</span>Platform<span class="token punctuation">.</span><span class="token function">select</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-      ios<span class="token operator">:</span> <span class="token punctuation">{</span> color<span class="token operator">:</span> <span class="token function">PlatformColor</span><span class="token punctuation">(</span><span class="token string">'label'</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-      android<span class="token operator">:</span> <span class="token punctuation">{</span>
-        color<span class="token operator">:</span> <span class="token function">PlatformColor</span><span class="token punctuation">(</span><span class="token string">'?attr/colorControlNormal'</span><span class="token punctuation">)</span>
+      ios<span class="token punctuation">:</span> <span class="token punctuation">{</span> color<span class="token punctuation">:</span> <span class="token function">PlatformColor</span><span class="token punctuation">(</span><span class="token string">'label'</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      android<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        color<span class="token punctuation">:</span> <span class="token function">PlatformColor</span><span class="token punctuation">(</span><span class="token string">'?attr/colorControlNormal'</span><span class="token punctuation">)</span>
       <span class="token punctuation">}</span><span class="token punctuation">,</span>
-      <span class="token keyword">default</span><span class="token operator">:</span> <span class="token punctuation">{</span> color<span class="token operator">:</span> <span class="token string">'black'</span> <span class="token punctuation">}</span>
+      <span class="token keyword">default</span><span class="token punctuation">:</span> <span class="token punctuation">{</span> color<span class="token punctuation">:</span> <span class="token string">'black'</span> <span class="token punctuation">}</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>

@@ -81,11 +81,11 @@
   <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Navigator</span></span>
-        <span class="token attr-name">initialRoute</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> title<span class="token operator">:</span> <span class="token string">'Awesome Scene'</span><span class="token punctuation">,</span> index<span class="token operator">:</span> <span class="token number">0</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
+        <span class="token attr-name">initialRoute</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> title<span class="token punctuation">:</span> <span class="token string">'Awesome Scene'</span><span class="token punctuation">,</span> index<span class="token punctuation">:</span> <span class="token number">0</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
         <span class="token attr-name">renderScene</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token parameter">route<span class="token punctuation">,</span> navigator</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span>
           <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">Hello </span><span class="token punctuation">{</span>route<span class="token punctuation">.</span>title<span class="token punctuation">}</span><span class="token plain-text">!</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span>
         <span class="token punctuation">)</span><span class="token punctuation">}</span></span>
-        <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> padding<span class="token operator">:</span> <span class="token number">100</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
+        <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> padding<span class="token punctuation">:</span> <span class="token number">100</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span>
       <span class="token punctuation">/></span></span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
@@ -96,15 +96,15 @@
 <p>The first example demonstrated one scene. To set up multiple scenes, you pass the <code>initialRouteStack</code> prop to <code>Navigator</code>:</p>
 <pre><code class="hljs css language-jsx"><span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">const</span> routes <span class="token operator">=</span> <span class="token punctuation">[</span>
-    <span class="token punctuation">{</span>title<span class="token operator">:</span> <span class="token string">'First Scene'</span><span class="token punctuation">,</span> index<span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token punctuation">{</span>title<span class="token operator">:</span> <span class="token string">'Second Scene'</span><span class="token punctuation">,</span> index<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>title<span class="token punctuation">:</span> <span class="token string">'First Scene'</span><span class="token punctuation">,</span> index<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>title<span class="token punctuation">:</span> <span class="token string">'Second Scene'</span><span class="token punctuation">,</span> index<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">]</span><span class="token punctuation">;</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
-    <span class="token operator">&lt;</span>Navigator
-      initialRoute<span class="token operator">=</span><span class="token punctuation">{</span>routes<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
-      initialRouteStack<span class="token operator">=</span><span class="token punctuation">{</span>routes<span class="token punctuation">}</span>
-      renderScene<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token parameter">route<span class="token punctuation">,</span> navigator</span><span class="token punctuation">)</span> <span class="token operator">=></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TouchableHighlight</span></span> <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Navigator</span></span>
+      <span class="token attr-name">initialRoute</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>routes<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span>
+      <span class="token attr-name">initialRouteStack</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>routes<span class="token punctuation">}</span></span>
+      <span class="token attr-name">renderScene</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token parameter">route<span class="token punctuation">,</span> navigator</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+        <span class="token operator">&lt;</span>TouchableHighlight onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
           <span class="token keyword">if</span> <span class="token punctuation">(</span>route<span class="token punctuation">.</span>index <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
             navigator<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>routes<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
           <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
@@ -112,13 +112,13 @@
           <span class="token punctuation">}</span>
         <span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
         </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">Hello </span><span class="token punctuation">{</span>route<span class="token punctuation">.</span>title<span class="token punctuation">}</span><span class="token plain-text">!</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
-        </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">TouchableHighlight</span></span><span class="token punctuation">></span></span>
-      <span class="token punctuation">}</span>
-      style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>padding<span class="token operator">:</span> <span class="token number">100</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
-    <span class="token operator">/</span><span class="token operator">></span>
-  <span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-</code></pre>
+        </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">TouchableHighlight</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+      }
+      style=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>padding<span class="token punctuation">:</span> <span class="token number">100</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token plain-text">
+    />
+  );
+}
+</span></code></pre>
 <p>In the above example, a routes variable is defined with two route objects representing two scenes. Each route has an index property that is used to manage the scene being rendered. The <code>renderScene</code> method is changed to either <code>push</code> or <code>pop</code> the navigator depending on the current route's index. Finally, the <code>Text</code> component in the scene is now wrapped in a <code>TouchableHighlight</code> component to help trigger the navigator transitions.</p>
 <h2><a class="anchor" aria-hidden="true" id="navigation-bar"></a><a href="#navigation-bar" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Navigation Bar</h2>
 <p>You can optionally pass in your own navigation bar by returning a <code>Navigator.NavigationBar</code> component to the <code>navigationBar</code> prop in <code>Navigator</code>. You can configure the navigation bar properties, through the <code>routeMapper</code> prop. There you set up the left, right, and title properties of the navigation bar:</p>
@@ -296,7 +296,7 @@
 <h2><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="immediatelyresetroutestack"></a><a href="#immediatelyresetroutestack" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>immediatelyResetRouteStack()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token function">immediatelyResetRouteStack</span><span class="token punctuation">(</span><span class="token punctuation">(</span>nextRouteStack<span class="token operator">:</span> RouteStack<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token function">immediatelyResetRouteStack</span><span class="token punctuation">(</span><span class="token punctuation">(</span>nextRouteStack<span class="token punctuation">:</span> RouteStack<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Reset every scene with an array of routes. All existing route stacks are destroyed and potentially recreated. There is no accompanying animation and this method immediately replaces and re-renders the navigation bar and the stack items.</p>
 <p><strong>Parameters:</strong></p>
@@ -310,7 +310,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="jumpto"></a><a href="#jumpto" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>jumpTo()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token function">jumpTo</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token operator">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token function">jumpTo</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token punctuation">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Transition to an existing scene without unmounting.</p>
 <p>The specified route must be in the currently mounted set of routes defined in <code>routeStack</code>.</p>
@@ -335,7 +335,7 @@
 <p>Jump backward without unmounting the current scene.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="push"></a><a href="#push" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>push()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token operator">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token punctuation">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Navigate forward to a new scene, squashing any scenes that you could jump forward to.</p>
 <p><strong>Parameters:</strong></p>
@@ -349,7 +349,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="popn"></a><a href="#popn" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>popN()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token function">popN</span><span class="token punctuation">(</span><span class="token punctuation">(</span>n<span class="token operator">:</span> number<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token function">popN</span><span class="token punctuation">(</span><span class="token punctuation">(</span>n<span class="token punctuation">:</span> number<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Go back N scenes at once. When N=1, behavior matches <code>pop()</code>. When N is invalid (negative or bigger than current routes count), do nothing.</p>
 <p><strong>Parameters:</strong></p>
@@ -368,7 +368,7 @@
 <p>Transition back and unmount the current scene.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="replaceatindex"></a><a href="#replaceatindex" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>replaceAtIndex()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token function">replaceAtIndex</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token operator">:</span> object<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>index<span class="token operator">:</span> number<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>cb<span class="token operator">:</span> Function<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token function">replaceAtIndex</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token punctuation">:</span> object<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>index<span class="token punctuation">:</span> number<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>cb<span class="token punctuation">:</span> Function<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Replace a scene as specified by an index.</p>
 <p><strong>Parameters:</strong></p>
@@ -384,7 +384,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="replace"></a><a href="#replace" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>replace()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token function">replace</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token operator">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token function">replace</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token punctuation">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Replace the current scene with a new route.</p>
 <p><strong>Parameters:</strong></p>
@@ -398,7 +398,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="replaceprevious"></a><a href="#replaceprevious" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>replacePrevious()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token function">replacePrevious</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token operator">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token function">replacePrevious</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token punctuation">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Replace the previous scene.</p>
 <p><strong>Parameters:</strong></p>
@@ -417,7 +417,7 @@
 <p>Get the first scene in the stack, unmounting every other scene.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="poptoroute"></a><a href="#poptoroute" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>popToRoute()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token function">popToRoute</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token operator">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token function">popToRoute</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token punctuation">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Get a particular scene, as specified by its route. All scenes after it will be unmounted.</p>
 <p><strong>Parameters:</strong></p>
@@ -431,7 +431,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="replacepreviousandpop"></a><a href="#replacepreviousandpop" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>replacePreviousAndPop()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token function">replacePreviousAndPop</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token operator">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token function">replacePreviousAndPop</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token punctuation">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Replace the previous scene and get to it.</p>
 <p><strong>Parameters:</strong></p>
@@ -445,7 +445,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="resetto"></a><a href="#resetto" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>resetTo()</code></h3>
-<pre><code class="hljs css language-jsx"><span class="token function">resetTo</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token operator">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token function">resetTo</span><span class="token punctuation">(</span><span class="token punctuation">(</span>route<span class="token punctuation">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Navigate to a new scene and reset route stack.</p>
 <p><strong>Parameters:</strong></p>

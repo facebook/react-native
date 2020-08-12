@@ -95,7 +95,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
 <span class="token keyword">let</span> VeryExpensive <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
 
 <span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">Optimized</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
-  state <span class="token operator">=</span> <span class="token punctuation">{</span> needsExpensive<span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  state <span class="token operator">=</span> <span class="token punctuation">{</span> needsExpensive<span class="token punctuation">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function-variable function">didPress</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span>VeryExpensive <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -103,17 +103,17 @@ console<span class="token punctuation">.</span><span class="token function">log<
     <span class="token punctuation">}</span>
 
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span><span class="token punctuation">{</span>
-      needsExpensive<span class="token operator">:</span> <span class="token boolean">true</span>
+      needsExpensive<span class="token punctuation">:</span> <span class="token boolean">true</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> marginTop<span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> marginTop<span class="token punctuation">:</span> <span class="token number">20</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
         </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TouchableOpacity</span></span> <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>didPress<span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
           </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">Load</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
         </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">TouchableOpacity</span></span><span class="token punctuation">></span></span><span class="token plain-text">
-        </span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>needsExpensive <span class="token operator">?</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">VeryExpensive</span></span> <span class="token punctuation">/></span></span> <span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">}</span><span class="token plain-text">
+        </span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>needsExpensive <span class="token operator">?</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">VeryExpensive</span></span> <span class="token punctuation">/></span></span> <span class="token punctuation">:</span> <span class="token keyword">null</span><span class="token punctuation">}</span><span class="token plain-text">
       </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
@@ -189,8 +189,8 @@ console<span class="token punctuation">.</span><span class="token function">log<
 <span class="token keyword">const</span> <span class="token constant">ROOT_FOLDER</span> <span class="token operator">=</span> <span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'..'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 <span class="token keyword">const</span> config <span class="token operator">=</span> <span class="token punctuation">{</span>
-  transformer<span class="token operator">:</span> <span class="token punctuation">{</span>
-    <span class="token function-variable function">getTransformOptions</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  transformer<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    <span class="token function-variable function">getTransformOptions</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
       <span class="token keyword">const</span> moduleMap <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
       modulePaths<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">path</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
         <span class="token keyword">if</span> <span class="token punctuation">(</span>fs<span class="token punctuation">.</span><span class="token function">existsSync</span><span class="token punctuation">(</span>path<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -198,12 +198,12 @@ console<span class="token punctuation">.</span><span class="token function">log<
         <span class="token punctuation">}</span>
       <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
       <span class="token keyword">return</span> <span class="token punctuation">{</span>
-        preloadedModules<span class="token operator">:</span> moduleMap<span class="token punctuation">,</span>
-        transform<span class="token operator">:</span> <span class="token punctuation">{</span> inlineRequires<span class="token operator">:</span> <span class="token punctuation">{</span> blacklist<span class="token operator">:</span> moduleMap <span class="token punctuation">}</span> <span class="token punctuation">}</span>
+        preloadedModules<span class="token punctuation">:</span> moduleMap<span class="token punctuation">,</span>
+        transform<span class="token punctuation">:</span> <span class="token punctuation">{</span> inlineRequires<span class="token punctuation">:</span> <span class="token punctuation">{</span> blacklist<span class="token punctuation">:</span> moduleMap <span class="token punctuation">}</span> <span class="token punctuation">}</span>
       <span class="token punctuation">}</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  projectRoot<span class="token operator">:</span> <span class="token constant">ROOT_FOLDER</span>
+  projectRoot<span class="token punctuation">:</span> <span class="token constant">ROOT_FOLDER</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
 module<span class="token punctuation">.</span>exports <span class="token operator">=</span> config<span class="token punctuation">;</span>
