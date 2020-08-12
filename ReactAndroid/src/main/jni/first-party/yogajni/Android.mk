@@ -10,6 +10,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := yoga
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/jni/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/jni
 

@@ -27,7 +27,7 @@ LOCAL_STATIC_LIBRARIES = libcallinvoker libreactperfloggerjni
 LOCAL_MODULE := callinvokerholder
 
 # Compile all local c++ files
-LOCAL_SRC_FILES := $(LOCAL_PATH)/ReactCommon/CallInvokerHolder.cpp
+LOCAL_SRC_FILES := ReactCommon/CallInvokerHolder.cpp
 
 # Build the files in this directory as a shared library
 include $(BUILD_STATIC_LIBRARY)
