@@ -351,6 +351,9 @@ folly::Future<debugger::BreakpointInfo> Inspector::setBreakpoint(
     debugger::SourceLocation loc,
     folly::Optional<std::string> condition) {
   auto promise = std::make_shared<folly::Promise<debugger::BreakpointInfo>>();
+  // Automatically re-enable breakpoints since the user presumably wants this
+  // to start triggering.
+  breakpointsActive_ = true;
 
   executor_->add([this, loc, condition, promise] {
     setBreakpointOnExecutor(loc, condition, promise);
@@ -449,6 +452,14 @@ folly::Future<folly::Unit> Inspector::setPauseOnLoads(
   // Return a future anyways for consistency.
   auto promise = std::make_shared<folly::Promise<Unit>>();
   pauseOnLoadMode_ = mode;
+  promise->setValue();
+  return promise->getFuture();
+};
+
+folly::Future<folly::Unit> Inspector::setBreakpointsActive(bool active) {
+  // Same logic as setPauseOnLoads.
+  auto promise = std::make_shared<folly::Promise<Unit>>();
+  breakpointsActive_ = active;
   promise->setValue();
   return promise->getFuture();
 };

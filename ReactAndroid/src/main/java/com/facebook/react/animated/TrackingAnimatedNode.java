@@ -33,4 +33,18 @@ import com.facebook.react.bridge.ReadableMap;
     mNativeAnimatedNodesManager.startAnimatingNode(
         mAnimationId, mValueNode, mAnimationConfig, null);
   }
+
+  @Override
+  public String prettyPrint() {
+    return "TrackingAnimatedNode["
+        + mTag
+        + "]: animationID: "
+        + mAnimationId
+        + " toValueNode: "
+        + mToValueNode
+        + " valueNode: "
+        + mValueNode
+        + " animationConfig: "
+        + mAnimationConfig;
+  }
 }

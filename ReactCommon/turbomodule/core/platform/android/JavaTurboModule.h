@@ -49,9 +49,16 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       const jsi::Value *args,
       size_t argCount);
 
+  static void enablePromiseAsyncDispatch(bool enable);
+
  private:
   jni::global_ref<JTurboModule> instance_;
   std::shared_ptr<CallInvoker> nativeInvoker_;
+
+  /**
+   * Experiments
+   */
+  static bool isPromiseAsyncDispatchEnabled_;
 
   JNIArgs convertJSIArgsToJNIArgs(
       JNIEnv *env,

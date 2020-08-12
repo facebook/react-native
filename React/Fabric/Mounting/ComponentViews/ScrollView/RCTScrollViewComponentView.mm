@@ -11,12 +11,13 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTScrollEvent.h>
 
-#import <react/components/scrollview/RCTComponentViewHelpers.h>
-#import <react/components/scrollview/ScrollViewComponentDescriptor.h>
-#import <react/components/scrollview/ScrollViewEventEmitter.h>
-#import <react/components/scrollview/ScrollViewProps.h>
-#import <react/components/scrollview/ScrollViewState.h>
-#import <react/graphics/Geometry.h>
+#import <react/renderer/components/scrollview/RCTComponentViewHelpers.h>
+#import <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
+#import <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
+#import <react/renderer/components/scrollview/ScrollViewProps.h>
+#import <react/renderer/components/scrollview/ScrollViewState.h>
+#import <react/renderer/components/scrollview/conversions.h>
+#import <react/renderer/graphics/Geometry.h>
 
 #import "RCTConversions.h"
 #import "RCTEnhancedScrollView.h"
@@ -186,13 +187,30 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
     _scrollView.contentInset = RCTUIEdgeInsetsFromEdgeInsets(newScrollViewProps.contentInset);
   }
 
+  RCTEnhancedScrollView *scrollView = (RCTEnhancedScrollView *)_scrollView;
   if (oldScrollViewProps.contentOffset != newScrollViewProps.contentOffset) {
     _scrollView.contentOffset = RCTCGPointFromPoint(newScrollViewProps.contentOffset);
   }
 
+  if (oldScrollViewProps.snapToAlignment != newScrollViewProps.snapToAlignment) {
+    scrollView.snapToAlignment = RCTNSStringFromString(toString(newScrollViewProps.snapToAlignment));
+  }
+
+  scrollView.snapToStart = newScrollViewProps.snapToStart;
+  scrollView.snapToEnd = newScrollViewProps.snapToEnd;
+
+  if (oldScrollViewProps.snapToOffsets != newScrollViewProps.snapToOffsets) {
+    NSMutableArray<NSNumber *> *snapToOffsets = [NSMutableArray array];
+    for (auto const &snapToOffset : newScrollViewProps.snapToOffsets) {
+      [snapToOffsets addObject:[NSNumber numberWithFloat:snapToOffset]];
+    }
+    scrollView.snapToOffsets = snapToOffsets;
+  }
+
+  MAP_SCROLL_VIEW_PROP(disableIntervalMomentum);
+  MAP_SCROLL_VIEW_PROP(snapToInterval);
+
   // MAP_SCROLL_VIEW_PROP(scrollIndicatorInsets);
-  // MAP_SCROLL_VIEW_PROP(snapToInterval);
-  // MAP_SCROLL_VIEW_PROP(snapToAlignment);
 
   [super updateProps:props oldProps:oldProps];
 }

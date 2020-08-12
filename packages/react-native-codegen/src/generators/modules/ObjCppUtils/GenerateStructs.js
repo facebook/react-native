@@ -18,8 +18,8 @@ const {
   flatObjects,
   capitalizeFirstLetter,
   getSafePropertyName,
-  getTypeAliasTypeAnnotation,
 } = require('./Utils');
+const {getTypeAliasTypeAnnotation} = require('../Utils');
 const {generateStructsForConstants} = require('./GenerateStructsForConstants');
 
 const template = `

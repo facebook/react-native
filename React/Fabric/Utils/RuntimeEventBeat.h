@@ -8,7 +8,7 @@
 #include <CoreFoundation/CFRunLoop.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <ReactCommon/RuntimeExecutor.h>
-#include <react/core/EventBeat.h>
+#include <react/renderer/core/EventBeat.h>
 
 namespace facebook {
 namespace react {
