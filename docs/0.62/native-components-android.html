@@ -192,7 +192,7 @@ module<span class="token punctuation">.</span>exports <span class="token operato
     <span class="token keyword">super</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>_onChange <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_onChange</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
-  <span class="token function">_onChange</span><span class="token punctuation">(</span><span class="token parameter">event<span class="token punctuation">:</span> Event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">_onChange</span><span class="token punctuation">(</span><span class="token parameter">event<span class="token operator">:</span> Event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>onChangeMessage<span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
@@ -206,7 +206,7 @@ MyCustomView<span class="token punctuation">.</span>propTypes <span class="token
   <span class="token comment">/**
    * Callback that is called continuously when the user is dragging the map.
    */</span>
-  onChangeMessage<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>func<span class="token punctuation">,</span>
+  onChangeMessage<span class="token operator">:</span> PropTypes<span class="token punctuation">.</span>func<span class="token punctuation">,</span>
   <span class="token operator">...</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 

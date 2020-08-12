@@ -130,23 +130,23 @@
 </code></pre>
 <p>Then, we'll open up our <code>package.json</code> and replace the <code>jest</code> field with the following:</p>
 <pre><code class="hljs css language-js"><span class="token punctuation">{</span>
-  <span class="token string">"jest"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    <span class="token string">"preset"</span><span class="token punctuation">:</span> <span class="token string">"react-native"</span><span class="token punctuation">,</span>
-    <span class="token string">"moduleFileExtensions"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>
+  <span class="token string">"jest"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token string">"preset"</span><span class="token operator">:</span> <span class="token string">"react-native"</span><span class="token punctuation">,</span>
+    <span class="token string">"moduleFileExtensions"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
       <span class="token string">"ts"</span><span class="token punctuation">,</span>
       <span class="token string">"tsx"</span><span class="token punctuation">,</span>
       <span class="token string">"js"</span>
     <span class="token punctuation">]</span><span class="token punctuation">,</span>
-    <span class="token string">"transform"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
-      <span class="token string">"^.+\\.(js)$"</span><span class="token punctuation">:</span> <span class="token string">"&lt;rootDir>/node_modules/babel-jest"</span><span class="token punctuation">,</span>
-      <span class="token string">"\\.(ts|tsx)$"</span><span class="token punctuation">:</span> <span class="token string">"&lt;rootDir>/node_modules/ts-jest/preprocessor.js"</span>
+    <span class="token string">"transform"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token string">"^.+\\.(js)$"</span><span class="token operator">:</span> <span class="token string">"&lt;rootDir>/node_modules/babel-jest"</span><span class="token punctuation">,</span>
+      <span class="token string">"\\.(ts|tsx)$"</span><span class="token operator">:</span> <span class="token string">"&lt;rootDir>/node_modules/ts-jest/preprocessor.js"</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token string">"testRegex"</span><span class="token punctuation">:</span> <span class="token string">"(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$"</span><span class="token punctuation">,</span>
-    <span class="token string">"testPathIgnorePatterns"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"testRegex"</span><span class="token operator">:</span> <span class="token string">"(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$"</span><span class="token punctuation">,</span>
+    <span class="token string">"testPathIgnorePatterns"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
       <span class="token string">"\\.snap$"</span><span class="token punctuation">,</span>
       <span class="token string">"&lt;rootDir>/node_modules/"</span>
     <span class="token punctuation">]</span><span class="token punctuation">,</span>
-    <span class="token string">"cacheDirectory"</span><span class="token punctuation">:</span> <span class="token string">".jest/cache"</span>
+    <span class="token string">"cacheDirectory"</span><span class="token operator">:</span> <span class="token string">".jest/cache"</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre>

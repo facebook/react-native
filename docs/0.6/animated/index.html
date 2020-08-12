@@ -18,7 +18,7 @@
   <span class="token comment">// Animate value over time</span>
   <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>fadeAnim<span class="token punctuation">,</span> <span class="token comment">// The value to drive</span>
   <span class="token punctuation">{</span>
-    toValue<span class="token punctuation">:</span> <span class="token number">1</span> <span class="token comment">// Animate to final value of 1</span>
+    toValue<span class="token operator">:</span> <span class="token number">1</span> <span class="token comment">// Animate to final value of 1</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// Start the animation</span>
 </code></pre>
@@ -95,9 +95,9 @@
 <p>For example, when working with horizontal scrolling gestures, you would do the following in order to map <code>event.nativeEvent.contentOffset.x</code> to <code>scrollX</code> (an <code>Animated.Value</code>):</p>
 <pre><code class="hljs css language-jsx"> onScroll<span class="token operator">=</span><span class="token punctuation">{</span>Animated<span class="token punctuation">.</span><span class="token function">event</span><span class="token punctuation">(</span>
    <span class="token comment">// scrollX = e.nativeEvent.contentOffset.x</span>
-   <span class="token punctuation">[</span><span class="token punctuation">{</span> nativeEvent<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-        contentOffset<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-          x<span class="token punctuation">:</span> scrollX
+   <span class="token punctuation">[</span><span class="token punctuation">{</span> nativeEvent<span class="token operator">:</span> <span class="token punctuation">{</span>
+        contentOffset<span class="token operator">:</span> <span class="token punctuation">{</span>
+          x<span class="token operator">:</span> scrollX
         <span class="token punctuation">}</span>
       <span class="token punctuation">}</span>
     <span class="token punctuation">}</span><span class="token punctuation">]</span>
@@ -391,14 +391,14 @@
 </code></pre>
 <p>Takes an array of mappings and extracts values from each arg accordingly, then calls <code>setValue</code> on the mapped outputs. e.g.</p>
 <pre><code class="hljs css language-jsx">onScroll<span class="token operator">=</span><span class="token punctuation">{</span>Animated<span class="token punctuation">.</span><span class="token function">event</span><span class="token punctuation">(</span>
-  <span class="token punctuation">[</span><span class="token punctuation">{</span>nativeEvent<span class="token punctuation">:</span> <span class="token punctuation">{</span>contentOffset<span class="token punctuation">:</span> <span class="token punctuation">{</span>x<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_scrollX<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span><span class="token function-variable function">listener</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token comment">// Optional async listener</span>
+  <span class="token punctuation">[</span><span class="token punctuation">{</span>nativeEvent<span class="token operator">:</span> <span class="token punctuation">{</span>contentOffset<span class="token operator">:</span> <span class="token punctuation">{</span>x<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_scrollX<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span><span class="token function-variable function">listener</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token comment">// Optional async listener</span>
 <span class="token punctuation">)</span><span class="token punctuation">}</span>
 <span class="token operator">...</span>
-onPanResponderMove<span class="token punctuation">:</span> Animated<span class="token punctuation">.</span><span class="token function">event</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+onPanResponderMove<span class="token operator">:</span> Animated<span class="token punctuation">.</span><span class="token function">event</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
   <span class="token keyword">null</span><span class="token punctuation">,</span>                <span class="token comment">// raw event arg ignored</span>
-  <span class="token punctuation">{</span>dx<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_panX<span class="token punctuation">}</span><span class="token punctuation">,</span>    <span class="token comment">// gestureState arg</span>
-  <span class="token punctuation">{</span><span class="token function-variable function">listener</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token parameter">event<span class="token punctuation">,</span> gestureState</span><span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>event<span class="token punctuation">,</span> gestureState<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token comment">// Optional async listener</span>
+  <span class="token punctuation">{</span>dx<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_panX<span class="token punctuation">}</span><span class="token punctuation">,</span>    <span class="token comment">// gestureState arg</span>
+  <span class="token punctuation">{</span><span class="token function-variable function">listener</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">event<span class="token punctuation">,</span> gestureState</span><span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>event<span class="token punctuation">,</span> gestureState<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token comment">// Optional async listener</span>
 <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
 </code></pre>
 <p><strong>Parameters:</strong></p>
