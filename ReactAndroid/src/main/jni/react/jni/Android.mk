@@ -77,7 +77,7 @@ LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 LOCAL_LDLIBS += -landroid
 
 # The dynamic libraries (.so files) that this module depends on.
-LOCAL_SHARED_LIBRARIES := libreactnativeutilsjni libfolly_json libfb libfbjni libglog_init libyoga libfabricjni
+LOCAL_SHARED_LIBRARIES := libreactnativeutilsjni libfolly_json libfb libfbjni libglog_init libyoga
 
 # The static libraries (.a files) that this module depends on.
 LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder libruntimeexecutor
@@ -131,7 +131,10 @@ $(call import-module,runtimeexecutor)
 
 include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
 include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
-include $(REACT_SRC_DIR)/fabric/jni/Android.mk
+
+ifeq ($(BUILD_FABRIC),true)
+  include $(REACT_SRC_DIR)/fabric/jni/Android.mk
+endif
 
 # TODO(ramanpreet):
 #   Why doesn't this import-module call generate a jscexecutor.so file?
