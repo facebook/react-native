@@ -13,6 +13,7 @@
 import * as React from 'react';
 import {StyleSheet, View, Text, Dimensions, Image} from 'react-native';
 
+import {RNTesterThemeContext} from './RNTesterTheme';
 import Background from './Background';
 
 type Props = $ReadOnly<{|
@@ -27,6 +28,8 @@ const ScreenHeight = Dimensions.get('window').height;
 const ScreenWidth = Dimensions.get('window').width;
 
 export default function ExamplePage(props: Props): React.Node {
+  const theme = React.useContext(RNTesterThemeContext);
+
   const description = props.description ?? '';
   const androidImage = !props.android ? (
     <Image
@@ -48,7 +51,7 @@ export default function ExamplePage(props: Props): React.Node {
 
   return (
     <React.Fragment>
-      <View style={styles.titleView}>
+      <View style={[styles.titleView, {backgroundColor: theme.BackgroundColor}]}>
         <View style={styles.container}>
           <View style={styles.headingContainer}>
             <Text>{description}</Text>
@@ -76,7 +79,6 @@ const imagePaths = {
 
 const styles = StyleSheet.create({
   titleView: {
-    backgroundColor: '#F3F8FF',
     height: 75,
     padding: 20,
     paddingTop: 8,

@@ -16,34 +16,39 @@ type Props = $ReadOnly<{|
   description?: ?string,
 |}>;
 
-import React from 'react';
+import React, {useContext} from 'react';
 import {RNTesterThemeContext} from './RNTesterTheme';
 import {StyleSheet, Text, View} from 'react-native';
 
 /** functional component for generating example blocks */
 const RNTesterBlock = ({description, title, children}: Props) => {
+  const theme = useContext(RNTesterThemeContext);
+
   let descComponent = null;
   /** generating description component if description passed */
   descComponent = (
-    <RNTesterThemeContext.Consumer>
-      {theme => {
-        return <Text style={[styles.descriptionText]}>{description}</Text>;
-      }}
-    </RNTesterThemeContext.Consumer>
+    <Text style={[styles.descriptionText, {color: theme.LabelColor}]}>
+      {description}
+    </Text>
   );
 
   return (
-    <RNTesterThemeContext.Consumer>
-      {theme => (
-        <View style={[styles.container]}>
-          <View style={[styles.titleContainer]}>
-            <Text style={[styles.titleText]}>{title}</Text>
-            {descComponent}
-          </View>
-          <View style={styles.children}>{children}</View>
-        </View>
-      )}
-    </RNTesterThemeContext.Consumer>
+    <View
+      style={[
+        styles.container,
+        {
+          borderColor: theme.BorderColor,
+          backgroundColor: theme.SystemBackgroundColor,
+        },
+      ]}>
+      <View style={[styles.titleContainer]}>
+        <Text style={[styles.titleText]}>{title}</Text>
+        {descComponent}
+      </View>
+      <View style={[styles.children, {backgroundColor: theme.BackgroundColor}]}>
+        {children}
+      </View>
+    </View>
   );
 };
 
@@ -53,8 +58,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     margin: 15,
     marginVertical: 5,
-    borderColor: '#005DFF',
-    backgroundColor: 'white',
   },
   titleText: {
     fontSize: 18,
@@ -68,12 +71,10 @@ const styles = StyleSheet.create({
   descriptionText: {
     fontSize: 12,
     opacity: 0.5,
-    color: 'black',
   },
   children: {
     paddingVertical: 10,
     paddingHorizontal: 10,
-    backgroundColor: '#F3F8FF',
     margin: 10,
   },
 });

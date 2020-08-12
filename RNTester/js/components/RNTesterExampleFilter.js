@@ -95,7 +95,7 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
       <RNTesterThemeContext.Consumer>
         {theme => {
           return (
-            <View style={[styles.searchRow, {backgroundColor: '#F3F8FF'}]}>
+            <View style={[styles.searchRow, {backgroundColor: theme.BackgroundColor}]}>
               <TextInput
                 autoCapitalize="none"
                 autoCorrect={false}

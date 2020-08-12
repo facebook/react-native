@@ -51,23 +51,16 @@ const APP_STATE_KEY = 'RNTesterAppState.v2';
 
 const Header = ({
   title,
+  theme
 }: {
   title: string,
   ...
 }) => (
-  <RNTesterThemeContext.Consumer>
-    {theme => {
-      return (
-        <View style={[styles.toolbar, {backgroundColor: '#F3F8FF'}]}>
-          <View style={styles.toolbarCenter}>
-            <Text style={[styles.title, {color: theme.LabelColor}]}>
-              {title}
-            </Text>
-          </View>
-        </View>
-      );
-    }}
-  </RNTesterThemeContext.Consumer>
+  <View style={[styles.toolbar, {backgroundColor: theme.BackgroundColor}]}>
+    <View style={styles.toolbarCenter}>
+      <Text style={[styles.title, {color: theme.LabelColor}]}>{title}</Text>
+    </View>
+  </View>
 );
 
 const RNTesterExampleContainerViaHook = ({
@@ -85,7 +78,7 @@ const RNTesterExampleContainerViaHook = ({
   return (
     <RNTesterThemeContext.Provider value={theme}>
       <View style={styles.container}>
-        <Header title={title} />
+        <Header title={title} theme={theme} />
         <RNTesterExampleContainer module={module} ref={exampleRef} />
       </View>
     </RNTesterThemeContext.Provider>
@@ -115,7 +108,7 @@ const RNTesterExampleListViaHook = ({
     <RNTesterThemeContext.Provider value={theme}>
       <RNTesterBookmarkContext.Provider value={bookmark}>
         <View style={styles.container}>
-          <Header title={exampleTitle} />
+          <Header title={exampleTitle} theme={theme} />
           <RNTesterExampleList
             onNavigate={onNavigate}
             list={list}
@@ -142,7 +135,7 @@ const RNTesterBookmarkListViaHook = ({
     <RNTesterThemeContext.Provider value={theme}>
       <RNTesterBookmarkContext.Provider value={bookmark}>
         <View style={styles.container}>
-          <Header title="Bookmarks" />
+          <Header title="Bookmarks" theme={theme} />
           <RNtesterBookmarkList onNavigate={onNavigate} />
         </View>
       </RNTesterBookmarkContext.Provider>

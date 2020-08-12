@@ -1,10 +1,12 @@
 import React from 'react';
 import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
+
+import {RNTesterThemeContext} from './RNTesterTheme';
 const RNTesterActions = require('../utils/RNTesterActions');
 
-const APP_COLOR = '#F3F8FF';
-
 const RNTesterNavbar = ({onNavigate, screen}) => {
+  const theme = React.useContext(RNTesterThemeContext);
+
   /** to be attached to navigation framework */
   const isAPIActive =  screen === 'api';
   const isComponentActive =   screen === 'component';
@@ -16,7 +18,7 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
         {/** component and APIs tab  */}
         <View style={styles.buttonContainer}>
           {/** left tab with Components  */}
-          <View style={styles.leftBox}>
+          <View style={[styles.leftBox, {backgroundColor: theme.BackgroundColor}]}>
             {/** @attention attach navigation endpoints here */}
             <Pressable
               onPress={() =>  onNavigate(RNTesterActions.OpenList('component'))}>
@@ -48,7 +50,7 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
           <View style={styles.floatContainer}>
             <Pressable
               onPress={() => { onNavigate(RNTesterActions.OpenList('bookmark')) }}>
-                <View style={styles.floatingButton} >
+                <View style={[styles.floatingButton, {backgroundColor: theme.BorderColor}]} >
                 <Image
                     style={styles.bookmarkIcon}
                     source={
@@ -65,7 +67,7 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
           {/** right tab with Components  */}
          <Pressable onPress={() => { onNavigate(RNTesterActions.OpenList('api')) }}
 
-          style={styles.rightBox}>
+          style={[styles.rightBox, {backgroundColor: theme.BackgroundColor}]}>
               <Image
                 style={styles.apiIcon}
                 source={
@@ -99,7 +101,6 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 500,
     alignContent: 'center',
-    backgroundColor: '#005DFF',
     shadowColor: 'black',
     shadowOffset: {
       height: 5,
@@ -139,7 +140,6 @@ const styles = StyleSheet.create({
   leftBox: {
     flex: 1,
     height: 65,
-    backgroundColor: APP_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -150,7 +150,6 @@ const styles = StyleSheet.create({
   rightBox: {
     flex: 1,
     height: 65,
-    backgroundColor: APP_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
   },
