@@ -69,6 +69,9 @@ plugins {
  *   // Enable react-native-codegen during build time.
  *   enableCodegen: true,
  *
+ *   // Enable Fabric at build time and runtime.
+ *   enableFabric: true,
+ *
  *   // Java package name to use for any codegen artifacts produced during build time.
  *   // Defaults to "com.facebook.fbreact.specs".
  *   codegenJavaPackageName: "com.facebook.fbreact.specs",
@@ -86,6 +89,7 @@ project.ext.react = [
     enableHermesForVariant: { def v -> v.name.contains("hermes") },
     jsRootDir: "$rootDir/RNTester",
     enableCodegen: System.getenv('USE_CODEGEN'),
+    enableFabric: System.getenv("USE_FABRIC") ?: false,
 ]
 
 apply from: "../../../react.gradle"
@@ -105,6 +109,11 @@ def enableSeparateBuildPerCPUArchitecture = true
  * Run Proguard to shrink the Java bytecode in release builds.
  */
 def enableProguardInReleaseBuilds = true
+
+/**
+ * Build and enable Fabric in RN Tester app.
+ */
+def enableFabric = project.ext.react.enableFabric
 
 /**
  * Use the international variant of JavaScriptCore
@@ -134,10 +143,6 @@ android {
         jsc {
             dimension "vm"
         }
-        fabric {
-            // TODO T71370706 - Create a different dimension to build fabric
-            dimension "vm"
-        }
     }
 
     defaultConfig {
@@ -148,6 +153,7 @@ android {
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        buildConfigField("boolean", "ENABLE_FABRIC", "$enableFabric")
     }
     signingConfigs {
         release {
@@ -182,8 +188,6 @@ android {
 configurations {
   hermesDebugImplementation {}
   hermesReleaseImplementation {}
-  fabricDebugImplementation {}
-  fabricReleaseImplementation {}
 }
 
 dependencies {
@@ -196,9 +200,7 @@ dependencies {
 
     def hermesPath = '$projectDir/../../../../node_modules/hermes-engine/android/'
     hermesDebugImplementation files(hermesPath + "hermes-debug.aar")
-    fabricDebugImplementation files(hermesPath + "hermes-debug.aar")
     hermesReleaseImplementation files(hermesPath + "hermes-release.aar")
-    fabricReleaseImplementation files(hermesPath + "hermes-release.aar")
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
