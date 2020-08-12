@@ -290,7 +290,9 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = '<SectionList>';
+exports.title = 'SectionList';
+exports.documentationURL = 'https://reactnative.dev/docs/sectionlist';
+exports.category = 'ListViews';
 exports.description = 'Performant, scrollable list of data.';
 exports.examples = [
   {

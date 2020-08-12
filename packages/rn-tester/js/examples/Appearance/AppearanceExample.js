@@ -77,6 +77,7 @@ const ThemedText = props => (
 );
 
 exports.title = 'Appearance';
+exports.documentationURL = 'https://reactnative.dev/docs/appearance';
 exports.description = 'Light and dark user interface examples.';
 exports.examples = [
   {

@@ -19,8 +19,8 @@ describe('DatePickerIOS', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
     await openComponentWithLabel(
-      '<DatePickerIOS>',
-      '<DatePickerIOS> Select dates and times using the native UIDatePicker.',
+      'DatePickerIOS',
+      'DatePickerIOS Select dates and times using the native UIDatePicker.',
     );
   });
 
