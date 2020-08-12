@@ -9,6 +9,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTConstants.h>
 #import <React/RCTScrollEvent.h>
 
 #import <react/renderer/components/scrollview/RCTComponentViewHelpers.h>
@@ -40,13 +41,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
                                                                  userData:nil
                                                             coalescingKey:coalescingKey];
   [[RCTBridge currentBridge].eventDispatcher sendEvent:scrollEvent];
-}
-
-static BOOL isOnDemandViewMountingEnabledGlobally = NO;
-
-void RCTSetEnableOnDemandViewMounting(BOOL value)
-{
-  isOnDemandViewMountingEnabledGlobally = value;
 }
 
 @interface RCTScrollViewComponentView () <UIScrollViewDelegate, RCTScrollViewProtocol, RCTScrollableProtocol>
@@ -83,7 +77,7 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
     static const auto defaultProps = std::make_shared<const ScrollViewProps>();
     _props = defaultProps;
 
-    _isOnDemandViewMountingEnabled = isOnDemandViewMountingEnabledGlobally;
+    _isOnDemandViewMountingEnabled = RCTExperimentGetOnDemandViewMounting();
     _childComponentViews = [[NSMutableArray alloc] init];
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
