@@ -73,7 +73,7 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
   _renderFilteredSections(filteredSections): ?React.Element<any> {
     if (this.props.page === 'examples_page') {
       return (
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps="hadnled" keyboardDismissMode="interactive">
           {this.props.render({filteredSections})}
           {/**
            * This is a fake list item. It is needed to provide the ScrollView some bottom padding.
