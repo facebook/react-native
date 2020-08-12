@@ -10,94 +10,71 @@
 
 'use strict';
 
-const React = require('react');
-
-const {StyleSheet, Text, View} = require('react-native');
-import {RNTesterThemeContext} from './RNTesterTheme';
-
 type Props = $ReadOnly<{|
   children?: React.Node,
   title?: ?string,
   description?: ?string,
 |}>;
 
-type State = {|
-  description: ?string,
-|};
+import React, {useContext} from 'react';
+import {RNTesterThemeContext} from './RNTesterTheme';
+import {StyleSheet, Text, View} from 'react-native';
 
-class RNTesterBlock extends React.Component<Props, State> {
-  state: State = {description: null};
+/** functional component for generating example blocks */
+const RNTesterBlock = ({description, title, children}: Props) => {
+  const theme = useContext(RNTesterThemeContext);
 
-  render(): React.Node {
-    const description = this.props.description ? (
-      <RNTesterThemeContext.Consumer>
-        {theme => {
-          return (
-            <Text style={[styles.descriptionText, {color: theme.LabelColor}]}>
-              {this.props.description}
-            </Text>
-          );
-        }}
-      </RNTesterThemeContext.Consumer>
-    ) : null;
+  let descComponent = null;
+  /** generating description component if description passed */
+  descComponent = (
+    <Text style={[styles.descriptionText, {color: theme.LabelColor}]}>
+      {description}
+    </Text>
+  );
 
-    return (
-      <RNTesterThemeContext.Consumer>
-        {theme => {
-          return (
-            <View
-              style={[
-                styles.container,
-                {
-                  borderColor: theme.SeparatorColor,
-                  backgroundColor: theme.SystemBackgroundColor,
-                },
-              ]}>
-              <View
-                style={[
-                  styles.titleContainer,
-                  {
-                    borderBottomColor: theme.SeparatorColor,
-                    backgroundColor: theme.QuaternarySystemFillColor,
-                  },
-                ]}>
-                <Text style={[styles.titleText, {color: theme.LabelColor}]}>
-                  {this.props.title}
-                </Text>
-                {description}
-              </View>
-              <View style={styles.children}>{this.props.children}</View>
-            </View>
-          );
-        }}
-      </RNTesterThemeContext.Consumer>
-    );
-  }
-}
+  return (
+    <View
+      style={[
+        styles.container,
+        {
+          borderColor: theme.BorderColor,
+          backgroundColor: theme.SystemBackgroundColor,
+        },
+      ]}>
+      <View style={[styles.titleContainer]}>
+        <Text style={[styles.titleText]}>{title}</Text>
+        {descComponent}
+      </View>
+      <View style={[styles.children, {backgroundColor: theme.BackgroundColor}]}>
+        {children}
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 3,
-    borderWidth: 0.5,
-    margin: 10,
+    borderRadius: 0,
+    borderWidth: 1,
+    margin: 15,
     marginVertical: 5,
-    overflow: 'hidden',
+  },
+  titleText: {
+    fontSize: 18,
+    fontFamily: 'Times New Roman',
+    fontWeight: '300',
   },
   titleContainer: {
-    borderBottomWidth: 0.5,
-    borderTopLeftRadius: 3,
-    borderTopRightRadius: 2.5,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
-  titleText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
   descriptionText: {
-    fontSize: 14,
+    fontSize: 12,
+    opacity: 0.5,
   },
   children: {
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     margin: 10,
   },
 });
