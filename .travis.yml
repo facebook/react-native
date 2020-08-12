@@ -1,0 +1,24 @@
+cache:
+  yarn: true
+  directories:
+    - $HOME/.yarn-cache
+    - node_modules
+branches:
+  only:
+  - master
+notifications:
+  email:
+    on_success: never
+    on_failure: always
+
+matrix:
+  include:
+    - language: objective-c
+      os: osx
+      osx_image: xcode10.2
+      node_js: false
+      before_install:
+        - travis_retry npm install -g yarn
+        - yarn -version
+      install:
+        - travis_retry yarn
