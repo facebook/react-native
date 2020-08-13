@@ -440,20 +440,6 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * C++ class for module 'ImageStore'
-     */
-
-    class JSI_EXPORT NativeImageStoreSpecJSI : public JavaTurboModule {
-    public:
-      NativeImageStoreSpecJSI(const JavaTurboModule::InitParams &params);
-
-    };
-  } // namespace react
-} // namespace facebook
-
-namespace facebook {
-  namespace react {
-    /**
      * C++ class for module 'JSCHeapCapture'
      */
 

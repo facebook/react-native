@@ -21,7 +21,6 @@ import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.blob.FileReaderModule;
-import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.datepicker.DatePickerDialogModule;
 import com.facebook.react.modules.dialog.DialogModule;
@@ -78,7 +77,6 @@ import java.util.Map;
       FrescoModule.class,
       I18nManagerModule.class,
       ImageLoaderModule.class,
-      ImageStoreManager.class,
       IntentModule.class,
       NativeAnimatedModule.class,
       NetworkingModule.class,
@@ -128,8 +126,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new I18nManagerModule(context);
       case ImageLoaderModule.NAME:
         return new ImageLoaderModule(context);
-      case ImageStoreManager.NAME:
-        return new ImageStoreManager(context);
       case IntentModule.NAME:
         return new IntentModule(context);
       case NativeAnimatedModule.NAME:
@@ -205,7 +201,6 @@ public class MainReactPackage extends TurboReactPackage {
             FrescoModule.class,
             I18nManagerModule.class,
             ImageLoaderModule.class,
-            ImageStoreManager.class,
             IntentModule.class,
             NativeAnimatedModule.class,
             NetworkingModule.class,
