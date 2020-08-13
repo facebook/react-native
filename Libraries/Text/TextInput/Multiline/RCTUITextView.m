@@ -30,8 +30,7 @@ static UIFont *defaultPlaceholderFont()
 
 static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 {
-  // Default placeholder color from UITextField.
-  return [RCTUIColor colorWithRed:0 green:0 blue:0.0980392 alpha:0.22]; // TODO(OSS Candidate ISS#2710739)
+  return [RCTUIColor placeholderTextColor]; // TODO(OSS Candidate ISS#2710739)
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -227,7 +226,7 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
       [self.textStorage setAttributedString:[NSAttributedString new]];
     }
   } else {
-  // But if the text is preserved, we just copying the attributes from the source string.
+    // But if the text is preserved, we just copy the attributes from the source string.
     if (![self.textStorage isEqualToAttributedString:attributedText]) {
       [self copyTextAttributesFrom:attributedText];
     }

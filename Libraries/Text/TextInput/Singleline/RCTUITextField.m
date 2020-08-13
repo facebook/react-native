@@ -320,7 +320,11 @@ static RCTUIColor *defaultPlaceholderTextColor()
   if (self.placeholderColor) {
     [textAttributes setValue:self.placeholderColor forKey:NSForegroundColorAttributeName];
   } else {
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+    [textAttributes setValue:defaultPlaceholderTextColor() forKey:NSForegroundColorAttributeName];
+#else
     [textAttributes removeObjectForKey:NSForegroundColorAttributeName];
+#endif // ]TODO(macOS ISS#2323203)
   }
 
   return textAttributes;
