@@ -12,7 +12,7 @@
 
 import Platform from '../../Utilities/Platform'; 
 import * as React from 'react';
-import StatusBar from '../../StatusBar/StatusBar'; 
+import StatusBar from '../StatusBar/StatusBar'; 
 import StyleSheet from '../../StyleSheet/StyleSheet'; 
 import View from '../View/View'; 
 
