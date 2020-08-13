@@ -6,6 +6,7 @@
  *
  * @flow strict-local
  * @format
+ * @generate-docs
  */
 
 'use strict';
@@ -23,14 +24,45 @@ import View from '../../Components/View/View';
 import * as React from 'react';
 
 type AndroidProps = $ReadOnly<{|
+  /**
+    TV next focus down (see documentation for the View component).
+
+    @platform android
+   */
   nextFocusDown?: ?number,
+  /**
+    TV next focus forward (see documentation for the View component).
+
+    @platform android
+   */
   nextFocusForward?: ?number,
+  /**
+    TV next focus left (see documentation for the View component).
+
+    @platform android
+   */
   nextFocusLeft?: ?number,
+  /**
+    TV next focus left (see documentation for the View component).
+
+    @platform android
+   */
   nextFocusRight?: ?number,
+  /**
+    TV next focus up (see documentation for the View component).
+
+    @platform android
+   */
   nextFocusUp?: ?number,
 |}>;
 
 type IOSProps = $ReadOnly<{|
+  /**
+    _(Apple TV only)_ TV preferred focus (see documentation for the View
+    component).
+
+    @platform ios
+   */
   hasTVPreferredFocus?: ?boolean,
 |}>;
 
@@ -39,11 +71,33 @@ type Props = $ReadOnly<{|
   ...AndroidProps,
   ...IOSProps,
 
+  /**
+    Determines what the opacity of the wrapped view should be when touch is
+    active. The value should be between 0 and 1. Requires `underlayColor` to be
+    set.
+
+    @default 0.85
+   */
   activeOpacity?: ?number,
+  /**
+    The color of the underlay that will show through when the touch is active.
+   */
   underlayColor?: ?ColorValue,
+  /**
+    @type View.style
+   */
   style?: ?ViewStyleProp,
+  /**
+    Called immediately after the underlay is shown.
+   */
   onShowUnderlay?: ?() => void,
+  /**
+    Called immediately after the underlay is hidden.
+   */
   onHideUnderlay?: ?() => void,
+  /**
+    Handy for snapshot tests.
+   */
   testOnly_pressed?: ?boolean,
 
   hostRef: React.Ref<typeof View>,
@@ -60,100 +114,141 @@ type State = $ReadOnly<{|
 |}>;
 
 /**
- * A wrapper for making views respond properly to touches.
- * On press down, the opacity of the wrapped view is decreased, which allows
- * the underlay color to show through, darkening or tinting the view.
- *
- * The underlay comes from wrapping the child in a new View, which can affect
- * layout, and sometimes cause unwanted visual artifacts if not used correctly,
- * for example if the backgroundColor of the wrapped view isn't explicitly set
- * to an opaque color.
- *
- * TouchableHighlight must have one child (not zero or more than one).
- * If you wish to have several child components, wrap them in a View.
- *
- * Example:
- *
- * ```
- * renderButton: function() {
- *   return (
- *     <TouchableHighlight onPress={this._onPressButton}>
- *       <Image
- *         style={styles.button}
- *         source={require('./myButton.png')}
- *       />
- *     </TouchableHighlight>
- *   );
- * },
- * ```
- *
- *
- * ### Example
- *
- * ```ReactNativeWebPlayer
- * import React, { Component } from 'react'
- * import {
- *   AppRegistry,
- *   StyleSheet,
- *   TouchableHighlight,
- *   Text,
- *   View,
- * } from 'react-native'
- *
- * class App extends Component {
- *   constructor(props) {
- *     super(props)
- *     this.state = { count: 0 }
- *   }
- *
- *   onPress = () => {
- *     this.setState({
- *       count: this.state.count+1
- *     })
- *   }
- *
- *  render() {
- *     return (
- *       <View style={styles.container}>
- *         <TouchableHighlight
- *          style={styles.button}
- *          onPress={this.onPress}
- *         >
- *          <Text> Touch Here </Text>
- *         </TouchableHighlight>
- *         <View style={[styles.countContainer]}>
- *           <Text style={[styles.countText]}>
- *             { this.state.count !== 0 ? this.state.count: null}
- *           </Text>
- *         </View>
- *       </View>
- *     )
- *   }
- * }
- *
- * const styles = StyleSheet.create({
- *   container: {
- *     flex: 1,
- *     justifyContent: 'center',
- *     paddingHorizontal: 10
- *   },
- *   button: {
- *     alignItems: 'center',
- *     backgroundColor: '#DDDDDD',
- *     padding: 10
- *   },
- *   countContainer: {
- *     alignItems: 'center',
- *     padding: 10
- *   },
- *   countText: {
- *     color: '#FF00FF'
- *   }
- * })
- *
- * AppRegistry.registerComponent('App', () => App)
- * ```
- *
+  > If you're looking for a more extensive and future-proof way to handle
+  > touch-based input, check out the [Pressable](pressable.md) API.
+
+  A wrapper for making views respond properly to touches. On press down, the
+  opacity of the wrapped view is decreased, which allows the underlay color to
+  show through, darkening or tinting the view.
+
+  The underlay comes from wrapping the child in a new View, which can affect
+  layout, and sometimes cause unwanted visual artifacts if not used correctly,
+  for example if the backgroundColor of the wrapped view isn't explicitly set to
+  an opaque color.
+
+  TouchableHighlight must have one child (not zero or more than one). If you
+  wish to have several child components, wrap them in a View.
+
+  ```jsx
+  function MyComponent(props) {
+    return (
+      <View {...props} style={{ flex: 1, backgroundColor: '#fff' }}>
+        <Text>My Component</Text>
+      </View>
+    );
+  }
+
+  <TouchableHighlight
+    activeOpacity={0.6}
+    underlayColor="#DDDDDD"
+    onPress={() => alert('Pressed!')}>
+    <MyComponent />
+  </TouchableHighlight>;
+  ```
+
+  ```SnackPlayer name=TouchableHighlight%20Function%20Component%20Example
+  import React, { useState } from "react";
+  import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+
+  const TouchableHighlightExample = () => {
+    const [count, setCount] = useState(0);
+    const onPress = () => setCount(count + 1);
+
+    return (
+      <View style={styles.container}>
+        <TouchableHighlight onPress={onPress}>
+          <View style={styles.button}>
+            <Text>Touch Here</Text>
+          </View>
+        </TouchableHighlight>
+        <View style={styles.countContainer}>
+          <Text style={styles.countText}>
+            {count ? count : null}
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      paddingHorizontal: 10
+    },
+    button: {
+      alignItems: "center",
+      backgroundColor: "#DDDDDD",
+      padding: 10
+    },
+    countContainer: {
+      alignItems: "center",
+      padding: 10
+    },
+    countText: {
+      color: "#FF00FF"
+    }
+  });
+
+  export default TouchableHighlightExample;
+  ```
+
+  ```SnackPlayer name=TouchableHighlight%20Class%20Component%20Example
+  import React, { Component } from "react";
+  import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+
+  class App extends Component {
+    constructor(props) {
+      super(props);
+      this.state = { count: 0 };
+    }
+
+    onPress = () => {
+      this.setState({
+        count: this.state.count + 1
+      });
+    };
+
+    render() {
+      return (
+        <View style={styles.container}>
+          <TouchableHighlight onPress={this.onPress}>
+            <View style={styles.button}>
+              <Text>Touch Here</Text>
+            </View>
+          </TouchableHighlight>
+          <View style={[styles.countContainer]}>
+            <Text style={[styles.countText]}>
+              {this.state.count ? this.state.count : null}
+            </Text>
+          </View>
+        </View>
+      );
+    }
+  }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      paddingHorizontal: 10
+    },
+    button: {
+      alignItems: "center",
+      backgroundColor: "#DDDDDD",
+      padding: 10
+    },
+    countContainer: {
+      alignItems: "center",
+      padding: 10
+    },
+    countText: {
+      color: "#FF00FF"
+    }
+  });
+
+  export default App;
+  ```
  */
 class TouchableHighlight extends React.Component<Props, State> {
   _hideTimeout: ?TimeoutID;
