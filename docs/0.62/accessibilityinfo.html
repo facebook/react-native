@@ -82,20 +82,20 @@
 </div>
 <p><block class="functional syntax" /></p>
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript">
-<span class="hljs-keyword">import</span> React, { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { AccessibilityInfo, View, Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<span class="hljs-keyword">import</span> React, { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { AccessibilityInfo, View, Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">const</span> [reduceMotionEnabled, setReduceMotionEnabled] = useState(<span class="hljs-literal">false</span>);
   <span class="hljs-keyword">const</span> [screenReaderEnabled, setScreenReaderEnabled] = useState(<span class="hljs-literal">false</span>);
 
-  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  useEffect(<span class="hljs-function">() =&gt;</span> {
     AccessibilityInfo.addEventListener(
-      <span class="hljs-string">"reduceMotionChanged"</span>,
+      <span class="hljs-string">&quot;reduceMotionChanged&quot;</span>,
       handleReduceMotionToggled
     );
     AccessibilityInfo.addEventListener(
-      <span class="hljs-string">"screenReaderChanged"</span>,
+      <span class="hljs-string">&quot;screenReaderChanged&quot;</span>,
       handleScreenReaderToggled
     );
 
@@ -105,14 +105,14 @@
     AccessibilityInfo.fetch().then(<span class="hljs-function"><span class="hljs-params">screenReaderEnabled</span> =&gt;</span> {
       setScreenReaderEnabled(screenReaderEnabled);
     });
-    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> {
       AccessibilityInfo.removeEventListener(
-        <span class="hljs-string">"reduceMotionChanged"</span>,
+        <span class="hljs-string">&quot;reduceMotionChanged&quot;</span>,
         handleReduceMotionToggled
       );
 
       AccessibilityInfo.removeEventListener(
-        <span class="hljs-string">"screenReaderChanged"</span>,
+        <span class="hljs-string">&quot;screenReaderChanged&quot;</span>,
         handleScreenReaderToggled
       );
     };
@@ -129,10 +129,10 @@
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.status}</span>&gt;</span>
-        The reduce motion is {reduceMotionEnabled ? "enabled" : "disabled"}.
+        The reduce motion is {reduceMotionEnabled ? &quot;enabled&quot; : &quot;disabled&quot;}.
       <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.status}</span>&gt;</span>
-        The screen reader is {screenReaderEnabled ? "enabled" : "disabled"}.
+        The screen reader is {screenReaderEnabled ? &quot;enabled&quot; : &quot;disabled&quot;}.
       <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
     <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
@@ -141,8 +141,8 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
   <span class="hljs-attr">status</span>: {
     <span class="hljs-attr">margin</span>: <span class="hljs-number">30</span>
@@ -165,8 +165,8 @@
         "
       ></div></div></div><p><block class="classical syntax" /></p>
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript">
-<span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { AccessibilityInfo, View, Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { AccessibilityInfo, View, Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AccessibilityStatusExample</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
   state = {
@@ -176,52 +176,52 @@
 
   componentDidMount() {
     AccessibilityInfo.addEventListener(
-      <span class="hljs-string">'reduceMotionChanged'</span>,
-      <span class="hljs-keyword">this</span>._handleReduceMotionToggled
+      <span class="hljs-string">&#x27;reduceMotionChanged&#x27;</span>,
+      <span class="hljs-built_in">this</span>._handleReduceMotionToggled
     );
     AccessibilityInfo.addEventListener(
-      <span class="hljs-string">'screenReaderChanged'</span>,
-      <span class="hljs-keyword">this</span>._handleScreenReaderToggled
+      <span class="hljs-string">&#x27;screenReaderChanged&#x27;</span>,
+      <span class="hljs-built_in">this</span>._handleScreenReaderToggled
     );
 
     AccessibilityInfo.fetch().then(<span class="hljs-function"><span class="hljs-params">reduceMotionEnabled</span> =&gt;</span> {
-      <span class="hljs-keyword">this</span>.setState({ reduceMotionEnabled });
+      <span class="hljs-built_in">this</span>.setState({ reduceMotionEnabled });
     });
     AccessibilityInfo.fetch().then(<span class="hljs-function"><span class="hljs-params">screenReaderEnabled</span> =&gt;</span> {
-      <span class="hljs-keyword">this</span>.setState({ screenReaderEnabled });
+      <span class="hljs-built_in">this</span>.setState({ screenReaderEnabled });
     });
   }
 
   componentWillUnmount() {
     AccessibilityInfo.removeEventListener(
-      <span class="hljs-string">'reduceMotionChanged'</span>,
-      <span class="hljs-keyword">this</span>._handleReduceMotionToggled
+      <span class="hljs-string">&#x27;reduceMotionChanged&#x27;</span>,
+      <span class="hljs-built_in">this</span>._handleReduceMotionToggled
     );
 
     AccessibilityInfo.removeEventListener(
-      <span class="hljs-string">'screenReaderChanged'</span>,
-      <span class="hljs-keyword">this</span>._handleScreenReaderToggled
+      <span class="hljs-string">&#x27;screenReaderChanged&#x27;</span>,
+      <span class="hljs-built_in">this</span>._handleScreenReaderToggled
     );
   }
 
   _handleReduceMotionToggled = <span class="hljs-function"><span class="hljs-params">reduceMotionEnabled</span> =&gt;</span> {
-    <span class="hljs-keyword">this</span>.setState({ reduceMotionEnabled });
+    <span class="hljs-built_in">this</span>.setState({ reduceMotionEnabled });
   };
 
   _handleScreenReaderToggled = <span class="hljs-function"><span class="hljs-params">screenReaderEnabled</span> =&gt;</span> {
-    <span class="hljs-keyword">this</span>.setState({ screenReaderEnabled });
+    <span class="hljs-built_in">this</span>.setState({ screenReaderEnabled });
   };
 
   render() {
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{this.styles.container}</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{this.styles.status}</span>&gt;</span>
-          The reduce motion is{' '}
-          {this.state.reduceMotionEnabled ? 'enabled' : 'disabled'}.
+          The reduce motion is{&#x27; &#x27;}
+          {this.state.reduceMotionEnabled ? &#x27;enabled&#x27; : &#x27;disabled&#x27;}.
         <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{this.styles.status}</span>&gt;</span>
-          The screen reader is{' '}
-          {this.state.screenReaderEnabled ? 'enabled' : 'disabled'}.
+          The screen reader is{&#x27; &#x27;}
+          {this.state.screenReaderEnabled ? &#x27;enabled&#x27; : &#x27;disabled&#x27;}.
         <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
@@ -230,8 +230,8 @@
   styles = StyleSheet.create({
     <span class="hljs-attr">container</span>: {
       <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-      <span class="hljs-attr">alignItems</span>: <span class="hljs-string">'center'</span>,
-      <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">'center'</span>,
+      <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
+      <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
     },
     <span class="hljs-attr">status</span>: {
       <span class="hljs-attr">margin</span>: <span class="hljs-number">30</span>,

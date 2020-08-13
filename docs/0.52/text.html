@@ -71,15 +71,15 @@
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/text.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Text</h1></header><article><div><span><p>A React component for displaying text.</p>
 <p><code>Text</code> supports nesting, styling, and touch handling.</p>
 <p>In the following example, the nested title and body text will inherit the <code>fontFamily</code> from <code>styles.baseText</code>, but the title provides its own additional styles. The title and body will stack on top of each other on account of the literal newlines:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { AppRegistry, Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { AppRegistry, Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TextInANest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   <span class="hljs-keyword">constructor</span>(props) {
-    <span class="hljs-keyword">super</span>(props);
-    <span class="hljs-keyword">this</span>.state = {
-      <span class="hljs-attr">titleText</span>: <span class="hljs-string">"Bird's Nest"</span>,
-      <span class="hljs-attr">bodyText</span>: <span class="hljs-string">'This is not really a bird nest.'</span>
+    <span class="hljs-built_in">super</span>(props);
+    <span class="hljs-built_in">this</span>.state = {
+      <span class="hljs-attr">titleText</span>: <span class="hljs-string">&quot;Bird&#x27;s Nest&quot;</span>,
+      <span class="hljs-attr">bodyText</span>: <span class="hljs-string">&#x27;This is not really a bird nest.&#x27;</span>
     };
   }
 
@@ -87,7 +87,7 @@
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.baseText}</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.titleText}</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this.onPressTitle}</span>&gt;</span>
-          {this.state.titleText}{'\n'}{'\n'}
+          {this.state.titleText}{&#x27;\n&#x27;}{&#x27;\n&#x27;}
         <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">numberOfLines</span>=<span class="hljs-string">{5}</span>&gt;</span>
           {this.state.bodyText}
@@ -99,16 +99,16 @@
 
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">baseText</span>: {
-    <span class="hljs-attr">fontFamily</span>: <span class="hljs-string">'Cochin'</span>,
+    <span class="hljs-attr">fontFamily</span>: <span class="hljs-string">&#x27;Cochin&#x27;</span>,
   },
   <span class="hljs-attr">titleText</span>: {
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">20</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">'bold'</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&#x27;bold&#x27;</span>,
   },
 });
 
 <span class="hljs-comment">// skip this line if using Create React Native App</span>
-AppRegistry.registerComponent(<span class="hljs-string">'TextInANest'</span>, () =&gt; TextInANest);
+AppRegistry.registerComponent(<span class="hljs-string">&#x27;TextInANest&#x27;</span>, <span class="hljs-function">() =&gt;</span> TextInANest);
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"
         data-snack-description="Example usage"
@@ -126,15 +126,15 @@ AppRegistry.registerComponent(<span class="hljs-string">'TextInANest'</span>, ()
         "
       ></div></div></div><h2><a class="anchor" aria-hidden="true" id="nested-text"></a><a href="#nested-text" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Nested text</h2>
 <p>Both Android and iOS allow you to display formatted text by annotating ranges of a string with specific formatting like bold or colored text (<code>NSAttributedString</code> on iOS, <code>SpannableString</code> on Android). In practice, this is very tedious. For React Native, we decided to use web paradigm for this where you can nest text to achieve the same effect.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { AppRegistry, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { AppRegistry, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BoldAndBeautiful</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{fontWeight:</span> '<span class="hljs-attr">bold</span>'}}&gt;</span>
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{fontWeight:</span> &#x27;<span class="hljs-attr">bold</span>&#x27;}}&gt;</span>
         I am bold
-        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{color:</span> '<span class="hljs-attr">red</span>'}}&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{color:</span> &#x27;<span class="hljs-attr">red</span>&#x27;}}&gt;</span>
           and red
         <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
@@ -143,7 +143,7 @@ AppRegistry.registerComponent(<span class="hljs-string">'TextInANest'</span>, ()
 }
 
 <span class="hljs-comment">// skip this line if using Create React Native App</span>
-AppRegistry.registerComponent(<span class="hljs-string">'AwesomeProject'</span>, () =&gt; BoldAndBeautiful);
+AppRegistry.registerComponent(<span class="hljs-string">&#x27;AwesomeProject&#x27;</span>, <span class="hljs-function">() =&gt;</span> BoldAndBeautiful);
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"
         data-snack-description="Example usage"
@@ -166,24 +166,24 @@ AppRegistry.registerComponent(<span class="hljs-string">'AwesomeProject'</span>,
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="nested-views-ios-only"></a><a href="#nested-views-ios-only" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Nested views (iOS only)</h2>
 <p>On iOS, you can nest views within your Text component. Here's an example:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { AppRegistry, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { AppRegistry, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BlueIsCool</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>
         There is a blue square
-        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> '<span class="hljs-attr">steelblue</span>'}} /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> &#x27;<span class="hljs-attr">steelblue</span>&#x27;}} /&gt;</span>
         in between my text.
-      <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
     );
   }
 }
 
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () =&gt; BlueIsCool);
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+<span class="hljs-comment">// skip this line if using Create React Native App</span>
+AppRegistry.registerComponent(<span class="hljs-string">&#x27;AwesomeProject&#x27;</span>, <span class="hljs-function">() =&gt;</span> BlueIsCool);
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20BlueIsCool%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%3E%0A%20%20%20%20%20%20%20%20There%20is%20a%20blue%20square%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7Bwidth%3A%2050%2C%20height%3A%2050%2C%20backgroundColor%3A%20'steelblue'%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20in%20between%20my%20text.%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('AwesomeProject'%2C%20()%20%3D%3E%20BlueIsCool)%3B%0A"

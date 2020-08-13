@@ -70,22 +70,22 @@
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/drawerlayoutandroid.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">DrawerLayoutAndroid</h1></header><article><div><span><p>React component that wraps the platform <code>DrawerLayout</code> (Android only). The Drawer (typically used for navigation) is rendered with <code>renderNavigationView</code> and direct children are the main view (where your content goes). The navigation view is initially not visible on the screen, but can be pulled in from the side of the window specified by the <code>drawerPosition</code> prop and its width can be set by the <code>drawerWidth</code> prop.</p>
 <h2><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h2>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Button, DrawerLayoutAndroid, Text, StyleSheet, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Button, DrawerLayoutAndroid, Text, StyleSheet, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">const</span> [drawerPosition, setDrawerPosition] = useState(<span class="hljs-string">"left"</span>);
-  <span class="hljs-keyword">const</span> changeDrawerPosition = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-keyword">if</span> (drawerPosition === <span class="hljs-string">"left"</span>) {
-      setDrawerPosition(<span class="hljs-string">"right"</span>);
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> [drawerPosition, setDrawerPosition] = useState(<span class="hljs-string">&quot;left&quot;</span>);
+  <span class="hljs-keyword">const</span> changeDrawerPosition = <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">if</span> (drawerPosition === <span class="hljs-string">&quot;left&quot;</span>) {
+      setDrawerPosition(<span class="hljs-string">&quot;right&quot;</span>);
     } <span class="hljs-keyword">else</span> {
-      setDrawerPosition(<span class="hljs-string">"left"</span>);
+      setDrawerPosition(<span class="hljs-string">&quot;left&quot;</span>);
     }
   };
 
   <span class="hljs-keyword">const</span> navigationView = (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.navigationContainer}</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">margin:</span> <span class="hljs-attr">10</span>, <span class="hljs-attr">fontSize:</span> <span class="hljs-attr">15</span> }}&gt;</span>I'm in the Drawer!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">margin:</span> <span class="hljs-attr">10</span>, <span class="hljs-attr">fontSize:</span> <span class="hljs-attr">15</span> }}&gt;</span>I&#x27;m in the Drawer!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
     <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 
@@ -100,36 +100,36 @@
           DrawerLayoutAndroid example
         <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
-          <span class="hljs-attr">title</span>=<span class="hljs-string">"Change Drawer Position"</span>
+          <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Change Drawer Position&quot;</span>
           <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> changeDrawerPosition()}
         /&gt;
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">margin:</span> <span class="hljs-attr">10</span>, <span class="hljs-attr">fontSize:</span> <span class="hljs-attr">15</span> }}&gt;</span>
           Drawer on the {drawerPosition}! Swipe from the side to see!
         <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">DrawerLayoutAndroid</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">DrawerLayoutAndroid</span>&gt;</span></span>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 50,
-    backgroundColor: "#ecf0f1",
-    padding: 8
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">paddingTop</span>: <span class="hljs-number">50</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#ecf0f1&quot;</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">8</span>
   },
-  navigationContainer: {
-    flex: 1,
-    paddingTop: 50,
-    backgroundColor: "#fff",
-    padding: 8
+  <span class="hljs-attr">navigationContainer</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">paddingTop</span>: <span class="hljs-number">50</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#fff&quot;</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">8</span>
   }
 });
 
-export default App;
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="DrawerLayoutAndroid Component Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7B%20useState%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Button%2C%20DrawerLayoutAndroid%2C%20Text%2C%20StyleSheet%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20%5BdrawerPosition%2C%20setDrawerPosition%5D%20%3D%20useState(%22left%22)%3B%0A%20%20const%20changeDrawerPosition%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20if%20(drawerPosition%20%3D%3D%3D%20%22left%22)%20%7B%0A%20%20%20%20%20%20setDrawerPosition(%22right%22)%3B%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20setDrawerPosition(%22left%22)%3B%0A%20%20%20%20%7D%0A%20%20%7D%3B%0A%0A%20%20const%20navigationView%20%3D%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.navigationContainer%7D%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7B%7B%20margin%3A%2010%2C%20fontSize%3A%2015%20%7D%7D%3EI'm%20in%20the%20Drawer!%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CDrawerLayoutAndroid%0A%20%20%20%20%20%20drawerWidth%3D%7B300%7D%0A%20%20%20%20%20%20drawerPosition%3D%7BdrawerPosition%7D%0A%20%20%20%20%20%20renderNavigationView%3D%7B()%20%3D%3E%20navigationView%7D%0A%20%20%20%20%3E%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7B%20margin%3A%2010%2C%20fontSize%3A%2015%20%7D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20DrawerLayoutAndroid%20example%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CButton%0A%20%20%20%20%20%20%20%20%20%20title%3D%22Change%20Drawer%20Position%22%0A%20%20%20%20%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20changeDrawerPosition()%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7B%20margin%3A%2010%2C%20fontSize%3A%2015%20%7D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20Drawer%20on%20the%20%7BdrawerPosition%7D!%20Swipe%20from%20the%20side%20to%20see!%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%3C%2FDrawerLayoutAndroid%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%2C%0A%20%20%20%20paddingTop%3A%2050%2C%0A%20%20%20%20backgroundColor%3A%20%22%23ecf0f1%22%2C%0A%20%20%20%20padding%3A%208%0A%20%20%7D%2C%0A%20%20navigationContainer%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20paddingTop%3A%2050%2C%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%2C%0A%20%20%20%20padding%3A%208%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20App%3B%0A"

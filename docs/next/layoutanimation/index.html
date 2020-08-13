@@ -78,16 +78,16 @@
 <span class="token punctuation">}</span>
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h2>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { LayoutAnimation, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { LayoutAnimation, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">if</span> (
-  Platform.OS === <span class="hljs-string">"android"</span> &amp;&amp;
+  Platform.OS === <span class="hljs-string">&quot;android&quot;</span> &amp;&amp;
   UIManager.setLayoutAnimationEnabledExperimental
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(<span class="hljs-literal">true</span>);
 }
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">const</span> [expanded, setExpanded] = useState(<span class="hljs-literal">false</span>);
 
   <span class="hljs-keyword">return</span> (
@@ -98,7 +98,7 @@
           setExpanded(!expanded);
         }}
       &gt;
-        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Press me to {expanded ? "collapse" : "expand"}!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Press me to {expanded ? &quot;collapse&quot; : &quot;expand&quot;}!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span>
       {expanded &amp;&amp; (
         <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{style.tile}</span>&gt;</span>
@@ -111,15 +111,15 @@
 
 <span class="hljs-keyword">const</span> style = StyleSheet.create({
   <span class="hljs-attr">tile</span>: {
-    <span class="hljs-attr">background</span>: <span class="hljs-string">"lightGrey"</span>,
+    <span class="hljs-attr">background</span>: <span class="hljs-string">&quot;lightGrey&quot;</span>,
     <span class="hljs-attr">borderWidth</span>: <span class="hljs-number">0.5</span>,
-    <span class="hljs-attr">borderColor</span>: <span class="hljs-string">"#d6d7da"</span>
+    <span class="hljs-attr">borderColor</span>: <span class="hljs-string">&quot;#d6d7da&quot;</span>
   },
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">overflow</span>: <span class="hljs-string">"hidden"</span>
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">overflow</span>: <span class="hljs-string">&quot;hidden&quot;</span>
   }
 });
 
@@ -190,7 +190,7 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
 <span class="hljs-keyword">import</span> {
   View,
   Platform,
@@ -198,19 +198,19 @@
   LayoutAnimation,
   StyleSheet,
   Button
-} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">if</span> (
-  Platform.OS === <span class="hljs-string">"android"</span> &amp;&amp;
+  Platform.OS === <span class="hljs-string">&quot;android&quot;</span> &amp;&amp;
   UIManager.setLayoutAnimationEnabledExperimental
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(<span class="hljs-literal">true</span>);
 }
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">const</span> [boxPosition, setBoxPosition] = useState(<span class="hljs-string">"left"</span>);
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> [boxPosition, setBoxPosition] = useState(<span class="hljs-string">&quot;left&quot;</span>);
 
-  <span class="hljs-keyword">const</span> toggleBox = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> toggleBox = <span class="hljs-function">() =&gt;</span> {
     LayoutAnimation.configureNext(
       LayoutAnimation.create(
         <span class="hljs-number">500</span>,
@@ -218,45 +218,45 @@
         LayoutAnimation.Properties.scaleXY
       )
     );
-    setBoxPosition(boxPosition === <span class="hljs-string">"left"</span> ? <span class="hljs-string">"right"</span> : <span class="hljs-string">"left"</span>);
+    setBoxPosition(boxPosition === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-string">&quot;right&quot;</span> : <span class="hljs-string">&quot;left&quot;</span>);
   };
 
   <span class="hljs-keyword">return</span> (
-    &lt;View style={styles.container}&gt;
-      &lt;View style={styles.buttonContainer}&gt;
-        &lt;Button title="Toggle Layout" onPress={toggleBox} /&gt;
-      &lt;/View&gt;
-      &lt;View
-        style={[styles.box, boxPosition === "left" ? null : styles.moveRight]}
-      /&gt;
-    &lt;/View&gt;
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonContainer}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Toggle Layout&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{toggleBox}</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.box,</span> <span class="hljs-attr">boxPosition</span> === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-attr">null</span> <span class="hljs-attr">:</span> <span class="hljs-attr">styles.moveRight</span>]}
+      /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;flex-start&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
-  box: {
-    height: 100,
-    width: 100,
-    borderRadius: 5,
-    margin: 8,
-    backgroundColor: "blue"
+  <span class="hljs-attr">box</span>: {
+    <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">5</span>,
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">8</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;blue&quot;</span>
   },
-  moveRight: {
-    alignSelf: "flex-end",
-    height: 200,
-    width: 200
+  <span class="hljs-attr">moveRight</span>: {
+    <span class="hljs-attr">alignSelf</span>: <span class="hljs-string">&quot;flex-end&quot;</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">200</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">200</span>
   },
-  buttonContainer: {
-    alignSelf: "center"
+  <span class="hljs-attr">buttonContainer</span>: {
+    <span class="hljs-attr">alignSelf</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="LayoutAnimation"
         data-snack-description="Example usage"
@@ -273,7 +273,7 @@ export default App;
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
 <span class="hljs-keyword">import</span> {
   View,
   Platform,
@@ -281,10 +281,10 @@ export default App;
   LayoutAnimation,
   StyleSheet,
   Button
-} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">if</span> (
-  Platform.OS === <span class="hljs-string">"android"</span> &amp;&amp;
+  Platform.OS === <span class="hljs-string">&quot;android&quot;</span> &amp;&amp;
   UIManager.setLayoutAnimationEnabledExperimental
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(<span class="hljs-literal">true</span>);
@@ -292,10 +292,10 @@ export default App;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   state = {
-    <span class="hljs-attr">boxPosition</span>: <span class="hljs-string">"left"</span>
+    <span class="hljs-attr">boxPosition</span>: <span class="hljs-string">&quot;left&quot;</span>
   };
 
-  toggleBox = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  toggleBox = <span class="hljs-function">() =&gt;</span> {
     LayoutAnimation.configureNext(
       LayoutAnimation.create(
         <span class="hljs-number">500</span>,
@@ -303,52 +303,52 @@ export default App;
         LayoutAnimation.Properties.scaleXY
       )
     );
-    <span class="hljs-keyword">this</span>.setState({
-      <span class="hljs-attr">boxPosition</span>: <span class="hljs-keyword">this</span>.state.boxPosition === <span class="hljs-string">"left"</span> ? <span class="hljs-string">"right"</span> : <span class="hljs-string">"left"</span>
+    <span class="hljs-built_in">this</span>.setState({
+      <span class="hljs-attr">boxPosition</span>: <span class="hljs-built_in">this</span>.state.boxPosition === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-string">&quot;right&quot;</span> : <span class="hljs-string">&quot;left&quot;</span>
     });
   };
 
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;View style={styles.container}&gt;
-        &lt;View style={styles.buttonContainer}&gt;
-          &lt;Button title="Toggle Layout" onPress={this.toggleBox} /&gt;
-        &lt;/View&gt;
-        &lt;View
-          style={[
-            styles.box,
-            this.state.boxPosition === "left" ? null : styles.moveRight
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonContainer}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Toggle Layout&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this.toggleBox}</span> /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{[</span>
+            <span class="hljs-attr">styles.box</span>,
+            <span class="hljs-attr">this.state.boxPosition</span> === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-attr">null</span> <span class="hljs-attr">:</span> <span class="hljs-attr">styles.moveRight</span>
           ]}
-        /&gt;
-      &lt;/View&gt;
+        /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;flex-start&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
-  box: {
-    height: 100,
-    width: 100,
-    borderRadius: 5,
-    margin: 8,
-    backgroundColor: "blue"
+  <span class="hljs-attr">box</span>: {
+    <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">5</span>,
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">8</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;blue&quot;</span>
   },
-  moveRight: {
-    alignSelf: "flex-end",
-    height: 200,
-    width: 200
+  <span class="hljs-attr">moveRight</span>: {
+    <span class="hljs-attr">alignSelf</span>: <span class="hljs-string">&quot;flex-end&quot;</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">200</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">200</span>
   },
-  buttonContainer: {
-    alignSelf: "center"
+  <span class="hljs-attr">buttonContainer</span>: {
+    <span class="hljs-attr">alignSelf</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="LayoutAnimation"
         data-snack-description="Example usage"
@@ -429,7 +429,7 @@ export default App;
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
 <span class="hljs-keyword">import</span> {
   View,
   Platform,
@@ -437,90 +437,90 @@ export default App;
   LayoutAnimation,
   StyleSheet,
   Button
-} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">if</span> (
-  Platform.OS === <span class="hljs-string">"android"</span> &amp;&amp;
+  Platform.OS === <span class="hljs-string">&quot;android&quot;</span> &amp;&amp;
   UIManager.setLayoutAnimationEnabledExperimental
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(<span class="hljs-literal">true</span>);
 }
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">const</span> [firstBoxPosition, setFirstBoxPosition] = useState(<span class="hljs-string">"left"</span>);
-  <span class="hljs-keyword">const</span> [secondBoxPosition, setSecondBoxPosition] = useState(<span class="hljs-string">"left"</span>);
-  <span class="hljs-keyword">const</span> [thirdBoxPosition, setThirdBoxPosition] = useState(<span class="hljs-string">"left"</span>);
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> [firstBoxPosition, setFirstBoxPosition] = useState(<span class="hljs-string">&quot;left&quot;</span>);
+  <span class="hljs-keyword">const</span> [secondBoxPosition, setSecondBoxPosition] = useState(<span class="hljs-string">&quot;left&quot;</span>);
+  <span class="hljs-keyword">const</span> [thirdBoxPosition, setThirdBoxPosition] = useState(<span class="hljs-string">&quot;left&quot;</span>);
 
-  <span class="hljs-keyword">const</span> toggleFirstBox = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> toggleFirstBox = <span class="hljs-function">() =&gt;</span> {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setFirstBoxPosition(firstBoxPosition === <span class="hljs-string">"left"</span> ? <span class="hljs-string">"right"</span> : <span class="hljs-string">"left"</span>);
+    setFirstBoxPosition(firstBoxPosition === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-string">&quot;right&quot;</span> : <span class="hljs-string">&quot;left&quot;</span>);
   };
 
-  <span class="hljs-keyword">const</span> toggleSecondBox = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> toggleSecondBox = <span class="hljs-function">() =&gt;</span> {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
-    setSecondBoxPosition(secondBoxPosition === <span class="hljs-string">"left"</span> ? <span class="hljs-string">"right"</span> : <span class="hljs-string">"left"</span>);
+    setSecondBoxPosition(secondBoxPosition === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-string">&quot;right&quot;</span> : <span class="hljs-string">&quot;left&quot;</span>);
   };
 
-  <span class="hljs-keyword">const</span> toggleThirdBox = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> toggleThirdBox = <span class="hljs-function">() =&gt;</span> {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-    setThirdBoxPosition(thirdBoxPosition === <span class="hljs-string">"left"</span> ? <span class="hljs-string">"right"</span> : <span class="hljs-string">"left"</span>);
+    setThirdBoxPosition(thirdBoxPosition === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-string">&quot;right&quot;</span> : <span class="hljs-string">&quot;left&quot;</span>);
   };
 
   <span class="hljs-keyword">return</span> (
-    &lt;View style={styles.container}&gt;
-      &lt;View style={styles.buttonContainer}&gt;
-        &lt;Button title="EaseInEaseOut" onPress={toggleFirstBox} /&gt;
-      &lt;/View&gt;
-      &lt;View
-        style={[
-          styles.box,
-          firstBoxPosition === "left" ? null : styles.moveRight
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonContainer}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;EaseInEaseOut&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{toggleFirstBox}</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{[</span>
+          <span class="hljs-attr">styles.box</span>,
+          <span class="hljs-attr">firstBoxPosition</span> === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-attr">null</span> <span class="hljs-attr">:</span> <span class="hljs-attr">styles.moveRight</span>
         ]}
-      /&gt;
-      &lt;View style={styles.buttonContainer}&gt;
-        &lt;Button title="Linear" onPress={toggleSecondBox} /&gt;
-      &lt;/View&gt;
-      &lt;View
-        style={[
-          styles.box,
-          secondBoxPosition === "left" ? null : styles.moveRight
+      /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonContainer}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Linear&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{toggleSecondBox}</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{[</span>
+          <span class="hljs-attr">styles.box</span>,
+          <span class="hljs-attr">secondBoxPosition</span> === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-attr">null</span> <span class="hljs-attr">:</span> <span class="hljs-attr">styles.moveRight</span>
         ]}
-      /&gt;
-      &lt;View style={styles.buttonContainer}&gt;
-        &lt;Button title="Spring" onPress={toggleThirdBox} /&gt;
-      &lt;/View&gt;
-      &lt;View
-        style={[
-          styles.box,
-          thirdBoxPosition === "left" ? null : styles.moveRight
+      /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonContainer}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Spring&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{toggleThirdBox}</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{[</span>
+          <span class="hljs-attr">styles.box</span>,
+          <span class="hljs-attr">thirdBoxPosition</span> === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-attr">null</span> <span class="hljs-attr">:</span> <span class="hljs-attr">styles.moveRight</span>
         ]}
-      /&gt;
-    &lt;/View&gt;
+      /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;flex-start&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
-  box: {
-    height: 100,
-    width: 100,
-    borderRadius: 5,
-    margin: 8,
-    backgroundColor: "blue"
+  <span class="hljs-attr">box</span>: {
+    <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">5</span>,
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">8</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;blue&quot;</span>
   },
-  moveRight: {
-    alignSelf: "flex-end"
+  <span class="hljs-attr">moveRight</span>: {
+    <span class="hljs-attr">alignSelf</span>: <span class="hljs-string">&quot;flex-end&quot;</span>
   },
-  buttonContainer: {
-    alignSelf: "center"
+  <span class="hljs-attr">buttonContainer</span>: {
+    <span class="hljs-attr">alignSelf</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="LayoutAnimation"
         data-snack-description="Example usage"
@@ -537,7 +537,7 @@ export default App;
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
 <span class="hljs-keyword">import</span> {
   View,
   Platform,
@@ -545,10 +545,10 @@ export default App;
   LayoutAnimation,
   StyleSheet,
   Button
-} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">if</span> (
-  Platform.OS === <span class="hljs-string">"android"</span> &amp;&amp;
+  Platform.OS === <span class="hljs-string">&quot;android&quot;</span> &amp;&amp;
   UIManager.setLayoutAnimationEnabledExperimental
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(<span class="hljs-literal">true</span>);
@@ -556,92 +556,92 @@ export default App;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   state = {
-    <span class="hljs-attr">firstBoxPosition</span>: <span class="hljs-string">"left"</span>,
-    <span class="hljs-attr">secondBoxPosition</span>: <span class="hljs-string">"left"</span>,
-    <span class="hljs-attr">thirdBoxPosition</span>: <span class="hljs-string">"left"</span>
+    <span class="hljs-attr">firstBoxPosition</span>: <span class="hljs-string">&quot;left&quot;</span>,
+    <span class="hljs-attr">secondBoxPosition</span>: <span class="hljs-string">&quot;left&quot;</span>,
+    <span class="hljs-attr">thirdBoxPosition</span>: <span class="hljs-string">&quot;left&quot;</span>
   };
 
-  toggleFirstBox = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  toggleFirstBox = <span class="hljs-function">() =&gt;</span> {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    <span class="hljs-keyword">this</span>.setState({
+    <span class="hljs-built_in">this</span>.setState({
       <span class="hljs-attr">firstBoxPosition</span>:
-        <span class="hljs-keyword">this</span>.state.firstBoxPosition === <span class="hljs-string">"left"</span> ? <span class="hljs-string">"right"</span> : <span class="hljs-string">"left"</span>
+        <span class="hljs-built_in">this</span>.state.firstBoxPosition === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-string">&quot;right&quot;</span> : <span class="hljs-string">&quot;left&quot;</span>
     });
   };
 
-  toggleSecondBox = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  toggleSecondBox = <span class="hljs-function">() =&gt;</span> {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
-    <span class="hljs-keyword">this</span>.setState({
+    <span class="hljs-built_in">this</span>.setState({
       <span class="hljs-attr">secondBoxPosition</span>:
-        <span class="hljs-keyword">this</span>.state.secondBoxPosition === <span class="hljs-string">"left"</span> ? <span class="hljs-string">"right"</span> : <span class="hljs-string">"left"</span>
+        <span class="hljs-built_in">this</span>.state.secondBoxPosition === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-string">&quot;right&quot;</span> : <span class="hljs-string">&quot;left&quot;</span>
     });
   };
 
-  toggleThirdBox = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  toggleThirdBox = <span class="hljs-function">() =&gt;</span> {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-    <span class="hljs-keyword">this</span>.setState({
+    <span class="hljs-built_in">this</span>.setState({
       <span class="hljs-attr">thirdBoxPosition</span>:
-        <span class="hljs-keyword">this</span>.state.thirdBoxPosition === <span class="hljs-string">"left"</span> ? <span class="hljs-string">"right"</span> : <span class="hljs-string">"left"</span>
+        <span class="hljs-built_in">this</span>.state.thirdBoxPosition === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-string">&quot;right&quot;</span> : <span class="hljs-string">&quot;left&quot;</span>
     });
   };
 
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;View style={styles.container}&gt;
-        &lt;View style={styles.buttonContainer}&gt;
-          &lt;Button title="EaseInEaseOut" onPress={this.toggleFirstBox} /&gt;
-        &lt;/View&gt;
-        &lt;View
-          style={[
-            styles.box,
-            this.state.firstBoxPosition === "left" ? null : styles.moveRight
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonContainer}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;EaseInEaseOut&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this.toggleFirstBox}</span> /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{[</span>
+            <span class="hljs-attr">styles.box</span>,
+            <span class="hljs-attr">this.state.firstBoxPosition</span> === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-attr">null</span> <span class="hljs-attr">:</span> <span class="hljs-attr">styles.moveRight</span>
           ]}
-        /&gt;
-        &lt;View style={styles.buttonContainer}&gt;
-          &lt;Button title="Linear" onPress={this.toggleSecondBox} /&gt;
-        &lt;/View&gt;
-        &lt;View
-          style={[
-            styles.box,
-            this.state.secondBoxPosition === "left" ? null : styles.moveRight
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonContainer}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Linear&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this.toggleSecondBox}</span> /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{[</span>
+            <span class="hljs-attr">styles.box</span>,
+            <span class="hljs-attr">this.state.secondBoxPosition</span> === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-attr">null</span> <span class="hljs-attr">:</span> <span class="hljs-attr">styles.moveRight</span>
           ]}
-        /&gt;
-        &lt;View style={styles.buttonContainer}&gt;
-          &lt;Button title="Spring" onPress={this.toggleThirdBox} /&gt;
-        &lt;/View&gt;
-        &lt;View
-          style={[
-            styles.box,
-            this.state.thirdBoxPosition === "left" ? null : styles.moveRight
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonContainer}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Spring&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this.toggleThirdBox}</span> /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{[</span>
+            <span class="hljs-attr">styles.box</span>,
+            <span class="hljs-attr">this.state.thirdBoxPosition</span> === <span class="hljs-string">&quot;left&quot;</span> ? <span class="hljs-attr">null</span> <span class="hljs-attr">:</span> <span class="hljs-attr">styles.moveRight</span>
           ]}
-        /&gt;
-      &lt;/View&gt;
+        /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;flex-start&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
-  box: {
-    height: 100,
-    width: 100,
-    borderRadius: 5,
-    margin: 8,
-    backgroundColor: "blue"
+  <span class="hljs-attr">box</span>: {
+    <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">5</span>,
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">8</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;blue&quot;</span>
   },
-  moveRight: {
-    alignSelf: "flex-end"
+  <span class="hljs-attr">moveRight</span>: {
+    <span class="hljs-attr">alignSelf</span>: <span class="hljs-string">&quot;flex-end&quot;</span>
   },
-  buttonContainer: {
-    alignSelf: "center"
+  <span class="hljs-attr">buttonContainer</span>: {
+    <span class="hljs-attr">alignSelf</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="LayoutAnimation"
         data-snack-description="Example usage"

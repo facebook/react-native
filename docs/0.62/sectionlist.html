@@ -94,32 +94,32 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
 <span class="hljs-keyword">import</span> {
   StyleSheet,
   Text,
   View,
   SafeAreaView,
   SectionList
-} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
-<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">"expo-constants"</span>;
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
+<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;expo-constants&quot;</span>;
 
 <span class="hljs-keyword">const</span> DATA = [
   {
-    <span class="hljs-attr">title</span>: <span class="hljs-string">"Main dishes"</span>,
-    <span class="hljs-attr">data</span>: [<span class="hljs-string">"Pizza"</span>, <span class="hljs-string">"Burger"</span>, <span class="hljs-string">"Risotto"</span>]
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Main dishes&quot;</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">&quot;Pizza&quot;</span>, <span class="hljs-string">&quot;Burger&quot;</span>, <span class="hljs-string">&quot;Risotto&quot;</span>]
   },
   {
-    <span class="hljs-attr">title</span>: <span class="hljs-string">"Sides"</span>,
-    <span class="hljs-attr">data</span>: [<span class="hljs-string">"French Fries"</span>, <span class="hljs-string">"Onion Rings"</span>, <span class="hljs-string">"Fried Shrimps"</span>]
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Sides&quot;</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">&quot;French Fries&quot;</span>, <span class="hljs-string">&quot;Onion Rings&quot;</span>, <span class="hljs-string">&quot;Fried Shrimps&quot;</span>]
   },
   {
-    <span class="hljs-attr">title</span>: <span class="hljs-string">"Drinks"</span>,
-    <span class="hljs-attr">data</span>: [<span class="hljs-string">"Water"</span>, <span class="hljs-string">"Coke"</span>, <span class="hljs-string">"Beer"</span>]
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Drinks&quot;</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">&quot;Water&quot;</span>, <span class="hljs-string">&quot;Coke&quot;</span>, <span class="hljs-string">&quot;Beer&quot;</span>]
   },
   {
-    <span class="hljs-attr">title</span>: <span class="hljs-string">"Desserts"</span>,
-    <span class="hljs-attr">data</span>: [<span class="hljs-string">"Cheese Cake"</span>, <span class="hljs-string">"Ice Cream"</span>]
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Desserts&quot;</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">&quot;Cheese Cake&quot;</span>, <span class="hljs-string">&quot;Ice Cream&quot;</span>]
   }
 ];
 
@@ -129,38 +129,38 @@
   <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
 );
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
-  &lt;SafeAreaView style={styles.container}&gt;
-    &lt;SectionList
-      sections={DATA}
-      keyExtractor={(item, index) =&gt; item + index}
-      renderItem={({ item }) =&gt; &lt;Item title={item} /&gt;}
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">SectionList</span>
+      <span class="hljs-attr">sections</span>=<span class="hljs-string">{DATA}</span>
+      <span class="hljs-attr">keyExtractor</span>=<span class="hljs-string">{(item,</span> <span class="hljs-attr">index</span>) =&gt;</span> item + index}
+      renderItem={({ item }) =&gt; <span class="hljs-tag">&lt;<span class="hljs-name">Item</span> <span class="hljs-attr">title</span>=<span class="hljs-string">{item}</span> /&gt;</span>}
       renderSectionHeader={({ section: { title } }) =&gt; (
-        &lt;Text style={styles.header}&gt;{title}&lt;/Text&gt;
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.header}</span>&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       )}
     /&gt;
-  &lt;/SafeAreaView&gt;
+  <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span></span>
 );
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: Constants.statusBarHeight,
-    marginHorizontal: 16
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">marginTop</span>: Constants.statusBarHeight,
+    <span class="hljs-attr">marginHorizontal</span>: <span class="hljs-number">16</span>
   },
-  item: {
-    backgroundColor: "#f9c2ff",
-    padding: 20,
-    marginVertical: 8
+  <span class="hljs-attr">item</span>: {
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#f9c2ff&quot;</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">20</span>,
+    <span class="hljs-attr">marginVertical</span>: <span class="hljs-number">8</span>
   },
-  header: {
-    fontSize: 32,
-    backgroundColor: "#fff"
+  <span class="hljs-attr">header</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">32</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#fff&quot;</span>
   },
-  title: {
-    fontSize: 24
+  <span class="hljs-attr">title</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">24</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
@@ -179,32 +179,32 @@ const styles = StyleSheet.create({
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
 <span class="hljs-keyword">import</span> {
   StyleSheet,
   Text,
   View,
   SafeAreaView,
   SectionList
-} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
-<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">"expo-constants"</span>;
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
+<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;expo-constants&quot;</span>;
 
 <span class="hljs-keyword">const</span> DATA = [
   {
-    <span class="hljs-attr">title</span>: <span class="hljs-string">"Main dishes"</span>,
-    <span class="hljs-attr">data</span>: [<span class="hljs-string">"Pizza"</span>, <span class="hljs-string">"Burger"</span>, <span class="hljs-string">"Risotto"</span>]
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Main dishes&quot;</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">&quot;Pizza&quot;</span>, <span class="hljs-string">&quot;Burger&quot;</span>, <span class="hljs-string">&quot;Risotto&quot;</span>]
   },
   {
-    <span class="hljs-attr">title</span>: <span class="hljs-string">"Sides"</span>,
-    <span class="hljs-attr">data</span>: [<span class="hljs-string">"French Fries"</span>, <span class="hljs-string">"Onion Rings"</span>, <span class="hljs-string">"Fried Shrimps"</span>]
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Sides&quot;</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">&quot;French Fries&quot;</span>, <span class="hljs-string">&quot;Onion Rings&quot;</span>, <span class="hljs-string">&quot;Fried Shrimps&quot;</span>]
   },
   {
-    <span class="hljs-attr">title</span>: <span class="hljs-string">"Drinks"</span>,
-    <span class="hljs-attr">data</span>: [<span class="hljs-string">"Water"</span>, <span class="hljs-string">"Coke"</span>, <span class="hljs-string">"Beer"</span>]
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Drinks&quot;</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">&quot;Water&quot;</span>, <span class="hljs-string">&quot;Coke&quot;</span>, <span class="hljs-string">&quot;Beer&quot;</span>]
   },
   {
-    <span class="hljs-attr">title</span>: <span class="hljs-string">"Desserts"</span>,
-    <span class="hljs-attr">data</span>: [<span class="hljs-string">"Cheese Cake"</span>, <span class="hljs-string">"Ice Cream"</span>]
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Desserts&quot;</span>,
+    <span class="hljs-attr">data</span>: [<span class="hljs-string">&quot;Cheese Cake&quot;</span>, <span class="hljs-string">&quot;Ice Cream&quot;</span>]
   }
 ];
 
@@ -217,39 +217,39 @@ Item = <span class="hljs-function">(<span class="hljs-params">{ title }</span>) 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;SafeAreaView style={styles.container}&gt;
-        &lt;SectionList
-          sections={DATA}
-          keyExtractor={(item, index) =&gt; item + index}
-          renderItem={({ item }) =&gt; &lt;Item title={item} /&gt;}
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">SectionList</span>
+          <span class="hljs-attr">sections</span>=<span class="hljs-string">{DATA}</span>
+          <span class="hljs-attr">keyExtractor</span>=<span class="hljs-string">{(item,</span> <span class="hljs-attr">index</span>) =&gt;</span> item + index}
+          renderItem={({ item }) =&gt; <span class="hljs-tag">&lt;<span class="hljs-name">Item</span> <span class="hljs-attr">title</span>=<span class="hljs-string">{item}</span> /&gt;</span>}
           renderSectionHeader={({ section: { title } }) =&gt; (
-            &lt;Text style={styles.header}&gt;{title}&lt;/Text&gt;
+            <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.header}</span>&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
           )}
         /&gt;
-      &lt;/SafeAreaView&gt;
+      <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span></span>
     );
   }
 }
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: Constants.statusBarHeight,
-    marginHorizontal: 16
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">marginTop</span>: Constants.statusBarHeight,
+    <span class="hljs-attr">marginHorizontal</span>: <span class="hljs-number">16</span>
   },
-  item: {
-    backgroundColor: "#f9c2ff",
-    padding: 20,
-    marginVertical: 8
+  <span class="hljs-attr">item</span>: {
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#f9c2ff&quot;</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">20</span>,
+    <span class="hljs-attr">marginVertical</span>: <span class="hljs-number">8</span>
   },
-  header: {
-    fontSize: 32,
-    backgroundColor: "#fff"
+  <span class="hljs-attr">header</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">32</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#fff&quot;</span>
   },
-  title: {
-    fontSize: 24
+  <span class="hljs-attr">title</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">24</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div

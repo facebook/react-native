@@ -70,28 +70,28 @@
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/image.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Image</h1></header><article><div><span><p>A React component for displaying different types of images, including network images, static resources, temporary local images, and images from local disk, such as the camera roll.</p>
 <p>This example shows both fetching and displaying an image from local storage as well as one from network.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { AppRegistry, View, Image } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { AppRegistry, View, Image } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DisplayAnImage</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;View&gt;
-        &lt;Image
-          style={{width: 50, height: 50}}
-          source={require('@expo/snack-static/react-native-logo.png')}
-        /&gt;
-        &lt;Image
-          style={{width: 50, height: 50}}
-          source={{uri: 'https://reactjs.org/logo-og.png'}}
-        /&gt;
-      &lt;/View&gt;
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>}}
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&#x27;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&#x27;)}
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>}}
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{{uri:</span> &#x27;<span class="hljs-attr">https:</span>//<span class="hljs-attr">reactjs.org</span>/<span class="hljs-attr">logo-og.png</span>&#x27;}}
+        /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-// App registration and rendering
-AppRegistry.registerComponent('DisplayAnImage', () =&gt; DisplayAnImage);
+<span class="hljs-comment">// App registration and rendering</span>
+AppRegistry.registerComponent(<span class="hljs-string">&#x27;DisplayAnImage&#x27;</span>, <span class="hljs-function">() =&gt;</span> DisplayAnImage);
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"
         data-snack-description="Example usage"
@@ -108,8 +108,8 @@ AppRegistry.registerComponent('DisplayAnImage', () =&gt; DisplayAnImage);
           width: 100%;
         "
       ></div></div></div><p>You can also add <code>style</code> to an image:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { AppRegistry, View, Image, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { AppRegistry, View, Image, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">stretch</span>: {
@@ -124,19 +124,19 @@ AppRegistry.registerComponent('DisplayAnImage', () =&gt; DisplayAnImage);
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
           <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.stretch}</span>
-          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>'@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>')}
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&#x27;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&#x27;)}
         /&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-// App registration and rendering
+<span class="hljs-comment">// App registration and rendering</span>
 AppRegistry.registerComponent(
-  'DisplayAnImageWithStyle',
-  () =&gt; DisplayAnImageWithStyle
+  <span class="hljs-string">&#x27;DisplayAnImageWithStyle&#x27;</span>,
+  <span class="hljs-function">() =&gt;</span> DisplayAnImageWithStyle
 );
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20stretch%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%0A%20%20%20%20height%3A%20200%0A%20%20%7D%0A%7D)%3B%0A%0Aclass%20DisplayAnImageWithStyle%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.stretch%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%40expo%2Fsnack-static%2Freact-native-logo.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20App%20registration%20and%20rendering%0AAppRegistry.registerComponent(%0A%20%20'DisplayAnImageWithStyle'%2C%0A%20%20()%20%3D%3E%20DisplayAnImageWithStyle%0A)%3B%0A"

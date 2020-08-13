@@ -71,15 +71,15 @@
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/text.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Text</h1></header><article><div><span><p>A React component for displaying text.</p>
 <p><code>Text</code> supports nesting, styling, and touch handling.</p>
 <p>In the following example, the nested title and body text will inherit the <code>fontFamily</code> from <code>styles.baseText</code>, but the title provides its own additional styles. The title and body will stack on top of each other on account of the literal newlines:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { AppRegistry, Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { AppRegistry, Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TextInANest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   <span class="hljs-keyword">constructor</span>(props) {
-    <span class="hljs-keyword">super</span>(props);
-    <span class="hljs-keyword">this</span>.state = {
-      <span class="hljs-attr">titleText</span>: <span class="hljs-string">"Bird's Nest"</span>,
-      <span class="hljs-attr">bodyText</span>: <span class="hljs-string">'This is not really a bird nest.'</span>
+    <span class="hljs-built_in">super</span>(props);
+    <span class="hljs-built_in">this</span>.state = {
+      <span class="hljs-attr">titleText</span>: <span class="hljs-string">&quot;Bird&#x27;s Nest&quot;</span>,
+      <span class="hljs-attr">bodyText</span>: <span class="hljs-string">&#x27;This is not really a bird nest.&#x27;</span>
     };
   }
 
@@ -87,7 +87,7 @@
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.baseText}</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.titleText}</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this.onPressTitle}</span>&gt;</span>
-          {this.state.titleText}{'\n'}{'\n'}
+          {this.state.titleText}{&#x27;\n&#x27;}{&#x27;\n&#x27;}
         <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">numberOfLines</span>=<span class="hljs-string">{5}</span>&gt;</span>
           {this.state.bodyText}
@@ -99,16 +99,16 @@
 
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">baseText</span>: {
-    <span class="hljs-attr">fontFamily</span>: <span class="hljs-string">'Cochin'</span>,
+    <span class="hljs-attr">fontFamily</span>: <span class="hljs-string">&#x27;Cochin&#x27;</span>,
   },
   <span class="hljs-attr">titleText</span>: {
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">20</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">'bold'</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&#x27;bold&#x27;</span>,
   },
 });
 
 <span class="hljs-comment">// App registration and rendering</span>
-AppRegistry.registerComponent(<span class="hljs-string">'TextInANest'</span>, () =&gt; TextInANest);
+AppRegistry.registerComponent(<span class="hljs-string">&#x27;TextInANest&#x27;</span>, <span class="hljs-function">() =&gt;</span> TextInANest);
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"
         data-snack-description="Example usage"

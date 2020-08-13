@@ -70,54 +70,54 @@
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/keyboardavoidingview.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">KeyboardAvoidingView</h1></header><article><div><span><p>It is a component to solve the common problem of views that need to move out of the way of the virtual keyboard. It can automatically adjust either its height, position, or bottom padding based on the keyboard height.</p>
 <h2><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h2>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { View, KeyboardAvoidingView, TextInput, StyleSheet, Text, Platform, TouchableWithoutFeedback, Button, Keyboard  } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { View, KeyboardAvoidingView, TextInput, StyleSheet, Text, Platform, TouchableWithoutFeedback, Button, Keyboard  } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">const</span> KeyboardAvoidingComponent = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> KeyboardAvoidingComponent = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
-    &lt;KeyboardAvoidingView
-      behavior={Platform.OS == "ios" ? "padding" : "height"}
-      style={styles.container}
-    &gt;
-      &lt;TouchableWithoutFeedback onPress={Keyboard.dismiss}&gt;
-        &lt;View style={styles.inner}&gt;
-          &lt;Text style={styles.header}&gt;Header&lt;/Text&gt;
-          &lt;TextInput placeholder="Username" style={styles.textInput} /&gt;
-          &lt;View style={styles.btnContainer}&gt;
-            &lt;Button title="Submit" onPress={() =&gt; null} /&gt;
-          &lt;/View&gt;
-        &lt;/View&gt;
-      &lt;/TouchableWithoutFeedback&gt;
-    &lt;/KeyboardAvoidingView&gt;
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">KeyboardAvoidingView</span>
+      <span class="hljs-attr">behavior</span>=<span class="hljs-string">{Platform.OS</span> == <span class="hljs-string">&quot;ios&quot;</span> ? &quot;<span class="hljs-attr">padding</span>&quot; <span class="hljs-attr">:</span> &quot;<span class="hljs-attr">height</span>&quot;}
+      <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>
+    &gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">TouchableWithoutFeedback</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{Keyboard.dismiss}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.inner}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.header}</span>&gt;</span>Header<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">&quot;Username&quot;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.textInput}</span> /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.btnContainer}</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Submit&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> null} /&gt;
+          <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableWithoutFeedback</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">KeyboardAvoidingView</span>&gt;</span></span>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>
   },
-  inner: {
-    padding: 24,
-    flex: 1,
-    justifyContent: "space-around"
+  <span class="hljs-attr">inner</span>: {
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">24</span>,
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;space-around&quot;</span>
   },
-  header: {
-    fontSize: 36,
-    marginBottom: 48
+  <span class="hljs-attr">header</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">36</span>,
+    <span class="hljs-attr">marginBottom</span>: <span class="hljs-number">48</span>
   },
-  textInput: {
-    height: 40,
-    borderColor: "#000000",
-    borderBottomWidth: 1,
-    marginBottom: 36
+  <span class="hljs-attr">textInput</span>: {
+    <span class="hljs-attr">height</span>: <span class="hljs-number">40</span>,
+    <span class="hljs-attr">borderColor</span>: <span class="hljs-string">&quot;#000000&quot;</span>,
+    <span class="hljs-attr">borderBottomWidth</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">marginBottom</span>: <span class="hljs-number">36</span>
   },
-  btnContainer: {
-    backgroundColor: "white",
-    marginTop: 12
+  <span class="hljs-attr">btnContainer</span>: {
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;white&quot;</span>,
+    <span class="hljs-attr">marginTop</span>: <span class="hljs-number">12</span>
   }
 });
 
-export default KeyboardAvoidingComponent;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> KeyboardAvoidingComponent;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="KeyboardAvoidingView"
         data-snack-description="Example usage"

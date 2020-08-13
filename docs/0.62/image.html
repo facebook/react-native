@@ -86,8 +86,8 @@
 </div>
 <p><block class="functional syntax" /></p>
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript">
-<span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { View, Image, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { View, Image, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
@@ -103,31 +103,31 @@
   },
 });
 
-<span class="hljs-keyword">const</span> DisplayAnImage = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> DisplayAnImage = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
-    &lt;View style={styles.container}&gt;
-      &lt;Image
-        style={styles.tinyLogo}
-        source={require('@expo/snack-static/react-native-logo.png')}
-      /&gt;
-      &lt;Image
-        style={styles.tinyLogo}
-        source={{
-          uri: 'https://reactnative.dev/img/tiny_logo.png',
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.tinyLogo}</span>
+        <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&#x27;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&#x27;)}
+      /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.tinyLogo}</span>
+        <span class="hljs-attr">source</span>=<span class="hljs-string">{{</span>
+          <span class="hljs-attr">uri:</span> &#x27;<span class="hljs-attr">https:</span>//<span class="hljs-attr">reactnative.dev</span>/<span class="hljs-attr">img</span>/<span class="hljs-attr">tiny_logo.png</span>&#x27;,
+        }}
+      /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.logo}</span>
+        <span class="hljs-attr">source</span>=<span class="hljs-string">{{</span>
+          <span class="hljs-attr">uri:</span>
+            &#x27;<span class="hljs-attr">data:image</span>/<span class="hljs-attr">png</span>;<span class="hljs-attr">base64</span>,<span class="hljs-attr">iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB</span>+<span class="hljs-attr">2</span>/<span class="hljs-attr">ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw</span>+<span class="hljs-attr">P</span>/<span class="hljs-attr">eMrC5UTVAAAAABJRU5ErkJggg</span>==<span class="hljs-string">&#x27;,
         }}
       /&gt;
-      &lt;Image
-        style={styles.logo}
-        source={{
-          uri:
-            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==',
-        }}
-      /&gt;
-    &lt;/View&gt;
+    &lt;/View&gt;</span></span></span>
   );
 }
 
-export default DisplayAnImage;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> DisplayAnImage;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Function Component Example"
         data-snack-description="Example usage"
@@ -145,8 +145,8 @@ export default DisplayAnImage;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript">
-<span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { AppRegistry, View, Image, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { AppRegistry, View, Image, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
@@ -165,20 +165,20 @@ export default DisplayAnImage;
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DisplayAnImage</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;View style={styles.container}&gt;
-        &lt;Image
-          style={styles.tinyLogo}
-          source={require('@expo/snack-static/react-native-logo.png')}
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.tinyLogo}</span>
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&#x27;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&#x27;)}
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.tinyLogo}</span>
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{{uri:</span> &#x27;<span class="hljs-attr">https:</span>//<span class="hljs-attr">reactnative.dev</span>/<span class="hljs-attr">img</span>/<span class="hljs-attr">tiny_logo.png</span>&#x27;}}
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.logo}</span>
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{{uri:</span> &#x27;<span class="hljs-attr">data:image</span>/<span class="hljs-attr">png</span>;<span class="hljs-attr">base64</span>,<span class="hljs-attr">iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB</span>+<span class="hljs-attr">2</span>/<span class="hljs-attr">ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw</span>+<span class="hljs-attr">P</span>/<span class="hljs-attr">eMrC5UTVAAAAABJRU5ErkJggg</span>==<span class="hljs-string">&#x27;}}
         /&gt;
-        &lt;Image
-          style={styles.tinyLogo}
-          source={{uri: 'https://reactnative.dev/img/tiny_logo.png'}}
-        /&gt;
-        &lt;Image
-          style={styles.logo}
-          source={{uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg=='}}
-        /&gt;
-      &lt;/View&gt;
+      &lt;/View&gt;</span></span></span>
     );
   }
 }
@@ -212,8 +212,8 @@ export default DisplayAnImage;
 </div>
 <p><block class="functional syntax" /></p>
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript">
-<span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { View, Image, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { View, Image, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
@@ -222,23 +222,23 @@ export default DisplayAnImage;
   <span class="hljs-attr">stretch</span>: {
     <span class="hljs-attr">width</span>: <span class="hljs-number">50</span>,
     <span class="hljs-attr">height</span>: <span class="hljs-number">200</span>,
-    <span class="hljs-attr">resizeMode</span>: <span class="hljs-string">'stretch'</span>,
+    <span class="hljs-attr">resizeMode</span>: <span class="hljs-string">&#x27;stretch&#x27;</span>,
   },
 });
 
-<span class="hljs-keyword">const</span> DisplayAnImageWithStyle = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> DisplayAnImageWithStyle = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
         <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.stretch}</span>
-        <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>'@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>')}
+        <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&#x27;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&#x27;)}
       /&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-export default DisplayAnImageWithStyle;
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> DisplayAnImageWithStyle;
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Function Component Example"
         data-snack-description="Example usage"
         data-snack-code="%0Aimport%20React%20from%20'react'%3B%0Aimport%20%7B%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20paddingTop%3A%2050%2C%0A%20%20%7D%2C%0A%20%20stretch%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%0A%20%20%20%20height%3A%20200%2C%0A%20%20%20%20resizeMode%3A%20'stretch'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aconst%20DisplayAnImageWithStyle%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20style%3D%7Bstyles.stretch%7D%0A%20%20%20%20%20%20%20%20source%3D%7Brequire('%40expo%2Fsnack-static%2Freact-native-logo.png')%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20DisplayAnImageWithStyle%3B%0A"
@@ -255,14 +255,14 @@ export default DisplayAnImageWithStyle;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript">
-<span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { View, Image, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { View, Image, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">stretch</span>: {
     <span class="hljs-attr">width</span>: <span class="hljs-number">50</span>,
     <span class="hljs-attr">height</span>: <span class="hljs-number">200</span>,
-    <span class="hljs-attr">resizeMode</span>: <span class="hljs-string">'stretch'</span>
+    <span class="hljs-attr">resizeMode</span>: <span class="hljs-string">&#x27;stretch&#x27;</span>
   }
 });
 
@@ -272,14 +272,14 @@ export default DisplayAnImageWithStyle;
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
           <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.stretch}</span>
-          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>'@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>')}
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&#x27;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&#x27;)}
         /&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Class Component Example"
         data-snack-description="Example usage"
         data-snack-code="%0Aimport%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20stretch%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%0A%20%20%20%20height%3A%20200%2C%0A%20%20%20%20resizeMode%3A%20'stretch'%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20class%20DisplayAnImageWithStyle%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.stretch%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%40expo%2Fsnack-static%2Freact-native-logo.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A"

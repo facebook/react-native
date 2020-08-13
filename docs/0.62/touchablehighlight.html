@@ -98,13 +98,13 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { StyleSheet, TouchableHighlight, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, TouchableHighlight, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">TouchableHighlightExample</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">const</span> [count, setCount] = useState(<span class="hljs-number">0</span>);
 
-  <span class="hljs-keyword">const</span> onPress = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> onPress = <span class="hljs-function">() =&gt;</span> {
     setCount(count + <span class="hljs-number">1</span>);
   };
 
@@ -124,20 +124,20 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
     <span class="hljs-attr">paddingHorizontal</span>: <span class="hljs-number">10</span>
   },
   <span class="hljs-attr">button</span>: {
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">"#DDDDDD"</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#DDDDDD&quot;</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>
   },
   <span class="hljs-attr">countContainer</span>: {
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>
   },
   <span class="hljs-attr">countText</span>: {
-    <span class="hljs-attr">color</span>: <span class="hljs-string">"#FF00FF"</span>
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&quot;#FF00FF&quot;</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
@@ -156,18 +156,18 @@
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { StyleSheet, TouchableHighlight, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, TouchableHighlight, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   <span class="hljs-keyword">constructor</span>(props) {
-    <span class="hljs-keyword">super</span>(props);
-    <span class="hljs-keyword">this</span>.state = { <span class="hljs-attr">count</span>: <span class="hljs-number">0</span> };
+    <span class="hljs-built_in">super</span>(props);
+    <span class="hljs-built_in">this</span>.state = { <span class="hljs-attr">count</span>: <span class="hljs-number">0</span> };
   }
 
-  onPress = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-keyword">this</span>.setState({
-      <span class="hljs-attr">count</span>: <span class="hljs-keyword">this</span>.state.count + <span class="hljs-number">1</span>
+  onPress = <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-built_in">this</span>.setState({
+      <span class="hljs-attr">count</span>: <span class="hljs-built_in">this</span>.state.count + <span class="hljs-number">1</span>
     });
   };
 
@@ -190,20 +190,20 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
     <span class="hljs-attr">paddingHorizontal</span>: <span class="hljs-number">10</span>
   },
   <span class="hljs-attr">button</span>: {
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">"#DDDDDD"</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#DDDDDD&quot;</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>
   },
   <span class="hljs-attr">countContainer</span>: {
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>
   },
   <span class="hljs-attr">countText</span>: {
-    <span class="hljs-attr">color</span>: <span class="hljs-string">"#FF00FF"</span>
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&quot;#FF00FF&quot;</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div

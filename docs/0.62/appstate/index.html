@@ -95,23 +95,23 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useEffect, useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { AppState, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useEffect, useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { AppState, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> AppStateExample = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> AppStateExample = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">const</span> [appState, setAppState] = useState(AppState.currentState);
 
-  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    AppState.addEventListener(<span class="hljs-string">"change"</span>, _handleAppStateChange);
+  useEffect(<span class="hljs-function">() =&gt;</span> {
+    AppState.addEventListener(<span class="hljs-string">&quot;change&quot;</span>, _handleAppStateChange);
 
-    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-      AppState.removeEventListener(<span class="hljs-string">"change"</span>, _handleAppStateChange);
+    <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> {
+      AppState.removeEventListener(<span class="hljs-string">&quot;change&quot;</span>, _handleAppStateChange);
     };
   }, []);
 
   <span class="hljs-keyword">const</span> _handleAppStateChange = <span class="hljs-function"><span class="hljs-params">nextAppState</span> =&gt;</span> {
-    <span class="hljs-keyword">if</span> (appState.match(<span class="hljs-regexp">/inactive|background/</span>) &amp;&amp; nextAppState === <span class="hljs-string">"active"</span>) {
-      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"App has come to the foreground!"</span>);
+    <span class="hljs-keyword">if</span> (appState.match(<span class="hljs-regexp">/inactive|background/</span>) &amp;&amp; nextAppState === <span class="hljs-string">&quot;active&quot;</span>) {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;App has come to the foreground!&quot;</span>);
     }
     setAppState(nextAppState);
   };
@@ -126,8 +126,8 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
@@ -148,8 +148,8 @@
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { AppState, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { AppState, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppStateExample</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   state = {
@@ -157,21 +157,21 @@
   };
 
   componentDidMount() {
-    AppState.addEventListener(<span class="hljs-string">"change"</span>, <span class="hljs-keyword">this</span>._handleAppStateChange);
+    AppState.addEventListener(<span class="hljs-string">&quot;change&quot;</span>, <span class="hljs-built_in">this</span>._handleAppStateChange);
   }
 
   componentWillUnmount() {
-    AppState.removeEventListener(<span class="hljs-string">"change"</span>, <span class="hljs-keyword">this</span>._handleAppStateChange);
+    AppState.removeEventListener(<span class="hljs-string">&quot;change&quot;</span>, <span class="hljs-built_in">this</span>._handleAppStateChange);
   }
 
   _handleAppStateChange = <span class="hljs-function"><span class="hljs-params">nextAppState</span> =&gt;</span> {
     <span class="hljs-keyword">if</span> (
-      <span class="hljs-keyword">this</span>.state.appState.match(<span class="hljs-regexp">/inactive|background/</span>) &amp;&amp;
-      nextAppState === <span class="hljs-string">"active"</span>
+      <span class="hljs-built_in">this</span>.state.appState.match(<span class="hljs-regexp">/inactive|background/</span>) &amp;&amp;
+      nextAppState === <span class="hljs-string">&quot;active&quot;</span>
     ) {
-      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"App has come to the foreground!"</span>);
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;App has come to the foreground!&quot;</span>);
     }
-    <span class="hljs-keyword">this</span>.setState({ <span class="hljs-attr">appState</span>: nextAppState });
+    <span class="hljs-built_in">this</span>.setState({ <span class="hljs-attr">appState</span>: nextAppState });
   };
 
   render() {
@@ -186,8 +186,8 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div

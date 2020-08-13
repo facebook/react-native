@@ -380,18 +380,6 @@
         </author>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Better List Views in React Native]]></title>
-        <id>https://reactnative.dev/blog/2017/03/13/better-list-views.html</id>
-        <link href="https://reactnative.dev/blog/2017/03/13/better-list-views.html"/>
-        <updated>2017-03-13T06:00:00.000Z</updated>
-        <summary type="html"><![CDATA[<p>Many of you have started playing with some of our new List components already after our <a href="https://www.facebook.com/groups/react.native.community/permalink/921378591331053">teaser announcement in the community group</a>, but we are officially announcing them today! No more <code>ListView</code>s or <code>DataSource</code>s, stale rows, ignored bugs, or excessive ...</p>]]></summary>
-        <author>
-            <name>Spencer Ahrens</name>
-            <email/>
-            <uri>https://github.com/sahrens</uri>
-        </author>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[idx: The Existential Function]]></title>
         <id>https://reactnative.dev/blog/2017/03/13/idx-the-existential-function.html</id>
         <link href="https://reactnative.dev/blog/2017/03/13/idx-the-existential-function.html"/>
@@ -401,6 +389,18 @@
             <name>Timothy Yung</name>
             <email/>
             <uri>https://github.com/yungsters</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Better List Views in React Native]]></title>
+        <id>https://reactnative.dev/blog/2017/03/13/better-list-views.html</id>
+        <link href="https://reactnative.dev/blog/2017/03/13/better-list-views.html"/>
+        <updated>2017-03-13T06:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<p>Many of you have started playing with some of our new List components already after our <a href="https://www.facebook.com/groups/react.native.community/permalink/921378591331053">teaser announcement in the community group</a>, but we are officially announcing them today! No more <code>ListView</code>s or <code>DataSource</code>s, stale rows, ignored bugs, or excessive ...</p>]]></summary>
+        <author>
+            <name>Spencer Ahrens</name>
+            <email/>
+            <uri>https://github.com/sahrens</uri>
         </author>
     </entry>
     <entry>

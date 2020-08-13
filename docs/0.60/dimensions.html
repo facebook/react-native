@@ -90,11 +90,11 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { View, StyleSheet, Text, Dimensions } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { View, StyleSheet, Text, Dimensions } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> <span class="hljs-built_in">window</span> = Dimensions.get(<span class="hljs-string">"window"</span>);
-<span class="hljs-keyword">const</span> screen = Dimensions.get(<span class="hljs-string">"screen"</span>);
+<span class="hljs-keyword">const</span> <span class="hljs-built_in">window</span> = Dimensions.get(<span class="hljs-string">&quot;window&quot;</span>);
+<span class="hljs-keyword">const</span> screen = Dimensions.get(<span class="hljs-string">&quot;screen&quot;</span>);
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">const</span> [dimensions, setDimensions] = useState({ <span class="hljs-built_in">window</span>, screen });
@@ -103,10 +103,10 @@
     setDimensions({ <span class="hljs-built_in">window</span>, screen });
   };
 
-  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    Dimensions.addEventListener(<span class="hljs-string">"change"</span>, onChange);
-    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-      Dimensions.removeEventListener(<span class="hljs-string">"change"</span>, onChange);
+  useEffect(<span class="hljs-function">() =&gt;</span> {
+    Dimensions.addEventListener(<span class="hljs-string">&quot;change&quot;</span>, onChange);
+    <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> {
+      Dimensions.removeEventListener(<span class="hljs-string">&quot;change&quot;</span>, onChange);
     };
   });
 
@@ -121,8 +121,8 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
@@ -141,11 +141,11 @@
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { View, StyleSheet, Text, Dimensions } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { View, StyleSheet, Text, Dimensions } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> <span class="hljs-built_in">window</span> = Dimensions.get(<span class="hljs-string">"window"</span>);
-<span class="hljs-keyword">const</span> screen = Dimensions.get(<span class="hljs-string">"screen"</span>);
+<span class="hljs-keyword">const</span> <span class="hljs-built_in">window</span> = Dimensions.get(<span class="hljs-string">&quot;window&quot;</span>);
+<span class="hljs-keyword">const</span> screen = Dimensions.get(<span class="hljs-string">&quot;screen&quot;</span>);
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   state = {
@@ -156,19 +156,19 @@
   };
 
   onChange = <span class="hljs-function">(<span class="hljs-params">{ <span class="hljs-built_in">window</span>, screen }</span>) =&gt;</span> {
-    <span class="hljs-keyword">this</span>.setState({ <span class="hljs-attr">dimensions</span>: { <span class="hljs-built_in">window</span>, screen } });
+    <span class="hljs-built_in">this</span>.setState({ <span class="hljs-attr">dimensions</span>: { <span class="hljs-built_in">window</span>, screen } });
   };
 
   componentDidMount() {
-    Dimensions.addEventListener(<span class="hljs-string">"change"</span>, <span class="hljs-keyword">this</span>.onChange);
+    Dimensions.addEventListener(<span class="hljs-string">&quot;change&quot;</span>, <span class="hljs-built_in">this</span>.onChange);
   }
 
   componentWillUnmount() {
-    Dimensions.removeEventListener(<span class="hljs-string">"change"</span>, <span class="hljs-keyword">this</span>.onChange);
+    Dimensions.removeEventListener(<span class="hljs-string">&quot;change&quot;</span>, <span class="hljs-built_in">this</span>.onChange);
   }
 
   render() {
-    <span class="hljs-keyword">const</span> { dimensions } = <span class="hljs-keyword">this</span>.state;
+    <span class="hljs-keyword">const</span> { dimensions } = <span class="hljs-built_in">this</span>.state;
 
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
@@ -182,8 +182,8 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div

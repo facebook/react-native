@@ -81,10 +81,10 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { SafeAreaView, ScrollView, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { SafeAreaView, ScrollView, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> (
   <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">ScrollView</span>
       <span class="hljs-attr">contentContainerStyle</span>=<span class="hljs-string">{styles.scrollContentContainer}</span>
@@ -112,15 +112,15 @@
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
       <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.box,</span> {
-        <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">rotate:</span> "<span class="hljs-attr">45deg</span>" }]
+        <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">rotate:</span> &quot;<span class="hljs-attr">45deg</span>&quot; }]
       }]}&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>Rotate by 45 deg<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
       <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.box,</span> {
         <span class="hljs-attr">transform:</span> [
-          { <span class="hljs-attr">rotateX:</span> "<span class="hljs-attr">45deg</span>" },
-          { <span class="hljs-attr">rotateZ:</span> "<span class="hljs-attr">45deg</span>" }
+          { <span class="hljs-attr">rotateX:</span> &quot;<span class="hljs-attr">45deg</span>&quot; },
+          { <span class="hljs-attr">rotateZ:</span> &quot;<span class="hljs-attr">45deg</span>&quot; }
         ]
       }]}&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>Rotate X&amp;Z by 45 deg<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
@@ -128,29 +128,29 @@
 
       <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.box,</span> {
         <span class="hljs-attr">transform:</span> [
-          { <span class="hljs-attr">rotateY:</span> "<span class="hljs-attr">45deg</span>" },
-          { <span class="hljs-attr">rotateZ:</span> "<span class="hljs-attr">45deg</span>" }
+          { <span class="hljs-attr">rotateY:</span> &quot;<span class="hljs-attr">45deg</span>&quot; },
+          { <span class="hljs-attr">rotateZ:</span> &quot;<span class="hljs-attr">45deg</span>&quot; }
         ]
       }]}&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>Rotate Y&amp;Z by 45 deg<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
       <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.box,</span> {
-        <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">skewX:</span> "<span class="hljs-attr">45deg</span>" }]
+        <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">skewX:</span> &quot;<span class="hljs-attr">45deg</span>&quot; }]
       }]}&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>SkewX by 45 deg<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
       <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.box,</span> {
-        <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">skewY:</span> "<span class="hljs-attr">45deg</span>" }]
+        <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">skewY:</span> &quot;<span class="hljs-attr">45deg</span>&quot; }]
       }]}&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>SkewY by 45 deg<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
       <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.box,</span> {
         <span class="hljs-attr">transform:</span> [
-          { <span class="hljs-attr">skewX:</span> "<span class="hljs-attr">30deg</span>" },
-          { <span class="hljs-attr">skewY:</span> "<span class="hljs-attr">30deg</span>" }
+          { <span class="hljs-attr">skewX:</span> &quot;<span class="hljs-attr">30deg</span>&quot; },
+          { <span class="hljs-attr">skewY:</span> &quot;<span class="hljs-attr">30deg</span>&quot; }
         ]
       }]}&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>Skew X&amp;Y by 30 deg<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
@@ -176,7 +176,7 @@
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>
   },
   <span class="hljs-attr">scrollContentContainer</span>: {
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
     <span class="hljs-attr">paddingBottom</span>: <span class="hljs-number">60</span>
   },
   <span class="hljs-attr">box</span>: {
@@ -184,16 +184,16 @@
     <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
     <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">5</span>,
     <span class="hljs-attr">marginVertical</span>: <span class="hljs-number">40</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">"#61dafb"</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#61dafb&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
   <span class="hljs-attr">text</span>: {
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">14</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">"bold"</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>,
     <span class="hljs-attr">margin</span>: <span class="hljs-number">8</span>,
-    <span class="hljs-attr">color</span>: <span class="hljs-string">"#000"</span>,
-    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&quot;#000&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
@@ -212,8 +212,8 @@
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { SafeAreaView, ScrollView, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { SafeAreaView, ScrollView, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
@@ -245,15 +245,15 @@
           <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
           <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.box,</span> {
-            <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">rotate:</span> "<span class="hljs-attr">45deg</span>" }]
+            <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">rotate:</span> &quot;<span class="hljs-attr">45deg</span>&quot; }]
           }]}&gt;</span>
             <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>Rotate by 45 deg<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
           <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
           <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.box,</span> {
             <span class="hljs-attr">transform:</span> [
-              { <span class="hljs-attr">rotateX:</span> "<span class="hljs-attr">45deg</span>" },
-              { <span class="hljs-attr">rotateZ:</span> "<span class="hljs-attr">45deg</span>" }
+              { <span class="hljs-attr">rotateX:</span> &quot;<span class="hljs-attr">45deg</span>&quot; },
+              { <span class="hljs-attr">rotateZ:</span> &quot;<span class="hljs-attr">45deg</span>&quot; }
             ]
           }]}&gt;</span>
             <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>Rotate X&amp;Z by 45 deg<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
@@ -261,29 +261,29 @@
 
           <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.box,</span> {
             <span class="hljs-attr">transform:</span> [
-              { <span class="hljs-attr">rotateY:</span> "<span class="hljs-attr">45deg</span>" },
-              { <span class="hljs-attr">rotateZ:</span> "<span class="hljs-attr">45deg</span>" }
+              { <span class="hljs-attr">rotateY:</span> &quot;<span class="hljs-attr">45deg</span>&quot; },
+              { <span class="hljs-attr">rotateZ:</span> &quot;<span class="hljs-attr">45deg</span>&quot; }
             ]
           }]}&gt;</span>
             <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>Rotate Y&amp;Z by 45 deg<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
           <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
           <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.box,</span> {
-            <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">skewX:</span> "<span class="hljs-attr">45deg</span>" }]
+            <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">skewX:</span> &quot;<span class="hljs-attr">45deg</span>&quot; }]
           }]}&gt;</span>
             <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>SkewX by 45 deg<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
           <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
           <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.box,</span> {
-            <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">skewY:</span> "<span class="hljs-attr">45deg</span>" }]
+            <span class="hljs-attr">transform:</span> [{ <span class="hljs-attr">skewY:</span> &quot;<span class="hljs-attr">45deg</span>&quot; }]
           }]}&gt;</span>
             <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>SkewY by 45 deg<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
           <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 
           <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.box,</span> {
             <span class="hljs-attr">transform:</span> [
-              { <span class="hljs-attr">skewX:</span> "<span class="hljs-attr">30deg</span>" },
-              { <span class="hljs-attr">skewY:</span> "<span class="hljs-attr">30deg</span>" }
+              { <span class="hljs-attr">skewX:</span> &quot;<span class="hljs-attr">30deg</span>&quot; },
+              { <span class="hljs-attr">skewY:</span> &quot;<span class="hljs-attr">30deg</span>&quot; }
             ]
           }]}&gt;</span>
             <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>Skew X&amp;Y by 30 deg<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
@@ -311,7 +311,7 @@
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>
   },
   <span class="hljs-attr">scrollContentContainer</span>: {
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
     <span class="hljs-attr">paddingBottom</span>: <span class="hljs-number">60</span>
   },
   <span class="hljs-attr">box</span>: {
@@ -319,16 +319,16 @@
     <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
     <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">5</span>,
     <span class="hljs-attr">marginVertical</span>: <span class="hljs-number">40</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">"#61dafb"</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#61dafb&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
   <span class="hljs-attr">text</span>: {
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">14</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">"bold"</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>,
     <span class="hljs-attr">margin</span>: <span class="hljs-number">8</span>,
-    <span class="hljs-attr">color</span>: <span class="hljs-string">"#000"</span>,
-    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&quot;#000&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div

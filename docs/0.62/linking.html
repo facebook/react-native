@@ -157,12 +157,12 @@
 <hr>
 <h2><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h2>
 <h3><a class="anchor" aria-hidden="true" id="open-links-and-deep-links-universal-links"></a><a href="#open-links-and-deep-links-universal-links" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Open Links and Deep Links (Universal Links)</h3>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useCallback } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Alert, Button, Linking, StyleSheet, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useCallback } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Alert, Button, Linking, StyleSheet, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> supportedURL = <span class="hljs-string">"https://google.com"</span>;
+<span class="hljs-keyword">const</span> supportedURL = <span class="hljs-string">&quot;https://google.com&quot;</span>;
 
-<span class="hljs-keyword">const</span> unsupportedURL = <span class="hljs-string">"slack://open?team=123456"</span>;
+<span class="hljs-keyword">const</span> unsupportedURL = <span class="hljs-string">&quot;slack://open?team=123456&quot;</span>;
 
 <span class="hljs-keyword">const</span> OpenURLButton = <span class="hljs-function">(<span class="hljs-params">{ url, children }</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> handlePress = useCallback(<span class="hljs-keyword">async</span> () =&gt; {
@@ -170,32 +170,32 @@
     <span class="hljs-keyword">const</span> supported = <span class="hljs-keyword">await</span> Linking.canOpenURL(url);
 
     <span class="hljs-keyword">if</span> (supported) {
-      <span class="hljs-comment">// Opening the link with some app, if the URL scheme is "http" the web link should be opened</span>
+      <span class="hljs-comment">// Opening the link with some app, if the URL scheme is &quot;http&quot; the web link should be opened</span>
       <span class="hljs-comment">// by some browser in the mobile</span>
       <span class="hljs-keyword">await</span> Linking.openURL(url);
     } <span class="hljs-keyword">else</span> {
-      Alert.alert(<span class="hljs-string">`Don't know how to open this URL: <span class="hljs-subst">${url}</span>`</span>);
+      Alert.alert(<span class="hljs-string">`Don&#x27;t know how to open this URL: <span class="hljs-subst">${url}</span>`</span>);
     }
   }, [url]);
 
-  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">{children}</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{handlePress}</span> /&gt;</span>;
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">{children}</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{handlePress}</span> /&gt;</span></span>;
 };
 
-const App = () =&gt; {
-  return (
-    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">OpenURLButton</span> <span class="hljs-attr">url</span>=<span class="hljs-string">{supportedURL}</span>&gt;</span>Open Supported URL<span class="hljs-tag">&lt;/<span class="hljs-name">OpenURLButton</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">OpenURLButton</span> <span class="hljs-attr">url</span>=<span class="hljs-string">{unsupportedURL}</span>&gt;</span>Open Unsupported URL<span class="hljs-tag">&lt;/<span class="hljs-name">OpenURLButton</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 };
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: { <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>, <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span> },
 });
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Linking Function Component Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7B%20useCallback%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Alert%2C%20Button%2C%20Linking%2C%20StyleSheet%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20supportedURL%20%3D%20%22https%3A%2F%2Fgoogle.com%22%3B%0A%0Aconst%20unsupportedURL%20%3D%20%22slack%3A%2F%2Fopen%3Fteam%3D123456%22%3B%0A%0Aconst%20OpenURLButton%20%3D%20(%7B%20url%2C%20children%20%7D)%20%3D%3E%20%7B%0A%20%20const%20handlePress%20%3D%20useCallback(async%20()%20%3D%3E%20%7B%0A%20%20%20%20%2F%2F%20Checking%20if%20the%20link%20is%20supported%20for%20links%20with%20custom%20URL%20scheme.%0A%20%20%20%20const%20supported%20%3D%20await%20Linking.canOpenURL(url)%3B%0A%0A%20%20%20%20if%20(supported)%20%7B%0A%20%20%20%20%20%20%2F%2F%20Opening%20the%20link%20with%20some%20app%2C%20if%20the%20URL%20scheme%20is%20%22http%22%20the%20web%20link%20should%20be%20opened%0A%20%20%20%20%20%20%2F%2F%20by%20some%20browser%20in%20the%20mobile%0A%20%20%20%20%20%20await%20Linking.openURL(url)%3B%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20Alert.alert(%60Don't%20know%20how%20to%20open%20this%20URL%3A%20%24%7Burl%7D%60)%3B%0A%20%20%20%20%7D%0A%20%20%7D%2C%20%5Burl%5D)%3B%0A%0A%20%20return%20%3CButton%20title%3D%7Bchildren%7D%20onPress%3D%7BhandlePress%7D%20%2F%3E%3B%0A%7D%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3COpenURLButton%20url%3D%7BsupportedURL%7D%3EOpen%20Supported%20URL%3C%2FOpenURLButton%3E%0A%20%20%20%20%20%20%3COpenURLButton%20url%3D%7BunsupportedURL%7D%3EOpen%20Unsupported%20URL%3C%2FOpenURLButton%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aexport%20default%20App%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%20flex%3A%201%2C%20justifyContent%3A%20%22center%22%2C%20alignItems%3A%20%22center%22%20%7D%2C%0A%7D)%3B%0A"
@@ -211,8 +211,8 @@ const styles = StyleSheet.create({
           width: 100%;
         "
       ></div></div></div><h3><a class="anchor" aria-hidden="true" id="open-custom-settings"></a><a href="#open-custom-settings" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Open Custom Settings</h3>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useCallback } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Button, Linking, StyleSheet, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useCallback } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Button, Linking, StyleSheet, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">const</span> OpenSettingsButton = <span class="hljs-function">(<span class="hljs-params">{ children }</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> handlePress = useCallback(<span class="hljs-keyword">async</span> () =&gt; {
@@ -220,23 +220,23 @@ const styles = StyleSheet.create({
     <span class="hljs-keyword">await</span> Linking.openSettings();
   }, []);
 
-  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">{children}</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{handlePress}</span> /&gt;</span>;
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">{children}</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{handlePress}</span> /&gt;</span></span>;
 };
 
-const App = () =&gt; {
-  return (
-    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">OpenSettingsButton</span>&gt;</span>Open Settings<span class="hljs-tag">&lt;/<span class="hljs-name">OpenSettingsButton</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 };
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: { <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>, <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span> },
 });
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Linking Function Component Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7B%20useCallback%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Button%2C%20Linking%2C%20StyleSheet%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20OpenSettingsButton%20%3D%20(%7B%20children%20%7D)%20%3D%3E%20%7B%0A%20%20const%20handlePress%20%3D%20useCallback(async%20()%20%3D%3E%20%7B%0A%20%20%20%20%2F%2F%20Open%20the%20custom%20settings%20if%20the%20app%20has%20one%0A%20%20%20%20await%20Linking.openSettings()%3B%0A%20%20%7D%2C%20%5B%5D)%3B%0A%0A%20%20return%20%3CButton%20title%3D%7Bchildren%7D%20onPress%3D%7BhandlePress%7D%20%2F%3E%3B%0A%7D%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3COpenSettingsButton%3EOpen%20Settings%3C%2FOpenSettingsButton%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aexport%20default%20App%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%20flex%3A%201%2C%20justifyContent%3A%20%22center%22%2C%20alignItems%3A%20%22center%22%20%7D%2C%0A%7D)%3B%0A"
@@ -252,22 +252,22 @@ const styles = StyleSheet.create({
           width: 100%;
         "
       ></div></div></div><h3><a class="anchor" aria-hidden="true" id="get-the-deep-link"></a><a href="#get-the-deep-link" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Get the Deep Link</h3>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Linking, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Linking, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> useMount = <span class="hljs-function"><span class="hljs-params">func</span> =&gt;</span> useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> func(), []);
+<span class="hljs-keyword">const</span> useMount = <span class="hljs-function"><span class="hljs-params">func</span> =&gt;</span> useEffect(<span class="hljs-function">() =&gt;</span> func(), []);
 
-<span class="hljs-keyword">const</span> useInitialURL = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> useInitialURL = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">const</span> [url, setUrl] = useState(<span class="hljs-literal">null</span>);
   <span class="hljs-keyword">const</span> [processing, setProcessing] = useState(<span class="hljs-literal">true</span>);
 
-  useMount(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  useMount(<span class="hljs-function">() =&gt;</span> {
     <span class="hljs-keyword">const</span> getUrlAsync = <span class="hljs-keyword">async</span> () =&gt; {
       <span class="hljs-comment">// Get the deep link used to open the app</span>
       <span class="hljs-keyword">const</span> initialUrl = <span class="hljs-keyword">await</span> Linking.getInitialURL();
 
       <span class="hljs-comment">// The setTimeout is just for testing purpose</span>
-      setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+      <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> {
         setUrl(initialUrl);
         setProcessing(<span class="hljs-literal">false</span>);
       }, <span class="hljs-number">1000</span>);
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   <span class="hljs-keyword">return</span> { url, processing };
 };
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">const</span> { <span class="hljs-attr">url</span>: initialUrl, processing } = useInitialURL();
 
   <span class="hljs-keyword">return</span> (
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
       <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>
         {processing
           ? `Processing the initial url from a deep link`
-          : `The deep link is: ${initialUrl || "None"}`}
+          : `The deep link is: ${initialUrl || &quot;None&quot;}`}
       <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
     <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
-  <span class="hljs-attr">container</span>: { <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>, <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span> },
+  <span class="hljs-attr">container</span>: { <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>, <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span> },
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Linking Function Component Example"
@@ -314,8 +314,8 @@ const styles = StyleSheet.create({
           width: 100%;
         "
       ></div></div></div><h3><a class="anchor" aria-hidden="true" id="send-intents-android"></a><a href="#send-intents-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Send Intents (Android)</h3>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useCallback } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Alert, Button, Linking, StyleSheet, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useCallback } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Alert, Button, Linking, StyleSheet, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">const</span> SendIntentButton = <span class="hljs-function">(<span class="hljs-params">{ action, extras, children }</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> handlePress = useCallback(<span class="hljs-keyword">async</span> () =&gt; {
@@ -326,33 +326,33 @@ const styles = StyleSheet.create({
     }
   }, [action, extras]);
 
-  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">{children}</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{handlePress}</span> /&gt;</span>;
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">{children}</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{handlePress}</span> /&gt;</span></span>;
 };
 
-const App = () =&gt; {
-  return (
-    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">SendIntentButton</span> <span class="hljs-attr">action</span>=<span class="hljs-string">"android.intent.action.POWER_USAGE_SUMMARY"</span>&gt;</span>
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">SendIntentButton</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;android.intent.action.POWER_USAGE_SUMMARY&quot;</span>&gt;</span>
         Power Usage Summary
       <span class="hljs-tag">&lt;/<span class="hljs-name">SendIntentButton</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">SendIntentButton</span>
-        <span class="hljs-attr">action</span>=<span class="hljs-string">"android.settings.APP_NOTIFICATION_SETTINGS"</span>
+        <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;android.settings.APP_NOTIFICATION_SETTINGS&quot;</span>
         <span class="hljs-attr">extras</span>=<span class="hljs-string">{[</span>
-          { "<span class="hljs-attr">android.provider.extra.APP_PACKAGE</span>"<span class="hljs-attr">:</span> "<span class="hljs-attr">com.facebook.katana</span>" },
+          { &quot;<span class="hljs-attr">android.provider.extra.APP_PACKAGE</span>&quot;<span class="hljs-attr">:</span> &quot;<span class="hljs-attr">com.facebook.katana</span>&quot; },
         ]}
       &gt;</span>
         App Notification Settings
       <span class="hljs-tag">&lt;/<span class="hljs-name">SendIntentButton</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 };
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: { <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>, <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span> },
 });
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Linking Function Component Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7B%20useCallback%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Alert%2C%20Button%2C%20Linking%2C%20StyleSheet%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20SendIntentButton%20%3D%20(%7B%20action%2C%20extras%2C%20children%20%7D)%20%3D%3E%20%7B%0A%20%20const%20handlePress%20%3D%20useCallback(async%20()%20%3D%3E%20%7B%0A%20%20%20%20try%20%7B%0A%20%20%20%20%20%20await%20Linking.sendIntent(action%2C%20extras)%3B%0A%20%20%20%20%7D%20catch%20(e)%20%7B%0A%20%20%20%20%20%20Alert.alert(e.message)%3B%0A%20%20%20%20%7D%0A%20%20%7D%2C%20%5Baction%2C%20extras%5D)%3B%0A%0A%20%20return%20%3CButton%20title%3D%7Bchildren%7D%20onPress%3D%7BhandlePress%7D%20%2F%3E%3B%0A%7D%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CSendIntentButton%20action%3D%22android.intent.action.POWER_USAGE_SUMMARY%22%3E%0A%20%20%20%20%20%20%20%20Power%20Usage%20Summary%0A%20%20%20%20%20%20%3C%2FSendIntentButton%3E%0A%20%20%20%20%20%20%3CSendIntentButton%0A%20%20%20%20%20%20%20%20action%3D%22android.settings.APP_NOTIFICATION_SETTINGS%22%0A%20%20%20%20%20%20%20%20extras%3D%7B%5B%0A%20%20%20%20%20%20%20%20%20%20%7B%20%22android.provider.extra.APP_PACKAGE%22%3A%20%22com.facebook.katana%22%20%7D%2C%0A%20%20%20%20%20%20%20%20%5D%7D%0A%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20App%20Notification%20Settings%0A%20%20%20%20%20%20%3C%2FSendIntentButton%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aexport%20default%20App%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%20flex%3A%201%2C%20justifyContent%3A%20%22center%22%2C%20alignItems%3A%20%22center%22%20%7D%2C%0A%7D)%3B%0A"

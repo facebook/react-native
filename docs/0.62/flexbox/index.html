@@ -86,17 +86,17 @@
 <li><p><code>column-reverse</code> Align children from bottom to top. If wrapping is enabled, then the next line will start to the right of the first item on the bottom of the container.</p></li>
 </ul>
 <p>You can learn more <a href="https://yogalayout.com/docs/flex-direction">here</a>.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> FlexDirectionBasics = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> FlexDirectionBasics = <span class="hljs-function">() =&gt;</span> {
     <span class="hljs-keyword">return</span> (
       <span class="hljs-comment">// Try setting `flexDirection` to `column`.</span>
-      &lt;View style={{flex: 1, flexDirection: 'row'}}&gt;
-        &lt;View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} /&gt;
-        &lt;View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} /&gt;
-        &lt;View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} /&gt;
-      &lt;/View&gt;
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">flexDirection:</span> &#x27;<span class="hljs-attr">row</span>&#x27;}}&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> &#x27;<span class="hljs-attr">powderblue</span>&#x27;}} /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> &#x27;<span class="hljs-attr">skyblue</span>&#x27;}} /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> &#x27;<span class="hljs-attr">steelblue</span>&#x27;}} /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
 };
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
@@ -132,22 +132,22 @@
 <li><p><code>space-evenly</code> Evenly distribute children within the alignment container along the main axis. The spacing between each pair of adjacent items, the main-start edge and the first item, and the main-end edge and the last item, are all exactly the same.</p></li>
 </ul>
 <p>You can learn more <a href="https://yogalayout.com/docs/justify-content">here</a>.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> JustifyContentBasics = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> JustifyContentBasics = <span class="hljs-function">() =&gt;</span> {
     <span class="hljs-keyword">return</span> (
       <span class="hljs-comment">// Try setting `justifyContent` to `center`.</span>
       <span class="hljs-comment">// Try setting `flexDirection` to `row`.</span>
-      &lt;View style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-      }}&gt;
-        &lt;View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} /&gt;
-        &lt;View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} /&gt;
-        &lt;View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} /&gt;
-      &lt;/View&gt;
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+        <span class="hljs-attr">flex:</span> <span class="hljs-attr">1</span>,
+        <span class="hljs-attr">flexDirection:</span> &#x27;<span class="hljs-attr">column</span>&#x27;,
+        <span class="hljs-attr">justifyContent:</span> &#x27;<span class="hljs-attr">space-between</span>&#x27;,
+      }}&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> &#x27;<span class="hljs-attr">powderblue</span>&#x27;}} /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> &#x27;<span class="hljs-attr">skyblue</span>&#x27;}} /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> &#x27;<span class="hljs-attr">steelblue</span>&#x27;}} /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
 };
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
@@ -179,24 +179,24 @@
 <p>For <code>stretch</code> to have an effect, children must not have a fixed dimension along the secondary axis. In the following example, setting <code>alignItems: stretch</code> does nothing until the <code>width: 50</code> is removed from the children.</p>
 </blockquote>
 <p>You can learn more <a href="https://yogalayout.com/docs/align-items">here</a>.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> AlignItemsBasics = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> AlignItemsBasics = <span class="hljs-function">() =&gt;</span> {
     <span class="hljs-keyword">return</span> (
-      <span class="hljs-comment">// Try setting `alignItems` to 'flex-start'</span>
+      <span class="hljs-comment">// Try setting `alignItems` to &#x27;flex-start&#x27;</span>
       <span class="hljs-comment">// Try setting `justifyContent` to `flex-end`.</span>
       <span class="hljs-comment">// Try setting `flexDirection` to `row`.</span>
-      &lt;View style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'stretch',
-      }}&gt;
-        &lt;View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} /&gt;
-        &lt;View style={{height: 50, backgroundColor: 'skyblue'}} /&gt;
-        &lt;View style={{height: 100, backgroundColor: 'steelblue'}} /&gt;
-      &lt;/View&gt;
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+        <span class="hljs-attr">flex:</span> <span class="hljs-attr">1</span>,
+        <span class="hljs-attr">flexDirection:</span> &#x27;<span class="hljs-attr">column</span>&#x27;,
+        <span class="hljs-attr">justifyContent:</span> &#x27;<span class="hljs-attr">center</span>&#x27;,
+        <span class="hljs-attr">alignItems:</span> &#x27;<span class="hljs-attr">stretch</span>&#x27;,
+      }}&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> &#x27;<span class="hljs-attr">powderblue</span>&#x27;}} /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> &#x27;<span class="hljs-attr">skyblue</span>&#x27;}} /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{height:</span> <span class="hljs-attr">100</span>, <span class="hljs-attr">backgroundColor:</span> &#x27;<span class="hljs-attr">steelblue</span>&#x27;}} /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
 };
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div

@@ -101,10 +101,10 @@
 <li><a href="/docs/easing#out"><code>out</code></a> runs an easing function backwards</li>
 </ul>
 <h2><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h2>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Animated, Easing, SectionList, StatusBar, StyleSheet, Text, TouchableOpacity, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Animated, Easing, SectionList, StatusBar, StyleSheet, Text, TouchableOpacity, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">let</span> opacity = <span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">0</span>);
 
   <span class="hljs-keyword">const</span> animate = <span class="hljs-function"><span class="hljs-params">easing</span> =&gt;</span> {
@@ -131,118 +131,118 @@
   ];
 
   <span class="hljs-keyword">return</span> (
-    &lt;View style={styles.container}&gt;
-      &lt;StatusBar hidden={true} /&gt;
-      &lt;Text style={styles.title}&gt;
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">StatusBar</span> <span class="hljs-attr">hidden</span>=<span class="hljs-string">{true}</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>
         Press rows below to preview the Easing!
-      &lt;/Text&gt;
-      &lt;View style={styles.boxContainer}&gt;
-        &lt;Animated.View style={animatedStyles} /&gt;
-      &lt;/View&gt;
-      &lt;SectionList
-        style={styles.list}
-        sections={SECTIONS}
-        keyExtractor={(item) =&gt; item.title}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.boxContainer}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Animated.View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{animatedStyles}</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">SectionList</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.list}</span>
+        <span class="hljs-attr">sections</span>=<span class="hljs-string">{SECTIONS}</span>
+        <span class="hljs-attr">keyExtractor</span>=<span class="hljs-string">{(item)</span> =&gt;</span> item.title}
         renderItem={({ item }) =&gt; (
-          &lt;TouchableOpacity
-            onPress={() =&gt; animate(item.easing)}
+          <span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span>
+            <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> animate(item.easing)}
             style={styles.listRow}
           &gt;
-            &lt;Text&gt;{item.title}&lt;/Text&gt;
-          &lt;/TouchableOpacity&gt;
+            <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{item.title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span>
         )}
         renderSectionHeader={({ section: { title } }) =&gt; (
-          &lt;Text style={styles.listHeader}&gt;{title}&lt;/Text&gt;
+          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.listHeader}</span>&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
         )}
       /&gt;
-    &lt;/View&gt;
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 };
 
-const SECTIONS = [
+<span class="hljs-keyword">const</span> SECTIONS = [
   {
-    title: "Predefined animations",
-    data: [
-      { title: "Bounce", easing: Easing.bounce },
-      { title: "Ease", easing: Easing.ease },
-      { title: "Elastic", easing: Easing.elastic(4) }
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Predefined animations&quot;</span>,
+    <span class="hljs-attr">data</span>: [
+      { <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Bounce&quot;</span>, <span class="hljs-attr">easing</span>: Easing.bounce },
+      { <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Ease&quot;</span>, <span class="hljs-attr">easing</span>: Easing.ease },
+      { <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Elastic&quot;</span>, <span class="hljs-attr">easing</span>: Easing.elastic(<span class="hljs-number">4</span>) }
     ]
   },
   {
-    title: "Standard functions",
-    data: [
-      { title: "Linear", easing: Easing.linear },
-      { title: "Quad", easing: Easing.quad },
-      { title: "Cubic", easing: Easing.cubic }
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Standard functions&quot;</span>,
+    <span class="hljs-attr">data</span>: [
+      { <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Linear&quot;</span>, <span class="hljs-attr">easing</span>: Easing.linear },
+      { <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Quad&quot;</span>, <span class="hljs-attr">easing</span>: Easing.quad },
+      { <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Cubic&quot;</span>, <span class="hljs-attr">easing</span>: Easing.cubic }
     ]
   },
   {
-    title: "Additional functions",
-    data: [
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Additional functions&quot;</span>,
+    <span class="hljs-attr">data</span>: [
       {
-        title: "Bezier",
-        easing: Easing.bezier(0, 2, 1, -1)
+        <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Bezier&quot;</span>,
+        <span class="hljs-attr">easing</span>: Easing.bezier(<span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">-1</span>)
       },
-      { title: "Circle", easing: Easing.circle },
-      { title: "Sin", easing: Easing.sin },
-      { title: "Exp", easing: Easing.exp }
+      { <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Circle&quot;</span>, <span class="hljs-attr">easing</span>: Easing.circle },
+      { <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Sin&quot;</span>, <span class="hljs-attr">easing</span>: Easing.sin },
+      { <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Exp&quot;</span>, <span class="hljs-attr">easing</span>: Easing.exp }
     ]
   },
   {
-    title: "Combinations",
-    data: [
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Combinations&quot;</span>,
+    <span class="hljs-attr">data</span>: [
       {
-        title: "In + Bounce",
-        easing: Easing.in(Easing.bounce)
+        <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;In + Bounce&quot;</span>,
+        <span class="hljs-attr">easing</span>: Easing.in(Easing.bounce)
       },
       {
-        title: "Out + Exp",
-        easing: Easing.out(Easing.exp)
+        <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Out + Exp&quot;</span>,
+        <span class="hljs-attr">easing</span>: Easing.out(Easing.exp)
       },
       {
-        title: "InOut + Elastic",
-        easing: Easing.inOut(Easing.elastic(1))
+        <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;InOut + Elastic&quot;</span>,
+        <span class="hljs-attr">easing</span>: Easing.inOut(Easing.elastic(<span class="hljs-number">1</span>))
       }
     ]
   }
 ];
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#20232a"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#20232a&quot;</span>
   },
-  title: {
-    marginTop: 10,
-    textAlign: "center",
-    color: "#61dafb"
+  <span class="hljs-attr">title</span>: {
+    <span class="hljs-attr">marginTop</span>: <span class="hljs-number">10</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&quot;#61dafb&quot;</span>
   },
-  boxContainer: {
-    height: 160,
-    alignItems: "center"
+  <span class="hljs-attr">boxContainer</span>: {
+    <span class="hljs-attr">height</span>: <span class="hljs-number">160</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
-  box: {
-    marginTop: 32,
-    borderRadius: 4,
-    backgroundColor: "#61dafb"
+  <span class="hljs-attr">box</span>: {
+    <span class="hljs-attr">marginTop</span>: <span class="hljs-number">32</span>,
+    <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">4</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#61dafb&quot;</span>
   },
-  list: {
-    backgroundColor: "#fff"
+  <span class="hljs-attr">list</span>: {
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#fff&quot;</span>
   },
-  listHeader: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    backgroundColor: "#f4f4f4",
-    color: "#999",
-    fontSize: 12,
-    textTransform: "uppercase"
+  <span class="hljs-attr">listHeader</span>: {
+    <span class="hljs-attr">paddingHorizontal</span>: <span class="hljs-number">8</span>,
+    <span class="hljs-attr">paddingVertical</span>: <span class="hljs-number">4</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#f4f4f4&quot;</span>,
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&quot;#999&quot;</span>,
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">12</span>,
+    <span class="hljs-attr">textTransform</span>: <span class="hljs-string">&quot;uppercase&quot;</span>
   },
-  listRow: {
-    padding: 8
+  <span class="hljs-attr">listRow</span>: {
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">8</span>
   }
 });
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Easing Demo"
         data-snack-description="Example usage"

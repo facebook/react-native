@@ -81,7 +81,7 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component, useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component, useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
 <span class="hljs-keyword">import</span> {
   Alert,
   Modal,
@@ -89,18 +89,18 @@
   Text,
   TouchableHighlight,
   View
-} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">const</span> [modalVisible, setModalVisible] = useState(<span class="hljs-literal">false</span>);
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.centeredView}</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Modal</span>
-        <span class="hljs-attr">animationType</span>=<span class="hljs-string">"slide"</span>
+        <span class="hljs-attr">animationType</span>=<span class="hljs-string">&quot;slide&quot;</span>
         <span class="hljs-attr">transparent</span>=<span class="hljs-string">{true}</span>
         <span class="hljs-attr">visible</span>=<span class="hljs-string">{modalVisible}</span>
         <span class="hljs-attr">onRequestClose</span>=<span class="hljs-string">{()</span> =&gt;</span> {
-          Alert.alert("Modal has been closed.");
+          Alert.alert(&quot;Modal has been closed.&quot;);
         }}
       &gt;
         <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.centeredView}</span>&gt;</span>
@@ -108,7 +108,7 @@
             <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.modalText}</span>&gt;</span>Hello World!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
 
             <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span>
-              <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">...styles.openButton</span>, <span class="hljs-attr">backgroundColor:</span> "#<span class="hljs-attr">2196F3</span>" }}
+              <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">...styles.openButton</span>, <span class="hljs-attr">backgroundColor:</span> &quot;#<span class="hljs-attr">2196F3</span>&quot; }}
               <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
                 setModalVisible(!modalVisible);
               }}
@@ -134,17 +134,17 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">centeredView</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
     <span class="hljs-attr">marginTop</span>: <span class="hljs-number">22</span>
   },
   <span class="hljs-attr">modalView</span>: {
     <span class="hljs-attr">margin</span>: <span class="hljs-number">20</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">"white"</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;white&quot;</span>,
     <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">20</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">35</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">shadowColor</span>: <span class="hljs-string">"#000"</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">shadowColor</span>: <span class="hljs-string">&quot;#000&quot;</span>,
     <span class="hljs-attr">shadowOffset</span>: {
       <span class="hljs-attr">width</span>: <span class="hljs-number">0</span>,
       <span class="hljs-attr">height</span>: <span class="hljs-number">2</span>
@@ -154,19 +154,19 @@
     <span class="hljs-attr">elevation</span>: <span class="hljs-number">5</span>
   },
   <span class="hljs-attr">openButton</span>: {
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">"#F194FF"</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#F194FF&quot;</span>,
     <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">20</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>,
     <span class="hljs-attr">elevation</span>: <span class="hljs-number">2</span>
   },
   <span class="hljs-attr">textStyle</span>: {
-    <span class="hljs-attr">color</span>: <span class="hljs-string">"white"</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">"bold"</span>,
-    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&quot;white&quot;</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
   <span class="hljs-attr">modalText</span>: {
     <span class="hljs-attr">marginBottom</span>: <span class="hljs-number">15</span>,
-    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
@@ -187,7 +187,7 @@
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
 <span class="hljs-keyword">import</span> {
   Alert,
   Modal,
@@ -195,7 +195,7 @@
   Text,
   TouchableHighlight,
   View
-} <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   state = {
@@ -203,19 +203,19 @@
   };
 
   setModalVisible = <span class="hljs-function">(<span class="hljs-params">visible</span>) =&gt;</span> {
-    <span class="hljs-keyword">this</span>.setState({ <span class="hljs-attr">modalVisible</span>: visible });
+    <span class="hljs-built_in">this</span>.setState({ <span class="hljs-attr">modalVisible</span>: visible });
   }
 
   render() {
-    <span class="hljs-keyword">const</span> { modalVisible } = <span class="hljs-keyword">this</span>.state;
+    <span class="hljs-keyword">const</span> { modalVisible } = <span class="hljs-built_in">this</span>.state;
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.centeredView}</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Modal</span>
-          <span class="hljs-attr">animationType</span>=<span class="hljs-string">"slide"</span>
+          <span class="hljs-attr">animationType</span>=<span class="hljs-string">&quot;slide&quot;</span>
           <span class="hljs-attr">transparent</span>=<span class="hljs-string">{true}</span>
           <span class="hljs-attr">visible</span>=<span class="hljs-string">{modalVisible}</span>
           <span class="hljs-attr">onRequestClose</span>=<span class="hljs-string">{()</span> =&gt;</span> {
-            Alert.alert("Modal has been closed.");
+            Alert.alert(&quot;Modal has been closed.&quot;);
           }}
         &gt;
           <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.centeredView}</span>&gt;</span>
@@ -223,7 +223,7 @@
               <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.modalText}</span>&gt;</span>Hello World!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
 
               <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span>
-                <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">...styles.openButton</span>, <span class="hljs-attr">backgroundColor:</span> "#<span class="hljs-attr">2196F3</span>" }}
+                <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">...styles.openButton</span>, <span class="hljs-attr">backgroundColor:</span> &quot;#<span class="hljs-attr">2196F3</span>&quot; }}
                 <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
                   this.setModalVisible(!modalVisible);
                 }}
@@ -250,17 +250,17 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">centeredView</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
     <span class="hljs-attr">marginTop</span>: <span class="hljs-number">22</span>
   },
   <span class="hljs-attr">modalView</span>: {
     <span class="hljs-attr">margin</span>: <span class="hljs-number">20</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">"white"</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;white&quot;</span>,
     <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">20</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">35</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">shadowColor</span>: <span class="hljs-string">"#000"</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">shadowColor</span>: <span class="hljs-string">&quot;#000&quot;</span>,
     <span class="hljs-attr">shadowOffset</span>: {
       <span class="hljs-attr">width</span>: <span class="hljs-number">0</span>,
       <span class="hljs-attr">height</span>: <span class="hljs-number">2</span>
@@ -270,19 +270,19 @@
     <span class="hljs-attr">elevation</span>: <span class="hljs-number">5</span>
   },
   <span class="hljs-attr">openButton</span>: {
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">"#F194FF"</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#F194FF&quot;</span>,
     <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">20</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>,
     <span class="hljs-attr">elevation</span>: <span class="hljs-number">2</span>
   },
   <span class="hljs-attr">textStyle</span>: {
-    <span class="hljs-attr">color</span>: <span class="hljs-string">"white"</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">"bold"</span>,
-    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&quot;white&quot;</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
   <span class="hljs-attr">modalText</span>: {
     <span class="hljs-attr">marginBottom</span>: <span class="hljs-number">15</span>,
-    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 

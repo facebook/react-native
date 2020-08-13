@@ -28,10 +28,10 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, {useState} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> {DatePickerIOS, View, StyleSheet} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, {useState} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> {DatePickerIOS, View, StyleSheet} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
 
   <span class="hljs-keyword">const</span> [chosenDate, setChosenDate] = useState(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>());
 
@@ -41,19 +41,19 @@
         <span class="hljs-attr">date</span>=<span class="hljs-string">{chosenDate}</span>
         <span class="hljs-attr">onDateChange</span>=<span class="hljs-string">{setChosenDate}</span>
       /&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
   },
 });
 
-export default App;
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="DatePickerIOS"
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7BuseState%7D%20from%20'react'%3B%0Aimport%20%7BDatePickerIOS%2C%20View%2C%20StyleSheet%7D%20from%20'react-native'%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%0A%20%20const%20%5BchosenDate%2C%20setChosenDate%5D%20%3D%20useState(new%20Date())%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CDatePickerIOS%0A%20%20%20%20%20%20%20%20date%3D%7BchosenDate%7D%0A%20%20%20%20%20%20%20%20onDateChange%3D%7BsetChosenDate%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20justifyContent%3A%20'center'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aexport%20default%20App%3B%0A"
@@ -69,19 +69,19 @@ export default App;
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, {Component} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> {DatePickerIOS, View, StyleSheet} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, {Component} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> {DatePickerIOS, View, StyleSheet} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   <span class="hljs-keyword">constructor</span>(props) {
-    <span class="hljs-keyword">super</span>(props);
-    <span class="hljs-keyword">this</span>.state = {<span class="hljs-attr">chosenDate</span>: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>()};
+    <span class="hljs-built_in">super</span>(props);
+    <span class="hljs-built_in">this</span>.state = {<span class="hljs-attr">chosenDate</span>: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>()};
 
-    <span class="hljs-keyword">this</span>.setDate = <span class="hljs-keyword">this</span>.setDate.bind(<span class="hljs-keyword">this</span>);
+    <span class="hljs-built_in">this</span>.setDate = <span class="hljs-built_in">this</span>.setDate.bind(<span class="hljs-built_in">this</span>);
   }
 
   setDate(newDate) {
-    <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">chosenDate</span>: newDate});
+    <span class="hljs-built_in">this</span>.setState({<span class="hljs-attr">chosenDate</span>: newDate});
   }
 
   render() {
@@ -91,18 +91,18 @@ export default App;
           <span class="hljs-attr">date</span>=<span class="hljs-string">{this.state.chosenDate}</span>
           <span class="hljs-attr">onDateChange</span>=<span class="hljs-string">{this.setDate}</span>
         /&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
   },
 });
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="DatePickerIOS"
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7BComponent%7D%20from%20'react'%3B%0Aimport%20%7BDatePickerIOS%2C%20View%2C%20StyleSheet%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20App%20extends%20Component%20%7B%0A%20%20constructor(props)%20%7B%0A%20%20%20%20super(props)%3B%0A%20%20%20%20this.state%20%3D%20%7BchosenDate%3A%20new%20Date()%7D%3B%0A%0A%20%20%20%20this.setDate%20%3D%20this.setDate.bind(this)%3B%0A%20%20%7D%0A%0A%20%20setDate(newDate)%20%7B%0A%20%20%20%20this.setState(%7BchosenDate%3A%20newDate%7D)%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CDatePickerIOS%0A%20%20%20%20%20%20%20%20%20%20date%3D%7Bthis.state.chosenDate%7D%0A%20%20%20%20%20%20%20%20%20%20onDateChange%3D%7Bthis.setDate%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20justifyContent%3A%20'center'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A"

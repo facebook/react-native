@@ -84,23 +84,23 @@
 <span class="token punctuation">}</span><span class="token punctuation">,</span>
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h3>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>
 <span class="hljs-keyword">import</span> {
   StyleSheet,
   TouchableHighlight,
   Text,
   View,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   <span class="hljs-keyword">constructor</span>(props) {
-    <span class="hljs-keyword">super</span>(props)
-    <span class="hljs-keyword">this</span>.state = { <span class="hljs-attr">count</span>: <span class="hljs-number">0</span> }
+    <span class="hljs-built_in">super</span>(props)
+    <span class="hljs-built_in">this</span>.state = { <span class="hljs-attr">count</span>: <span class="hljs-number">0</span> }
   }
 
-  onPress = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-keyword">this</span>.setState({
-      <span class="hljs-attr">count</span>: <span class="hljs-keyword">this</span>.state.count+<span class="hljs-number">1</span>
+  onPress = <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-built_in">this</span>.setState({
+      <span class="hljs-attr">count</span>: <span class="hljs-built_in">this</span>.state.count+<span class="hljs-number">1</span>
     })
   }
 
@@ -126,20 +126,20 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">'center'</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
     <span class="hljs-attr">paddingHorizontal</span>: <span class="hljs-number">10</span>
   },
   <span class="hljs-attr">button</span>: {
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">'center'</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'#DDDDDD'</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;#DDDDDD&#x27;</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>
   },
   <span class="hljs-attr">countContainer</span>: {
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">'center'</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>
   },
   <span class="hljs-attr">countText</span>: {
-    <span class="hljs-attr">color</span>: <span class="hljs-string">'#FF00FF'</span>
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&#x27;#FF00FF&#x27;</span>
   }
 })
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div

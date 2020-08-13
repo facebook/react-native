@@ -81,90 +81,90 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Button, Platform, Text, Vibration, View, SafeAreaView, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Button, Platform, Text, Vibration, View, SafeAreaView, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> Separator = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">return</span> &lt;View style={Platform.OS === "android" ? styles.separator : null} /&gt;;
+<span class="hljs-keyword">const</span> Separator = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{Platform.OS</span> === <span class="hljs-string">&quot;android&quot;</span> ? <span class="hljs-attr">styles.separator</span> <span class="hljs-attr">:</span> <span class="hljs-attr">null</span>} /&gt;</span></span>;
 }
 
-const App = () =&gt; {
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
 
-  const ONE_SECOND_IN_MS = 1000;
+  <span class="hljs-keyword">const</span> ONE_SECOND_IN_MS = <span class="hljs-number">1000</span>;
 
-  const PATTERN = [
-    1 * ONE_SECOND_IN_MS,
-    2 * ONE_SECOND_IN_MS,
-    3 * ONE_SECOND_IN_MS
+  <span class="hljs-keyword">const</span> PATTERN = [
+    <span class="hljs-number">1</span> * ONE_SECOND_IN_MS,
+    <span class="hljs-number">2</span> * ONE_SECOND_IN_MS,
+    <span class="hljs-number">3</span> * ONE_SECOND_IN_MS
   ];
 
-  const PATTERN_DESC =
-    Platform.OS === "android"
-      ? "wait 1s, vibrate 2s, wait 3s"
-      : "wait 1s, vibrate, wait 2s, vibrate, wait 3s";
+  <span class="hljs-keyword">const</span> PATTERN_DESC =
+    Platform.OS === <span class="hljs-string">&quot;android&quot;</span>
+      ? <span class="hljs-string">&quot;wait 1s, vibrate 2s, wait 3s&quot;</span>
+      : <span class="hljs-string">&quot;wait 1s, vibrate, wait 2s, vibrate, wait 3s&quot;</span>;
 
-  return (
-    &lt;SafeAreaView style={styles.container}&gt;
-      &lt;Text style={[styles.header, styles.paragraph]}&gt;Vibration API&lt;/Text&gt;
-      &lt;View&gt;
-        &lt;Button title="Vibrate once" onPress={() =&gt; Vibration.vibrate()} /&gt;
-      &lt;/View&gt;
-      &lt;Separator /&gt;
-      {Platform.OS == "android"
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.header,</span> <span class="hljs-attr">styles.paragraph</span>]}&gt;</span>Vibration API<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Vibrate once&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Vibration.vibrate()} /&gt;
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Separator</span> /&gt;</span>
+      {Platform.OS == &quot;android&quot;
         ? [
-            &lt;View&gt;
-              &lt;Button
-                title="Vibrate for 10 seconds"
-                onPress={() =&gt; Vibration.vibrate(10 * ONE_SECOND_IN_MS)}
+            <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+                <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Vibrate for 10 seconds&quot;</span>
+                <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Vibration.vibrate(10 * ONE_SECOND_IN_MS)}
               /&gt;
-            &lt;/View&gt;,
-            &lt;Separator /&gt;
+            <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>,
+            <span class="hljs-tag">&lt;<span class="hljs-name">Separator</span> /&gt;</span>
           ]
         : null}
-      &lt;Text style={styles.paragraph}&gt;Pattern: {PATTERN_DESC}&lt;/Text&gt;
-      &lt;Button
-        title="Vibrate with pattern"
-        onPress={() =&gt; Vibration.vibrate(PATTERN)}
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.paragraph}</span>&gt;</span>Pattern: {PATTERN_DESC}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+        <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Vibrate with pattern&quot;</span>
+        <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Vibration.vibrate(PATTERN)}
       /&gt;
-      &lt;Separator /&gt;
-      &lt;Button
-        title="Vibrate with pattern until cancelled"
-        onPress={() =&gt; Vibration.vibrate(PATTERN, true)}
+      <span class="hljs-tag">&lt;<span class="hljs-name">Separator</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+        <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Vibrate with pattern until cancelled&quot;</span>
+        <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Vibration.vibrate(PATTERN, true)}
       /&gt;
-      &lt;Separator /&gt;
-      &lt;Button
-        title="Stop vibration pattern"
-        onPress={() =&gt; Vibration.cancel()}
-        color="#FF0000"
+      <span class="hljs-tag">&lt;<span class="hljs-name">Separator</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+        <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Stop vibration pattern&quot;</span>
+        <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Vibration.cancel()}
+        color=&quot;#FF0000&quot;
       /&gt;
-    &lt;/SafeAreaView&gt;
+    <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span></span>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingTop: 44,
-    padding: 8
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">paddingTop</span>: <span class="hljs-number">44</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">8</span>
   },
-  header: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center"
+  <span class="hljs-attr">header</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">18</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
-  paragraph: {
-    margin: 24,
-    textAlign: "center"
+  <span class="hljs-attr">paragraph</span>: {
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">24</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
-  separator: {
-    marginVertical: 8,
-    borderBottomColor: "#737373",
-    borderBottomWidth: StyleSheet.hairlineWidth
+  <span class="hljs-attr">separator</span>: {
+    <span class="hljs-attr">marginVertical</span>: <span class="hljs-number">8</span>,
+    <span class="hljs-attr">borderBottomColor</span>: <span class="hljs-string">&quot;#737373&quot;</span>,
+    <span class="hljs-attr">borderBottomWidth</span>: StyleSheet.hairlineWidth
   }
 });
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Vibration"
         data-snack-description="Example usage"
@@ -181,91 +181,91 @@ export default App;
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Button, Platform, Text, Vibration, View, SafeAreaView, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Button, Platform, Text, Vibration, View, SafeAreaView, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> Separator = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">return</span> &lt;View style={Platform.OS === "android" ? styles.separator : null} /&gt;;
+<span class="hljs-keyword">const</span> Separator = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{Platform.OS</span> === <span class="hljs-string">&quot;android&quot;</span> ? <span class="hljs-attr">styles.separator</span> <span class="hljs-attr">:</span> <span class="hljs-attr">null</span>} /&gt;</span></span>;
 }
 
-class App extends Component {
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
-    const ONE_SECOND_IN_MS = 1000;
+    <span class="hljs-keyword">const</span> ONE_SECOND_IN_MS = <span class="hljs-number">1000</span>;
 
-    const PATTERN = [
-      1 * ONE_SECOND_IN_MS,
-      2 * ONE_SECOND_IN_MS,
-      3 * ONE_SECOND_IN_MS
+    <span class="hljs-keyword">const</span> PATTERN = [
+      <span class="hljs-number">1</span> * ONE_SECOND_IN_MS,
+      <span class="hljs-number">2</span> * ONE_SECOND_IN_MS,
+      <span class="hljs-number">3</span> * ONE_SECOND_IN_MS
     ];
 
-    const PATTERN_DESC =
-      Platform.OS === "android"
-        ? "wait 1s, vibrate 2s, wait 3s"
-        : "wait 1s, vibrate, wait 2s, vibrate, wait 3s";
+    <span class="hljs-keyword">const</span> PATTERN_DESC =
+      Platform.OS === <span class="hljs-string">&quot;android&quot;</span>
+        ? <span class="hljs-string">&quot;wait 1s, vibrate 2s, wait 3s&quot;</span>
+        : <span class="hljs-string">&quot;wait 1s, vibrate, wait 2s, vibrate, wait 3s&quot;</span>;
 
-    return (
-      &lt;SafeAreaView style={styles.container}&gt;
-        &lt;Text style={[styles.header, styles.paragraph]}&gt;Vibration API&lt;/Text&gt;
-        &lt;View&gt;
-          &lt;Button title="Vibrate once" onPress={() =&gt; Vibration.vibrate()} /&gt;
-        &lt;/View&gt;
-        &lt;Separator /&gt;
-        {Platform.OS == "android"
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.header,</span> <span class="hljs-attr">styles.paragraph</span>]}&gt;</span>Vibration API<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Vibrate once&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Vibration.vibrate()} /&gt;
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Separator</span> /&gt;</span>
+        {Platform.OS == &quot;android&quot;
           ? [
-              &lt;View&gt;
-                &lt;Button
-                  title="Vibrate for 10 seconds"
-                  onPress={() =&gt; Vibration.vibrate(10 * ONE_SECOND_IN_MS)}
+              <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+                  <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Vibrate for 10 seconds&quot;</span>
+                  <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Vibration.vibrate(10 * ONE_SECOND_IN_MS)}
                 /&gt;
-              &lt;/View&gt;,
-              &lt;Separator /&gt;
+              <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>,
+              <span class="hljs-tag">&lt;<span class="hljs-name">Separator</span> /&gt;</span>
             ]
           : null}
-        &lt;Text style={styles.paragraph}&gt;Pattern: {PATTERN_DESC}&lt;/Text&gt;
-        &lt;Button
-          title="Vibrate with pattern"
-          onPress={() =&gt; Vibration.vibrate(PATTERN)}
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.paragraph}</span>&gt;</span>Pattern: {PATTERN_DESC}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+          <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Vibrate with pattern&quot;</span>
+          <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Vibration.vibrate(PATTERN)}
         /&gt;
-        &lt;Separator /&gt;
-        &lt;Button
-          title="Vibrate with pattern until cancelled"
-          onPress={() =&gt; Vibration.vibrate(PATTERN, true)}
+        <span class="hljs-tag">&lt;<span class="hljs-name">Separator</span> /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+          <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Vibrate with pattern until cancelled&quot;</span>
+          <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Vibration.vibrate(PATTERN, true)}
         /&gt;
-        &lt;Separator /&gt;
-        &lt;Button
-          title="Stop vibration pattern"
-          onPress={() =&gt; Vibration.cancel()}
-          color="#FF0000"
+        <span class="hljs-tag">&lt;<span class="hljs-name">Separator</span> /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+          <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Stop vibration pattern&quot;</span>
+          <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Vibration.cancel()}
+          color=&quot;#FF0000&quot;
         /&gt;
-      &lt;/SafeAreaView&gt;
+      <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span></span>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingTop: 44,
-    padding: 8
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">paddingTop</span>: <span class="hljs-number">44</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">8</span>
   },
-  header: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center"
+  <span class="hljs-attr">header</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">18</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
-  paragraph: {
-    margin: 24,
-    textAlign: "center"
+  <span class="hljs-attr">paragraph</span>: {
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">24</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
-  separator: {
-    marginVertical: 8,
-    borderBottomColor: "#737373",
-    borderBottomWidth: StyleSheet.hairlineWidth
+  <span class="hljs-attr">separator</span>: {
+    <span class="hljs-attr">marginVertical</span>: <span class="hljs-number">8</span>,
+    <span class="hljs-attr">borderBottomColor</span>: <span class="hljs-string">&quot;#737373&quot;</span>,
+    <span class="hljs-attr">borderBottomWidth</span>: StyleSheet.hairlineWidth
   }
 });
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Vibration"
         data-snack-description="Example usage"

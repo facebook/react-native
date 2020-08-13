@@ -81,58 +81,58 @@
 <p>This will render a blue label on iOS, and a blue rounded rectangle with light text on Android. Pressing the button will call the &quot;onPress&quot; function, which in this case displays an alert popup. If you like, you can specify a &quot;color&quot; prop to change the color of your button.</p>
 <p><img src="/docs/assets/Button.png" alt=""></p>
 <p>Go ahead and play around with the <code>Button</code> component using the example below. You can select which platform your app is previewed in by clicking on the toggle in the bottom right, then click on &quot;Tap to Play&quot; to preview the app.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Button, StyleSheet, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Button, StyleSheet, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ButtonBasics</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   _onPressButton() {
-    alert(<span class="hljs-string">'You tapped the button!'</span>)
+    alert(<span class="hljs-string">&#x27;You tapped the button!&#x27;</span>)
   }
 
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;View style={styles.container}&gt;
-        &lt;View style={styles.buttonContainer}&gt;
-          &lt;Button
-            onPress={this._onPressButton}
-            title="Press Me"
-          /&gt;
-        &lt;/View&gt;
-        &lt;View style={styles.buttonContainer}&gt;
-          &lt;Button
-            onPress={this._onPressButton}
-            title="Press Me"
-            color="#841584"
-          /&gt;
-        &lt;/View&gt;
-        &lt;View style={styles.alternativeLayoutButtonContainer}&gt;
-          &lt;Button
-            onPress={this._onPressButton}
-            title="This looks great!"
-          /&gt;
-          &lt;Button
-            onPress={this._onPressButton}
-            title="OK!"
-            color="#841584"
-          /&gt;
-        &lt;/View&gt;
-      &lt;/View&gt;
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonContainer}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+            <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPressButton}</span>
+            <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Press Me&quot;</span>
+          /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonContainer}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+            <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPressButton}</span>
+            <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Press Me&quot;</span>
+            <span class="hljs-attr">color</span>=<span class="hljs-string">&quot;#841584&quot;</span>
+          /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.alternativeLayoutButtonContainer}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+            <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPressButton}</span>
+            <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;This looks great!&quot;</span>
+          /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+            <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPressButton}</span>
+            <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;OK!&quot;</span>
+            <span class="hljs-attr">color</span>=<span class="hljs-string">&quot;#841584&quot;</span>
+          /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-   flex: 1,
-   justifyContent: 'center',
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+   <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+   <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
   },
-  buttonContainer: {
-    margin: 20
+  <span class="hljs-attr">buttonContainer</span>: {
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">20</span>
   },
-  alternativeLayoutButtonContainer: {
-    margin: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between'
+  <span class="hljs-attr">alternativeLayoutButtonContainer</span>: {
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">20</span>,
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">&#x27;row&#x27;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;space-between&#x27;</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
@@ -161,23 +161,23 @@ const styles = StyleSheet.create({
 </ul>
 <p>In some cases, you may want to detect when a user presses and holds a view for a set amount of time. These long presses can be handled by passing a function to the <code>onLongPress</code> props of any of the &quot;Touchable&quot; components.</p>
 <p>Let's see all of these in action:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Platform, StyleSheet, Text, TouchableHighlight, TouchableOpacity, TouchableNativeFeedback, TouchableWithoutFeedback, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Platform, StyleSheet, Text, TouchableHighlight, TouchableOpacity, TouchableNativeFeedback, TouchableWithoutFeedback, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Touchables</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   _onPressButton() {
-    alert(<span class="hljs-string">'You tapped the button!'</span>)
+    alert(<span class="hljs-string">&#x27;You tapped the button!&#x27;</span>)
   }
 
   _onLongPressButton() {
-    alert(<span class="hljs-string">'You long-pressed the button!'</span>)
+    alert(<span class="hljs-string">&#x27;You long-pressed the button!&#x27;</span>)
   }
 
 
   render() {
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPressButton}</span> <span class="hljs-attr">underlayColor</span>=<span class="hljs-string">"white"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPressButton}</span> <span class="hljs-attr">underlayColor</span>=<span class="hljs-string">&quot;white&quot;</span>&gt;</span>
           <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.button}</span>&gt;</span>
             <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonText}</span>&gt;</span>TouchableHighlight<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
           <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
@@ -189,9 +189,9 @@ const styles = StyleSheet.create({
         <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">TouchableNativeFeedback</span>
             <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPressButton}</span>
-            <span class="hljs-attr">background</span>=<span class="hljs-string">{Platform.OS</span> === <span class="hljs-string">'android'</span> ? <span class="hljs-attr">TouchableNativeFeedback.SelectableBackground</span>() <span class="hljs-attr">:</span> ''}&gt;</span>
+            <span class="hljs-attr">background</span>=<span class="hljs-string">{Platform.OS</span> === <span class="hljs-string">&#x27;android&#x27;</span> ? <span class="hljs-attr">TouchableNativeFeedback.SelectableBackground</span>() <span class="hljs-attr">:</span> &#x27;&#x27;}&gt;</span>
           <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.button}</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonText}</span>&gt;</span>TouchableNativeFeedback {Platform.OS !== 'android' ? '(Android only)' : ''}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonText}</span>&gt;</span>TouchableNativeFeedback {Platform.OS !== &#x27;android&#x27; ? &#x27;(Android only)&#x27; : &#x27;&#x27;}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
           <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
         <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableNativeFeedback</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">TouchableWithoutFeedback</span>
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
             <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonText}</span>&gt;</span>TouchableWithoutFeedback<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
           <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
         <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableWithoutFeedback</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPressButton}</span> <span class="hljs-attr">onLongPress</span>=<span class="hljs-string">{this._onLongPressButton}</span> <span class="hljs-attr">underlayColor</span>=<span class="hljs-string">"white"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPressButton}</span> <span class="hljs-attr">onLongPress</span>=<span class="hljs-string">{this._onLongPressButton}</span> <span class="hljs-attr">underlayColor</span>=<span class="hljs-string">&quot;white&quot;</span>&gt;</span>
           <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.button}</span>&gt;</span>
             <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonText}</span>&gt;</span>Touchable with Long Press<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
           <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
@@ -214,18 +214,18 @@ const styles = StyleSheet.create({
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">paddingTop</span>: <span class="hljs-number">60</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">'center'</span>
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&#x27;center&#x27;</span>
   },
   <span class="hljs-attr">button</span>: {
     <span class="hljs-attr">marginBottom</span>: <span class="hljs-number">30</span>,
     <span class="hljs-attr">width</span>: <span class="hljs-number">260</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">'center'</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'#2196F3'</span>
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;#2196F3&#x27;</span>
   },
   <span class="hljs-attr">buttonText</span>: {
-    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">'center'</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">20</span>,
-    <span class="hljs-attr">color</span>: <span class="hljs-string">'white'</span>
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&#x27;white&#x27;</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div

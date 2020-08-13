@@ -68,93 +68,93 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/shadow-props.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Shadow Props</h1></header><article><div><span><div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Text, View, StyleSheet, Slider } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/shadow-props.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Shadow Props</h1></header><article><div><span><div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Text, View, StyleSheet, Slider } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ShadowPropSlider</span>(<span class="hljs-params">{ label, value, ...props }</span>) </span>{
   <span class="hljs-keyword">return</span> (
-    &lt;&gt;
-      &lt;Text&gt;
+    <span class="xml"><span class="hljs-tag">&lt;&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>
         {label} ({value.toFixed(2)})
-      &lt;/Text&gt;
-      &lt;Slider step={1} value={value} {...props} /&gt;
-    &lt;/&gt;
+      <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Slider</span> <span class="hljs-attr">step</span>=<span class="hljs-string">{1}</span> <span class="hljs-attr">value</span>=<span class="hljs-string">{value}</span> {<span class="hljs-attr">...props</span>} /&gt;</span>
+    <span class="hljs-tag">&lt;/&gt;</span></span>
   );
 }
 
-export default function App() {
-  const [shadowOffsetWidth, setShadowOffsetWidth] = useState(0);
-  const [shadowOffsetHeight, setShadowOffsetHeight] = useState(0);
-  const [shadowRadius, setShadowRadius] = useState(0);
-  const [shadowOpacity, setShadowOpacity] = useState(0.1);
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> [shadowOffsetWidth, setShadowOffsetWidth] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [shadowOffsetHeight, setShadowOffsetHeight] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [shadowRadius, setShadowRadius] = useState(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> [shadowOpacity, setShadowOpacity] = useState(<span class="hljs-number">0.1</span>);
 
-  return (
-    &lt;View style={styles.container}&gt;
-      &lt;View
-        style={[
-          styles.square,
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{[</span>
+          <span class="hljs-attr">styles.square</span>,
           {
-            shadowOffset: {
-              width: shadowOffsetWidth,
-              height: -shadowOffsetHeight
+            <span class="hljs-attr">shadowOffset:</span> {
+              <span class="hljs-attr">width:</span> <span class="hljs-attr">shadowOffsetWidth</span>,
+              <span class="hljs-attr">height:</span> <span class="hljs-attr">-shadowOffsetHeight</span>
             },
-            shadowOpacity,
-            shadowRadius
+            <span class="hljs-attr">shadowOpacity</span>,
+            <span class="hljs-attr">shadowRadius</span>
           }
         ]}
-      /&gt;
-      &lt;View style={styles.controls}&gt;
-        &lt;ShadowPropSlider
-          label="shadowOffset - X"
-          minimumValue={-50}
-          maximumValue={50}
-          value={shadowOffsetWidth}
-          onValueChange={val =&gt; setShadowOffsetWidth(val)}
+      /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.controls}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">ShadowPropSlider</span>
+          <span class="hljs-attr">label</span>=<span class="hljs-string">&quot;shadowOffset - X&quot;</span>
+          <span class="hljs-attr">minimumValue</span>=<span class="hljs-string">{-50}</span>
+          <span class="hljs-attr">maximumValue</span>=<span class="hljs-string">{50}</span>
+          <span class="hljs-attr">value</span>=<span class="hljs-string">{shadowOffsetWidth}</span>
+          <span class="hljs-attr">onValueChange</span>=<span class="hljs-string">{val</span> =&gt;</span> setShadowOffsetWidth(val)}
         /&gt;
-        &lt;ShadowPropSlider
-          label="shadowOffset - Y"
-          minimumValue={-50}
-          maximumValue={50}
-          value={shadowOffsetHeight}
-          onValueChange={val =&gt; setShadowOffsetHeight(val)}
+        <span class="hljs-tag">&lt;<span class="hljs-name">ShadowPropSlider</span>
+          <span class="hljs-attr">label</span>=<span class="hljs-string">&quot;shadowOffset - Y&quot;</span>
+          <span class="hljs-attr">minimumValue</span>=<span class="hljs-string">{-50}</span>
+          <span class="hljs-attr">maximumValue</span>=<span class="hljs-string">{50}</span>
+          <span class="hljs-attr">value</span>=<span class="hljs-string">{shadowOffsetHeight}</span>
+          <span class="hljs-attr">onValueChange</span>=<span class="hljs-string">{val</span> =&gt;</span> setShadowOffsetHeight(val)}
         /&gt;
-        &lt;ShadowPropSlider
-          label="shadowRadius"
-          minimumValue={0}
-          maximumValue={100}
-          value={shadowRadius}
-          onValueChange={val =&gt; setShadowRadius(val)}
+        <span class="hljs-tag">&lt;<span class="hljs-name">ShadowPropSlider</span>
+          <span class="hljs-attr">label</span>=<span class="hljs-string">&quot;shadowRadius&quot;</span>
+          <span class="hljs-attr">minimumValue</span>=<span class="hljs-string">{0}</span>
+          <span class="hljs-attr">maximumValue</span>=<span class="hljs-string">{100}</span>
+          <span class="hljs-attr">value</span>=<span class="hljs-string">{shadowRadius}</span>
+          <span class="hljs-attr">onValueChange</span>=<span class="hljs-string">{val</span> =&gt;</span> setShadowRadius(val)}
         /&gt;
-        &lt;ShadowPropSlider
-          label="shadowOpacity"
-          minimumValue={0}
-          maximumValue={1}
-          step={0.05}
-          value={shadowOpacity}
-          onValueChange={val =&gt; setShadowOpacity(val)}
+        <span class="hljs-tag">&lt;<span class="hljs-name">ShadowPropSlider</span>
+          <span class="hljs-attr">label</span>=<span class="hljs-string">&quot;shadowOpacity&quot;</span>
+          <span class="hljs-attr">minimumValue</span>=<span class="hljs-string">{0}</span>
+          <span class="hljs-attr">maximumValue</span>=<span class="hljs-string">{1}</span>
+          <span class="hljs-attr">step</span>=<span class="hljs-string">{0.05}</span>
+          <span class="hljs-attr">value</span>=<span class="hljs-string">{shadowOpacity}</span>
+          <span class="hljs-attr">onValueChange</span>=<span class="hljs-string">{val</span> =&gt;</span> setShadowOpacity(val)}
         /&gt;
-      &lt;/View&gt;
-    &lt;/View&gt;
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "space-around",
-    backgroundColor: "#ecf0f1",
-    padding: 8
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;space-around&quot;</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#ecf0f1&quot;</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">8</span>
   },
-  square: {
-    alignSelf: "center",
-    backgroundColor: "white",
-    borderRadius: 4,
-    height: 150,
-    shadowColor: "black",
-    width: 150
+  <span class="hljs-attr">square</span>: {
+    <span class="hljs-attr">alignSelf</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;white&quot;</span>,
+    <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">4</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">150</span>,
+    <span class="hljs-attr">shadowColor</span>: <span class="hljs-string">&quot;black&quot;</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">150</span>
   },
-  controls: {
-    paddingHorizontal: 12
+  <span class="hljs-attr">controls</span>: {
+    <span class="hljs-attr">paddingHorizontal</span>: <span class="hljs-number">12</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div

@@ -74,13 +74,13 @@
 <p>The <a href="/docs/0.49/animated"><code>Animated</code></a> API is designed to concisely express a wide variety of interesting animation and interaction patterns in a very performant way. <code>Animated</code> focuses on declarative relationships between inputs and outputs, with configurable transforms in between, and <code>start</code>/<code>stop</code> methods to control time-based animation execution.</p>
 <p><code>Animated</code> exports six animatable component types: <code>View</code>, <code>Text</code>, <code>Image</code>, <code>ScrollView</code>, <code>FlatList</code> and <code>SectionList</code>, but you can also create your own using <code>Animated.createAnimatedComponent()</code>.</p>
 <p>For example, a container view that fades in when it is mounted may look like this:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Animated, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Animated, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">const</span> FadeInView = <span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> [fadeAnim] = useState(<span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">0</span>))  <span class="hljs-comment">// Initial value for opacity: 0</span>
 
-  React.useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  React.useEffect(<span class="hljs-function">() =&gt;</span> {
     Animated.timing(
       fadeAnim,
       {
@@ -105,9 +105,9 @@
 <span class="hljs-comment">// You can then use your `FadeInView` in place of a `View` in your components:</span>
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> () =&gt; {
   <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">alignItems:</span> '<span class="hljs-attr">center</span>', <span class="hljs-attr">justifyContent:</span> '<span class="hljs-attr">center</span>'}}&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">FadeInView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">250</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> '<span class="hljs-attr">powderblue</span>'}}&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{fontSize:</span> <span class="hljs-attr">28</span>, <span class="hljs-attr">textAlign:</span> '<span class="hljs-attr">center</span>', <span class="hljs-attr">margin:</span> <span class="hljs-attr">10</span>}}&gt;</span>Fading in<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">alignItems:</span> &#x27;<span class="hljs-attr">center</span>&#x27;, <span class="hljs-attr">justifyContent:</span> &#x27;<span class="hljs-attr">center</span>&#x27;}}&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">FadeInView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">250</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> &#x27;<span class="hljs-attr">powderblue</span>&#x27;}}&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{fontSize:</span> <span class="hljs-attr">28</span>, <span class="hljs-attr">textAlign:</span> &#x27;<span class="hljs-attr">center</span>&#x27;, <span class="hljs-attr">margin:</span> <span class="hljs-attr">10</span>}}&gt;</span>Fading in<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">FadeInView</span>&gt;</span>
     <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   )
@@ -316,7 +316,7 @@ Animated<span class="token punctuation">.</span><span class="token function">tim
 <pre><code class="hljs css language-jsx">UIManager<span class="token punctuation">.</span>setLayoutAnimationEnabledExperimental <span class="token operator">&amp;&amp;</span>
   UIManager<span class="token punctuation">.</span><span class="token function">setLayoutAnimationEnabledExperimental</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
 <span class="hljs-keyword">import</span> {
   NativeModules,
   LayoutAnimation,
@@ -324,7 +324,7 @@ Animated<span class="token punctuation">.</span><span class="token function">tim
   TouchableOpacity,
   StyleSheet,
   View,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">const</span> { UIManager } = NativeModules;
 
@@ -337,10 +337,10 @@ UIManager.setLayoutAnimationEnabledExperimental &amp;&amp;
     <span class="hljs-attr">h</span>: <span class="hljs-number">100</span>,
   };
 
-  _onPress = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  _onPress = <span class="hljs-function">() =&gt;</span> {
     <span class="hljs-comment">// Animate the update</span>
     LayoutAnimation.spring();
-    <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">w</span>: <span class="hljs-keyword">this</span>.state.w + <span class="hljs-number">15</span>, <span class="hljs-attr">h</span>: <span class="hljs-keyword">this</span>.state.h + <span class="hljs-number">15</span>})
+    <span class="hljs-built_in">this</span>.setState({<span class="hljs-attr">w</span>: <span class="hljs-built_in">this</span>.state.w + <span class="hljs-number">15</span>, <span class="hljs-attr">h</span>: <span class="hljs-built_in">this</span>.state.h + <span class="hljs-number">15</span>})
   }
 
   render() {
@@ -352,34 +352,34 @@ UIManager.setLayoutAnimationEnabledExperimental &amp;&amp;
             <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonText}</span>&gt;</span>Press me!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
           <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
         <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
   },
-  box: {
-    width: 200,
-    height: 200,
-    backgroundColor: 'red',
+  <span class="hljs-attr">box</span>: {
+    <span class="hljs-attr">width</span>: <span class="hljs-number">200</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">200</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;red&#x27;</span>,
   },
-  button: {
-    backgroundColor: 'black',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    marginTop: 15,
+  <span class="hljs-attr">button</span>: {
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;black&#x27;</span>,
+    <span class="hljs-attr">paddingHorizontal</span>: <span class="hljs-number">20</span>,
+    <span class="hljs-attr">paddingVertical</span>: <span class="hljs-number">15</span>,
+    <span class="hljs-attr">marginTop</span>: <span class="hljs-number">15</span>,
   },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  <span class="hljs-attr">buttonText</span>: {
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&#x27;#fff&#x27;</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&#x27;bold&#x27;</span>,
   },
 });
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%0A%20%20NativeModules%2C%0A%20%20LayoutAnimation%2C%0A%20%20Text%2C%0A%20%20TouchableOpacity%2C%0A%20%20StyleSheet%2C%0A%20%20View%2C%0A%7D%20from%20'react-native'%3B%0A%0Aconst%20%7B%20UIManager%20%7D%20%3D%20NativeModules%3B%0A%0AUIManager.setLayoutAnimationEnabledExperimental%20%26%26%0A%20%20UIManager.setLayoutAnimationEnabledExperimental(true)%3B%0A%0Aexport%20default%20class%20App%20extends%20React.Component%20%7B%0A%20%20state%20%3D%20%7B%0A%20%20%20%20w%3A%20100%2C%0A%20%20%20%20h%3A%20100%2C%0A%20%20%7D%3B%0A%0A%20%20_onPress%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20%2F%2F%20Animate%20the%20update%0A%20%20%20%20LayoutAnimation.spring()%3B%0A%20%20%20%20this.setState(%7Bw%3A%20this.state.w%20%2B%2015%2C%20h%3A%20this.state.h%20%2B%2015%7D)%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%5Bstyles.box%2C%20%7Bwidth%3A%20this.state.w%2C%20height%3A%20this.state.h%7D%5D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CTouchableOpacity%20onPress%3D%7Bthis._onPress%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.button%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.buttonText%7D%3EPress%20me!%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20alignItems%3A%20'center'%2C%0A%20%20%20%20justifyContent%3A%20'center'%2C%0A%20%20%7D%2C%0A%20%20box%3A%20%7B%0A%20%20%20%20width%3A%20200%2C%0A%20%20%20%20height%3A%20200%2C%0A%20%20%20%20backgroundColor%3A%20'red'%2C%0A%20%20%7D%2C%0A%20%20button%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20'black'%2C%0A%20%20%20%20paddingHorizontal%3A%2020%2C%0A%20%20%20%20paddingVertical%3A%2015%2C%0A%20%20%20%20marginTop%3A%2015%2C%0A%20%20%7D%2C%0A%20%20buttonText%3A%20%7B%0A%20%20%20%20color%3A%20'%23fff'%2C%0A%20%20%20%20fontWeight%3A%20'bold'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A"

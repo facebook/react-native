@@ -71,20 +71,20 @@
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/statusbar.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">StatusBar</h1></header><article><div><span><p>Component to control the app status bar.</p>
 <h3><a class="anchor" aria-hidden="true" id="usage-with-navigator"></a><a href="#usage-with-navigator" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Usage with Navigator</h3>
 <p>It is possible to have multiple <code>StatusBar</code> components mounted at the same time. The props will be merged in the order the <code>StatusBar</code> components were mounted.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Button, Platform, SafeAreaView, StatusBar, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Button, Platform, SafeAreaView, StatusBar, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">const</span> STYLES = [<span class="hljs-string">'default'</span>, <span class="hljs-string">'dark-content'</span>, <span class="hljs-string">'light-content'</span>];
-<span class="hljs-keyword">const</span> TRANSITIONS = [<span class="hljs-string">'fade'</span>, <span class="hljs-string">'slide'</span>, <span class="hljs-string">'none'</span>];
+<span class="hljs-keyword">const</span> STYLES = [<span class="hljs-string">&#x27;default&#x27;</span>, <span class="hljs-string">&#x27;dark-content&#x27;</span>, <span class="hljs-string">&#x27;light-content&#x27;</span>];
+<span class="hljs-keyword">const</span> TRANSITIONS = [<span class="hljs-string">&#x27;fade&#x27;</span>, <span class="hljs-string">&#x27;slide&#x27;</span>, <span class="hljs-string">&#x27;none&#x27;</span>];
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">const</span> [hidden, setHidden] = useState(<span class="hljs-literal">false</span>);
   <span class="hljs-keyword">const</span> [statusBarStyle, setStatusBarStyle] = useState(STYLES[<span class="hljs-number">0</span>]);
   <span class="hljs-keyword">const</span> [statusBarTransition, setStatusBarTransition] = useState(TRANSITIONS[<span class="hljs-number">0</span>]);
 
-  <span class="hljs-keyword">const</span> changeStatusBarVisibility = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> setHidden(!hidden);
+  <span class="hljs-keyword">const</span> changeStatusBarVisibility = <span class="hljs-function">() =&gt;</span> setHidden(!hidden);
 
-  <span class="hljs-keyword">const</span> changeStatusBarStyle = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> changeStatusBarStyle = <span class="hljs-function">() =&gt;</span> {
     <span class="hljs-keyword">const</span> styleId = STYLES.indexOf(statusBarStyle) + <span class="hljs-number">1</span>;
     <span class="hljs-keyword">if</span> (styleId === STYLES.length) {
       setStatusBarStyle(STYLES[<span class="hljs-number">0</span>]);
@@ -93,7 +93,7 @@
     }
   };
 
-  <span class="hljs-keyword">const</span> changeStatusBarTransition = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> changeStatusBarTransition = <span class="hljs-function">() =&gt;</span> {
     <span class="hljs-keyword">const</span> transition = TRANSITIONS.indexOf(statusBarTransition) + <span class="hljs-number">1</span>;
     <span class="hljs-keyword">if</span> (transition === TRANSITIONS.length) {
       setStatusBarTransition(TRANSITIONS[<span class="hljs-number">0</span>]);
@@ -103,60 +103,60 @@
   };
 
   <span class="hljs-keyword">return</span> (
-    &lt;SafeAreaView style={styles.container}&gt;
-      &lt;StatusBar
-        animated={true}
-        backgroundColor="#61dafb"
-        barStyle={statusBarStyle}
-        showHideTransition={statusBarTransition}
-        hidden={hidden} /&gt;
-      &lt;Text style={styles.textStyle}&gt;
-        StatusBar Visibility:{'\n'}
-        {hidden ? 'Hidden' : 'Visible'}
-      &lt;/Text&gt;
-      &lt;Text style={styles.textStyle}&gt;
-        StatusBar Style:{'\n'}
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">StatusBar</span>
+        <span class="hljs-attr">animated</span>=<span class="hljs-string">{true}</span>
+        <span class="hljs-attr">backgroundColor</span>=<span class="hljs-string">&quot;#61dafb&quot;</span>
+        <span class="hljs-attr">barStyle</span>=<span class="hljs-string">{statusBarStyle}</span>
+        <span class="hljs-attr">showHideTransition</span>=<span class="hljs-string">{statusBarTransition}</span>
+        <span class="hljs-attr">hidden</span>=<span class="hljs-string">{hidden}</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.textStyle}</span>&gt;</span>
+        StatusBar Visibility:{&#x27;\n&#x27;}
+        {hidden ? &#x27;Hidden&#x27; : &#x27;Visible&#x27;}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.textStyle}</span>&gt;</span>
+        StatusBar Style:{&#x27;\n&#x27;}
         {statusBarStyle}
-      &lt;/Text&gt;
-      {Platform.OS === 'ios' ? (
-        &lt;Text style={styles.textStyle}&gt;
-          StatusBar Transition:{'\n'}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      {Platform.OS === &#x27;ios&#x27; ? (
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.textStyle}</span>&gt;</span>
+          StatusBar Transition:{&#x27;\n&#x27;}
           {statusBarTransition}
-        &lt;/Text&gt;
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       ) : null}
-      &lt;View style={styles.buttonsContainer}&gt;
-        &lt;Button
-          title="Toggle StatusBar"
-          onPress={changeStatusBarVisibility} /&gt;
-        &lt;Button
-          title="Change StatusBar Style"
-          onPress={changeStatusBarStyle} /&gt;
-        {Platform.OS === 'ios' ? (
-          &lt;Button
-            title="Change StatusBar Transition"
-            onPress={changeStatusBarTransition} /&gt;
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonsContainer}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+          <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Toggle StatusBar&quot;</span>
+          <span class="hljs-attr">onPress</span>=<span class="hljs-string">{changeStatusBarVisibility}</span> /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+          <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Change StatusBar Style&quot;</span>
+          <span class="hljs-attr">onPress</span>=<span class="hljs-string">{changeStatusBarStyle}</span> /&gt;</span>
+        {Platform.OS === &#x27;ios&#x27; ? (
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+            <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Change StatusBar Transition&quot;</span>
+            <span class="hljs-attr">onPress</span>=<span class="hljs-string">{changeStatusBarTransition}</span> /&gt;</span>
         ) : null}
-      &lt;/View&gt;
-    &lt;/SafeAreaView&gt;
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span></span>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#ECF0F1'
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;#ECF0F1&#x27;</span>
   },
-  buttonsContainer: {
-    padding: 10
+  <span class="hljs-attr">buttonsContainer</span>: {
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>
   },
-  textStyle: {
-    textAlign: 'center',
-    marginBottom: 8
+  <span class="hljs-attr">textStyle</span>: {
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
+    <span class="hljs-attr">marginBottom</span>: <span class="hljs-number">8</span>
   }
 });
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="StatusBar Component Example"
         data-snack-description="Example usage"

@@ -70,34 +70,34 @@
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/inputaccessoryview.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">InputAccessoryView</h1></header><article><div><span><p>A component which enables customization of the keyboard input accessory view on iOS. The input accessory view is displayed above the keyboard whenever a <code>TextInput</code> has focus. This component can be used to create custom toolbars.</p>
 <p>To use this component wrap your custom toolbar with the InputAccessoryView component, and set a <code>nativeID</code>. Then, pass that <code>nativeID</code> as the <code>inputAccessoryViewID</code> of whatever <code>TextInput</code> you desire. A basic example:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Button, InputAccessoryView, ScrollView, TextInput } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Button, InputAccessoryView, ScrollView, TextInput } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">const</span> inputAccessoryViewID = <span class="hljs-string">'uniqueID'</span>;
-  <span class="hljs-keyword">const</span> initialText = <span class="hljs-string">'Placeholder Text'</span>;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> inputAccessoryViewID = <span class="hljs-string">&#x27;uniqueID&#x27;</span>;
+  <span class="hljs-keyword">const</span> initialText = <span class="hljs-string">&#x27;Placeholder Text&#x27;</span>;
   <span class="hljs-keyword">const</span> [text, setText] = useState(initialText);
 
   <span class="hljs-keyword">return</span> (
-    &lt;&gt;
-      &lt;ScrollView keyboardDismissMode="interactive"&gt;
-        &lt;TextInput
-          style={{
-            padding: 16,
-            marginTop: 50
+    <span class="xml"><span class="hljs-tag">&lt;&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">ScrollView</span> <span class="hljs-attr">keyboardDismissMode</span>=<span class="hljs-string">&quot;interactive&quot;</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">padding:</span> <span class="hljs-attr">16</span>,
+            <span class="hljs-attr">marginTop:</span> <span class="hljs-attr">50</span>
           }}
-          inputAccessoryViewID={inputAccessoryViewID}
-          onChangeText={text =&gt; setText(text)}
+          <span class="hljs-attr">inputAccessoryViewID</span>=<span class="hljs-string">{inputAccessoryViewID}</span>
+          <span class="hljs-attr">onChangeText</span>=<span class="hljs-string">{text</span> =&gt;</span> setText(text)}
           value={text}
         /&gt;
-      &lt;/ScrollView&gt;
-      &lt;InputAccessoryView nativeID={inputAccessoryViewID}&gt;
-        &lt;Button
-          onPress={() =&gt; setText(initialText)}
-          title="Reset Text"
+      <span class="hljs-tag">&lt;/<span class="hljs-name">ScrollView</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">InputAccessoryView</span> <span class="hljs-attr">nativeID</span>=<span class="hljs-string">{inputAccessoryViewID}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+          <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> setText(initialText)}
+          title=&quot;Reset Text&quot;
         /&gt;
-      &lt;/InputAccessoryView&gt;
-    &lt;/&gt;
+      <span class="hljs-tag">&lt;/<span class="hljs-name">InputAccessoryView</span>&gt;</span>
+    <span class="hljs-tag">&lt;/&gt;</span></span>
   );
 }
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div

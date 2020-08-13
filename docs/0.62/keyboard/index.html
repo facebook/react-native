@@ -83,44 +83,44 @@
 </div>
 <p><block class="functional syntax" /></p>
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript">
-<span class="hljs-keyword">import</span> React, { useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Keyboard, TextInput, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<span class="hljs-keyword">import</span> React, { useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Keyboard, TextInput, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Example</span>(<span class="hljs-params"></span>) </span>{
 
-  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    Keyboard.addListener(<span class="hljs-string">"keyboardDidShow"</span>, _keyboardDidShow);
-    Keyboard.addListener(<span class="hljs-string">"keyboardDidHide"</span>, _keyboardDidHide);
+  useEffect(<span class="hljs-function">() =&gt;</span> {
+    Keyboard.addListener(<span class="hljs-string">&quot;keyboardDidShow&quot;</span>, _keyboardDidShow);
+    Keyboard.addListener(<span class="hljs-string">&quot;keyboardDidHide&quot;</span>, _keyboardDidHide);
 
     <span class="hljs-comment">// cleanup function</span>
-    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-      Keyboard.removeListener(<span class="hljs-string">"keyboardDidShow"</span>, _keyboardDidShow);
-      Keyboard.removeListener(<span class="hljs-string">"keyboardDidHide"</span>, _keyboardDidHide);
+    <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> {
+      Keyboard.removeListener(<span class="hljs-string">&quot;keyboardDidShow&quot;</span>, _keyboardDidShow);
+      Keyboard.removeListener(<span class="hljs-string">&quot;keyboardDidHide&quot;</span>, _keyboardDidHide);
     };
   }, []);
 
-  <span class="hljs-keyword">const</span> _keyboardDidShow = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    alert(<span class="hljs-string">"Keyboard Shown"</span>);
+  <span class="hljs-keyword">const</span> _keyboardDidShow = <span class="hljs-function">() =&gt;</span> {
+    alert(<span class="hljs-string">&quot;Keyboard Shown&quot;</span>);
   };
 
-  <span class="hljs-keyword">const</span> _keyboardDidHide = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    alert(<span class="hljs-string">"Keyboard Hidden"</span>);
+  <span class="hljs-keyword">const</span> _keyboardDidHide = <span class="hljs-function">() =&gt;</span> {
+    alert(<span class="hljs-string">&quot;Keyboard Hidden&quot;</span>);
   };
 
-  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{s.input}</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">'Click here ...'</span> <span class="hljs-attr">onSubmitEditing</span>=<span class="hljs-string">{Keyboard.dismiss}</span> /&gt;</span>;
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{s.input}</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">&#x27;Click here ...&#x27;</span> <span class="hljs-attr">onSubmitEditing</span>=<span class="hljs-string">{Keyboard.dismiss}</span> /&gt;</span></span>;
 }
 
-const s = StyleSheet.create({
-   input:{
-    margin:60,
-    padding: 10,
-    borderWidth: 0.5,
-    borderRadius: 4,
-    backgroundColor: "#fff"
+<span class="hljs-keyword">const</span> s = StyleSheet.create({
+   <span class="hljs-attr">input</span>:{
+    <span class="hljs-attr">margin</span>:<span class="hljs-number">60</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>,
+    <span class="hljs-attr">borderWidth</span>: <span class="hljs-number">0.5</span>,
+    <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">4</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#fff&quot;</span>
    }
 })
 
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Keyboard Function Component Example"
         data-snack-description="Example usage"
         data-snack-code="%0Aimport%20React%2C%20%7B%20useEffect%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20Keyboard%2C%20TextInput%2C%20StyleSheet%20%7D%20from%20%22react-native%22%3B%0A%0Aexport%20default%20function%20Example()%20%7B%0A%0A%20%20useEffect(()%20%3D%3E%20%7B%0A%20%20%20%20Keyboard.addListener(%22keyboardDidShow%22%2C%20_keyboardDidShow)%3B%0A%20%20%20%20Keyboard.addListener(%22keyboardDidHide%22%2C%20_keyboardDidHide)%3B%0A%0A%20%20%20%20%2F%2F%20cleanup%20function%0A%20%20%20%20return%20()%20%3D%3E%20%7B%0A%20%20%20%20%20%20Keyboard.removeListener(%22keyboardDidShow%22%2C%20_keyboardDidShow)%3B%0A%20%20%20%20%20%20Keyboard.removeListener(%22keyboardDidHide%22%2C%20_keyboardDidHide)%3B%0A%20%20%20%20%7D%3B%0A%20%20%7D%2C%20%5B%5D)%3B%0A%0A%20%20const%20_keyboardDidShow%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20alert(%22Keyboard%20Shown%22)%3B%0A%20%20%7D%3B%0A%0A%20%20const%20_keyboardDidHide%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20alert(%22Keyboard%20Hidden%22)%3B%0A%20%20%7D%3B%0A%0A%20%20return%20%3CTextInput%20style%3D%7Bs.input%7D%20placeholder%3D'Click%20here%20...'%20onSubmitEditing%3D%7BKeyboard.dismiss%7D%20%2F%3E%3B%0A%7D%0A%0Aconst%20s%20%3D%20StyleSheet.create(%7B%0A%20%20%20input%3A%7B%0A%20%20%20%20margin%3A60%2C%0A%20%20%20%20padding%3A%2010%2C%0A%20%20%20%20borderWidth%3A%200.5%2C%0A%20%20%20%20borderRadius%3A%204%2C%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%0A%20%20%20%7D%0A%7D)%0A%0A"
@@ -136,49 +136,49 @@ const s = StyleSheet.create({
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, {Component} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> {Keyboard, TextInput , StyleSheet} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, {Component} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> {Keyboard, TextInput , StyleSheet} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Example</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   componentDidMount() {
-    <span class="hljs-keyword">this</span>.keyboardDidShowListener = Keyboard.addListener(
-      <span class="hljs-string">'keyboardDidShow'</span>,
-      <span class="hljs-keyword">this</span>._keyboardDidShow,
+    <span class="hljs-built_in">this</span>.keyboardDidShowListener = Keyboard.addListener(
+      <span class="hljs-string">&#x27;keyboardDidShow&#x27;</span>,
+      <span class="hljs-built_in">this</span>._keyboardDidShow,
     );
-    <span class="hljs-keyword">this</span>.keyboardDidHideListener = Keyboard.addListener(
-      <span class="hljs-string">'keyboardDidHide'</span>,
-      <span class="hljs-keyword">this</span>._keyboardDidHide,
+    <span class="hljs-built_in">this</span>.keyboardDidHideListener = Keyboard.addListener(
+      <span class="hljs-string">&#x27;keyboardDidHide&#x27;</span>,
+      <span class="hljs-built_in">this</span>._keyboardDidHide,
     );
   }
 
   componentWillUnmount() {
-    <span class="hljs-keyword">this</span>.keyboardDidShowListener.remove();
-    <span class="hljs-keyword">this</span>.keyboardDidHideListener.remove();
+    <span class="hljs-built_in">this</span>.keyboardDidShowListener.remove();
+    <span class="hljs-built_in">this</span>.keyboardDidHideListener.remove();
   }
 
   _keyboardDidShow() {
-    alert(<span class="hljs-string">'Keyboard Shown'</span>);
+    alert(<span class="hljs-string">&#x27;Keyboard Shown&#x27;</span>);
   }
 
   _keyboardDidHide() {
-    alert(<span class="hljs-string">'Keyboard Hidden'</span>);
+    alert(<span class="hljs-string">&#x27;Keyboard Hidden&#x27;</span>);
   }
 
   render() {
-    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{s.input}</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">'Click here ...'</span> <span class="hljs-attr">onSubmitEditing</span>=<span class="hljs-string">{Keyboard.dismiss}</span> /&gt;</span>;
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{s.input}</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">&#x27;Click here ...&#x27;</span> <span class="hljs-attr">onSubmitEditing</span>=<span class="hljs-string">{Keyboard.dismiss}</span> /&gt;</span></span>;
   }
 }
 
-const s = StyleSheet.create({
-   input:{
-    margin:60,
-    padding: 10,
-    borderWidth: 0.5,
-    borderRadius: 4,
-    backgroundColor: "#fff"
+<span class="hljs-keyword">const</span> s = StyleSheet.create({
+   <span class="hljs-attr">input</span>:{
+    <span class="hljs-attr">margin</span>:<span class="hljs-number">60</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>,
+    <span class="hljs-attr">borderWidth</span>: <span class="hljs-number">0.5</span>,
+    <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">4</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#fff&quot;</span>
    }
 })
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Keyboard Class Component Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7BComponent%7D%20from%20'react'%3B%0Aimport%20%7BKeyboard%2C%20TextInput%20%2C%20StyleSheet%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20Example%20extends%20Component%20%7B%0A%20%20componentDidMount()%20%7B%0A%20%20%20%20this.keyboardDidShowListener%20%3D%20Keyboard.addListener(%0A%20%20%20%20%20%20'keyboardDidShow'%2C%0A%20%20%20%20%20%20this._keyboardDidShow%2C%0A%20%20%20%20)%3B%0A%20%20%20%20this.keyboardDidHideListener%20%3D%20Keyboard.addListener(%0A%20%20%20%20%20%20'keyboardDidHide'%2C%0A%20%20%20%20%20%20this._keyboardDidHide%2C%0A%20%20%20%20)%3B%0A%20%20%7D%0A%0A%20%20componentWillUnmount()%20%7B%0A%20%20%20%20this.keyboardDidShowListener.remove()%3B%0A%20%20%20%20this.keyboardDidHideListener.remove()%3B%0A%20%20%7D%0A%0A%20%20_keyboardDidShow()%20%7B%0A%20%20%20%20alert('Keyboard%20Shown')%3B%0A%20%20%7D%0A%0A%20%20_keyboardDidHide()%20%7B%0A%20%20%20%20alert('Keyboard%20Hidden')%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20%3CTextInput%20style%3D%7Bs.input%7D%20placeholder%3D'Click%20here%20...'%20onSubmitEditing%3D%7BKeyboard.dismiss%7D%20%2F%3E%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20s%20%3D%20StyleSheet.create(%7B%0A%20%20%20input%3A%7B%0A%20%20%20%20margin%3A60%2C%0A%20%20%20%20padding%3A%2010%2C%0A%20%20%20%20borderWidth%3A%200.5%2C%0A%20%20%20%20borderRadius%3A%204%2C%0A%20%20%20%20backgroundColor%3A%20%22%23fff%22%0A%20%20%20%7D%0A%7D)%0A"

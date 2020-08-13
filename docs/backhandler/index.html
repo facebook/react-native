@@ -114,29 +114,29 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Text, View, StyleSheet, BackHandler, Alert } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Text, View, StyleSheet, BackHandler, Alert } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-keyword">const</span> backAction = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-      Alert.alert(<span class="hljs-string">"Hold on!"</span>, <span class="hljs-string">"Are you sure you want to go back?"</span>, [
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
+  useEffect(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">const</span> backAction = <span class="hljs-function">() =&gt;</span> {
+      Alert.alert(<span class="hljs-string">&quot;Hold on!&quot;</span>, <span class="hljs-string">&quot;Are you sure you want to go back?&quot;</span>, [
         {
-          <span class="hljs-attr">text</span>: <span class="hljs-string">"Cancel"</span>,
-          <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-literal">null</span>,
-          <span class="hljs-attr">style</span>: <span class="hljs-string">"cancel"</span>
+          <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;Cancel&quot;</span>,
+          <span class="hljs-attr">onPress</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-literal">null</span>,
+          <span class="hljs-attr">style</span>: <span class="hljs-string">&quot;cancel&quot;</span>
         },
-        { <span class="hljs-attr">text</span>: <span class="hljs-string">"YES"</span>, <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> BackHandler.exitApp() }
+        { <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;YES&quot;</span>, <span class="hljs-attr">onPress</span>: <span class="hljs-function">() =&gt;</span> BackHandler.exitApp() }
       ]);
       <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
     };
 
     <span class="hljs-keyword">const</span> backHandler = BackHandler.addEventListener(
-      <span class="hljs-string">"hardwareBackPress"</span>,
+      <span class="hljs-string">&quot;hardwareBackPress&quot;</span>,
       backAction
     );
 
-    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> backHandler.remove();
+    <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> backHandler.remove();
   }, []);
 
   <span class="hljs-keyword">return</span> (
@@ -149,12 +149,12 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
   <span class="hljs-attr">text</span>: {
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">18</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">"bold"</span>
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>
   }
 });
 
@@ -175,31 +175,31 @@
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Text, View, StyleSheet, BackHandler, Alert } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Text, View, StyleSheet, BackHandler, Alert } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
-  backAction = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    Alert.alert(<span class="hljs-string">"Hold on!"</span>, <span class="hljs-string">"Are you sure you want to go back?"</span>, [
+  backAction = <span class="hljs-function">() =&gt;</span> {
+    Alert.alert(<span class="hljs-string">&quot;Hold on!&quot;</span>, <span class="hljs-string">&quot;Are you sure you want to go back?&quot;</span>, [
       {
-        <span class="hljs-attr">text</span>: <span class="hljs-string">"Cancel"</span>,
-        <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-literal">null</span>,
-        <span class="hljs-attr">style</span>: <span class="hljs-string">"cancel"</span>
+        <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;Cancel&quot;</span>,
+        <span class="hljs-attr">onPress</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-literal">null</span>,
+        <span class="hljs-attr">style</span>: <span class="hljs-string">&quot;cancel&quot;</span>
       },
-      { <span class="hljs-attr">text</span>: <span class="hljs-string">"YES"</span>, <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> BackHandler.exitApp() }
+      { <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;YES&quot;</span>, <span class="hljs-attr">onPress</span>: <span class="hljs-function">() =&gt;</span> BackHandler.exitApp() }
     ]);
     <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
   };
 
   componentDidMount() {
-    <span class="hljs-keyword">this</span>.backHandler = BackHandler.addEventListener(
-      <span class="hljs-string">"hardwareBackPress"</span>,
-      <span class="hljs-keyword">this</span>.backAction
+    <span class="hljs-built_in">this</span>.backHandler = BackHandler.addEventListener(
+      <span class="hljs-string">&quot;hardwareBackPress&quot;</span>,
+      <span class="hljs-built_in">this</span>.backAction
     );
   }
 
   componentWillUnmount() {
-    <span class="hljs-keyword">this</span>.backHandler.remove();
+    <span class="hljs-built_in">this</span>.backHandler.remove();
   }
 
   render() {
@@ -214,12 +214,12 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
   <span class="hljs-attr">text</span>: {
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">18</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">"bold"</span>
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>
   }
 });
 
@@ -253,27 +253,27 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Text, View, StyleSheet, BackHandler, Alert } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Text, View, StyleSheet, BackHandler, Alert } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">const</span> backAction = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    Alert.alert(<span class="hljs-string">"Hold on!"</span>, <span class="hljs-string">"Are you sure you want to go back?"</span>, [
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> backAction = <span class="hljs-function">() =&gt;</span> {
+    Alert.alert(<span class="hljs-string">&quot;Hold on!&quot;</span>, <span class="hljs-string">&quot;Are you sure you want to go back?&quot;</span>, [
       {
-        <span class="hljs-attr">text</span>: <span class="hljs-string">"Cancel"</span>,
-        <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-literal">null</span>,
-        <span class="hljs-attr">style</span>: <span class="hljs-string">"cancel"</span>
+        <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;Cancel&quot;</span>,
+        <span class="hljs-attr">onPress</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-literal">null</span>,
+        <span class="hljs-attr">style</span>: <span class="hljs-string">&quot;cancel&quot;</span>
       },
-      { <span class="hljs-attr">text</span>: <span class="hljs-string">"YES"</span>, <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> BackHandler.exitApp() }
+      { <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;YES&quot;</span>, <span class="hljs-attr">onPress</span>: <span class="hljs-function">() =&gt;</span> BackHandler.exitApp() }
     ]);
     <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
   };
 
-  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    BackHandler.addEventListener(<span class="hljs-string">"hardwareBackPress"</span>, backAction);
+  useEffect(<span class="hljs-function">() =&gt;</span> {
+    BackHandler.addEventListener(<span class="hljs-string">&quot;hardwareBackPress&quot;</span>, backAction);
 
-    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span>
-      BackHandler.removeEventListener(<span class="hljs-string">"hardwareBackPress"</span>, backAction);
+    <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span>
+      BackHandler.removeEventListener(<span class="hljs-string">&quot;hardwareBackPress&quot;</span>, backAction);
   }, []);
 
   <span class="hljs-keyword">return</span> (
@@ -286,12 +286,12 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
   <span class="hljs-attr">text</span>: {
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">18</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">"bold"</span>
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>
   }
 });
 
@@ -312,28 +312,28 @@
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Text, View, StyleSheet, BackHandler, Alert } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Text, View, StyleSheet, BackHandler, Alert } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
-  backAction = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    Alert.alert(<span class="hljs-string">"Hold on!"</span>, <span class="hljs-string">"Are you sure you want to go back?"</span>, [
+  backAction = <span class="hljs-function">() =&gt;</span> {
+    Alert.alert(<span class="hljs-string">&quot;Hold on!&quot;</span>, <span class="hljs-string">&quot;Are you sure you want to go back?&quot;</span>, [
       {
-        <span class="hljs-attr">text</span>: <span class="hljs-string">"Cancel"</span>,
-        <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-literal">null</span>,
-        <span class="hljs-attr">style</span>: <span class="hljs-string">"cancel"</span>
+        <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;Cancel&quot;</span>,
+        <span class="hljs-attr">onPress</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-literal">null</span>,
+        <span class="hljs-attr">style</span>: <span class="hljs-string">&quot;cancel&quot;</span>
       },
-      { <span class="hljs-attr">text</span>: <span class="hljs-string">"YES"</span>, <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> BackHandler.exitApp() }
+      { <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;YES&quot;</span>, <span class="hljs-attr">onPress</span>: <span class="hljs-function">() =&gt;</span> BackHandler.exitApp() }
     ]);
     <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
   };
 
   componentDidMount() {
-    BackHandler.addEventListener(<span class="hljs-string">"hardwareBackPress"</span>, <span class="hljs-keyword">this</span>.backAction);
+    BackHandler.addEventListener(<span class="hljs-string">&quot;hardwareBackPress&quot;</span>, <span class="hljs-built_in">this</span>.backAction);
   }
 
   componentWillUnmount() {
-    BackHandler.removeEventListener(<span class="hljs-string">"hardwareBackPress"</span>, <span class="hljs-keyword">this</span>.backAction);
+    BackHandler.removeEventListener(<span class="hljs-string">&quot;hardwareBackPress&quot;</span>, <span class="hljs-built_in">this</span>.backAction);
   }
 
   render() {
@@ -348,12 +348,12 @@
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
   <span class="hljs-attr">text</span>: {
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">18</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">"bold"</span>
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>
   }
 });
 

@@ -80,83 +80,83 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { View, Image, Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { View, Image, Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> DisplayAnImageWithStyle = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> DisplayAnImageWithStyle = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
-    &lt;View style={styles.container}&gt;
-      &lt;View&gt;
-        &lt;Image
-          style={{
-            resizeMode: "cover",
-            height: 100,
-            width: 200
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">resizeMode:</span> &quot;<span class="hljs-attr">cover</span>&quot;,
+            <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
           }}
-          source={require("@expo/snack-static/react-native-logo.png")}
-        /&gt;
-        &lt;Text&gt;resizeMode : cover&lt;/Text&gt;
-      &lt;/View&gt;
-      &lt;View&gt;
-        &lt;Image
-          style={{
-            resizeMode: "contain",
-            height: 100,
-            width: 200
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>resizeMode : cover<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">resizeMode:</span> &quot;<span class="hljs-attr">contain</span>&quot;,
+            <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
           }}
-          source={require("@expo/snack-static/react-native-logo.png")}
-        /&gt;
-        &lt;Text&gt;resizeMode : contain&lt;/Text&gt;
-      &lt;/View&gt;
-      &lt;View&gt;
-        &lt;Image
-          style={{
-            resizeMode: "stretch",
-            height: 100,
-            width: 200
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>resizeMode : contain<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">resizeMode:</span> &quot;<span class="hljs-attr">stretch</span>&quot;,
+            <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
           }}
-          source={require("@expo/snack-static/react-native-logo.png")}
-        /&gt;
-        &lt;Text&gt;resizeMode : stretch&lt;/Text&gt;
-      &lt;/View&gt;
-      &lt;View&gt;
-        &lt;Image
-          style={{
-            resizeMode: "repeat",
-            height: 100,
-            width: 200
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>resizeMode : stretch<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">resizeMode:</span> &quot;<span class="hljs-attr">repeat</span>&quot;,
+            <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
           }}
-          source={require("@expo/snack-static/react-native-logo.png")}
-        /&gt;
-        &lt;Text&gt;resizeMode : repeat&lt;/Text&gt;
-      &lt;/View&gt;
-      &lt;View&gt;
-        &lt;Image
-          style={{
-            resizeMode: "center",
-            height: 100,
-            width: 200
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>resizeMode : repeat<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">resizeMode:</span> &quot;<span class="hljs-attr">center</span>&quot;,
+            <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
           }}
-          source={require("@expo/snack-static/react-native-logo.png")}
-        /&gt;
-        &lt;Text&gt;resizeMode : center&lt;/Text&gt;
-      &lt;/View&gt;
-    &lt;/View&gt;
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>resizeMode : center<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flexDirection: "vertical",
-    justifyContent: "space-around",
-    alignItems: "center",
-    height: "100%",
-    textAlign: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">display</span>: <span class="hljs-string">&quot;flex&quot;</span>,
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">&quot;vertical&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;space-around&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-string">&quot;100%&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default DisplayAnImageWithStyle;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> DisplayAnImageWithStyle;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Image Style Props Function Component Example"
         data-snack-description="Example usage"
@@ -173,85 +173,85 @@ export default DisplayAnImageWithStyle;
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DisplayAnImageWithStyle</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;View style={styles.container}&gt;
-        &lt;View&gt;
-          &lt;Image
-            style={{
-              resizeMode: "cover",
-              height: 100,
-              width: 200
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">resizeMode:</span> &quot;<span class="hljs-attr">cover</span>&quot;,
+              <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+              <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
             }}
-            source={require("@expo/snack-static/react-native-logo.png")}
-          /&gt;
-          &lt;Text&gt;resizeMode : cover&lt;/Text&gt;
-        &lt;/View&gt;
-        &lt;View&gt;
-          &lt;Image
-            style={{
-              resizeMode: "contain",
-              height: 100,
-              width: 200
+            <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+          /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>resizeMode : cover<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">resizeMode:</span> &quot;<span class="hljs-attr">contain</span>&quot;,
+              <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+              <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
             }}
-            source={require("@expo/snack-static/react-native-logo.png")}
-          /&gt;
-          &lt;Text&gt;resizeMode : contain&lt;/Text&gt;
-        &lt;/View&gt;
-        &lt;View&gt;
-          &lt;Image
-            style={{
-              resizeMode: "stretch",
-              height: 100,
-              width: 200
+            <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+          /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>resizeMode : contain<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">resizeMode:</span> &quot;<span class="hljs-attr">stretch</span>&quot;,
+              <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+              <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
             }}
-            source={require("@expo/snack-static/react-native-logo.png")}
-          /&gt;
-          &lt;Text&gt;resizeMode : stretch&lt;/Text&gt;
-        &lt;/View&gt;
-        &lt;View&gt;
-          &lt;Image
-            style={{
-              resizeMode: "repeat",
-              height: 100,
-              width: 200
+            <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+          /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>resizeMode : stretch<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">resizeMode:</span> &quot;<span class="hljs-attr">repeat</span>&quot;,
+              <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+              <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
             }}
-            source={require("@expo/snack-static/react-native-logo.png")}
-          /&gt;
-          &lt;Text&gt;resizeMode : repeat&lt;/Text&gt;
-        &lt;/View&gt;
-        &lt;View&gt;
-          &lt;Image
-            style={{
-              resizeMode: "center",
-              height: 100,
-              width: 200
+            <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+          /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>resizeMode : repeat<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">resizeMode:</span> &quot;<span class="hljs-attr">center</span>&quot;,
+              <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+              <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
             }}
-            source={require("@expo/snack-static/react-native-logo.png")}
-          /&gt;
-          &lt;Text&gt;resizeMode : center&lt;/Text&gt;
-        &lt;/View&gt;
-      &lt;/View&gt;
+            <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+          /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>resizeMode : center<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flexDirection: "vertical",
-    justifyContent: "space-around",
-    alignItems: "center",
-    height: "100%",
-    textAlign: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">display</span>: <span class="hljs-string">&quot;flex&quot;</span>,
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">&quot;vertical&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;space-around&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-string">&quot;100%&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default DisplayAnImageWithStyle;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> DisplayAnImageWithStyle;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Image Style Props Class Component Example"
         data-snack-description="Example usage"
@@ -279,72 +279,72 @@ export default DisplayAnImageWithStyle;
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> DisplayAnImageWithStyle = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> DisplayAnImageWithStyle = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
-    &lt;View style={styles.container}&gt;
-      &lt;View&gt;
-        &lt;Image
-          style={{
-            borderTopRightRadius: 20,
-            height: 100,
-            width: 200
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">borderTopRightRadius:</span> <span class="hljs-attr">20</span>,
+            <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
           }}
-          source={require("@expo/snack-static/react-native-logo.png")}
-        /&gt;
-        &lt;Text&gt;borderTopRightRadius&lt;/Text&gt;
-      &lt;/View&gt;
-      &lt;View&gt;
-        &lt;Image
-          style={{
-            borderBottomRightRadius: 20,
-            height: 100,
-            width: 200
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>borderTopRightRadius<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">borderBottomRightRadius:</span> <span class="hljs-attr">20</span>,
+            <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
           }}
-          source={require("@expo/snack-static/react-native-logo.png")}
-        /&gt;
-        &lt;Text&gt;borderBottomRightRadius&lt;/Text&gt;
-      &lt;/View&gt;
-      &lt;View&gt;
-        &lt;Image
-          style={{
-            borderBottomLeftRadius: 20,
-            height: 100,
-            width: 200
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>borderBottomRightRadius<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">borderBottomLeftRadius:</span> <span class="hljs-attr">20</span>,
+            <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
           }}
-          source={require("@expo/snack-static/react-native-logo.png")}
-        /&gt;
-        &lt;Text&gt;borderBottomLeftRadius&lt;/Text&gt;
-      &lt;/View&gt;
-      &lt;View&gt;
-        &lt;Image
-          style={{
-            borderTopLeftRadius: 20,
-            height: 100,
-            width: 200
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>borderBottomLeftRadius<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">borderTopLeftRadius:</span> <span class="hljs-attr">20</span>,
+            <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
           }}
-          source={require("@expo/snack-static/react-native-logo.png")}
-        /&gt;
-        &lt;Text&gt;borderTopLeftRadius&lt;/Text&gt;
-      &lt;/View&gt;
-    &lt;/View&gt;
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+        /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>borderTopLeftRadius<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flexDirection: "vertical",
-    justifyContent: "space-around",
-    alignItems: "center",
-    height: "100%",
-    textAlign: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">display</span>: <span class="hljs-string">&quot;flex&quot;</span>,
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">&quot;vertical&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;space-around&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-string">&quot;100%&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default DisplayAnImageWithStyle;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> DisplayAnImageWithStyle;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Style Border Radius Function Component Example"
         data-snack-description="Example usage"
@@ -361,74 +361,74 @@ export default DisplayAnImageWithStyle;
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DisplayAnImageWithStyle</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;View style={styles.container}&gt;
-        &lt;View&gt;
-          &lt;Image
-            style={{
-              borderTopRightRadius: 20,
-              height: 100,
-              width: 200
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">borderTopRightRadius:</span> <span class="hljs-attr">20</span>,
+              <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+              <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
             }}
-            source={require("@expo/snack-static/react-native-logo.png")}
-          /&gt;
-          &lt;Text&gt;borderTopRightRadius&lt;/Text&gt;
-        &lt;/View&gt;
-        &lt;View&gt;
-          &lt;Image
-            style={{
-              borderBottomRightRadius: 20,
-              height: 100,
-              width: 200
+            <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+          /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>borderTopRightRadius<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">borderBottomRightRadius:</span> <span class="hljs-attr">20</span>,
+              <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+              <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
             }}
-            source={require("@expo/snack-static/react-native-logo.png")}
-          /&gt;
-          &lt;Text&gt;borderBottomRightRadius&lt;/Text&gt;
-        &lt;/View&gt;
-        &lt;View&gt;
-          &lt;Image
-            style={{
-              borderBottomLeftRadius: 20,
-              height: 100,
-              width: 200
+            <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+          /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>borderBottomRightRadius<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">borderBottomLeftRadius:</span> <span class="hljs-attr">20</span>,
+              <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+              <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
             }}
-            source={require("@expo/snack-static/react-native-logo.png")}
-          /&gt;
-          &lt;Text&gt;borderBottomLeftRadius&lt;/Text&gt;
-        &lt;/View&gt;
-        &lt;View&gt;
-          &lt;Image
-            style={{
-              borderTopLeftRadius: 20,
-              height: 100,
-              width: 200
+            <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+          /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>borderBottomLeftRadius<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">borderTopLeftRadius:</span> <span class="hljs-attr">20</span>,
+              <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+              <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
             }}
-            source={require("@expo/snack-static/react-native-logo.png")}
-          /&gt;
-          &lt;Text&gt;borderTopLeftRadius&lt;/Text&gt;
-        &lt;/View&gt;
-      &lt;/View&gt;
+            <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
+          /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>borderTopLeftRadius<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flexDirection: "vertical",
-    justifyContent: "space-around",
-    alignItems: "center",
-    height: "100%",
-    textAlign: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">display</span>: <span class="hljs-string">&quot;flex&quot;</span>,
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">&quot;vertical&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;space-around&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-string">&quot;100%&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default DisplayAnImageWithStyle;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> DisplayAnImageWithStyle;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Style Border Radius Class Component Example"
         data-snack-description="Example usage"
@@ -456,41 +456,41 @@ export default DisplayAnImageWithStyle;
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> DisplayAnImageWithStyle = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> DisplayAnImageWithStyle = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
         <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
-          <span class="hljs-attr">borderColor:</span> "<span class="hljs-attr">red</span>",
+          <span class="hljs-attr">borderColor:</span> &quot;<span class="hljs-attr">red</span>&quot;,
           <span class="hljs-attr">borderWidth:</span> <span class="hljs-attr">5</span>,
           <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
           <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
         }}
-        <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>"@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>")}
+        <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
       /&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>borderColor &amp; borderWidth<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flexDirection: "vertical",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    textAlign: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">display</span>: <span class="hljs-string">&quot;flex&quot;</span>,
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">&quot;vertical&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-string">&quot;100%&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default DisplayAnImageWithStyle;
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> DisplayAnImageWithStyle;
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Style BorderWidth and BorderColor Function Component Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%20from%20%22react%22%3B%0Aimport%20%7B%20View%2C%20Image%2C%20StyleSheet%2C%20Text%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20DisplayAnImageWithStyle%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20borderColor%3A%20%22red%22%2C%0A%20%20%20%20%20%20%20%20%20%20borderWidth%3A%205%2C%0A%20%20%20%20%20%20%20%20%20%20height%3A%20100%2C%0A%20%20%20%20%20%20%20%20%20%20width%3A%20200%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20source%3D%7Brequire(%22%40expo%2Fsnack-static%2Freact-native-logo.png%22)%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3CText%3E%0A%20%20%20%20%20%20%20%20%3CText%3EborderColor%20%26%20borderWidth%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20display%3A%20%22flex%22%2C%0A%20%20%20%20flexDirection%3A%20%22vertical%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20height%3A%20%22100%25%22%2C%0A%20%20%20%20textAlign%3A%20%22center%22%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20DisplayAnImageWithStyle%3B%0A"
@@ -506,8 +506,8 @@ export default DisplayAnImageWithStyle;
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DisplayAnImageWithStyle</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
@@ -515,32 +515,32 @@ export default DisplayAnImageWithStyle;
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
           <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
-            <span class="hljs-attr">borderColor:</span> "<span class="hljs-attr">red</span>",
+            <span class="hljs-attr">borderColor:</span> &quot;<span class="hljs-attr">red</span>&quot;,
             <span class="hljs-attr">borderWidth:</span> <span class="hljs-attr">5</span>,
             <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
             <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
           }}
-          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>"@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>")}
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
         /&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>borderColor &amp; borderWidth<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flexDirection: "vertical",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    textAlign: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">display</span>: <span class="hljs-string">&quot;flex&quot;</span>,
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">&quot;vertical&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-string">&quot;100%&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default DisplayAnImageWithStyle;
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> DisplayAnImageWithStyle;
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Style BorderWidth and BorderColor Class Component Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20View%2C%20Image%2C%20StyleSheet%2C%20Text%20%7D%20from%20%22react-native%22%3B%0A%0Aclass%20DisplayAnImageWithStyle%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20borderColor%3A%20%22red%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20borderWidth%3A%205%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20height%3A%20100%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20width%3A%20200%0A%20%20%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire(%22%40expo%2Fsnack-static%2Freact-native-logo.png%22)%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CText%3EborderColor%20%26%20borderWidth%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20display%3A%20%22flex%22%2C%0A%20%20%20%20flexDirection%3A%20%22vertical%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20height%3A%20%22100%25%22%2C%0A%20%20%20%20textAlign%3A%20%22center%22%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20DisplayAnImageWithStyle%3B%0A"
@@ -567,39 +567,39 @@ export default DisplayAnImageWithStyle;
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> DisplayAnImageWithStyle = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> DisplayAnImageWithStyle = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
         <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
-          <span class="hljs-attr">tintColor:</span> "#<span class="hljs-attr">000000</span>",
-          <span class="hljs-attr">resizeMode:</span> "<span class="hljs-attr">contain</span>",
+          <span class="hljs-attr">tintColor:</span> &quot;#<span class="hljs-attr">000000</span>&quot;,
+          <span class="hljs-attr">resizeMode:</span> &quot;<span class="hljs-attr">contain</span>&quot;,
           <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
           <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
         }}
-        <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>"@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>")}
+        <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
       /&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>tintColor<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flexDirection: "vertical",
-    justifyContent: "space-around",
-    alignItems: "center",
-    height: "100%",
-    textAlign: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">display</span>: <span class="hljs-string">&quot;flex&quot;</span>,
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">&quot;vertical&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;space-around&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-string">&quot;100%&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default DisplayAnImageWithStyle;
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> DisplayAnImageWithStyle;
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Style tintColor Function Component"
         data-snack-description="Example usage"
         data-snack-code="import%20React%20from%20%22react%22%3B%0Aimport%20%7B%20View%2C%20Image%2C%20StyleSheet%2C%20Text%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20DisplayAnImageWithStyle%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20tintColor%3A%20%22%23000000%22%2C%0A%20%20%20%20%20%20%20%20%20%20resizeMode%3A%20%22contain%22%2C%0A%20%20%20%20%20%20%20%20%20%20height%3A%20100%2C%0A%20%20%20%20%20%20%20%20%20%20width%3A%20200%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20source%3D%7Brequire(%22%40expo%2Fsnack-static%2Freact-native-logo.png%22)%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3CText%3EtintColor%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20display%3A%20%22flex%22%2C%0A%20%20%20%20flexDirection%3A%20%22vertical%22%2C%0A%20%20%20%20justifyContent%3A%20%22space-around%22%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20height%3A%20%22100%25%22%2C%0A%20%20%20%20textAlign%3A%20%22center%22%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20DisplayAnImageWithStyle%3B%0A"
@@ -615,8 +615,8 @@ export default DisplayAnImageWithStyle;
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { View, Image, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DisplayAnImageWithStyle</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
@@ -624,32 +624,32 @@ export default DisplayAnImageWithStyle;
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
           <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
-            <span class="hljs-attr">tintColor:</span> "#<span class="hljs-attr">000000</span>",
-            <span class="hljs-attr">resizeMode:</span> "<span class="hljs-attr">contain</span>",
+            <span class="hljs-attr">tintColor:</span> &quot;#<span class="hljs-attr">000000</span>&quot;,
+            <span class="hljs-attr">resizeMode:</span> &quot;<span class="hljs-attr">contain</span>&quot;,
             <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
             <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>
           }}
-          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>"@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>")}
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>&quot;@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>&quot;)}
         /&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>tintColor<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flexDirection: "vertical",
-    justifyContent: "space-around",
-    alignItems: "center",
-    height: "100%",
-    textAlign: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">display</span>: <span class="hljs-string">&quot;flex&quot;</span>,
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">&quot;vertical&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;space-around&quot;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-string">&quot;100%&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default DisplayAnImageWithStyle;
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> DisplayAnImageWithStyle;
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Style tintColor Class Component"
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20View%2C%20Image%2C%20StyleSheet%2C%20Text%20%7D%20from%20%22react-native%22%3B%0A%0Aclass%20DisplayAnImageWithStyle%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20tintColor%3A%20%22%23000000%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20resizeMode%3A%20%22contain%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20height%3A%20100%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20width%3A%20200%0A%20%20%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire(%22%40expo%2Fsnack-static%2Freact-native-logo.png%22)%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CText%3EtintColor%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20display%3A%20%22flex%22%2C%0A%20%20%20%20flexDirection%3A%20%22vertical%22%2C%0A%20%20%20%20justifyContent%3A%20%22space-around%22%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20height%3A%20%22100%25%22%2C%0A%20%20%20%20textAlign%3A%20%22center%22%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20DisplayAnImageWithStyle%3B%0A"

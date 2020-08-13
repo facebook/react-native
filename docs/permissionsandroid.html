@@ -89,59 +89,59 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { StyleSheet, Text, View, SafeAreaView, PermissionsAndroid, Button } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
-<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">"expo-constants"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View, SafeAreaView, PermissionsAndroid, Button } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
+<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;expo-constants&quot;</span>;
 
 <span class="hljs-keyword">const</span> requestCameraPermission = <span class="hljs-keyword">async</span> () =&gt; {
   <span class="hljs-keyword">try</span> {
     <span class="hljs-keyword">const</span> granted = <span class="hljs-keyword">await</span> PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.CAMERA,
       {
-        <span class="hljs-attr">title</span>: <span class="hljs-string">"Cool Photo App Camera Permission"</span>,
+        <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Cool Photo App Camera Permission&quot;</span>,
         <span class="hljs-attr">message</span>:
-          <span class="hljs-string">"Cool Photo App needs access to your camera "</span> +
-          <span class="hljs-string">"so you can take awesome pictures."</span>,
-        <span class="hljs-attr">buttonNeutral</span>: <span class="hljs-string">"Ask Me Later"</span>,
-        <span class="hljs-attr">buttonNegative</span>: <span class="hljs-string">"Cancel"</span>,
-        <span class="hljs-attr">buttonPositive</span>: <span class="hljs-string">"OK"</span>
+          <span class="hljs-string">&quot;Cool Photo App needs access to your camera &quot;</span> +
+          <span class="hljs-string">&quot;so you can take awesome pictures.&quot;</span>,
+        <span class="hljs-attr">buttonNeutral</span>: <span class="hljs-string">&quot;Ask Me Later&quot;</span>,
+        <span class="hljs-attr">buttonNegative</span>: <span class="hljs-string">&quot;Cancel&quot;</span>,
+        <span class="hljs-attr">buttonPositive</span>: <span class="hljs-string">&quot;OK&quot;</span>
       }
     );
     <span class="hljs-keyword">if</span> (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"You can use the camera"</span>);
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;You can use the camera&quot;</span>);
     } <span class="hljs-keyword">else</span> {
-      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Camera permission denied"</span>);
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Camera permission denied&quot;</span>);
     }
   } <span class="hljs-keyword">catch</span> (err) {
     <span class="hljs-built_in">console</span>.warn(err);
   }
 };
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> (
   <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.item}</span>&gt;</span>Try permissions<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">"request permissions"</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{requestCameraPermission}</span> /&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;request permissions&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{requestCameraPermission}</span> /&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
 );
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingTop: Constants.statusBarHeight,
-    backgroundColor: "#ecf0f1",
-    padding: 8
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">paddingTop</span>: Constants.statusBarHeight,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#ecf0f1&quot;</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">8</span>
   },
-  item: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center"
+  <span class="hljs-attr">item</span>: {
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">24</span>,
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">18</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default App;
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="PermissionsAndroid Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%20from%20%22react%22%3B%0Aimport%20%7B%20StyleSheet%2C%20Text%2C%20View%2C%20SafeAreaView%2C%20PermissionsAndroid%2C%20Button%20%7D%20from%20%22react-native%22%3B%0Aimport%20Constants%20from%20%22expo-constants%22%3B%0A%0Aconst%20requestCameraPermission%20%3D%20async%20()%20%3D%3E%20%7B%0A%20%20try%20%7B%0A%20%20%20%20const%20granted%20%3D%20await%20PermissionsAndroid.request(%0A%20%20%20%20%20%20PermissionsAndroid.PERMISSIONS.CAMERA%2C%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20title%3A%20%22Cool%20Photo%20App%20Camera%20Permission%22%2C%0A%20%20%20%20%20%20%20%20message%3A%0A%20%20%20%20%20%20%20%20%20%20%22Cool%20Photo%20App%20needs%20access%20to%20your%20camera%20%22%20%2B%0A%20%20%20%20%20%20%20%20%20%20%22so%20you%20can%20take%20awesome%20pictures.%22%2C%0A%20%20%20%20%20%20%20%20buttonNeutral%3A%20%22Ask%20Me%20Later%22%2C%0A%20%20%20%20%20%20%20%20buttonNegative%3A%20%22Cancel%22%2C%0A%20%20%20%20%20%20%20%20buttonPositive%3A%20%22OK%22%0A%20%20%20%20%20%20%7D%0A%20%20%20%20)%3B%0A%20%20%20%20if%20(granted%20%3D%3D%3D%20PermissionsAndroid.RESULTS.GRANTED)%20%7B%0A%20%20%20%20%20%20console.log(%22You%20can%20use%20the%20camera%22)%3B%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20console.log(%22Camera%20permission%20denied%22)%3B%0A%20%20%20%20%7D%0A%20%20%7D%20catch%20(err)%20%7B%0A%20%20%20%20console.warn(err)%3B%0A%20%20%7D%0A%7D%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20(%0A%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%3CText%20style%3D%7Bstyles.item%7D%3ETry%20permissions%3C%2FText%3E%0A%20%20%20%20%3CButton%20title%3D%22request%20permissions%22%20onPress%3D%7BrequestCameraPermission%7D%20%2F%3E%0A%20%20%3C%2FView%3E%0A)%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%2C%0A%20%20%20%20paddingTop%3A%20Constants.statusBarHeight%2C%0A%20%20%20%20backgroundColor%3A%20%22%23ecf0f1%22%2C%0A%20%20%20%20padding%3A%208%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20margin%3A%2024%2C%0A%20%20%20%20fontSize%3A%2018%2C%0A%20%20%20%20fontWeight%3A%20%22bold%22%2C%0A%20%20%20%20textAlign%3A%20%22center%22%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20App%3B%0A"
@@ -157,28 +157,28 @@ export default App;
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { StyleSheet, Text, View, SafeAreaView, PermissionsAndroid, Button } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
-<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">"expo-constants"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View, SafeAreaView, PermissionsAndroid, Button } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
+<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;expo-constants&quot;</span>;
 
 <span class="hljs-keyword">const</span> requestCameraPermission = <span class="hljs-keyword">async</span> () =&gt; {
   <span class="hljs-keyword">try</span> {
     <span class="hljs-keyword">const</span> granted = <span class="hljs-keyword">await</span> PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.CAMERA,
       {
-        <span class="hljs-attr">title</span>: <span class="hljs-string">"Cool Photo App Camera Permission"</span>,
+        <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Cool Photo App Camera Permission&quot;</span>,
         <span class="hljs-attr">message</span>:
-          <span class="hljs-string">"Cool Photo App needs access to your camera "</span> +
-          <span class="hljs-string">"so you can take awesome pictures."</span>,
-        <span class="hljs-attr">buttonNeutral</span>: <span class="hljs-string">"Ask Me Later"</span>,
-        <span class="hljs-attr">buttonNegative</span>: <span class="hljs-string">"Cancel"</span>,
-        <span class="hljs-attr">buttonPositive</span>: <span class="hljs-string">"OK"</span>
+          <span class="hljs-string">&quot;Cool Photo App needs access to your camera &quot;</span> +
+          <span class="hljs-string">&quot;so you can take awesome pictures.&quot;</span>,
+        <span class="hljs-attr">buttonNeutral</span>: <span class="hljs-string">&quot;Ask Me Later&quot;</span>,
+        <span class="hljs-attr">buttonNegative</span>: <span class="hljs-string">&quot;Cancel&quot;</span>,
+        <span class="hljs-attr">buttonPositive</span>: <span class="hljs-string">&quot;OK&quot;</span>
       }
     );
     <span class="hljs-keyword">if</span> (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"You can use the camera"</span>);
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;You can use the camera&quot;</span>);
     } <span class="hljs-keyword">else</span> {
-      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Camera permission denied"</span>);
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Camera permission denied&quot;</span>);
     }
   } <span class="hljs-keyword">catch</span> (err) {
     <span class="hljs-built_in">console</span>.warn(err);
@@ -190,30 +190,30 @@ export default App;
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.item}</span>&gt;</span>Try permissions<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">"request permissions"</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{requestCameraPermission}</span> /&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;request permissions&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{requestCameraPermission}</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingTop: Constants.statusBarHeight,
-    backgroundColor: "#ecf0f1",
-    padding: 8
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">paddingTop</span>: Constants.statusBarHeight,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#ecf0f1&quot;</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">8</span>
   },
-  item: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center"
+  <span class="hljs-attr">item</span>: {
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">24</span>,
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">18</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default App;
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="PermissionsAndroid Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20StyleSheet%2C%20Text%2C%20View%2C%20SafeAreaView%2C%20PermissionsAndroid%2C%20Button%20%7D%20from%20%22react-native%22%3B%0Aimport%20Constants%20from%20%22expo-constants%22%3B%0A%0Aconst%20requestCameraPermission%20%3D%20async%20()%20%3D%3E%20%7B%0A%20%20try%20%7B%0A%20%20%20%20const%20granted%20%3D%20await%20PermissionsAndroid.request(%0A%20%20%20%20%20%20PermissionsAndroid.PERMISSIONS.CAMERA%2C%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20title%3A%20%22Cool%20Photo%20App%20Camera%20Permission%22%2C%0A%20%20%20%20%20%20%20%20message%3A%0A%20%20%20%20%20%20%20%20%20%20%22Cool%20Photo%20App%20needs%20access%20to%20your%20camera%20%22%20%2B%0A%20%20%20%20%20%20%20%20%20%20%22so%20you%20can%20take%20awesome%20pictures.%22%2C%0A%20%20%20%20%20%20%20%20buttonNeutral%3A%20%22Ask%20Me%20Later%22%2C%0A%20%20%20%20%20%20%20%20buttonNegative%3A%20%22Cancel%22%2C%0A%20%20%20%20%20%20%20%20buttonPositive%3A%20%22OK%22%0A%20%20%20%20%20%20%7D%0A%20%20%20%20)%3B%0A%20%20%20%20if%20(granted%20%3D%3D%3D%20PermissionsAndroid.RESULTS.GRANTED)%20%7B%0A%20%20%20%20%20%20console.log(%22You%20can%20use%20the%20camera%22)%3B%0A%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20console.log(%22Camera%20permission%20denied%22)%3B%0A%20%20%20%20%7D%0A%20%20%7D%20catch%20(err)%20%7B%0A%20%20%20%20console.warn(err)%3B%0A%20%20%7D%0A%7D%3B%0A%0Aclass%20App%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.item%7D%3ETry%20permissions%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CButton%20title%3D%22request%20permissions%22%20onPress%3D%7BrequestCameraPermission%7D%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%2C%0A%20%20%20%20paddingTop%3A%20Constants.statusBarHeight%2C%0A%20%20%20%20backgroundColor%3A%20%22%23ecf0f1%22%2C%0A%20%20%20%20padding%3A%208%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20margin%3A%2024%2C%0A%20%20%20%20fontSize%3A%2018%2C%0A%20%20%20%20fontWeight%3A%20%22bold%22%2C%0A%20%20%20%20textAlign%3A%20%22center%22%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20App%3B%0A"

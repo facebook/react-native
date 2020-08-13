@@ -82,26 +82,26 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { View, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { View, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> ViewBoxesWithColorAndText = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> ViewBoxesWithColorAndText = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
-    &lt;View
-      style={{
-        flexDirection: "row",
-        height: 100,
-        padding: 20
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+      <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+        <span class="hljs-attr">flexDirection:</span> &quot;<span class="hljs-attr">row</span>&quot;,
+        <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+        <span class="hljs-attr">padding:</span> <span class="hljs-attr">20</span>
       }}
-    &gt;
-      &lt;View style={{ backgroundColor: "blue", flex: 0.3 }} /&gt;
-      &lt;View style={{ backgroundColor: "red", flex: 0.5 }} /&gt;
-      &lt;Text&gt;Hello World!&lt;/Text&gt;
-    &lt;/View&gt;
+    &gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">backgroundColor:</span> &quot;<span class="hljs-attr">blue</span>&quot;, <span class="hljs-attr">flex:</span> <span class="hljs-attr">0.3</span> }} /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">backgroundColor:</span> &quot;<span class="hljs-attr">red</span>&quot;, <span class="hljs-attr">flex:</span> <span class="hljs-attr">0.5</span> }} /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello World!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 };
 
-export default ViewBoxesWithColorAndText;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> ViewBoxesWithColorAndText;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="View Function Component Example"
         data-snack-description="Example usage"
@@ -118,23 +118,23 @@ export default ViewBoxesWithColorAndText;
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { View, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { View, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;View
-        style={{
-          flexDirection: "row",
-          height: 100,
-          padding: 20
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+          <span class="hljs-attr">flexDirection:</span> &quot;<span class="hljs-attr">row</span>&quot;,
+          <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+          <span class="hljs-attr">padding:</span> <span class="hljs-attr">20</span>
         }}
-      &gt;
-        &lt;View style={{ backgroundColor: "blue", flex: 0.3 }} /&gt;
-        &lt;View style={{ backgroundColor: "red", flex: 0.5 }} /&gt;
-        &lt;Text&gt;Hello World!&lt;/Text&gt;
-      &lt;/View&gt;
+      &gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">backgroundColor:</span> &quot;<span class="hljs-attr">blue</span>&quot;, <span class="hljs-attr">flex:</span> <span class="hljs-attr">0.3</span> }} /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">backgroundColor:</span> &quot;<span class="hljs-attr">red</span>&quot;, <span class="hljs-attr">flex:</span> <span class="hljs-attr">0.5</span> }} /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello World!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }

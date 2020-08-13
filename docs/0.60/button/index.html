@@ -71,7 +71,7 @@
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/button.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Button</h1></header><article><div><span><p>A basic button component that should render nicely on any platform. Supports a minimal level of customization.</p>
 <p>If this button doesn't look right for your app, you can build your own button using <a href="/docs/0.60/touchableopacity">TouchableOpacity</a> or <a href="/docs/0.60/touchablenativefeedback">TouchableNativeFeedback</a>. For inspiration, look at the <a href="https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js">source code for this button component</a>. Or, take a look at the <a href="https://js.coach/?menu%5Bcollections%5D=React%20Native&amp;page=1&amp;query=button">wide variety of button components built by the community</a>.</p>
 <h3><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h3>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
 <span class="hljs-keyword">import</span> {
   StyleSheet,
   Button,
@@ -79,88 +79,88 @@
   SafeAreaView,
   Text,
   Alert,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
-<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">'expo-constants'</span>;
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
+<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;expo-constants&#x27;</span>;
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Separator</span>(<span class="hljs-params"></span>) </span>{
-  <span class="hljs-keyword">return</span> &lt;View style={styles.separator} /&gt;;
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.separator}</span> /&gt;</span></span>;
 }
 
-export default function App() {
-  return (
-    &lt;SafeAreaView style={styles.container}&gt;
-      &lt;View&gt;
-        &lt;Text style={styles.title}&gt;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>
           The title and onPress handler are required. It is recommended to set
           accessibilityLabel to help make your app usable by everyone.
-        &lt;/Text&gt;
-        &lt;Button
-          title="Press me"
-          onPress={() =&gt; Alert.alert('Simple Button pressed')}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+          <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Press me&quot;</span>
+          <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Alert.alert(&#x27;Simple Button pressed&#x27;)}
         /&gt;
-      &lt;/View&gt;
-      &lt;Separator /&gt;
-      &lt;View&gt;
-        &lt;Text style={styles.title}&gt;
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Separator</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>
           Adjust the color in a way that looks standard on each platform. On
           iOS, the color prop controls the color of the text. On Android, the
           color adjusts the backgroud color of the button.
-        &lt;/Text&gt;
-        &lt;Button
-          title="Press me"
-          color="#f194ff"
-          onPress={() =&gt; Alert.alert('Button with adjusted color pressed')}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+          <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Press me&quot;</span>
+          <span class="hljs-attr">color</span>=<span class="hljs-string">&quot;#f194ff&quot;</span>
+          <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Alert.alert(&#x27;Button with adjusted color pressed&#x27;)}
         /&gt;
-      &lt;/View&gt;
-      &lt;Separator /&gt;
-      &lt;View&gt;
-        &lt;Text style={styles.title}&gt;
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Separator</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>
           All interaction for the component are disabled.
-        &lt;/Text&gt;
-        &lt;Button
-          title="Press me"
-          disabled
-          onPress={() =&gt; Alert.alert('Cannot press this one')}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+          <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Press me&quot;</span>
+          <span class="hljs-attr">disabled</span>
+          <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Alert.alert(&#x27;Cannot press this one&#x27;)}
         /&gt;
-      &lt;/View&gt;
-      &lt;Separator /&gt;
-      &lt;View&gt;
-        &lt;Text style={styles.title}&gt;
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Separator</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>
           This layout strategy lets the title define the width of the button.
-        &lt;/Text&gt;
-        &lt;View style={styles.fixToText}&gt;
-          &lt;Button
-            title="Left button"
-            onPress={() =&gt; Alert.alert('Left button pressed')}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.fixToText}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+            <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Left button&quot;</span>
+            <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Alert.alert(&#x27;Left button pressed&#x27;)}
           /&gt;
-          &lt;Button
-            title="Right button"
-            onPress={() =&gt; Alert.alert('Right button pressed')}
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+            <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Right button&quot;</span>
+            <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> Alert.alert(&#x27;Right button pressed&#x27;)}
           /&gt;
-        &lt;/View&gt;
-      &lt;/View&gt;
-    &lt;/SafeAreaView&gt;
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span></span>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: Constants.statusBarHeight,
-    marginHorizontal: 16,
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">marginTop</span>: Constants.statusBarHeight,
+    <span class="hljs-attr">marginHorizontal</span>: <span class="hljs-number">16</span>,
   },
-  title: {
-    textAlign: 'center',
-    marginVertical: 8,
+  <span class="hljs-attr">title</span>: {
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
+    <span class="hljs-attr">marginVertical</span>: <span class="hljs-number">8</span>,
   },
-  fixToText: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  <span class="hljs-attr">fixToText</span>: {
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">&#x27;row&#x27;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;space-between&#x27;</span>,
   },
-  separator: {
-    marginVertical: 8,
-    borderBottomColor: '#737373',
-    borderBottomWidth: StyleSheet.hairlineWidth,
+  <span class="hljs-attr">separator</span>: {
+    <span class="hljs-attr">marginVertical</span>: <span class="hljs-number">8</span>,
+    <span class="hljs-attr">borderBottomColor</span>: <span class="hljs-string">&#x27;#737373&#x27;</span>,
+    <span class="hljs-attr">borderBottomWidth</span>: StyleSheet.hairlineWidth,
   },
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div

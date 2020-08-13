@@ -14,41 +14,41 @@
         });
         </script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/prism.css"/><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/header_logo.svg" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/versions"><h3>0.23</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/docs/0.23/getting-started" target="_self">Docs</a></li><li class=""><a href="/docs/0.23/components-and-apis" target="_self">Components</a></li><li class=""><a href="/docs/0.23/accessibilityinfo" target="_self">API</a></li><li class=""><a href="/help" target="_self">Community</a></li><li class=""><a href="/blog/" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/activityindicator.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">ActivityIndicator</h1></header><article><div><span><p>Displays a circular loading indicator.</p>
 <h3><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h3>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>
 <span class="hljs-keyword">import</span> {
   ActivityIndicator,
   AppRegistry,
   StyleSheet,
   Text,
   View,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;View style={[styles.container, styles.horizontal]}&gt;
-        &lt;ActivityIndicator size="large" color="#0000ff" /&gt;
-        &lt;ActivityIndicator size="small" color="#00ff00" /&gt;
-        &lt;ActivityIndicator size="large" color="#0000ff" /&gt;
-        &lt;ActivityIndicator size="small" color="#00ff00" /&gt;
-      &lt;/View&gt;
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.container,</span> <span class="hljs-attr">styles.horizontal</span>]}&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">ActivityIndicator</span> <span class="hljs-attr">size</span>=<span class="hljs-string">&quot;large&quot;</span> <span class="hljs-attr">color</span>=<span class="hljs-string">&quot;#0000ff&quot;</span> /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">ActivityIndicator</span> <span class="hljs-attr">size</span>=<span class="hljs-string">&quot;small&quot;</span> <span class="hljs-attr">color</span>=<span class="hljs-string">&quot;#00ff00&quot;</span> /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">ActivityIndicator</span> <span class="hljs-attr">size</span>=<span class="hljs-string">&quot;large&quot;</span> <span class="hljs-attr">color</span>=<span class="hljs-string">&quot;#0000ff&quot;</span> /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">ActivityIndicator</span> <span class="hljs-attr">size</span>=<span class="hljs-string">&quot;small&quot;</span> <span class="hljs-attr">color</span>=<span class="hljs-string">&quot;#00ff00&quot;</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     )
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center'
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;center&#x27;</span>
   },
-  horizontal: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 10
+  <span class="hljs-attr">horizontal</span>: {
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">&#x27;row&#x27;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;space-around&#x27;</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>
   }
 })
 
-AppRegistry.registerComponent('App', () =&gt; App)
+AppRegistry.registerComponent(<span class="hljs-string">&#x27;App&#x27;</span>, <span class="hljs-function">() =&gt;</span> App)
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"
         data-snack-description="Example usage"

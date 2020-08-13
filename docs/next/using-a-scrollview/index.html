@@ -70,49 +70,49 @@
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/using-a-scrollview.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Using a ScrollView</h1></header><article><div><span><p>The <a href="/docs/next/scrollview">ScrollView</a> is a generic scrolling container that can contain multiple components and views. The scrollable items can be heterogeneous, and you can scroll both vertically and horizontally (by setting the <code>horizontal</code> property).</p>
 <p>This example creates a vertical <code>ScrollView</code> with both images and text mixed together.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Image, ScrollView, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Image, ScrollView, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">const</span> logo = {
-  <span class="hljs-attr">uri</span>: <span class="hljs-string">'https://reactnative.dev/img/tiny_logo.png'</span>,
+  <span class="hljs-attr">uri</span>: <span class="hljs-string">&#x27;https://reactnative.dev/img/tiny_logo.png&#x27;</span>,
   <span class="hljs-attr">width</span>: <span class="hljs-number">64</span>,
   <span class="hljs-attr">height</span>: <span class="hljs-number">64</span>
 };
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
-  &lt;ScrollView&gt;
-    &lt;Text style={{ fontSize: 96 }}&gt;Scroll me plz&lt;/Text&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Text style={{ fontSize: 96 }}&gt;If you like&lt;/Text&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Text style={{ fontSize: 96 }}&gt;Scrolling down&lt;/Text&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Text style={{ fontSize: 96 }}&gt;What's the best&lt;/Text&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Text style={{ fontSize: 96 }}&gt;Framework around?&lt;/Text&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Image source={logo} /&gt;
-    &lt;Text style={{ fontSize: 80 }}&gt;React Native&lt;/Text&gt;
-  &lt;/ScrollView&gt;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">ScrollView</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">fontSize:</span> <span class="hljs-attr">96</span> }}&gt;</span>Scroll me plz<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">fontSize:</span> <span class="hljs-attr">96</span> }}&gt;</span>If you like<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">fontSize:</span> <span class="hljs-attr">96</span> }}&gt;</span>Scrolling down<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">fontSize:</span> <span class="hljs-attr">96</span> }}&gt;</span>What&#x27;s the best<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">fontSize:</span> <span class="hljs-attr">96</span> }}&gt;</span>Framework around?<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{logo}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">fontSize:</span> <span class="hljs-attr">80</span> }}&gt;</span>React Native<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">ScrollView</span>&gt;</span></span>
 );
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Using ScrollView"

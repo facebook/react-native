@@ -70,29 +70,29 @@
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/textinput.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">TextInput</h1></header><article><div><span><p>A foundational component for inputting text into the app via a keyboard. Props provide configurability for several features, such as auto-correction, auto-capitalization, placeholder text, and different keyboard types, such as a numeric keypad.</p>
 <p>One use case is to plop down a <code>TextInput</code> and subscribe to the <code>onChangeText</code> events to read the user input. There are also other events, such as <code>onSubmitEditing</code> and <code>onFocus</code> that can be subscribed to. An example:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { AppRegistry, TextInput } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { AppRegistry, TextInput } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UselessTextInput</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   <span class="hljs-keyword">constructor</span>(props) {
-    <span class="hljs-keyword">super</span>(props);
-    <span class="hljs-keyword">this</span>.state = { <span class="hljs-attr">text</span>: <span class="hljs-string">'Useless Placeholder'</span> };
+    <span class="hljs-built_in">super</span>(props);
+    <span class="hljs-built_in">this</span>.state = { <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;Useless Placeholder&#x27;</span> };
   }
 
   render() {
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span>
-        <span class="hljs-attr">style</span>=<span class="hljs-string">{{height:</span> <span class="hljs-attr">40</span>, <span class="hljs-attr">borderColor:</span> '<span class="hljs-attr">gray</span>', <span class="hljs-attr">borderWidth:</span> <span class="hljs-attr">1</span>}}
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{{height:</span> <span class="hljs-attr">40</span>, <span class="hljs-attr">borderColor:</span> &#x27;<span class="hljs-attr">gray</span>&#x27;, <span class="hljs-attr">borderWidth:</span> <span class="hljs-attr">1</span>}}
         <span class="hljs-attr">onChangeText</span>=<span class="hljs-string">{(text)</span> =&gt;</span> this.setState({text})}
         value={this.state.text}
-      /&gt;
+      /&gt;</span>
     );
   }
 }
 
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () =&gt; UselessTextInput);
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+<span class="hljs-comment">// skip this line if using Create React Native App</span>
+AppRegistry.registerComponent(<span class="hljs-string">&#x27;AwesomeProject&#x27;</span>, <span class="hljs-function">() =&gt;</span> UselessTextInput);
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"
         data-snack-description="Example usage"
         data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20TextInput%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20UselessTextInput%20extends%20Component%20%7B%0A%20%20constructor(props)%20%7B%0A%20%20%20%20super(props)%3B%0A%20%20%20%20this.state%20%3D%20%7B%20text%3A%20'Useless%20Placeholder'%20%7D%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20%20%20style%3D%7B%7Bheight%3A%2040%2C%20borderColor%3A%20'gray'%2C%20borderWidth%3A%201%7D%7D%0A%20%20%20%20%20%20%20%20onChangeText%3D%7B(text)%20%3D%3E%20this.setState(%7Btext%7D)%7D%0A%20%20%20%20%20%20%20%20value%3D%7Bthis.state.text%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('AwesomeProject'%2C%20()%20%3D%3E%20UselessTextInput)%3B%0A"
@@ -108,53 +108,53 @@ AppRegistry.registerComponent('AwesomeProject', () =&gt; UselessTextInput);
           width: 100%;
         "
       ></div></div></div><p>Note that some props are only available with <code>multiline={true/false}</code>. Additionally, border styles that apply to only one side of the element (e.g., <code>borderBottomColor</code>, <code>borderLeftWidth</code>, etc.) will not be applied if <code>multiline=false</code>. To achieve the same effect, you can wrap your <code>TextInput</code> in a <code>View</code>:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { AppRegistry, View, TextInput } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { AppRegistry, View, TextInput } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UselessTextInput</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;TextInput
-        {...this.props} // Inherit any props passed to it; e.g., multiline, numberOfLines below
-        editable = {true}
-        maxLength = {40}
-      /&gt;
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span>
+        {<span class="hljs-attr">...this.props</span>} // <span class="hljs-attr">Inherit</span> <span class="hljs-attr">any</span> <span class="hljs-attr">props</span> <span class="hljs-attr">passed</span> <span class="hljs-attr">to</span> <span class="hljs-attr">it</span>; <span class="hljs-attr">e.g.</span>, <span class="hljs-attr">multiline</span>, <span class="hljs-attr">numberOfLines</span> <span class="hljs-attr">below</span>
+        <span class="hljs-attr">editable</span> = <span class="hljs-string">{true}</span>
+        <span class="hljs-attr">maxLength</span> = <span class="hljs-string">{40}</span>
+      /&gt;</span></span>
     );
   }
 }
 
-export default class UselessTextInputMultiline extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      text: 'Useless Multiline Placeholder',
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UselessTextInputMultiline</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">constructor</span>(props) {
+    <span class="hljs-built_in">super</span>(props);
+    <span class="hljs-built_in">this</span>.state = {
+      <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;Useless Multiline Placeholder&#x27;</span>,
     };
   }
 
-  // If you type something in the text box that is a color, the background will change to that
-  // color.
+  <span class="hljs-comment">// If you type something in the text box that is a color, the background will change to that</span>
+  <span class="hljs-comment">// color.</span>
   render() {
-    return (
-     &lt;View style={{
-       backgroundColor: this.state.text,
-       borderBottomColor: '#000000',
-       borderBottomWidth: 1 }}
-     &gt;
-       &lt;UselessTextInput
-         multiline = {true}
-         numberOfLines = {4}
-         onChangeText={(text) =&gt; this.setState({text})}
+    <span class="hljs-keyword">return</span> (
+     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+       <span class="hljs-attr">backgroundColor:</span> <span class="hljs-attr">this.state.text</span>,
+       <span class="hljs-attr">borderBottomColor:</span> &#x27;#<span class="hljs-attr">000000</span>&#x27;,
+       <span class="hljs-attr">borderBottomWidth:</span> <span class="hljs-attr">1</span> }}
+     &gt;</span>
+       <span class="hljs-tag">&lt;<span class="hljs-name">UselessTextInput</span>
+         <span class="hljs-attr">multiline</span> = <span class="hljs-string">{true}</span>
+         <span class="hljs-attr">numberOfLines</span> = <span class="hljs-string">{4}</span>
+         <span class="hljs-attr">onChangeText</span>=<span class="hljs-string">{(text)</span> =&gt;</span> this.setState({text})}
          value={this.state.text}
        /&gt;
-     &lt;/View&gt;
+     <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-// skip these lines if using Create React Native App
+<span class="hljs-comment">// skip these lines if using Create React Native App</span>
 AppRegistry.registerComponent(
- 'AwesomeProject',
- () =&gt; UselessTextInputMultiline
+ <span class="hljs-string">&#x27;AwesomeProject&#x27;</span>,
+ <span class="hljs-function">() =&gt;</span> UselessTextInputMultiline
 );
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"

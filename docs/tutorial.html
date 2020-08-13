@@ -16,16 +16,16 @@
 <p>Let's do this thing.</p>
 <h2><a class="anchor" aria-hidden="true" id="hello-world"></a><a href="#hello-world" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Hello World</h2>
 <p>In accordance with the ancient traditions of our people, we must first build an app that does nothing except say &quot;Hello, world!&quot;. Here it is:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">const</span> HelloWorldApp = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> HelloWorldApp = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>
       <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
         <span class="hljs-attr">flex:</span> <span class="hljs-attr">1</span>,
-        <span class="hljs-attr">justifyContent:</span> "<span class="hljs-attr">center</span>",
-        <span class="hljs-attr">alignItems:</span> "<span class="hljs-attr">center</span>"
+        <span class="hljs-attr">justifyContent:</span> &quot;<span class="hljs-attr">center</span>&quot;,
+        <span class="hljs-attr">alignItems:</span> &quot;<span class="hljs-attr">center</span>&quot;
       }}&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello, world!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
     <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
@@ -65,12 +65,12 @@
 <h2><a class="anchor" aria-hidden="true" id="props"></a><a href="#props" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
 <p>Most components can be customized when they are created, with different parameters. These creation parameters are called props.</p>
 <p>Your own components can also use <code>props</code>. This lets you make a single component that is used in many different places in your app, with slightly different properties in each place. Refer to <code>props.{NAME}</code> in your functional components or <code>this.props.{NAME}</code> in your class components. Here's an example:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Text, View, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Text, View, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">center</span>: {
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">'center'</span>
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&#x27;center&#x27;</span>
   }
 })
 
@@ -82,17 +82,17 @@
   );
 }
 
-<span class="hljs-keyword">const</span> LotsOfGreetings = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> LotsOfGreetings = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
-    &lt;View style={[styles.center, {top: 50}]}&gt;
-      &lt;Greeting name='Rexxar' /&gt;
-      &lt;Greeting name='Jaina' /&gt;
-      &lt;Greeting name='Valeera' /&gt;
-    &lt;/View&gt;
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.center,</span> {<span class="hljs-attr">top:</span> <span class="hljs-attr">50</span>}]}&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Greeting</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&#x27;Rexxar&#x27;</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Greeting</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&#x27;Jaina&#x27;</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Greeting</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&#x27;Valeera&#x27;</span> /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-export default LotsOfGreetings;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> LotsOfGreetings;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Hello Props"
         data-snack-description="Example usage"
@@ -119,22 +119,22 @@ export default LotsOfGreetings;
 <p><img src="https://user-images.githubusercontent.com/20761166/61405629-48270680-a8a8-11e9-906e-aa80d51e51e3.png" alt="image"></p>
 <p>As shown in the image, there is no difference in handling the <code>state</code> between <a href="https://reactjs.org/docs/state-and-lifecycle.html">React</a> and <code>React Native</code>. You can use the state of your components both in classes and in functional components using <a href="https://reactjs.org/docs/hooks-intro.html">hooks</a>!</p>
 <p>In the following example we will show the same above counter example using classes.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>
 <span class="hljs-keyword">import</span> {
   StyleSheet,
   TouchableOpacity,
   Text,
   View,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   state = {
     <span class="hljs-attr">count</span>: <span class="hljs-number">0</span>
   }
 
-  onPress = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-keyword">this</span>.setState({
-      <span class="hljs-attr">count</span>: <span class="hljs-keyword">this</span>.state.count + <span class="hljs-number">1</span>
+  onPress = <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-built_in">this</span>.setState({
+      <span class="hljs-attr">count</span>: <span class="hljs-built_in">this</span>.state.count + <span class="hljs-number">1</span>
     })
   }
 
@@ -160,12 +160,12 @@ export default LotsOfGreetings;
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">'center'</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">'center'</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
   },
   <span class="hljs-attr">button</span>: {
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">'center'</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'#DDDDDD'</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;#DDDDDD&#x27;</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">10</span>,
     <span class="hljs-attr">marginBottom</span>: <span class="hljs-number">10</span>
   }

@@ -69,10 +69,10 @@
               }
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/stylesheet.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">StyleSheet</h1></header><article><div><span><p>A StyleSheet is an abstraction similar to CSS StyleSheets</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> (
   <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>React Native<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
   <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
@@ -82,19 +82,19 @@
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">24</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">"#eaeaea"</span>
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#eaeaea&quot;</span>
   },
   <span class="hljs-attr">title</span>: {
     <span class="hljs-attr">marginTop</span>: <span class="hljs-number">16</span>,
     <span class="hljs-attr">paddingVertical</span>: <span class="hljs-number">8</span>,
     <span class="hljs-attr">borderWidth</span>: <span class="hljs-number">4</span>,
-    <span class="hljs-attr">borderColor</span>: <span class="hljs-string">"#20232a"</span>,
+    <span class="hljs-attr">borderColor</span>: <span class="hljs-string">&quot;#20232a&quot;</span>,
     <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">6</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">"#61dafb"</span>,
-    <span class="hljs-attr">color</span>: <span class="hljs-string">"#20232a"</span>,
-    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">"center"</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#61dafb&quot;</span>,
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&quot;#20232a&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>,
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">30</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">"bold"</span>
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
@@ -124,10 +124,10 @@
 <pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">compose</span><span class="token punctuation">(</span>style1<span class="token operator">:</span> object<span class="token punctuation">,</span> style2<span class="token operator">:</span> object<span class="token punctuation">)</span><span class="token operator">:</span> object <span class="token operator">|</span> array<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>object</span><span class="token punctuation">></span></span><span class="token plain-text">
 </span></code></pre>
 <p>Combines two styles such that <code>style2</code> will override any styles in <code>style1</code>. If either style is falsy, the other one is returned without allocating an array, saving allocations and maintaining reference equality for PureComponent checks.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> (
   <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{container}</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{text}</span>&gt;</span>React Native<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
   <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
@@ -137,22 +137,22 @@
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">24</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'#fff'</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;#fff&#x27;</span>,
   },
   <span class="hljs-attr">text</span>: {
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">30</span>,
-    <span class="hljs-attr">color</span>: <span class="hljs-string">'#000'</span>
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&#x27;#000&#x27;</span>
   },
 });
 
 <span class="hljs-keyword">const</span> lists = StyleSheet.create({
   <span class="hljs-attr">listContainer</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'#61dafb'</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;#61dafb&#x27;</span>,
   },
   <span class="hljs-attr">listItem</span>: {
-    <span class="hljs-attr">fontStyle</span>: <span class="hljs-string">'italic'</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">'bold'</span>
+    <span class="hljs-attr">fontStyle</span>: <span class="hljs-string">&#x27;italic&#x27;</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&#x27;bold&#x27;</span>
   },
 });
 
@@ -187,10 +187,10 @@
 <blockquote>
 <p><strong>NOTE:</strong> Exercise caution as abusing this can tax you in terms of optimizations. IDs enable optimizations through the bridge and memory in general. Referring to style objects directly will deprive you of these optimizations.</p>
 </blockquote>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> (
   <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{page.container}</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{flattenStyle}</span>&gt;</span>React Native<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Flatten Style<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
@@ -204,25 +204,25 @@
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">24</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
   <span class="hljs-attr">text</span>: {
-    <span class="hljs-attr">color</span>: <span class="hljs-string">"#000"</span>,
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&quot;#000&quot;</span>,
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">14</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">"bold"</span>
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>
   },
   <span class="hljs-attr">code</span>: {
     <span class="hljs-attr">marginTop</span>: <span class="hljs-number">12</span>,
     <span class="hljs-attr">padding</span>: <span class="hljs-number">12</span>,
     <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">8</span>,
-    <span class="hljs-attr">color</span>: <span class="hljs-string">"#666"</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">"#eaeaea"</span>
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&quot;#666&quot;</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;#eaeaea&quot;</span>
   }
 });
 
 <span class="hljs-keyword">const</span> typography = StyleSheet.create({
   <span class="hljs-attr">header</span>: {
-    <span class="hljs-attr">color</span>: <span class="hljs-string">"#61dafb"</span>,
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&quot;#61dafb&quot;</span>,
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">30</span>,
     <span class="hljs-attr">marginBottom</span>: <span class="hljs-number">36</span>
   }
@@ -260,10 +260,10 @@
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="absolutefill"></a><a href="#absolutefill" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>absoluteFill</code></h3>
 <p>A very common pattern is to create overlays with position absolute and zero positioning (<code>position: 'absolute', left: 0, right: 0, top: 0, bottom: 0</code>), so <code>absoluteFill</code> can be used for convenience and to reduce duplication of these repeated styles. If you want, absoluteFill can be used to create a customized entry in a StyleSheet, e.g.:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> (
   <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.box1}</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>1<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
@@ -282,29 +282,29 @@
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>
   },
   <span class="hljs-attr">box1</span>: {
-    <span class="hljs-attr">position</span>: <span class="hljs-string">'absolute'</span>,
+    <span class="hljs-attr">position</span>: <span class="hljs-string">&#x27;absolute&#x27;</span>,
     <span class="hljs-attr">top</span>: <span class="hljs-number">40</span>,
     <span class="hljs-attr">left</span>: <span class="hljs-number">40</span>,
     <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
     <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'red'</span>
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;red&#x27;</span>
   },
   <span class="hljs-attr">box2</span>: {
     ...StyleSheet.absoluteFill,
     <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
     <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'blue'</span>
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;blue&#x27;</span>
   },
   <span class="hljs-attr">box3</span>: {
-    <span class="hljs-attr">position</span>: <span class="hljs-string">'absolute'</span>,
+    <span class="hljs-attr">position</span>: <span class="hljs-string">&#x27;absolute&#x27;</span>,
     <span class="hljs-attr">top</span>: <span class="hljs-number">120</span>,
     <span class="hljs-attr">left</span>: <span class="hljs-number">120</span>,
     <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
     <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'green'</span>
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;green&#x27;</span>
   },
   <span class="hljs-attr">text</span>: {
-    <span class="hljs-attr">color</span>: <span class="hljs-string">'#FFF'</span>,
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&#x27;#FFF&#x27;</span>,
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">80</span>
   }
 });
@@ -326,10 +326,10 @@
       ></div></div></div><hr>
 <h3><a class="anchor" aria-hidden="true" id="absolutefillobject"></a><a href="#absolutefillobject" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>absoluteFillObject</code></h3>
 <p>Sometimes you may want <code>absoluteFill</code> but with a couple tweaks - <code>absoluteFillObject</code> can be used to create a customized entry in a <code>StyleSheet</code>, e.g.:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> (
   <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.box1}</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>1<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
@@ -348,12 +348,12 @@
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>
   },
   <span class="hljs-attr">box1</span>: {
-    <span class="hljs-attr">position</span>: <span class="hljs-string">'absolute'</span>,
+    <span class="hljs-attr">position</span>: <span class="hljs-string">&#x27;absolute&#x27;</span>,
     <span class="hljs-attr">top</span>: <span class="hljs-number">40</span>,
     <span class="hljs-attr">left</span>: <span class="hljs-number">40</span>,
     <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
     <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'red'</span>
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;red&#x27;</span>
   },
   <span class="hljs-attr">box2</span>: {
     ...StyleSheet.absoluteFill,
@@ -361,7 +361,7 @@
     <span class="hljs-attr">left</span>: <span class="hljs-number">50</span>,
     <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
     <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'blue'</span>
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;blue&#x27;</span>
   },
   <span class="hljs-attr">box3</span>: {
     ...StyleSheet.absoluteFillObject,
@@ -369,10 +369,10 @@
     <span class="hljs-attr">left</span>: <span class="hljs-number">120</span>,
     <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
     <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'green'</span>
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;green&#x27;</span>
   },
   <span class="hljs-attr">text</span>: {
-    <span class="hljs-attr">color</span>: <span class="hljs-string">'#FFF'</span>,
+    <span class="hljs-attr">color</span>: <span class="hljs-string">&#x27;#FFF&#x27;</span>,
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">80</span>
   }
 });
@@ -394,10 +394,10 @@
       ></div></div></div><hr>
 <h3><a class="anchor" aria-hidden="true" id="hairlinewidth"></a><a href="#hairlinewidth" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>hairlineWidth</code></h3>
 <p>This is defined as the width of a thin line on the platform. It can be used as the thickness of a border or division between two elements. Example:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> (
   <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.row}</span>&gt;</span>React<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.row}</span>&gt;</span>Native<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
@@ -411,7 +411,7 @@
   },
   <span class="hljs-attr">row</span>: {
     <span class="hljs-attr">padding</span>: <span class="hljs-number">4</span>,
-    <span class="hljs-attr">borderBottomColor</span>: <span class="hljs-string">"red"</span>,
+    <span class="hljs-attr">borderBottomColor</span>: <span class="hljs-string">&quot;red&quot;</span>,
     <span class="hljs-attr">borderBottomWidth</span>: StyleSheet.hairlineWidth
   }
 });

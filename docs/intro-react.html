@@ -90,10 +90,10 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">const</span> Cat = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> Cat = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello, I am your cat!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
   );
@@ -139,8 +139,8 @@
 </code></pre>
 <p><block class="classical syntax" /></p>
 <p>Class components tend to be a bit more verbose than function components.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
@@ -195,11 +195,11 @@
 <p>Now take a closer look at that <code>return</code> statement. <code>&lt;Text&gt;Hello, I am your cat!&lt;/Text&gt;</code> is using a kind of JavaScript syntax that makes writing elements convenient: JSX.</p>
 <h2><a class="anchor" aria-hidden="true" id="jsx"></a><a href="#jsx" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>JSX</h2>
 <p>React and React Native use <strong>JSX,</strong> a syntax that lets you write elements inside JavaScript like so: <code>&lt;Text&gt;Hello, I am your cat!&lt;/Text&gt;</code>. The React docs have <a href="https://reactjs.org/docs/jsx-in-depth.html">a comprehensive guide to JSX</a> you can reference to learn even more. Because JSX is JavaScript, you can use variables inside it. Here you are declaring a name for the cat, <code>name</code>, and embedding it with curly braces inside <code>&lt;Text&gt;</code>.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">const</span> Cat = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">const</span> name = <span class="hljs-string">"Maru"</span>;
+<span class="hljs-keyword">const</span> Cat = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> name = <span class="hljs-string">&quot;Maru&quot;</span>;
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello, I am {name}!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
   );
@@ -222,17 +222,17 @@
           width: 100%;
         "
       ></div></div></div><p>Any JavaScript expression will work between curly braces, including function calls like <code>{getFullName(&quot;Rum&quot;, &quot;Tum&quot;, &quot;Tugger&quot;)}</code>:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Text } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">const</span> getFullName = <span class="hljs-function">(<span class="hljs-params">firstName, secondName, thirdName</span>) =&gt;</span> {
-  <span class="hljs-keyword">return</span> firstName + <span class="hljs-string">" "</span> + secondName + <span class="hljs-string">" "</span> + thirdName;
+  <span class="hljs-keyword">return</span> firstName + <span class="hljs-string">&quot; &quot;</span> + secondName + <span class="hljs-string">&quot; &quot;</span> + thirdName;
 }
 
-<span class="hljs-keyword">const</span> Cat = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> Cat = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>
-      Hello, I am {getFullName("Rum", "Tum", "Tugger")}!
+      Hello, I am {getFullName(&quot;Rum&quot;, &quot;Tum&quot;, &quot;Tugger&quot;)}!
     <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
   );
 }
@@ -260,27 +260,27 @@
 <h2><a class="anchor" aria-hidden="true" id="custom-components"></a><a href="#custom-components" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Custom Components</h2>
 <p>You’ve already met <a href="intro-react-native-components">React Native’s Core Components</a>. React lets you nest these components inside each other to create new components. These nestable, reusable components are at the heart of the React paradigm.</p>
 <p>For example, you can nest <a href="text"><code>Text</code></a> and <a href="textinput"><code>TextInput</code></a> inside a <a href="view"><code>View</code></a> below, and React Native will render them together:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Text, TextInput, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Text, TextInput, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">const</span> Cat = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> Cat = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello, I am...<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span>
         <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
           <span class="hljs-attr">height:</span> <span class="hljs-attr">40</span>,
-          <span class="hljs-attr">borderColor:</span> '<span class="hljs-attr">gray</span>',
+          <span class="hljs-attr">borderColor:</span> &#x27;<span class="hljs-attr">gray</span>&#x27;,
           <span class="hljs-attr">borderWidth:</span> <span class="hljs-attr">1</span>
         }}
-        <span class="hljs-attr">defaultValue</span>=<span class="hljs-string">"Name me!"</span>
+        <span class="hljs-attr">defaultValue</span>=<span class="hljs-string">&quot;Name me!&quot;</span>
       /&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-export default Cat;
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> Cat;
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Custom Components"
         data-snack-description="Example usage"
         data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20TextInput%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20Cat%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%3CText%3EHello%2C%20I%20am...%3C%2FText%3E%0A%20%20%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20height%3A%2040%2C%0A%20%20%20%20%20%20%20%20%20%20borderColor%3A%20'gray'%2C%0A%20%20%20%20%20%20%20%20%20%20borderWidth%3A%201%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%20%20defaultValue%3D%22Name%20me!%22%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20Cat%3B%0A"
@@ -312,10 +312,10 @@ export default Cat;
 </blockquote>
 <p><block class="endBlock devNotes" /></p>
 <p>You can render this component multiple times and multiple places without repeating your code by using <code>&lt;Cat&gt;</code>:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Text, TextInput, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Text, TextInput, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">const</span> Cat = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> Cat = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>I am also a cat!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
@@ -323,7 +323,7 @@ export default Cat;
   );
 }
 
-<span class="hljs-keyword">const</span> Cafe = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> Cafe = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Welcome!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
@@ -354,8 +354,8 @@ export default Cat;
 <p>You can put as many cats in your cafe as you like. Each <code>&lt;Cat&gt;</code> renders a unique element—which you can customize with props.</p>
 <h2><a class="anchor" aria-hidden="true" id="props"></a><a href="#props" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
 <p><strong>Props</strong> is short for “properties.” Props let you customize React components. For example, here you pass each <code>&lt;Cat&gt;</code> a different <code>name</code> for <code>Cat</code> to render:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">const</span> Cat = <span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> {
   <span class="hljs-keyword">return</span> (
@@ -365,17 +365,17 @@ export default Cat;
   );
 }
 
-<span class="hljs-keyword">const</span> Cafe = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> Cafe = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
-    &lt;View&gt;
-      &lt;Cat name="Maru" /&gt;
-      &lt;Cat name="Jellylorum" /&gt;
-      &lt;Cat name="Spot" /&gt;
-    &lt;/View&gt;
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Cat</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Maru&quot;</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Cat</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Jellylorum&quot;</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Cat</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Spot&quot;</span> /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-export default Cafe;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> Cafe;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Multiple Props"
         data-snack-description="Example usage"
@@ -392,23 +392,23 @@ export default Cafe;
           width: 100%;
         "
       ></div></div></div><p>Most of React Native’s Core Components can be customized with props, too. For example, when using <a href="image"><code>Image</code></a>, you pass it a prop named <a href="image#source"><code>source</code></a> to define what image it shows:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Text, View, Image } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { Text, View, Image } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
-<span class="hljs-keyword">const</span> CatApp = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> CatApp = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">return</span> (
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
-        <span class="hljs-attr">source</span>=<span class="hljs-string">{{uri:</span> "<span class="hljs-attr">https:</span>//<span class="hljs-attr">reactnative.dev</span>/<span class="hljs-attr">docs</span>/<span class="hljs-attr">assets</span>/<span class="hljs-attr">p_cat1.png</span>"}}
+        <span class="hljs-attr">source</span>=<span class="hljs-string">{{uri:</span> &quot;<span class="hljs-attr">https:</span>//<span class="hljs-attr">reactnative.dev</span>/<span class="hljs-attr">docs</span>/<span class="hljs-attr">assets</span>/<span class="hljs-attr">p_cat1.png</span>&quot;}}
         <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">200</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">200</span>}}
       /&gt;</span>
       <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello, I am your cat!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-export default CatApp;
-</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> CatApp;
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Props"
         data-snack-description="Example usage"
         data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20View%2C%20Image%20%7D%20from%20'react-native'%3B%0A%0Aconst%20CatApp%20%3D%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20source%3D%7B%7Buri%3A%20%22https%3A%2F%2Freactnative.dev%2Fdocs%2Fassets%2Fp_cat1.png%22%7D%7D%0A%20%20%20%20%20%20%20%20style%3D%7B%7Bwidth%3A%20200%2C%20height%3A%20200%7D%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3CText%3EHello%2C%20I%20am%20your%20cat!%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20CatApp%3B%0A"
@@ -446,38 +446,38 @@ export default CatApp;
 </div>
 <p><block class="functional syntax" /></p>
 <p>You can add state to a component by calling <a href="https://reactjs.org/docs/hooks-state.html">React’s <code>useState</code> Hook</a>. A Hook is a kind of function that lets you “hook into” React features. For example, <code>useState</code> is a Hook that lets you add state to function components. You can learn more about <a href="https://reactjs.org/docs/hooks-intro.html">other kinds of Hooks in the React documentation.</a></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Button, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Button, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">const</span> Cat = <span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> [isHungry, setIsHungry] = useState(<span class="hljs-literal">true</span>);
 
   <span class="hljs-keyword">return</span> (
-    &lt;View&gt;
-      &lt;Text&gt;
-        I am {props.name}, and I am {isHungry ? "hungry" : "full"}!
-      &lt;/Text&gt;
-      &lt;Button
-        onPress={() =&gt; {
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>
+        I am {props.name}, and I am {isHungry ? &quot;hungry&quot; : &quot;full&quot;}!
+      <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+        <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
           setIsHungry(false);
         }}
         disabled={!isHungry}
-        title={isHungry ? "Pour me some milk, please!" : "Thank you!"}
+        title={isHungry ? &quot;Pour me some milk, please!&quot; : &quot;Thank you!&quot;}
       /&gt;
-    &lt;/View&gt;
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-const Cafe = () =&gt; {
-  return (
-    &lt;&gt;
-      &lt;Cat name="Munkustrap" /&gt;
-      &lt;Cat name="Spot" /&gt;
-    &lt;/&gt;
+<span class="hljs-keyword">const</span> Cafe = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Cat</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Munkustrap&quot;</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Cat</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Spot&quot;</span> /&gt;</span>
+    <span class="hljs-tag">&lt;/&gt;</span></span>
   );
 }
 
-export default Cafe;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> Cafe;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="State"
         data-snack-description="Example usage"
@@ -541,45 +541,45 @@ export default Cafe;
 </code></pre>
 <p><block class="classical syntax" /></p>
 <p>The older class components approach is a little different when it comes to state.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Button, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Button, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   state = { <span class="hljs-attr">isHungry</span>: <span class="hljs-literal">true</span> };
 
   render(props) {
     <span class="hljs-keyword">return</span> (
-      &lt;View&gt;
-        &lt;Text&gt;
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>
           I am {this.props.name}, and I am
-          {this.state.isHungry ? " hungry" : " full"}!
-        &lt;/Text&gt;
-        &lt;Button
-          onPress={() =&gt; {
+          {this.state.isHungry ? &quot; hungry&quot; : &quot; full&quot;}!
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+          <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
             this.setState({ isHungry: false });
           }}
           disabled={!this.state.isHungry}
           title={
-            this.state.isHungry ? "Pour me some milk, please!" : "Thank you!"
+            this.state.isHungry ? &quot;Pour me some milk, please!&quot; : &quot;Thank you!&quot;
           }
         /&gt;
-      &lt;/View&gt;
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-class Cafe extends Component {
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cafe</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
-    return (
-      &lt;&gt;
-        &lt;Cat name="Munkustrap" /&gt;
-        &lt;Cat name="Spot" /&gt;
-      &lt;/&gt;
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Cat</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Munkustrap&quot;</span> /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Cat</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Spot&quot;</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/&gt;</span></span>
     );
   }
 }
 
-export default  Cafe;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span>  Cafe;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="State and Class Components"
         data-snack-description="Example usage"

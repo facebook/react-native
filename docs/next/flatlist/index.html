@@ -83,21 +83,21 @@
 </ul>
 <p>If you need section support, use <a href="/docs/next/sectionlist"><code>&lt;SectionList&gt;</code></a>.</p>
 <h2><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h2>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { SafeAreaView, View, FlatList, StyleSheet, Text, StatusBar } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> { SafeAreaView, View, FlatList, StyleSheet, Text, StatusBar } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
 
 <span class="hljs-keyword">const</span> DATA = [
   {
-    <span class="hljs-attr">id</span>: <span class="hljs-string">'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba'</span>,
-    <span class="hljs-attr">title</span>: <span class="hljs-string">'First Item'</span>,
+    <span class="hljs-attr">id</span>: <span class="hljs-string">&#x27;bd7acbea-c1b1-46c2-aed5-3ad53abb28ba&#x27;</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&#x27;First Item&#x27;</span>,
   },
   {
-    <span class="hljs-attr">id</span>: <span class="hljs-string">'3ac68afc-c605-48d3-a4f8-fbd91aa97f63'</span>,
-    <span class="hljs-attr">title</span>: <span class="hljs-string">'Second Item'</span>,
+    <span class="hljs-attr">id</span>: <span class="hljs-string">&#x27;3ac68afc-c605-48d3-a4f8-fbd91aa97f63&#x27;</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&#x27;Second Item&#x27;</span>,
   },
   {
-    <span class="hljs-attr">id</span>: <span class="hljs-string">'58694a0f-3da1-471f-bd96-145571e29d72'</span>,
-    <span class="hljs-attr">title</span>: <span class="hljs-string">'Third Item'</span>,
+    <span class="hljs-attr">id</span>: <span class="hljs-string">&#x27;58694a0f-3da1-471f-bd96-145571e29d72&#x27;</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&#x27;Third Item&#x27;</span>,
   },
 ];
 
@@ -107,39 +107,39 @@
   <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
 );
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">const</span> renderItem = <span class="hljs-function">(<span class="hljs-params">{ item }</span>) =&gt;</span> (
-    &lt;Item title={item.title} /&gt;
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Item</span> <span class="hljs-attr">title</span>=<span class="hljs-string">{item.title}</span> /&gt;</span></span>
   );
 
-  return (
-    &lt;SafeAreaView style={styles.container}&gt;
-      &lt;FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={item =&gt; item.id}
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">FlatList</span>
+        <span class="hljs-attr">data</span>=<span class="hljs-string">{DATA}</span>
+        <span class="hljs-attr">renderItem</span>=<span class="hljs-string">{renderItem}</span>
+        <span class="hljs-attr">keyExtractor</span>=<span class="hljs-string">{item</span> =&gt;</span> item.id}
       /&gt;
-    &lt;/SafeAreaView&gt;
+    <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span></span>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">marginTop</span>: StatusBar.currentHeight || <span class="hljs-number">0</span>,
   },
-  item: {
-    backgroundColor: '#f9c2ff',
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
+  <span class="hljs-attr">item</span>: {
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;#f9c2ff&#x27;</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">20</span>,
+    <span class="hljs-attr">marginVertical</span>: <span class="hljs-number">8</span>,
+    <span class="hljs-attr">marginHorizontal</span>: <span class="hljs-number">16</span>,
   },
-  title: {
-    fontSize: 32,
+  <span class="hljs-attr">title</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">32</span>,
   },
 });
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="flatlist-simple"
         data-snack-description="Example usage"
@@ -161,21 +161,21 @@ export default App;
 <li>By passing <code>extraData={selected}</code> to <code>FlatList</code> we make sure <code>FlatList</code> itself will re-render when the state changes. Without setting this prop, <code>FlatList</code> would not know it needs to re-render any items because it is a <code>PureComponent</code> and the prop comparison will not show any changes.</li>
 <li><code>keyExtractor</code> tells the list to use the <code>id</code>s for the react keys instead of the default <code>key</code> property.</li>
 </ul>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { FlatList, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { FlatList, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">const</span> DATA = [
   {
-    <span class="hljs-attr">id</span>: <span class="hljs-string">"bd7acbea-c1b1-46c2-aed5-3ad53abb28ba"</span>,
-    <span class="hljs-attr">title</span>: <span class="hljs-string">"First Item"</span>,
+    <span class="hljs-attr">id</span>: <span class="hljs-string">&quot;bd7acbea-c1b1-46c2-aed5-3ad53abb28ba&quot;</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;First Item&quot;</span>,
   },
   {
-    <span class="hljs-attr">id</span>: <span class="hljs-string">"3ac68afc-c605-48d3-a4f8-fbd91aa97f63"</span>,
-    <span class="hljs-attr">title</span>: <span class="hljs-string">"Second Item"</span>,
+    <span class="hljs-attr">id</span>: <span class="hljs-string">&quot;3ac68afc-c605-48d3-a4f8-fbd91aa97f63&quot;</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Second Item&quot;</span>,
   },
   {
-    <span class="hljs-attr">id</span>: <span class="hljs-string">"58694a0f-3da1-471f-bd96-145571e29d72"</span>,
-    <span class="hljs-attr">title</span>: <span class="hljs-string">"Third Item"</span>,
+    <span class="hljs-attr">id</span>: <span class="hljs-string">&quot;58694a0f-3da1-471f-bd96-145571e29d72&quot;</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Third Item&quot;</span>,
   },
 ];
 
@@ -185,49 +185,49 @@ export default App;
   <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span></span>
 );
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-keyword">const</span> [selectedId, setSelectedId] = useState(<span class="hljs-literal">null</span>);
 
   <span class="hljs-keyword">const</span> renderItem = <span class="hljs-function">(<span class="hljs-params">{ item }</span>) =&gt;</span> {
-    <span class="hljs-keyword">const</span> backgroundColor = item.id === selectedId ? <span class="hljs-string">"#6e3b6e"</span> : <span class="hljs-string">"#f9c2ff"</span>;
+    <span class="hljs-keyword">const</span> backgroundColor = item.id === selectedId ? <span class="hljs-string">&quot;#6e3b6e&quot;</span> : <span class="hljs-string">&quot;#f9c2ff&quot;</span>;
 
     <span class="hljs-keyword">return</span> (
-      &lt;Item
-        item={item}
-        onPress={() =&gt; setSelectedId(item.id)}
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Item</span>
+        <span class="hljs-attr">item</span>=<span class="hljs-string">{item}</span>
+        <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> setSelectedId(item.id)}
         style={{ backgroundColor }}
-      /&gt;
+      /&gt;</span>
     );
   };
 
-  return (
-    &lt;SafeAreaView style={styles.container}&gt;
-      &lt;FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={(item) =&gt; item.id}
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">FlatList</span>
+        <span class="hljs-attr">data</span>=<span class="hljs-string">{DATA}</span>
+        <span class="hljs-attr">renderItem</span>=<span class="hljs-string">{renderItem}</span>
+        <span class="hljs-attr">keyExtractor</span>=<span class="hljs-string">{(item)</span> =&gt;</span> item.id}
         extraData={selectedId}
       /&gt;
-    &lt;/SafeAreaView&gt;
+    <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span></span>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">marginTop</span>: StatusBar.currentHeight || <span class="hljs-number">0</span>,
   },
-  item: {
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
+  <span class="hljs-attr">item</span>: {
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">20</span>,
+    <span class="hljs-attr">marginVertical</span>: <span class="hljs-number">8</span>,
+    <span class="hljs-attr">marginHorizontal</span>: <span class="hljs-number">16</span>,
   },
-  title: {
-    fontSize: 32,
+  <span class="hljs-attr">title</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">32</span>,
   },
 });
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="flatlist-selectable"
         data-snack-description="Example usage"
@@ -283,17 +283,25 @@ export default App;
 </ul>
 <p>Example usage:</p>
 <pre><code class="hljs css language-jsx"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">FlatList</span></span>
-  <span class="token attr-name">ItemSeparatorComponent</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>Platform<span class="token punctuation">.</span><span class="token constant">OS</span> <span class="token operator">!==</span> <span class="token string">'android'</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span>highlighted<span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>style<span class="token punctuation">.</span>separator<span class="token punctuation">,</span> highlighted <span class="token operator">&amp;&amp;</span> <span class="token punctuation">{</span>marginLeft<span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span>
-  <span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span>
-  <span class="token attr-name">data</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span><span class="token punctuation">{</span>title<span class="token operator">:</span> <span class="token string">'Title Text'</span><span class="token punctuation">,</span> key<span class="token operator">:</span> <span class="token string">'item1'</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span>
-  <span class="token attr-name">renderItem</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span>item<span class="token punctuation">,</span> index<span class="token punctuation">,</span> separators<span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span>
+  <span class="token attr-name">ItemSeparatorComponent</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>
+    Platform<span class="token punctuation">.</span><span class="token constant">OS</span> <span class="token operator">!==</span> <span class="token string">'android'</span> <span class="token operator">&amp;&amp;</span>
+    <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> highlighted <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span>
+        <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>
+          style<span class="token punctuation">.</span>separator<span class="token punctuation">,</span>
+          highlighted <span class="token operator">&amp;&amp;</span> <span class="token punctuation">{</span> marginLeft<span class="token operator">:</span> <span class="token number">0</span> <span class="token punctuation">}</span>
+        <span class="token punctuation">]</span><span class="token punctuation">}</span></span>
+      <span class="token punctuation">/></span></span>
+    <span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span></span>
+  <span class="token attr-name">data</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span><span class="token punctuation">{</span> title<span class="token operator">:</span> <span class="token string">'Title Text'</span><span class="token punctuation">,</span> key<span class="token operator">:</span> <span class="token string">'item1'</span> <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span>
+  <span class="token attr-name">renderItem</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> item<span class="token punctuation">,</span> index<span class="token punctuation">,</span> separators <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TouchableHighlight</span></span>
       <span class="token attr-name">key</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>item<span class="token punctuation">.</span>key<span class="token punctuation">}</span></span>
       <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_onPress</span><span class="token punctuation">(</span>item<span class="token punctuation">)</span><span class="token punctuation">}</span></span>
       <span class="token attr-name">onShowUnderlay</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>separators<span class="token punctuation">.</span>highlight<span class="token punctuation">}</span></span>
       <span class="token attr-name">onHideUnderlay</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>separators<span class="token punctuation">.</span>unhighlight<span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
-      </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>backgroundColor<span class="token operator">:</span> <span class="token string">'white'</span><span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+      </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> backgroundColor<span class="token operator">:</span> <span class="token string">'white'</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
         </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token punctuation">{</span>item<span class="token punctuation">.</span>title<span class="token punctuation">}</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
       </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span><span class="token plain-text">
     </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">TouchableHighlight</span></span><span class="token punctuation">></span></span>

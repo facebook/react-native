@@ -82,51 +82,51 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Button, Text, View, StyleSheet, Systrace } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Button, Text, View, StyleSheet, Systrace } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> App =  <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span>  {
+<span class="hljs-keyword">const</span> App =  <span class="hljs-function">() =&gt;</span>  {
 
-  <span class="hljs-keyword">const</span> enableProfiling = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> enableProfiling = <span class="hljs-function">() =&gt;</span> {
     Systrace.setEnabled(<span class="hljs-literal">true</span>); <span class="hljs-comment">// Call setEnabled to turn on the profiling.</span>
-    Systrace.beginEvent(<span class="hljs-string">'event_label'</span>)
-    Systrace.counterEvent(<span class="hljs-string">'event_label'</span>, <span class="hljs-number">10</span>);
+    Systrace.beginEvent(<span class="hljs-string">&#x27;event_label&#x27;</span>)
+    Systrace.counterEvent(<span class="hljs-string">&#x27;event_label&#x27;</span>, <span class="hljs-number">10</span>);
   }
 
-  <span class="hljs-keyword">const</span> stopProfiling = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> stopProfiling = <span class="hljs-function">() =&gt;</span> {
     Systrace.endEvent()
   }
 
   <span class="hljs-keyword">return</span> (
-    &lt;View style={styles.container}&gt;
-      &lt;Text style={[styles.header, styles.paragraph]}&gt;React Native Systrace API&lt;/Text&gt;
-      &lt;Button title="Capture the non-Timed JS events in EasyProfiler" onPress={()=&gt; enableProfiling()}/&gt;
-      &lt;Button title="Stop capturing" onPress={()=&gt; stopProfiling()} color="#FF0000"/&gt;
-    &lt;/View&gt;
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.header,</span> <span class="hljs-attr">styles.paragraph</span>]}&gt;</span>React Native Systrace API<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Capture the non-Timed JS events in EasyProfiler&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span>=&gt;</span> enableProfiling()}/&gt;
+      <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Stop capturing&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span>=&gt;</span> stopProfiling()} color=&quot;#FF0000&quot;/&gt;
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 44,
-    padding: 8
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;#fff&#x27;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
+    <span class="hljs-attr">paddingTop</span>: <span class="hljs-number">44</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">8</span>
   },
-   header: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center"
+   <span class="hljs-attr">header</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">18</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
-  paragraph: {
-    margin: 24,
-    textAlign: "center"
+  <span class="hljs-attr">paragraph</span>: {
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">24</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 
-export default App
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Systrace Function Component Example"
         data-snack-description="Example usage"
@@ -143,15 +143,15 @@ export default App
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Button, Text, View, StyleSheet, Systrace } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Button, Text, View, StyleSheet, Systrace } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
 
   enableProfiling(){
     Systrace.setEnabled(<span class="hljs-literal">true</span>); <span class="hljs-comment">// Call setEnabled to turn on the profiling.</span>
-    Systrace.beginEvent(<span class="hljs-string">'event_label'</span>)
-    Systrace.counterEvent(<span class="hljs-string">'event_label'</span>, <span class="hljs-number">10</span>);
+    Systrace.beginEvent(<span class="hljs-string">&#x27;event_label&#x27;</span>)
+    Systrace.counterEvent(<span class="hljs-string">&#x27;event_label&#x27;</span>, <span class="hljs-number">10</span>);
   }
 
   stopProfiling(){
@@ -160,32 +160,32 @@ export default App
 
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;View style={styles.container}&gt;
-        &lt;Text style={[styles.header, styles.paragraph]}&gt;React Native Systrace API&lt;/Text&gt;
-        &lt;Button title="Capture the non-Timed JS events in EasyProfiler" onPress={()=&gt; this.enableProfiling()}/&gt;
-        &lt;Button title="Stop capturing" onPress={()=&gt; this.stopProfiling()} color="#FF0000"/&gt;
-      &lt;/View&gt;
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[styles.header,</span> <span class="hljs-attr">styles.paragraph</span>]}&gt;</span>React Native Systrace API<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Capture the non-Timed JS events in EasyProfiler&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span>=&gt;</span> this.enableProfiling()}/&gt;
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Stop capturing&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span>=&gt;</span> this.stopProfiling()} color=&quot;#FF0000&quot;/&gt;
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 44,
-    padding: 8
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&#x27;#fff&#x27;</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&#x27;center&#x27;</span>,
+    <span class="hljs-attr">paddingTop</span>: <span class="hljs-number">44</span>,
+    <span class="hljs-attr">padding</span>: <span class="hljs-number">8</span>
   },
-   header: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center"
+   <span class="hljs-attr">header</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">18</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">&quot;bold&quot;</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
-  paragraph: {
-    margin: 24,
-    textAlign: "center"
+  <span class="hljs-attr">paragraph</span>: {
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">24</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>
   }
 });
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div

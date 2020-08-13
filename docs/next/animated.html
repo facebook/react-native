@@ -102,14 +102,14 @@
   </ul>
 </div>
 <p><block class="functional syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useRef } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Animated, Text, View, StyleSheet, Button } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useRef } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Animated, Text, View, StyleSheet, Button } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
   <span class="hljs-comment">// fadeAnim will be used as the value for opacity. Initial Value: 0</span>
   <span class="hljs-keyword">const</span> fadeAnim = useRef(<span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">0</span>)).current;
 
-  <span class="hljs-keyword">const</span> fadeIn = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> fadeIn = <span class="hljs-function">() =&gt;</span> {
     <span class="hljs-comment">// Will change fadeAnim value to 1 in 5 seconds</span>
     Animated.timing(fadeAnim, {
       <span class="hljs-attr">toValue</span>: <span class="hljs-number">1</span>,
@@ -117,7 +117,7 @@
     }).start();
   };
 
-  <span class="hljs-keyword">const</span> fadeOut = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> fadeOut = <span class="hljs-function">() =&gt;</span> {
     <span class="hljs-comment">// Will change fadeAnim value to 0 in 5 seconds</span>
     Animated.timing(fadeAnim, {
       <span class="hljs-attr">toValue</span>: <span class="hljs-number">0</span>,
@@ -126,48 +126,48 @@
   };
 
   <span class="hljs-keyword">return</span> (
-    &lt;View style={styles.container}&gt;
-      &lt;Animated.View
-        style={[
-          styles.fadingContainer,
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Animated.View</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{[</span>
+          <span class="hljs-attr">styles.fadingContainer</span>,
           {
-            opacity: fadeAnim // Bind opacity to animated value
+            <span class="hljs-attr">opacity:</span> <span class="hljs-attr">fadeAnim</span> // <span class="hljs-attr">Bind</span> <span class="hljs-attr">opacity</span> <span class="hljs-attr">to</span> <span class="hljs-attr">animated</span> <span class="hljs-attr">value</span>
           }
         ]}
-      &gt;
-        &lt;Text style={styles.fadingText}&gt;Fading View!&lt;/Text&gt;
-      &lt;/Animated.View&gt;
-      &lt;View style={styles.buttonRow}&gt;
-        &lt;Button title="Fade In" onPress={fadeIn} /&gt;
-        &lt;Button title="Fade Out" onPress={fadeOut} /&gt;
-      &lt;/View&gt;
-    &lt;/View&gt;
+      &gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.fadingText}</span>&gt;</span>Fading View!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">Animated.View</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonRow}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Fade In&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{fadeIn}</span> /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Fade Out&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{fadeOut}</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
-  fadingContainer: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    backgroundColor: "powderblue"
+  <span class="hljs-attr">fadingContainer</span>: {
+    <span class="hljs-attr">paddingVertical</span>: <span class="hljs-number">8</span>,
+    <span class="hljs-attr">paddingHorizontal</span>: <span class="hljs-number">16</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;powderblue&quot;</span>
   },
-  fadingText: {
-    fontSize: 28,
-    textAlign: "center",
-    margin: 10
+  <span class="hljs-attr">fadingText</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">28</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">10</span>
   },
-  buttonRow: {
-    flexDirection: "row",
-    marginVertical: 16
+  <span class="hljs-attr">buttonRow</span>: {
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">&quot;row&quot;</span>,
+    <span class="hljs-attr">marginVertical</span>: <span class="hljs-number">16</span>
   }
 });
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Animated"
         data-snack-description="Example usage"
@@ -184,8 +184,8 @@ export default App;
           width: 100%;
         "
       ></div></div></div><p><block class="classical syntax" /></p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { Animated, Text, View, StyleSheet, Button } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Animated, Text, View, StyleSheet, Button } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   <span class="hljs-comment">// fadeAnim will be used as the value for opacity. Initial Value: 0</span>
@@ -193,17 +193,17 @@ export default App;
     <span class="hljs-attr">fadeAnim</span>: <span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">0</span>)
   };
 
-  fadeIn = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  fadeIn = <span class="hljs-function">() =&gt;</span> {
     <span class="hljs-comment">// Will change fadeAnim value to 1 in 5 seconds</span>
-    Animated.timing(<span class="hljs-keyword">this</span>.state.fadeAnim, {
+    Animated.timing(<span class="hljs-built_in">this</span>.state.fadeAnim, {
       <span class="hljs-attr">toValue</span>: <span class="hljs-number">1</span>,
       <span class="hljs-attr">duration</span>: <span class="hljs-number">5000</span>
     }).start();
   };
 
-  fadeOut = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  fadeOut = <span class="hljs-function">() =&gt;</span> {
     <span class="hljs-comment">// Will change fadeAnim value to 0 in 5 seconds</span>
-    Animated.timing(<span class="hljs-keyword">this</span>.state.fadeAnim, {
+    Animated.timing(<span class="hljs-built_in">this</span>.state.fadeAnim, {
       <span class="hljs-attr">toValue</span>: <span class="hljs-number">0</span>,
       <span class="hljs-attr">duration</span>: <span class="hljs-number">5000</span>
     }).start();
@@ -211,49 +211,49 @@ export default App;
 
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;View style={styles.container}&gt;
-        &lt;Animated.View
-          style={[
-            styles.fadingContainer,
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Animated.View</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{[</span>
+            <span class="hljs-attr">styles.fadingContainer</span>,
             {
-              opacity: this.state.fadeAnim // Bind opacity to animated value
+              <span class="hljs-attr">opacity:</span> <span class="hljs-attr">this.state.fadeAnim</span> // <span class="hljs-attr">Bind</span> <span class="hljs-attr">opacity</span> <span class="hljs-attr">to</span> <span class="hljs-attr">animated</span> <span class="hljs-attr">value</span>
             }
           ]}
-        &gt;
-          &lt;Text style={styles.fadingText}&gt;Fading View!&lt;/Text&gt;
-        &lt;/Animated.View&gt;
-        &lt;View style={styles.buttonRow}&gt;
-          &lt;Button title="Fade In" onPress={this.fadeIn} /&gt;
-          &lt;Button title="Fade Out" onPress={this.fadeOut} /&gt;
-        &lt;/View&gt;
-      &lt;/View&gt;
+        &gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.fadingText}</span>&gt;</span>Fading View!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Animated.View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.buttonRow}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Fade In&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this.fadeIn}</span> /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">title</span>=<span class="hljs-string">&quot;Fade Out&quot;</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this.fadeOut}</span> /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>
   },
-  fadingContainer: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    backgroundColor: "powderblue"
+  <span class="hljs-attr">fadingContainer</span>: {
+    <span class="hljs-attr">paddingVertical</span>: <span class="hljs-number">8</span>,
+    <span class="hljs-attr">paddingHorizontal</span>: <span class="hljs-number">16</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">&quot;powderblue&quot;</span>
   },
-  fadingText: {
-    fontSize: 28,
-    textAlign: "center",
-    margin: 10
+  <span class="hljs-attr">fadingText</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">28</span>,
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">10</span>
   },
-  buttonRow: {
-    flexDirection: "row",
-    marginVertical: 16
+  <span class="hljs-attr">buttonRow</span>: {
+    <span class="hljs-attr">flexDirection</span>: <span class="hljs-string">&quot;row&quot;</span>,
+    <span class="hljs-attr">marginVertical</span>: <span class="hljs-number">16</span>
   }
 });
 
-export default App;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Animated"
         data-snack-description="Example usage"
