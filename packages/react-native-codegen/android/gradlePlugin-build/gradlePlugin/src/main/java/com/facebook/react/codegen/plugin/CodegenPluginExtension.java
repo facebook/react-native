@@ -13,12 +13,13 @@ import org.gradle.api.Project;
 public class CodegenPluginExtension {
   // TODO: Remove beta.
   public String codegenJavaPackageName = "com.facebook.fbreact.specs.beta";
-  public boolean enableCodegen;
+  public boolean enableCodegen = false;
   public File jsRootDir;
   public String[] nodeExecutableAndArgs = {"node"};
   public File reactNativeRootDir;
+  public boolean useJavaGenerator = false;
 
-  public CodegenPluginExtension(Project project) {
+  public CodegenPluginExtension(final Project project) {
     this.reactNativeRootDir = new File(project.getRootDir(), "node_modules/react-native");
   }
 

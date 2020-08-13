@@ -8,9 +8,11 @@
 package com.facebook.react.codegen.plugin;
 
 import com.android.build.gradle.BaseExtension;
+import com.facebook.react.codegen.generator.JavaGenerator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.File;
+import java.io.IOException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -95,16 +97,25 @@ public class CodegenPlugin implements Plugin<Project> {
               task.getInputs().files(generatedSchemaFile);
               task.getOutputs().dir(outputDir);
 
-              ImmutableList<String> execCommands =
-                  new ImmutableList.Builder<String>()
-                      .add("yarn")
-                      .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
-                      .add(extension.codegenGenerateNativeModuleSpecsCLI().getAbsolutePath())
-                      .add("android")
-                      .add(generatedSchemaFile.getAbsolutePath())
-                      .add(outputDir.getAbsolutePath())
-                      .build();
-              task.commandLine(execCommands);
+              if (extension.useJavaGenerator) {
+                generateJavaFromSchemaWithJavaGenerator(
+                    generatedSchemaFile,
+                    extension.codegenJavaPackageName,
+                    new File(generatedSrcDir, "java"));
+                // TODO: generate JNI C++ files.
+                task.commandLine("echo");
+              } else {
+                ImmutableList<String> execCommands =
+                    new ImmutableList.Builder<String>()
+                        .add("yarn")
+                        .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
+                        .add(extension.codegenGenerateNativeModuleSpecsCLI().getAbsolutePath())
+                        .add("android")
+                        .add(generatedSchemaFile.getAbsolutePath())
+                        .add(outputDir.getAbsolutePath())
+                        .build();
+                task.commandLine(execCommands);
+              }
             });
 
     // 4. Add dependencies & generated sources to the project.
@@ -139,5 +150,17 @@ public class CodegenPlugin implements Plugin<Project> {
               .srcDir(new File(generatedSrcDir, "java"));
           // TODO: Add JNI sources.
         });
+  }
+
+  // Use Java-based generator implementation to produce the source files, instead of using the
+  // JS-based generator.
+  private void generateJavaFromSchemaWithJavaGenerator(
+      final File schemaFile, final String javaPackageName, final File outputDir) {
+    final JavaGenerator generator = new JavaGenerator(schemaFile, javaPackageName, outputDir);
+    try {
+      generator.build();
+    } catch (final IOException e) {
+      // Ignore for now.
+    }
   }
 }

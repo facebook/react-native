@@ -476,4 +476,5 @@ react {
     enableCodegen = System.getenv("USE_CODEGEN") ?: false
     jsRootDir = file("../Libraries")
     reactNativeRootDir = file("$rootDir")
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }

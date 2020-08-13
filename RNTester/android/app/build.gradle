@@ -229,4 +229,5 @@ react {
     enableCodegen = System.getenv("USE_CODEGEN") ?: false
     jsRootDir = file("$rootDir/RNTester")
     reactNativeRootDir = file("$rootDir")
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }
