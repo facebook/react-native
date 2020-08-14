@@ -4,7 +4,7 @@
 const fs = require("fs");
 const path = require("path");
 const execSync = require("child_process").execSync;
-const {pkgJsonPath, publishBranchName, gatherVersionInfo} = require('./versionUtils');
+const {publishBranchName, gatherVersionInfo} = require('./versionUtils');
 
 function exec(command) {
   try {
@@ -43,7 +43,7 @@ function doPublish(fakeMode) {
   
   if(fakeMode) {
     if (!fs.existsSync(npmTarPath))
-      throw "The final artefact to be published is missing.";
+      throw "The final artifact to be published is missing.";
   } else {
     fs.copyFileSync(npmTarPath, finalTarPath);
   }
