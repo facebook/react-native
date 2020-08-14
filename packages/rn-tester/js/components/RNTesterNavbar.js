@@ -20,6 +20,7 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
           {/** left tab with Components  */}
             {/** @attention attach navigation endpoints here */}
             <Pressable
+              testID="components-tab"
               onPress={() =>  onNavigate(RNTesterActions.OpenList('component'))}
               style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
               <View style={styles.pressableContent} collapsable={false}>
@@ -50,6 +51,7 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
           {/** floating button in center  */}
           <View style={styles.floatContainer}>
             <Pressable
+              testID="bookmarks-tab"
               onPress={() => { onNavigate(RNTesterActions.OpenList('bookmark')) }}>
                 <View style={[styles.floatingButton, {backgroundColor: theme.BorderColor}]} >
                 <Image
@@ -67,6 +69,7 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
 
           {/** right tab with Components  */}
          <Pressable 
+          testID="apis-tab"
           onPress={() => { onNavigate(RNTesterActions.OpenList('api')) }}
           style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
             <View style={styles.pressableContent} collapsable={false}>
