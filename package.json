@@ -118,7 +118,7 @@
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
+    "@babel/core": "7.11.1",
     "@babel/generator": "^7.5.0",
     "@react-native-community/eslint-plugin": "file:packages/eslint-plugin-react-native-community",
     "@reactions/component": "^2.0.2",
