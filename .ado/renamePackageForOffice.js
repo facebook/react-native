@@ -1,6 +1,8 @@
 // @ts-check
-const {pkgJsonPath} = require('./versionUtils');
 const fs = require("fs");
+const path = require("path");
+
+const pkgJsonPath = path.resolve(__dirname, "../package.json");
 
 function updatePackageName(name) {
     let pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf8"));
