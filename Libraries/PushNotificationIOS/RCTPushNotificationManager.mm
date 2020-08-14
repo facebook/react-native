@@ -410,7 +410,7 @@ RCT_EXPORT_METHOD(setApplicationIconBadgeNumber:(double)number)
 #else // [TODO(macOS ISS#2323203)
   NSDockTile *tile = [NSApp dockTile];
   tile.showsApplicationBadge = number > 0;
-  tile.badgeLabel = number > 0 ? [NSString stringWithFormat:@"%ld", number] : nil;
+  tile.badgeLabel = number > 0 ? [NSString stringWithFormat:@"%.0lf", number] : nil;
 #endif // ]TODO(macOS ISS#2323203)
 }
 
