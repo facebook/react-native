@@ -34,9 +34,9 @@ def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
 
 // The 'USE_FABRIC' environment variable will build Fabric C++ code into the bundle
-// USE_FABRIC=false will build RN excluding fabric
-// USE_FABRIC=true will build RN including fabric
-def enableFabric = System.getenv("USE_FABRIC") ?: "false"
+// USE_FABRIC=0 will build RN excluding fabric
+// USE_FABRIC=1 will build RN including fabric
+def enableFabric = (System.getenv('USE_FABRIC') ?: '0').toBoolean()
 
 // The Boost library is a very large download (>100MB).
 // If Boost is already present on your system, define the REACT_NATIVE_BOOST_PATH env variable

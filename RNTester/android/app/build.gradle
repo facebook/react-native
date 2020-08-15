@@ -66,9 +66,6 @@ plugins {
  *   // Root dir for all JS files for the app. Defaults to `root` above.
  *   jsRootDir: "../..",
  *
- *   // Enable react-native-codegen during build time.
- *   enableCodegen: true,
- *
  *   // Enable Fabric at build time and runtime.
  *   enableFabric: true,
  *
@@ -88,8 +85,7 @@ project.ext.react = [
     hermesCommand: "../../../node_modules/hermes-engine/%OS-BIN%/hermesc",
     enableHermesForVariant: { def v -> v.name.contains("hermes") },
     jsRootDir: "$rootDir/RNTester",
-    enableCodegen: System.getenv('USE_CODEGEN'),
-    enableFabric: System.getenv("USE_FABRIC") ?: false,
+    enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean(),
 ]
 
 apply from: "../../../react.gradle"
