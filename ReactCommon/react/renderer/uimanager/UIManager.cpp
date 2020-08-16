@@ -238,10 +238,10 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
 
   shadowTreeRegistry_.visit(
       family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        auto transaction = [&](RootShadowNode::Shared const &oldRootShadowNode)
-            -> RootShadowNode::Unshared {
-          return std::static_pointer_cast<RootShadowNode>(
-              oldRootShadowNode->cloneTree(
+        bool updateSucceeded = shadowTree.tryCommit(
+            [&](RootShadowNode::Shared const &oldRootShadowNode) {
+              return std::static_pointer_cast<
+                  RootShadowNode>(oldRootShadowNode->cloneTree(
                   *family, [&](ShadowNode const &oldShadowNode) {
                     auto newData =
                         callback(oldShadowNode.getState()->getDataPointer());
@@ -255,18 +255,9 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
                         /* .state = */ newState,
                     });
                   }));
-        };
-        if (stateUpdate.failureCallback) {
-          // If caller passes failure callback, we don't retry but let the
-          // caller handle failure.
-          bool updateSucceeded = shadowTree.tryCommit(transaction);
-          if (!updateSucceeded && stateUpdate.failureCallback) {
-            stateUpdate.failureCallback();
-          }
-        } else {
-          // If caller does't provide failure block, commit is attempted until
-          // it succeeds.
-          shadowTree.commit(transaction);
+            });
+        if (!updateSucceeded && stateUpdate.failureCallback) {
+          stateUpdate.failureCallback();
         }
       });
 }
