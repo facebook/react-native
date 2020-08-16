@@ -14,6 +14,16 @@
 #include <algorithm>
 #include "ShadowView.h"
 
+// Uncomment this to enable verbose diffing logs, which can be useful for
+// debugging. #define DEBUG_LOGS_DIFFER
+
+#ifdef DEBUG_LOGS_DIFFER
+#include <glog/logging.h>
+#define DEBUG_LOGS(code) code
+#else
+#define DEBUG_LOGS(code)
+#endif
+
 namespace facebook {
 namespace react {
 
@@ -149,6 +159,206 @@ class TinyMap final {
   int erasedAtFront_{0};
 };
 
+struct OperationsOnTag final {
+  int shouldEraseOp = 0;
+  int opExists = 0;
+
+  int removeInsertIndex = -1;
+  Tag parentTag =
+      -1; // the parent tag of Remove or Insert, whichever comes first
+
+  ShadowNode const *oldNode;
+  ShadowNode const *newNode;
+};
+
+class ReparentingMetadata final {
+ public:
+  ReparentingMetadata(bool enabled) : enabled_(enabled) {}
+
+  /**
+   * Returns a triple: (ShouldRemove, ShouldDelete, ShadowNode pointer if
+   * updating)
+   *
+   * @param mutation
+   * @return
+   */
+  std::tuple<bool, bool, ShadowNode const *> shouldRemoveDeleteUpdate(
+      Tag parentTag,
+      ShadowNode const *shadowNode,
+      int index) {
+    if (!enabled_) {
+      return std::tuple<bool, bool, ShadowNode const *>(true, true, nullptr);
+    }
+
+    Tag tag = shadowNode->getTag();
+
+    auto it = tagsToOperations_.find(tag);
+    if (it == tagsToOperations_.end()) {
+      auto tagOperations = OperationsOnTag{};
+      tagOperations.removeInsertIndex = index;
+      tagOperations.parentTag = parentTag;
+      tagOperations.opExists |=
+          ShadowViewMutation::Type::Remove | ShadowViewMutation::Type::Delete;
+      tagOperations.oldNode = shadowNode;
+      tagsToOperations_[tag] = tagOperations;
+      return std::tuple<bool, bool, ShadowNode const *>(true, true, nullptr);
+    }
+
+    assert(it->second.shouldEraseOp == 0);
+    bool shouldRemove =
+        !((it->second.opExists & ShadowViewMutation::Type::Insert) &&
+          it->second.removeInsertIndex == index &&
+          it->second.parentTag == parentTag);
+    it->second.shouldEraseOp |=
+        (it->second.opExists & ShadowViewMutation::Type::Create);
+    it->second.shouldEraseOp |= shouldRemove
+        ? 0
+        : (it->second.opExists & ShadowViewMutation::Type::Insert);
+
+    if (it->second.shouldEraseOp != 0) {
+      reparentingOperations_++;
+    }
+
+    // TODO: At this point we are *done* with this record in the map besides
+    // postprocessing, and we know we've reparented. There is a potential
+    // optimization here.
+
+    return std::tuple<bool, bool, ShadowNode const *>(
+        shouldRemove, false, it->second.newNode);
+  }
+
+  /**
+   * Returns a triple: (ShouldCreate, ShouldInsert, ShadowNode pointer if
+   * updating)
+   *
+   * @param mutation
+   * @return
+   */
+  std::tuple<bool, bool, ShadowNode const *> shouldCreateInsertUpdate(
+      Tag parentTag,
+      ShadowNode const *shadowNode,
+      int index) {
+    if (!enabled_) {
+      return std::tuple<bool, bool, ShadowNode const *>(true, true, nullptr);
+    }
+
+    Tag tag = shadowNode->getTag();
+
+    auto it = tagsToOperations_.find(tag);
+    if (it == tagsToOperations_.end()) {
+      auto tagOperations = OperationsOnTag{};
+      tagOperations.removeInsertIndex = index;
+      tagOperations.opExists |=
+          ShadowViewMutation::Type::Create | ShadowViewMutation::Type::Insert;
+      tagOperations.newNode = shadowNode;
+      tagsToOperations_[tag] = tagOperations;
+      return std::tuple<bool, bool, ShadowNode const *>(true, true, nullptr);
+    }
+
+    assert(it->second.shouldEraseOp == 0);
+    bool shouldInsert =
+        !((it->second.opExists & ShadowViewMutation::Type::Remove) &&
+          it->second.removeInsertIndex == index &&
+          it->second.parentTag == parentTag);
+    it->second.shouldEraseOp |=
+        (it->second.opExists & ShadowViewMutation::Type::Delete);
+    it->second.shouldEraseOp |= shouldInsert
+        ? 0
+        : (it->second.opExists & ShadowViewMutation::Type::Remove);
+
+    if (it->second.shouldEraseOp != 0) {
+      reparentingOperations_++;
+    }
+
+    // TODO: At this point we are *done* with this record in the map besides
+    // postprocessing, and we know we've reparented. There is a potential
+    // optimization here.
+
+    return std::tuple<bool, bool, ShadowNode const *>(
+        shouldInsert, false, it->second.oldNode);
+  }
+
+  /**
+   * Returns a pair: (ShouldCreate, ShadowNode pointer if updating)
+   * This is called in a case where a node has *already* been inserted.
+   *
+   * @param mutation
+   * @return
+   */
+  std::pair<bool, ShadowNode const *> shouldCreateUpdate(
+      ShadowNode const *shadowNode) {
+    if (!enabled_) {
+      return std::pair<bool, ShadowNode const *>(true, nullptr);
+    }
+
+    Tag tag = shadowNode->getTag();
+
+    auto it = tagsToOperations_.find(tag);
+    assert(it != tagsToOperations_.end());
+
+    if (it->second.opExists & ShadowViewMutation::Type::Delete) {
+      reparentingOperations_++;
+      it->second.shouldEraseOp |= ShadowViewMutation::Type::Delete;
+      it->second.newNode = shadowNode; // Is this necessary?
+      return std::pair<bool, ShadowNode const *>(false, it->second.oldNode);
+    }
+
+    it->second.opExists |= ShadowViewMutation::Type::Create;
+    return std::pair<bool, ShadowNode const *>(true, nullptr);
+  }
+
+  /**
+   * Insertion is happening due to reordering and likely cannot be canceled.
+   *
+   * @param shadowNode
+   * @param index
+   */
+  void markInserted(Tag parentTag, ShadowNode const *shadowNode, int index) {
+    if (!enabled_) {
+      return;
+    }
+
+    Tag tag = shadowNode->getTag();
+
+    auto it = tagsToOperations_.find(tag);
+    if (it == tagsToOperations_.end()) {
+      auto tagOperations = OperationsOnTag{};
+      tagOperations.removeInsertIndex = index;
+      tagOperations.parentTag = parentTag;
+      it->second.opExists |= ShadowViewMutation::Type::Insert;
+      tagsToOperations_[tag] = tagOperations;
+      return;
+    }
+
+    // Element was moved from somewhere else in the hierarchy and inserted
+    // in a new position - we can't cancel this operation.
+    it->second.opExists |= ShadowViewMutation::Type::Insert;
+  }
+
+  /**
+   * Use this to prepare for iterating over records for ShadowViewMutation
+   * removal. This removes unnecessary information from the map.
+   */
+  void removeUselessRecords() {
+    if (!enabled_) {
+      return;
+    }
+
+    for (auto it = tagsToOperations_.begin(); it != tagsToOperations_.end();) {
+      OperationsOnTag &op = it->second;
+      if (op.shouldEraseOp == 0) {
+        it = tagsToOperations_.erase(it);
+      } else {
+        it++;
+      }
+    }
+  }
+
+  bool enabled_{false};
+  int reparentingOperations_ = 0;
+  std::map<Tag, OperationsOnTag> tagsToOperations_;
+};
+
 /*
  * Sorting comparator for `reorderInPlaceIfNeeded`.
  */
@@ -266,6 +476,7 @@ static_assert(
 
 static void calculateShadowViewMutations(
     ShadowViewMutation::List &mutations,
+    ReparentingMetadata &reparentingMetadata,
     ShadowView const &parentShadowView,
     ShadowViewNodePair::List &&oldChildPairs,
     ShadowViewNodePair::List &&newChildPairs) {
@@ -295,9 +506,21 @@ static void calculateShadowViewMutations(
     auto const &newChildPair = newChildPairs[index];
 
     if (oldChildPair.shadowView.tag != newChildPair.shadowView.tag) {
+      DEBUG_LOGS({
+        LOG(ERROR) << "Differ Branch 1.1: Tags Different: ["
+                   << oldChildPair.shadowView.tag << "] ["
+                   << newChildPair.shadowView.tag << "]";
+      });
+
       // Totally different nodes, updating is impossible.
       break;
     }
+
+    DEBUG_LOGS({
+      LOG(ERROR) << "Differ Branch 1.2: Same tags, update and recurse: ["
+                 << oldChildPair.shadowView.tag << "] ["
+                 << newChildPair.shadowView.tag << "]";
+    });
 
     if (oldChildPair.shadowView != newChildPair.shadowView) {
       updateMutations.push_back(ShadowViewMutation::UpdateMutation(
@@ -314,6 +537,7 @@ static void calculateShadowViewMutations(
     calculateShadowViewMutations(
         *(newGrandChildPairs.size() ? &downwardMutations
                                     : &destructiveDownwardMutations),
+        reparentingMetadata,
         oldChildPair.shadowView,
         std::move(oldGrandChildPairs),
         std::move(newGrandChildPairs));
@@ -327,15 +551,40 @@ static void calculateShadowViewMutations(
     for (; index < oldChildPairs.size(); index++) {
       auto const &oldChildPair = oldChildPairs[index];
 
-      deleteMutations.push_back(
-          ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
-      removeMutations.push_back(ShadowViewMutation::RemoveMutation(
-          parentShadowView, oldChildPair.shadowView, index));
+      DEBUG_LOGS({
+        LOG(ERROR)
+            << "Differ Branch 2: Deleting Tag/Tree (may be reparented): ["
+            << oldChildPair.shadowView.tag << "]";
+      });
+
+      bool shouldRemove;
+      bool shouldDelete;
+      ShadowNode const *newTreeNode;
+      std::tie(shouldRemove, shouldDelete, newTreeNode) =
+          reparentingMetadata.shouldRemoveDeleteUpdate(
+              parentShadowView.tag, oldChildPair.shadowNode, index);
+
+      if (shouldDelete) {
+        deleteMutations.push_back(
+            ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
+      }
+      if (shouldRemove) {
+        removeMutations.push_back(ShadowViewMutation::RemoveMutation(
+            parentShadowView, oldChildPair.shadowView, index));
+      }
+      if (newTreeNode != nullptr) {
+        ShadowView newTreeNodeView = ShadowView(*newTreeNode);
+        if (newTreeNodeView != oldChildPair.shadowView) {
+          updateMutations.push_back(ShadowViewMutation::UpdateMutation(
+              parentShadowView, oldChildPair.shadowView, newTreeNodeView, -1));
+        }
+      }
 
       // We also have to call the algorithm recursively to clean up the entire
       // subtree starting from the removed view.
       calculateShadowViewMutations(
           destructiveDownwardMutations,
+          reparentingMetadata,
           oldChildPair.shadowView,
           sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode),
           {});
@@ -346,13 +595,38 @@ static void calculateShadowViewMutations(
     for (; index < newChildPairs.size(); index++) {
       auto const &newChildPair = newChildPairs[index];
 
-      insertMutations.push_back(ShadowViewMutation::InsertMutation(
-          parentShadowView, newChildPair.shadowView, index));
-      createMutations.push_back(
-          ShadowViewMutation::CreateMutation(newChildPair.shadowView));
+      DEBUG_LOGS({
+        LOG(ERROR)
+            << "Differ Branch 3: Creating Tag/Tree (may be reparented): ["
+            << newChildPair.shadowView.tag << "]";
+      });
+
+      bool shouldInsert;
+      bool shouldCreate;
+      ShadowNode const *oldTreeNode;
+      std::tie(shouldInsert, shouldCreate, oldTreeNode) =
+          reparentingMetadata.shouldCreateInsertUpdate(
+              parentShadowView.tag, newChildPair.shadowNode, index);
+
+      if (shouldInsert) {
+        insertMutations.push_back(ShadowViewMutation::InsertMutation(
+            parentShadowView, newChildPair.shadowView, index));
+      }
+      if (shouldCreate) {
+        createMutations.push_back(
+            ShadowViewMutation::CreateMutation(newChildPair.shadowView));
+      }
+      if (oldTreeNode != nullptr) {
+        ShadowView oldTreeNodeView = ShadowView(*oldTreeNode);
+        if (oldTreeNodeView != newChildPair.shadowView) {
+          updateMutations.push_back(ShadowViewMutation::UpdateMutation(
+              parentShadowView, oldTreeNodeView, newChildPair.shadowView, -1));
+        }
+      }
 
       calculateShadowViewMutations(
           downwardMutations,
+          reparentingMetadata,
           newChildPair.shadowView,
           {},
           sliceChildShadowNodeViewPairs(*newChildPair.shadowNode));
@@ -388,6 +662,13 @@ static void calculateShadowViewMutations(
         int oldTag = oldChildPair.shadowView.tag;
 
         if (newTag == oldTag) {
+          DEBUG_LOGS({
+            LOG(ERROR) << "Differ Branch 5: Matched Tags at indices: "
+                       << oldIndex << " " << newIndex << ": ["
+                       << oldChildPair.shadowView.tag << "]["
+                       << newChildPair.shadowView.tag << "]";
+          });
+
           // Generate Update instructions
           if (oldChildPair.shadowView != newChildPair.shadowView) {
             updateMutations.push_back(ShadowViewMutation::UpdateMutation(
@@ -411,6 +692,7 @@ static void calculateShadowViewMutations(
           calculateShadowViewMutations(
               *(newGrandChildPairs.size() ? &downwardMutations
                                           : &destructiveDownwardMutations),
+              reparentingMetadata,
               oldChildPair.shadowView,
               std::move(oldGrandChildPairs),
               std::move(newGrandChildPairs));
@@ -430,6 +712,12 @@ static void calculateShadowViewMutations(
         // remove the node from its old position now.
         auto const insertedIt = newInsertedPairs.find(oldTag);
         if (insertedIt != newInsertedPairs.end()) {
+          DEBUG_LOGS({
+            LOG(ERROR)
+                << "Differ Branch 6: Removing tag that was already inserted: "
+                << oldIndex << ": [" << oldChildPair.shadowView.tag << "]";
+          });
+
           removeMutations.push_back(ShadowViewMutation::RemoveMutation(
               parentShadowView, oldChildPair.shadowView, oldIndex));
 
@@ -452,6 +740,7 @@ static void calculateShadowViewMutations(
           calculateShadowViewMutations(
               *(newGrandChildPairs.size() ? &downwardMutations
                                           : &destructiveDownwardMutations),
+              reparentingMetadata,
               oldChildPair.shadowView,
               std::move(oldGrandChildPairs),
               std::move(newGrandChildPairs));
@@ -466,15 +755,45 @@ static void calculateShadowViewMutations(
         // generate remove+delete for this node and its subtree.
         auto const newIt = newRemainingPairs.find(oldTag);
         if (newIt == newRemainingPairs.end()) {
+          DEBUG_LOGS({
+            LOG(ERROR)
+                << "Differ Branch 8: Removing tag/tree that was not reinserted (may be reparented): "
+                << oldIndex << ": [" << oldChildPair.shadowView.tag << "]";
+          });
+
+          bool shouldRemove;
+          bool shouldDelete;
+          ShadowNode const *newTreeNode;
+          // Indices and parentTag don't matter here because we will always be
+          // executing this Remove operation, since it's in the context of
+          // reordering of views and the View was not already in this hierarchy.
+          std::tie(shouldRemove, shouldDelete, newTreeNode) =
+              reparentingMetadata.shouldRemoveDeleteUpdate(
+                  -1, oldChildPair.shadowNode, -1);
+
           removeMutations.push_back(ShadowViewMutation::RemoveMutation(
               parentShadowView, oldChildPair.shadowView, oldIndex));
-          deleteMutations.push_back(
-              ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
+
+          if (shouldDelete) {
+            deleteMutations.push_back(
+                ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
+          }
+          if (newTreeNode != nullptr) {
+            ShadowView newTreeNodeView = ShadowView(*newTreeNode);
+            if (newTreeNodeView != oldChildPair.shadowView) {
+              updateMutations.push_back(ShadowViewMutation::UpdateMutation(
+                  parentShadowView,
+                  oldChildPair.shadowView,
+                  newTreeNodeView,
+                  -1));
+            }
+          }
 
           // We also have to call the algorithm recursively to clean up the
           // entire subtree starting from the removed view.
           calculateShadowViewMutations(
               destructiveDownwardMutations,
+              reparentingMetadata,
               oldChildPair.shadowView,
               sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode),
               {});
@@ -488,6 +807,13 @@ static void calculateShadowViewMutations(
       // inserted or matched yet. We're not sure yet if the new node is in the
       // old list - generate an insert instruction for the new node.
       auto const &newChildPair = newChildPairs[newIndex];
+      DEBUG_LOGS({
+        LOG(ERROR)
+            << "Differ Branch 9: Inserting tag/tree that was not yet removed from hierarchy (may be reparented): "
+            << newIndex << ": [" << newChildPair.shadowView.tag << "]";
+      });
+      reparentingMetadata.markInserted(
+          parentShadowView.tag, newChildPair.shadowNode, newIndex);
       insertMutations.push_back(ShadowViewMutation::InsertMutation(
           parentShadowView, newChildPair.shadowView, newIndex));
       newInsertedPairs.insert({newChildPair.shadowView.tag, &newChildPair});
@@ -506,11 +832,34 @@ static void calculateShadowViewMutations(
       }
 
       auto const &newChildPair = *it->second;
-      createMutations.push_back(
-          ShadowViewMutation::CreateMutation(newChildPair.shadowView));
+
+      DEBUG_LOGS({
+        LOG(ERROR)
+            << "Differ Branch 9: Inserting tag/tree that was not yet removed from hierarchy (may be reparented): "
+            << newIndex << ": [" << newChildPair.shadowView.tag << "]";
+      });
+
+      bool shouldCreate;
+      ShadowNode const *updateNode;
+      std::tie(shouldCreate, updateNode) =
+          reparentingMetadata.shouldCreateUpdate(newChildPair.shadowNode);
+
+      if (shouldCreate) {
+        createMutations.push_back(
+            ShadowViewMutation::CreateMutation(newChildPair.shadowView));
+      }
+
+      if (updateNode != nullptr) {
+        ShadowView updateNodeView = ShadowView(*updateNode);
+        if (updateNodeView != newChildPair.shadowView) {
+          updateMutations.push_back(ShadowViewMutation::UpdateMutation(
+              parentShadowView, updateNodeView, newChildPair.shadowView, -1));
+        }
+      }
 
       calculateShadowViewMutations(
           downwardMutations,
+          reparentingMetadata,
           newChildPair.shadowView,
           {},
           sliceChildShadowNodeViewPairs(*newChildPair.shadowNode));
@@ -550,7 +899,8 @@ static void calculateShadowViewMutations(
 
 ShadowViewMutation::List calculateShadowViewMutations(
     ShadowNode const &oldRootShadowNode,
-    ShadowNode const &newRootShadowNode) {
+    ShadowNode const &newRootShadowNode,
+    bool enableReparentingDetection) {
   SystraceSection s("calculateShadowViewMutations");
 
   // Root shadow nodes must be belong the same family.
@@ -558,6 +908,8 @@ ShadowViewMutation::List calculateShadowViewMutations(
 
   auto mutations = ShadowViewMutation::List{};
   mutations.reserve(256);
+
+  auto reparentingMetadata = ReparentingMetadata(enableReparentingDetection);
 
   auto oldRootShadowView = ShadowView(oldRootShadowNode);
   auto newRootShadowView = ShadowView(newRootShadowNode);
@@ -569,9 +921,48 @@ ShadowViewMutation::List calculateShadowViewMutations(
 
   calculateShadowViewMutations(
       mutations,
+      reparentingMetadata,
       ShadowView(oldRootShadowNode),
       sliceChildShadowNodeViewPairs(oldRootShadowNode),
       sliceChildShadowNodeViewPairs(newRootShadowNode));
+
+  // Remove instructions obviated by reparenting
+  if (reparentingMetadata.reparentingOperations_ > 0 &&
+      enableReparentingDetection) {
+    reparentingMetadata.removeUselessRecords();
+
+    mutations.erase(
+        std::remove_if(
+            mutations.begin(),
+            mutations.end(),
+            [&](ShadowViewMutation &mutation) {
+              if (reparentingMetadata.reparentingOperations_ == 0) {
+                return false;
+              }
+
+              ShadowViewMutation::Type type = mutation.type;
+              Tag tag = type == ShadowViewMutation::Type::Insert ||
+                      type == ShadowViewMutation::Type::Create
+                  ? mutation.newChildShadowView.tag
+                  : mutation.oldChildShadowView.tag;
+              auto it = reparentingMetadata.tagsToOperations_.find(tag);
+              if (it != reparentingMetadata.tagsToOperations_.end()) {
+                bool shouldDelete = it->second.shouldEraseOp & type;
+                it->second.shouldEraseOp &= ~type;
+
+                // We've done everything we need to with this record; delete it.
+                if (it->second.shouldEraseOp == 0) {
+                  reparentingMetadata.tagsToOperations_.erase(it);
+                  reparentingMetadata.reparentingOperations_--;
+                }
+
+                return shouldDelete;
+              }
+
+              return false;
+            }),
+        mutations.end());
+  }
 
   return mutations;
 }
