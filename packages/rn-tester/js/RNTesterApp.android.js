@@ -49,7 +49,8 @@ import {
   addComponent,
   removeApi,
   removeComponent,
-  checkBookmarks
+  checkBookmarks,
+  updateRecentlyViewedList
 } from './utils/RNTesterAsyncStorageAbstraction';
 
 UIManager.setLayoutAnimationEnabledExperimental &&
@@ -115,12 +116,18 @@ const RNTesterExampleContainerViaHook = ({
 const RNTesterExampleListViaHook = ({
   title,
   onNavigate,
+  updateRecentlyViewedList,
+  recentComponents,
+  recentApis,
   bookmark,
   list,
   screen,
 }: {
   title: string,
   onNavigate?: () => mixed,
+  updateRecentlyViewedList?: () => mixed,
+  recentComponents: Array<RNTesterExample>,
+  recentApis: Array<RNTesterExample>,
   list: {
     ComponentExamples: Array<RNTesterExample>,
     APIExamples: Array<RNTesterExample>,
@@ -143,6 +150,9 @@ const RNTesterExampleListViaHook = ({
           <Header title={exampleTitle} />
           <RNTesterExampleList
             onNavigate={onNavigate}
+            recentComponents={recentComponents}
+            recentApis={recentApis}
+            updateRecentlyViewedList={updateRecentlyViewedList}
             list={list}
             screen={screen}
           />
@@ -159,12 +169,15 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
       openExample: null,
       Components: bookmarks.Components,
       Api: bookmarks.Api,
+      recentComponents: [],
+      recentApis: [],
       screen: 'component',
       AddApi: (apiName, api) => addApi(apiName, api, this),
       AddComponent: (componentName, component) => addComponent(componentName, component, this),
       RemoveApi: (apiName) => removeApi(apiName, this),
       RemoveComponent: (componentName) => removeComponent(componentName, this),
       checkBookmark: (title, key) => checkBookmarks(title, key, this),
+      updateRecentlyViewedList: (item, key) => updateRecentlyViewedList(item, key, this),
     };
   }
   UNSAFE_componentWillMount() {
@@ -205,20 +218,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   _renderApp(bookmark) {
     const {openExample, screen} = this.state;
 
-    if (screen === 'bookmark' && !openExample) {
-      return (
-        <RNTesterExampleListViaHook
-          title={'RNTester'}
-          key={screen}
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-           * when making Flow check .android.js files. */
-          bookmark={bookmark}
-          onNavigate={this._handleAction}
-          list={RNTesterList}
-          screen={screen}
-        />
-      );
-    } else if (openExample) {
+    if (openExample) {
       const ExampleModule = RNTesterList.Modules[openExample];
       if (ExampleModule.external) {
         return (
@@ -259,6 +259,9 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
          * when making Flow check .android.js files. */
         onNavigate={this._handleAction}
+        updateRecentlyViewedList={this.state.updateRecentlyViewedList}
+        recentComponents={this.state.recentComponents}
+        recentApis={this.state.recentApis}
         bookmark={bookmark}
         list={RNTesterList}
         screen={screen}

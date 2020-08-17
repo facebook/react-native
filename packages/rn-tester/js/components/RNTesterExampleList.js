@@ -55,7 +55,7 @@ type ButtonProps = {
   onPress?: Function,
   onShowUnderlay?: Function,
   onHideUnderlay?: Function,
-  updateSectionsList?: Function,
+  updateRecentlyViewedList?: Function,
   ...
 };
 
@@ -99,7 +99,7 @@ class RowComponent extends React.PureComponent<ButtonProps, ButtonState> {
   };
 
   _onPress = () => {
-    this.props.updateSectionsList();
+    this.props.updateRecentlyViewedList();
     if (this.props.onPress) {
       this.props.onPress();
       return;
@@ -210,60 +210,22 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
     this.state = {
       components: props.list.ComponentExamples,
       api: props.list.APIExamples,
-      recentComponents: [],
-      recentApis: [],
+      recentComponents: props.recentComponents,
+      recentApis: props.recentApis,
+      updateRecentlyViewedList: (item, key) => props.updateRecentlyViewedList(item, key),
     };
   }
 
-  componentDidMount() {
-    AsyncStorage.getItem('RecentComponents', (err, storedString) => {
-      if (err || !storedString) {
-        return;
-      }
-      const recentComponents = JSON.parse(storedString);
-      this.setState({
-        recentComponents: recentComponents,
-      });
-    });
-    AsyncStorage.getItem('RecentApi', (err, storedString) => {
-      if (err || !storedString) {
-        return;
-      }
-      const recentApis = JSON.parse(storedString);
-      this.setState({
-        recentApis: recentApis,
-      });
-    });
-  }
-
-  updateSectionsList = (item, key) => {
-      const openedItem = item;
-      if (key === 'COMPONENTS' || key === 'RECENT_COMPONENTS') {
-      let componentsCopy = [...this.state.recentComponents];
-      const ind = componentsCopy.findIndex(
-        component => component.key === openedItem.key,
-      );
-      if (ind != -1) {
-        componentsCopy.splice(ind, 1);
-      }
-      if (this.state.recentComponents.length >= 5) {
-        componentsCopy.pop();
-      }
-      componentsCopy.unshift(openedItem);
-      AsyncStorage.setItem('RecentComponents', JSON.stringify(componentsCopy));
-    } else {
-      let apisCopy = [...this.state.recentApis];
-      const ind = apisCopy.findIndex(api => api.key === openedItem.key);
-      if (ind != -1) {
-        apisCopy.splice(ind, 1);
-      }
-      if (this.state.recentApis.length >= 5) {
-        apisCopy.pop();
-      }
-      apisCopy.unshift(openedItem);
-      AsyncStorage.setItem('RecentApi', JSON.stringify(apisCopy));
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if(nextProps.recentComponents.every((component, index) => component !== prevState.recentComponents[index]) &&
+    nextProps.recentApis.every((api, index) => api !== prevState.recentApis[index])) {
+      return {
+        recentComponents: nextProps.recentComponents, 
+        recentApis: nextProps.recentApis
+      };
     }
-  };
+    return null;
+  }
 
   render(): React.Node {
     const bookmark = this.context;
@@ -384,7 +346,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
         onNavigate={this.props.onNavigate}
         onShowUnderlay={separators.highlight}
         onHideUnderlay={separators.unhighlight}
-        updateSectionsList={() => this.updateSectionsList(item, section.key)}
+        updateRecentlyViewedList={() => this.state.updateRecentlyViewedList(item, section.key)}
       />
     );
   };

@@ -57,7 +57,8 @@ import {
   addComponent,
   removeApi,
   removeComponent,
-  checkBookmarks
+  checkBookmarks,
+  updateRecentlyViewedList
 } from './utils/RNTesterAsyncStorageAbstraction';
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
@@ -151,11 +152,17 @@ const RNTesterExampleContainerViaHook = ({
 
 const RNTesterExampleListViaHook = ({
   onNavigate,
+  updateRecentlyViewedList,
+  recentComponents,
+  recentApis,
   bookmark,
   list,
   screen,
 }: {
   onNavigate?: () => mixed,
+  updateRecentlyViewedList?: () => mixed,
+  recentComponents: Array<RNTesterExample>,
+  recentApis: Array<RNTesterExample>,
   list: {
     ComponentExamples: Array<RNTesterExample>,
     APIExamples: Array<RNTesterExample>,
@@ -178,6 +185,9 @@ const RNTesterExampleListViaHook = ({
           <Header title={exampleTitle} />
           <RNTesterExampleList
             onNavigate={onNavigate}
+            recentComponents={recentComponents}
+            recentApis={recentApis}
+            updateRecentlyViewedList={updateRecentlyViewedList}
             list={list}
             screen={screen}
           />
@@ -197,11 +207,14 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
       screen: 'component',
       Components: bookmarks.Components,
       Api: bookmarks.Api,
+      recentComponents: [],
+      recentApis: [],
       AddApi: (apiName, api) => addApi(apiName, api, this),
       AddComponent: (componentName, component) => addComponent(componentName, component, this),
       RemoveApi: (apiName) => removeApi(apiName, this),
       RemoveComponent: (componentName) => removeComponent(componentName, this),
       checkBookmark: (title,key) => checkBookmarks(title, key, this),
+      updateRecentlyViewedList: (item, key) => updateRecentlyViewedList(item, key, this),
     };
   }
 
@@ -261,31 +274,16 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
           </>
         );
       }
-    } else if (this.state.screen === 'bookmark') {
-      return (
-        <>
-          <RNTesterExampleListViaHook
-            key={this.state.screen}
-            title={'RNTester'}
-            list={RNTesterList}
-            screen={this.state.screen}
-            bookmark={bookmark}
-            onNavigate={this._handleAction}
-          />
-          <View style={styles.bottomNavbar}>
-            <RNTesterNavbar
-              screen={this.state.screen}
-              onNavigate={this._handleAction}
-            />
-          </View>
-        </>
-      );
-    }
+    } 
     return (
       <>
         <RNTesterExampleListViaHook
           key={this.state.screen}
+          title={'RNTester'}
           onNavigate={this._handleAction}
+          updateRecentlyViewedList={this.state.updateRecentlyViewedList}
+          recentComponents={this.state.recentComponents}
+          recentApis={this.state.recentApis}
           bookmark={bookmark}
           list={RNTesterList}
           screen={this.state.screen}
