@@ -16,10 +16,6 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2020.01.13.00'
-boost_compiler_flags = '-Wno-documentation'
-
 Pod::Spec.new do |s|
   s.name                   = "React-callinvoker"
   s.version                = version
