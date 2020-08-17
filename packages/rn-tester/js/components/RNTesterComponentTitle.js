@@ -10,7 +10,7 @@
 
 const React = require('react');
 import {RNTesterThemeContext} from './RNTesterTheme';
-const {StyleSheet, Text, Platform} = require('react-native');
+const {StyleSheet, Text} = require('react-native');
 
 type Props = $ReadOnly<{|
   children: string,

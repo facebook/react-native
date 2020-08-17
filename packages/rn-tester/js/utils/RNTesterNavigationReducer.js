@@ -27,17 +27,17 @@ function RNTesterNavigationReducer(
     (state.openExample && action.type === 'RNTesterBackAction')
   ) {
     return {
-      screen: action.screen ?? "component",
+      screen: action.screen ?? 'component',
       // A null openExample will cause the views to display the RNTester example list
       openExample: null,
     };
   }
 
-  if (action.screen === "bookmark" && action.type === 'RNTesterBackAction') { 
-    return { 
-      screen: 'component', 
-      openExample: null
-    }
+  if (action.screen === 'bookmark' && action.type === 'RNTesterBackAction') {
+    return {
+      screen: 'component',
+      openExample: null,
+    };
   }
 
   if (action.type === 'RNTesterExampleAction') {
@@ -49,7 +49,6 @@ function RNTesterNavigationReducer(
       };
     }
   }
-
 
   return state;
 }

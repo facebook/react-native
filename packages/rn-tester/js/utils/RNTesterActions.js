@@ -28,7 +28,7 @@ export type RNTesterAction =
 function Back(screen: string): RNTesterBackAction {
   return {
     type: 'RNTesterBackAction',
-    screen, 
+    screen,
   };
 }
 

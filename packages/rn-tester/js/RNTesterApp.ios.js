@@ -17,7 +17,6 @@ const RNTesterList = require('./utils/RNTesterList.ios');
 const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
 const React = require('react');
 const SnapshotViewIOS = require('./examples/Snapshot/SnapshotViewIOS.ios');
-const URIActionMap = require('./utils/URIActionMap');
 const RNTesterNavbar = require('./components/RNTesterNavbar');
 
 const {
@@ -25,24 +24,19 @@ const {
   AsyncStorage,
   BackHandler,
   Button,
-  Linking,
   Platform,
   SafeAreaView,
   StyleSheet,
   Text,
   useColorScheme,
   View,
-  LogBox,
-  TouchableOpacity,
-  Image,
 } = require('react-native');
-
-import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
 
 import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterAction} from './utils/RNTesterActions';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
+import RNTesterDocumentationURL from './components/RNTesterDocumentationURL';
 import type {ColorSchemeName} from 'react-native/Libraries/Utilities/NativeAppearance';
 import {
   RNTesterBookmarkContext,
@@ -58,7 +52,7 @@ import {
   removeApi,
   removeComponent,
   checkBookmarks,
-  updateRecentlyViewedList
+  updateRecentlyViewedList,
 } from './utils/RNTesterAsyncStorageAbstraction';
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
@@ -70,7 +64,7 @@ const Header = ({
 }: {
   onBack?: () => mixed,
   title: string,
-  documentationURL: string,
+  documentationURL?: string,
   ...
 }) => (
   <RNTesterThemeContext.Consumer>
@@ -90,19 +84,7 @@ const Header = ({
                 {title}
               </Text>
               {documentationURL && (
-                <TouchableOpacity
-                  style={{
-                    textDecorationLine: 'underline',
-                    position: 'absolute',
-                    bottom: 3,
-                    right: 25,
-                  }}
-                  onPress={() => openURLInBrowser(documentationURL)}>
-                  <Image
-                    source={require('./assets/documentation.png')}
-                    style={{width: 25, height: 25}}
-                  />
-                </TouchableOpacity>
+                <RNTesterDocumentationURL documentationURL={documentationURL} />
               )}
             </View>
             {onBack && (
@@ -210,11 +192,13 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
       recentComponents: [],
       recentApis: [],
       AddApi: (apiName, api) => addApi(apiName, api, this),
-      AddComponent: (componentName, component) => addComponent(componentName, component, this),
-      RemoveApi: (apiName) => removeApi(apiName, this),
-      RemoveComponent: (componentName) => removeComponent(componentName, this),
-      checkBookmark: (title,key) => checkBookmarks(title, key, this),
-      updateRecentlyViewedList: (item, key) => updateRecentlyViewedList(item, key, this),
+      AddComponent: (componentName, component) =>
+        addComponent(componentName, component, this),
+      RemoveApi: apiName => removeApi(apiName, this),
+      RemoveComponent: componentName => removeComponent(componentName, this),
+      checkBookmark: (title, key) => checkBookmarks(title, key, this),
+      updateRecentlyViewedList: (item, key) =>
+        updateRecentlyViewedList(item, key, this),
     };
   }
 
@@ -274,7 +258,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
           </>
         );
       }
-    } 
+    }
     return (
       <>
         <RNTesterExampleListViaHook

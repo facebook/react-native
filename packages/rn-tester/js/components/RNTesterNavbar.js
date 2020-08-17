@@ -52,7 +52,7 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
           <View style={styles.floatContainer}>
             <Pressable
               testID="bookmarks-tab"
-              onPress={() => { onNavigate(RNTesterActions.OpenList('bookmark')) }}>
+              onPress={() => { onNavigate(RNTesterActions.OpenList('bookmark')); }}>
                 <View style={[styles.floatingButton, {backgroundColor: theme.BorderColor}]} >
                 <Image
                     style={styles.bookmarkIcon}
@@ -68,9 +68,9 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
           </View>
 
           {/** right tab with Components  */}
-         <Pressable 
+         <Pressable
           testID="apis-tab"
-          onPress={() => { onNavigate(RNTesterActions.OpenList('api')) }}
+          onPress={() => { onNavigate(RNTesterActions.OpenList('api')); }}
           style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
             <View style={styles.pressableContent} collapsable={false}>
               <Image
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 });
 
 module.exports = RNTesterNavbar;

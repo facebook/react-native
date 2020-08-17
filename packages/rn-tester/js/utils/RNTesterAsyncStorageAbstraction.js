@@ -138,7 +138,7 @@ export const updateRecentlyViewedList = (item, key, context) => {
     const ind = componentsCopy.findIndex(
       component => component.key === openedItem.key,
     );
-    if (ind != -1) {
+    if (ind !== -1) {
       componentsCopy.splice(ind, 1);
     }
     if (context.state.recentComponents.length >= 5) {
@@ -153,7 +153,7 @@ export const updateRecentlyViewedList = (item, key, context) => {
   } else {
     let apisCopy = [...context.state.recentApis];
     const ind = apisCopy.findIndex(api => api.key === openedItem.key);
-    if (ind != -1) {
+    if (ind !== -1) {
       apisCopy.splice(ind, 1);
     }
     if (context.state.recentApis.length >= 5) {
@@ -163,7 +163,7 @@ export const updateRecentlyViewedList = (item, key, context) => {
     context.setState({
       recentApis: apisCopy,
     });
-  // Syncing the recently viewed apis over async storage
+    // Syncing the recently viewed apis over async storage
     AsyncStorage.setItem('RecentApi', JSON.stringify(apisCopy));
   }
 };

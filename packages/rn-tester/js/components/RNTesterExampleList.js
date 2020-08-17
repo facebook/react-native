@@ -13,18 +13,13 @@
 const RNTesterActions = require('../utils/RNTesterActions');
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 const RNTesterComponentTitle = require('./RNTesterComponentTitle');
-const RNTesterBookmarkButton = require('./RNTesterBookmarkButton');
 const React = require('react');
-
-import {AsyncStorage} from 'react-native';
 
 const {
   Platform,
   SectionList,
-  FlatList,
   StyleSheet,
   Text,
-  Button,
   TouchableHighlight,
   Image,
   View,
@@ -212,16 +207,23 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
       api: props.list.APIExamples,
       recentComponents: props.recentComponents,
       recentApis: props.recentApis,
-      updateRecentlyViewedList: (item, key) => props.updateRecentlyViewedList(item, key),
+      updateRecentlyViewedList: (item, key) =>
+        props.updateRecentlyViewedList(item, key),
     };
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if(nextProps.recentComponents.every((component, index) => component !== prevState.recentComponents[index]) &&
-    nextProps.recentApis.every((api, index) => api !== prevState.recentApis[index])) {
+    if (
+      nextProps.recentComponents.every(
+        (component, index) => component !== prevState.recentComponents[index],
+      ) &&
+      nextProps.recentApis.every(
+        (api, index) => api !== prevState.recentApis[index],
+      )
+    ) {
       return {
-        recentComponents: nextProps.recentComponents, 
-        recentApis: nextProps.recentApis
+        recentComponents: nextProps.recentComponents,
+        recentApis: nextProps.recentApis,
       };
     }
     return null;
@@ -323,9 +325,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
                     automaticallyAdjustContentInsets={false}
                     keyboardDismissMode="on-drag"
                     renderSectionHeader={renderSectionHeader}
-                    ListFooterComponent={() => (
-                      <View style={{height: 200}}></View>
-                    )}
+                    ListFooterComponent={() => <View style={{height: 200}} />}
                   />
                 )}
               />
@@ -346,7 +346,9 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
         onNavigate={this.props.onNavigate}
         onShowUnderlay={separators.highlight}
         onHideUnderlay={separators.unhighlight}
-        updateRecentlyViewedList={() => this.state.updateRecentlyViewedList(item, section.key)}
+        updateRecentlyViewedList={() =>
+          this.state.updateRecentlyViewedList(item, section.key)
+        }
       />
     );
   };

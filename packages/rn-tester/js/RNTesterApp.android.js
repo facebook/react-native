@@ -16,7 +16,6 @@ const RNTesterExampleList = require('./components/RNTesterExampleList');
 const RNTesterList = require('./utils/RNTesterList');
 const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
 const React = require('react');
-const URIActionMap = require('./utils/URIActionMap');
 const RNTesterNavBar = require('./components/RNTesterNavbar');
 
 const {
@@ -25,19 +24,15 @@ const {
   BackHandler,
   StyleSheet,
   Text,
-  Linking,
   UIManager,
   useColorScheme,
   View,
-  TouchableOpacity,
-  Image,
 } = require('react-native');
-
-import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
 
 import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
+import RNTesterDocumentationURL from './components/RNTesterDocumentationURL';
 import {
   RNTesterBookmarkContext,
   bookmarks,
@@ -50,7 +45,7 @@ import {
   removeApi,
   removeComponent,
   checkBookmarks,
-  updateRecentlyViewedList
+  updateRecentlyViewedList,
 } from './utils/RNTesterAsyncStorageAbstraction';
 
 UIManager.setLayoutAnimationEnabledExperimental &&
@@ -70,19 +65,7 @@ const Header = ({title, documentationURL}: {title: string, ...}) => (
               {title}
             </Text>
             {documentationURL && (
-              <TouchableOpacity
-                style={{
-                  textDecorationLine: 'underline',
-                  position: 'absolute',
-                  bottom: 3,
-                  right: 25,
-                }}
-                onPress={() => openURLInBrowser(documentationURL)}>
-                <Image
-                  source={require('./assets/documentation.png')}
-                  style={{width: 25, height: 25}}
-                />
-              </TouchableOpacity>
+              <RNTesterDocumentationURL documentationURL={documentationURL} />
             )}
           </View>
         </View>
@@ -173,11 +156,13 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
       recentApis: [],
       screen: 'component',
       AddApi: (apiName, api) => addApi(apiName, api, this),
-      AddComponent: (componentName, component) => addComponent(componentName, component, this),
-      RemoveApi: (apiName) => removeApi(apiName, this),
-      RemoveComponent: (componentName) => removeComponent(componentName, this),
+      AddComponent: (componentName, component) =>
+        addComponent(componentName, component, this),
+      RemoveApi: apiName => removeApi(apiName, this),
+      RemoveComponent: componentName => removeComponent(componentName, this),
       checkBookmark: (title, key) => checkBookmarks(title, key, this),
-      updateRecentlyViewedList: (item, key) => updateRecentlyViewedList(item, key, this),
+      updateRecentlyViewedList: (item, key) =>
+        updateRecentlyViewedList(item, key, this),
     };
   }
   UNSAFE_componentWillMount() {
