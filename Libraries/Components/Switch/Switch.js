@@ -50,16 +50,17 @@ export type Props = $ReadOnly<{|
   value?: ?boolean,
 
   /**
-    Color of the foreground switch grip. If this is set on iOS, the switch grip will lose its drop shadow.
+    Color of the foreground switch grip. If this is set on iOS, the switch grip
+    will lose its drop shadow.
    */
   thumbColor?: ?ColorValue,
 
   /**
     Custom colors for the switch track.
 
-    _iOS_: When the switch value is false, the track shrinks into the border. If you want to change the
-    color of the background exposed by the shrunken track, use
-     [`ios_backgroundColor`](https://reactnative.dev/docs/switch#ios_backgroundColor).
+    _iOS_: When the switch value is false, the track shrinks into the border. If
+    you want to change the color of the background exposed by the shrunken
+    track, use [`ios_backgroundColor`](switch#ios_backgroundColor).
    */
   trackColor?: ?$ReadOnly<{|
     false?: ?ColorValue,
