@@ -30,9 +30,12 @@
    * This must be kept track of because `UIKit` destroys the touch targets
    * if touches are canceled and we have no other way to recover this information.
    */
-  NSMutableOrderedSet *_nativeTouches;
-  NSMutableArray *_reactTouches;
-  NSMutableArray *_touchViews;
+  // @brief 存储 UITouch 对象
+  NSMutableOrderedSet<UITouch *> *_nativeTouches;
+  // @brief 存储的 map 类型，记录的各种 react 相关信息，包含 `target / identifier / touches / changedTouches` 等 Key
+  NSMutableArray<NSMutableDictionary *> *_reactTouches;
+  // @brief 存储该次 touch 事件找到的第一响应者视图集合
+  NSMutableArray<UIView *> *_touchViews;
 
   BOOL _recordingInteractionTiming;
   CFTimeInterval _mostRecentEnqueueJS;
@@ -70,12 +73,14 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 
 - (void)_recordNewTouches:(NSSet *)touches
 {
+  // touchBegin 时调用，记录 touch 对象
   for (UITouch *touch in touches) {
 
     RCTAssert(![_nativeTouches containsObject:touch],
               @"Touch is already recorded. This is a critical bug.");
 
     // Find closest React-managed touchable view
+    // 找到该次手势触发第一响应者视图
     UIView *targetView = touch.view;
     while (targetView) {
       if (targetView.reactTag && targetView.userInteractionEnabled &&
@@ -120,9 +125,10 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 
 - (void)_recordRemovedTouches:(NSSet *)touches
 {
+  // touchEnd 和 touchCancel 时调用，移除记录的 touch 对象
   for (UITouch *touch in touches) {
     NSUInteger index = [_nativeTouches indexOfObject:touch];
-    if(index == NSNotFound) {
+    if (index == NSNotFound) {
       continue;
     }
 
@@ -134,6 +140,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 
 - (void)_updateReactTouchAtIndex:(NSInteger)touchIndex
 {
+  // 更新 `React` touch 对象，分别获取在 window 和 self.view（手势响应视图）中经过转换的 point 值并进行存储
   UITouch *nativeTouch = _nativeTouches[touchIndex];
   CGPoint windowLocation = [nativeTouch locationInView:nativeTouch.window];
   CGPoint rootViewLocation = [nativeTouch.window convertPoint:windowLocation toView:self.view];
@@ -216,6 +223,7 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   return NO;
 }
 
+#pragma mark - Touch Methods
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [super touchesBegan:touches withEvent:event];

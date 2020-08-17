@@ -38,6 +38,7 @@ NSString *const RCTDequeueNotification = @"RCTDequeueNotification";
 /**
  * Must be kept in sync with `MessageQueue.js`.
  */
+/// @brief 必须与 `MessageQueue.js` 保持同步
 typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldRequestModuleIDs = 0,
   RCTBridgeFieldMethodIDs,
@@ -63,11 +64,14 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
 {
   BOOL _loading;
   __weak id<RCTJavaScriptExecutor> _javaScriptExecutor;
-  NSMutableArray *_moduleDataByID;
+  /// @brief 所有创建的 RCTModuleData 实例集合，moduleData 的 uid 是以当前 `_moduleDataByID` 数组中元素个数为 uid（即 moduleID）
+  NSMutableArray<RCTModuleData *> *_moduleDataByID;
+  /// @brief 以 KV 的方式存储 modules，Key 为 moduleName，Value 为 module 实例
   RCTModuleMap *_modulesByName;
-  CADisplayLink *_mainDisplayLink;
+  CADisplayLink *_mainDisplayLink; // DEV 用
   CADisplayLink *_jsDisplayLink;
-  NSMutableSet *_frameUpdateObservers;
+  /// @brief RCTModuleData 实例集合中遵守了 `RCTFrameUpdateObserver` 协议的实例
+  NSMutableSet<RCTModuleData *> *_frameUpdateObservers;
   NSMutableArray *_scheduledCalls;
   RCTSparseArray *_scheduledCallbacks;
 }
@@ -156,17 +160,21 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   return _valid;
 }
 
+/// @method registerModules
+/// @brief 所有 module 的创建及 RCTModuleData 的创建都在这里被完成
 - (void)registerModules
 {
   RCTAssertMainThread();
 
   // Register passed-in module instances
+  // 注册初始化方法直接传入的 module 模块实例
   NSMutableDictionary *preregisteredModules = [[NSMutableDictionary alloc] init];
   for (id<RCTBridgeModule> module in self.moduleProvider ? self.moduleProvider() : nil) {
     preregisteredModules[RCTBridgeModuleNameForClass([module class])] = module;
   }
 
   // Instantiate modules
+  // 初始化 modules，存储进 modulesByName 集合
   _moduleDataByID = [[NSMutableArray alloc] init];
   NSMutableDictionary *modulesByName = [preregisteredModules mutableCopy];
   for (Class moduleClass in RCTGetModuleClasses()) {
@@ -175,6 +183,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
      // Check if module instance has already been registered for this name
      id<RCTBridgeModule> module = modulesByName[moduleName];
 
+     // 获取已有或创建 module
      if (module) {
        // Preregistered instances takes precedence, no questions asked
        if (!preregisteredModules[moduleName]) {
@@ -194,32 +203,38 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
        // Module name hasn't been used before, so go ahead and instantiate
        module = [[moduleClass alloc] init];
      }
+    
+     // 存储进 modulesByName 集合
      if (module) {
        modulesByName[moduleName] = module;
      }
   }
 
   // Store modules
+  // 创建 _modulesByName 存储 modules
   _modulesByName = [[RCTModuleMap alloc] initWithDictionary:modulesByName];
 
   /**
    * The executor is a bridge module, wait for it to be created and set it before
    * any other module has access to the bridge
    */
+  // `- executorClass` 方法已经被重写，如果 `parentBridge` 没有设置 executorClass，则默认为 [RCTContextExecutor class]
   _javaScriptExecutor = _modulesByName[RCTBridgeModuleNameForClass(self.executorClass)];
   RCTLatestExecutor = _javaScriptExecutor;
 
   [_javaScriptExecutor setUp];
 
   // Set bridge
+  // 创建 RCTModuleData 并
   for (id<RCTBridgeModule> module in _modulesByName.allValues) {
     if ([module respondsToSelector:@selector(setBridge:)]) {
       module.bridge = self;
     }
 
+    // moduleData 的 uid 是以当前 `_moduleDataByID` 数组中元素个数为 uid（即 moduleID）
     RCTModuleData *moduleData = [[RCTModuleData alloc] initWithExecutor:_javaScriptExecutor
-                                                                  uid:@(_moduleDataByID.count)
-                                                             instance:module];
+                                                                    uid:@(_moduleDataByID.count)
+                                                               instance:module];
     [_moduleDataByID addObject:moduleData];
 
     if ([module conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
@@ -227,17 +242,27 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
     }
   }
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidCreateNativeModules
-                                                      object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidCreateNativeModules object:self];
 }
 
+/// @method initJS
+/// @brief 向 JS 侧注入 module data 信息
 - (void)initJS
 {
   RCTAssertMainThread();
 
   // Inject module data into JS context
+  
+  // @NOTE: 这里需要重点关注
+  // 向 JS 侧注入 module data 信息
+  // 循环 _moduleDataByID 数组，把每一个 module 的 name 写进 `config` 字典，然后写进 Key 为 `remoteModuleConfig`
+  // 的字典，并且序列化成 JSON，之后通过 `RCTJavaScriptExecutor` 注入到 JS 中名为 `__fbBatchedBridgeConfig` 的对象
+  // 中，这样相当于告知了 JS 侧，OC 这边提供的 module 都有哪些，以及该 module 分别能够提供哪些方法，这些信息都存储在
+  // `RCTModuleData` 的 `config` 属性当中
   NSMutableDictionary *config = [[NSMutableDictionary alloc] init];
   for (RCTModuleData *moduleData in _moduleDataByID) {
+    // {'module-name': 'module-config'}
+    // 其中 `moduleData.config` 的配置中保存着 moduleID、constants 及 methods（能向 JS 提供的所有方法） 等所有信息
     config[moduleData.name] = moduleData.config;
   }
   NSString *configJSON = RCTJSONStringify(@{
@@ -270,7 +295,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
                                                         userInfo:@{ @"bridge": self }];
     });
   } else {
-
+    // 加载应用 JS 脚本，如 demo 中的 main.jsbundle 文件，以此来真正启动 react-native 程序
     RCTProfileBeginEvent();
     RCTPerformanceLoggerStart(RCTPLScriptDownload);
     RCTJavaScriptLoader *loader = [[RCTJavaScriptLoader alloc] initWithBridge:self];
@@ -313,6 +338,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
       } else {
 
+        // 加载应用程序 JS 脚本完成
         [self enqueueApplicationScript:script url:bundleURL onComplete:^(NSError *loadError) {
 
           if (loadError) {
@@ -324,6 +350,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
            * Register the display link to start sending js calls after everything
            * is setup
            */
+          // 启动一个 displayLink
           NSRunLoop *targetRunLoop = [_javaScriptExecutor isKindOfClass:[RCTContextExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
           [_jsDisplayLink addToRunLoop:targetRunLoop forMode:NSRunLoopCommonModes];
 
@@ -405,6 +432,10 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 {
   NSArray *ids = [moduleDotMethod componentsSeparatedByString:@"."];
 
+  // 这里只是做一个包装，在 JS 侧业务层实际处理的 module 和 method 应该是
+  // 数组 ids 中的元素，即 ids[0] 和 ids[1]，分别对应 module 和 method，
+  // `BatchedBridge` 在 JS 侧 BatchedBridge.js 文件中，为 `MessageQueue` 类型对象
+  // `callFunctionReturnFlushedQueue` 在 JS 侧 MessageQueue.js 文件中，为出入口方法名称
   [self _invokeAndProcessModule:@"BatchedBridge"
                          method:@"callFunctionReturnFlushedQueue"
                       arguments:@[ids[0], ids[1], args ?: @[]]];
@@ -618,6 +649,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   }
 }
 
+/// @brief 找到对应的 RCTModuleMethod 实例，并执行相应操作
 - (BOOL)_handleRequestNumber:(NSUInteger)i
                     moduleID:(NSUInteger)moduleID
                     methodID:(NSUInteger)methodID
@@ -672,6 +704,8 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   RCTProfileBeginEvent();
 
   RCTFrameUpdate *frameUpdate = [[RCTFrameUpdate alloc] initWithDisplayLink:displayLink];
+  
+  // 将屏幕刷新消息发送给所有订阅屏幕刷新协议的监听者
   for (RCTModuleData *moduleData in _frameUpdateObservers) {
     id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
     if (![observer respondsToSelector:@selector(isPaused)] || ![observer isPaused]) {
@@ -681,6 +715,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
       [moduleData dispatchBlock:^{
         RCTProfileEndFlowEvent();
         RCTProfileBeginEvent();
+        // 向监听者（module 对象）发送屏幕刷新消息
         [observer didUpdateFrame:frameUpdate];
         RCTProfileEndEvent(name, @"objc_call,fps", nil);
       }];
@@ -700,6 +735,15 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   if (calls.count > 0) {
     _scheduledCalls = [[NSMutableArray alloc] init];
     _scheduledCallbacks = [[RCTSparseArray alloc] init];
+    
+    // https://blog.csdn.net/Baby_come_here/article/details/75797669
+    // [calls valueForKey:@"js_args"] 会将数组 `calls` 中的元素中 Key 为
+    // `js_args` 对应的 Value 取出并重新生成数组，具体值如下:
+    // {
+    //    @"module": module,
+    //    @"method": method,
+    //    @"args": args,
+    // }
     [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
                                    method:@"processBatch"
                                 arguments:@[[calls valueForKey:@"js_args"]]];
@@ -708,6 +752,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   RCTProfileEndEvent(@"DispatchFrameUpdate", @"objc_call", nil);
 
   dispatch_async(dispatch_get_main_queue(), ^{
+    // 刷新 JS 执行线程帧率指示器
     [self.perfStats.jsGraph onTick:displayLink.timestamp];
   });
 }
@@ -717,12 +762,14 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   RCTAssertMainThread();
 
   RCTProfileImmediateEvent(@"VSYNC", displayLink.timestamp, @"g");
-
+  // 刷新主线程帧率指示器
   [self.perfStats.uiGraph onTick:displayLink.timestamp];
 }
 
+#pragma mark - Profiling Methods
 - (void)startProfiling
 {
+  // 开始性能分析，完成分析工具的初始化
   RCTAssertMainThread();
 
   if (![_parentBridge.bundleURL.scheme isEqualToString:@"http"]) {
@@ -737,6 +784,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
 - (void)stopProfiling
 {
+  // 停止性能分析，并上传收集结果
   RCTAssertMainThread();
 
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{

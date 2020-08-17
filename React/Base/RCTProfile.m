@@ -146,6 +146,7 @@ static IMP RCTProfileMsgForward(NSObject *self, SEL selector)
 
 void RCTProfileHookModules(RCTBridge *bridge)
 {
+  // [bridge valueForKey:@"_modules"] 调用的是 `- [RCTBatchedBridge modules]` 方法
   for (RCTModuleData *moduleData in [bridge valueForKey:@"_modules"]) {
     [moduleData dispatchBlock:^{
       Class moduleClass = moduleData.moduleClass;

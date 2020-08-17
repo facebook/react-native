@@ -14,6 +14,8 @@ typedef NS_ENUM(NSUInteger, RCTFPSGraphPosition) {
   RCTFPSGraphPositionRight = 2
 };
 
+/// @class RCTFPSGraph
+/// @brief 屏幕刷新帧率监控视图（FPS）
 @interface RCTFPSGraph : UIView
 
 - (instancetype)initWithFrame:(CGRect)frame graphPosition:(RCTFPSGraphPosition)position name:(NSString *)name color:(UIColor *)color NS_DESIGNATED_INITIALIZER;

@@ -34,6 +34,7 @@ NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
 
 @interface RCTBridge ()
 
+/// @brief 实际上 RCTBridge 类对外提供的大部分 API 最终都由 batchedBridge 进行处理，重点关注 `RCTBatchedBridge.m` 文件
 @property (nonatomic, strong) RCTBatchedBridge *batchedBridge;
 
 @end
@@ -68,14 +69,17 @@ void RCTRegisterModule(Class moduleClass)
 NSString *RCTBridgeModuleNameForClass(Class cls)
 {
   NSString *name = nil;
+  // `+ [id<RCTBridgeModule> moduleName]` 方法获取自定义的 moduleName
   if ([cls respondsToSelector:NSSelectorFromString(@"moduleName")]) {
     name = [cls valueForKey:@"moduleName"];
   }
+  // 如果获取到的 moduleName 为空，则使用类名作为 moduleName
   if ([name length] == 0) {
     name = NSStringFromClass(cls);
   }
+  // 未找到 `RK` 开头的相关内容，猜测目的是兼容使用者的老版本业务代码
   if ([name hasPrefix:@"RK"]) {
-    name = [name stringByReplacingCharactersInRange:(NSRange){0,@"RK".length} withString:@"RCT"];
+    name = [name stringByReplacingCharactersInRange:(NSRange){0, @"RK".length} withString:@"RCT"];
   }
   return name;
 }
@@ -83,6 +87,7 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
 /**
  * Check if class has been registered
  */
+/// @brief 检查某一 module 类是否已经注册过
 BOOL RCTBridgeModuleClassIsRegistered(Class);
 BOOL RCTBridgeModuleClassIsRegistered(Class cls)
 {
@@ -175,7 +180,7 @@ RCT_NOT_IMPLEMENTED(-init)
                                                name:RCTReloadNotification
                                              object:nil];
 
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_IPHONE_SIMULATOR // 模拟器调试用，`Command+R` 执行刷新操作
 
   __weak RCTBridge *weakSelf = self;
   RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];

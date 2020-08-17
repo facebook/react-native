@@ -42,6 +42,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 @interface RCTRootContentView : RCTView <RCTInvalidating>
 
+/// @brief 用来判断内容是否出现
 @property (nonatomic, readonly) BOOL contentHasAppeared;
 
 - (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge;
@@ -81,6 +82,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                                              selector:@selector(hideLoadingView)
                                                  name:RCTContentDidAppearNotification
                                                object:self];
+    // 不是加载状态说明已经加载完成，直接走加载完成的逻辑
     if (!_bridge.batchedBridge.isLoading) {
       [self bundleFinishedLoading:_bridge.batchedBridge];
     }
@@ -130,6 +132,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)showLoadingView
 {
+  // 方法名改成 `showLoadingViewIfNeeded` 或许更合适
   if (_loadingView && !_contentView.contentHasAppeared) {
     _loadingView.hidden = NO;
     [self addSubview:_loadingView];
@@ -157,6 +160,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
 
 - (void)javaScriptDidLoad:(NSNotification *)notification
 {
+  // JS 加载完成通知处理
   RCTBridge *bridge = notification.userInfo[@"bridge"];
   [self bundleFinishedLoading:bridge];
 }
@@ -168,6 +172,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
       return;
     }
 
+    // 初始化 contentView 内容视图，并添加到 rootView 上
     [_contentView removeFromSuperview];
     _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds bridge:bridge];
     _contentView.backgroundColor = self.backgroundColor;
@@ -179,6 +184,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
       @"initialProps": _initialProperties ?: @{},
     };
 
+    // 通过 bridge 调用 `AppRegistry.js` 文件中的 `runApplication` 函数
     [bridge enqueueJSCall:@"AppRegistry.runApplication"
                      args:@[moduleName, appParameters]];
   });
@@ -289,6 +295,7 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
    */
   self.reactTag = [_bridge.uiManager allocateRootTag];
   [self addGestureRecognizer:[[RCTTouchHandler alloc] initWithBridge:_bridge]];
+  // 向当前 bridge 实例绑定的 uiManager 注册一个 rootView 实例（RCTRootContentView 类型的）
   [_bridge.uiManager registerRootView:self];
 }
 

@@ -19,6 +19,8 @@
 /**
  * The RCTUIManager is the module responsible for updating the view hierarchy.
  */
+/// @class RCTUIManager
+/// @brief RCTUIManager 是负责更新视图层次结构的模块
 @interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
 
 @property (nonatomic, weak) id<RCTScrollableProtocol> mainScrollView;

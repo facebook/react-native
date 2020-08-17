@@ -105,6 +105,7 @@ RCT_NOT_IMPLEMENTED(-init);
     }
 
     // Create new queue
+    // 注意，这里一定是串行队列，执行导出的方法时异步执行，以此来保证每个 module 内部的通信事件是串行顺序的
     queue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
 
     // assign it to the module

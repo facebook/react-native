@@ -20,6 +20,8 @@
  * before before using it.
  */
 
+/// @brief 此文件主要提供了一系列用于性能分析的函数和宏
+
 RCT_EXTERN NSString *const RCTProfileDidStartProfiling;
 RCT_EXTERN NSString *const RCTProfileDidEndProfiling;
 

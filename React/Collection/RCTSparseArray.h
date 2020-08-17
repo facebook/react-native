@@ -9,6 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
+/// @class RCTSparseArray
+/// @brief 对 NSMutableDictionary 进行的封装类，以此来约束 Key 或下标
 @interface RCTSparseArray : NSObject <NSCopying>
 
 - (instancetype)initWithCapacity:(NSUInteger)capacity NS_DESIGNATED_INITIALIZER;

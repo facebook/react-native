@@ -37,6 +37,7 @@ RCT_NOT_IMPLEMENTED(-init)
   scriptURL = [RCTConvert NSURL:scriptURL.absoluteString];
 
   if (!scriptURL ||
+      // 如果是文件类型的 URL，并且本地不存在该文件，直接抛出错误
       ([scriptURL isFileURL] && ![[NSFileManager defaultManager] fileExistsAtPath:scriptURL.path])) {
     NSError *error = [NSError errorWithDomain:@"JavaScriptLoader" code:1 userInfo:@{
       NSLocalizedDescriptionKey: scriptURL ? [NSString stringWithFormat:@"Script at '%@' could not be found.", scriptURL] : @"No script URL provided"

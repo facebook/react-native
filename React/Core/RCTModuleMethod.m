@@ -53,6 +53,10 @@ RCT_NOT_IMPLEMENTED(-init)
       selectorRegex = [[NSRegularExpression alloc] initWithPattern:@"(?<=:).*?(?=[a-zA-Z_]+:|$)" options:0 error:NULL];
     }
 
+    // objCMethodName 是由 RCT_EXPORT_METHOD(method) 宏导出得到的结果
+    // @eg:
+    //  `getCurrentAppState:(RCTResponseSenderBlock)callback error:(__attribute__((__unused__)) RCTResponseSenderBlock)error`
+    // `argumentNames` 中存储的其实是 `参数类型`
     NSMutableArray *argumentNames = [NSMutableArray array];
     [typeRegex enumerateMatchesInString:objCMethodName options:0 range:NSMakeRange(0, objCMethodName.length) usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
       NSString *argumentName = [objCMethodName substringWithRange:[result rangeAtIndex:1]];
@@ -60,11 +64,13 @@ RCT_NOT_IMPLEMENTED(-init)
     }];
 
     // Remove the parameters' type and name
+    // 干掉参数相关的内容，获取真正的方法名，`getCurrentAppState:error:`
     objCMethodName = [selectorRegex stringByReplacingMatchesInString:objCMethodName
                                                              options:0
                                                                range:NSMakeRange(0, objCMethodName.length)
                                                         withTemplate:@""];
     // Remove any spaces since `selector : (Type)name` is a valid syntax
+    // 删除所有空格，解决 `selector: (Type)name` 这种情况，对外部来说这是一种有效语法
     objCMethodName = [objCMethodName stringByReplacingOccurrencesOfString:@" " withString:@""];
 
     _moduleClass = moduleClass;
@@ -124,6 +130,7 @@ RCT_NOT_IMPLEMENTED(-init)
       const char *argumentType = [_methodSignature getArgumentTypeAtIndex:i];
 
       NSString *argumentName = argumentNames[i - 2];
+      // `selector` 是指 RCTConvert 中的方法选择器
       SEL selector = NSSelectorFromString([argumentName stringByAppendingString:@":"]);
       if ([RCTConvert respondsToSelector:selector]) {
         switch (argumentType[0]) {
@@ -134,7 +141,18 @@ case _value: { \
   RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
   break; \
 }
-
+            // RCT_CONVERT_CASE(':', SEL) 展开后代码如下：
+            // 这个宏中最终的目的就是为了调用 `[invocation setArgument:&value atIndex:index]`，为了外部方便调用所以才用 block 包装起来
+            //
+            //  case ':': {
+            //    SEL (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend;
+            //    [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) {
+            //      // 这里是在调用 RCTConvert 类的 selector（是一个类方法）
+            //      SEL value = convert([RCTConvert class], selector, json);
+            //      [invocation setArgument:&value atIndex:index];
+            //    }];
+            //  } break;
+            
             RCT_CONVERT_CASE(':', SEL)
             RCT_CONVERT_CASE('*', const char *)
             RCT_CONVERT_CASE('c', char)
@@ -165,7 +183,6 @@ case _value: { \
                 [_invocation getReturnValue:returnValue];
 
                 [invocation setArgument:returnValue atIndex:index];
-
                   free(returnValue);
                 }];
                 break;
@@ -283,6 +300,7 @@ case _value: { \
   NSUInteger index = 0;
   for (id json in arguments) {
     id arg = RCTNilIfNull(json);
+    // `[invocation setArgument:&value atIndex:index]` 被包装在 block 中作为 `_argumentBlocks` 数组中的元素
     void (^block)(RCTBridge *, NSInvocation *, NSUInteger, id) = _argumentBlocks[index];
     block(bridge, invocation, index + 2, arg);
     index++;

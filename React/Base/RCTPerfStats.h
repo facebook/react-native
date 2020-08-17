@@ -10,9 +10,13 @@
 #import "RCTBridge.h"
 #import "RCTFPSGraph.h"
 
+/// @class RCTPerfStats
+/// @brief 性能统计视图包装
 @interface RCTPerfStats : NSObject
 
+/// @brief js 执行线程屏幕刷新监控视图（FPS）
 @property (nonatomic, strong) RCTFPSGraph *jsGraph;
+/// @brief 主线程屏幕刷新监控视图（FPS）
 @property (nonatomic, strong) RCTFPSGraph *uiGraph;
 
 - (void)show;
@@ -22,6 +26,7 @@
 
 @interface RCTBridge (RCTPerfStats)
 
+/// @brief 性能统计实例
 @property (nonatomic, strong, readonly) RCTPerfStats *perfStats;
 
 @end

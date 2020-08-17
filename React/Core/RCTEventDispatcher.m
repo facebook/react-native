@@ -180,6 +180,7 @@ RCT_EXPORT_MODULE()
   return RCTJSThread;
 }
 
+#pragma mark - RCTFrameUpdateObserver
 - (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
   [_eventQueueLock lock];

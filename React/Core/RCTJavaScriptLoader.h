@@ -18,10 +18,17 @@
  * JavaScript application inside of a native application.
  * TODO: Incremental module loading. (low pri).
  */
+/// @class RCTJavaScriptLoader
+/// @brief JS 资源脚本加载器
 @interface RCTJavaScriptLoader : NSObject
 
+/// @brief 指定初始化方法
+/// @param bridge RCTBridge 实例
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
-- (void)loadBundleAtURL:(NSURL *)moduleURL onComplete:(void (^)(NSError *, NSString *))onComplete;
+/// @brief 加载脚本资源
+/// @param scriptURL 脚本地址
+/// @param onComplete 加载回调
+- (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(void (^)(NSError *, NSString *))onComplete;
 
 @end

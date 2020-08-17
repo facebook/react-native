@@ -17,12 +17,14 @@
  * The type of a block that is capable of sending a response to a bridged
  * operation. Use this for returning callback methods to JS.
  */
+/// @brief 能够向 bridge 操作发送响应的块的类型，使用这个返回回调方法到 JS 侧
 typedef void (^RCTResponseSenderBlock)(NSArray *response);
 
 /**
  * The type of a block that is capable of sending an error response to a
  * bridged operation. Use this for returning error information to JS.
  */
+/// @brief 能够向 bridge 操作发送错误响应的块的类型，使用这个将错误信息返回给 JS 侧
 typedef void (^RCTResponseErrorBlock)(NSError *error);
 
 /**
@@ -51,6 +53,9 @@ extern dispatch_queue_t RCTJSThread;
 /**
  * Provides the interface needed to register a bridge module.
  */
+/// @protocol RCTBridgeModule
+/// @brief 每个遵循了 `RCTBridgeModule` 协议的实例，最终都会被整合成一个 `RCTModuleData` 类型
+///        的实例，所有的内容最终都会在 `RCTModuleData` 实例中被保存，以此用来进行和 js 之间的交互
 @protocol RCTBridgeModule <NSObject>
 @optional
 

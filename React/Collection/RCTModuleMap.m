@@ -38,7 +38,7 @@ RCT_NOT_IMPLEMENTED(-initWithObjects:(const id [])objects
   return _modulesByName.count;
 }
 
-//declared in RCTBridge.m
+// declared in RCTBridge.m
 extern BOOL RCTBridgeModuleClassIsRegistered(Class cls);
 
 - (id)objectForKey:(NSString *)moduleName
