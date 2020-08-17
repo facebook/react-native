@@ -10,29 +10,30 @@ package com.facebook.react.codegen.generator.model;
 import java.util.Collections;
 import java.util.List;
 
-public final class ObjectType extends Type {
-  public static final String TYPE_NAME = "ObjectTypeAnnotation";
+public final class NativeModuleType extends Type {
+  public static String TYPE_NAME = "<NONE>"; // Not an actual type in the schema.
+
+  public final List<Property> properties;
 
   public static class Property {
     public final String name;
-    public final Type type;
+    public final FunctionType type;
     public final boolean optional;
 
-    public Property(String name, Type type, boolean optional) {
+    public Property(final String name, final Type type, final boolean optional) {
+      assertType(type, FunctionType.class);
       this.name = name;
-      this.type = type;
+      this.type = (FunctionType) type;
       this.optional = optional;
     }
 
     @Override
     public String toString() {
-      return (optional ? "?" : "") + name + ": " + type;
+      return name + ": " + (this.optional ? "?" : "") + type;
     }
   }
 
-  public final List<Property> properties;
-
-  public ObjectType(final TypeId typeId, final List<Property> properties) {
+  public NativeModuleType(final TypeId typeId, final List<Property> properties) {
     super(typeId);
     this.properties = Collections.unmodifiableList(properties);
   }

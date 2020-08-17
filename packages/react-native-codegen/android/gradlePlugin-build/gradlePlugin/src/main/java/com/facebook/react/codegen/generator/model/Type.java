@@ -10,7 +10,17 @@ package com.facebook.react.codegen.generator.model;
 import java.util.Objects;
 
 public abstract class Type {
+  public static String TYPE_NAME = "<NONE>";
+
   protected final TypeId mTypeId;
+
+  public static <T extends Type> void assertType(
+      final Type type, final Class<T> expectedTypeClass) {
+    if (!expectedTypeClass.isInstance(type)) {
+      throw new IllegalStateException(
+          "Expected: " + expectedTypeClass.getName() + " but found: " + type.getClass().getName());
+    }
+  }
 
   public Type(final TypeId typeId) {
     mTypeId = typeId;

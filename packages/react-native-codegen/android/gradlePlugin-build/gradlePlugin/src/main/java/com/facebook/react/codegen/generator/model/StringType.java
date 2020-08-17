@@ -8,6 +8,7 @@
 package com.facebook.react.codegen.generator.model;
 
 public final class StringType extends Type {
+  public static final String TYPE_NAME = "StringTypeAnnotation";
 
   public StringType(final TypeId typeId) {
     super(typeId);

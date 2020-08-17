@@ -38,6 +38,10 @@ public final class TypeId {
     return new TypeId(moduleName, typeName);
   }
 
+  public static TypeId of(final TypeId typeId) {
+    return of(typeId.moduleName, typeId.typeName);
+  }
+
   @Override
   public String toString() {
     return String.format(

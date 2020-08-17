@@ -8,6 +8,7 @@
 package com.facebook.react.codegen.generator.model;
 
 public final class AliasType extends Type {
+  public static final String TYPE_NAME = "TypeAliasTypeAnnotation";
 
   public final TypeId referredTypeId;
 

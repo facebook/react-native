@@ -7,11 +7,13 @@
 
 package com.facebook.react.codegen.generator.model;
 
-public final class VoidType extends Type {
-  public static final String TYPE_NAME = "VoidTypeAnnotation";
-  public static final VoidType VOID = new VoidType(TypeId.of(""));
+public final class NullableType extends Type {
+  public static final String TYPE_NAME = "NullableTypeAnnotation";
 
-  private VoidType(final TypeId typeId) {
+  public final Type referredType;
+
+  public NullableType(final TypeId typeId, final Type referredType) {
     super(typeId);
+    this.referredType = referredType;
   }
 }
