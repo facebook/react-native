@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = 'ActivityIndicator';
+exports.documentationURL = 'https://reactnative.dev/docs/activityindicator';
 exports.description = 'Animated loading indicators.';
 
 exports.examples = [

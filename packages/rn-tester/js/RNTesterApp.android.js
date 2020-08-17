@@ -13,26 +13,27 @@
 const RNTesterActions = require('./utils/RNTesterActions');
 const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
 const RNTesterExampleList = require('./components/RNTesterExampleList');
-const RNtesterBookmarkList = require('./components/RNTesterBookmarkList');
 const RNTesterList = require('./utils/RNTesterList');
 const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
 const React = require('react');
 const URIActionMap = require('./utils/URIActionMap');
 const RNTesterNavBar = require('./components/RNTesterNavbar');
 
-// const nativeImageSource = require('react-native');
-
 const {
   AppRegistry,
   AsyncStorage,
   BackHandler,
-  Linking,
   StyleSheet,
   Text,
+  Linking,
   UIManager,
   useColorScheme,
   View,
+  TouchableOpacity,
+  Image,
 } = require('react-native');
+
+import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
 
 import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
@@ -49,12 +50,7 @@ type Props = {exampleFromAppetizeParams?: ?string, ...};
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
-const Header = ({
-  title,
-}: {
-  title: string,
-  ...
-}) => (
+const Header = ({title, documentationURL}: {title: string, ...}) => (
   <RNTesterThemeContext.Consumer>
     {theme => {
       return (
@@ -63,6 +59,21 @@ const Header = ({
             <Text style={[styles.title, {color: theme.LabelColor}]}>
               {title}
             </Text>
+            {documentationURL && (
+              <TouchableOpacity
+                style={{
+                  textDecorationLine: 'underline',
+                  position: 'absolute',
+                  bottom: 3,
+                  right: 25,
+                }}
+                onPress={() => openURLInBrowser(documentationURL)}>
+                <Image
+                  source={require('./assets/documentation.png')}
+                  style={{width: 25, height: 25}}
+                />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       );
@@ -85,7 +96,7 @@ const RNTesterExampleContainerViaHook = ({
   return (
     <RNTesterThemeContext.Provider value={theme}>
       <View style={styles.container}>
-        <Header title={title} />
+        <Header title={title} documentationURL={module.documentationURL} />
         <RNTesterExampleContainer module={module} ref={exampleRef} />
       </View>
     </RNTesterThemeContext.Provider>
@@ -110,7 +121,12 @@ const RNTesterExampleListViaHook = ({
 }) => {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? themes.dark : themes.light;
-  const exampleTitle = screen == 'component' ? "Component Store" : "API Store"
+  const exampleTitle =
+    screen === 'component'
+      ? 'Component Store'
+      : screen === 'api'
+      ? 'API Store'
+      : 'Bookmarks';
   return (
     <RNTesterThemeContext.Provider value={theme}>
       <RNTesterBookmarkContext.Provider value={bookmark}>
@@ -121,29 +137,6 @@ const RNTesterExampleListViaHook = ({
             list={list}
             screen={screen}
           />
-        </View>
-      </RNTesterBookmarkContext.Provider>
-    </RNTesterThemeContext.Provider>
-  );
-};
-
-const RNTesterBookmarkListViaHook = ({
-  title,
-  bookmark,
-  onNavigate,
-}: {
-  title: string,
-  onNavigate?: () => mixed,
-  ...
-}) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? themes.dark : themes.light;
-  return (
-    <RNTesterThemeContext.Provider value={theme}>
-      <RNTesterBookmarkContext.Provider value={bookmark}>
-        <View style={styles.container}>
-          <Header title="Bookmarks" />
-          <RNtesterBookmarkList onNavigate={onNavigate} />
         </View>
       </RNTesterBookmarkContext.Provider>
     </RNTesterThemeContext.Provider>
@@ -247,7 +240,6 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     });
   }
 
-
   render(): React.Node {
     if (!this.state) {
       return null;
@@ -263,9 +255,12 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
           RemoveComponent: this.state.RemoveComponent,
           checkBookmark: this.state.checkBookmark,
         })}
-          <View style={styles.bottomNavbar}>
-            <RNTesterNavBar screen={this.state.screen} onNavigate={this._handleAction} />
-          </View>
+        <View style={styles.bottomNavbar}>
+          <RNTesterNavBar
+            screen={this.state.screen}
+            onNavigate={this._handleAction}
+          />
+        </View>
       </View>
     );
   }
@@ -275,12 +270,15 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
 
     if (screen === 'bookmark' && !openExample) {
       return (
-        <RNTesterBookmarkListViaHook
+        <RNTesterExampleListViaHook
           title={'RNTester'}
+          key={screen}
           /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
            * when making Flow check .android.js files. */
           bookmark={bookmark}
           onNavigate={this._handleAction}
+          list={RNTesterList}
+          screen={screen}
         />
       );
     } else if (openExample) {

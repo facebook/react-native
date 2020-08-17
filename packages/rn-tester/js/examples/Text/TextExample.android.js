@@ -879,6 +879,7 @@ const styles = StyleSheet.create({
   },
 });
 exports.title = 'Text';
+exports.category = 'Basic';
 exports.description = 'Base component for rendering styled text.';
 exports.examples = [
   {

@@ -10,7 +10,7 @@
 
 const React = require('react');
 import {RNTesterThemeContext} from './RNTesterTheme';
-const {StyleSheet, Text} = require('react-native');
+const {StyleSheet, Text, Platform} = require('react-native');
 
 type Props = $ReadOnly<{|
   children: string,
@@ -37,9 +37,8 @@ class RNTesterComponentTitle extends React.Component<Props> {
 const styles = StyleSheet.create({
   titleText: {
     fontSize: 20,
-    fontWeight: '300',
-    fontFamily: 'Times New Roman',
-    marginBottom: 10,
+    fontWeight: '400',
+    marginBottom: 5,
   },
 });
 

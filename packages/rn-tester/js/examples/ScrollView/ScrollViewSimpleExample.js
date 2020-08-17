@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'ScrollViewSimpleExample';
+exports.category = 'Basic';
 exports.description =
   'Component that enables scrolling through child components.';
 

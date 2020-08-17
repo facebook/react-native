@@ -21,6 +21,7 @@ import {AsyncStorage} from 'react-native';
 const {
   Platform,
   SectionList,
+  FlatList,
   StyleSheet,
   Text,
   Button,
@@ -58,25 +59,6 @@ type ButtonProps = {
   ...
 };
 
-const PlatformLogoContainer = ({platform}: PlatformLogoPropsType) => {
-  return (
-    <View style={{flexDirection: 'row'}}>
-      {(!platform || platform === 'ios') && (
-        <Image
-          style={styles.platformLogoStyle}
-          source={require('../assets/apple.png')}
-        />
-      )}
-      {(!platform || platform === 'android') && (
-        <Image
-          style={styles.platformLogoStyle}
-          source={require('../assets/android.png')}
-        />
-      )}
-    </View>
-  );
-};
-
 class RowComponent extends React.PureComponent<ButtonProps, ButtonState> {
   static contextType = RNTesterBookmarkContext;
 
@@ -98,9 +80,6 @@ class RowComponent extends React.PureComponent<ButtonProps, ButtonState> {
 
   onButtonPress = () => {
     let bookmark = this.context;
-    this.setState({
-      active: !this.state.active,
-    });
     if (!this.state.active) {
       if (this.state.key === 'APIS' || this.state.key === 'RECENT_APIS') {
         bookmark.AddApi(this.props.item.module.title, this.props.item);
@@ -114,6 +93,9 @@ class RowComponent extends React.PureComponent<ButtonProps, ButtonState> {
         bookmark.RemoveComponent(this.props.item.module.title);
       }
     }
+    this.setState({
+      active: !this.state.active,
+    });
   };
 
   _onPress = () => {
@@ -126,6 +108,9 @@ class RowComponent extends React.PureComponent<ButtonProps, ButtonState> {
   };
   render() {
     const {item} = this.props;
+    const platform = item.module.platform;
+    const onIos = !platform || platform === 'ios';
+    const onAndroid = !platform || platform === 'android';
     return (
       <RNTesterThemeContext.Consumer>
         {theme => {
@@ -136,6 +121,7 @@ class RowComponent extends React.PureComponent<ButtonProps, ButtonState> {
               accessibilityLabel={
                 item.module.title + ' ' + item.module.description
               }
+              style={styles.listItem}
               underlayColor={'rgb(242,242,242)'}
               onPress={this._onPress}>
               <View
@@ -143,30 +129,10 @@ class RowComponent extends React.PureComponent<ButtonProps, ButtonState> {
                   styles.row,
                   {backgroundColor: theme.SystemBackgroundColor},
                 ]}>
-                <View style={styles.rowTextContent}>
+                <View style={styles.topRowStyle}>
                   <RNTesterComponentTitle>
                     {item.module.title}
                   </RNTesterComponentTitle>
-
-                  <View style={{flexDirection: 'row', marginBottom: 5}}>
-                    <Text style={{color: 'blue'}}>Category: </Text>
-                    <Text>{item.category || 'Components/Basic'}</Text>
-                  </View>
-
-                  <Text
-                    style={[
-                      styles.rowDetailText,
-                      {color: theme.SecondaryLabelColor},
-                    ]}>
-                    {item.module.description}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 0.15,
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
                   <TouchableHighlight
                     style={styles.imageViewStyle}
                     onPress={() => this.onButtonPress()}>
@@ -174,12 +140,39 @@ class RowComponent extends React.PureComponent<ButtonProps, ButtonState> {
                       style={styles.imageStyle}
                       source={
                         this.state.active
-                          ? require('../assets/bookmark-filled.png')
-                          : require('../assets/bookmark-outline.png')
+                          ? require('../assets/bookmark-outline-blue.png')
+                          : require('../assets/bookmark-outline-gray.png')
                       }
                     />
                   </TouchableHighlight>
-                  <PlatformLogoContainer platform={item.module.platform} />
+                </View>
+                <Text
+                  style={[
+                    styles.rowDetailText,
+                    {color: theme.SecondaryLabelColor, marginBottom: 5},
+                  ]}>
+                  {item.module.description}
+                </Text>
+                <View style={styles.bottomRowStyle}>
+                  <Text style={{color: theme.SecondaryLabelColor, width: 65}}>
+                    {item.module.category || 'Other'}
+                  </Text>
+                  <View style={styles.platformLabelStyle}>
+                    <Text
+                      style={{
+                        color: onIos ? '#787878' : theme.SeparatorColor,
+                        fontWeight: onIos ? '500' : '300',
+                      }}>
+                      iOS
+                    </Text>
+                    <Text
+                      style={{
+                        color: onAndroid ? '#787878' : theme.SeparatorColor,
+                        fontWeight: onAndroid ? '500' : '300',
+                      }}>
+                      Android
+                    </Text>
+                  </View>
                 </View>
               </View>
             </TouchableHighlight>
@@ -243,12 +236,14 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
     });
   }
 
-  updateSectionsList = (index, key) => {
-    if (key === 'Components') {
-      let openedItem = this.state.components[index];
+  updateSectionsList = (item, key) => {
+      const openedItem = item;
+      if (key === 'COMPONENTS' || key === 'RECENT_COMPONENTS') {
       let componentsCopy = [...this.state.recentComponents];
-      const ind = componentsCopy.findIndex(component => component.key === openedItem.key);
-      if(ind != -1) {
+      const ind = componentsCopy.findIndex(
+        component => component.key === openedItem.key,
+      );
+      if (ind != -1) {
         componentsCopy.splice(ind, 1);
       }
       if (this.state.recentComponents.length >= 5) {
@@ -257,10 +252,9 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
       componentsCopy.unshift(openedItem);
       AsyncStorage.setItem('RecentComponents', JSON.stringify(componentsCopy));
     } else {
-      let openedItem = this.state.api[index];
       let apisCopy = [...this.state.recentApis];
       const ind = apisCopy.findIndex(api => api.key === openedItem.key);
-      if(ind != -1) {
+      if (ind != -1) {
         apisCopy.splice(ind, 1);
       }
       if (this.state.recentApis.length >= 5) {
@@ -272,9 +266,10 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   };
 
   render(): React.Node {
+    const bookmark = this.context;
     const filter = ({example, filterRegex, category}) =>
       filterRegex.test(example.module.title) &&
-      (!category || example.category === category) &&
+      (!category || example.module.category === category) &&
       (!Platform.isTV || example.supportsTVOS);
 
     const {screen} = this.props;
@@ -285,19 +280,19 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
           {
             data: this.state.recentComponents,
             key: 'RECENT_COMPONENTS',
-            title: 'Recently viewed'
+            title: 'Recently viewed',
           },
           {
             data: this.state.components,
             key: 'COMPONENTS',
-            title: 'Components'
+            title: 'Components',
           },
         ];
       } else {
         sections = [
           {
             data: this.state.components,
-            key: 'Components',
+            key: 'COMPONENTS',
           },
         ];
       }
@@ -307,7 +302,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
           {
             data: this.state.recentApis,
             key: 'RECENT_APIS',
-            title: 'Recently viewed'
+            title: 'Recently viewed',
           },
           {
             data: this.state.api,
@@ -324,10 +319,23 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
           },
         ];
       }
+    } else if (screen === 'bookmark') {
+      sections = [
+        {
+          data: Object.values(bookmark.Components),
+          title: 'COMPONENTS',
+          key: 'COMPONENTS',
+        },
+        {
+          data: Object.values(bookmark.Api),
+          title: 'APIS',
+          key: 'APIS',
+        },
+      ];
     } else {
       sections = [];
     }
-    
+
     return (
       <RNTesterThemeContext.Consumer>
         {theme => {
@@ -348,12 +356,13 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
                     sections={filteredSections}
                     extraData={filteredSections}
                     renderItem={this._renderItem}
+                    ItemSeparatorComponent={ItemSeparator}
                     keyboardShouldPersistTaps="handled"
                     automaticallyAdjustContentInsets={false}
                     keyboardDismissMode="on-drag"
                     renderSectionHeader={renderSectionHeader}
                     ListFooterComponent={() => (
-                      <View style={{height: 80}}></View>
+                      <View style={{height: 200}}></View>
                     )}
                   />
                 )}
@@ -375,7 +384,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
         onNavigate={this.props.onNavigate}
         onShowUnderlay={separators.highlight}
         onHideUnderlay={separators.unhighlight}
-        updateSectionsList={() => this.updateSectionsList(index, section.key)}
+        updateSectionsList={() => this.updateSectionsList(item, section.key)}
       />
     );
   };
@@ -408,6 +417,9 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
   },
+  listItem: {
+    backgroundColor: Platform.select({ios: '#FFFFFF', android: '#F3F8FF'}),
+  },
   sectionHeader: {
     padding: 5,
     fontWeight: '500',
@@ -416,51 +428,50 @@ const styles = StyleSheet.create({
   row: {
     justifyContent: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 8,
-    marginVertical: 4,
+    paddingVertical: 12,
+    marginVertical: Platform.select({ios: 4, android: 8}),
     marginHorizontal: 15,
-    flexDirection: 'row',
-    borderColor: 'blue',
-    borderWidth: 1,
     overflow: 'hidden',
-  },
-  rowTextContent: {
-    flex: 0.8,
+    elevation: 5,
   },
   separator: {
-    height: StyleSheet.hairlineWidth,
-    marginLeft: 15,
+    height: Platform.select({ios: StyleSheet.hairlineWidth, android: 0}),
+    marginHorizontal: Platform.select({ios: 15, android: 0}),
   },
   separatorHighlighted: {
     height: StyleSheet.hairlineWidth,
   },
-  rowTitleText: {
-    fontSize: 20,
-    fontWeight: '300',
-    fontFamily: 'Times New Roman',
-    marginBottom: 10,
+  topRowStyle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flex: 1,
+  },
+  bottomRowStyle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   rowDetailText: {
     fontSize: 12,
     lineHeight: 20,
   },
-  imageStyle: {
-    height: 25,
-    width: 25,
-  },
   imageViewStyle: {
     height: 30,
     width: 30,
     borderRadius: 15,
-    backgroundColor: 'blue',
+    // backgroundColor: 'blue',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  platformLogoStyle: {
-    height: 35,
-    width: 30,
     position: 'relative',
-    top: 20,
+    bottom: 5,
+  },
+  imageStyle: {
+    height: 25,
+    width: 25,
+  },
+  platformLabelStyle: {
+    flexDirection: 'row',
+    width: 100,
+    justifyContent: 'space-between',
   },
 });
 

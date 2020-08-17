@@ -291,6 +291,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'SectionList';
+exports.category = 'ListViews';
 exports.description = 'Performant, scrollable list of data.';
 exports.examples = [
   {

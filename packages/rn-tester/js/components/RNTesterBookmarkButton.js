@@ -43,7 +43,7 @@ class RNTesterBookmarkButton extends React.Component<Props> {
           source={
             isActive
               ? require('../assets/bookmark-filled.png')
-              : require('../assets/bookmark-outline.png')
+              : require('../assets/bookmark-outline-gray.png')
           }
         />
       </TouchableOpacity>

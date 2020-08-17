@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'ScrollViewAnimated';
+exports.category = 'Basic';
 exports.description = 'Component that is animated when ScrollView is offset.';
 
 exports.examples = [

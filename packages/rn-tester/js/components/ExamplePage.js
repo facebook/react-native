@@ -11,82 +11,65 @@
 'use strict';
 
 import * as React from 'react';
-import {StyleSheet, View, Text, Dimensions, Image} from 'react-native';
-
-import {RNTesterThemeContext} from './RNTesterTheme';
-import Background from './Background';
+import {StyleSheet, View, Text, Dimensions} from 'react-native';
 
 type Props = $ReadOnly<{|
   children?: React.Node,
   title: string,
   description?: ?string,
+  category?: ?string,
   ios?: ?boolean,
   android?: ?boolean,
 |}>;
 
-const ScreenHeight = Dimensions.get('window').height;
 const ScreenWidth = Dimensions.get('window').width;
+import {RNTesterThemeContext} from './RNTesterTheme';
 
 export default function ExamplePage(props: Props): React.Node {
   const theme = React.useContext(RNTesterThemeContext);
 
   const description = props.description ?? '';
-  const androidImage = !props.android ? (
-    <Image
-      style={{height: 35, width: 30, margin: 2}}
-      source={imagePaths.android}
-    />
-  ) : null;
-
-  const appleImage = !props.ios ? (
-    <Image style={{height: 35, width: 30, margin: 2}} source={imagePaths.ios} />
-  ) : null;
-
-  const docsImage = (
-    <View style={styles.docsContainer}>
-      <Image source={imagePaths.docs} />
-      <Text>Docs</Text>
-    </View>
-  );
+  const onAndroid = props.android;
+  const onIos = props.ios;
+  const category = props.category;
 
   return (
-    <React.Fragment>
-      <View style={[styles.titleView, {backgroundColor: theme.BackgroundColor}]}>
-        <View style={styles.container}>
-          <View style={styles.headingContainer}>
-            <Text>{description}</Text>
-            <View style={styles.iconContainer}>
-              {appleImage}
-              {androidImage}
-            </View>
+    <>
+      <View style={styles.titleView}>
+        <Text style={{marginVertical: 8}}>{description}</Text>
+        <View style={styles.rowStyle}>
+          <Text style={{color: theme.SecondaryLabelColor, width: 65}}>
+            {category || 'Other'}
+          </Text>
+          <View style={styles.platformLabelStyle}>
+            <Text
+              style={{
+                color: onIos ? '#787878' : theme.SeparatorColor,
+                fontWeight: onIos ? '500' : '300',
+              }}>
+              iOS
+            </Text>
+            <Text
+              style={{
+                color: onAndroid ? '#787878' : theme.SeparatorColor,
+                fontWeight: onAndroid ? '500' : '300',
+              }}>
+              Android
+            </Text>
           </View>
-          {docsImage}
         </View>
       </View>
-
-      <Background height={ScreenHeight} width={ScreenWidth}>
-        <View style={styles.examplesContainer}>{props.children}</View>
-      </Background>
-    </React.Fragment>
+      <View style={styles.examplesContainer}>{props.children}</View>
+    </>
   );
 }
 
-const imagePaths = {
-  android: require('../assets/android-icon.png'),
-  ios: require('../assets/apple-icon.png'),
-  docs: require('../assets/docs-icon.png'),
-};
-
 const styles = StyleSheet.create({
   titleView: {
-    height: 75,
-    padding: 20,
+    backgroundColor: '#F3F8FF',
+    paddingHorizontal: 25,
     paddingTop: 8,
     overflow: 'hidden',
-  },
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
   },
   iconContainer: {
     flexDirection: 'row',
@@ -95,12 +78,6 @@ const styles = StyleSheet.create({
   examplesContainer: {
     width: ScreenWidth,
     flexGrow: 1,
-    backgroundColor: 'transparent',
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
   },
   description: {
     paddingVertical: 5,
@@ -111,7 +88,13 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     justifyContent: 'center',
   },
-  headingContainer: {
-    width: '80%',
+  rowStyle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  platformLabelStyle: {
+    flexDirection: 'row',
+    width: 100,
+    justifyContent: 'space-between',
   },
 });

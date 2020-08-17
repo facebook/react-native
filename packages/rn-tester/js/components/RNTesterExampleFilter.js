@@ -12,13 +12,19 @@
 
 const React = require('react');
 const RNTesterListFilters = require('./RNTesterListFilters');
-const {StyleSheet, TextInput, View, ScrollView} = require('react-native');
+const {
+  StyleSheet,
+  TextInput,
+  View,
+  ScrollView,
+  Image,
+} = require('react-native');
 import {RNTesterThemeContext} from './RNTesterTheme';
 
 type Props = {
   filter: Function,
   render: Function,
-  sections: Object,
+  content: Object,
   disableSearch?: boolean,
   testID?: string,
   hideFilterPills?: boolean,
@@ -58,8 +64,10 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
       data: section.data.filter(filter),
     }));
 
-    if(this.state.filter.trim() !== '' || this.state.category.trim() !== '') {
-      filteredSections = filteredSections.filter(section => section.title !== 'Recently viewed');
+    if (this.state.filter.trim() !== '' || this.state.category.trim() !== '') {
+      filteredSections = filteredSections.filter(
+        section => section.title !== 'Recently viewed',
+      );
     }
 
     return (
@@ -73,13 +81,13 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
   _renderFilteredSections(filteredSections): ?React.Element<any> {
     if (this.props.page === 'examples_page') {
       return (
-        <ScrollView keyboardShouldPersistTaps="hadnled" keyboardDismissMode="interactive">
+        <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="interactive">
           {this.props.render({filteredSections})}
           {/**
            * This is a fake list item. It is needed to provide the ScrollView some bottom padding.
            * The height of this item is basically ScreenHeight - the height of (Header + bottom navbar)
            * */}
-          <View style={{height: 280}} />
+          <View style={{height: 320}} />
         </ScrollView>
       );
     } else {
@@ -95,28 +103,34 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
       <RNTesterThemeContext.Consumer>
         {theme => {
           return (
-            <View style={[styles.searchRow, {backgroundColor: theme.BackgroundColor}]}>
-              <TextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                clearButtonMode="always"
-                onChangeText={text => {
-                  this.setState(() => ({filter: text}));
-                }}
-                placeholder="Search..."
-                placeholderTextColor={theme.PlaceholderTextColor}
-                underlineColorAndroid="transparent"
-                style={[
-                  styles.searchTextInput,
-                  {
-                    color: theme.LabelColor,
-                    backgroundColor: theme.SecondaryGroupedBackgroundColor,
-                    borderColor: theme.QuaternaryLabelColor,
-                  },
-                ]}
-                testID={this.props.testID}
-                value={this.state.filter}
-              />
+            <View style={[styles.searchRow, {backgroundColor: '#F3F8FF'}]}>
+              <View style={styles.textInputStyle}>
+                <Image
+                  source={require('../assets/search-icon.png')}
+                  style={styles.searchIcon}
+                />
+                <TextInput
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  clearButtonMode="always"
+                  onChangeText={text => {
+                    this.setState(() => ({filter: text}));
+                  }}
+                  placeholder="Search..."
+                  placeholderTextColor={theme.PlaceholderTextColor}
+                  underlineColorAndroid="transparent"
+                  style={[
+                    styles.searchTextInput,
+                    {
+                      color: theme.LabelColor,
+                      backgroundColor: theme.SecondaryGroupedBackgroundColor,
+                      borderColor: theme.QuaternaryLabelColor,
+                    },
+                  ]}
+                  testID={this.props.testID}
+                  value={this.state.filter}
+                />
+              </View>
               {!this.props.hideFilterPills && (
                 <RNTesterListFilters
                   onFilterButtonPress={filterLabel =>
@@ -134,17 +148,32 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
   searchRow: {
-    padding: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    alignItems: 'center',
   },
   searchTextInput: {
-    borderRadius: 3,
+    borderRadius: 6,
     borderWidth: 1,
-    paddingLeft: 8,
     paddingVertical: 0,
     height: 35,
-  },
-  container: {
     flex: 1,
+    alignSelf: 'center',
+    paddingLeft: 35,
+  },
+  textInputStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'relative',
+    right: 10,
+  },
+  searchIcon: {
+    width: 20,
+    height: 20,
+    position: 'relative',
+    top: 0,
+    left: 27,
+    zIndex: 2,
   },
 });
 

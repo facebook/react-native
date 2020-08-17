@@ -46,9 +46,10 @@ class RNTesterExampleContainer extends React.Component {
         <ExamplePage
           title={module.title}
           description={module.description}
-          android={module.android}
-          ios={module.ios}
-          documentationURL={module.documentationURL}>
+          android={!module.platform || module.platform === 'android'}
+          ios={!module.platform || module.platform === 'ios'}
+          documentationURL={module.documentationURL}
+          category={module.category}>
           {module.examples[0].render()}
         </ExamplePage>
       );
@@ -58,9 +59,10 @@ class RNTesterExampleContainer extends React.Component {
         <ExamplePage
           title={module.title}
           description={module.description}
-          android={module.android}
-          ios={module.ios}
-          documentationURL={module.documentationURL}>
+          android={!module.platform || module.platform === 'android'}
+          ios={!module.platform || module.platform === 'ios'}
+          documentationURL={module.documentationURL}
+          category={module.category}>
           {module.examples[0].render()}
         </ExamplePage>
       );
@@ -80,9 +82,10 @@ class RNTesterExampleContainer extends React.Component {
       <ExamplePage
         title={module.title}
         description={module.description}
-        android={module.android}
-        ios={module.ios}
-        documentationURL={module.documentationURL}>
+        android={!module.platform || module.platform === 'android'}
+        ios={!module.platform || module.platform === 'ios'}
+        documentationURL={module.documentationURL}
+        category={module.category}>
         <RNTesterExampleFilter
           testID="example_search"
           page="examples_page"
