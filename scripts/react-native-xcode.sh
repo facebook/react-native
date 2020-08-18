@@ -167,6 +167,7 @@ fi
 
 if [[ $USE_HERMES != true ]]; then
   mv "$BUNDLE_FILE" "$DEST/"
+  BUNDLE_FILE="$DEST/main.jsbundle"
 else
   EXTRA_COMPILER_ARGS=
   if [[ $DEV == true ]]; then
@@ -180,6 +181,7 @@ else
   HBC_FILE="$CONFIGURATION_BUILD_DIR/$(basename $BUNDLE_FILE)"
   "$HERMES_PATH" -emit-binary $EXTRA_COMPILER_ARGS -out "$HBC_FILE" "$BUNDLE_FILE"
   mv "$HBC_FILE" "$DEST/"
+  BUNDLE_FILE="$DEST/main.jsbundle"
   if [[ $EMIT_SOURCEMAP == true ]]; then
     HBC_SOURCEMAP_FILE="$HBC_FILE.map"
     "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$SOURCEMAP_FILE"
