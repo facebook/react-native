@@ -4,13 +4,13 @@ import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
 import {RNTesterThemeContext} from './RNTesterTheme';
 const RNTesterActions = require('../utils/RNTesterActions');
 
-const RNTesterNavbar = ({onNavigate, screen}) => {
+const RNTesterNavbar = ({updateScreen, screen}) => {
   const theme = React.useContext(RNTesterThemeContext);
 
   /** to be attached to navigation framework */
-  const isAPIActive =  screen === 'api';
-  const isComponentActive =   screen === 'component';
-  const isBookmarkActive =   screen === 'bookmark';
+  const isAPIActive =  screen === 'apis';
+  const isComponentActive =   screen === 'components';
+  const isBookmarkActive =   screen === 'bookmarks';
 
   return (
     <View>
@@ -21,7 +21,7 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
             {/** @attention attach navigation endpoints here */}
             <Pressable
               testID="components-tab"
-              onPress={() =>  onNavigate(RNTesterActions.OpenList('component'))}
+              onPress={() =>  updateScreen({ screen: 'components'})}
               style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
               <View style={styles.pressableContent} collapsable={false}>
                 <Image
@@ -52,7 +52,7 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
           <View style={styles.floatContainer}>
             <Pressable
               testID="bookmarks-tab"
-              onPress={() => { onNavigate(RNTesterActions.OpenList('bookmark')); }}>
+              onPress={() =>  updateScreen({ screen: 'bookmarks'})}>
                 <View style={[styles.floatingButton, {backgroundColor: theme.BorderColor}]} >
                 <Image
                     style={styles.bookmarkIcon}
@@ -70,7 +70,7 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
           {/** right tab with Components  */}
          <Pressable
           testID="apis-tab"
-          onPress={() => { onNavigate(RNTesterActions.OpenList('api')); }}
+          onPress={() =>  updateScreen({ screen: 'apis'})}
           style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
             <View style={styles.pressableContent} collapsable={false}>
               <Image
