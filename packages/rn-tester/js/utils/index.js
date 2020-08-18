@@ -66,7 +66,7 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
       {
         key: 'RECENT_COMPONENTS',
         data: recentlyUsedComponents,
-        title: 'Recent Components',
+        title: 'Recently Viewed',
       },
       {
         key: 'COMPONENTS',
@@ -78,7 +78,7 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
       {
         key: 'RECENT_APIS',
         data: recentlyUsedAPIs,
-        title: 'Recent APIs',
+        title: 'Recently viewed',
       },
       {
         key: 'APIS',

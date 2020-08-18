@@ -66,7 +66,7 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
 
     if (this.state.filter.trim() !== '' || this.state.category.trim() !== '') {
       filteredSections = filteredSections.filter(
-        section => section.title !== 'Recently viewed',
+        section => section.title !== 'Recently Viewed',
       );
     }
 
