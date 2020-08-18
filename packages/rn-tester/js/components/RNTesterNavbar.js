@@ -2,7 +2,6 @@ import React from 'react';
 import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
-const RNTesterActions = require('../utils/RNTesterActions');
 
 const RNTesterNavbar = ({updateScreen, screen}) => {
   const theme = React.useContext(RNTesterThemeContext);
