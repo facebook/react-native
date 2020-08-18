@@ -863,7 +863,11 @@ static NSString *RCTSemanticColorNames()
         return color;
       } else if ([value isKindOfClass:[NSArray class]]) {
         for (id name in value) {
-          UIColor *color = RCTColorFromSemanticColorName(name);
+          UIColor *color = [UIColor colorNamed:name];
+          if (color != nil) {
+            return color;
+          }
+          color = RCTColorFromSemanticColorName(name);
           if (color != nil) {
             return color;
           }
