@@ -16,10 +16,12 @@ const invariant = require('invariant');
 type SimpleTask = {
   name: string,
   run: () => void,
+  ...
 };
 type PromiseTask = {
   name: string,
   gen: () => Promise<any>,
+  ...
 };
 export type Task = Function | SimpleTask | PromiseTask;
 
@@ -49,7 +51,7 @@ class TaskQueue {
    * `onMoreTasks` is invoked when `PromiseTask`s resolve if there are more
    * tasks to process.
    */
-  constructor({onMoreTasks}: {onMoreTasks: () => void}) {
+  constructor({onMoreTasks}: {onMoreTasks: () => void, ...}) {
     this._onMoreTasks = onMoreTasks;
     this._queueStack = [{tasks: [], popable: false}];
   }
@@ -122,7 +124,11 @@ class TaskQueue {
     }
   }
 
-  _queueStack: Array<{tasks: Array<Task>, popable: boolean}>;
+  _queueStack: Array<{
+    tasks: Array<Task>,
+    popable: boolean,
+    ...
+  }>;
   _onMoreTasks: () => void;
 
   _getCurrentQueue(): Array<Task> {

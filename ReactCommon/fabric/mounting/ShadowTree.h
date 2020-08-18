@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -21,8 +23,8 @@
 namespace facebook {
 namespace react {
 
-using ShadowTreeCommitTransaction = std::function<UnsharedRootShadowNode(
-    const SharedRootShadowNode &oldRootShadowNode)>;
+using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
+    RootShadowNode::Shared const &oldRootShadowNode)>;
 
 /*
  * Represents the shadow tree and its lifecycle.
@@ -34,9 +36,10 @@ class ShadowTree final {
    */
   ShadowTree(
       SurfaceId surfaceId,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext,
-      const RootComponentDescriptor &rootComponentDescriptor);
+      LayoutConstraints const &layoutConstraints,
+      LayoutContext const &layoutContext,
+      RootComponentDescriptor const &rootComponentDescriptor,
+      ShadowTreeDelegate const &delegate);
 
   ~ShadowTree();
 
@@ -58,31 +61,27 @@ class ShadowTree final {
    */
   void commit(ShadowTreeCommitTransaction transaction) const;
 
-#pragma mark - Delegate
-
   /*
-   * Sets and gets the delegate.
-   * The delegate is stored as a raw pointer, so the owner must null
-   * the pointer before being destroyed.
+   * Commit an empty tree (a new `RootShadowNode` with no children).
    */
-  void setDelegate(ShadowTreeDelegate const *delegate);
-  ShadowTreeDelegate const *getDelegate() const;
+  void commitEmptyTree() const;
 
  private:
-  UnsharedRootShadowNode cloneRootShadowNode(
-      const SharedRootShadowNode &oldRootShadowNode,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
+  RootShadowNode::Unshared cloneRootShadowNode(
+      RootShadowNode::Shared const &oldRootShadowNode,
+      LayoutConstraints const &layoutConstraints,
+      LayoutContext const &layoutContext) const;
 
   void emitLayoutEvents(
       std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
 
   SurfaceId const surfaceId_;
+  ShadowTreeDelegate const &delegate_;
   mutable better::shared_mutex commitMutex_;
-  mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.
+  mutable RootShadowNode::Shared
+      rootShadowNode_; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision::Number revisionNumber_{
       0}; // Protected by `commitMutex_`.
-  ShadowTreeDelegate const *delegate_;
   MountingCoordinator::Shared mountingCoordinator_;
 };
 

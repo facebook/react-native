@@ -10,7 +10,7 @@
 // [TODO(macOS ISS#2323203)
 'use strict';
 
-import type {NativeOrDynamicColorType} from '../Color/NativeOrDynamicColorType';
+import type {NativeOrDynamicColorType} from '../StyleSheet/NativeOrDynamicColorType';
 
 function processColorObject(
   color: NativeOrDynamicColorType,

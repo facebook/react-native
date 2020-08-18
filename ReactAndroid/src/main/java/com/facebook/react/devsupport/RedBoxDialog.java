@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
 import android.app.Dialog;
@@ -122,6 +123,8 @@ import org.json.JSONObject;
     public StackAdapter(String title, StackFrame[] stack) {
       mTitle = title;
       mStack = stack;
+      Assertions.assertNotNull(mTitle);
+      Assertions.assertNotNull(mStack);
     }
 
     @Override
@@ -169,7 +172,8 @@ import org.json.JSONObject;
                     LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.redbox_item_title, parent, false);
         // Remove ANSI color codes from the title
-        title.setText(mTitle.replaceAll("\\x1b\\[[0-9;]*m", ""));
+        String titleSafe = (mTitle == null ? "<unknown title>" : mTitle);
+        title.setText(titleSafe.replaceAll("\\x1b\\[[0-9;]*m", ""));
         return title;
       } else {
         if (convertView == null) {
@@ -182,6 +186,8 @@ import org.json.JSONObject;
         FrameViewHolder holder = (FrameViewHolder) convertView.getTag();
         holder.mMethodView.setText(frame.getMethod());
         holder.mFileView.setText(StackTraceHelper.formatFrameSource(frame));
+        holder.mMethodView.setTextColor(frame.isCollapsed() ? 0xFFAAAAAA : Color.WHITE);
+        holder.mFileView.setTextColor(frame.isCollapsed() ? 0xFF808080 : 0xFFB3B3B3);
         return convertView;
       }
     }

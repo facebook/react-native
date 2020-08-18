@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 
 #include <array>
@@ -27,19 +28,20 @@ class StateUpdate;
  */
 class EventDispatcher {
  public:
-  using Shared = std::shared_ptr<const EventDispatcher>;
-  using Weak = std::weak_ptr<const EventDispatcher>;
+  using Shared = std::shared_ptr<EventDispatcher const>;
+  using Weak = std::weak_ptr<EventDispatcher const>;
 
   EventDispatcher(
-      const EventPipe &eventPipe,
-      const StatePipe &statePipe,
-      const EventBeatFactory &synchonousEventBeatFactory,
-      const EventBeatFactory &asynchonousEventBeatFactory);
+      EventPipe const &eventPipe,
+      StatePipe const &statePipe,
+      EventBeat::Factory const &synchonousEventBeatFactory,
+      EventBeat::Factory const &asynchonousEventBeatFactory,
+      EventBeat::SharedOwnerBox const &ownerBox);
 
   /*
    * Dispatches a raw event with given priority using event-delivery pipe.
    */
-  void dispatchEvent(const RawEvent &rawEvent, EventPriority priority) const;
+  void dispatchEvent(RawEvent const &rawEvent, EventPriority priority) const;
 
   /*
    * Dispatches a state update with given priority.
@@ -48,7 +50,7 @@ class EventDispatcher {
       const;
 
  private:
-  const EventQueue &getEventQueue(EventPriority priority) const;
+  EventQueue const &getEventQueue(EventPriority priority) const;
 
   std::array<std::unique_ptr<EventQueue>, 4> eventQueues_;
 };

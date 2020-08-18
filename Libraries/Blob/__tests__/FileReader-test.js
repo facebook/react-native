@@ -7,6 +7,7 @@
  * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 jest.unmock('event-target-shim').setMock('../../BatchedBridge/NativeModules', {

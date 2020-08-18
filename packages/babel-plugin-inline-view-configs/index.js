@@ -6,6 +6,7 @@
  *
  * @format
  */
+
 'use strict';
 
 const {parseString} = require('react-native-codegen/src/parsers/flow');
@@ -39,6 +40,14 @@ function isCodegenDeclaration(declaration) {
     declaration.callee &&
     declaration.callee.name &&
     declaration.callee.name === 'codegenNativeComponent'
+  ) {
+    return true;
+  } else if (
+    declaration.type === 'TypeCastExpression' &&
+    declaration.expression &&
+    declaration.expression.callee &&
+    declaration.expression.callee.name &&
+    declaration.expression.callee.name === 'codegenNativeComponent'
   ) {
     return true;
   }

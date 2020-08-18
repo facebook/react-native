@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -12,9 +14,6 @@
 #include <react/config/ReactNativeConfig.h>
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
-#include <react/mounting/ShadowTree.h>
-#include <react/mounting/ShadowTreeDelegate.h>
-#include <react/mounting/ShadowTreeRegistry.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/SchedulerDelegate.h>
@@ -30,7 +29,7 @@ namespace react {
 /*
  * Scheduler coordinates Shadow Tree updates and event flows.
  */
-class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
+class Scheduler final : public UIManagerDelegate {
  public:
   Scheduler(SchedulerToolbox schedulerToolbox, SchedulerDelegate *delegate);
   ~Scheduler();
@@ -67,14 +66,21 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       const LayoutConstraints &layoutConstraints,
       const LayoutContext &layoutContext) const;
 
-  const ComponentDescriptor &getComponentDescriptor(ComponentHandle handle);
+  /*
+   * This is broken. Please do not use.
+   * `ComponentDescriptor`s are not designed to be used outside of `UIManager`,
+   * there is no any garantees about their lifetime.
+   */
+  ComponentDescriptor const *
+  findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
+      ComponentHandle handle) const;
 
 #pragma mark - Delegate
 
   /*
    * Sets and gets the Scheduler's delegate.
-   * The delegate is stored as a raw pointer, so the owner must null
-   * the pointer before being destroyed.
+   * If you requesting a ComponentDescriptor and unsure that it's there, you are
+   * doing something wrong.
    */
   void setDelegate(SchedulerDelegate *delegate);
   SchedulerDelegate *getDelegate() const;
@@ -82,8 +88,7 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
 #pragma mark - UIManagerDelegate
 
   void uiManagerDidFinishTransaction(
-      SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildNodes) override;
+      MountingCoordinator::Shared const &mountingCoordinator) override;
   void uiManagerDidCreateShadowNode(
       const SharedShadowNode &shadowNode) override;
   void uiManagerDidDispatchCommand(
@@ -96,20 +101,14 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       bool blockNativeResponder) override;
   void uiManagerDidClearJSResponder() override;
 
-#pragma mark - ShadowTreeDelegate
-
-  void shadowTreeDidCommit(
-      ShadowTree const &shadowTree,
-      MountingCoordinator::Shared const &mountingCoordinator) const override;
-
  private:
   SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   std::unique_ptr<const RootComponentDescriptor> rootComponentDescriptor_;
-  ShadowTreeRegistry shadowTreeRegistry_;
   RuntimeExecutor runtimeExecutor_;
-  std::shared_ptr<UIManagerBinding> uiManagerBinding_;
+  std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
+  EventDispatcher::Shared eventDispatcher_;
 };
 
 } // namespace react

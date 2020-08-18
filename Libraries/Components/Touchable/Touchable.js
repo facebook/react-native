@@ -19,9 +19,10 @@ const StyleSheet = require('../../StyleSheet/StyleSheet');
 const TVEventHandler = require('../AppleTV/TVEventHandler');
 const UIManager = require('../../ReactNative/UIManager');
 const View = require('../View/View');
+const SoundManager = require('../Sound/SoundManager');
 
 const keyMirror = require('fbjs/lib/keyMirror');
-const normalizeColor = require('../../Color/normalizeColor');
+const normalizeColor = require('../../StyleSheet/normalizeColor');
 
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PressEvent} from '../../Types/CoreEventTypes';
@@ -380,7 +381,7 @@ const TouchableMixin = {
           cmp.touchableHandleFocus(evt);
         } else if (evt.eventType === 'blur') {
           cmp.touchableHandleBlur(evt);
-        } else if (evt.eventType === 'select') {
+        } else if (evt.eventType === 'select' && Platform.OS !== 'android') {
           cmp.touchableHandlePress &&
             !cmp.props.disabled &&
             cmp.touchableHandlePress(evt);
@@ -679,12 +680,16 @@ const TouchableMixin = {
    * @private
    */
   _remeasureMetricsOnActivation: function() {
-    const tag = this.state.touchable.responderID;
-    if (tag == null) {
+    const responderID = this.state.touchable.responderID;
+    if (responderID == null) {
       return;
     }
 
-    UIManager.measure(tag, this._handleQueryLayout);
+    if (typeof responderID === 'number') {
+      UIManager.measure(responderID, this._handleQueryLayout);
+    } else {
+      responderID.measure(this._handleQueryLayout);
+    }
   },
 
   _handleQueryLayout: function(
@@ -722,18 +727,9 @@ const TouchableMixin = {
     this.longPressDelayTimeout = null;
     const curState = this.state.touchable.touchState;
     if (
-      curState !== States.RESPONDER_ACTIVE_PRESS_IN &&
-      curState !== States.RESPONDER_ACTIVE_LONG_PRESS_IN
+      curState === States.RESPONDER_ACTIVE_PRESS_IN ||
+      curState === States.RESPONDER_ACTIVE_LONG_PRESS_IN
     ) {
-      console.error(
-        'Attempted to transition from state `' +
-          curState +
-          '` to `' +
-          States.RESPONDER_ACTIVE_LONG_PRESS_IN +
-          '`, which is not supported. This is ' +
-          'most likely due to `Touchable.longPressDelayTimeout` not being cancelled.',
-      );
-    } else {
       this._receiveSignal(Signals.LONG_PRESS_DETECTED, e);
     }
   },
@@ -760,8 +756,10 @@ const TouchableMixin = {
           '` or state `' +
           curState +
           '` for Touchable responder `' +
-          responderID +
-          '`',
+          typeof this.state.touchable.responderID ===
+        'number'
+          ? this.state.touchable.responderID
+          : 'host component' + '`',
       );
     }
     if (nextState === States.ERROR) {
@@ -771,8 +769,10 @@ const TouchableMixin = {
           '` to `' +
           signal +
           '` for responder `' +
-          responderID +
-          '`',
+          typeof this.state.touchable.responderID ===
+        'number'
+          ? this.state.touchable.responderID
+          : '<<host component>>' + '`',
       );
     }
     if (curState !== nextState) {
@@ -875,7 +875,7 @@ const TouchableMixin = {
           this._endHighlight(e);
         }
         if (Platform.OS === 'android' && !this.props.touchSoundDisabled) {
-          this._playTouchSound();
+          SoundManager.playTouchSound();
         }
         this.touchableHandlePress(e);
       }
@@ -883,10 +883,6 @@ const TouchableMixin = {
 
     this.touchableDelayTimeout && clearTimeout(this.touchableDelayTimeout);
     this.touchableDelayTimeout = null;
-  },
-
-  _playTouchSound: function() {
-    UIManager.playTouchSound();
   },
 
   _startHighlight: function(e: PressEvent) {
@@ -937,6 +933,7 @@ const Touchable = {
   }: {
     color: string | number,
     hitSlop: EdgeInsetsProp,
+    ...
   }): null | React.Node => {
     if (!Touchable.TOUCH_TARGET_DEBUG) {
       return null;
@@ -962,6 +959,9 @@ const Touchable = {
         pointerEvents="none"
         style={[
           styles.debug,
+          /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.111 was deployed. To see the error,
+           * delete this comment and run Flow. */
           {
             borderColor: hexColor.slice(0, -2) + '55', // More opaque
             backgroundColor: hexColor.slice(0, -2) + '0F', // Less opaque

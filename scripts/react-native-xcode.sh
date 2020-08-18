@@ -3,7 +3,7 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-#
+
 # Bundle React Native app's code and image assets.
 # This script is supposed to be invoked as part of Xcode build process
 # and relies on environment variables (including PWD) set by Xcode
@@ -12,7 +12,7 @@
 set -x
 DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
-# Enables iOS devices to get the IP address of the machine running Metro Bundler
+# Enables iOS devices to get the IP address of the machine running Metro
 if [[ "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator ]]; then
   IP=$(ipconfig getifaddr en0)
   if [ -z "$IP" ]; then
@@ -108,13 +108,17 @@ source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
 [ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
 
+[ -z "$HERMES_PATH" ] && HERMES_PATH="$PROJECT_ROOT/node_modules/hermes-engine-darwin/destroot/bin/hermesc"
+
+[ -z "$COMPOSE_SOURCEMAP_PATH" ] && COMPOSE_SOURCEMAP_PATH="$REACT_NATIVE_DIR/scripts/compose-source-maps.js"
+
 if [[ -z "$BUNDLE_CONFIG" ]]; then
   CONFIG_ARG=""
 else
   CONFIG_ARG="--config $BUNDLE_CONFIG"
 fi
 
-BUNDLE_FILE="$DEST/main.jsbundle"
+BUNDLE_FILE="$CONFIGURATION_BUILD_DIR/main.jsbundle"
 
 case "$PLATFORM_NAME" in
   "macosx")
@@ -125,9 +129,29 @@ case "$PLATFORM_NAME" in
     ;;
 esac
 
+USE_HERMES=
+if [[ "$BUNDLE_PLATFORM" == "macos" && -f "$HERMES_PATH" ]]; then
+  USE_HERMES=true
+fi
+
 EXTRA_ARGS=
 if [ -d "$PROJECT_ROOT/node_modules/react-native-macos" ]; then
   EXTRA_ARGS=--use-react-native-macos
+fi
+
+EMIT_SOURCEMAP=
+if [[ ! -z "$SOURCEMAP_FILE" ]]; then
+  EMIT_SOURCEMAP=true
+fi
+
+PACKAGER_SOURCEMAP_FILE=
+if [[ $EMIT_SOURCEMAP == true ]]; then
+  if [[ $USE_HERMES == true ]]; then
+    PACKAGER_SOURCEMAP_FILE="$CONFIGURATION_BUILD_DIR/$(basename $SOURCEMAP_FILE)"
+  else
+    PACKAGER_SOURCEMAP_FILE="$SOURCEMAP_FILE"
+  fi
+  EXTRA_ARGS="$EXTRA_ARGS --sourcemap-output $PACKAGER_SOURCEMAP_FILE"
 fi
 
 "$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
@@ -140,6 +164,29 @@ fi
   --assets-dest "$DEST" \
   $EXTRA_ARGS \
   $EXTRA_PACKAGER_ARGS
+
+if [[ $USE_HERMES != true ]]; then
+  mv "$BUNDLE_FILE" "$DEST/"
+  BUNDLE_FILE="$DEST/main.jsbundle"
+else
+  EXTRA_COMPILER_ARGS=
+  if [[ $DEV == true ]]; then
+    EXTRA_COMPILER_ARGS=-Og
+  else
+    EXTRA_COMPILER_ARGS=-O
+  fi
+  if [[ $EMIT_SOURCEMAP == true ]]; then
+    EXTRA_COMPILER_ARGS="$EXTRA_COMPILER_ARGS -output-source-map"
+  fi
+  HBC_FILE="$CONFIGURATION_BUILD_DIR/$(basename $BUNDLE_FILE)"
+  "$HERMES_PATH" -emit-binary $EXTRA_COMPILER_ARGS -out "$HBC_FILE" "$BUNDLE_FILE"
+  mv "$HBC_FILE" "$DEST/"
+  BUNDLE_FILE="$DEST/main.jsbundle"
+  if [[ $EMIT_SOURCEMAP == true ]]; then
+    HBC_SOURCEMAP_FILE="$HBC_FILE.map"
+    "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$SOURCEMAP_FILE"
+  fi
+fi
 
 if [[ $DEV != true && ! -f "$BUNDLE_FILE" ]]; then
   echo "error: File $BUNDLE_FILE does not exist. This must be a bug with" >&2

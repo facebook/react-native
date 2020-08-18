@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "idx": "^2.1.0",
-    "yargs": "^9.0.1"
+    "yargs": "^14.2.0"
   },
   "beachball": {
     "shouldPublish": false

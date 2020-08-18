@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.systeminfo;
 
 import static android.content.Context.UI_MODE_SERVICE;
@@ -92,7 +93,7 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule implements Tur
 
   private Boolean isRunningScreenshotTest() {
     try {
-      Class.forName("android.support.test.rule.ActivityTestRule");
+      Class.forName("com.facebook.testing.react.screenshots.ReactAppScreenshotTestActivity");
       return true;
     } catch (ClassNotFoundException ignored) {
       return false;

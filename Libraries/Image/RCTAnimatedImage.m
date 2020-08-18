@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -91,6 +91,10 @@
     NSNumber *gifLoopCount = gifProperties[(__bridge NSString *)kCGImagePropertyGIFLoopCount];
     if (gifLoopCount != nil) {
       loopCount = gifLoopCount.unsignedIntegerValue;
+      // A loop count of 1 means it should repeat twice, 2 means, thrice, etc.
+      if (loopCount != 0) {
+        loopCount++;
+      }
     }
   }
   return loopCount;

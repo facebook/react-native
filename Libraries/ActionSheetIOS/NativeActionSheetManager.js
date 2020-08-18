@@ -12,7 +12,7 @@
 
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-import type {NativeOrDynamicColorType} from '../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from '../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 export interface Spec extends TurboModule {
   +getConstants: () => {||};
@@ -21,8 +21,7 @@ export interface Spec extends TurboModule {
       +title?: ?string,
       +message?: ?string,
       +options: ?Array<string>,
-      // Supports Array<number> as well.
-      +destructiveButtonIndex?: ?number,
+      +destructiveButtonIndices?: ?Array<number>,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
       +tintColor?: ?(number | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)

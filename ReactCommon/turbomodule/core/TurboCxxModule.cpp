@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -38,7 +38,7 @@ static CxxModule::Callback makeTurboCxxModuleCallback(
 
 TurboCxxModule::TurboCxxModule(
     std::unique_ptr<CxxModule> cxxModule,
-    std::shared_ptr<JSCallInvoker> jsInvoker)
+    std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(cxxModule->getName(), jsInvoker),
       cxxMethods_(cxxModule->getMethods()),
       cxxModule_(std::move(cxxModule)) {}

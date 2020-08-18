@@ -1,5 +1,5 @@
-load("@fbsource//tools/build_defs:default_platform_defs.bzl", "ANDROID", "APPLE", "CXX")
 load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
+load("@fbsource//tools/build_defs:platform_defs.bzl", "ANDROID", "APPLE", "CXX")
 load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "flags", "get_debug_preprocessor_flags", "get_static_library_ios_flags")
 load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "get_apple_inspector_flags", "rn_xplat_cxx_library")
 
@@ -25,6 +25,7 @@ rn_xplat_cxx_library(
         "-Wall",
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
     force_static = True,
     platforms = (ANDROID, APPLE, CXX),

@@ -1,5 +1,5 @@
 load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_debug_preprocessor_flags", "get_fbobjc_enable_exception_lang_compiler_flags_DEPRECATED")
-load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_apple_library", "rn_debug_flags")
+load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_apple_library", "rn_extra_build_flags")
 load(
     "@fbsource//xplat/configurations/buck/apple/plugins/sad_xplat_hosted_configurations:react_module_registration.bzl",
     "react_module_plugin_providers",
@@ -25,37 +25,99 @@ rn_apple_library(
         "-weak_framework",
         "WebKit",
     ],
-    exported_preprocessor_flags = rn_debug_flags(),
+    exported_preprocessor_flags = rn_extra_build_flags(),
     frameworks = [
         "Foundation",
         "UIKit",
     ],
     header_path_prefix = "React",
+    labels = ["supermodule:ios/isolation/infra.react_native"],
     lang_compiler_flags = get_fbobjc_enable_exception_lang_compiler_flags_DEPRECATED(),
     link_whole = True,
     platform_preprocessor_flags = [(
         "linux",
         ["-D PIC_MODIFIER=@PLT"],
     )],
-    plugins = react_module_plugin_providers(
-                name = "ExceptionsManager",
-                native_class_func = "RCTExceptionsManagerCls",
-              ) +
-              react_module_plugin_providers(
-                  name = "ImageLoader",
-                  native_class_func = "RCTImageLoaderCls",
-              ) +
-              react_module_plugin_providers(
-                  name = "PlatformConstants",
-                  native_class_func = "RCTPlatformCls",
-              ),
-    preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_debug_flags() + [
+    plugins =
+        react_module_plugin_providers(
+            name = "AccessibilityManager",
+            native_class_func = "RCTAccessibilityManagerCls",
+        ) + react_module_plugin_providers(
+            name = "Appearance",
+            native_class_func = "RCTAppearanceCls",
+        ) + react_module_plugin_providers(
+            name = "DeviceInfo",
+            native_class_func = "RCTDeviceInfoCls",
+        ) + react_module_plugin_providers(
+            name = "ExceptionsManager",
+            native_class_func = "RCTExceptionsManagerCls",
+        ) + react_module_plugin_providers(
+            name = "PlatformConstants",
+            native_class_func = "RCTPlatformCls",
+        ) + react_module_plugin_providers(
+            name = "Clipboard",
+            native_class_func = "RCTClipboardCls",
+        ) + react_module_plugin_providers(
+            name = "I18nManager",
+            native_class_func = "RCTI18nManagerCls",
+        ) + react_module_plugin_providers(
+            name = "SourceCode",
+            native_class_func = "RCTSourceCodeCls",
+        ) + react_module_plugin_providers(
+            name = "ActionSheetManager",
+            native_class_func = "RCTActionSheetManagerCls",
+        ) + react_module_plugin_providers(
+            name = "AlertManager",
+            native_class_func = "RCTAlertManagerCls",
+        ) + react_module_plugin_providers(
+            name = "AsyncLocalStorage",
+            native_class_func = "RCTAsyncLocalStorageCls",
+        ) + react_module_plugin_providers(
+            name = "Timing",
+            native_class_func = "RCTTimingCls",
+        ) + react_module_plugin_providers(
+            name = "StatusBarManager",
+            native_class_func = "RCTStatusBarManagerCls",
+        ) + react_module_plugin_providers(
+            name = "KeyboardObserver",
+            native_class_func = "RCTKeyboardObserverCls",
+        ) + react_module_plugin_providers(
+            name = "AppState",
+            native_class_func = "RCTAppStateCls",
+        ) + react_module_plugin_providers(
+            name = "PerfMonitor",
+            native_class_func = "RCTPerfMonitorCls",
+        ) + react_module_plugin_providers(
+            name = "DevMenu",
+            native_class_func = "RCTDevMenuCls",
+        ) + react_module_plugin_providers(
+            name = "DevSettings",
+            native_class_func = "RCTDevSettingsCls",
+        ) + react_module_plugin_providers(
+            name = "RedBox",
+            native_class_func = "RCTRedBoxCls",
+        ) + react_module_plugin_providers(
+            name = "LogBox",
+            native_class_func = "RCTLogBoxCls",
+        ) + react_module_plugin_providers(
+            name = "TVNavigationEventEmitter",
+            native_class_func = "RCTTVNavigationEventEmitterCls",
+        ) + react_module_plugin_providers(
+            name = "WebSocketExecutor",
+            native_class_func = "RCTWebSocketExecutorCls",
+        ) + react_module_plugin_providers(
+            name = "WebSocketModule",
+            native_class_func = "RCTWebSocketModuleCls",
+        ),
+    plugins_header = "FBCoreModulesPlugins.h",
+    preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_extra_build_flags() + [
         "-DRN_DISABLE_OSS_PLUGIN_HEADER",
     ],
     reexport_all_header_dependencies = True,
     visibility = ["PUBLIC"],
     exported_deps = [
-        "fbsource//xplat/js:RCTImageApple",
+        "fbsource//xplat/js:RCTLinkingApple",
+        "fbsource//xplat/js:RCTPushNotificationApple",
         "fbsource//xplat/js/react-native-github:ReactInternalApple",
         "fbsource//xplat/js/react-native-github/Libraries/FBReactNativeSpec:FBReactNativeSpecApple",
     ],

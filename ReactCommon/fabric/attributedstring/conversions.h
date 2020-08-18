@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <folly/Conv.h>
 #include <folly/dynamic.h>
 #include <react/attributedstring/AttributedString.h>
 #include <react/attributedstring/ParagraphAttributes.h>
@@ -16,9 +17,12 @@
 #include <react/core/LayoutableShadowNode.h>
 #include <react/core/ShadowNode.h>
 #include <react/core/conversions.h>
+#include <react/core/propsConversions.h>
 #include <react/graphics/Geometry.h>
 #include <react/graphics/conversions.h>
 #include <cmath>
+
+#include <Glog/logging.h>
 
 namespace facebook {
 namespace react {
@@ -52,6 +56,34 @@ inline void fromRawValue(const RawValue &value, EllipsizeMode &result) {
   }
   if (string == "middle") {
     result = EllipsizeMode::Middle;
+    return;
+  }
+  abort();
+}
+
+inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
+  switch (textBreakStrategy) {
+    case TextBreakStrategy::Simple:
+      return "simple";
+    case TextBreakStrategy::HighQuality:
+      return "highQuality";
+    case TextBreakStrategy::Balanced:
+      return "balanced";
+  }
+}
+
+inline void fromRawValue(const RawValue &value, TextBreakStrategy &result) {
+  auto string = (std::string)value;
+  if (string == "simple") {
+    result = TextBreakStrategy::Simple;
+    return;
+  }
+  if (string == "highQuality") {
+    result = TextBreakStrategy::HighQuality;
+    return;
+  }
+  if (string == "balanced") {
+    result = TextBreakStrategy::Balanced;
     return;
   }
   abort();
@@ -284,7 +316,8 @@ inline void fromRawValue(
   }
 
   // TODO: remove "underline line-through" after "line-through" deprecation
-  if (string == "underline-strikethrough" || string == "underline line-through") {
+  if (string == "underline-strikethrough" ||
+      string == "underline line-through") {
     result = TextDecorationLineType::UnderlineStrikethrough;
     return;
   }
@@ -379,6 +412,59 @@ inline std::string toString(
   }
 }
 
+inline ParagraphAttributes convertRawProp(
+    RawProps const &rawProps,
+    ParagraphAttributes const &defaultParagraphAttributes) {
+  auto paragraphAttributes = ParagraphAttributes{};
+
+  paragraphAttributes.maximumNumberOfLines = convertRawProp(
+      rawProps,
+      "numberOfLines",
+      defaultParagraphAttributes.maximumNumberOfLines);
+  paragraphAttributes.ellipsizeMode = convertRawProp(
+      rawProps, "ellipsizeMode", defaultParagraphAttributes.ellipsizeMode);
+  paragraphAttributes.textBreakStrategy = convertRawProp(
+      rawProps,
+      "textBreakStrategy",
+      defaultParagraphAttributes.textBreakStrategy);
+  paragraphAttributes.adjustsFontSizeToFit = convertRawProp(
+      rawProps,
+      "adjustsFontSizeToFit",
+      defaultParagraphAttributes.adjustsFontSizeToFit);
+  paragraphAttributes.minimumFontSize = convertRawProp(
+      rawProps,
+      "minimumFontSize",
+      defaultParagraphAttributes.minimumFontSize,
+      std::numeric_limits<Float>::quiet_NaN());
+  paragraphAttributes.maximumFontSize = convertRawProp(
+      rawProps,
+      "maximumFontSize",
+      defaultParagraphAttributes.maximumFontSize,
+      std::numeric_limits<Float>::quiet_NaN());
+
+  return paragraphAttributes;
+}
+
+inline void fromRawValue(
+    RawValue const &value,
+    AttributedString::Range &result) {
+  auto map = (better::map<std::string, int>)value;
+
+  auto start = map.find("start");
+  if (start != map.end()) {
+    result.location = start->second;
+  }
+  auto end = map.find("end");
+  if (end != map.end()) {
+    result.length = start->second - result.location;
+  }
+}
+
+inline std::string toString(AttributedString::Range const &range) {
+  return "{location: " + folly::to<std::string>(range.location) +
+      ", length: " + folly::to<std::string>(range.length) + "}";
+}
+
 #ifdef ANDROID
 
 inline folly::dynamic toDynamic(
@@ -386,6 +472,7 @@ inline folly::dynamic toDynamic(
   auto values = folly::dynamic::object();
   values("maximumNumberOfLines", paragraphAttributes.maximumNumberOfLines);
   values("ellipsizeMode", toString(paragraphAttributes.ellipsizeMode));
+  values("textBreakStrategy", toString(paragraphAttributes.textBreakStrategy));
   values("adjustsFontSizeToFit", paragraphAttributes.adjustsFontSizeToFit);
   return values;
 }
@@ -494,6 +581,13 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
       "hash", std::hash<facebook::react::AttributedString>{}(attributedString));
   value("string", attributedString.getString());
   return value;
+}
+
+inline folly::dynamic toDynamic(AttributedString::Range const &range) {
+  folly::dynamic dynamicValue = folly::dynamic::object();
+  dynamicValue["location"] = range.location;
+  dynamicValue["length"] = range.length;
+  return dynamicValue;
 }
 
 #endif

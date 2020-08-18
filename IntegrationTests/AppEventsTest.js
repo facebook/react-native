@@ -19,14 +19,19 @@ const deepDiffer = require('react-native/Libraries/Utilities/differ/deepDiffer')
 
 const TEST_PAYLOAD = {foo: 'bar'};
 
-type AppEvent = {data: Object, ts: number};
+type AppEvent = {
+  data: Object,
+  ts: number,
+  ...
+};
 type State = {
   sent: 'none' | AppEvent,
   received: 'none' | AppEvent,
   elapsed?: string,
+  ...
 };
 
-class AppEventsTest extends React.Component<{}, State> {
+class AppEventsTest extends React.Component<{...}, State> {
   state: State = {sent: 'none', received: 'none'};
 
   componentDidMount() {

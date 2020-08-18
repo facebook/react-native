@@ -11,11 +11,11 @@
 'use strict';
 
 const processColor = require('./processColor');
-import type {NativeOrDynamicColorType} from '../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from '../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 function processColorArray(
   colors: ?Array<string>,
-): ?Array<?(number | NativeOrDynamicColorType)> {
+): ?Array<?(number | NativeOrDynamicColorType)> /* TODO(macOS ISS#2323203) */ {
   return colors == null ? null : colors.map(processColor);
 }
 

@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -44,6 +46,39 @@ class ContextContainer final {
 #ifndef NDEBUG
     typeNames_.insert({key, typeid(T).name()});
 #endif
+  }
+
+  /*
+   * Removes an instance stored for a given `key`.
+   * Does nothing if the instance was not found.
+   */
+  void erase(std::string const &key) const {
+    std::unique_lock<better::shared_mutex> lock(mutex_);
+
+    instances_.erase(key);
+
+#ifndef NDEBUG
+    typeNames_.erase(key);
+#endif
+  }
+
+  /*
+   * Updates the container with values from a given container.
+   * Values with keys that already exist in the container will be replaced with
+   * values from the given container.
+   */
+  void update(ContextContainer const &contextContainer) const {
+    std::unique_lock<better::shared_mutex> lock(mutex_);
+
+    for (auto const &pair : contextContainer.instances_) {
+      instances_.erase(pair.first);
+      instances_.insert(pair);
+#ifndef NDEBUG
+      typeNames_.erase(pair.first);
+      typeNames_.insert(
+          {pair.first, contextContainer.typeNames_.at(pair.first)});
+#endif
+    }
   }
 
   /*

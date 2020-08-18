@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,15 +9,18 @@
 
 #import <mutex>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConvert.h>
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
 #import <React/RCTWebSocketModule.h>
+
+#import "RCTBlobPlugins.h"
 #import "RCTBlobCollector.h"
 
 static NSString *const kBlobURIScheme = @"blob";
 
-@interface RCTBlobManager () <RCTNetworkingRequestHandler, RCTNetworkingResponseHandler, RCTWebSocketContentHandler>
+@interface RCTBlobManager () <RCTNetworkingRequestHandler, RCTNetworkingResponseHandler, RCTWebSocketContentHandler, NativeBlobModuleSpec>
 
 @end
 
@@ -142,25 +145,25 @@ RCT_EXPORT_METHOD(addNetworkingHandler)
   });
 }
 
-RCT_EXPORT_METHOD(addWebSocketHandler:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(addWebSocketHandler:(double)socketID)
 {
   dispatch_async(_bridge.webSocketModule.methodQueue, ^{
-    [self->_bridge.webSocketModule setContentHandler:self forSocketID:socketID];
+    [self->_bridge.webSocketModule setContentHandler:self forSocketID:[NSNumber numberWithDouble:socketID]];
   });
 }
 
-RCT_EXPORT_METHOD(removeWebSocketHandler:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(removeWebSocketHandler:(double)socketID)
 {
   dispatch_async(_bridge.webSocketModule.methodQueue, ^{
-    [self->_bridge.webSocketModule setContentHandler:nil forSocketID:socketID];
+    [self->_bridge.webSocketModule setContentHandler:nil forSocketID:[NSNumber numberWithDouble:socketID]];
   });
 }
 
 // @lint-ignore FBOBJCUNTYPEDCOLLECTION1
-RCT_EXPORT_METHOD(sendOverSocket:(NSDictionary *)blob socketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(sendOverSocket:(NSDictionary *)blob socketID:(double)socketID)
 {
   dispatch_async(_bridge.webSocketModule.methodQueue, ^{
-    [self->_bridge.webSocketModule sendData:[self resolve:blob] forSocketID:socketID];
+    [self->_bridge.webSocketModule sendData:[self resolve:blob] forSocketID:[NSNumber numberWithDouble:socketID]];
   });
 }
 
@@ -298,4 +301,13 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
   };
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeBlobModuleSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTBlobManagerCls(void) {
+  return RCTBlobManager.class;
+}

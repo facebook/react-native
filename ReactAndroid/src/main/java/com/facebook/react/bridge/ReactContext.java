@@ -1,10 +1,13 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.bridge;
+
+import static com.facebook.infer.annotation.ThreadConfined.UI;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,10 +16,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -219,6 +226,7 @@ public class ReactContext extends ContextWrapper {
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_END);
   }
 
+  @ThreadConfined(UI)
   public void onNewIntent(@Nullable Activity activity, Intent intent) {
     UiThreadUtil.assertOnUiThread();
     mCurrentActivity = new WeakReference(activity);
@@ -246,6 +254,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onDestroy} */
+  @ThreadConfined(UI)
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_CREATE;
@@ -260,11 +269,15 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** Destroy this instance, making it unusable. */
+  @ThreadConfined(UI)
   public void destroy() {
     UiThreadUtil.assertOnUiThread();
 
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
+      if (ReactFeatureFlags.nullifyCatalystInstanceOnDestroy) {
+        mCatalystInstance = null;
+      }
     }
   }
 
@@ -279,6 +292,7 @@ public class ReactContext extends ContextWrapper {
     }
   }
 
+  @ThreadConfined(UI)
   public void onWindowFocusChange(boolean hasFocus) {
     UiThreadUtil.assertOnUiThread();
     for (WindowFocusChangeListener listener : mWindowFocusEventListeners) {
@@ -336,11 +350,23 @@ public class ReactContext extends ContextWrapper {
    * otherwise.
    */
   public void handleException(Exception e) {
-    if (mCatalystInstance != null
-        && !mCatalystInstance.isDestroyed()
-        && mNativeModuleCallExceptionHandler != null) {
+    boolean catalystInstanceVariableExists = mCatalystInstance != null;
+    boolean isCatalystInstanceAlive =
+        catalystInstanceVariableExists && !mCatalystInstance.isDestroyed();
+    boolean hasExceptionHandler = mNativeModuleCallExceptionHandler != null;
+
+    if (isCatalystInstanceAlive && hasExceptionHandler) {
       mNativeModuleCallExceptionHandler.handleException(e);
     } else {
+      FLog.e(
+          ReactConstants.TAG,
+          "Unable to handle Exception - catalystInstanceVariableExists: "
+              + catalystInstanceVariableExists
+              + " - isCatalystInstanceAlive: "
+              + !isCatalystInstanceAlive
+              + " - hasExceptionHandler: "
+              + hasExceptionHandler,
+          e);
       throw new RuntimeException(e);
     }
   }

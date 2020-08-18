@@ -1,18 +1,20 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.views.scroll;
 
 import android.content.Context;
-import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import androidx.core.view.ViewCompat;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.views.view.ReactViewGroup;
 
 /** Container of Horizontal scrollViews that supports RTL scrolling. */
-public class ReactHorizontalScrollContainerView extends ViewGroup {
+public class ReactHorizontalScrollContainerView extends ReactViewGroup {
 
   private int mLayoutDirection;
   private int mCurrentWidth;

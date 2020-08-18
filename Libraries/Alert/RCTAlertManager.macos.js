@@ -10,8 +10,7 @@
 
 // TODO(macOS ISS#2323203)
 
-'use strict';
+/* $FlowFixMe allow macOS to share iOS file */
+const alertWithArgs = require('./RCTAlertManager.ios');
 
-var RCTAlertManager = require('../BatchedBridge/NativeModules').AlertManager;
-
-module.exports = RCTAlertManager;
+module.exports = alertWithArgs;

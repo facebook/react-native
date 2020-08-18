@@ -1,11 +1,13 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 
 #include "NativeCommon.h"
@@ -15,7 +17,8 @@ namespace react {
 
 class NativeArray : public jni::HybridClass<NativeArray> {
  public:
-  static constexpr const char* kJavaDescriptor = "Lcom/facebook/react/bridge/NativeArray;";
+  static constexpr const char *kJavaDescriptor =
+      "Lcom/facebook/react/bridge/NativeArray;";
 
   jni::local_ref<jstring> toString();
 
@@ -35,4 +38,5 @@ class NativeArray : public jni::HybridClass<NativeArray> {
   explicit NativeArray(folly::dynamic array);
 };
 
-}}
+} // namespace react
+} // namespace facebook

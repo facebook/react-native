@@ -21,7 +21,7 @@ type FilesOutput = Map<string, string>;
 const moduleTemplate = `
 class JSI_EXPORT Native::_MODULE_NAME_::CxxSpecJSI : public TurboModule {
 protected:
-  Native::_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+  Native::_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
 ::_MODULE_PROPERTIES_::

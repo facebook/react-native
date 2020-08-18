@@ -19,6 +19,7 @@ rn_xplat_cxx_library(
     ),
     compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
     fbobjc_compiler_flags = get_apple_compiler_flags(),
+    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
     force_static = True,
     visibility = [
         "PUBLIC",
@@ -43,6 +44,7 @@ rn_xplat_cxx_library(
         "-frtti",
     ],
     fbobjc_compiler_flags = get_apple_compiler_flags(),
+    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
     force_static = True,
     preprocessor_flags = [
         "-DWITH_FBREMAP=1",
@@ -127,6 +129,7 @@ rn_xplat_cxx_library(
     fbandroid_preprocessor_flags = get_android_inspector_flags(),
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     fbobjc_force_static = True,
+    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE),

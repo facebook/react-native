@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -49,7 +48,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "React"
   s.framework              = "JavaScriptCore"
   s.library                = "stdc++"
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/RCT-Folly\"" }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
   s.default_subspec        = "Default"
 
@@ -58,19 +57,20 @@ Pod::Spec.new do |s|
     ss.exclude_files          = "React/CoreModules/**/*",
                                 "React/DevSupport/**/*",
                                 "React/Fabric/**/*",
-                                "React/Inspector/**/*"
+                                "React/Inspector/**/*",
+                                "React/CxxBridge/HermesExecutorFactory.*" # TODO(macOS GH#214)
     ss.ios.exclude_files      = "React/**/RCTTV*.*",
 
     # [TODO(macOS ISS#2323203)
-                                "**/MacOS/*"
+                                "**/macOS/*"
     ss.osx.exclude_files      = "React/Modules/RCTRedBoxExtraDataViewController.{h,m}",
                                 "React/Modules/RCTAccessibilityManager.m",
                                 "React/Profiler/{RCTFPSGraph,RCTPerfMonitor}.*",
                                 "React/Profiler/RCTProfileTrampoline-{arm,i386}.S",
                                 "React/Base/RCTKeyCommands.*",
                                 "React/Base/RCTTV*.*",
-                                "React/Base/RCTReloadCommand.*",
-                                "React/Views/{RCTModal*,RCTMasked*,RCTTV*,RCTRefreshControl*,RCTWrapperViewController}.*",
+                                "React/Views/{RCTModal*,RCTMasked*,RCTTV*,RCTWrapperViewController}.*",
+                                "React/Views/RefreshControl/*",
                                 "React/Views/SafeAreaView/*"
     # ]TODO(macOS ISS#2323203)
 
@@ -82,6 +82,19 @@ Pod::Spec.new do |s|
                                 "React/Views/RCTSwitch*",
     ss.private_header_files   = "React/Cxx*/*.h"
   end
+
+  # [TODO(macOS GH#214)
+  s.subspec "Hermes" do |ss|
+    ss.platforms = { :osx => "10.14" }
+    ss.source_files = "ReactCommon/hermes/executor/*.{cpp,h}",
+                      "ReactCommon/hermes/inspector/*.{cpp,h}",
+                      "ReactCommon/hermes/inspector/chrome/*.{cpp,h}",
+                      "ReactCommon/hermes/inspector/detail/*.{cpp,h}"
+    ss.pod_target_xcconfig = { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" }
+    ss.dependency "RCT-Folly/Futures"
+    ss.dependency "hermes", "~> 0.4.1"
+  end
+  # ]TODO(macOS GH#214)
 
   s.subspec "DevSupport" do |ss|
     ss.source_files = "React/DevSupport/*.{h,mm,m}",
@@ -106,7 +119,7 @@ Pod::Spec.new do |s|
     end
   end
 
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
   s.dependency "React-jsiexecutor", version

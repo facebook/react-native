@@ -1,9 +1,10 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
 
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
@@ -73,10 +74,10 @@ public class TextLayoutManager {
                   start, end, new ReactBackgroundColorSpan(textAttributes.mBackgroundColor)));
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          if (!Float.isNaN(textAttributes.mLetterSpacing)) {
+          if (!Float.isNaN(textAttributes.getLetterSpacing())) {
             ops.add(
                 new SetSpanOperation(
-                    start, end, new CustomLetterSpacingSpan(textAttributes.mLetterSpacing)));
+                    start, end, new CustomLetterSpacingSpan(textAttributes.getLetterSpacing())));
           }
         }
         ops.add(
@@ -91,6 +92,7 @@ public class TextLayoutManager {
                   new CustomStyleSpan(
                       textAttributes.mFontStyle,
                       textAttributes.mFontWeight,
+                      textAttributes.mFontFeatureSettings,
                       textAttributes.mFontFamily,
                       context.getAssets())));
         }
@@ -123,7 +125,8 @@ public class TextLayoutManager {
     }
   }
 
-  protected static Spannable getOrCreateSpannableForText(
+  // public because both ReactTextViewManager and ReactTextInputManager need to use this
+  public static Spannable getOrCreateSpannableForText(
       Context context, ReadableMap attributedString) {
 
     Spannable preparedSpannableText;

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
@@ -392,7 +393,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     if (uiManagerType == FABRIC) {
       UIManager fabricUIManager =
           UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
-      fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
+      if (fabricUIManager != null) {
+        fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
+      }
     } else {
       mUIImplementation.synchronouslyUpdateViewOnUIThread(tag, new ReactStylesDiffMap(props));
     }
@@ -414,7 +417,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     final ThemedReactContext themedRootContext =
-        new ThemedReactContext(reactApplicationContext, rootView.getContext());
+        new ThemedReactContext(
+            reactApplicationContext, rootView.getContext(), ((ReactRoot) rootView).getSurfaceID());
 
     mUIImplementation.registerRootView(rootView, tag, themedRootContext);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -466,7 +470,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod
-  public void updateView(int tag, String className, ReadableMap props) {
+  public void updateView(final int tag, final String className, final ReadableMap props) {
     if (DEBUG) {
       String message =
           "(UIManager.updateView) tag: " + tag + ", class: " + className + ", props: " + props;
@@ -475,9 +479,20 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
     int uiManagerType = ViewUtil.getUIManagerType(tag);
     if (uiManagerType == FABRIC) {
-      UIManager fabricUIManager =
-          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
-      fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
+      ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+      if (reactApplicationContext.hasActiveCatalystInstance()) {
+        final UIManager fabricUIManager =
+            UIManagerHelper.getUIManager(reactApplicationContext, uiManagerType);
+        if (fabricUIManager != null) {
+          reactApplicationContext.runOnUiQueueThread(
+              new Runnable() {
+                @Override
+                public void run() {
+                  fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
+                }
+              });
+        }
+      }
     } else {
       mUIImplementation.updateView(tag, className, props);
     }
@@ -667,14 +682,20 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     // the dispatchViewManagerCommand() method is supported by Fabric JS API.
     if (commandId.getType() == ReadableType.Number) {
       final int commandIdNum = commandId.asInt();
-      UIManagerHelper.getUIManager(
-              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
-          .dispatchCommand(reactTag, commandIdNum, commandArgs);
+      UIManager uiManager =
+          UIManagerHelper.getUIManager(
+              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag));
+      if (uiManager != null) {
+        uiManager.dispatchCommand(reactTag, commandIdNum, commandArgs);
+      }
     } else if (commandId.getType() == ReadableType.String) {
       final String commandIdStr = commandId.asString();
-      UIManagerHelper.getUIManager(
-              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
-          .dispatchCommand(reactTag, commandIdStr, commandArgs);
+      UIManager uiManager =
+          UIManagerHelper.getUIManager(
+              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag));
+      if (uiManager != null) {
+        uiManager.dispatchCommand(reactTag, commandIdStr, commandArgs);
+      }
     }
   }
 
@@ -796,7 +817,21 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   @ReactMethod
   public void sendAccessibilityEvent(int tag, int eventType) {
-    mUIImplementation.sendAccessibilityEvent(tag, eventType);
+    int uiManagerType = ViewUtil.getUIManagerType(tag);
+    if (uiManagerType == FABRIC) {
+      UIManager fabricUIManager =
+          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
+      if (fabricUIManager != null) {
+        fabricUIManager.sendAccessibilityEvent(tag, eventType);
+      }
+    } else {
+      mUIImplementation.sendAccessibilityEvent(tag, eventType);
+    }
+  }
+
+  @Override
+  public void setAllowImmediateUIOperationExecution(boolean flag) {
+    // Noop outside of Fabric, call directly on FabricUIManager
   }
 
   /**

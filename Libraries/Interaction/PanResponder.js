@@ -559,7 +559,7 @@ const PanResponder = {
 };
 
 function clearInteractionHandle(
-  interactionState: {handle: ?number},
+  interactionState: {handle: ?number, ...},
   callback: ?(ActiveCallback | PassiveCallback),
   event: PressEvent,
   gestureState: GestureState,

@@ -36,6 +36,7 @@ rn_xplat_cxx_library(
         "-Wall",
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),

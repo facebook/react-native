@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const AnimatedValue = require('./nodes/AnimatedValue');
@@ -17,17 +18,18 @@ const invariant = require('invariant');
 
 const {shouldUseNativeDriver} = require('./NativeAnimatedHelper');
 
-export type Mapping = {[key: string]: Mapping} | AnimatedValue;
+export type Mapping = {[key: string]: Mapping, ...} | AnimatedValue;
 export type EventConfig = {
   listener?: ?Function,
-  useNativeDriver?: boolean,
+  useNativeDriver: boolean,
+  ...
 };
 
 function attachNativeEvent(
   viewRef: any,
   eventName: string,
   argMapping: Array<?Mapping>,
-): $TEMPORARY$object<{|detach: () => void|}> {
+): {|detach: () => void|} {
   // Find animated values in `argMapping` and create an array representing their
   // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
   const eventMappings = [];
@@ -57,23 +59,27 @@ function attachNativeEvent(
 
   const viewTag = ReactNative.findNodeHandle(viewRef);
 
-  eventMappings.forEach(mapping => {
-    NativeAnimatedHelper.API.addAnimatedEventToView(
-      viewTag,
-      eventName,
-      mapping,
-    );
-  });
+  if (viewTag != null) {
+    eventMappings.forEach(mapping => {
+      NativeAnimatedHelper.API.addAnimatedEventToView(
+        viewTag,
+        eventName,
+        mapping,
+      );
+    });
+  }
 
   return {
     detach() {
-      eventMappings.forEach(mapping => {
-        NativeAnimatedHelper.API.removeAnimatedEventFromView(
-          viewTag,
-          eventName,
-          mapping.animatedValueTag,
-        );
-      });
+      if (viewTag != null) {
+        eventMappings.forEach(mapping => {
+          NativeAnimatedHelper.API.removeAnimatedEventFromView(
+            viewTag,
+            eventName,
+            mapping.animatedValueTag,
+          );
+        });
+      }
     },
   };
 }
@@ -82,13 +88,17 @@ class AnimatedEvent {
   _argMapping: Array<?Mapping>;
   _listeners: Array<Function> = [];
   _callListeners: Function;
-  _attachedEvent: ?{
-    detach: () => void,
-  };
+  _attachedEvent: ?{detach: () => void, ...};
   __isNative: boolean;
 
-  constructor(argMapping: Array<?Mapping>, config?: EventConfig = {}) {
+  constructor(argMapping: Array<?Mapping>, config: EventConfig) {
     this._argMapping = argMapping;
+
+    if (config == null) {
+      console.warn('Animated.event now requires a second argument for options');
+      config = {};
+    }
+
     if (config.listener) {
       this.__addListener(config.listener);
     }

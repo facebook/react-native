@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,7 +7,6 @@
 
 #import <React/RCTBaseTextInputView.h>
 
-#import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
@@ -27,6 +26,7 @@
   BOOL _hasInputAccesoryView;
   // TODO(OSS Candidate ISS#2710739): remove _predictedText ivar
   NSInteger _nativeEventCount;
+  BOOL _didMoveToWindow;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -70,11 +70,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   if (![self ignoresTextAttributes]) { // TODO(OSS Candidate ISS#2710739)
     id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-    if (backedTextInputView.attributedText.string.length != 0) {
-      return;
-    }
-
-    backedTextInputView.reactTextAttributes = _textAttributes;
+    backedTextInputView.defaultTextAttributes = [_textAttributes effectiveTextAttributes];
   } // TODO(OSS Candidate ISS#2710739)
 }
 
@@ -333,29 +329,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 }
 #endif // TODO(macOS ISS#2323203)
 
-- (BOOL)secureTextEntry {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203) // On Mac, this can be achieved by using an NSSecureTextField instead of an NSTextField
-  return self.backedTextInputView.secureTextEntry;
-#else // TODO(macOS ISS#2323203)
-  return NO; // TODO(macOS ISS#2323203)
-#endif // TODO(macOS ISS#2323203)
-}
-
-- (void)setSecureTextEntry:(BOOL)secureTextEntry {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
-    
-  if (textInputView.secureTextEntry != secureTextEntry) {
-    textInputView.secureTextEntry = secureTextEntry;
-      
-    // Fix #5859, see https://stackoverflow.com/questions/14220187/uitextfield-has-trailing-whitespace-after-securetextentry-toggle/22537788#22537788
-    NSAttributedString *originalText = [textInputView.attributedText copy];
-    self.backedTextInputView.attributedText = [NSAttributedString new];
-    self.backedTextInputView.attributedText = originalText;
-  }
-#endif // TODO(macOS ISS#2323203)
-}
-
 #pragma mark - RCTBackedTextInputDelegate
 
 - (BOOL)textInputShouldBeginEditing
@@ -427,7 +400,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // Does nothing.
 }
 
-- (BOOL)textInputShouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+- (NSString *)textInputShouldChangeText:(NSString *)text inRange:(NSRange)range
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
 
@@ -471,7 +444,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
         [self textInputDidChange];
       }
 
-      return NO;
+      return nil; // Rejecting the change.
     }
   }
 
@@ -495,7 +468,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     });
   }
 
-  return YES;
+  return text; // Accepting the change.
 }
 
 - (void)textInputDidChange
@@ -512,7 +485,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   NSRange predictionRange;
   if (findMismatch(backedTextInputView.attributedText.string, [self predictedText], &currentRange, &predictionRange)) { // TODO(OSS Candidate ISS#2710739)
     NSString *replacement = [backedTextInputView.attributedText.string substringWithRange:currentRange];
-    [self textInputShouldChangeTextInRange:predictionRange replacementText:replacement];
+    [self textInputShouldChangeText:replacement inRange:predictionRange];
     // JS will assume the selection changed based on the location of our shouldChangeTextInRange, so reset it.
     [self textInputDidChangeSelection];
     [self setPredictedText:backedTextInputView.attributedText.string]; // TODO(OSS Candidate ISS#2710739)
@@ -616,7 +589,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)didMoveToWindow
 {
-  [self.backedTextInputView reactFocusIfNeeded];
+  if (self.autoFocus && !_didMoveToWindow) {
+    [self.backedTextInputView reactFocus];
+  } else {
+    [self.backedTextInputView reactFocusIfNeeded];
+  }
+
+  _didMoveToWindow = YES;
 }
 
 #pragma mark - Custom Input Accessory View
@@ -656,14 +635,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   // These keyboard types (all are number pads) don't have a "Done" button by default,
   // so we create an `inputAccessoryView` with this button for them.
-  BOOL shouldHaveInputAccesoryView =
-    (
-      keyboardType == UIKeyboardTypeNumberPad ||
-      keyboardType == UIKeyboardTypePhonePad ||
-      keyboardType == UIKeyboardTypeDecimalPad ||
-      keyboardType == UIKeyboardTypeASCIICapableNumberPad
-    ) &&
-    textInputView.returnKeyType == UIReturnKeyDone;
+  BOOL shouldHaveInputAccesoryView;
+  if (@available(iOS 10.0, *)) {
+      shouldHaveInputAccesoryView =
+      (
+       keyboardType == UIKeyboardTypeNumberPad ||
+       keyboardType == UIKeyboardTypePhonePad ||
+       keyboardType == UIKeyboardTypeDecimalPad ||
+       keyboardType == UIKeyboardTypeASCIICapableNumberPad
+      ) &&
+      textInputView.returnKeyType == UIReturnKeyDone;
+  } else {
+      shouldHaveInputAccesoryView =
+      (
+       keyboardType == UIKeyboardTypeNumberPad ||
+       keyboardType == UIKeyboardTypePhonePad ||
+       keyboardType == UIKeyboardTypeDecimalPad
+      ) &&
+      textInputView.returnKeyType == UIReturnKeyDone;
+  }
 
   if (_hasInputAccesoryView == shouldHaveInputAccesoryView) {
     return;

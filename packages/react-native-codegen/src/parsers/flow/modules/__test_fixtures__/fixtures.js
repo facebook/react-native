@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -17,7 +17,7 @@ const EMPTY_NATIVE_MODULE = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -41,7 +41,7 @@ const NATIVE_MODULE_WITH_COMPLEX_OBJECTS = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -50,7 +50,7 @@ const NATIVE_MODULE_WITH_COMPLEX_OBJECTS = `
 import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
-export type String = string
+export type String = string;
 
 export interface Spec extends TurboModule {
   // Exported methods.
@@ -76,7 +76,7 @@ const NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -112,7 +112,7 @@ const NATIVE_MODULE_WITH_BASIC_PARAM_TYPES = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -139,7 +139,7 @@ const NATIVE_MODULE_WITH_WITH_ALIASES = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -173,7 +173,7 @@ const NATIVE_MODULE_WITH_WITH_FLOAT_AND_INT32 = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -198,7 +198,7 @@ const NATIVE_MODULE_WITH_SIMPLE_OBJECT = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -208,7 +208,7 @@ import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getObject(o : Object) => Object,
+  +getObject: (o : Object) => Object,
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -222,7 +222,7 @@ const NATIVE_MODULE_WITH_NULLABLE_PARAM = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -247,7 +247,7 @@ const NATIVE_MODULE_WITH_BASIC_ARRAY = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -272,7 +272,7 @@ const NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEIFNED_IN_FILE_AS_PROPERTY = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -308,7 +308,7 @@ const NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -332,7 +332,7 @@ const NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -358,7 +358,7 @@ const NATIVE_MODULE_WITH_COMPLEX_ARRAY = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -381,7 +381,7 @@ const NATIVE_MODULE_WITH_PROMISE = `/**
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -390,7 +390,7 @@ const NATIVE_MODULE_WITH_PROMISE = `/**
 import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
-export type String = string
+export type String = string;
 export type SomeObj = {| a: string |};
 
 export interface Spec extends TurboModule {
@@ -410,7 +410,7 @@ const NATIVE_MODULE_WITH_CALLBACK = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 

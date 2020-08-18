@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -31,6 +31,9 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     _textShadowRadius = NAN;
     _opacity = NAN;
     _textTransform = RCTTextTransformUndefined;
+#if TARGET_OS_OSX // TODO(macOS ISS#2323203)
+    _foregroundColor = [NSColor labelColor];
+#endif // TODO(macOS ISS#2323203)
   }
 
   return self;

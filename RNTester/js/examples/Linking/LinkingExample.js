@@ -76,20 +76,8 @@ class IntentAndroidExample extends React.Component {
           <OpenURLButton url={'https://www.facebook.com'} />
           <OpenURLButton url={'http://www.facebook.com'} />
           <OpenURLButton url={'http://facebook.com'} />
-          <OpenURLButton
-            url={
-              Platform.OS === 'macos' /* TODO(OSS Candidate ISS#2710739) */
-                ? 'mailto:mark@facebook.com'
-                : 'fb://notifications'
-            }
-          />
-          <OpenURLButton
-            url={
-              Platform.OS === 'macos' /* TODO(OSS Candidate ISS#2710739) */
-                ? 'maps:ll=45.5200,-122.681'
-                : 'geo:37.484847,-122.148386'
-            }
-          />
+          <OpenURLButton url={'fb://notifications'} />
+          <OpenURLButton url={'geo:37.484847,-122.148386'} />
           <OpenURLButton url={'tel:9876543210'} />
         </RNTesterBlock>
         {Platform.OS === 'android' && (

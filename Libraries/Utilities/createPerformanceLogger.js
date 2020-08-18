@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const Systrace = require('../Performance/Systrace');
@@ -22,6 +23,7 @@ type Timespan = {
   totalTime?: number,
   startTime?: number,
   endTime?: number,
+  ...
 };
 
 export type IPerformanceLogger = {
@@ -32,21 +34,22 @@ export type IPerformanceLogger = {
   clearCompleted(): void,
   clearExceptTimespans(Array<string>): void,
   currentTimestamp(): number,
-  getTimespans(): {[key: string]: Timespan},
+  getTimespans(): {[key: string]: Timespan, ...},
   hasTimespan(string): boolean,
   logTimespans(): void,
   addTimespans(Array<number>, Array<string>): void,
   setExtra(string, any): void,
-  getExtras(): {[key: string]: any},
+  getExtras(): {[key: string]: any, ...},
   removeExtra(string): ?any,
   logExtras(): void,
   markPoint(string, number | void): void,
-  getPoints(): {[key: string]: number},
+  getPoints(): {[key: string]: number, ...},
   logPoints(): void,
   logEverything(): void,
+  ...
 };
 
-const _cookies: {[key: string]: number} = {};
+const _cookies: {[key: string]: number, ...} = {};
 
 const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally committing `true`;
 
@@ -57,9 +60,10 @@ const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally 
  */
 function createPerformanceLogger(): IPerformanceLogger {
   const result: IPerformanceLogger & {
-    _timespans: {[key: string]: Timespan},
-    _extras: {[key: string]: any},
-    _points: {[key: string]: number},
+    _timespans: {[key: string]: Timespan, ...},
+    _extras: {[key: string]: any, ...},
+    _points: {[key: string]: number, ...},
+    ...
   } = {
     _timespans: {},
     _extras: {},

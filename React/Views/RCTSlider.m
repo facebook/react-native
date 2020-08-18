@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -326,5 +326,27 @@
   return ((RCTSliderCell*)self.cell).knobImage;
 #endif // ]TODO(macOS ISS#2323203)
 }
+
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203) - accessibility on macOS is on the NSCell rather than the NSControl
+- (void)accessibilityIncrement
+{
+  [super accessibilityIncrement];
+  if (_onSlidingComplete) {
+    _onSlidingComplete(@{
+        @"value": @(self.value),
+    });
+  }
+}
+
+- (void)accessibilityDecrement
+{
+  [super accessibilityDecrement];
+  if (_onSlidingComplete) {
+    _onSlidingComplete(@{
+        @"value": @(self.value),
+    });
+  }
+}
+#endif // TODO(macOS ISS#2323203)
 
 @end

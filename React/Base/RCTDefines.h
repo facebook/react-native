@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -47,6 +47,14 @@
 #endif
 #endif
 
+/**
+ * RCT_DEV_MENU can be used to toggle the dev menu separately from RCT_DEV.
+ * By default though, it will inherit from RCT_DEV.
+ */
+#ifndef RCT_DEV_MENU
+#define RCT_DEV_MENU RCT_DEV
+#endif
+
 #ifndef RCT_ENABLE_INSPECTOR
 #if RCT_DEV && __has_include(<React/RCTInspectorDevServerHelper.h>)
 #define RCT_ENABLE_INSPECTOR 1
@@ -56,7 +64,7 @@
 #endif
 
 #ifndef ENABLE_PACKAGER_CONNECTION
-#if RCT_DEV && (__has_include("RCTPackagerConnection.h") || __has_include(<React/RCTPackagerConnection.h>)) && !TARGET_OS_UIKITFORMAC
+#if RCT_DEV && (__has_include("RCTPackagerConnection.h") || __has_include(<React/RCTPackagerConnection.h>))
 #define ENABLE_PACKAGER_CONNECTION 1
 #else
 #define ENABLE_PACKAGER_CONNECTION 0

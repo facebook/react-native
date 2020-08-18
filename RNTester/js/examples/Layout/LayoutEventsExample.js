@@ -15,7 +15,6 @@ const React = require('react');
 const {
   Image,
   LayoutAnimation,
-  Platform, // TODO(OSS Candidate ISS#2710739)
   StyleSheet,
   Text,
   View,
@@ -34,6 +33,7 @@ type State = {
   textLayout?: ViewLayout,
   viewLayout?: ViewLayout,
   viewStyle: {|margin: number|},
+  ...
 };
 
 class LayoutEventExample extends React.Component<Props, State> {
@@ -44,15 +44,10 @@ class LayoutEventExample extends React.Component<Props, State> {
   };
 
   animateViewLayout = () => {
-    LayoutAnimation.configureNext(
-      Platform.OS === 'macos' /* TODO(OSS Candidate ISS#2710739) */
-        ? LayoutAnimation.Presets.easeInEaseOut
-        : LayoutAnimation.Presets.spring,
-      () => {
-        console.log('layout animation done.');
-        this.addWrapText();
-      },
-    );
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring, () => {
+      console.log('layout animation done.');
+      this.addWrapText();
+    });
     this.setState({
       viewStyle: {
         margin: this.state.viewStyle.margin > 20 ? 20 : 60,

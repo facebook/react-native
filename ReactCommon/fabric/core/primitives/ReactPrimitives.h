@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -12,7 +12,6 @@
 #include <react/core/RawValue.h>
 #include <memory>
 #include <string>
-#include <unordered_map>
 
 namespace facebook {
 namespace react {

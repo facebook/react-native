@@ -10,10 +10,9 @@
 
 'use strict';
 
-const PropTypes = require('prop-types');
 const DeprecatedColorPropType = require('./DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('./DeprecatedViewPropTypes');
-const DocumentSelectionState = require('../vendor/document/selection/DocumentSelectionState');
+const PropTypes = require('prop-types');
 const Text = require('../Text/Text');
 
 const DataDetectorTypes = [
@@ -35,7 +34,12 @@ module.exports = {
    * - `sentences`: first letter of each sentence (*default*).
    * - `none`: don't auto capitalize anything.
    */
-  autoCapitalize: PropTypes.oneOf(['none', 'sentences', 'words', 'characters']),
+  autoCapitalize: (PropTypes.oneOf([
+    'none',
+    'sentences',
+    'words',
+    'characters',
+  ]): React$PropType$Primitive<'none' | 'sentences' | 'words' | 'characters'>),
   /**
    * Determines which content to suggest on auto complete, e.g.`username`.
    * To disable auto complete, use `off`.
@@ -60,7 +64,7 @@ module.exports = {
    *
    * @platform android
    */
-  autoCompleteType: PropTypes.oneOf([
+  autoCompleteType: (PropTypes.oneOf([
     'cc-csc',
     'cc-exp',
     'cc-exp-month',
@@ -74,7 +78,21 @@ module.exports = {
     'tel',
     'username',
     'off',
-  ]),
+  ]): React$PropType$Primitive<
+    | 'cc-csc'
+    | 'cc-exp'
+    | 'cc-exp-month'
+    | 'cc-exp-year'
+    | 'cc-number'
+    | 'email'
+    | 'name'
+    | 'password'
+    | 'postal-code'
+    | 'street-address'
+    | 'tel'
+    | 'username'
+    | 'off',
+  >),
   /**
    * If `false`, disables auto-correct. The default value is `true`.
    */
@@ -129,6 +147,7 @@ module.exports = {
    * - `name-phone-pad`
    * - `twitter`
    * - `web-search`
+   * - `ascii-capable-number-pad`
    *
    * *Android Only*
    *
@@ -136,7 +155,7 @@ module.exports = {
    *
    * - `visible-password`
    */
-  keyboardType: PropTypes.oneOf([
+  keyboardType: (PropTypes.oneOf([
     // Cross-platform
     'default',
     'email-address',
@@ -151,14 +170,35 @@ module.exports = {
     'decimal-pad',
     'twitter',
     'web-search',
+    // iOS 10+ only
+    'ascii-capable-number-pad',
     // Android-only
     'visible-password',
-  ]),
+  ]): React$PropType$Primitive<
+    | 'default'
+    | 'email-address'
+    | 'numeric'
+    | 'phone-pad'
+    | 'number-pad'
+    | 'ascii-capable'
+    | 'numbers-and-punctuation'
+    | 'url'
+    | 'name-phone-pad'
+    | 'decimal-pad'
+    | 'twitter'
+    | 'web-search'
+    | 'ascii-capable-number-pad'
+    | 'visible-password',
+  >),
   /**
    * Determines the color of the keyboard.
    * @platform ios
    */
-  keyboardAppearance: PropTypes.oneOf(['default', 'light', 'dark']),
+  keyboardAppearance: (PropTypes.oneOf([
+    'default',
+    'light',
+    'dark',
+  ]): React$PropType$Primitive<'default' | 'light' | 'dark'>),
   /**
    * Determines how the return key should look. On Android you can also use
    * `returnKeyLabel`.
@@ -191,7 +231,7 @@ module.exports = {
    * - `route`
    * - `yahoo`
    */
-  returnKeyType: PropTypes.oneOf([
+  returnKeyType: (PropTypes.oneOf([
     // Cross-platform
     'done',
     'go',
@@ -208,7 +248,21 @@ module.exports = {
     'join',
     'route',
     'yahoo',
-  ]),
+  ]): React$PropType$Primitive<
+    | 'done'
+    | 'go'
+    | 'next'
+    | 'search'
+    | 'send'
+    | 'none'
+    | 'previous'
+    | 'default'
+    | 'emergency-call'
+    | 'google'
+    | 'join'
+    | 'route'
+    | 'yahoo',
+  >),
   /**
    * Sets the return key to the label. Use it instead of `returnKeyType`.
    * @platform android
@@ -250,7 +304,11 @@ module.exports = {
    * The default value is `simple`.
    * @platform android
    */
-  textBreakStrategy: PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
+  textBreakStrategy: (PropTypes.oneOf([
+    'simple',
+    'highQuality',
+    'balanced',
+  ]): React$PropType$Primitive<'simple' | 'highQuality' | 'balanced'>),
   /**
    * Callback that is called when the text input is blurred.
    */
@@ -334,29 +392,17 @@ module.exports = {
    */
   selectionColor: DeprecatedColorPropType,
   /**
-   * An instance of `DocumentSelectionState`, this is some state that is responsible for
-   * maintaining selection information for a document.
-   *
-   * Some functionality that can be performed with this instance is:
-   *
-   * - `blur()`
-   * - `focus()`
-   * - `update()`
-   *
-   * > You can reference `DocumentSelectionState` in
-   * > [`vendor/document/selection/DocumentSelectionState.js`](https://github.com/facebook/react-native/blob/master/Libraries/vendor/document/selection/DocumentSelectionState.js)
-   *
-   * @platform ios
-   */
-  selectionState: PropTypes.instanceOf(DocumentSelectionState),
-  /**
    * The start and end of the text input's selection. Set start and end to
    * the same value to position the cursor.
    */
-  selection: PropTypes.shape({
+  selection: (PropTypes.shape({
     start: PropTypes.number.isRequired,
     end: PropTypes.number,
-  }),
+  }): React$PropType$Primitive<{
+    end?: number,
+    start: number,
+    ...
+  }>),
   /**
    * The value to show for the text input. `TextInput` is a controlled
    * component, which means the native value will be forced to match this
@@ -378,12 +424,14 @@ module.exports = {
    * This property is supported only for single-line TextInput component.
    * @platform ios
    */
-  clearButtonMode: PropTypes.oneOf([
+  clearButtonMode: (PropTypes.oneOf([
     'never',
     'while-editing',
     'unless-editing',
     'always',
-  ]),
+  ]): React$PropType$Primitive<
+    'never' | 'while-editing' | 'unless-editing' | 'always',
+  >),
   /**
    * If `true`, clears the text field automatically when editing begins.
    * @platform ios
@@ -471,10 +519,20 @@ module.exports = {
    *
    * @platform ios
    */
-  dataDetectorTypes: PropTypes.oneOfType([
+  dataDetectorTypes: (PropTypes.oneOfType([
     PropTypes.oneOf(DataDetectorTypes),
     PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
-  ]),
+  ]): React$PropType$Primitive<
+    | 'phoneNumber'
+    | 'link'
+    | 'address'
+    | 'calendarEvent'
+    | 'none'
+    | 'all'
+    | Array<
+        'phoneNumber' | 'link' | 'address' | 'calendarEvent' | 'none' | 'all',
+      >,
+  >),
   /**
    * If `true`, caret is hidden. The default value is `false`.
    * This property is supported only for single-line TextInput component on iOS.
@@ -496,7 +554,7 @@ module.exports = {
    * expected semantic meaning for the content that users enter.
    * @platform ios
    */
-  textContentType: PropTypes.oneOf([
+  textContentType: (PropTypes.oneOf([
     'none',
     'URL',
     'addressCity',
@@ -525,7 +583,36 @@ module.exports = {
     'password',
     'newPassword',
     'oneTimeCode',
-  ]),
+  ]): React$PropType$Primitive<
+    | 'none'
+    | 'URL'
+    | 'addressCity'
+    | 'addressCityAndState'
+    | 'addressState'
+    | 'countryName'
+    | 'creditCardNumber'
+    | 'emailAddress'
+    | 'familyName'
+    | 'fullStreetAddress'
+    | 'givenName'
+    | 'jobTitle'
+    | 'location'
+    | 'middleName'
+    | 'name'
+    | 'namePrefix'
+    | 'nameSuffix'
+    | 'nickname'
+    | 'organizationName'
+    | 'postalCode'
+    | 'streetAddressLine1'
+    | 'streetAddressLine2'
+    | 'sublocality'
+    | 'telephoneNumber'
+    | 'username'
+    | 'password'
+    | 'newPassword'
+    | 'oneTimeCode',
+  >),
   /**
    * When `false`, it will prevent the soft keyboard from showing when the field is focused.
    * Defaults to `true`.

@@ -14,15 +14,17 @@
 
 import NativePlatformConstantsMacOS from './NativePlatformConstantsMacOS';
 
-export type PlatformSelectSpec<D, I> = {
+export type PlatformSelectSpec<D, N, I> = {
   default?: D,
+  native?: N,
   macos?: I,
+  ...
 };
 
 const Platform = {
   __constants: null,
   OS: 'macos',
-  get Version(): $FlowFixMe {
+  get Version(): string {
     return this.constants.osVersion;
   },
   get constants(): {|
@@ -50,8 +52,12 @@ const Platform = {
     }
     return false;
   },
-  select: <D, I>(spec: PlatformSelectSpec<D, I>): D | I =>
-    'macos' in spec ? spec.macos : spec.default,
+  select: <D, N, I>(spec: PlatformSelectSpec<D, N, I>): D | N | I =>
+    'macos' in spec
+      ? spec.macos
+      : 'native' in spec
+      ? spec.native
+      : spec.default,
 };
 
 module.exports = Platform;

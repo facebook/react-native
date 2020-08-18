@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -45,6 +45,16 @@
 - (BOOL)isYogaLeafNode
 {
   return YES;
+}
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  [super didSetProps:changedProps];
+
+  // `backgroundColor` and `opacity` are being applied directly to a UIView,
+  // therefore we need to exclude them from base `textAttributes`.
+  self.textAttributes.backgroundColor = nil;
+  self.textAttributes.opacity = NAN;
 }
 
 - (void)layoutSubviewsWithContext:(RCTLayoutContext)layoutContext

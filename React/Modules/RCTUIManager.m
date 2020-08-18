@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -11,9 +11,6 @@
 
 #import <yoga/Yoga.h> // TODO(macOS ISS#2323203)
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-#import "RCTAccessibilityManager.h"
-#endif // TODO(macOS ISS#2323203)
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
@@ -81,7 +78,7 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
   NSMutableDictionary<NSNumber *, RCTPlatformView *> *_viewRegistry; // Main thread only // TODO(macOS ISS#2323203)
-  NSMapTable<NSString *, UIView *> *_nativeIDRegistry;
+  NSMapTable<NSString *, RCTPlatformView *> *_nativeIDRegistry; // TODO(macOS ISS#2323203)
 
   NSMapTable<RCTShadowView *, NSArray<NSString *> *> *_shadowViewsWithUpdatedProps; // UIManager queue only.
   NSHashTable<RCTShadowView *> *_shadowViewsWithUpdatedChildren; // UIManager queue only.
@@ -98,13 +95,6 @@ RCT_EXPORT_MODULE()
 {
   return NO;
 }
-
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-- (void)dealloc
-{
-  [NSNotificationCenter.defaultCenter removeObserver:self];
-}
-#endif // TODO(macOS ISS#2323203)
 
 - (void)invalidate
 {
@@ -194,8 +184,9 @@ RCT_EXPORT_MODULE()
   dispatch_async(dispatch_get_main_queue(), ^{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewContentSizeMultiplier)
-                                                 name:RCTAccessibilityManagerDidUpdateMultiplierNotification
-                                               object:self->_bridge.accessibilityManager];
+                                                 name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
+                                               object:[self->_bridge moduleForName:@"AccessibilityManager"
+                                                             lazilyLoadIfNecessary:YES]];
   });
 #endif // TODO(macOS ISS#2323203)
 #if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
@@ -217,8 +208,12 @@ RCT_EXPORT_MODULE()
   // Report the event across the bridge.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
-                                              body:@([_bridge.accessibilityManager multiplier])];
+  id multiplier = [[self->_bridge moduleForName:@"AccessibilityManager"
+                          lazilyLoadIfNecessary:YES] valueForKey:@"multiplier"];
+  if (multiplier) {
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
+                                                body:multiplier];
+  }
 #pragma clang diagnostic pop
 
   RCTExecuteOnUIManagerQueue(^{
@@ -349,10 +344,28 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 - (NSString *)viewNameForReactTag:(NSNumber *)reactTag
 {
   RCTAssertUIManagerQueue();
-  return _shadowViewRegistry[reactTag].viewName;
+  NSString *name = _shadowViewRegistry[reactTag].viewName;
+  if (name) {
+    return name;
+  }
+
+  __block RCTPlatformView *view; // TODO(macOS ISS#2323203)
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    view = self->_viewRegistry[reactTag];
+  });
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+
+  if ([view respondsToSelector:@selector(componentViewName_DO_NOT_USE_THIS_IS_BROKEN)]) {
+    return [view performSelector:@selector(componentViewName_DO_NOT_USE_THIS_IS_BROKEN)];
+  }
+
+#pragma clang diagnostic pop
+  return nil;
 }
 
-- (UIView *)viewForReactTag:(NSNumber *)reactTag
+- (RCTPlatformView *)viewForReactTag:(NSNumber *)reactTag // TODO(macOS ISS#2323203)
 {
   RCTAssertMainQueue();
   return _viewRegistry[reactTag];
@@ -998,7 +1011,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
 
   // Dispatch view creation directly to the main thread instead of adding to
   // UIBlocks array. This way, it doesn't get deferred until after layout.
-  __block UIView *preliminaryCreatedView = nil;
+  __block RCTPlatformView *preliminaryCreatedView = nil; // TODO(macOS ISS#2323203)
 
   void (^createViewBlock)(void) = ^{
     // Do nothing on the second run.
@@ -1006,7 +1019,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
       return;
     }
 
-    preliminaryCreatedView = [componentData createViewWithTag:reactTag];
+    preliminaryCreatedView = [componentData createViewWithTag:reactTag rootTag:rootTag];
 
     if (preliminaryCreatedView) {
       self->_viewRegistry[reactTag] = preliminaryCreatedView;
@@ -1022,7 +1035,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
 
   RCTExecuteOnMainQueue(createViewBlock);
 
-  [self addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#2323203)
     createViewBlock();
 
     if (preliminaryCreatedView) {
@@ -1110,7 +1123,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
   if (!componentData) {
-      __block RCTPlatformView *view; // TODO(macOS ISS#2323203)
+    __block RCTPlatformView *view; // TODO(macOS ISS#2323203)
     RCTUnsafeExecuteOnMainQueueSync(^{
       view = self->_viewRegistry[reactTag];
     });
@@ -1172,7 +1185,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   }];
 }
 
-- (void)flushUIBlocksWithCompletion:(void (^)(void))completion;
+- (void)flushUIBlocksWithCompletion:(void (^)(void))completion
 {
   RCTAssertUIManagerQueue();
 
@@ -1599,7 +1612,7 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   }];
 }
 
-- (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion
+- (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(RCTPlatformView *view))completion // TODO(macOS ISS#2323203)
 {
   RCTAssertMainQueue();
   RCTAssert(completion != nil, @"Attempted to resolve rootView for tag %@ without a completion block", reactTag);

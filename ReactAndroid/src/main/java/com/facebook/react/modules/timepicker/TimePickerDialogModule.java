@@ -1,11 +1,13 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.timepicker;
 
+import android.app.Activity;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -88,12 +90,16 @@ public class TimePickerDialogModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void open(@Nullable final ReadableMap options, Promise promise) {
 
-    FragmentActivity activity = (FragmentActivity) getCurrentActivity();
-    if (activity == null) {
+    Activity raw_activity = getCurrentActivity();
+    if (raw_activity == null || !(raw_activity instanceof FragmentActivity)) {
       promise.reject(
-          ERROR_NO_ACTIVITY, "Tried to open a TimePicker dialog while not attached to an Activity");
+        ERROR_NO_ACTIVITY,
+        "Tried to open a DatePicker dialog while not attached to a FragmentActivity");
       return;
     }
+
+    FragmentActivity activity = (FragmentActivity) raw_activity;
+
     // We want to support both android.app.Activity and the pre-Honeycomb FragmentActivity
     // (for apps that use it for legacy reasons). This unfortunately leads to some code duplication.
     FragmentManager fragmentManager = activity.getSupportFragmentManager();

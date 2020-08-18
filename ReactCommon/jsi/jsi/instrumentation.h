@@ -1,13 +1,15 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 
 #include <iosfwd>
 #include <string>
+#include <unordered_map>
 
 #include <jsi/jsi.h>
 
@@ -17,6 +19,8 @@ namespace jsi {
 /// Methods for starting and collecting instrumentation, an \c Instrumentation
 /// instance is associated with a particular \c Runtime instance, which it
 /// controls the instrumentation of.
+/// None of these functions should return newly created jsi values, nor should
+/// it modify the values of any jsi values in the heap (although GCs are fine).
 class Instrumentation {
  public:
   virtual ~Instrumentation() = default;
@@ -40,9 +44,10 @@ class Instrumentation {
   /// function can be called at any time, and should produce information that is
   /// correct at the instant it is called (i.e, not stale).
   ///
-  /// \return a jsi Value containing whichever statistics the runtime supports
-  ///   for its heap.
-  virtual Value getHeapInfo(bool includeExpensive) = 0;
+  /// \return a map from a string key to a number associated with that
+  /// statistic.
+  virtual std::unordered_map<std::string, int64_t> getHeapInfo(
+      bool includeExpensive) = 0;
 
   /// perform a full garbage collection
   virtual void collectGarbage() = 0;
@@ -51,19 +56,15 @@ class Instrumentation {
   ///
   /// \param path to save the heap capture
   ///
-  /// \param compact Whether the JSON should be compact or pretty
-  ///
   /// \return true iff the heap capture succeeded
-  virtual bool createSnapshotToFile(const std::string& path, bool compact) = 0;
+  virtual bool createSnapshotToFile(const std::string& path) = 0;
 
   /// Captures the heap to an output stream
   ///
   /// \param os output stream to write to.
   ///
-  /// \param compact Whether the JSON should be compact or pretty
-  ///
   /// \return true iff the heap capture succeeded.
-  virtual bool createSnapshotToStream(std::ostream& os, bool compact) = 0;
+  virtual bool createSnapshotToStream(std::ostream& os) = 0;
 
   /// Write a trace of bridge traffic to the given file name.
   virtual void writeBridgeTrafficTraceToFile(

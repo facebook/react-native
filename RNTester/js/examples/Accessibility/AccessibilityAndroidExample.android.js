@@ -68,7 +68,7 @@ class AccessibilityAndroidExample extends React.Component {
 
         <RNTesterBlock title="Overlapping views and importantForAccessibility property">
           <View style={styles.container}>
-            <View
+            <TouchableWithoutFeedback
               style={{
                 position: 'absolute',
                 left: 10,
@@ -87,7 +87,7 @@ class AccessibilityAndroidExample extends React.Component {
               <View accessible={true}>
                 <Text style={{fontSize: 25}}>Hello</Text>
               </View>
-            </View>
+            </TouchableWithoutFeedback>
             <View
               style={{
                 position: 'absolute',

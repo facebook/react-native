@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -14,7 +14,7 @@ namespace react {
 
 TurboModule::TurboModule(
     const std::string &name,
-    std::shared_ptr<JSCallInvoker> jsInvoker)
+    std::shared_ptr<CallInvoker> jsInvoker)
     : name_(name), jsInvoker_(jsInvoker) {}
 
 TurboModule::~TurboModule() {}

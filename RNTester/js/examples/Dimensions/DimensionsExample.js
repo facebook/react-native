@@ -14,8 +14,8 @@ import {Dimensions, Text, useWindowDimensions} from 'react-native';
 import * as React from 'react';
 
 class DimensionsSubscription extends React.Component<
-  {dim: string},
-  {dims: Object},
+  {dim: string, ...},
+  {dims: Object, ...},
 > {
   state = {
     dims: Dimensions.get(this.props.dim),

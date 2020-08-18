@@ -47,7 +47,7 @@ jobs:
       - task: CmdLine@2
         displayName: chmod
         inputs:
-          script: chmod -R +r .
+          script: chmod -R +rw .
 
       - task: CmdLine@2
         displayName: "Rename package to react-native"
@@ -58,6 +58,16 @@ jobs:
         displayName: npm install
         inputs:
           script: npm install
+
+      - task: CmdLine@2
+        displayName: nuget restore
+        inputs:
+          script: mono $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe restore $(System.DefaultWorkingDirectory)/ReactAndroid/packages.config -PackagesDirectory  $(System.DefaultWorkingDirectory)/ReactAndroid/packages/ -Verbosity Detailed -NonInteractive
+
+      - task: CmdLine@2
+        displayName: Setup Build Dependencies
+        inputs:
+          script: chmod +x .ado/setup_droid_deps.sh && .ado/setup_droid_deps.sh
 
       - task: CmdLine@2
         displayName: Remove RNTesterApp.android.bundle
@@ -72,7 +82,7 @@ jobs:
       - task: CmdLine@2
         displayName: gradlew installArchives
         inputs:
-          script: ./gradlew installArchives -Pparam="excludeLibs"
+          script: REACT_NATIVE_DEPENDENCIES=$(System.DefaultWorkingDirectory)/build_deps ./gradlew installArchives -Pparam="excludeLibs"
 
       - template: templates\prep-android-nuget.yml
 

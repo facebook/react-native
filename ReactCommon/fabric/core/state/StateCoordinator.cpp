@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -24,6 +24,26 @@ const StateTarget &StateCoordinator::getTarget() const {
 
 void StateCoordinator::setTarget(StateTarget &&target) const {
   std::unique_lock<better::shared_mutex> lock(mutex_);
+
+  assert(target && "`StateTarget` must not be empty.");
+
+  if (target_) {
+    auto &previousState = target_.getShadowNode().getState();
+    auto &nextState = target.getShadowNode().getState();
+
+    /*
+     * Checking and setting `isObsolete_` prevents old states to be recommitted
+     * on top of fresher states. It's okay to commit a tree with "older" Shadow
+     * Nodes (the evolution of nodes is not linear), however, we never back out
+     * states (they progress linearly).
+     */
+    if (nextState->isObsolete_) {
+      return;
+    }
+
+    previousState->isObsolete_ = true;
+  }
+
   target_ = std::move(target);
 }
 

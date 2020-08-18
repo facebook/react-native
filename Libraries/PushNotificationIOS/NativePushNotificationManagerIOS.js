@@ -32,7 +32,7 @@ type Notification = {|
 |};
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {};
+  +getConstants: () => {...};
   +onFinishRemoteNotification: (
     notificationId: string,
     /**
@@ -46,9 +46,9 @@ export interface Spec extends TurboModule {
   +setApplicationIconBadgeNumber: (num: number) => void;
   +getApplicationIconBadgeNumber: (callback: (num: number) => void) => void;
   +requestPermissions: (permission: {|
-    +alert?: ?boolean,
-    +badge?: ?boolean,
-    +sound?: ?boolean,
+    +alert: boolean,
+    +badge: boolean,
+    +sound: boolean,
   |}) => Promise<Permissions>;
   +abandonPermissions: () => void;
   +checkPermissions: (callback: (permissions: Permissions) => void) => void;

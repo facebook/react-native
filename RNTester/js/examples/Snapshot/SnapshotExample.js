@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const React = require('react');
@@ -20,7 +21,7 @@ const {
 } = require('react-native');
 const ScreenshotManager = NativeModules.ScreenshotManager;
 
-class ScreenshotExample extends React.Component<{}, $FlowFixMeState> {
+class ScreenshotExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     uri: undefined,
   };

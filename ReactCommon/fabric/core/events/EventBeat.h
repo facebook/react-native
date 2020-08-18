@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -21,10 +21,35 @@ namespace react {
  */
 class EventBeat {
  public:
-  virtual ~EventBeat() = default;
+  /*
+   * The concept of `Owner`
+   * The purpose of `EventBeat` is handling an asynchronous callback to itself
+   * which is being delivered on some different thread. That brings a challenge
+   * of ensuring that the `EventBeat` object stays valid during the timeframe of
+   * callback execution. The concept of Owner helps with that. The owner is a
+   * shared pointer that retains (probably indirectly) the `EventBeat` object.
+   * To ensure the correctness of the call, `EventBeat` retains the owner
+   * (practically creating a retain cycle) during executing the callback. In
+   * case if the pointer to the owner already null, `EventBeat` skips executing
+   * the callback. It's impossible to retain itself directly or refer to the
+   * shared pointer to itself from a constructor. `OwnerBox` is designed to work
+   * around this issue; it allows to store the pointer later, right after the
+   * creation of some other object that owns an `EventBeat`.
+   */
+  using Owner = std::weak_ptr<void const>;
+  struct OwnerBox {
+    Owner owner;
+  };
+  using SharedOwnerBox = std::shared_ptr<OwnerBox>;
+
+  using Factory =
+      std::function<std::unique_ptr<EventBeat>(SharedOwnerBox const &ownerBox)>;
 
   using BeatCallback = std::function<void(jsi::Runtime &runtime)>;
-  using FailCallback = std::function<void()>;
+
+  EventBeat(SharedOwnerBox const &ownerBox);
+
+  virtual ~EventBeat() = default;
 
   /*
    * Communicates to the Beat that a consumer is waiting for the coming beat.
@@ -50,27 +75,17 @@ class EventBeat {
    */
   void setBeatCallback(const BeatCallback &beatCallback);
 
-  /*
-   * Sets the fail callback function.
-   * Called in case if the beat cannot be performed anymore because of
-   * some external circumstances (e.g. execution thread is beling destructed).
-   * The callback can be called on any thread.
-   */
-  void setFailCallback(const FailCallback &failCallback);
-
+ protected:
   /*
    * Should be used by sublasses to send a beat.
    * Receiver might ignore the call if a beat was not requested.
    */
   void beat(jsi::Runtime &runtime) const;
 
- protected:
   BeatCallback beatCallback_;
-  FailCallback failCallback_;
+  SharedOwnerBox ownerBox_;
   mutable std::atomic<bool> isRequested_{false};
 };
-
-using EventBeatFactory = std::function<std::unique_ptr<EventBeat>()>;
 
 } // namespace react
 } // namespace facebook

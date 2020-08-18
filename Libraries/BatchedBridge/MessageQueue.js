@@ -23,6 +23,7 @@ export type SpyData = {
   module: ?string,
   method: string | number,
   args: any[],
+  ...
 };
 
 const TO_JS = 0;
@@ -39,7 +40,7 @@ const TRACE_TAG_REACT_APPS = 1 << 17;
 const DEBUG_INFO_LIMIT = 32;
 
 class MessageQueue {
-  _lazyCallableModules: {[key: string]: (void) => Object};
+  _lazyCallableModules: {[key: string]: (void) => Object, ...};
   _queue: [number[], number[], any[], number];
   _successCallbacks: Map<number, ?Function>;
   _failureCallbacks: Map<number, ?Function>;
@@ -48,9 +49,9 @@ class MessageQueue {
   _eventLoopStartTime: number;
   _immediatesCallback: ?() => void;
 
-  _debugInfo: {[number]: [number, number]};
-  _remoteModuleTable: {[number]: string};
-  _remoteMethodTable: {[number]: $ReadOnlyArray<string>};
+  _debugInfo: {[number]: [number, number], ...};
+  _remoteModuleTable: {[number]: string, ...};
+  _remoteMethodTable: {[number]: $ReadOnlyArray<string>, ...};
 
   __spy: ?(data: SpyData) => void;
 
@@ -190,19 +191,7 @@ class MessageQueue {
       );
     }
     this.processCallbacks(moduleID, methodID, params, onFail, onSucc);
-    try {
-      return global.nativeCallSyncHook(moduleID, methodID, params);
-    } catch (e) {
-      if (
-        typeof e === 'object' &&
-        e != null &&
-        typeof e.framesToPop === 'undefined' &&
-        /^Exception in HostFunction: /.test(e.message)
-      ) {
-        e.framesToPop = 2;
-      }
-      throw e;
-    }
+    return global.nativeCallSyncHook(moduleID, methodID, params);
   }
 
   processCallbacks(

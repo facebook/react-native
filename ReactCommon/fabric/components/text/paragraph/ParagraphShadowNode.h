@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,7 +8,6 @@
 #pragma once
 
 #include <folly/Optional.h>
-#include <react/components/text/ParagraphMeasurementCache.h>
 #include <react/components/text/ParagraphProps.h>
 #include <react/components/text/ParagraphState.h>
 #include <react/components/text/TextShadowNode.h>
@@ -39,6 +38,12 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    return traits;
+  }
+
   /*
    * Returns a `AttributedString` which represents text content of the node.
    */
@@ -50,15 +55,6 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
    * and construct `ParagraphState` objects.
    */
   void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
-
-  /*
-   * Associates a shared LRU cache with the node.
-   * `ParagraphShadowNode` uses this to cache the results of
-   * text rendering measurements.
-   * By design, the ParagraphComponentDescriptor outlives all
-   * shadow nodes, so it's safe for this to be a raw pointer.
-   */
-  void setMeasureCache(ParagraphMeasurementCache const *cache);
 
 #pragma mark - LayoutableShadowNode
 
@@ -73,7 +69,6 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
   void updateStateIfNeeded();
 
   SharedTextLayoutManager textLayoutManager_;
-  ParagraphMeasurementCache const *measureCache_;
 
   /*
    * Cached attributed string that represents the content of the subtree started

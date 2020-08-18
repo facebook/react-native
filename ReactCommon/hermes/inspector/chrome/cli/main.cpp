@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include <cstdio>
 #include <cstdlib>
@@ -46,13 +51,82 @@ static void usage() {
   exit(1);
 }
 
+/// Truncate UTF8 string \p s to be at most \p len bytes long.  If a multi-byte
+/// sequence crosses the limit (len), it will be wholly omitted from the
+/// output.  If the output is truncated, it will be suffixed with "...".
+///
+/// \pre len must be strictly greater than the length of the truncation suffix
+///     (three characters), so there is something left after truncation.
+static void truncate(std::string &s, size_t len) {
+  static constexpr char suffix[] = "...";
+  static const size_t suflen = strlen(suffix);
+  assert(len > suflen);
+
+  if (s.size() <= len) {
+    return;
+  }
+
+  // Iterate back from the edge to pop off continuation bytes.
+  ssize_t last = len - suflen;
+  while (last > 0 && (s[last] & 0xC0) == 0x80)
+    --last;
+
+  // Copy in the suffix.
+  strncpy(&s[last], suffix, suflen);
+
+  // Trim the excess.
+  s.resize(last + suflen);
+}
+
+/// Traverse the structure of \p d, truncating all the strings found,
+/// (excluding object keys) to at most \p len bytes long using the definition
+/// of truncate above.
+static void truncateStringsIn(folly::dynamic &d, size_t len) {
+  switch (d.type()) {
+    case folly::dynamic::STRING:
+      truncate(d.getString(), len);
+      break;
+
+    case folly::dynamic::ARRAY:
+      for (auto &child : d) {
+        truncateStringsIn(child, len);
+      }
+      break;
+
+    case folly::dynamic::OBJECT:
+      for (auto &kvp : d.items()) {
+        truncateStringsIn(kvp.second, len);
+      }
+      break;
+
+    default:
+      /* nop */
+      break;
+  }
+}
+
+/// Pretty print the JSON blob contained within \p str, by introducing
+/// parsing it and pretty printing it.  Large string values (larger than 512
+/// characters) are truncated.
+///
+/// \pre str contains a valid JSON blob.
 static std::string prettify(const std::string &str) {
+  constexpr size_t MAX_LINE_LEN = 512;
+
   try {
     folly::dynamic obj = folly::parseJson(str);
+    truncateStringsIn(obj, MAX_LINE_LEN);
     return folly::toPrettyJson(obj);
   } catch (...) {
     // pass
   }
+
+  if (str.size() > MAX_LINE_LEN) {
+    std::string cpy = str;
+    truncate(cpy, MAX_LINE_LEN);
+    return cpy;
+  }
+
   return str;
 }
 

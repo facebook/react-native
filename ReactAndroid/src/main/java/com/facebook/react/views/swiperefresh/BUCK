@@ -23,4 +23,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
         react_native_target("java/com/facebook/react/views/scroll:scroll"),
     ],
+    exported_deps = [
+        react_native_target("java/com/facebook/react/viewmanagers:viewmanagers"),
+    ],
 )

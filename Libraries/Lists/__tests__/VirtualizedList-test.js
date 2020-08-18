@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
  * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 const React = require('react');
@@ -44,7 +44,7 @@ describe('VirtualizedList', () => {
   });
 
   it('warns if both renderItem or ListItemComponent are specified. Uses ListItemComponent', () => {
-    jest.spyOn(global.console, 'warn');
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
     function ListItemComponent({item}) {
       return <item value={item.key} testID={`${item.key}-ListItemComponent`} />;
     }
@@ -60,16 +60,22 @@ describe('VirtualizedList', () => {
       />,
     );
 
-    expect(console.warn.mock.calls).toEqual([
-      [
-        'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take precedence over renderItem.',
-      ],
-    ]);
+    expect(console.warn).toBeCalledWith(
+      'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take precedence over renderItem.',
+    );
     expect(component).toMatchSnapshot();
     console.warn.mockRestore();
   });
 
   it('throws if no renderItem or ListItemComponent', () => {
+    // Silence the React error boundary warning; we expect an uncaught error.
+    jest.spyOn(console, 'error').mockImplementation(message => {
+      if (message.startsWith('The above error occured in the ')) {
+        return;
+      }
+      console.errorDebug(message);
+    });
+
     const componentFactory = () =>
       ReactTestRenderer.create(
         <VirtualizedList
@@ -81,6 +87,8 @@ describe('VirtualizedList', () => {
     expect(componentFactory).toThrow(
       'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
     );
+
+    console.error.mockRestore();
   });
 
   it('renders empty list', () => {
@@ -272,5 +280,58 @@ describe('VirtualizedList', () => {
         viewableItems: [expect.objectContaining({isViewable: true, key: 'i4'})],
       }),
     );
+  });
+
+  it('getScrollRef for case where it returns a ScrollView', () => {
+    const listRef = React.createRef(null);
+
+    ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+        renderItem={({item}) => <item value={item.key} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+        ref={listRef}
+      />,
+    );
+
+    const scrollRef = listRef.current.getScrollRef();
+
+    // This is checking if the ref acts like a ScrollView. If we had an
+    // `isScrollView(ref)` method, that would be preferred.
+    expect(scrollRef.scrollTo).toBeInstanceOf(Function);
+  });
+
+  it('getScrollRef for case where it returns a View', () => {
+    const listRef = React.createRef(null);
+
+    ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'outer0'}, {key: 'outer1'}]}
+        renderItem={outerInfo => (
+          <VirtualizedList
+            data={[
+              {key: outerInfo.item.key + ':inner0'},
+              {key: outerInfo.item.key + ':inner1'},
+            ]}
+            renderItem={innerInfo => {
+              return <item title={innerInfo.item.key} />;
+            }}
+            getItem={(data, index) => data[index]}
+            getItemCount={data => data.length}
+            ref={listRef}
+          />
+        )}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
+    const scrollRef = listRef.current.getScrollRef();
+
+    // This is checking if the ref acts like a host component. If we had an
+    // `isHostComponent(ref)` method, that would be preferred.
+    expect(scrollRef.measure).toBeInstanceOf(jest.fn().constructor);
+    expect(scrollRef.measureLayout).toBeInstanceOf(jest.fn().constructor);
+    expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
   });
 });

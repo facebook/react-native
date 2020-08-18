@@ -12,7 +12,6 @@
 import type {Node} from 'React';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import React, {Component} from 'react';
-import {Platform} from 'react-native'; // TODO(macOS ISS#2323203)
 
 type State = {|animating: boolean|};
 type Props = $ReadOnly<{||}>;
@@ -43,7 +42,7 @@ class ToggleAnimatingActivityIndicator extends Component<Props, State> {
     }, 2000);
   }
 
-  render() {
+  render(): Node {
     return (
       <ActivityIndicator
         animating={this.state.animating}
@@ -67,15 +66,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     padding: 8,
-    ...Platform.select({
-      // [TODO(macOS ISS#2323203)
-      macos: {
-        backgroundColor: {semantic: 'windowBackgroundColor'},
-      },
-      default: {
-        backgroundColor: undefined,
-      },
-    }), // ]TODO(macOS ISS#2323203)
   },
 });
 
@@ -112,18 +102,8 @@ exports.examples = [
     render(): Node {
       return (
         <View style={styles.horizontal}>
-          <ActivityIndicator
-            color={
-              Platform.OS === 'macos'
-                ? {dynamic: {light: 'black', dark: 'white'}}
-                : '#0000ff'
-            }
-          />
-          <ActivityIndicator
-            color={
-              Platform.OS === 'macos' ? {semantic: 'textColor'} : '#aa00aa'
-            }
-          />
+          <ActivityIndicator color="#0000ff" />
+          <ActivityIndicator color="#aa00aa" />
           <ActivityIndicator color="#aa3300" />
           <ActivityIndicator color="#00aa00" />
         </View>

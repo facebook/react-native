@@ -1,11 +1,13 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react;
 
+import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
@@ -28,6 +30,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
@@ -124,8 +127,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    setAllowImmediateUIOperationExecution(false);
+
     if (mUseSurface) {
       super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+      setAllowImmediateUIOperationExecution(true);
       return;
     }
 
@@ -179,6 +185,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mLastHeight = height;
 
     } finally {
+      setAllowImmediateUIOperationExecution(true);
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
@@ -369,6 +376,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
    * context of that manager. Extra parameter {@param launchOptions} can be used to pass initial
    * properties for the react component.
    */
+  @ThreadConfined(UI)
   public void startReactApplication(
       ReactInstanceManager reactInstanceManager,
       String moduleName,
@@ -418,6 +426,13 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     mShouldLogContentAppeared = shouldLogContentAppeared;
   }
 
+  @Nullable
+  @Override
+  public String getSurfaceID() {
+    Bundle appProperties = getAppProperties();
+    return appProperties != null ? appProperties.getString("surfaceID") : null;
+  }
+
   private void updateRootLayoutSpecs(final int widthMeasureSpec, final int heightMeasureSpec) {
     if (mReactInstanceManager == null) {
       FLog.w(
@@ -434,17 +449,52 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   /**
+   * In Fabric, it is possible for MountItems to be scheduled during onMeasure calls, specifically:
+   *
+   * <p>ReactRootView.onMeasure -> ReactRootView.updateRootLayoutSpecs ->
+   * FabricUIManager.updateRootLayoutSpecs -> Binding.setConstraints -> (C++) commit new tree ->
+   * (C++ Android binding) diff tree, schedule mount items -> FabricUIManager.scheduleMountItem
+   *
+   * <p>If called on the main thread, `scheduleMountItem` will execute MountItems synchronously,
+   * causing all ShadowNode updates to be flushed to the view hierarchy, on the main thread, during
+   * an onMeasure call.
+   *
+   * <p>Use this method to disable immediate execution of mount items.
+   *
+   * <p>This is a noop outside in pre-Fabric React Native.
+   */
+  private void setAllowImmediateUIOperationExecution(boolean flag) {
+    final ReactInstanceManager reactInstanceManager = mReactInstanceManager;
+
+    if (reactInstanceManager == null) {
+      return;
+    }
+
+    final ReactContext reactApplicationContext = reactInstanceManager.getCurrentReactContext();
+
+    if (reactApplicationContext == null) {
+      return;
+    }
+
+    UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType())
+        .setAllowImmediateUIOperationExecution(flag);
+  }
+
+  /**
    * Unmount the react application at this root view, reclaiming any JS memory associated with that
    * application. If {@link #startReactApplication} is called, this method must be called before the
    * ReactRootView is garbage collected (typically in your Activity's onDestroy, or in your
    * Fragment's onDestroyView).
    */
+  @ThreadConfined(UI)
   public void unmountReactApplication() {
+    UiThreadUtil.assertOnUiThread();
+
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);
-      mReactInstanceManager = null;
       mIsAttachedToInstance = false;
     }
+    mReactInstanceManager = null;
     mShouldLogContentAppeared = false;
   }
 
@@ -489,6 +539,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return mInitialUITemplate;
   }
 
+  @ThreadConfined(UI)
   public void setAppProperties(@Nullable Bundle appProperties) {
     UiThreadUtil.assertOnUiThread();
     mAppProperties = appProperties;
@@ -559,11 +610,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   private void attachToReactInstanceManager() {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachToReactInstanceManager");
-    try {
-      if (mIsAttachedToInstance) {
-        return;
-      }
 
+    if (mIsAttachedToInstance) {
+      return;
+    }
+
+    try {
       mIsAttachedToInstance = true;
       Assertions.assertNotNull(mReactInstanceManager).attachRootView(this);
       getViewTreeObserver().addOnGlobalLayoutListener(getCustomGlobalLayoutListener());

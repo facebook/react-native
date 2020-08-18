@@ -36,6 +36,7 @@ export type ButtonsArray = Array<{
    * An Alert button style
    */
   style?: AlertButtonStyle,
+  ...
 }>;
 
 /**

@@ -29,6 +29,43 @@ const ArrayPropsNativeComponentViewConfig = {
     points: true,
     sizes: true,
     object: true,
+    array: true,
+    arrayOfArrayOfObject: true,
+  },
+};
+
+let nativeComponentName = 'ArrayPropsNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, ArrayPropsNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = ArrayPropsNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
+Map {
+  "ARRAY_PROPS_WITH_NESTED_OBJECTNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const ArrayPropsNativeComponentViewConfig = {
+  uiViewClassName: 'ArrayPropsNativeComponent',
+
+  validAttributes: {
+    nativePrimitives: true,
   },
 };
 
@@ -238,41 +275,6 @@ export default nativeComponentName;
 }
 `;
 
-exports[`GenerateViewConfigJs can generate fixture ENUM_PROP 1`] = `
-Map {
-  "ENUM_PROPNativeViewConfig.js" => "
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @flow
- */
-
-'use strict';
-
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-
-const EnumPropsNativeComponentViewConfig = {
-  uiViewClassName: 'EnumPropsNativeComponent',
-
-  validAttributes: {
-    alignment: true,
-  },
-};
-
-let nativeComponentName = 'EnumPropsNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, EnumPropsNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = EnumPropsNativeComponentViewConfig;
-
-export default nativeComponentName;
-",
-}
-`;
-
 exports[`GenerateViewConfigJs can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "EVENT_NESTED_OBJECT_PROPSNativeViewConfig.js" => "
@@ -445,6 +447,38 @@ export default nativeComponentName;
 }
 `;
 
+exports[`GenerateViewConfigJs can generate fixture EXCLUDE_ANDROID 1`] = `
+Map {
+  "EXCLUDE_ANDROIDNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const ExcludedAndroidComponentViewConfig = {
+  uiViewClassName: 'ExcludedAndroidComponent',
+  validAttributes: {},
+};
+
+let nativeComponentName = 'ExcludedAndroidComponent';
+
+registerGeneratedViewConfig(nativeComponentName, ExcludedAndroidComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = ExcludedAndroidComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
 exports[`GenerateViewConfigJs can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "FLOAT_PROPSNativeViewConfig.js" => "
@@ -514,6 +548,76 @@ let nativeComponentName = 'ImagePropNativeComponent';
 registerGeneratedViewConfig(nativeComponentName, ImagePropNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = ImagePropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture INSETS_PROP 1`] = `
+Map {
+  "INSETS_PROPNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const InsetsPropNativeComponentViewConfig = {
+  uiViewClassName: 'InsetsPropNativeComponent',
+
+  validAttributes: {
+    contentInset: { diff: require('insetsDiffer') },
+  },
+};
+
+let nativeComponentName = 'InsetsPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, InsetsPropNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = InsetsPropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture INT32_ENUM_PROP 1`] = `
+Map {
+  "INT32_ENUM_PROPNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const Int32EnumPropsNativeComponentViewConfig = {
+  uiViewClassName: 'Int32EnumPropsNativeComponent',
+
+  validAttributes: {
+    maxInterval: true,
+  },
+};
+
+let nativeComponentName = 'Int32EnumPropsNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, Int32EnumPropsNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = Int32EnumPropsNativeComponentViewConfig;
 
 export default nativeComponentName;
 ",
@@ -736,6 +840,41 @@ let nativeComponentName = 'PointPropNativeComponent';
 registerGeneratedViewConfig(nativeComponentName, PointPropNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = PointPropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture STRING_ENUM_PROP 1`] = `
+Map {
+  "STRING_ENUM_PROPNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const StringEnumPropsNativeComponentViewConfig = {
+  uiViewClassName: 'StringEnumPropsNativeComponent',
+
+  validAttributes: {
+    alignment: true,
+  },
+};
+
+let nativeComponentName = 'StringEnumPropsNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, StringEnumPropsNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = StringEnumPropsNativeComponentViewConfig;
 
 export default nativeComponentName;
 ",

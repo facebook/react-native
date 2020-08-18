@@ -19,7 +19,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_difficult(jsi
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->difficult(rt, args[0].getObject(rt));
 }
 
-NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule(\\"SampleTurboModule\\", jsInvoker) {
   methodMap_[\\"difficult\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_difficult};
 }
@@ -48,7 +48,7 @@ namespace react {
 
 
 
-NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule(\\"SampleTurboModule\\", jsInvoker) {
 
 }
@@ -110,7 +110,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithP
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValueWithPromise(rt, args[0].getBool());
 }
 
-NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule(\\"SampleTurboModule\\", jsInvoker) {
   methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getConstants};
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc};
@@ -152,7 +152,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc(jsi:
   return jsi::Value::undefined();
 }
 
-NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule(\\"SampleTurboModule\\", jsInvoker) {
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc};
 }
@@ -165,7 +165,7 @@ static jsi::Value __hostFunction_NativeSample2TurboModuleCxxSpecJSI_voidFunc(jsi
   return jsi::Value::undefined();
 }
 
-NativeSample2TurboModuleCxxSpecJSI::NativeSample2TurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSample2TurboModuleCxxSpecJSI::NativeSample2TurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule(\\"Sample2TurboModule\\", jsInvoker) {
   methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleCxxSpecJSI_getConstants};
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleCxxSpecJSI_voidFunc};
@@ -199,7 +199,7 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc(jsi:
   return jsi::Value::undefined();
 }
 
-NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule(\\"SampleTurboModule\\", jsInvoker) {
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc};
 }
@@ -209,7 +209,7 @@ static jsi::Value __hostFunction_NativeSample2TurboModuleCxxSpecJSI_voidFunc(jsi
   return jsi::Value::undefined();
 }
 
-NativeSample2TurboModuleCxxSpecJSI::NativeSample2TurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSample2TurboModuleCxxSpecJSI::NativeSample2TurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule(\\"Sample2TurboModule\\", jsInvoker) {
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleCxxSpecJSI_voidFunc};
 }

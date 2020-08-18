@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -113,7 +113,7 @@ static jsi::Value __hostFunction_NativeSampleTurboCxxModuleSpecJSI_getConstants(
 }
 
 NativeSampleTurboCxxModuleSpecJSI::NativeSampleTurboCxxModuleSpecJSI(
-    std::shared_ptr<JSCallInvoker> jsInvoker)
+    std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule("SampleTurboCxxModule", jsInvoker) {
   methodMap_["voidFunc"] = MethodMetadata{
       0, __hostFunction_NativeSampleTurboCxxModuleSpecJSI_voidFunc};

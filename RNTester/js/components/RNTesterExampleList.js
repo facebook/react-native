@@ -26,13 +26,17 @@ const {
 import type {ViewStyleProp} from '../../../Libraries/StyleSheet/StyleSheet';
 import type {RNTesterExample} from '../types/RNTesterTypes';
 
+import {RNTesterThemeContext} from './RNTesterTheme';
+
 type Props = {
   onNavigate: Function,
   list: {
     ComponentExamples: Array<RNTesterExample>,
     APIExamples: Array<RNTesterExample>,
+    ...
   },
   style?: ?ViewStyleProp,
+  ...
 };
 
 class RowComponent extends React.PureComponent<{
@@ -42,6 +46,7 @@ class RowComponent extends React.PureComponent<{
   onPress?: Function,
   onShowUnderlay?: Function,
   onHideUnderlay?: Function,
+  ...
 }> {
   _onPress = () => {
     if (this.props.onPress) {
@@ -52,25 +57,60 @@ class RowComponent extends React.PureComponent<{
   };
   render() {
     const {item} = this.props;
-    const rowStyle = this.props.isSelected ? styles.selectedRow : styles.row; // TODO(macOS ISS#2323203)
     return (
-      <TouchableHighlight
-        onShowUnderlay={this.props.onShowUnderlay}
-        onHideUnderlay={this.props.onHideUnderlay}
-        onAccessibilityAction={this._onPress} // TODO(macOS ISS#2323203)
-        acceptsKeyboardFocus={false} // TODO(macOS ISS#2323203)
-        onPress={this._onPress}>
-        <View style={rowStyle}>
-          <Text style={styles.rowTitleText}>{item.module.title}</Text>
-          <Text style={styles.rowDetailText}>{item.module.description}</Text>
-        </View>
-      </TouchableHighlight>
+      <RNTesterThemeContext.Consumer>
+        {theme => {
+          const rowStyle = this.props.isSelected
+            ? styles.selectedRow
+            : styles.row; // TODO(macOS ISS#2323203)
+          return (
+            <TouchableHighlight
+              onShowUnderlay={this.props.onShowUnderlay}
+              onHideUnderlay={this.props.onHideUnderlay}
+              onAccessibilityAction={this._onPress} // TODO(macOS ISS#2323203)
+              acceptsKeyboardFocus={false} // TODO(macOS ISS#2323203)
+              onPress={this._onPress}>
+              <View
+                style={[
+                  rowStyle, // TODO(macOS ISS#2323203)
+                  {backgroundColor: theme.SystemBackgroundColor},
+                ]}>
+                <Text style={[styles.rowTitleText, {color: theme.LabelColor}]}>
+                  {item.module.title}
+                </Text>
+                <Text
+                  style={[
+                    styles.rowDetailText,
+                    {color: theme.SecondaryLabelColor},
+                  ]}>
+                  {item.module.description}
+                </Text>
+              </View>
+            </TouchableHighlight>
+          );
+        }}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
 
 const renderSectionHeader = ({section}) => (
-  <Text style={styles.sectionHeader}>{section.title}</Text>
+  <RNTesterThemeContext.Consumer>
+    {theme => {
+      return (
+        <Text
+          style={[
+            styles.sectionHeader,
+            {
+              color: theme.SecondaryLabelColor,
+              backgroundColor: theme.GroupedBackgroundColor,
+            },
+          ]}>
+          {section.title}
+        </Text>
+      );
+    }}
+  </RNTesterThemeContext.Consumer>
 );
 
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
@@ -93,49 +133,57 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
     ];
 
     return (
-      <View style={[styles.listContainer, this.props.style]}>
-        {this._renderTitleRow()}
-        <RNTesterExampleFilter
-          testID="explorer_search"
-          sections={sections}
-          filter={filter}
-          render={({filteredSections}) => (
-            <SectionList
-              ItemSeparatorComponent={ItemSeparator}
-              contentContainerStyle={styles.sectionListContentContainer}
-              style={styles.list}
-              sections={filteredSections}
-              renderItem={this._renderItem}
-              enableEmptySections={true}
-              itemShouldUpdate={this._itemShouldUpdate}
-              keyboardShouldPersistTaps="handled"
-              acceptsKeyboardFocus={true} // TODO(macOS ISS#2323203)
-              onSelectionEntered={this._handleOnSelectionEntered} // TODO(macOS ISS#2323203)
-              enableSelectionOnKeyPress={true} // TODO(macOS ISS#2323203)
-              automaticallyAdjustContentInsets={false}
-              keyboardDismissMode="on-drag"
-              renderSectionHeader={renderSectionHeader}
-              backgroundColor={Platform.select({
-                macos: 'transparent',
-                ios: 'transparent',
-                default: undefined,
-              })} // TODO(macOS ISS#2323203)
-            />
-          )}
-        />
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => {
+          return (
+            <View
+              style={[
+                styles.listContainer,
+                this.props.style,
+                {backgroundColor: theme.SecondaryGroupedBackgroundColor},
+              ]}>
+              {this._renderTitleRow()}
+              <RNTesterExampleFilter
+                testID="explorer_search"
+                sections={sections}
+                filter={filter}
+                render={({filteredSections}) => (
+                  <SectionList
+                    ItemSeparatorComponent={ItemSeparator}
+                    contentContainerStyle={{
+                      backgroundColor: theme.SeparatorColor,
+                    }}
+                    style={{backgroundColor: theme.SystemBackgroundColor}}
+                    sections={filteredSections}
+                    renderItem={this._renderItem}
+                    keyboardShouldPersistTaps="handled"
+                    acceptsKeyboardFocus={true} // TODO(macOS ISS#2323203)
+                    onSelectionEntered={this._handleOnSelectionEntered} // TODO(macOS ISS#2323203)
+                    enableSelectionOnKeyPress={true} // TODO(macOS ISS#2323203)
+                    automaticallyAdjustContentInsets={false}
+                    keyboardDismissMode="on-drag"
+                    renderSectionHeader={renderSectionHeader}
+                    // TODO 62 backgroundColor={Platform.select({
+                    //  macos: 'transparent',
+                    //  ios: 'transparent',
+                    //  default: undefined,
+                    // })} // TODO(macOS ISS#2323203)
+                  />
+                )}
+              />
+            </View>
+          );
+        }}
+      </RNTesterThemeContext.Consumer>
     );
   }
 
-  _handleOnSelectionEntered = item => {
-    // [TODO(macOS ISS#2323203)
+  // [TODO(macOS ISS#2323203)
+  _handleOnSelectionEntered = (item: any) => {
     const {key} = item;
     this.props.onNavigate(RNTesterActions.ExampleAction(key));
-  }; // ]TODO(macOS ISS#2323203)
-
-  _itemShouldUpdate(curr, prev) {
-    return curr.item !== prev.item;
-  }
+  };
+  // ]TODO(macOS ISS#2323203)
 
   _renderItem = (
     {item, isSelected, separators}, // TODO(macOS ISS#2323203)
@@ -178,7 +226,22 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
 }
 
 const ItemSeparator = ({highlighted}) => (
-  <View style={highlighted ? styles.separatorHighlighted : styles.separator} />
+  <RNTesterThemeContext.Consumer>
+    {theme => {
+      return (
+        <View
+          style={
+            highlighted
+              ? [
+                  styles.separatorHighlighted,
+                  {backgroundColor: theme.OpaqueSeparatorColor},
+                ]
+              : [styles.separator, {backgroundColor: theme.SeparatorColor}]
+          }
+        />
+      );
+    }}
+  </RNTesterThemeContext.Consumer>
 );
 
 const styles = StyleSheet.create({
@@ -252,6 +315,7 @@ const styles = StyleSheet.create({
   }, // ]TODO(macOS ISS#2323203)
   separator: {
     height: StyleSheet.hairlineWidth,
+    marginLeft: 15,
     ...Platform.select({
       // [TODO(macOS ISS#2323203)
       macos: {
@@ -265,7 +329,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#bbbbbb',
       }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
-    marginLeft: 15,
   },
   separatorHighlighted: {
     height: StyleSheet.hairlineWidth,
@@ -296,7 +359,6 @@ const styles = StyleSheet.create({
   },
   rowDetailText: {
     fontSize: 15,
-    color: '#888888',
     lineHeight: 20,
   },
 });

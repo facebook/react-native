@@ -23,6 +23,29 @@ NS_ASSUME_NONNULL_END",
 }
 `;
 
+exports[`GenerateComponentHObjCpp can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
+Map {
+  "RCTComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol RCTArrayPropsNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
 exports[`GenerateComponentHObjCpp can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "RCTComponentViewHelpers.h" => "/**
@@ -90,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
-  id<CommandNativeComponentViewProtocol> componentView,
+  id<RCTCommandNativeComponentViewProtocol> componentView,
   NSString const *commandName,
   NSArray const *args)
 {
@@ -102,9 +125,9 @@ RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
   }
 #endif
 
+  
 
-
-  [componentView flashScrollIndicators]
+  [componentView flashScrollIndicators];
   return;
 }
 
@@ -116,47 +139,47 @@ if ([commandName isEqualToString:@\\"allTypes\\"]) {
   }
 #endif
 
-#if RCT_DEBUG
   NSObject *arg0 = args[0];
+#if RCT_DEBUG
   if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @\\"number\\", @\\"CommandNativeComponent\\", commandName, @\\"1st\\")) {
     return;
   }
 #endif
   NSInteger x = [(NSNumber *)arg0 intValue];
 
+NSObject *arg1 = args[1];
 #if RCT_DEBUG
-  NSObject *arg1 = args[1];
   if (!RCTValidateTypeOfViewCommandArgument(arg1, [NSNumber class], @\\"float\\", @\\"CommandNativeComponent\\", commandName, @\\"2nd\\")) {
     return;
   }
 #endif
   float y = [(NSNumber *)arg1 floatValue];
 
+NSObject *arg2 = args[2];
 #if RCT_DEBUG
-  NSObject *arg2 = args[2];
   if (!RCTValidateTypeOfViewCommandArgument(arg2, [NSNumber class], @\\"double\\", @\\"CommandNativeComponent\\", commandName, @\\"3rd\\")) {
     return;
   }
 #endif
   double z = [(NSNumber *)arg2 doubleValue];
 
+NSObject *arg3 = args[3];
 #if RCT_DEBUG
-  NSObject *arg3 = args[3];
   if (!RCTValidateTypeOfViewCommandArgument(arg3, [NSString class], @\\"string\\", @\\"CommandNativeComponent\\", commandName, @\\"4th\\")) {
     return;
   }
 #endif
   NSString * message = (NSString *)arg3;
 
+NSObject *arg4 = args[4];
 #if RCT_DEBUG
-  NSObject *arg4 = args[4];
   if (!RCTValidateTypeOfViewCommandArgument(arg4, [NSNumber class], @\\"boolean\\", @\\"CommandNativeComponent\\", commandName, @\\"5th\\")) {
     return;
   }
 #endif
   BOOL animated = [(NSNumber *)arg4 boolValue];
 
-  [componentView allTypes:x y:y z:z message:message animated:animated]
+  [componentView allTypes:x y:y z:z message:message animated:animated];
   return;
 }
 
@@ -189,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
-  id<CommandNativeComponentViewProtocol> componentView,
+  id<RCTCommandNativeComponentViewProtocol> componentView,
   NSString const *commandName,
   NSArray const *args)
 {
@@ -201,23 +224,23 @@ RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
   }
 #endif
 
-#if RCT_DEBUG
   NSObject *arg0 = args[0];
+#if RCT_DEBUG
   if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @\\"number\\", @\\"CommandNativeComponent\\", commandName, @\\"1st\\")) {
     return;
   }
 #endif
   NSInteger x = [(NSNumber *)arg0 intValue];
 
+NSObject *arg1 = args[1];
 #if RCT_DEBUG
-  NSObject *arg1 = args[1];
   if (!RCTValidateTypeOfViewCommandArgument(arg1, [NSNumber class], @\\"number\\", @\\"CommandNativeComponent\\", commandName, @\\"2nd\\")) {
     return;
   }
 #endif
   NSInteger y = [(NSNumber *)arg1 intValue];
 
-  [componentView hotspotUpdate:x y:y]
+  [componentView hotspotUpdate:x y:y];
   return;
 }
 
@@ -246,29 +269,6 @@ Map {
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTDoublePropNativeComponentViewProtocol <NSObject>
-
-@end
-
-NS_ASSUME_NONNULL_END",
-}
-`;
-
-exports[`GenerateComponentHObjCpp can generate fixture ENUM_PROP 1`] = `
-Map {
-  "RCTComponentViewHelpers.h" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-#import <Foundation/Foundation.h>
-#import <React/RCTDefines.h>
-#import <React/RCTLog.h>
-
-NS_ASSUME_NONNULL_BEGIN
-
-@protocol RCTEnumPropsNativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -345,6 +345,29 @@ NS_ASSUME_NONNULL_END",
 }
 `;
 
+exports[`GenerateComponentHObjCpp can generate fixture EXCLUDE_ANDROID 1`] = `
+Map {
+  "RCTComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol RCTExcludedAndroidComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
 exports[`GenerateComponentHObjCpp can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "RCTComponentViewHelpers.h" => "/**
@@ -384,6 +407,52 @@ Map {
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTImagePropNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture INSETS_PROP 1`] = `
+Map {
+  "RCTComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol RCTInsetsPropNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture INT32_ENUM_PROP 1`] = `
+Map {
+  "RCTComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol RCTInt32EnumPropsNativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -522,6 +591,29 @@ Map {
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTPointPropNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture STRING_ENUM_PROP 1`] = `
+Map {
+  "RCTComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol RCTStringEnumPropsNativeComponentViewProtocol <NSObject>
 
 @end
 

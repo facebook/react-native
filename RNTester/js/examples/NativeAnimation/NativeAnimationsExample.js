@@ -72,7 +72,7 @@ class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   }
 }
 
-class ValueListenerExample extends React.Component<{}, $FlowFixMeState> {
+class ValueListenerExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     anim: new Animated.Value(0),
     progress: 0,
@@ -121,7 +121,7 @@ class ValueListenerExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class LoopExample extends React.Component<{}, $FlowFixMeState> {
+class LoopExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     value: new Animated.Value(0),
   };
@@ -157,8 +157,12 @@ class LoopExample extends React.Component<{}, $FlowFixMeState> {
 
 const RNTesterSettingSwitchRow = require('../../components/RNTesterSettingSwitchRow');
 class InternalSettings extends React.Component<
-  {},
-  {busyTime: number | string, filteredStall: number},
+  {...},
+  {
+    busyTime: number | string,
+    filteredStall: number,
+    ...
+  },
 > {
   _stallInterval: ?number;
   render() {
@@ -220,7 +224,7 @@ class InternalSettings extends React.Component<
   }
 }
 
-class EventExample extends React.Component<{}, $FlowFixMeState> {
+class EventExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     anim: new Animated.Value(0),
   };
@@ -309,9 +313,6 @@ class TrackingExample extends React.Component<
     this.state.toJS.setValue(nextValue);
   };
 
-  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.85 was deployed. To see the error, delete this comment
-   * and run Flow. */
   renderBlock = (anim, dest) => [
     <Animated.View
       key="line"

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -26,17 +26,17 @@ class RawPropsKey final {
   /*
    * Converts to `std::string`.
    */
-  explicit operator std::string() const;
+  explicit operator std::string() const noexcept;
 
   /*
    * Renders compound prop name to given buffer and put the resulting length
    * into `length`.
    */
-  void render(char *buffer, RawPropsPropNameLength *length) const;
+  void render(char *buffer, RawPropsPropNameLength *length) const noexcept;
 };
 
-bool operator==(RawPropsKey const &lhs, RawPropsKey const &rhs);
-bool operator!=(RawPropsKey const &lhs, RawPropsKey const &rhs);
+bool operator==(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept;
+bool operator!=(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept;
 
 } // namespace react
 } // namespace facebook

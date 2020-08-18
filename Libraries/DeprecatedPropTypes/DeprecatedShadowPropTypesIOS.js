@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const DeprecatedColorPropType = require('./DeprecatedColorPropType');
@@ -17,7 +18,11 @@ const DeprecatedShadowPropTypesIOS = {
   shadowOffset: (ReactPropTypes.shape({
     width: ReactPropTypes.number,
     height: ReactPropTypes.number,
-  }): React$PropType$Primitive<{height?: number, width?: number}>),
+  }): React$PropType$Primitive<{
+    height?: number,
+    width?: number,
+    ...
+  }>),
   shadowOpacity: ReactPropTypes.number,
   shadowRadius: ReactPropTypes.number,
 };

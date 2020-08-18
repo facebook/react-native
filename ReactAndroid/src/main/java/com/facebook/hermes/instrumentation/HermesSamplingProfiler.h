@@ -1,10 +1,14 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #ifndef HERMESSAMPLINGPROFILER_H_
 #define HERMESSAMPLINGPROFILER_H_
 
-#include <fb/fbjni.h>
-#include <jni/Registration.h>
+#include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
 namespace facebook {

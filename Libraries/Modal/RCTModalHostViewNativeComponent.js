@@ -5,17 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 import codegenNativeComponent from '../Utilities/codegenNativeComponent';
-import {type NativeComponentType} from '../Utilities/codegenNativeComponent';
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {
   WithDefault,
-  BubblingEventHandler,
   DirectEventHandler,
+  BubblingEventHandler,
   Int32,
 } from '../Types/CodegenTypes';
 
@@ -52,6 +52,14 @@ type NativeProps = $ReadOnly<{|
    * See https://facebook.github.io/react-native/docs/modal.html#transparent
    */
   transparent?: WithDefault<boolean, false>,
+
+  /**
+   * The `statusBarTranslucent` prop determines whether your modal should go under
+   * the system statusbar.
+   *
+   * See https://facebook.github.io/react-native/docs/modal.html#statusBarTranslucent
+   */
+  statusBarTranslucent?: WithDefault<boolean, false>,
 
   /**
    * The `hardwareAccelerated` prop controls whether to force hardware
@@ -124,4 +132,4 @@ type NativeProps = $ReadOnly<{|
 export default (codegenNativeComponent<NativeProps>('ModalHostView', {
   interfaceOnly: true,
   paperComponentName: 'RCTModalHostView',
-}): NativeComponentType<NativeProps>);
+}): HostComponent<NativeProps>);

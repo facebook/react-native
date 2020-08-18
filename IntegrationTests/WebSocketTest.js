@@ -28,9 +28,10 @@ type State = {
   lastMessage: ?string | ?ArrayBuffer,
   testMessage: string,
   testExpectedResponse: string,
+  ...
 };
 
-class WebSocketTest extends React.Component<{}, State> {
+class WebSocketTest extends React.Component<{...}, State> {
   state: State = {
     url: DEFAULT_WS_URL,
     fetchStatus: null,

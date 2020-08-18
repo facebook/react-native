@@ -19,7 +19,7 @@ const deepFreezeAndThrowOnMutationInDev = require('./Utilities/deepFreezeAndThro
  *  - Source code should be limitted to ASCII.
  *  - Less chance of typos.
  */
-const UTFSequence: $TEMPORARY$object<{|
+const UTFSequence: {|
   BOM: string,
   BULLET: string,
   BULLET_SP: string,
@@ -34,7 +34,7 @@ const UTFSequence: $TEMPORARY$object<{|
   PIZZA: string,
   TRIANGLE_LEFT: string,
   TRIANGLE_RIGHT: string,
-|}> = deepFreezeAndThrowOnMutationInDev({
+|} = deepFreezeAndThrowOnMutationInDev({
   BOM: '\ufeff', // byte order mark
   BULLET: '\u2022', // bullet: &#8226;
   BULLET_SP: '\u00A0\u2022\u00A0', // &nbsp;&#8226;&nbsp;

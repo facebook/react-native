@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.camera;
 
 import android.content.ContentResolver;
@@ -82,6 +83,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
 
   private static final String SELECTION_BUCKET = Images.Media.BUCKET_DISPLAY_NAME + " = ?";
   private static final String SELECTION_DATE_TAKEN = Images.Media.DATE_TAKEN + " < ?";
+  private static final String SELECTION_MEDIA_SIZE = Images.Media.SIZE + " < ?";
 
   public CameraRollManager(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -228,13 +230,21 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     String groupName = params.hasKey("groupName") ? params.getString("groupName") : null;
     String assetType =
         params.hasKey("assetType") ? params.getString("assetType") : ASSET_TYPE_PHOTOS;
+    Integer maxSize = params.hasKey("maxSize") ? params.getInt("maxSize") : null;
     ReadableArray mimeTypes = params.hasKey("mimeTypes") ? params.getArray("mimeTypes") : null;
     if (params.hasKey("groupTypes")) {
       throw new JSApplicationIllegalArgumentException("groupTypes is not supported on Android");
     }
 
     new GetMediaTask(
-            getReactApplicationContext(), first, after, groupName, mimeTypes, assetType, promise)
+            getReactApplicationContext(),
+            first,
+            after,
+            groupName,
+            mimeTypes,
+            assetType,
+            maxSize,
+            promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
@@ -246,6 +256,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     private final @Nullable ReadableArray mMimeTypes;
     private final Promise mPromise;
     private final String mAssetType;
+    private final @Nullable Integer mMaxSize;
 
     private GetMediaTask(
         ReactContext context,
@@ -254,6 +265,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
         @Nullable String groupName,
         @Nullable ReadableArray mimeTypes,
         String assetType,
+        @Nullable Integer maxSize,
         Promise promise) {
       super(context);
       mContext = context;
@@ -263,6 +275,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       mMimeTypes = mimeTypes;
       mPromise = promise;
       mAssetType = assetType;
+      mMaxSize = maxSize;
     }
 
     @Override
@@ -276,6 +289,10 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       if (!TextUtils.isEmpty(mGroupName)) {
         selection.append(" AND " + SELECTION_BUCKET);
         selectionArgs.add(mGroupName);
+      }
+      if (mMaxSize != null) {
+        selection.append(" AND " + SELECTION_MEDIA_SIZE);
+        selectionArgs.add(mMaxSize.toString());
       }
 
       switch (mAssetType) {

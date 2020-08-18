@@ -13,13 +13,29 @@
 const React = require('react');
 
 const {StyleSheet, Text, View} = require('react-native');
+import {RNTesterThemeContext} from './RNTesterTheme';
 
 class RNTesterTitle extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
     return (
-      <View style={styles.container}>
-        <Text style={styles.text}>{this.props.title}</Text>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => {
+          return (
+            <View
+              style={[
+                styles.container,
+                {
+                  borderColor: theme.SeparatorColor,
+                  backgroundColor: theme.SystemBackgroundColor,
+                },
+              ]}>
+              <Text style={[styles.text, {color: theme.LabelColor}]}>
+                {this.props.title}
+              </Text>
+            </View>
+          );
+        }}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
@@ -28,12 +44,10 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 4,
     borderWidth: 0.5,
-    borderColor: '#d6d7da',
     margin: 10,
     marginBottom: 0,
     height: 45,
     padding: 10,
-    backgroundColor: 'white',
   },
   text: {
     fontSize: 19,

@@ -13,7 +13,7 @@
 const React = require('react');
 const {Text, View, TouchableOpacity, Alert} = require('react-native');
 
-class TransparentHitTestExample extends React.Component<{}> {
+class TransparentHitTestExample extends React.Component<{...}> {
   render() {
     return (
       <View style={{flex: 1}}>

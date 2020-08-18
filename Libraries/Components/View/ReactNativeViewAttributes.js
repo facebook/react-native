@@ -19,15 +19,14 @@ const UIView = {
   accessibilityLabel: true,
   accessibilityLiveRegion: true,
   accessibilityRole: true,
-  accessibilityStates: true,
   accessibilityState: true,
+  accessibilityValue: true,
   accessibilityHint: true,
   acceptsKeyboardFocus: true, // TODO(macOS ISS#2323203)
   enableFocusRing: true, // TODO(macOS ISS#2323203)
   importantForAccessibility: true,
   nativeID: true,
   testID: true,
-  tabIndex: true, // TODO(win ISS#2323203)
   renderToHardwareTextureAndroid: true,
   shouldRasterizeIOS: true,
   onLayout: true,

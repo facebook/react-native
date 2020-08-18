@@ -16,6 +16,7 @@ const {AsyncStorage} = require('react-native');
 export type PassProps<State> = {
   state: State,
   setState: (stateLamda: (state: State) => State) => void,
+  ...
 };
 
 /**
@@ -29,11 +30,12 @@ export type PassProps<State> = {
  * usage.
  */
 function createContainer<Props: Object, State>(
-  Component: React.ComponentType<Props & {persister: PassProps<State>}>,
+  Component: React.ComponentType<Props & {persister: PassProps<State>, ...}>,
   spec: {
     cacheKeySuffix: (props: Props) => string,
     getInitialState: (props: Props) => State,
     version?: string,
+    ...
   },
 ): React.ComponentType<Props> {
   return class ComponentWithPersistedState extends React.Component<

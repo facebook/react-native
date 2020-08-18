@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -28,6 +28,8 @@ class MountingTelemetry final {
   void didCommit();
   void willLayout();
   void didLayout();
+  void willMount();
+  void didMount();
 
   /*
    * Reading
@@ -39,6 +41,8 @@ class MountingTelemetry final {
   int64_t getCommitStartTime() const;
   int64_t getCommitEndTime() const;
   int64_t getCommitNumber() const;
+  int64_t getMountStartTime() const;
+  int64_t getMountEndTime() const;
 
  private:
   constexpr static int64_t kUndefinedTime = std::numeric_limits<int64_t>::max();
@@ -50,6 +54,8 @@ class MountingTelemetry final {
   int64_t commitEndTime_{kUndefinedTime};
   int64_t layoutStartTime_{kUndefinedTime};
   int64_t layoutEndTime_{kUndefinedTime};
+  int64_t mountStartTime_{kUndefinedTime};
+  int64_t mountEndTime_{kUndefinedTime};
 };
 
 } // namespace react

@@ -6,7 +6,7 @@
  *
  * @format
  * @emails oncall+react_native
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -14,50 +14,21 @@
 const React = require('react');
 const Picker = require('../Picker');
 
-const render = require('../../../../jest/renderer');
+const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 
 describe('<Picker />', () => {
-  it('should render as <View> when mocked', () => {
-    const instance = render.create(
-      <Picker selectedValue="foo" onValueChange={jest.fn()}>
-        <Picker.Item label="foo" value="foo" />
-        <Picker.Item label="bar" value="bar" />
-      </Picker>,
+  it('should render as expected', () => {
+    ReactNativeTestTools.expectRendersMatchingSnapshot(
+      'Picker',
+      () => (
+        <Picker selectedValue="foo" onValueChange={jest.fn()}>
+          <Picker.Item label="foo" value="foo" />
+          <Picker.Item label="bar" value="bar" />
+        </Picker>
+      ),
+      () => {
+        jest.dontMock('../Picker');
+      },
     );
-    expect(instance).toMatchSnapshot();
-  });
-
-  it('should shallow render as <Picker> when mocked', () => {
-    const output = render.shallow(
-      <Picker selectedValue="foo" onValueChange={jest.fn()}>
-        <Picker.Item label="foo" value="foo" />
-        <Picker.Item label="bar" value="bar" />
-      </Picker>,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should shallow render as <Picker> when not mocked', () => {
-    jest.dontMock('../Picker');
-
-    const output = render.shallow(
-      <Picker selectedValue="foo" onValueChange={jest.fn()}>
-        <Picker.Item label="foo" value="foo" />
-        <Picker.Item label="bar" value="bar" />
-      </Picker>,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should render as <View> when not mocked', () => {
-    jest.dontMock('../Picker');
-
-    const instance = render.create(
-      <Picker selectedValue="foo" onValueChange={jest.fn()}>
-        <Picker.Item label="foo" value="foo" />
-        <Picker.Item label="bar" value="bar" />
-      </Picker>,
-    );
-    expect(instance).toMatchSnapshot();
   });
 });

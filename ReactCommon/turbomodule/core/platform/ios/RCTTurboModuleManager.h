@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -13,7 +13,7 @@
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                        instance:(id<RCTTurboModule>)instance
                                                       jsInvoker:
-                                                          (std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
+                                                          (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
 @optional
 
@@ -32,7 +32,7 @@
  */
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:
-                                                          (std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
+                                                          (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
 @end
 
@@ -43,5 +43,7 @@
 - (void)installJSBindingWithRuntime:(facebook::jsi::Runtime *)runtime;
 
 - (std::shared_ptr<facebook::react::TurboModule>)getModule:(const std::string &)name;
+
+- (void)invalidate;
 
 @end

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.ViewManager;
@@ -19,6 +21,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import javax.inject.Provider;
 
@@ -61,14 +64,48 @@ public abstract class TurboReactPackage implements ReactPackage {
       // This should ideally be an IteratorConvertor, but we don't have any internal library for it
       public Iterator<ModuleHolder> iterator() {
         return new Iterator<ModuleHolder>() {
+          Map.Entry<String, ReactModuleInfo> nextEntry = null;
+
+          private void findNext() {
+            while (entrySetIterator.hasNext()) {
+              Map.Entry<String, ReactModuleInfo> entry = entrySetIterator.next();
+              ReactModuleInfo reactModuleInfo = entry.getValue();
+
+              // This Iterator is used to create the NativeModule registry. The NativeModule
+              // registry must not have TurboModules. Therefore, if TurboModules are enabled, and
+              // the current NativeModule is a TurboModule, we need to skip iterating over it.
+              if (ReactFeatureFlags.useTurboModules && reactModuleInfo.isTurboModule()) {
+                continue;
+              }
+
+              nextEntry = entry;
+              return;
+            }
+            nextEntry = null;
+          }
+
           @Override
           public boolean hasNext() {
-            return entrySetIterator.hasNext();
+            if (nextEntry == null) {
+              findNext();
+            }
+            return nextEntry != null;
           }
 
           @Override
           public ModuleHolder next() {
-            Map.Entry<String, ReactModuleInfo> entry = entrySetIterator.next();
+            if (nextEntry == null) {
+              findNext();
+            }
+
+            if (nextEntry == null) {
+              throw new NoSuchElementException("ModuleHolder not found");
+            }
+
+            Map.Entry<String, ReactModuleInfo> entry = nextEntry;
+
+            // Advance iterator
+            findNext();
             String name = entry.getKey();
             ReactModuleInfo reactModuleInfo = entry.getValue();
             return new ModuleHolder(reactModuleInfo, new ModuleHolderProvider(name, reactContext));

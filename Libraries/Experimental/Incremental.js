@@ -90,10 +90,9 @@ export type Props = {
    */
   name: string,
   children: React.Node,
+  ...
 };
-type State = {
-  doIncrementalRender: boolean,
-};
+type State = {doIncrementalRender: boolean, ...};
 
 class Incremental extends React.Component<Props, State> {
   props: Props;
@@ -103,16 +102,16 @@ class Incremental extends React.Component<Props, State> {
   _mounted: boolean;
   _rendered: boolean;
 
-  static defaultProps: $TEMPORARY$object<{|name: string|}> = {
+  static defaultProps: {|name: string|} = {
     name: '',
   };
 
   static contextTypes:
     | any
-    | $TEMPORARY$object<{|
+    | {|
         incrementalGroup: React$PropType$Primitive<any>,
         incrementalGroupEnabled: React$PropType$Primitive<boolean>,
-      |}> = {
+      |} = {
     incrementalGroup: PropTypes.object,
     incrementalGroupEnabled: PropTypes.bool,
   };
@@ -191,7 +190,9 @@ export type Context = {
   incrementalGroup: ?{
     groupId: string,
     incrementalCount: number,
+    ...
   },
+  ...
 };
 
 module.exports = Incremental;

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.view;
 
 import static com.facebook.react.common.ReactConstants.TAG;
@@ -28,7 +29,9 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
@@ -357,6 +360,8 @@ public class ReactViewGroup extends ViewGroup
   }
 
   private void updateSubviewClipStatus(Rect clippingRect, int idx, int clippedSoFar) {
+    UiThreadUtil.assertOnUiThread();
+
     View child = Assertions.assertNotNull(mAllChildren)[idx];
     sHelperRect.set(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
     boolean intersects =
@@ -428,6 +433,13 @@ public class ReactViewGroup extends ViewGroup
   }
 
   @Override
+  public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
+    return ReactFeatureFlags.clipChildRectsIfOverflowIsHidden
+        ? ReactClippingViewGroupHelper.getChildVisibleRectHelper(child, r, offset, this, mOverflow)
+        : super.getChildVisibleRect(child, r, offset);
+  }
+
+  @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
     if (mRemoveClippedSubviews) {
@@ -455,6 +467,8 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void removeView(View view) {
+    UiThreadUtil.assertOnUiThread();
+
     mDrawingOrderHelper.handleRemoveView(view);
     setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
 
@@ -463,6 +477,8 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void removeViewAt(int index) {
+    UiThreadUtil.assertOnUiThread();
+
     mDrawingOrderHelper.handleRemoveView(getChildAt(index));
     setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
 
@@ -536,6 +552,8 @@ public class ReactViewGroup extends ViewGroup
   }
 
   /*package*/ void removeViewWithSubviewClippingEnabled(View view) {
+    UiThreadUtil.assertOnUiThread();
+
     Assertions.assertCondition(mRemoveClippedSubviews);
     Assertions.assertNotNull(mClippingRect);
     Assertions.assertNotNull(mAllChildren);

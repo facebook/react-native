@@ -14,5 +14,5 @@ steps:
     inputs:
       targetType: inline # filePath | inline
       script: |
-        (Get-Content android\com\facebook\react\react-native\0.61.5\react-native-0.61.5.pom).replace('<version>0.61.5</version>', '<version>1000.0.0-master</version>') | Set-Content android\com\facebook\react\react-native\0.61.5\react-native-0.61.5.pom
+        (Get-Content android\com\facebook\react\react-native\0.62.0\react-native-0.62.0.pom).replace('<version>0.62.0</version>', '<version>1000.0.0-master</version>') | Set-Content android\com\facebook\react\react-native\0.62.0\react-native-0.62.0.pom
 

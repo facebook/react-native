@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -16,7 +16,7 @@ import type {
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
-import {type NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import type {HostComponent} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -28,8 +28,9 @@ type NativeProps = $ReadOnly<{|
   blurRadius4?: WithDefault<Float, 0>,
   blurRadius5?: WithDefault<Float, 1>,
   blurRadius6?: WithDefault<Float, -0.0>,
+  blurRadiusNullable?: WithDefault<Float, null>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'FloatPropsNativeComponentView',
-): NativeComponentType<NativeProps>);
+): HostComponent<NativeProps>);

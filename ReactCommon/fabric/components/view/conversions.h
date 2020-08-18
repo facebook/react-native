@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -399,10 +399,17 @@ inline Float toRadians(const RawValue &value) {
 inline void fromRawValue(const RawValue &value, Transform &result) {
   assert(value.hasType<std::vector<RawValue>>());
   auto transformMatrix = Transform{};
-  auto configurations = (std::vector<RawValue>)value;
+  auto configurations = static_cast<std::vector<RawValue>>(value);
 
   for (const auto &configuration : configurations) {
-    auto configurationPair = (better::map<std::string, RawValue>)configuration;
+    if (!configuration.hasType<better::map<std::string, RawValue>>()) {
+      // TODO: The following checks have to be removed after codegen is shipped.
+      // See T45151459.
+      continue;
+    }
+
+    auto configurationPair =
+        static_cast<better::map<std::string, RawValue>>(configuration);
     auto pair = configurationPair.begin();
     auto operation = pair->first;
     auto &parameters = pair->second;

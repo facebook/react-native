@@ -1,6 +1,7 @@
 // @ts-check
 const fs = require("fs");
 const path = require("path");
+const semver = require('semver');
 
 const pkgJsonPath = path.resolve(__dirname, "../package.json");
 let publishBranchName = '';
@@ -20,16 +21,25 @@ function gatherVersionInfo() {
 function updateVersionsInFiles(patchVersionPrefix) {
 
     let {pkgJson, releaseVersion, branchVersionSuffix} = gatherVersionInfo();
-  
-    const versionStringRegEx = new RegExp(`(.*)(-${publishBranchName})?\\.([0-9]*)`);
-    const versionGroups = versionStringRegEx.exec(releaseVersion);
-    if (versionGroups) {
-      releaseVersion = versionGroups[1] + patchVersionPrefix + branchVersionSuffix + '.' + (parseInt(versionGroups[3]) + 1);
-    } else {
-      console.log("Invalid version to publish");
-      process.exit(1);
+
+    const prerelease = semver.prerelease(releaseVersion);
+
+    if (!prerelease) {
+      if (patchVersionPrefix) {
+        releaseVersion = semver.inc(releaseVersion, 'prerelease', patchVersionPrefix);
+      }
+      else {
+      releaseVersion = semver.inc(releaseVersion, 'patch');
+      }
     }
-  
+
+    if (prerelease) {
+      releaseVersion = semver.inc(releaseVersion, 'prerelease');
+      if (patchVersionPrefix) {
+        releaseVersion = releaseVersion.replace(`-${prerelease[0]}.`, `-${prerelease[0]}-${patchVersionPrefix}.`);
+      }
+    }
+ 
     pkgJson.version = releaseVersion;
     fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2));
     console.log(`Updating package.json to version ${releaseVersion}`);
@@ -37,17 +47,9 @@ function updateVersionsInFiles(patchVersionPrefix) {
     return {releaseVersion, branchVersionSuffix};
 }
 
-function updatePackageName(name) {
-    let pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf8"));
-    pkgJson.name = name;
-    fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2));
-    console.log(`Updating package.json to name ${name}`);
-}
-
 module.exports = {
     gatherVersionInfo,
     publishBranchName,
     pkgJsonPath,
-    updateVersionsInFiles,
-    updatePackageName
+    updateVersionsInFiles
 }

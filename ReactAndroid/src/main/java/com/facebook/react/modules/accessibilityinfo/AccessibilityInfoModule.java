@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.modules.accessibilityinfo;
 
@@ -114,18 +116,26 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
 
     if (mReduceMotionEnabled != isReduceMotionEnabled) {
       mReduceMotionEnabled = isReduceMotionEnabled;
-      getReactApplicationContext()
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit(REDUCE_MOTION_EVENT_NAME, mReduceMotionEnabled);
+
+      ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+      if (reactApplicationContext != null) {
+        reactApplicationContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(REDUCE_MOTION_EVENT_NAME, mReduceMotionEnabled);
+      }
     }
   }
 
   private void updateAndSendTouchExplorationChangeEvent(boolean enabled) {
     if (mTouchExplorationEnabled != enabled) {
       mTouchExplorationEnabled = enabled;
-      getReactApplicationContext()
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit(TOUCH_EXPLORATION_EVENT_NAME, mTouchExplorationEnabled);
+
+      ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+      if (reactApplicationContext != null) {
+        getReactApplicationContext()
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(TOUCH_EXPLORATION_EVENT_NAME, mTouchExplorationEnabled);
+      }
     }
   }
 

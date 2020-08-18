@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<MaskedViewIOS /> should render as <RCTMaskedView> when mocked 1`] = `
+exports[`<MaskedViewIOS /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
 <RCTMaskedView>
   <View
     pointerEvents="none"
@@ -24,7 +24,7 @@ exports[`<MaskedViewIOS /> should render as <RCTMaskedView> when mocked 1`] = `
 </RCTMaskedView>
 `;
 
-exports[`<MaskedViewIOS /> should render as <RCTMaskedView> when not mocked 1`] = `
+exports[`<MaskedViewIOS /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
 <RCTMaskedView>
   <View
     pointerEvents="none"
@@ -48,7 +48,7 @@ exports[`<MaskedViewIOS /> should render as <RCTMaskedView> when not mocked 1`] 
 </RCTMaskedView>
 `;
 
-exports[`<MaskedViewIOS /> should shallow render as <MaskedViewIOS> when mocked 1`] = `
+exports[`<MaskedViewIOS /> should render as expected: should shallow render as <MaskedViewIOS /> when mocked 1`] = `
 <MaskedViewIOS
   maskElement={
     <View>
@@ -62,7 +62,7 @@ exports[`<MaskedViewIOS /> should shallow render as <MaskedViewIOS> when mocked 
 </MaskedViewIOS>
 `;
 
-exports[`<MaskedViewIOS /> should shallow render as <MaskedViewIOS> when not mocked 1`] = `
+exports[`<MaskedViewIOS /> should render as expected: should shallow render as <MaskedViewIOS /> when not mocked 1`] = `
 <MaskedViewIOS
   maskElement={
     <View>

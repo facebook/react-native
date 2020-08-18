@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
 
 import android.annotation.TargetApi;
@@ -17,6 +18,7 @@ import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -32,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * {@link ReactShadowNode} abstract class for spannable text nodes.
@@ -194,6 +197,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
                 new CustomStyleSpan(
                     textShadowNode.mFontStyle,
                     textShadowNode.mFontWeight,
+                    textShadowNode.mFontFeatureSettings,
                     textShadowNode.mFontFamily,
                     textShadowNode.getThemedContext().getAssets())));
       }
@@ -300,23 +304,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     return sb;
   }
 
-  /**
-   * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
-   * return the weight.
-   *
-   * <p>This code is duplicated in ReactTextInputManager TODO: Factor into a common place they can
-   * both use
-   */
-  private static int parseNumericFontWeight(String fontWeightString) {
-    // This should be much faster than using regex to verify input and Integer.parseInt
-    return fontWeightString.length() == 3
-            && fontWeightString.endsWith("00")
-            && fontWeightString.charAt(0) <= '9'
-            && fontWeightString.charAt(0) >= '1'
-        ? 100 * (fontWeightString.charAt(0) - '0')
-        : UNSET;
-  }
-
   protected TextAttributes mTextAttributes;
 
   protected boolean mIsColorSet = false;
@@ -332,7 +319,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
   protected int mJustificationMode =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
-  protected TextTransform mTextTransform = TextTransform.UNSET;
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
@@ -342,6 +328,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected boolean mIsUnderlineTextDecorationSet = false;
   protected boolean mIsLineThroughTextDecorationSet = false;
   protected boolean mIncludeFontPadding = true;
+  protected boolean mAdjustsFontSizeToFit = false;
+  protected float mMinimumFontScale = 0;
 
   /**
    * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}. mFontWeight can be {@link
@@ -372,6 +360,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
    * </pre>
    */
   protected @Nullable String mFontFamily = null;
+
+  /**
+   * @see android.graphics.Paint#setFontFeatureSettings
+   */
+  protected @Nullable String mFontFeatureSettings = null;
 
   protected boolean mContainsImages = false;
   protected Map<Integer, ReactShadowNode> mInlineViews;
@@ -490,37 +483,28 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
-  /**
-   * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
-   * can both use
-   */
   @ReactProp(name = ViewProps.FONT_WEIGHT)
   public void setFontWeight(@Nullable String fontWeightString) {
-    int fontWeightNumeric =
-        fontWeightString != null ? parseNumericFontWeight(fontWeightString) : UNSET;
-    int fontWeight = fontWeightNumeric != UNSET ? fontWeightNumeric : Typeface.NORMAL;
-
-    if (fontWeight == 700 || "bold".equals(fontWeightString)) fontWeight = Typeface.BOLD;
-    else if (fontWeight == 400 || "normal".equals(fontWeightString)) fontWeight = Typeface.NORMAL;
-
+    int fontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
     if (fontWeight != mFontWeight) {
       mFontWeight = fontWeight;
       markUpdated();
     }
   }
 
-  /**
-   * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
-   * can both use
-   */
+  @ReactProp(name = ViewProps.FONT_VARIANT)
+  public void setFontVariant(@Nullable ReadableArray fontVariantArray) {
+    String fontFeatureSettings = ReactTypefaceUtils.parseFontVariant(fontVariantArray);
+
+    if (!Objects.equals(fontFeatureSettings, mFontFeatureSettings)) {
+      mFontFeatureSettings = fontFeatureSettings;
+      markUpdated();
+    }
+  }
+
   @ReactProp(name = ViewProps.FONT_STYLE)
   public void setFontStyle(@Nullable String fontStyleString) {
-    int fontStyle = UNSET;
-    if ("italic".equals(fontStyleString)) {
-      fontStyle = Typeface.ITALIC;
-    } else if ("normal".equals(fontStyleString)) {
-      fontStyle = Typeface.NORMAL;
-    }
+    int fontStyle = ReactTypefaceUtils.parseFontStyle(fontStyleString);
     if (fontStyle != mFontStyle) {
       mFontStyle = fontStyle;
       markUpdated();
@@ -621,5 +605,21 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
     }
     markUpdated();
+  }
+
+  @ReactProp(name = ViewProps.ADJUSTS_FONT_SIZE_TO_FIT)
+  public void setAdjustFontSizeToFit(boolean adjustsFontSizeToFit) {
+    if (adjustsFontSizeToFit != mAdjustsFontSizeToFit) {
+      mAdjustsFontSizeToFit = adjustsFontSizeToFit;
+      markUpdated();
+    }
+  }
+
+  @ReactProp(name = ViewProps.MINIMUM_FONT_SCALE)
+  public void setMinimumFontScale(float minimumFontScale) {
+    if (minimumFontScale != mMinimumFontScale) {
+      mMinimumFontScale = minimumFontScale;
+      markUpdated();
+    }
   }
 }

@@ -7,13 +7,14 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 import RCTActionSheetManager from './NativeActionSheetManager';
 
 const invariant = require('invariant');
 const processColor = require('../StyleSheet/processColor');
-import type {NativeOrDynamicColorType} from '../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from '../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 /**
  * Display action sheets and share sheets on iOS.
@@ -42,7 +43,7 @@ const ActionSheetIOS = {
       +title?: ?string,
       +message?: ?string,
       +options: Array<string>,
-      +destructiveButtonIndex?: ?number,
+      +destructiveButtonIndex?: ?number | ?Array<number>,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
       +tintColor?: number | string | NativeOrDynamicColorType, // TODO(macOS ISS#2323203)
@@ -56,10 +57,21 @@ const ActionSheetIOS = {
     invariant(typeof callback === 'function', 'Must provide a valid callback');
     invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
 
-    const {tintColor, ...remainingOptions} = options;
+    const {tintColor, destructiveButtonIndex, ...remainingOptions} = options;
+    let destructiveButtonIndices = null;
+
+    if (Array.isArray(destructiveButtonIndex)) {
+      destructiveButtonIndices = destructiveButtonIndex;
+    } else if (typeof destructiveButtonIndex === 'number') {
+      destructiveButtonIndices = [destructiveButtonIndex];
+    }
 
     RCTActionSheetManager.showActionSheetWithOptions(
-      {...remainingOptions, tintColor: processColor(tintColor)},
+      {
+        ...remainingOptions,
+        tintColor: processColor(tintColor),
+        destructiveButtonIndices,
+      },
       callback,
     );
   },

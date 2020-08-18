@@ -3,6 +3,7 @@
   "version": "0.0.6",
   "description": "ESLint config for React Native",
   "main": "index.js",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
@@ -10,15 +11,15 @@
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^1.5.0",
     "@typescript-eslint/parser": "^1.5.0",
-    "babel-eslint": "10.0.1",
+    "babel-eslint": "10.0.3",
     "eslint-config-prettier": "^6.0.0",
-    "eslint-plugin-eslint-comments": "^3.1.1",
+    "eslint-plugin-eslint-comments": "^3.1.2",
     "eslint-plugin-flowtype": "2.50.3",
     "eslint-plugin-jest": "22.4.1",
     "eslint-plugin-prettier": "2.6.2",
-    "eslint-plugin-react": "7.12.4",
-    "eslint-plugin-react-hooks": "^1.5.1",
-    "eslint-plugin-react-native": "3.7.0",
+    "eslint-plugin-react": "7.16.0",
+    "eslint-plugin-react-hooks": "^2.0.1",
+    "eslint-plugin-react-native": "3.8.1",
     "prettier": "1.17.0"
   },
   "peerDependencies": {

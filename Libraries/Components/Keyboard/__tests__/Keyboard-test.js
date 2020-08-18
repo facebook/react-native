@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  * @emails oncall+react_native
  */
 
@@ -31,6 +31,7 @@ describe('Keyboard', () => {
 
     // $FlowFixMe
     expect(Keyboard._subscriber).toBe(KeyboardEventEmitter._subscriber);
+    // $FlowFixMe Cannot access private property
     expect(Keyboard._nativeModule).toBe(KeyboardEventEmitter._nativeModule);
   });
 

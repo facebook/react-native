@@ -13,17 +13,19 @@
 type FormDataValue = any;
 type FormDataNameValuePair = [string, FormDataValue];
 
-type Headers = {[name: string]: string};
+type Headers = {[name: string]: string, ...};
 type FormDataPart =
   | {
       string: string,
       headers: Headers,
+      ...
     }
   | {
       uri: string,
       headers: Headers,
       name?: string,
       type?: string,
+      ...
     };
 
 /**

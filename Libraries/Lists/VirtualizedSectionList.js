@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const React = require('react');
@@ -17,10 +18,7 @@ const Platform = require('../Utilities/Platform'); // TODO(macOS ISS#2323203)
 const invariant = require('invariant');
 
 import type {ViewToken} from './ViewabilityHelper';
-import type {
-  Props as VirtualizedListProps,
-  SelectedRowIndexPathType, // TODO(macOS ISS#2323203)
-} from './VirtualizedList';
+import type {SelectedRowIndexPathType} from './VirtualizedList'; // TODO(macOS ISS#2323203)
 import type {ScrollEvent} from '../Types/CoreEventTypes'; // TODO(macOS ISS#2323203)
 
 type Item = any;
@@ -35,7 +33,6 @@ export type SectionBase<SectionItemT> = {
    * the array index will be used by default.
    */
   key?: string,
-
   // Optional props will override list-wide props just for this section.
   renderItem?: ?(info: {
     item: SectionItemT,
@@ -46,31 +43,26 @@ export type SectionBase<SectionItemT> = {
       highlight: () => void,
       unhighlight: () => void,
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+      ...
     },
-  }) => ?React.Element<any>,
+    ...
+  }) => null | React.Element<any>,
   ItemSeparatorComponent?: ?React.ComponentType<any>,
   keyExtractor?: (item: SectionItemT, index?: ?number) => string,
+  ...
 };
 
-type RequiredProps<SectionT: SectionBase<any>> = {
+type RequiredProps<SectionT: SectionBase<any>> = {|
   sections: $ReadOnlyArray<SectionT>,
-};
+|};
 
-type OptionalProps<SectionT: SectionBase<any>> = {
+type OptionalProps<SectionT: SectionBase<any>> = {|
   /**
    * Handles key down events and updates selection based on the key event
    *
    * @platform macos
    */
   enableSelectionOnKeyPress?: ?boolean, // TODO(macOS ISS#2323203)
-  /**
-   * Rendered after the last item in the last section.
-   */
-  ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Rendered at the very beginning of the list.
-   */
-  ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
    * Default renderer for every item in every section.
    */
@@ -83,68 +75,68 @@ type OptionalProps<SectionT: SectionBase<any>> = {
       highlight: () => void,
       unhighlight: () => void,
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+      ...
     },
-  }) => ?React.Element<any>,
+    ...
+  }) => null | React.Element<any>,
   /**
-   * Rendered at the top of each section.
+   * Rendered at the top of each section. These stick to the top of the `ScrollView` by default on
+   * iOS. See `stickySectionHeadersEnabled`.
    */
-  renderSectionHeader?: ?({section: SectionT}) => ?React.Element<any>,
+  renderSectionHeader?: ?(info: {
+    section: SectionT,
+    ...
+  }) => null | React.Element<any>,
   /**
    * Rendered at the bottom of each section.
    */
-  renderSectionFooter?: ?({section: SectionT}) => ?React.Element<any>,
+  renderSectionFooter?: ?(info: {
+    section: SectionT,
+    ...
+  }) => null | React.Element<any>,
   /**
-   * Rendered at the bottom of every Section, except the very last one, in place of the normal
-   * ItemSeparatorComponent.
+   * Rendered at the top and bottom of each section (note this is different from
+   * `ItemSeparatorComponent` which is only rendered between items). These are intended to separate
+   * sections from the headers above and below and typically have the same highlight response as
+   * `ItemSeparatorComponent`. Also receives `highlighted`, `[leading/trailing][Item/Separator]`,
+   * and any custom props from `separators.updateProps`.
    */
   SectionSeparatorComponent?: ?React.ComponentType<any>,
   /**
-   * Rendered at the bottom of every Item except the very last one in the last section.
+   * Makes section headers stick to the top of the screen until the next one pushes it off. Only
+   * enabled by default on iOS because that is the platform standard there.
    */
-  ItemSeparatorComponent?: ?React.ComponentType<any>,
-  /**
-   * DEPRECATED: Virtualization provides significant performance and memory optimizations, but fully
-   * unmounts react instances that are outside of the render window. You should only need to disable
-   * this for debugging purposes.
-   */
-  disableVirtualization?: ?boolean,
-  keyExtractor: (item: Item, index: number) => string,
-  onEndReached?: ?({distanceFromEnd: number}) => void,
-  /**
-   * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
-   * sure to also set the `refreshing` prop correctly.
-   */
-  onRefresh?: ?() => void,
+  stickySectionHeadersEnabled?: boolean,
+  onEndReached?: ?({distanceFromEnd: number, ...}) => void,
   /**
    * If provided, processes key press and mouse click events to update selection state
    * and invokes the provided function to notify of selection state changes.
    *
    * @platform macos
    */
-  onSelectionChanged?: ?Function, // TODO(macOS ISS#2323203)
+  onSelectionChanged?: ?(info: {
+    previousSelection: Object,
+    newSelection: Object,
+    item: ?Item,
+  }) => void, // TODO(macOS ISS#2323203)
   /**
    * If provided, called when 'Enter' key is pressed on an item.
    *
    * @platform macos
    */
-  onSelectionEntered?: ?Function, // TODO(macOS ISS#2323203)
-  /**
-   * Called when the viewability of rows changes, as defined by the
-   * `viewabilityConfig` prop.
-   */
-  onViewableItemsChanged?: ?({
-    viewableItems: Array<ViewToken>,
-    changed: Array<ViewToken>,
-  }) => void,
-  /**
-   * Set this true while waiting for new data from a refresh.
-   */
-  refreshing?: ?boolean,
-};
+  onSelectionEntered?: ?(item: ?Item) => void, // TODO(macOS ISS#2323203)
+|};
 
-export type Props<SectionT> = RequiredProps<SectionT> &
-  OptionalProps<SectionT> &
-  VirtualizedListProps;
+type VirtualizedListProps = React.ElementProps<typeof VirtualizedList>;
+
+export type Props<SectionT> = {|
+  ...RequiredProps<SectionT>,
+  ...OptionalProps<SectionT>,
+  ...$Diff<
+    VirtualizedListProps,
+    {renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>, ...},
+  >,
+|};
 export type ScrollToLocationParamsType = {|
   animated?: ?boolean,
   itemIndex: number,
@@ -161,6 +153,7 @@ type DefaultProps = {|
 type State = {
   childProps: VirtualizedListProps,
   selectedRowIndexPath: SelectedRowIndexPathType, // TODO(macOS ISS#2323203)
+  ...
 };
 
 /**
@@ -183,6 +176,7 @@ class VirtualizedSectionList<
     }
     let viewOffset = params.viewOffset || 0;
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
+      // $FlowFixMe Cannot access private property
       const frame = this._listRef._getFrameMetricsApprox(
         index - params.itemIndex,
       );
@@ -219,15 +213,25 @@ class VirtualizedSectionList<
         }, 0)
       : 0;
 
+    const {
+      SectionSeparatorComponent,
+      renderItem,
+      renderSectionFooter,
+      renderSectionHeader,
+      sections: _sections,
+      stickySectionHeadersEnabled,
+      ...restProps
+    } = props;
+
     return {
       childProps: {
-        ...props,
+        ...restProps,
         renderItem: this._renderItem,
         ItemSeparatorComponent: undefined, // Rendered with renderItem
         data: props.sections,
         getItemCount: () => itemCount,
         // $FlowFixMe
-        getItem: (sections, index) => getItem(props, sections, index),
+        getItem: (sections, index) => this._getItem(props, sections, index),
         keyExtractor: this._keyExtractor,
         onViewableItemsChanged: props.onViewableItemsChanged
           ? this._onViewableItemsChanged
@@ -364,6 +368,34 @@ class VirtualizedSectionList<
     );
   }
 
+  _getItem = (
+    props: Props<SectionT>,
+    sections: ?$ReadOnlyArray<Item>,
+    index: number,
+  ): ?Item => {
+    if (!sections) {
+      return null;
+    }
+    let itemIdx = index - 1;
+    for (let i = 0; i < sections.length; i++) {
+      const section = sections[i];
+      const sectionData = section.data;
+      const itemCount = props.getItemCount(sectionData);
+      if (itemIdx === -1 || itemIdx === itemCount) {
+        // We intend for there to be overflow by one on both ends of the list.
+        // This will be for headers and footers. When returning a header or footer
+        // item the section itself is the item.
+        return section;
+      } else if (itemIdx < itemCount) {
+        // If we are in the bounds of the list's data then return the item.
+        return props.getItem(sectionData, itemIdx);
+      } else {
+        itemIdx -= itemCount + 2; // Add two for the header and footer
+      }
+    }
+    return null;
+  };
+
   _keyExtractor = (item: Item, index: number) => {
     const info = this._subExtractor(index);
     return (info && info.key) || String(index);
@@ -373,13 +405,17 @@ class VirtualizedSectionList<
     index: number,
   ): ?{
     section: SectionT,
-    key: string, // Key of the section or combined key for section + item
-    index: ?number, // Relative index within the section
-    header?: ?boolean, // True if this is the section header
+    // Key of the section or combined key for section + item
+    key: string,
+    // Relative index within the section
+    index: ?number,
+    // True if this is the section header
+    header?: ?boolean,
     leadingItem?: ?Item,
     leadingSection?: ?SectionT,
     trailingItem?: ?Item,
     trailingSection?: ?SectionT,
+    ...
   } {
     let itemIndex = index;
     const {getItem, getItemCount, keyExtractor, sections} = this.props;
@@ -446,9 +482,11 @@ class VirtualizedSectionList<
   }: {
     viewableItems: Array<ViewToken>,
     changed: Array<ViewToken>,
+    ...
   }) => {
-    if (this.props.onViewableItemsChanged) {
-      this.props.onViewableItemsChanged({
+    const onViewableItemsChanged = this.props.onViewableItemsChanged;
+    if (onViewableItemsChanged != null) {
+      onViewableItemsChanged({
         viewableItems: viewableItems
           .map(this._convertViewable, this)
           .filter(Boolean),
@@ -475,7 +513,7 @@ class VirtualizedSectionList<
   };
   // ]TODO(macOS ISS#2323203)
 
-  _renderItem = ({item, index}: {item: Item, index: number}) => {
+  _renderItem = ({item, index}: {item: Item, index: number, ...}) => {
     const info = this._subExtractor(index);
     if (!info) {
       return null;
@@ -515,6 +553,7 @@ class VirtualizedSectionList<
           section={info.section}
           trailingItem={info.trailingItem}
           trailingSection={info.trailingSection}
+          inverted={!!this.props.inverted}
         />
       );
     }
@@ -577,6 +616,7 @@ type ItemWithSeparatorProps = $ReadOnly<{|
   onUpdateSeparator: (cellKey: string, newProps: Object) => void,
   prevCellKey?: ?string,
   renderItem: Function,
+  inverted: boolean,
 |}>;
 
 type ItemWithSeparatorState = {
@@ -588,6 +628,7 @@ type ItemWithSeparatorState = {
     highlighted: false,
     ...ItemWithSeparatorCommonProps,
   |}>,
+  ...
 };
 
 class ItemWithSeparator extends React.Component<
@@ -677,6 +718,7 @@ class ItemWithSeparator extends React.Component<
       index,
       isSelected, // TODO(macOS ISS#2323203)
       section,
+      inverted,
     } = this.props;
     const element = this.props.renderItem({
       item,
@@ -696,42 +738,14 @@ class ItemWithSeparator extends React.Component<
        * error found when Flow v0.89 was deployed. To see the error, delete
        * this comment and run Flow. */
       <View>
-        {leadingSeparator}
+        {!inverted ? leadingSeparator : separator}
         {element}
-        {separator}
+        {!inverted ? separator : leadingSeparator}
       </View>
     ) : (
       element
     );
   }
-}
-
-function getItem(
-  props: Props<SectionBase<any>>,
-  sections: ?$ReadOnlyArray<Item>,
-  index: number,
-): ?Item {
-  if (!sections) {
-    return null;
-  }
-  let itemIdx = index - 1;
-  for (let i = 0; i < sections.length; i++) {
-    const section = sections[i];
-    const sectionData = section.data;
-    const itemCount = props.getItemCount(sectionData);
-    if (itemIdx === -1 || itemIdx === itemCount) {
-      // We intend for there to be overflow by one on both ends of the list.
-      // This will be for headers and footers. When returning a header or footer
-      // item the section itself is the item.
-      return section;
-    } else if (itemIdx < itemCount) {
-      // If we are in the bounds of the list's data then return the item.
-      return props.getItem(sectionData, itemIdx);
-    } else {
-      itemIdx -= itemCount + 2; // Add two for the header and footer
-    }
-  }
-  return null;
 }
 
 module.exports = VirtualizedSectionList;

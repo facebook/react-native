@@ -7,7 +7,9 @@
  * @flow
  * @format
  */
+
 /* eslint no-bitwise: 0 */
+
 'use strict';
 
 const AnimatedNode = require('./AnimatedNode');
@@ -15,7 +17,7 @@ const AnimatedWithChildren = require('./AnimatedWithChildren');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
 const invariant = require('invariant');
-const normalizeColor = require('../../../Color/normalizeColor');
+const normalizeColor = require('../../../StyleSheet/normalizeColor');
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
@@ -30,6 +32,7 @@ export type InterpolationConfigType = {
   extrapolate?: ExtrapolateType,
   extrapolateLeft?: ExtrapolateType,
   extrapolateRight?: ExtrapolateType,
+  ...
 };
 
 const linear = t => t;

@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const BatchedBridge = require('../BatchedBridge/BatchedBridge');
@@ -24,7 +25,7 @@ import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
 
 type Task = (taskData: any) => Promise<void>;
-type TaskProvider = () => Task;
+export type TaskProvider = () => Task;
 type TaskCanceller = () => void;
 type TaskCancelProvider = () => TaskCanceller;
 
@@ -38,17 +39,18 @@ export type AppConfig = {
   component?: ComponentProvider,
   run?: Function,
   section?: boolean,
+  ...
 };
 export type Runnable = {
   component?: ComponentProvider,
   run: Function,
+  ...
 };
-export type Runnables = {
-  [appKey: string]: Runnable,
-};
+export type Runnables = {[appKey: string]: Runnable, ...};
 export type Registry = {
   sections: Array<string>,
   runnables: Runnables,
+  ...
 };
 export type WrapperComponentProvider = any => React$ComponentType<*>;
 
@@ -62,7 +64,7 @@ let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
 ) => component();
 
 let wrapperComponentProvider: ?WrapperComponentProvider;
-let showFabricIndicator = false;
+let showArchitectureIndicator = false;
 
 /**
  * `AppRegistry` is the JavaScript entry point to running all React Native apps.
@@ -74,8 +76,8 @@ const AppRegistry = {
     wrapperComponentProvider = provider;
   },
 
-  enableFabricIndicator(enabled: boolean): void {
-    showFabricIndicator = enabled;
+  enableArchitectureIndicator(enabled: boolean): void {
+    showArchitectureIndicator = enabled;
   },
 
   registerConfig(config: Array<AppConfig>): void {
@@ -121,8 +123,9 @@ const AppRegistry = {
           appParameters.rootTag,
           wrapperComponentProvider && wrapperComponentProvider(appParameters),
           appParameters.fabric,
-          showFabricIndicator,
+          showArchitectureIndicator,
           scopedPerformanceLogger,
+          appKey === 'LogBox',
         );
       },
     };
@@ -178,13 +181,15 @@ const AppRegistry = {
    * See http://facebook.github.io/react-native/docs/appregistry.html#runapplication
    */
   runApplication(appKey: string, appParameters: any): void {
-    const msg =
-      'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
-    infoLog(msg);
-    BugReporting.addSource(
-      'AppRegistry.runApplication' + runCount++,
-      () => msg,
-    );
+    if (appKey !== 'LogBox') {
+      const msg =
+        'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
+      infoLog(msg);
+      BugReporting.addSource(
+        'AppRegistry.runApplication' + runCount++,
+        () => msg,
+      );
+    }
     invariant(
       runnables[appKey] && runnables[appKey].run,
       `"${appKey}" has not been registered. This can happen if:\n` +
@@ -289,5 +294,18 @@ const AppRegistry = {
 };
 
 BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);
+
+if (__DEV__) {
+  const LogBoxInspector = require('../LogBox/LogBoxInspectorContainer').default;
+  AppRegistry.registerComponent('LogBox', () => LogBoxInspector);
+} else {
+  AppRegistry.registerComponent(
+    'LogBox',
+    () =>
+      function NoOp() {
+        return null;
+      },
+  );
+}
 
 module.exports = AppRegistry;

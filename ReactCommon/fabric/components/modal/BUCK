@@ -52,6 +52,7 @@ rn_xplat_cxx_library(
         ["platform/android/*.cpp"],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
     force_static = True,
     ios_exported_headers = subdir_glob(

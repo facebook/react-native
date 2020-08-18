@@ -19,11 +19,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'ARTExample',
-    module: require('../examples/ART/ARTExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'ButtonExample',
     module: require('../examples/Button/ButtonExample'),
     supportsTVOS: true,
@@ -60,6 +55,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'ImageExample',
     module: require('../examples/Image/ImageExample'),
     supportsTVOS: true,
+    skipTest: {
+      // [TODO(OSS Candidate ISS#2710739)
+      ios:
+        'Reason: -[NSURLResponse allHeaderFields]: unrecognized selector exception. Occurs upstream also.',
+    }, // ]TODO(OSS Candidate ISS#2710739)
   },
   {
     key: 'JSResponderHandlerExample',
@@ -144,6 +144,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'SectionListExample',
     module: require('../examples/SectionList/SectionListExample'),
     supportsTVOS: true,
+    skipTest: {
+      // [TODO(OSS Candidate ISS#2710739)
+      ios: 'Reason: RedBox shown on failure to load an image.',
+    }, // ]TODO(OSS Candidate ISS#2710739)
   },
   {
     key: 'SegmentedControlIOSExample',
@@ -170,11 +174,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     /* $FlowFixMe TODO(macOS ISS#2323203): allow macOS to share iOS test */
     module: require('../examples/Text/TextExample.ios'),
     supportsTVOS: true,
-    // [TODO(macOS ISS#2323203)
-    skipTest: {
-      macos:
-        'Reason: Intermittent failure: crash deallocating NSTextStorage of a TextView: tracked by https://github.com/microsoft/react-native-macos/issues/357',
-    }, // ]TODO(macOS ISS#2323203)
   },
   {
     key: 'TextInputExample',
@@ -237,6 +236,11 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'AppearanceExample',
+    module: require('../examples/Appearance/AppearanceExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'AppStateExample',
     module: require('../examples/AppState/AppStateExample'),
     supportsTVOS: true,
@@ -265,6 +269,10 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'CrashExample',
     module: require('../examples/Crash/CrashExample'),
     supportsTVOS: false,
+  },
+  {
+    key: 'DevSettings',
+    module: require('../examples/DevSettings/DevSettingsExample'),
   },
   {
     key: 'Dimensions',
@@ -330,11 +338,6 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'RTLExample',
     module: require('../examples/RTL/RTLExample'),
     supportsTVOS: true,
-    // [TODO(macOS ISS#2323203)
-    skipTest: {
-      macos:
-        'Reason: Intermittent failure: crash deallocating NSTextStorage of a TextView: tracked by https://github.com/microsoft/react-native-macos/issues/357',
-    }, // ]TODO(macOS ISS#2323203)
   },
   {
     key: 'ShareExample',
@@ -391,7 +394,7 @@ const APIExamples: Array<RNTesterExample> = [
   },
 ];
 
-const Modules: $TEMPORARY$object<{||}> = {};
+const Modules: {...} = {};
 
 APIExamples.concat(ComponentExamples).forEach(Example => {
   Modules[Example.key] = Example.module;

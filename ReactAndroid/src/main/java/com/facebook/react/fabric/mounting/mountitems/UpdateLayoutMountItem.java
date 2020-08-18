@@ -1,14 +1,16 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.fabric.mounting.mountitems;
 
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.util.LayoutDirection;
+import androidx.annotation.NonNull;
 import com.facebook.react.fabric.mounting.MountingManager;
 
 public class UpdateLayoutMountItem implements MountItem {
@@ -30,8 +32,9 @@ public class UpdateLayoutMountItem implements MountItem {
     mLayoutDirection = convertLayoutDirection(layoutDirection);
   }
 
+  // TODO move this from here
   @TargetApi(Build.VERSION_CODES.KITKAT)
-  private int convertLayoutDirection(int layoutDirection) {
+  private static int convertLayoutDirection(int layoutDirection) {
     switch (layoutDirection) {
       case 0:
         return LayoutDirection.INHERIT;
@@ -45,7 +48,7 @@ public class UpdateLayoutMountItem implements MountItem {
   }
 
   @Override
-  public void execute(MountingManager mountingManager) {
+  public void execute(@NonNull MountingManager mountingManager) {
     mountingManager.updateLayout(mReactTag, mX, mY, mWidth, mHeight);
   }
 

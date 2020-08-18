@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 const path = require('path');
 const getPolyfills = require('./rn-get-polyfills');

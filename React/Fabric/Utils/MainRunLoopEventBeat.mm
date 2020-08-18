@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #import "MainRunLoopEventBeat.h"
 
@@ -11,8 +13,8 @@
 namespace facebook {
 namespace react {
 
-MainRunLoopEventBeat::MainRunLoopEventBeat(RuntimeExecutor runtimeExecutor)
-    : runtimeExecutor_(std::move(runtimeExecutor))
+MainRunLoopEventBeat::MainRunLoopEventBeat(EventBeat::SharedOwnerBox const &ownerBox, RuntimeExecutor runtimeExecutor)
+    : EventBeat(ownerBox), runtimeExecutor_(std::move(runtimeExecutor))
 {
   mainRunLoopObserver_ = CFRunLoopObserverCreateWithHandler(
       NULL /* allocator */,
@@ -51,9 +53,13 @@ void MainRunLoopEventBeat::induce() const
 
 void MainRunLoopEventBeat::lockExecutorAndBeat() const
 {
+  auto owner = ownerBox_->owner.lock();
+  if (!owner) {
+    return;
+  }
+
   // Note: We need the third mutex to get back to the main thread before
   // the lambda is finished (because all mutexes are allocated on the stack).
-
   std::mutex mutex1;
   std::mutex mutex2;
   std::mutex mutex3;

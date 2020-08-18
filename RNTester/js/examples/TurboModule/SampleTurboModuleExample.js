@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -22,7 +22,14 @@ import {
 import * as React from 'react';
 
 type State = {|
-  testResults: {[string]: {type: string, value: mixed}},
+  testResults: {
+    [string]: {
+      type: string,
+      value: mixed,
+      ...
+    },
+    ...,
+  },
 |};
 
 class SampleTurboModuleExample extends React.Component<{||}, State> {
@@ -64,7 +71,13 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
   _setResult(name, result) {
     this.setState(({testResults}) => ({
       testResults: {
+        /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+         * an error found when Flow v0.111 was deployed. To see the error,
+         * delete this comment and run Flow. */
         ...testResults,
+        /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+         * an error found when Flow v0.111 was deployed. To see the error,
+         * delete this comment and run Flow. */
         [name]: {value: result, type: typeof result},
       },
     }));

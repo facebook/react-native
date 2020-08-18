@@ -16,7 +16,7 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
 const View = require('../Components/View/View');
 
-class PerformanceOverlay extends React.Component<{}> {
+class PerformanceOverlay extends React.Component<{...}> {
   render(): React.Node {
     const perfLogs = PerformanceLogger.getTimespans();
     const items = [];

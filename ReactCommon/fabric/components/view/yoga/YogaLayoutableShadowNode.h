@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -32,10 +32,10 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
 
 #pragma mark - Constructors
 
-  YogaLayoutableShadowNode();
+  YogaLayoutableShadowNode(bool isLeaf);
 
   YogaLayoutableShadowNode(
-      const YogaLayoutableShadowNode &layoutableShadowNode);
+      YogaLayoutableShadowNode const &layoutableShadowNode);
 
 #pragma mark - Mutating Methods
 
@@ -64,12 +64,14 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
    */
   void setProps(const YogaStylableProps &props);
 
-  /**
+  /*
    * Sets layoutable size of node.
    */
   void setSize(Size size) const;
 
-  /**
+  void setPadding(RectangleEdges<Float> padding) const;
+
+  /*
    * Sets position type of Yoga node (relative, absolute).
    */
   void setPositionType(YGPositionType positionType) const;
@@ -105,6 +107,13 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
    * all the time.
    */
   mutable YGNode yogaNode_;
+
+  /*
+   * Forces associated YGNode to be a leaf.
+   * Adding a child `ShadowNode` will not add `YGNode` associated with it as a
+   * child to the stored `YGNode`.
+   */
+  bool const isLeaf_;
 
  private:
   static YGConfig &initializeYogaConfig(YGConfig &config);

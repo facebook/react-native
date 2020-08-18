@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -22,8 +22,12 @@ class ModalHostViewComponentDescriptor final
     : public ConcreteComponentDescriptor<ModalHostViewShadowNode> {
  public:
 #ifdef ANDROID
-  ModalHostViewComponentDescriptor(EventDispatcher::Shared eventDispatcher)
-      : ConcreteComponentDescriptor(eventDispatcher) {}
+  ModalHostViewComponentDescriptor(
+      EventDispatcher::Weak eventDispatcher,
+      ContextContainer::Shared const &contextContainer,
+      ComponentDescriptor::Flavor const &flavor = {})
+      : ConcreteComponentDescriptor(eventDispatcher, contextContainer, flavor) {
+  }
 #else
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 #endif

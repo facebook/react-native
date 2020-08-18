@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -18,8 +18,8 @@ using namespace facebook::react;
   SimpleThreadSafeCache<AttributedString, std::shared_ptr<const void>, 256> _cache;
 }
 
-static NSLineBreakMode RCTNSLineBreakModeFromWritingDirection(
-    EllipsizeMode ellipsizeMode) {
+static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsizeMode)
+{
   switch (ellipsizeMode) {
     case EllipsizeMode::Clip:
       return NSLineBreakByClipping;
@@ -32,16 +32,22 @@ static NSLineBreakMode RCTNSLineBreakModeFromWritingDirection(
   }
 }
 
-- (facebook::react::Size)
-    measureWithAttributedString:(AttributedString)attributedString
-            paragraphAttributes:(ParagraphAttributes)paragraphAttributes
-              layoutConstraints:(LayoutConstraints)layoutConstraints {
-  CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width,
-                              layoutConstraints.maximumSize.height};
-  NSTextStorage *textStorage = [self
-      _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
-                                   paragraphAttributes:paragraphAttributes
-                                                  size:maximumSize];
+- (facebook::react::Size)measureNSAttributedString:(NSAttributedString *)attributedString
+                               paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                 layoutConstraints:(LayoutConstraints)layoutConstraints
+{
+  if (attributedString.length == 0) {
+    // This is not really an optimization because that should be checked much earlier on the call stack.
+    // Sometimes, very irregularly, measuring an empty string crashes/freezes iOS internal text infrastructure.
+    // This is our last line of defense.
+    return {0, 0};
+  }
+
+  CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width, CGFLOAT_MAX};
+
+  NSTextStorage *textStorage = [self _textStorageAndLayoutManagerWithAttributesString:attributedString
+                                                                  paragraphAttributes:paragraphAttributes
+                                                                                 size:maximumSize];
 
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
@@ -49,10 +55,16 @@ static NSLineBreakMode RCTNSLineBreakModeFromWritingDirection(
 
   CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
 
-  size = (CGSize){MIN(size.width, maximumSize.width),
-                  MIN(size.height, maximumSize.height)};
+  return {size.width, size.height};
+}
 
-  return facebook::react::Size{size.width, size.height};
+- (facebook::react::Size)measureAttributedString:(AttributedString)attributedString
+                             paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                               layoutConstraints:(LayoutConstraints)layoutConstraints
+{
+  return [self measureNSAttributedString:[self _nsAttributedStringFromAttributedString:attributedString]
+                     paragraphAttributes:paragraphAttributes
+                       layoutConstraints:layoutConstraints];
 }
 
 - (void)drawAttributedString:(AttributedString)attributedString
@@ -80,8 +92,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromWritingDirection(
 
   textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
   textContainer.lineBreakMode = paragraphAttributes.maximumNumberOfLines > 0
-      ? RCTNSLineBreakModeFromWritingDirection(
-            paragraphAttributes.ellipsizeMode)
+      ? RCTNSLineBreakModeFromEllipsizeMode(paragraphAttributes.ellipsizeMode)
       : NSLineBreakByClipping;
   textContainer.maximumNumberOfLines = paragraphAttributes.maximumNumberOfLines;
 

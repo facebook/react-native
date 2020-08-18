@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
 import android.os.SystemClock;
@@ -127,8 +128,8 @@ public class UIImplementation {
     return mShadowNodeRegistry.getNode(reactTag);
   }
 
-  protected final ViewManager resolveViewManager(String className) {
-    return mViewManagers.get(className);
+  protected final @Nullable ViewManager resolveViewManager(String className) {
+    return mViewManagers.getViewManagerIfExists(className);
   }
 
   /*package*/ UIViewOperationQueue getUIViewOperationQueue() {

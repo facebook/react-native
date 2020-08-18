@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
+
 'use strict';
 
 export function toCppNamespace(domain: string): string {
@@ -17,7 +18,7 @@ export function toCppType(type: string): string {
   return type.substr(0, 1).toUpperCase() + type.substr(1);
 }
 
-const jsTypeMappings: {[key: string]: string} = {
+const jsTypeMappings: {[key: string]: string, ...} = {
   any: 'folly::dynamic',
   array: 'folly::dynamic',
   boolean: 'bool',

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -77,6 +77,16 @@ RCT_EXTERN NSString *RCTFormatLog(
   NSNumber *lineNumber,
   NSString *message
 );
+
+/**
+ * A method to generate a string RCTLogLevel
+ */
+RCT_EXTERN NSString *RCTFormatLogLevel(RCTLogLevel);
+
+/**
+ * A method to generate a string from a RCTLogSource
+ */
+RCT_EXTERN NSString *RCTFormatLogSource(RCTLogSource);
 
 /**
  * The default logging function used by RCTLogXX.

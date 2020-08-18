@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -19,6 +19,7 @@
 @property (nonatomic, assign) BOOL wasOn;
 #else // [TODO(macOS ISS#2323203)
 @property (nonatomic, assign) BOOL on;
+- (void)setOn:(BOOL)on animated:(BOOL)animated;
 #endif // ]TODO(macOS ISS#2323203)
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 

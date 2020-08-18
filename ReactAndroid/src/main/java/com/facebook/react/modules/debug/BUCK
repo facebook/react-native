@@ -18,7 +18,11 @@ rn_android_library(
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/modules/debug:interfaces"),
+        react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
+    ],
+    exported_deps = [
+        react_native_target("java/com/facebook/fbreact/specs:FBReactNativeSpec"),
     ],
 )
 

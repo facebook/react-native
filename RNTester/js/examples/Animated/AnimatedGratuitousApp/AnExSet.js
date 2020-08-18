@@ -88,6 +88,7 @@ class AnExSet extends React.Component<Object, any> {
       },
       onPanResponderMove: Animated.event(
         [null, {dy: this.state.dismissY}], // track pan gesture
+        {useNativeDriver: false},
       ),
       onPanResponderRelease: (e, gestureState) => {
         if (gestureState.dy > 100) {

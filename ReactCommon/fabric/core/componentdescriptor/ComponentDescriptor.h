@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -33,9 +33,21 @@ class ComponentDescriptor {
   using Shared = std::shared_ptr<ComponentDescriptor const>;
   using Unique = std::unique_ptr<ComponentDescriptor const>;
 
+  /*
+   * `Flavor` is a special concept designed to allow registering instances of
+   * the exact same `ComponentDescriptor` class with different `ComponentName`
+   * and `ComponentHandle` (the particular custom implementation might use
+   * stored `flavor` to return different values from those virtual methods).
+   * Since it's a very niche requirement (e.g. we plan to use it for
+   * an interoperability layer with Paper), we are thinking about removing this
+   * feature completely after it's no longer needed.
+   */
+  using Flavor = std::shared_ptr<void const>;
+
   ComponentDescriptor(
-      EventDispatcher::Shared const &eventDispatcher,
-      ContextContainer::Shared const &contextContainer);
+      EventDispatcher::Weak const &eventDispatcher,
+      ContextContainer::Shared const &contextContainer,
+      ComponentDescriptor::Flavor const &flavor);
 
   virtual ~ComponentDescriptor() = default;
 
@@ -58,7 +70,12 @@ class ComponentDescriptor {
   virtual ComponentName getComponentName() const = 0;
 
   /*
-   * Creates a new `ShadowNode` of a particular type.
+   * Returns traits associated with a particular component type.
+   */
+  virtual ShadowNodeTraits getTraits() const = 0;
+
+  /*
+   * Creates a new `ShadowNode` of a particular component type.
    */
   virtual SharedShadowNode createShadowNode(
       const ShadowNodeFragment &fragment) const = 0;
@@ -111,9 +128,10 @@ class ComponentDescriptor {
       const StateData::Shared &data) const = 0;
 
  protected:
-  EventDispatcher::Shared eventDispatcher_;
+  EventDispatcher::Weak eventDispatcher_;
   ContextContainer::Shared contextContainer_;
   RawPropsParser rawPropsParser_{};
+  Flavor flavor_;
 };
 
 } // namespace react

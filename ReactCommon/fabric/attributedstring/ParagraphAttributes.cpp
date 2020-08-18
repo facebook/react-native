@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -16,10 +16,15 @@ namespace facebook {
 namespace react {
 
 bool ParagraphAttributes::operator==(const ParagraphAttributes &rhs) const {
-  return std::tie(maximumNumberOfLines, ellipsizeMode, adjustsFontSizeToFit) ==
+  return std::tie(
+             maximumNumberOfLines,
+             ellipsizeMode,
+             textBreakStrategy,
+             adjustsFontSizeToFit) ==
       std::tie(
              rhs.maximumNumberOfLines,
              rhs.ellipsizeMode,
+             rhs.textBreakStrategy,
              rhs.adjustsFontSizeToFit) &&
       floatEquality(minimumFontSize, rhs.minimumFontSize) &&
       floatEquality(maximumFontSize, rhs.maximumFontSize);
@@ -36,6 +41,7 @@ SharedDebugStringConvertibleList ParagraphAttributes::getDebugProps() const {
   return {
       debugStringConvertibleItem("maximumNumberOfLines", maximumNumberOfLines),
       debugStringConvertibleItem("ellipsizeMode", ellipsizeMode),
+      debugStringConvertibleItem("textBreakStrategy", textBreakStrategy),
       debugStringConvertibleItem("adjustsFontSizeToFit", adjustsFontSizeToFit),
       debugStringConvertibleItem("minimumFontSize", minimumFontSize),
       debugStringConvertibleItem("maximumFontSize", maximumFontSize)};

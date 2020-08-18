@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 
 #include <tuple>
@@ -325,7 +326,8 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     return plain().instrumentation().getRecordedGCStats();
   }
 
-  Value getHeapInfo(bool includeExpensive) override {
+  std::unordered_map<std::string, int64_t> getHeapInfo(
+      bool includeExpensive) override {
     return plain().instrumentation().getHeapInfo(includeExpensive);
   }
 
@@ -333,12 +335,12 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain().instrumentation().collectGarbage();
   }
 
-  bool createSnapshotToFile(const std::string& path, bool compact) override {
-    return plain().instrumentation().createSnapshotToFile(path, compact);
+  bool createSnapshotToFile(const std::string& path) override {
+    return plain().instrumentation().createSnapshotToFile(path);
   }
 
-  bool createSnapshotToStream(std::ostream& os, bool compact) override {
-    return plain().instrumentation().createSnapshotToStream(os, compact);
+  bool createSnapshotToStream(std::ostream& os) override {
+    return plain().instrumentation().createSnapshotToStream(os);
   }
 
   void writeBridgeTrafficTraceToFile(

@@ -18,7 +18,11 @@ import NativeDeviceInfo, {
 } from './NativeDeviceInfo';
 import invariant from 'invariant';
 
-type DimensionsValue = {window?: DisplayMetrics, screen?: DisplayMetrics};
+type DimensionsValue = {
+  window?: DisplayMetrics,
+  screen?: DisplayMetrics,
+  ...
+};
 
 const eventEmitter = new EventEmitter();
 let dimensionsInitialized = false;
@@ -53,7 +57,7 @@ class Dimensions {
    *
    * @param {object} dims Simple string-keyed object of dimensions to set
    */
-  static set(dims: $ReadOnly<{[key: string]: any}>): void {
+  static set(dims: $ReadOnly<{[key: string]: any, ...}>): void {
     // We calculate the window dimensions in JS so that we don't encounter loss of
     // precision in transferring the dimensions (which could be non-integers) over
     // the bridge.
@@ -118,7 +122,7 @@ class Dimensions {
   }
 }
 
-let initialDims: ?$ReadOnly<{[key: string]: any}> =
+let initialDims: ?$ReadOnly<{[key: string]: any, ...}> =
   global.nativeExtensions &&
   global.nativeExtensions.DeviceInfo &&
   global.nativeExtensions.DeviceInfo.Dimensions;

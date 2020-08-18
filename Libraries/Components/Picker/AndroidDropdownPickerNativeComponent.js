@@ -5,22 +5,25 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-import {requireNativeComponent} from 'react-native';
-import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import * as React from 'react';
+
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import requireNativeComponent from '../../ReactNative/requireNativeComponent';
+import type {NativeOrDynamicColorType} from '../../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 import type {
   DirectEventHandler,
   Int32,
   WithDefault,
 } from '../../Types/CodegenTypes';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 import type {ViewProps} from '../../Components/View/ViewPropTypes';
 
 type PickerItem = $ReadOnly<{|
@@ -47,8 +50,19 @@ type NativeProps = $ReadOnly<{|
   onSelect?: DirectEventHandler<PickerItemSelectEvent>,
 |}>;
 
-type ReactPicker = Class<NativeComponent<NativeProps>>;
+type NativeType = HostComponent<NativeProps>;
 
-module.exports = ((requireNativeComponent(
+interface NativeCommands {
+  +setNativeSelectedPosition: (
+    viewRef: React.ElementRef<NativeType>,
+    index: number,
+  ) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['setNativeSelectedPosition'],
+});
+
+export default (requireNativeComponent<NativeProps>(
   'AndroidDropdownPicker',
-): any): ReactPicker);
+): NativeType);

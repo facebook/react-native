@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  */
+
 'use strict';
 
 /**
@@ -49,13 +50,11 @@ if (!global.RN$Bridgeless) {
   );
 
   if (__DEV__ && !global.__RCTProfileIsProfiling) {
-    BatchedBridge.registerCallableModule(
-      'HMRClient',
+    BatchedBridge.registerLazyCallableModule('HMRClient', () =>
       require('../Utilities/HMRClient'),
     );
   } else {
-    BatchedBridge.registerCallableModule(
-      'HMRClient',
+    BatchedBridge.registerLazyCallableModule('HMRClient', () =>
       require('../Utilities/HMRClientProdShim'),
     );
   }

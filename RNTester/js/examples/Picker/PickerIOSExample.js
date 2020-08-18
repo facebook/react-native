@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const {PickerIOS, Text, View, Platform} = require('react-native'); // TODO(OSS Candidate ISS#2710739)
+const {PickerIOS, Text, View} = require('react-native');
 
 const PickerItemIOS = PickerIOS.Item;
 
@@ -97,7 +97,7 @@ const CAR_MAKES_AND_MODELS = {
   },
 };
 
-class PickerExample extends React.Component<{}, $FlowFixMeState> {
+class PickerExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     carMake: 'cadillac',
     modelIndex: 3,
@@ -142,7 +142,7 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class PickerStyleExample extends React.Component<{}, $FlowFixMeState> {
+class PickerStyleExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
     carMake: 'cadillac',
     modelIndex: 0,
@@ -152,10 +152,7 @@ class PickerStyleExample extends React.Component<{}, $FlowFixMeState> {
     return (
       <PickerIOS
         itemStyle={{
-          fontSize:
-            Platform.OS === 'macos'
-              ? 11
-              : 25 /* TODO(OSS Candidate ISS#2710739) */,
+          fontSize: 25,
           color: 'red',
           textAlign: 'left',
           fontWeight: 'bold',

@@ -16,13 +16,39 @@
 #import <string>
 #import <unordered_map>
 
-static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
-  {"ExceptionsManager", RCTExceptionsManagerCls},
-{"ImageLoader", RCTImageLoaderCls},
-{"PlatformConstants", RCTPlatformCls},
-};
-
 Class RCTCoreModulesClassProvider(const char *name) {
+  static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
+#if !TARGET_OS_OSX // TODO(macOS) = Do we need these?
+    {"AccessibilityManager", RCTAccessibilityManagerCls},
+    {"Appearance", RCTAppearanceCls},
+#endif // TODO(macOS)
+    {"DeviceInfo", RCTDeviceInfoCls},
+    {"ExceptionsManager", RCTExceptionsManagerCls},
+    {"PlatformConstants", RCTPlatformCls},
+    {"Clipboard", RCTClipboardCls},
+    {"I18nManager", RCTI18nManagerCls},
+    {"SourceCode", RCTSourceCodeCls},
+    {"ActionSheetManager", RCTActionSheetManagerCls},
+    {"AlertManager", RCTAlertManagerCls},
+    {"AsyncLocalStorage", RCTAsyncLocalStorageCls},
+    {"Timing", RCTTimingCls},
+    {"StatusBarManager", RCTStatusBarManagerCls},
+    {"KeyboardObserver", RCTKeyboardObserverCls},
+    {"AppState", RCTAppStateCls},
+#if !TARGET_OS_OSX // TODO(macOS) = Do we need these?
+    {"PerfMonitor", RCTPerfMonitorCls},
+#endif // TODO(macOS)
+    {"DevMenu", RCTDevMenuCls},
+    {"DevSettings", RCTDevSettingsCls},
+    {"RedBox", RCTRedBoxCls},
+#if !TARGET_OS_OSX // TODO(macOS) = Do we need these?
+    {"LogBox", RCTLogBoxCls},
+#endif // TODO(macOS)
+    {"TVNavigationEventEmitter", RCTTVNavigationEventEmitterCls},
+    {"WebSocketExecutor", RCTWebSocketExecutorCls},
+    {"WebSocketModule", RCTWebSocketModuleCls},
+  };
+
   auto p = sCoreModuleClassMap.find(name);
   if (p != sCoreModuleClassMap.end()) {
     auto classFunc = p->second;

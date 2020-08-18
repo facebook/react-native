@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -134,6 +134,11 @@ RCT_EXTERN NSString *RCTCurrentThreadName(void);
  * Helper to get generate exception message from NSError
  */
 RCT_EXTERN NSString *RCTFormatError(NSString *message, NSArray<NSDictionary<NSString *, id> *> *stacktrace, NSUInteger maxMessageLength);
+
+/**
+ * Formats a JS stack trace for logging.
+ */
+RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *> *stackTrace);
 
 /**
  * Convenience macro to assert which thread is currently running (DEBUG mode only)

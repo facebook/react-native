@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,6 +7,7 @@
 
 #import "RCTSurfaceHostingView.h"
 
+#import "RCTConstants.h"
 #import "RCTDefines.h"
 #import "RCTSurface.h"
 #import "RCTSurfaceDelegate.h"
@@ -80,10 +81,8 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     &maximumSize
   );
 
-  if (RCTSurfaceStageIsRunning(_stage)) {
     [_surface setMinimumSize:minimumSize
                  maximumSize:maximumSize];
-  }
 }
 
 - (CGSize)intrinsicContentSize
@@ -209,6 +208,20 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     self.isActivityIndicatorViewVisible = YES;
   }
 }
+
+#pragma mark - UITraitCollection updates
+
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTUserInterfaceStyleDidChangeNotification
+                                                      object:self
+                                                    userInfo:@{
+                                                      RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey: self.traitCollection,
+                                                    }];
+}
+#endif // TODO(macOS ISS#2323203)
 
 #pragma mark - Private stuff
 

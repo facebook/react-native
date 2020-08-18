@@ -1,5 +1,5 @@
-load("@fbsource//tools/build_defs:default_platform_defs.bzl", "IOS", "MACOSX")
 load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("@fbsource//tools/build_defs:platform_defs.bzl", "IOS", "MACOSX")
 load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
@@ -189,6 +189,7 @@ def rn_codegen_components(
             "ComponentDescriptors.h": ":{}".format(generate_component_descriptor_h_name),
             "EventEmitters.h": ":{}".format(generate_event_emitter_h_name),
             "Props.h": ":{}".format(generate_props_h_name),
+            "RCTComponentViewHelpers.h": ":{}".format(generate_component_hobjcpp_name),
             "ShadowNodes.h": ":{}".format(generate_shadow_node_h_name),
         },
         ios_exported_headers = {
@@ -203,6 +204,7 @@ def rn_codegen_components(
         ],
         fbobjc_compiler_flags = get_apple_compiler_flags(),
         fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+        fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
         platforms = (ANDROID, APPLE, CXX),
         preprocessor_flags = [
             "-DLOG_TAG=\"ReactNative\"",

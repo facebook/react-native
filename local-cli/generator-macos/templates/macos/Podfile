@@ -1,5 +1,48 @@
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
+def add_flipper_pods!(versions = {})
+  versions['Flipper'] ||= '~> 0.33.1'
+  versions['DoubleConversion'] ||= '1.1.7'
+  versions['Flipper-Folly'] ||= '~> 2.1'
+  versions['Flipper-Glog'] ||= '0.3.6'
+  versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
+  versions['Flipper-RSocket'] ||= '~> 1.0'
+
+  pod 'FlipperKit', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configuration => 'Debug'
+
+  # List all transitive dependencies for FlipperKit pods
+  # to avoid them being linked in Release builds
+  pod 'Flipper', versions['Flipper'], :configuration => 'Debug'
+  pod 'Flipper-DoubleConversion', versions['DoubleConversion'], :configuration => 'Debug'
+  pod 'Flipper-Folly', versions['Flipper-Folly'], :configuration => 'Debug'
+  pod 'Flipper-Glog', versions['Flipper-Glog'], :configuration => 'Debug'
+  pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configuration => 'Debug'
+  pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configuration => 'Debug'
+  pod 'FlipperKit/Core', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/CppBridge', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FBDefines', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
+end
+
+# Post Install processing for Flipper
+def flipper_post_install(installer)
+  installer.pods_project.targets.each do |target|
+    if target.name == 'YogaKit'
+      target.build_configurations.each do |config|
+        config.build_settings['SWIFT_VERSION'] = '4.1'
+      end
+    end
+  end
+end
+
 abstract_target 'Shared' do
   # Pods for HelloWorld
   pod 'FBLazyVector', :path => '../node_modules/react-native-macos/Libraries/FBLazyVector'
@@ -25,24 +68,45 @@ abstract_target 'Shared' do
   pod 'React-jsi', :path => '../node_modules/react-native-macos/ReactCommon/jsi'
   pod 'React-jsiexecutor', :path => '../node_modules/react-native-macos/ReactCommon/jsiexecutor'
   pod 'React-jsinspector', :path => '../node_modules/react-native-macos/ReactCommon/jsinspector'
-  pod 'ReactCommon/jscallinvoker', :path => '../node_modules/react-native-macos/ReactCommon'
+  pod 'ReactCommon/callinvoker', :path => '../node_modules/react-native-macos/ReactCommon'
   pod 'ReactCommon/turbomodule/core', :path => '../node_modules/react-native-macos/ReactCommon'
-  pod 'Yoga', :path => '../node_modules/react-native-macos/ReactCommon/yoga'
+  pod 'Yoga', :path => '../node_modules/react-native-macos/ReactCommon/yoga', :modular_headers => true
 
-  pod 'boost-for-react-native', :podspec => '../node_modules/react-native-macos/third-party-podspecs/boost-for-react-native.podspec'
   pod 'DoubleConversion', :podspec => '../node_modules/react-native-macos/third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../node_modules/react-native-macos/third-party-podspecs/glog.podspec'
-  pod 'Folly', :podspec => '../node_modules/react-native-macos/third-party-podspecs/Folly.podspec'
+  pod 'RCT-Folly', :podspec => '../node_modules/react-native-macos/third-party-podspecs/RCT-Folly.podspec'
+  pod 'boost-for-react-native', :podspec => '../node_modules/react-native-macos/third-party-podspecs/boost-for-react-native.podspec'
 
   target 'HelloWorld-macOS' do
     platform :macos, '10.14'
     use_native_modules!
+
+    # Enables Hermes
+    #
+    # Be sure to first install the `hermes-engine-darwin` npm package, e.g.:
+    # 
+    #   $ yarn add --dev 'hermes-engine-darwin@^0.4.3'
+    #
+    # pod 'React-Core/Hermes', :path => '../node_modules/react-native-macos/'
+    # pod 'hermes', :path => '../node_modules/hermes-engine-darwin'
+    # pod 'libevent', :podspec => '../node_modules/react-native-macos/third-party-podspecs/libevent.podspec'
+
     # Pods specifically for macOS target
   end
 
   target 'HelloWorld-iOS' do
     platform :ios, '9'
     use_native_modules!
+
+    # Enables Flipper.
+    #
+    # Note that if you have use_frameworks! enabled, Flipper will not work and
+    # you should disable these next few lines.
+    add_flipper_pods!
+    post_install do |installer|
+      flipper_post_install(installer)
+    end
+
     # Pods specifically for iOS target
   end
 end

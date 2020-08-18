@@ -23,6 +23,7 @@ type FilesOutput = Map<string, string>;
 
 type ComponentCollection = $ReadOnly<{
   [component: string]: ComponentShape,
+  ...,
 }>;
 
 const template = `

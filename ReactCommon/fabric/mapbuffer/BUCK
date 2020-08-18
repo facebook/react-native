@@ -30,6 +30,7 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
+    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
     force_static = True,
     macosx_tests_override = [],
     platforms = (ANDROID),

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -54,10 +54,12 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
   using ConcreteViewProps = ViewPropsT;
 
   ConcreteViewShadowNode(
-      const ShadowNodeFragment &fragment,
-      const ComponentDescriptor &componentDescriptor)
-      : BaseShadowNode(fragment, componentDescriptor),
-        YogaLayoutableShadowNode() {
+      ShadowNodeFragment const &fragment,
+      ComponentDescriptor const &componentDescriptor,
+      ShadowNodeTraits traits)
+      : BaseShadowNode(fragment, componentDescriptor, traits),
+        YogaLayoutableShadowNode(
+            traits.check(ShadowNodeTraits::Trait::LeafYogaNode)) {
     YogaLayoutableShadowNode::setProps(
         *std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
     YogaLayoutableShadowNode::setChildren(
@@ -65,8 +67,8 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
   };
 
   ConcreteViewShadowNode(
-      const ShadowNode &sourceShadowNode,
-      const ShadowNodeFragment &fragment)
+      ShadowNode const &sourceShadowNode,
+      ShadowNodeFragment const &fragment)
       : BaseShadowNode(sourceShadowNode, fragment),
         YogaLayoutableShadowNode(
             static_cast<const ConcreteViewShadowNode &>(sourceShadowNode)) {
@@ -104,9 +106,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
         std::static_pointer_cast<ConcreteViewShadowNode>(
             childShadowNode->clone({}));
     ShadowNode::replaceChild(
-        childShadowNode->shared_from_this(),
-        clonedChildShadowNode,
-        suggestedIndex);
+        *childShadowNode, clonedChildShadowNode, suggestedIndex);
     return clonedChildShadowNode.get();
   }
 

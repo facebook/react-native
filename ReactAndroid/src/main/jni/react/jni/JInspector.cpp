@@ -1,9 +1,13 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "JInspector.h"
+
+#include <memory>
 
 #ifdef WITH_INSPECTOR
 
@@ -78,7 +82,7 @@ jni::local_ref<jni::JArrayClass<JPage::javaobject>> JInspector::getPages() {
 }
 
 jni::local_ref<JLocalConnection::javaobject> JInspector::connect(int pageId, jni::alias_ref<JRemoteConnection::javaobject> remote) {
-  auto localConnection = inspector_->connect(pageId, folly::make_unique<RemoteConnection>(std::move(remote)));
+  auto localConnection = inspector_->connect(pageId, std::make_unique<RemoteConnection>(std::move(remote)));
   return JLocalConnection::newObjectCxxArgs(std::move(localConnection));
 }
 

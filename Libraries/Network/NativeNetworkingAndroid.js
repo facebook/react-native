@@ -22,7 +22,7 @@ export interface Spec extends TurboModule {
     requestId: number,
     headers: Array<Header>,
     data: Object,
-    responseType: Object, // TODO: Use stricter type.
+    responseType: string,
     useIncrementalUpdates: boolean,
     timeout: number,
     withCredentials: boolean,

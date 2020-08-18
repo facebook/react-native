@@ -6,7 +6,6 @@ exports[`TouchableHighlight renders correctly 1`] = `
   accessible={true}
   enableFocusRing={true}
   focusable={false}
-  isTVSelectable={true}
   onClick={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
@@ -16,9 +15,7 @@ exports[`TouchableHighlight renders correctly 1`] = `
   onStartShouldSetResponder={[Function]}
   style={Object {}}
 >
-  <Text
-    style={null}
-  >
+  <Text>
     Touchable
   </Text>
 </View>

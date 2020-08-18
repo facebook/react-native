@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -12,7 +12,7 @@
 
 #include <jsi/jsi.h>
 
-#include <ReactCommon/JSCallInvoker.h>
+#include <ReactCommon/CallInvoker.h>
 
 namespace facebook {
 namespace react {
@@ -37,9 +37,7 @@ enum TurboModuleMethodValueKind {
  */
 class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  public:
-  TurboModule(
-      const std::string &name,
-      std::shared_ptr<JSCallInvoker> jsInvoker);
+  TurboModule(const std::string &name, std::shared_ptr<CallInvoker> jsInvoker);
   virtual ~TurboModule();
 
   virtual facebook::jsi::Value get(
@@ -47,7 +45,7 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
       const facebook::jsi::PropNameID &propName) override;
 
   const std::string name_;
-  std::shared_ptr<JSCallInvoker> jsInvoker_;
+  std::shared_ptr<CallInvoker> jsInvoker_;
 
  protected:
   struct MethodMetadata {

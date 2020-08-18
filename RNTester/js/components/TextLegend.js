@@ -15,12 +15,12 @@ const React = require('react');
 const {Picker, Text, View} = require('react-native');
 
 class TextLegend extends React.Component<*, *> {
-  state: $TEMPORARY$object<{|
+  state: {|
     alignment: $TEMPORARY$string<'left'>,
     fontSize: number,
     language: $TEMPORARY$string<'english'>,
     textMetrics: Array<any>,
-  |}> = {
+  |} = {
     textMetrics: [],
     language: 'english',
     alignment: 'left',

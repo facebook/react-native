@@ -3,7 +3,6 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
  */
 
 'use strict';
@@ -44,6 +43,7 @@ module.exports = {
     'testEnvironment': 'node',
     'moduleNameMapper': {
       'react-native-codegen/(.*)': '<rootDir>/packages/react-native-codegen/$1',
+      'eslint/lib/rules/(.*)': '<rootDir>/node_modules/eslint/lib/rules/$1',
       'react-native(.*)': '<rootDir>$1',
     },
     'collectCoverageFrom': [

@@ -10,7 +10,16 @@
 
 'use strict';
 
+const RNTesterActions = require('./utils/RNTesterActions');
+const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
+const RNTesterExampleList = require('./components/RNTesterExampleList');
+const RNTesterList = require('./utils/RNTesterList');
+const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
 const React = require('react');
+const URIActionMap = require('./utils/URIActionMap');
+
+const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
+
 const {
   AppRegistry,
   AsyncStorage,
@@ -24,26 +33,19 @@ const {
   Text,
   TouchableWithoutFeedback,
   UIManager,
+  useColorScheme,
   View,
 } = require('react-native');
-const RNTesterActions = require('./utils/RNTesterActions');
-const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
-const RNTesterExampleList = require('./components/RNTesterExampleList');
-const RNTesterList = require('./utils/RNTesterList');
-const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
-const URIActionMap = require('./utils/URIActionMap');
 
-const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
-
+import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
+import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 
 UIManager.setLayoutAnimationEnabledExperimental(true);
 
 const DRAWER_WIDTH_LEFT = 56;
 
-type Props = {
-  exampleFromAppetizeParams?: ?string,
-};
+type Props = {exampleFromAppetizeParams?: ?string, ...};
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
@@ -53,18 +55,115 @@ const HEADER_NAV_ICON = nativeImageSource({
   height: 48,
 });
 
-const Header = ({title, onPressDrawer}) => {
+const Header = ({
+  onPressDrawer,
+  title,
+}: {
+  onPressDrawer?: () => mixed,
+  title: string,
+  ...
+}) => (
+  <RNTesterThemeContext.Consumer>
+    {theme => {
+      return (
+        <View style={[styles.toolbar, {backgroundColor: theme.ToolbarColor}]}>
+          <View style={styles.toolbarCenter}>
+            <Text style={[styles.title, {color: theme.LabelColor}]}>
+              {title}
+            </Text>
+          </View>
+          <View style={styles.toolbarLeft}>
+            <TouchableWithoutFeedback onPress={onPressDrawer}>
+              <Image source={HEADER_NAV_ICON} />
+            </TouchableWithoutFeedback>
+          </View>
+        </View>
+      );
+    }}
+  </RNTesterThemeContext.Consumer>
+);
+
+const RNTesterExampleContainerViaHook = ({
+  onPressDrawer,
+  title,
+  module,
+  exampleRef,
+}: {
+  onPressDrawer?: () => mixed,
+  title: string,
+  module: RNTesterExample,
+  exampleRef: () => void,
+  ...
+}) => {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? themes.dark : themes.light;
   return (
-    <View style={styles.toolbar}>
-      <View style={styles.toolbarCenter}>
-        <Text style={styles.title}>{title}</Text>
+    <RNTesterThemeContext.Provider value={theme}>
+      <View style={styles.container}>
+        <Header title={title} onPressDrawer={onPressDrawer} />
+        <RNTesterExampleContainer module={module} ref={exampleRef} />
       </View>
-      <View style={styles.toolbarLeft}>
-        <TouchableWithoutFeedback onPress={onPressDrawer}>
-          <Image source={HEADER_NAV_ICON} />
-        </TouchableWithoutFeedback>
+    </RNTesterThemeContext.Provider>
+  );
+};
+
+const RNTesterDrawerContentViaHook = ({
+  onNavigate,
+  list,
+}: {
+  onNavigate?: () => mixed,
+  list: {
+    ComponentExamples: Array<RNTesterExample>,
+    APIExamples: Array<RNTesterExample>,
+    ...
+  },
+  ...
+}) => {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? themes.dark : themes.light;
+  return (
+    <RNTesterThemeContext.Provider value={theme}>
+      <View
+        style={[
+          styles.drawerContentWrapper,
+          {backgroundColor: theme.SystemBackgroundColor},
+        ]}>
+        <RNTesterExampleList
+          list={list}
+          displayTitleRow={true}
+          disableSearch={true}
+          onNavigate={onNavigate}
+        />
       </View>
-    </View>
+    </RNTesterThemeContext.Provider>
+  );
+};
+
+const RNTesterExampleListViaHook = ({
+  title,
+  onPressDrawer,
+  onNavigate,
+  list,
+}: {
+  title: string,
+  onPressDrawer?: () => mixed,
+  onNavigate?: () => mixed,
+  list: {
+    ComponentExamples: Array<RNTesterExample>,
+    APIExamples: Array<RNTesterExample>,
+    ...
+  },
+  ...
+}) => {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? themes.dark : themes.light;
+  return (
+    <RNTesterThemeContext.Provider value={theme}>
+      <View style={styles.container}>
+        <Header title={title} onPressDrawer={onPressDrawer} />
+        <RNTesterExampleList onNavigate={onNavigate} list={list} />
+      </View>
+    </RNTesterThemeContext.Provider>
   );
 };
 
@@ -99,7 +198,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     });
   }
 
-  render() {
+  render(): React.Node {
     if (!this.state) {
       return null;
     }
@@ -132,14 +231,10 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
 
   _renderDrawerContent = () => {
     return (
-      <View style={styles.drawerContentWrapper}>
-        <RNTesterExampleList
-          list={RNTesterList}
-          displayTitleRow={true}
-          disableSearch={true}
-          onNavigate={this._handleAction}
-        />
-      </View>
+      <RNTesterDrawerContentViaHook
+        onNavigate={this._handleAction}
+        list={RNTesterList}
+      />
     );
   };
 
@@ -163,39 +258,31 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         );
       } else if (ExampleModule) {
         return (
-          <View style={styles.container}>
-            <Header
-              title={ExampleModule.title}
+          <RNTesterExampleContainerViaHook
+            /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+             * when making Flow check .android.js files. */
+            onPressDrawer={() => this.drawer.openDrawer()}
+            title={ExampleModule.title}
+            module={ExampleModule}
+            exampleRef={example => {
               /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
                * was found when making Flow check .android.js files. */
-              onPressDrawer={() => this.drawer.openDrawer()}
-            />
-            <RNTesterExampleContainer
-              module={ExampleModule}
-              ref={example => {
-                /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
-                 * was found when making Flow check .android.js files. */
-                this._exampleRef = example;
-              }}
-            />
-          </View>
+              this._exampleRef = example;
+            }}
+          />
         );
       }
     }
 
     return (
-      <View style={styles.container}>
-        <Header
-          title="RNTester"
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
-           * was found when making Flow check .android.js files. */
-          onPressDrawer={() => this.drawer.openDrawer()}
-        />
-        <RNTesterExampleList
-          onNavigate={this._handleAction}
-          list={RNTesterList}
-        />
-      </View>
+      <RNTesterExampleListViaHook
+        title={'RNTester'}
+        /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+         * when making Flow check .android.js files. */
+        onPressDrawer={() => this.drawer.openDrawer()}
+        onNavigate={this._handleAction}
+        list={RNTesterList}
+      />
     );
   }
 
@@ -245,7 +332,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   toolbar: {
-    backgroundColor: '#E9EAED',
     height: 56,
   },
   toolbarLeft: {
@@ -267,7 +353,6 @@ const styles = StyleSheet.create({
   drawerContentWrapper: {
     flex: 1,
     paddingTop: StatusBar.currentHeight,
-    backgroundColor: 'white',
   },
 });
 

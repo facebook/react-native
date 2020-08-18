@@ -15,11 +15,7 @@ const ReactNative = require('react-native');
 import {Platform} from 'react-native';
 const {Text, View} = ReactNative;
 
-type State = {};
-
-class SemanticColorsExample extends React.Component<{}, State> {
-  state: State = {};
-
+class SemanticColorsExample extends React.Component<{}> {
   createTable() {
     let colors = [];
     if (Platform.OS === 'macos') {

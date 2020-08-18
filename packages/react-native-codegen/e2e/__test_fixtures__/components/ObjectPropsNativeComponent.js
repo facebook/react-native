@@ -5,23 +5,24 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
+import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
+import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
 import type {
   PointValue,
   ColorValue,
 } from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
-import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
 import type {
   Int32,
   Float,
   WithDefault,
 } from '../../../../../Libraries/Types/CodegenTypes';
-import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import type {HostComponent} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
 
 type ObjectArrayPropType = $ReadOnly<{|
   array: $ReadOnlyArray<string>,
@@ -37,6 +38,7 @@ type NativeProps = $ReadOnly<{|
     floatProp: Float,
     intProp: Int32,
     stringEnumProp?: WithDefault<'small' | 'large', 'small'>,
+    intEnumProp?: WithDefault<0 | 1, 0>,
   |}>,
   objectArrayProp: ObjectArrayPropType,
   objectPrimitiveRequiredProp: $ReadOnly<{|
@@ -46,6 +48,6 @@ type NativeProps = $ReadOnly<{|
   |}>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>(
+export default (codegenNativeComponent<NativeProps>(
   'ObjectPropsNativeComponent',
-);
+): HostComponent<NativeProps>);

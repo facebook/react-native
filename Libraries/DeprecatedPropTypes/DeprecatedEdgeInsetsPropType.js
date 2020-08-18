@@ -17,6 +17,7 @@ const DeprecatedEdgeInsetsPropType: React$PropType$Primitive<{
   left?: number,
   right?: number,
   top?: number,
+  ...
 }> = PropTypes.shape({
   top: PropTypes.number,
   left: PropTypes.number,

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -28,27 +28,33 @@ class State {
   explicit State(StateCoordinator::Shared const &stateCoordinator);
   virtual ~State() = default;
 
+  /*
+   * Returns a momentary value of the most recently committed state
+   * associated with a family of nodes which this state belongs to.
+   * Sequential calls might return different values.
+   */
+  State::Shared getMostRecentState() const;
+
 #ifdef ANDROID
-  virtual const folly::dynamic getDynamic() const;
-  virtual void updateState(folly::dynamic data) const;
+  virtual folly::dynamic getDynamic() const = 0;
+  virtual void updateState(folly::dynamic data) const = 0;
 #endif
+
+  void commit(std::shared_ptr<ShadowNode const> const &shadowNode) const;
 
  protected:
   StateCoordinator::Shared stateCoordinator_;
 
  private:
-  friend class ShadowNode;
   friend class StateCoordinator;
 
   /*
-   * Must be used by `ShadowNode` *only*.
+   * Indicates that the state was committed once and then was replaced by a
+   * newer one.
+   * To be used by `StateCoordinator` only.
+   * Protected by mutex inside `StateCoordinator`.
    */
-  void commit(const ShadowNode &shadowNode) const;
-
-  /*
-   * Must be used by `ShadowNode` *only*.
-   */
-  State::Shared getCommitedState() const;
+  mutable bool isObsolete_{false};
 };
 
 } // namespace react

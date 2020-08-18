@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
 import android.app.Activity;
@@ -18,6 +19,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.util.Pair;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
@@ -30,7 +32,6 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -47,6 +48,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
+import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
@@ -376,6 +378,14 @@ public class DevSupportManagerImpl
     }
   }
 
+  public @Nullable View createRootView(String appKey) {
+    return mReactInstanceManagerHelper.createRootView(appKey);
+  }
+
+  public void destroyRootView(View rootView) {
+    mReactInstanceManagerHelper.destroyRootView(rootView);
+  }
+
   private void hideDevOptionsDialog() {
     if (mDevOptionsDialog != null) {
       mDevOptionsDialog.dismiss();
@@ -518,9 +528,7 @@ public class DevSupportManagerImpl
             mReactInstanceManagerHelper.toggleElementInspector();
           }
         });
-    // "Live reload" which refreshes on every edit was removed in favor of "Fast Refresh".
-    // While native code for "Live reload" is still there, please don't add the option back.
-    // See D15958697 for more context.
+
     options.put(
         mDevSettings.isHotModuleReplacementEnabled()
             ? mApplicationContext.getString(R.string.catalyst_hot_reloading_stop)
@@ -623,6 +631,9 @@ public class DevSupportManagerImpl
                 })
             .create();
     mDevOptionsDialog.show();
+    if (mCurrentContext != null) {
+      mCurrentContext.getJSModule(RCTNativeAppEventEmitter.class).emit("RCTDevMenuShown", null);
+    }
   }
 
   /** Starts of stops the sampling profiler */
@@ -1026,7 +1037,7 @@ public class DevSupportManagerImpl
     mDevServerHelper.downloadBundleFromURL(
         new DevBundleDownloadListener() {
           @Override
-          public void onSuccess(final @Nullable NativeDeltaClient nativeDeltaClient) {
+          public void onSuccess() {
             mDevLoadingViewController.hide();
             mDevLoadingViewVisible = false;
             synchronized (DevSupportManagerImpl.this) {
@@ -1034,7 +1045,7 @@ public class DevSupportManagerImpl
               mBundleStatus.updateTimestamp = System.currentTimeMillis();
             }
             if (mBundleDownloadListener != null) {
-              mBundleDownloadListener.onSuccess(nativeDeltaClient);
+              mBundleDownloadListener.onSuccess();
             }
             UiThreadUtil.runOnUiThread(
                 new Runnable() {
@@ -1042,7 +1053,7 @@ public class DevSupportManagerImpl
                   public void run() {
                     ReactMarker.logMarker(
                         ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
-                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer(nativeDeltaClient);
+                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer();
                   }
                 });
           }
@@ -1134,22 +1145,6 @@ public class DevSupportManagerImpl
   }
 
   @Override
-  public void setReloadOnJSChangeEnabled(final boolean isReloadOnJSChangeEnabled) {
-    if (!mIsDevSupportEnabled) {
-      return;
-    }
-
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            mDevSettings.setReloadOnJSChangeEnabled(isReloadOnJSChangeEnabled);
-            handleReloadJS();
-          }
-        });
-  }
-
-  @Override
   public void setFpsDebugEnabled(final boolean isFpsDebugEnabled) {
     if (!mIsDevSupportEnabled) {
       return;
@@ -1211,17 +1206,6 @@ public class DevSupportManagerImpl
       }
 
       mDevServerHelper.openPackagerConnection(this.getClass().getSimpleName(), this);
-      if (mDevSettings.isReloadOnJSChangeEnabled()) {
-        mDevServerHelper.startPollingOnChangeEndpoint(
-            new DevServerHelper.OnServerContentChangeListener() {
-              @Override
-              public void onServerContentChanged() {
-                handleReloadJS();
-              }
-            });
-      } else {
-        mDevServerHelper.stopPollingOnChangeEndpoint();
-      }
     } else {
       // hide FPS debug overlay
       if (mDebugOverlayController != null) {
@@ -1249,7 +1233,6 @@ public class DevSupportManagerImpl
       // hide loading view
       mDevLoadingViewController.hide();
       mDevServerHelper.closePackagerConnection();
-      mDevServerHelper.stopPollingOnChangeEndpoint();
     }
   }
 

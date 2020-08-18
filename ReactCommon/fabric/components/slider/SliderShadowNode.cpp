@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,9 +6,8 @@
  */
 
 #include "SliderShadowNode.h"
+#include "SliderLocalData.h"
 
-#include <react/components/slider/SliderLocalData.h>
-#include <react/components/slider/SliderShadowNode.h>
 #include <react/core/LayoutContext.h>
 
 namespace facebook {
@@ -64,13 +63,13 @@ void SliderShadowNode::updateLocalData() {
   // TODO: check if multiple requests are cached or if it's a net loss
   const auto &newLocalData = std::make_shared<SliderLocalData>(
       newTrackImageSource,
-      imageManager_->requestImage(newTrackImageSource),
+      imageManager_->requestImage(newTrackImageSource, getSurfaceId()),
       newMinimumTrackImageSource,
-      imageManager_->requestImage(newMinimumTrackImageSource),
+      imageManager_->requestImage(newMinimumTrackImageSource, getSurfaceId()),
       newMaximumTrackImageSource,
-      imageManager_->requestImage(newMaximumTrackImageSource),
+      imageManager_->requestImage(newMaximumTrackImageSource, getSurfaceId()),
       newThumbImageSource,
-      imageManager_->requestImage(newThumbImageSource));
+      imageManager_->requestImage(newThumbImageSource, getSurfaceId()));
   setLocalData(newLocalData);
 }
 
@@ -94,7 +93,7 @@ ImageSource SliderShadowNode::getThumbImageSource() const {
 
 Size SliderShadowNode::measure(LayoutConstraints layoutConstraints) const {
   if (SliderMeasurementsManager::shouldMeasureSlider()) {
-    return measurementsManager_->measure(layoutConstraints);
+    return measurementsManager_->measure(getSurfaceId(), layoutConstraints);
   }
 
   return {};

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -24,6 +24,7 @@
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTBundleURLProvider.h> // TODO(macOS ISS#2323203)
@@ -36,7 +37,15 @@
 #import <cxxreact/ReactMarker.h>
 #import <jsireact/JSIExecutor.h>
 
+#if TARGET_OS_OSX && __has_include(<hermes/hermes.h>)
+#define RCT_USE_HERMES 1
+#endif
+#if RCT_USE_HERMES
+#import "HermesExecutorFactory.h"
+#else
 #import "JSCExecutorFactory.h"
+#endif
+
 #import "NSDataBigString.h"
 #import "RCTMessageThread.h"
 #import "RCTObjcExecutor.h"
@@ -45,7 +54,7 @@
 #import <React/RCTFBSystrace.h>
 #endif
 
-#if RCT_DEV && __has_include(<React/RCTDevLoadingView.h>)
+#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingView.h>)
 #import <React/RCTDevLoadingView.h>
 #endif
 
@@ -346,7 +355,21 @@ struct RCTInstanceCallback : public InstanceCallback {
       executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
     }
     if (!executorFactory) {
-      executorFactory = std::make_shared<JSCExecutorFactory>(nullptr);
+      auto installBindings =
+        [](facebook::jsi::Runtime &runtime) {
+          facebook::react::Logger iosLoggingBinder =
+            [](const std::string &message, unsigned int logLevel) {
+              _RCTLogJavaScriptInternal(
+                static_cast<RCTLogLevel>(logLevel),
+                [NSString stringWithUTF8String:message.c_str()]);
+            };
+          facebook::react::bindNativeLogger(runtime, iosLoggingBinder);
+        };
+#if RCT_USE_HERMES
+      executorFactory = std::make_shared<HermesExecutorFactory>(installBindings);
+#else
+      executorFactory = std::make_shared<JSCExecutorFactory>(installBindings);
+#endif
     }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
@@ -376,7 +399,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     sourceCode = source.data;
     dispatch_group_leave(prepareBridge);
   } onProgress:^(RCTLoadingProgress *progressData) {
-#if RCT_DEV && __has_include(<React/RCTDevLoadingView.h>)
+#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingView.h>)
     if ([[self devSettings] isDevModeEnabled]) { // TODO(OSS Candidate ISS#2710739)
       // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
       RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
@@ -604,7 +627,7 @@ struct RCTInstanceCallback : public InstanceCallback {
    _moduleRegistryCreated = YES;
 }
 
-- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance;
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance
 {
   NSString *const moduleName = RCTBridgeModuleNameForClass([instance class]);
   if (moduleName) {
@@ -921,19 +944,17 @@ struct RCTInstanceCallback : public InstanceCallback {
     [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:completion];
   }
 
-#if RCT_DEV
   RCTDevSettings *devSettings = [self devSettings]; // TODO(OSS Candidate ISS#2710739)
   if ([devSettings isDevModeEnabled] && devSettings.isHotLoadingAvailable) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
     NSNumber *port = self.bundleURL.port;
-    BOOL isHotLoadingEnabled = devSettings.isHotLoadingEnabled;
+    BOOL isHotLoadingEnabled = self.devSettings.isHotLoadingEnabled;
     [self enqueueJSCall:@"HMRClient"
                  method:@"setup"
                    args:@[kRCTPlatformName, path, host, RCTNullIfNil(port), @(isHotLoadingEnabled)] // TODO(macOS ISS#2323203)
              completion:NULL];
   }
-#endif
 }
 
 - (void)handleError:(NSError *)error
@@ -1018,7 +1039,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   if (!_valid) {
     RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
   }
-  [_parentBridge reload];
+  RCTTriggerReloadCommandListeners(@"Unknown from cxx bridge");
+}
+
+- (void)reloadWithReason:(NSString *)reason
+{
+  if (!_valid) {
+    RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
+  }
+  RCTTriggerReloadCommandListeners(reason);
 }
 
 - (Class)executorClass

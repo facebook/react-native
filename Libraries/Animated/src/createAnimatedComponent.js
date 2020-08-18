@@ -7,16 +7,24 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('react');
-const DeprecatedViewStylePropTypes = require('../../DeprecatedPropTypes/DeprecatedViewStylePropTypes');
 
 const invariant = require('invariant');
+const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
-function createAnimatedComponent(Component: any, defaultProps: any): any {
+export type AnimatedComponentType<
+  Props: {+[string]: mixed, ...},
+  Instance,
+> = React.AbstractComponent<$ObjMap<Props, () => any>, Instance>;
+
+function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
+  Component: React.AbstractComponent<Props, Instance>,
+): AnimatedComponentType<Props, Instance> {
   invariant(
     typeof Component !== 'function' ||
       (Component.prototype && Component.prototype.isReactComponent),
@@ -25,40 +33,11 @@ function createAnimatedComponent(Component: any, defaultProps: any): any {
   );
 
   class AnimatedComponent extends React.Component<Object> {
-    _component: any;
+    _component: any; // TODO T53738161: flow type this, and the whole file
     _invokeAnimatedPropsCallbackOnMount: boolean = false;
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
-
-    static __skipSetNativeProps_FOR_TESTS_ONLY = false;
-
-    constructor(props: Object) {
-      super(props);
-    }
-
-    componentWillUnmount() {
-      this._propsAnimated && this._propsAnimated.__detach();
-      this._detachNativeEvents();
-    }
-
-    setNativeProps(props) {
-      this._component.setNativeProps(props);
-    }
-
-    UNSAFE_componentWillMount() {
-      this._attachProps(this.props);
-    }
-
-    componentDidMount() {
-      if (this._invokeAnimatedPropsCallbackOnMount) {
-        this._invokeAnimatedPropsCallbackOnMount = false;
-        this._animatedPropsCallback();
-      }
-
-      this._propsAnimated.setNativeView(this._component);
-      this._attachNativeEvents();
-    }
 
     _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement
@@ -95,8 +74,12 @@ function createAnimatedComponent(Component: any, defaultProps: any): any {
         // So a deferred call won't always be invoked.
         this._invokeAnimatedPropsCallbackOnMount = true;
       } else if (
-        AnimatedComponent.__skipSetNativeProps_FOR_TESTS_ONLY ||
-        typeof this._component.setNativeProps !== 'function'
+        process.env.NODE_ENV === 'test' ||
+        // For animating properties of non-leaf/non-native components
+        typeof this._component.setNativeProps !== 'function' ||
+        // In Fabric, force animations to go through forceUpdate and skip setNativeProps
+        // eslint-disable-next-line dot-notation
+        this._component['_internalInstanceHandle']?.stateNode?.canonical != null
       ) {
         this.forceUpdate();
       } else if (!this._propsAnimated.__isNative) {
@@ -128,7 +111,62 @@ function createAnimatedComponent(Component: any, defaultProps: any): any {
       // This way the intermediate state isn't to go to 0 and trigger
       // this expensive recursive detaching to then re-attach everything on
       // the very next operation.
-      oldPropsAnimated && oldPropsAnimated.__detach();
+      if (oldPropsAnimated) {
+        oldPropsAnimated.__restoreDefaultValues();
+        oldPropsAnimated.__detach();
+      }
+    }
+
+    _setComponentRef = setAndForwardRef({
+      getForwardedRef: () => this.props.forwardedRef,
+      setLocalRef: ref => {
+        this._prevComponent = this._component;
+        this._component = ref;
+
+        // TODO: Delete this in a future release.
+        if (ref != null && ref.getNode == null) {
+          ref.getNode = () => {
+            console.warn(
+              '%s: Calling `getNode()` on the ref of an Animated component ' +
+                'is no longer necessary. You can now directly use the ref ' +
+                'instead. This method will be removed in a future release.',
+              ref.constructor.name ?? '<<anonymous>>',
+            );
+            return ref;
+          };
+        }
+      },
+    });
+
+    render() {
+      const props = this._propsAnimated.__getValue();
+      return (
+        <Component
+          {...props}
+          ref={this._setComponentRef}
+          // The native driver updates views directly through the UI thread so we
+          // have to make sure the view doesn't get optimized away because it cannot
+          // go through the NativeViewHierarchyManager since it operates on the shadow
+          // thread.
+          collapsable={
+            this._propsAnimated.__isNative ? false : props.collapsable
+          }
+        />
+      );
+    }
+
+    UNSAFE_componentWillMount() {
+      this._attachProps(this.props);
+    }
+
+    componentDidMount() {
+      if (this._invokeAnimatedPropsCallbackOnMount) {
+        this._invokeAnimatedPropsCallbackOnMount = false;
+        this._animatedPropsCallback();
+      }
+
+      this._propsAnimated.setNativeView(this._component);
+      this._attachNativeEvents();
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
@@ -145,61 +183,20 @@ function createAnimatedComponent(Component: any, defaultProps: any): any {
       }
     }
 
-    render() {
-      const props = this._propsAnimated.__getValue();
-      return (
-        <Component
-          {...defaultProps}
-          {...props}
-          ref={this._setComponentRef}
-          // The native driver updates views directly through the UI thread so we
-          // have to make sure the view doesn't get optimized away because it cannot
-          // go through the NativeViewHierarchyManager since it operates on the shadow
-          // thread.
-          collapsable={
-            this._propsAnimated.__isNative ? false : props.collapsable
-          }
-        />
-      );
-    }
-
-    _setComponentRef = c => {
-      this._prevComponent = this._component;
-      this._component = c;
-    };
-
-    // A third party library can use getNode()
-    // to get the node reference of the decorated component
-    getNode() {
-      return this._component;
+    componentWillUnmount() {
+      this._propsAnimated && this._propsAnimated.__detach();
+      this._detachNativeEvents();
     }
   }
 
-  const propTypes = Component.propTypes;
-
-  AnimatedComponent.propTypes = {
-    style: function(props, propName, componentName) {
-      if (!propTypes) {
-        return;
-      }
-
-      for (const key in DeprecatedViewStylePropTypes) {
-        if (!propTypes[key] && props[key] !== undefined) {
-          console.warn(
-            'You are setting the style `{ ' +
-              key +
-              ': ... }` as a prop. You ' +
-              'should nest it in a style object. ' +
-              'E.g. `{ style: { ' +
-              key +
-              ': ... } }`',
-          );
-        }
-      }
-    },
-  };
-
-  return AnimatedComponent;
+  return React.forwardRef(function AnimatedComponentWrapper(props, ref) {
+    return (
+      <AnimatedComponent
+        {...props}
+        {...(ref == null ? null : {forwardedRef: ref})}
+      />
+    );
+  });
 }
 
 module.exports = createAnimatedComponent;

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
 
 import android.annotation.TargetApi;
@@ -19,11 +20,15 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.Spacing;
+import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
@@ -62,108 +67,59 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             YogaMeasureMode widthMode,
             float height,
             YogaMeasureMode heightMode) {
-
-          // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
-          TextPaint textPaint = sTextPaintInstance;
-          textPaint.setTextSize(mTextAttributes.getEffectiveFontSize());
-          Layout layout;
-          Spanned text =
+          Spannable text =
               Assertions.assertNotNull(
                   mPreparedSpannableText,
                   "Spannable element has not been prepared in onBeforeLayout");
-          BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
-          float desiredWidth = boring == null ? Layout.getDesiredWidth(text, textPaint) : Float.NaN;
 
-          // technically, width should never be negative, but there is currently a bug in
-          boolean unconstrainedWidth = widthMode == YogaMeasureMode.UNDEFINED || width < 0;
+          Layout layout = measureSpannedText(text, width, widthMode);
 
-          Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
-          switch (getTextAlign()) {
-            case Gravity.LEFT:
-              alignment = Layout.Alignment.ALIGN_NORMAL;
-              break;
-            case Gravity.RIGHT:
-              alignment = Layout.Alignment.ALIGN_OPPOSITE;
-              break;
-            case Gravity.CENTER_HORIZONTAL:
-              alignment = Layout.Alignment.ALIGN_CENTER;
-              break;
-          }
+          if (mAdjustsFontSizeToFit) {
+            int initialFontSize = mTextAttributes.getEffectiveFontSize();
+            int currentFontSize = mTextAttributes.getEffectiveFontSize();
+            // Minimum font size is 4pts to match the iOS implementation.
+            int minimumFontSize =
+                (int) Math.max(mMinimumFontScale * initialFontSize, PixelUtil.toPixelFromDIP(4));
+            while (currentFontSize > minimumFontSize
+                && (mNumberOfLines != UNSET && layout.getLineCount() > mNumberOfLines
+                    || heightMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)) {
+              // TODO: We could probably use a smarter algorithm here. This will require 0(n)
+              // measurements
+              // based on the number of points the font size needs to be reduced by.
+              currentFontSize = currentFontSize - (int) PixelUtil.toPixelFromDIP(1);
 
-          if (boring == null
-              && (unconstrainedWidth
-                  || (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
-            // Is used when the width is not known and the text is not boring, ie. if it contains
-            // unicode characters.
-
-            int hintWidth = (int) Math.ceil(desiredWidth);
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-              layout =
-                  new StaticLayout(
-                      text, textPaint, hintWidth, alignment, 1.f, 0.f, mIncludeFontPadding);
-            } else {
-              StaticLayout.Builder builder =
-                  StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, hintWidth)
-                      .setAlignment(alignment)
-                      .setLineSpacing(0.f, 1.f)
-                      .setIncludePad(mIncludeFontPadding)
-                      .setBreakStrategy(mTextBreakStrategy)
-                      .setHyphenationFrequency(mHyphenationFrequency);
-
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                builder.setJustificationMode(mJustificationMode);
+              float ratio = (float) currentFontSize / (float) initialFontSize;
+              ReactAbsoluteSizeSpan[] sizeSpans =
+                  text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
+              for (ReactAbsoluteSizeSpan span : sizeSpans) {
+                text.setSpan(
+                    new ReactAbsoluteSizeSpan(
+                        (int) Math.max((span.getSize() * ratio), minimumFontSize)),
+                    text.getSpanStart(span),
+                    text.getSpanEnd(span),
+                    text.getSpanFlags(span));
+                text.removeSpan(span);
               }
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                builder.setUseLineSpacingFromFallbacks(true);
-              }
-              layout = builder.build();
-            }
-
-          } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
-            // Is used for single-line, boring text when the width is either unknown or bigger
-            // than the width of the text.
-            layout =
-                BoringLayout.make(
-                    text,
-                    textPaint,
-                    boring.width,
-                    alignment,
-                    1.f,
-                    0.f,
-                    boring,
-                    mIncludeFontPadding);
-          } else {
-            // Is used for multiline, boring text and the width is known.
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-              layout =
-                  new StaticLayout(
-                      text, textPaint, (int) width, alignment, 1.f, 0.f, mIncludeFontPadding);
-            } else {
-              StaticLayout.Builder builder =
-                  StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, (int) width)
-                      .setAlignment(alignment)
-                      .setLineSpacing(0.f, 1.f)
-                      .setIncludePad(mIncludeFontPadding)
-                      .setBreakStrategy(mTextBreakStrategy)
-                      .setHyphenationFrequency(mHyphenationFrequency);
-
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                builder.setUseLineSpacingFromFallbacks(true);
-              }
-              layout = builder.build();
+              layout = measureSpannedText(text, width, widthMode);
             }
           }
 
           if (mShouldNotifyOnTextLayout) {
+            ThemedReactContext themedReactContext = getThemedContext();
             WritableArray lines =
                 FontMetricsUtil.getFontMetrics(
-                    text, layout, sTextPaintInstance, getThemedContext());
+                    text, layout, sTextPaintInstance, themedReactContext);
             WritableMap event = Arguments.createMap();
             event.putArray("lines", lines);
-            getThemedContext()
-                .getJSModule(RCTEventEmitter.class)
-                .receiveEvent(getReactTag(), "topTextLayout", event);
+            if (themedReactContext.hasActiveCatalystInstance()) {
+              themedReactContext
+                  .getJSModule(RCTEventEmitter.class)
+                  .receiveEvent(getReactTag(), "topTextLayout", event);
+            } else {
+              ReactSoftException.logSoftException(
+                  "ReactTextShadowNode",
+                  new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
+            }
           }
 
           if (mNumberOfLines != UNSET && mNumberOfLines < layout.getLineCount()) {
@@ -183,6 +139,89 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
     if (!isVirtual()) {
       setMeasureFunction(mTextMeasureFunction);
     }
+  }
+
+  private Layout measureSpannedText(Spannable text, float width, YogaMeasureMode widthMode) {
+    // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
+    TextPaint textPaint = sTextPaintInstance;
+    textPaint.setTextSize(mTextAttributes.getEffectiveFontSize());
+    Layout layout;
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
+    float desiredWidth = boring == null ? Layout.getDesiredWidth(text, textPaint) : Float.NaN;
+
+    // technically, width should never be negative, but there is currently a bug in
+    boolean unconstrainedWidth = widthMode == YogaMeasureMode.UNDEFINED || width < 0;
+
+    Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+    switch (getTextAlign()) {
+      case Gravity.LEFT:
+        alignment = Layout.Alignment.ALIGN_NORMAL;
+        break;
+      case Gravity.RIGHT:
+        alignment = Layout.Alignment.ALIGN_OPPOSITE;
+        break;
+      case Gravity.CENTER_HORIZONTAL:
+        alignment = Layout.Alignment.ALIGN_CENTER;
+        break;
+    }
+
+    if (boring == null
+        && (unconstrainedWidth
+            || (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
+      // Is used when the width is not known and the text is not boring, ie. if it contains
+      // unicode characters.
+
+      int hintWidth = (int) Math.ceil(desiredWidth);
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        layout =
+            new StaticLayout(text, textPaint, hintWidth, alignment, 1.f, 0.f, mIncludeFontPadding);
+      } else {
+        StaticLayout.Builder builder =
+            StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, hintWidth)
+                .setAlignment(alignment)
+                .setLineSpacing(0.f, 1.f)
+                .setIncludePad(mIncludeFontPadding)
+                .setBreakStrategy(mTextBreakStrategy)
+                .setHyphenationFrequency(mHyphenationFrequency);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          builder.setJustificationMode(mJustificationMode);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+          builder.setUseLineSpacingFromFallbacks(true);
+        }
+        layout = builder.build();
+      }
+
+    } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
+      // Is used for single-line, boring text when the width is either unknown or bigger
+      // than the width of the text.
+      layout =
+          BoringLayout.make(
+              text, textPaint, boring.width, alignment, 1.f, 0.f, boring, mIncludeFontPadding);
+    } else {
+      // Is used for multiline, boring text and the width is known.
+
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        layout =
+            new StaticLayout(
+                text, textPaint, (int) width, alignment, 1.f, 0.f, mIncludeFontPadding);
+      } else {
+        StaticLayout.Builder builder =
+            StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, (int) width)
+                .setAlignment(alignment)
+                .setLineSpacing(0.f, 1.f)
+                .setIncludePad(mIncludeFontPadding)
+                .setBreakStrategy(mTextBreakStrategy)
+                .setHyphenationFrequency(mHyphenationFrequency);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+          builder.setUseLineSpacingFromFallbacks(true);
+        }
+        layout = builder.build();
+      }
+    }
+    return layout;
   }
 
   // Return text alignment according to LTR or RTL style

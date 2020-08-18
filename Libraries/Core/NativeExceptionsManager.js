@@ -31,6 +31,7 @@ export type ExceptionData = {
   isFatal: boolean,
   // flowlint-next-line unclear-type:off
   extraData?: Object,
+  ...
 };
 
 export interface Spec extends TurboModule {
@@ -96,12 +97,7 @@ const ExceptionsManager = {
     }
   },
   reportException(data: ExceptionData): void {
-    if (
-      Platform.OS !== 'ios' &&
-      Platform.OS !== 'macos' /* TODO(macOS ISS#2323203) */ &&
-      NativeModule.reportException
-    ) {
-      // TODO(T53311281): This is a noop on iOS now. Implement it.
+    if (NativeModule.reportException) {
       NativeModule.reportException(data);
       return;
     }

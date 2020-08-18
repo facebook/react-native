@@ -19,7 +19,7 @@ export interface Spec extends TurboModule {
   |};
   +getCurrentAppState: (
     success: (appState: {|app_state: string|}) => void,
-    failure: (error: Object) => void,
+    error: (error: Object) => void,
   ) => void;
 
   // Events

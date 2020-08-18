@@ -26,6 +26,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/devsupport:devsupport"),
         react_native_target("java/com/facebook/react/module/model:model"),
         react_native_target("java/com/facebook/react/modules/accessibilityinfo:accessibilityinfo"),
+        react_native_target("java/com/facebook/react/modules/appearance:appearance"),
         react_native_target("java/com/facebook/react/modules/appstate:appstate"),
         react_native_target("java/com/facebook/react/modules/blob:blob"),
         react_native_target("java/com/facebook/react/modules/camera:camera"),

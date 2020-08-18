@@ -3,7 +3,6 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
  */
 
 #import "FBSnapshotTestController.h"
@@ -39,7 +38,7 @@ typedef struct RGBAPixel {
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithTestClass:(Class)testClass;
+- (instancetype)initWithTestClass:(Class)testClass
 {
     return [self initWithTestName:NSStringFromClass(testClass)];
 }

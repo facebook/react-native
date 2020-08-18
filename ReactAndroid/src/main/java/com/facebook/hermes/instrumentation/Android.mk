@@ -5,23 +5,23 @@
 
 
 LOCAL_PATH := $(call my-dir)
-
-include $(CLEAR_VARS)
 REACT_NATIVE := $(LOCAL_PATH)/../../../../../../../..
+
+include $(REACT_NATIVE)/ReactCommon/common.mk
+include $(CLEAR_VARS)
 
 LOCAL_MODULE := jsijniprofiler
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(REACT_NATIVE)/node_modules/hermes-engine/android/include $(REACT_NATIVE)/../hermes-engine/android/include $(REACT_NATIVE)/../node_modules/hermes-engine/include
+LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(call find-node-module,$(LOCAL_PATH),hermes-engine)/android/include
 
 LOCAL_CPP_FEATURES := exceptions
 
 LOCAL_STATIC_LIBRARIES := libjsireact libjsi
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libreactnativejni libhermes
+LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libreactnativejni libhermes
 
 include $(BUILD_SHARED_LIBRARY)
 
 
 include $(CLEAR_VARS)
-REACT_NATIVE := $(LOCAL_PATH)/../../../../../../../..

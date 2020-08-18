@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -14,6 +14,7 @@
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTBridge+Private.h"
+#import "RCTConstants.h"
 #import "RCTDevSettings.h"// TODO(OSS Candidate ISS#2710739)
 #import "RCTEventDispatcher.h"
 // TODO(OSS Candidate ISS#2710739): remove #import "RCTKeyCommands.h"
@@ -429,6 +430,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     return;
   }
 
+  [self invalidateIntrinsicContentSize];
+  #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+	[self.superview setNeedsLayout];
+  #else // [TODO(macOS ISS#2323203)
+	  [self.superview setNeedsLayout:YES];
+  #endif // ]TODO(macOS ISS#2323203)
+
   [_delegate rootViewDidChangeIntrinsicSize:self];
 }
 
@@ -444,11 +452,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self showLoadingView];
 }
 
-- (void)dealloc
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [_contentView invalidate];
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTUserInterfaceStyleDidChangeNotification
+                                                      object:self
+                                                    userInfo:@{
+                                                      RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey: self.traitCollection,
+                                                    }];
 }
+#else // [TODO(macOS ISS#2323203)
+- (void)viewDidChangeEffectiveAppearance {
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTUserInterfaceStyleDidChangeNotification
+                                                      object:self
+                                                    userInfo:@{
+                                                      RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey: self.effectiveAppearance,
+                                                    }];
+
+}
+#endif // ]TODO(macOS ISS#2323203)
 
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
@@ -469,6 +493,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return menu;
 }
 #endif // ]TODO(macOS ISS#2323203)
+
+- (void)dealloc
+{
+  [_contentView invalidate];
+}
 @end
 
 @implementation RCTRootView (Deprecated)

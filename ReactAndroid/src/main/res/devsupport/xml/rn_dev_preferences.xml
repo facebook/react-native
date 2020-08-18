@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
   <PreferenceCategory
       android:key="catalyst_perf"
       android:title="Performance"
@@ -19,19 +16,6 @@
         android:summary="Load JavaScript bundle with minify=true for debugging minification issues."
         android:defaultValue="false"
         />
-    <CheckBoxPreference
-      android:key="js_bundle_deltas"
-      android:title="Use JS Deltas"
-      android:summary="Request delta bundles from metro to get faster reloads (Experimental)"
-      android:defaultValue="false"
-      />
-    <CheckBoxPreference
-      android:key="js_bundle_deltas_cpp"
-      android:title="Native Delta Handling"
-      android:summary="Handles delta bundles in native code without writing code to disk (Experimental)."
-      android:defaultValue="false"
-      android:dependency="js_bundle_deltas"
-      />
     <CheckBoxPreference
         android:key="animations_debug"
         android:title="Animations FPS Summaries"

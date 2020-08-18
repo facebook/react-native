@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,7 +8,6 @@
 #include "ShadowNode.h"
 
 #include <better/small_vector.h>
-#include <string>
 
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/ShadowNodeFragment.h>
@@ -33,9 +32,14 @@ bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
 #pragma mark - Constructors
 
 ShadowNode::ShadowNode(
-    const ShadowNodeFragment &fragment,
-    const ComponentDescriptor &componentDescriptor)
-    : props_(fragment.props),
+    ShadowNodeFragment const &fragment,
+    ComponentDescriptor const &componentDescriptor,
+    ShadowNodeTraits traits)
+    :
+#if RN_DEBUG_STRING_CONVERTIBLE
+      revision_(1),
+#endif
+      props_(fragment.props),
       children_(
           fragment.children ? fragment.children
                             : emptySharedShadowNodeSharedList()),
@@ -45,10 +49,11 @@ ShadowNode::ShadowNode(
           fragment.surfaceId,
           fragment.eventEmitter,
           componentDescriptor)),
-      childrenAreShared_(true),
-      revision_(1) {
+      traits_(traits) {
   assert(props_);
   assert(children_);
+
+  traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
 
   for (const auto &child : *children_) {
     child->family_->setParent(family_);
@@ -58,7 +63,11 @@ ShadowNode::ShadowNode(
 ShadowNode::ShadowNode(
     const ShadowNode &sourceShadowNode,
     const ShadowNodeFragment &fragment)
-    : props_(fragment.props ? fragment.props : sourceShadowNode.props_),
+    :
+#if RN_DEBUG_STRING_CONVERTIBLE
+      revision_(sourceShadowNode.revision_ + 1),
+#endif
+      props_(fragment.props ? fragment.props : sourceShadowNode.props_),
       children_(
           fragment.children ? fragment.children : sourceShadowNode.children_),
       localData_(
@@ -68,8 +77,7 @@ ShadowNode::ShadowNode(
           fragment.state ? fragment.state
                          : sourceShadowNode.getMostRecentState()),
       family_(sourceShadowNode.family_),
-      childrenAreShared_(true),
-      revision_(sourceShadowNode.revision_ + 1) {
+      traits_(sourceShadowNode.traits_) {
   // `tag`, `surfaceId`, and `eventEmitter` cannot be changed with cloning.
   assert(fragment.tag == ShadowNodeFragment::tagPlaceholder());
   assert(fragment.surfaceId == ShadowNodeFragment::surfaceIdPlaceholder());
@@ -78,6 +86,8 @@ ShadowNode::ShadowNode(
 
   assert(props_);
   assert(children_);
+
+  traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
 
   if (fragment.children) {
     for (const auto &child : *children_) {
@@ -92,8 +102,20 @@ UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
 
 #pragma mark - Getters
 
+ComponentName ShadowNode::getComponentName() const {
+  return family_->getComponentName();
+}
+
+ComponentHandle ShadowNode::getComponentHandle() const {
+  return family_->getComponentHandle();
+}
+
 const SharedShadowNodeList &ShadowNode::getChildren() const {
   return *children_;
+}
+
+ShadowNodeTraits ShadowNode::getTraits() const {
+  return traits_;
 }
 
 const SharedProps &ShadowNode::getProps() const {
@@ -122,11 +144,11 @@ const State::Shared &ShadowNode::getState() const {
 
 State::Shared ShadowNode::getMostRecentState() const {
   if (state_) {
-    auto commitedState = state_->getCommitedState();
+    auto committedState = state_->getMostRecentState();
 
-    // Commited state can be `null` in case if no one node was commited yet;
+    // Committed state can be `null` in case if no one node was committed yet;
     // in this case we return own `state`.
-    return commitedState ? commitedState : state_;
+    return committedState ? committedState : state_;
   }
 
   return ShadowNodeFragment::statePlaceholder();
@@ -164,27 +186,36 @@ void ShadowNode::appendChild(const SharedShadowNode &child) {
 }
 
 void ShadowNode::replaceChild(
-    const SharedShadowNode &oldChild,
-    const SharedShadowNode &newChild,
+    ShadowNode const &oldChild,
+    ShadowNode::Shared const &newChild,
     int suggestedIndex) {
   ensureUnsealed();
 
   cloneChildrenIfShared();
 
-  auto nonConstChildren =
-      std::const_pointer_cast<SharedShadowNodeList>(children_);
+  newChild->family_->setParent(family_);
 
-  if (suggestedIndex != -1 && suggestedIndex < nonConstChildren->size()) {
-    if (nonConstChildren->at(suggestedIndex) == oldChild) {
-      (*nonConstChildren)[suggestedIndex] = newChild;
+  auto &children =
+      *std::const_pointer_cast<ShadowNode::ListOfShared>(children_);
+  auto size = children.size();
+
+  if (suggestedIndex != -1 && suggestedIndex < size) {
+    // If provided `suggestedIndex` is accurate,
+    // replacing in place using the index.
+    if (children.at(suggestedIndex).get() == &oldChild) {
+      children[suggestedIndex] = newChild;
       return;
     }
   }
 
-  std::replace(
-      nonConstChildren->begin(), nonConstChildren->end(), oldChild, newChild);
+  for (auto index = 0; index < size; index++) {
+    if (children.at(index).get() == &oldChild) {
+      children[index] = newChild;
+      return;
+    }
+  }
 
-  newChild->family_->setParent(family_);
+  assert(false && "Child to replace was not found.");
 }
 
 void ShadowNode::setLocalData(const SharedLocalData &localData) {
@@ -193,18 +224,16 @@ void ShadowNode::setLocalData(const SharedLocalData &localData) {
 }
 
 void ShadowNode::cloneChildrenIfShared() {
-  if (!childrenAreShared_) {
+  if (!traits_.check(ShadowNodeTraits::Trait::ChildrenAreShared)) {
     return;
   }
-  childrenAreShared_ = false;
+
+  traits_.unset(ShadowNodeTraits::Trait::ChildrenAreShared);
   children_ = std::make_shared<SharedShadowNodeList>(*children_);
 }
 
 void ShadowNode::setMounted(bool mounted) const {
   family_->eventEmitter_->setEnabled(mounted);
-  if (mounted && state_) {
-    state_->commit(*this);
-  }
 }
 
 AncestorList ShadowNode::getAncestors(

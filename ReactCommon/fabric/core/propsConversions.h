@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -27,6 +27,31 @@ template <typename T>
 void fromRawValue(RawValue const &rawValue, std::vector<T> &result) {
   if (rawValue.hasType<std::vector<RawValue>>()) {
     auto items = (std::vector<RawValue>)rawValue;
+    auto length = items.size();
+    result.clear();
+    result.reserve(length);
+    for (int i = 0; i < length; i++) {
+      T itemResult;
+      fromRawValue(items.at(i), itemResult);
+      result.push_back(itemResult);
+    }
+    return;
+  }
+
+  // The case where `value` is not an array.
+  result.clear();
+  result.reserve(1);
+  T itemResult;
+  fromRawValue(rawValue, itemResult);
+  result.push_back(itemResult);
+}
+
+template <typename T>
+void fromRawValue(
+    RawValue const &rawValue,
+    std::vector<std::vector<T>> &result) {
+  if (rawValue.hasType<std::vector<std::vector<RawValue>>>()) {
+    auto items = (std::vector<std::vector<RawValue>>)rawValue;
     auto length = items.size();
     result.clear();
     result.reserve(length);

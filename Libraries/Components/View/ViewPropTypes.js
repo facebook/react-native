@@ -11,6 +11,9 @@
 'use strict';
 
 import type {
+  BlurEvent,
+  FocusEvent,
+  MouseEvent,
   PressEvent,
   Layout,
   LayoutEvent,
@@ -19,11 +22,10 @@ import type {
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {TVViewProps} from '../AppleTV/TVViewPropTypes';
 import type {
   AccessibilityRole,
-  AccessibilityStates,
   AccessibilityState,
+  AccessibilityValue,
   AccessibilityActionEvent,
   AccessibilityActionInfo,
   AccessibilityNodeInfoProp, // TODO(android ISS)
@@ -36,13 +38,18 @@ import type {DraggedTypesType} from '../View/DraggedType';
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
 
+type BubblingEventProps = $ReadOnly<{|
+  onBlur?: ?(event: BlurEvent) => mixed,
+  onFocus?: ?(event: FocusEvent) => mixed,
+|}>;
+
 type DirectEventProps = $ReadOnly<{|
   /**
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs an accessibility custom action.
    *
    */
-  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => void,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -50,7 +57,7 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onaccessibilitytap
    */
-  onAccessibilityTap?: ?() => void,
+  onAccessibilityTap?: ?() => mixed,
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -69,8 +76,6 @@ type DirectEventProps = $ReadOnly<{|
    * when the user performs accessibility key down gesture.
    */
   onScrollKeyDown?: ?(event: ScrollEvent) => mixed, // TODO(macOS ISS#2323203)
-
-  onMouseEnter?: (event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Invoked on mount and layout changes with:
@@ -91,7 +96,7 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onmagictap
    */
-  onMagicTap?: ?() => void,
+  onMagicTap?: ?() => mixed,
 
   /**
    * When `accessible` is `true`, the system will invoke this function when the
@@ -99,7 +104,12 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityescape
    */
-  onAccessibilityEscape?: ?() => void,
+  onAccessibilityEscape?: ?() => mixed,
+|}>;
+
+type MouseEventProps = $ReadOnly<{|
+  onMouseEnter?: (event: MouseEvent) => void,
+  onMouseLeave?: (event: MouseEvent) => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
@@ -332,6 +342,13 @@ type AndroidViewProps = $ReadOnly<{|
   accessibilityNodeInfo?: AccessibilityNodeInfoProp, // TODO(android ISS)
 
   /**
+   * Whether to force the Android TV focus engine to move focus to this view.
+   *
+   * @platform android
+   */
+  hasTVPreferredFocus?: ?boolean,
+
+  /**
    * TV next focus down (see documentation for the View component).
    *
    * @platform android
@@ -368,12 +385,17 @@ type AndroidViewProps = $ReadOnly<{|
 
   /**
    * Whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
-   * when the user performs a click.
-  focusable?: boolean,
    *
    * @platform android
    */
-  onClick?: ?(event: PressEvent) => mixed, // TODO(android ISS)
+  focusable?: boolean,
+
+  /**
+   * The action to perform when this `View` is clicked on by a non-touch click, eg. enter key on a hardware keyboard.
+   *
+   * @platform android
+   */
+  onClick?: ?(event: PressEvent) => mixed,
 |}>;
 
 type IOSViewProps = $ReadOnly<{|
@@ -425,15 +447,13 @@ type IOSViewProps = $ReadOnly<{|
 |}>;
 
 export type ViewProps = $ReadOnly<{|
+  ...BubblingEventProps,
   ...DirectEventProps,
   ...GestureResponderEventProps,
+  ...MouseEventProps,
   ...TouchEventProps,
   ...AndroidViewProps,
   ...IOSViewProps,
-
-  // There's no easy way to create a different type if (Platform.isTV):
-  // so we must include TVViewProps
-  ...TVViewProps,
 
   children?: Node,
   style?: ?ViewStyleProp,
@@ -473,8 +493,8 @@ export type ViewProps = $ReadOnly<{|
   /**
    * Indicates to accessibility services that UI Component is in a specific State.
    */
-  accessibilityStates?: ?AccessibilityStates,
   accessibilityState?: ?AccessibilityState,
+  accessibilityValue?: ?AccessibilityValue,
 
   /**
    * Provides an array of custom actions available for accessibility.
@@ -499,8 +519,6 @@ export type ViewProps = $ReadOnly<{|
    * See http://facebook.github.io/react-native/docs/view.html#nativeid
    */
   nativeID?: ?string,
-
-  tabIndex?: ?number, // TODO(win ISS#2323203)
 
   /**
    * This defines how far a touch event can start away from the view.
@@ -535,32 +553,25 @@ export type ViewProps = $ReadOnly<{|
   removeClippedSubviews?: ?boolean,
 
   /**
-   * Fired when a pointing device is moved out the view
-   *
-   * @platform macos
-   */
-  onMouseLeave?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
-
-  /**
    * Fired when a dragged element enters a valid drop target
    *
    * @platform macos
    */
-  onDragEnter?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
+  onDragEnter?: (event: MouseEvent) => void, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when a dragged element leaves a valid drop target
    *
    * @platform macos
    */
-  onDragLeave?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
+  onDragLeave?: (event: MouseEvent) => void, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when an element is dropped on a valid drop target
    *
    * @platform macos
    */
-  onDrop?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
+  onDrop?: (event: MouseEvent) => void, // TODO(macOS ISS#2323203)
 
   /**
    * Specifies the Tooltip for the view
@@ -578,22 +589,6 @@ export type ViewProps = $ReadOnly<{|
    * Specifies whether focus ring should be drawn when the view has the first responder status.
    */
   enableFocusRing?: ?boolean, // TODO(macOS ISS#2323203)
-
-  /**
-   * Fired when an element is focused
-   *
-   * @platform macos
-   * @platform ios
-   */
-  onFocus?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
-
-  /**
-   * Fired when an element loses focus
-   *
-   * @platform macos
-   * @platform ios
-   */
-  onBlur?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Enables Dran'n'Drop Support for certain types of dragged types

@@ -89,7 +89,12 @@ jest
     mockComponent('../Libraries/Text/Text', MockNativeMethods),
   )
   .mock('../Libraries/Components/TextInput/TextInput', () =>
-    mockComponent('../Libraries/Components/TextInput/TextInput'),
+    mockComponent('../Libraries/Components/TextInput/TextInput', {
+      ...MockNativeMethods,
+      isFocused: jest.fn(),
+      clear: jest.fn(),
+      getNativeRef: jest.fn(),
+    }),
   )
   .mock('../Libraries/Modal/Modal', () =>
     mockComponent('../Libraries/Modal/Modal'),
@@ -125,27 +130,6 @@ jest
       '../Libraries/Components/ActivityIndicator/ActivityIndicator',
     ),
   )
-  .mock('../Libraries/Animated/src/Animated', () => {
-    const Animated = jest.requireActual('../Libraries/Animated/src/Animated');
-    Animated.Text.__skipSetNativeProps_FOR_TESTS_ONLY = true;
-    Animated.View.__skipSetNativeProps_FOR_TESTS_ONLY = true;
-    return Animated;
-  })
-  .mock('../Libraries/Animated/src/AnimatedImplementation', () => {
-    const AnimatedImplementation = jest.requireActual(
-      '../Libraries/Animated/src/AnimatedImplementation',
-    );
-    const oldCreate = AnimatedImplementation.createAnimatedComponent;
-    AnimatedImplementation.createAnimatedComponent = function(
-      Component,
-      defaultProps,
-    ) {
-      const Wrapped = oldCreate(Component, defaultProps);
-      Wrapped.__skipSetNativeProps_FOR_TESTS_ONLY = true;
-      return Wrapped;
-    };
-    return AnimatedImplementation;
-  })
   .mock('../Libraries/AppState/AppState', () => ({
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
@@ -333,6 +317,14 @@ jest
         render() {
           return React.createElement(viewName, this.props, this.props.children);
         }
+
+        // The methods that exist on host components
+        blur = jest.fn();
+        focus = jest.fn();
+        measure = jest.fn();
+        measureInWindow = jest.fn();
+        measureLayout = jest.fn();
+        setNativeProps = jest.fn();
       };
 
       if (viewName === 'RCTView') {

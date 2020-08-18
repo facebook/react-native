@@ -37,7 +37,7 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_diffic
          .invokeObjCMethod(rt, ObjectKind, \\"difficult\\", @selector(difficult:), args, count);
 }
 
-NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
   : ObjCTurboModule(\\"SampleTurboModule\\", instance, jsInvoker) {
   methodMap_[\\"difficult\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_difficult};
   setMethodArgConversionSelector(@\\"difficult\\", 0, @\\"JS_NativeSampleTurboModule_SpecDifficultA:\\");
@@ -67,7 +67,7 @@ namespace react {
 
 
 
-NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
   : ObjCTurboModule(\\"SampleTurboModule\\", instance, jsInvoker) {
 
 }
@@ -135,7 +135,7 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getVal
          .invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromise\\", @selector(getValueWithPromise:resolve:reject:), args, count);
 }
 
-NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
   : ObjCTurboModule(\\"SampleTurboModule\\", instance, jsInvoker) {
   methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
@@ -177,7 +177,7 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFu
          .invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
 }
 
-NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
   : ObjCTurboModule(\\"SampleTurboModule\\", instance, jsInvoker) {
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
 }
@@ -187,7 +187,7 @@ static facebook::jsi::Value __hostFunction_NativeSample2TurboModuleSpecJSI_voidF
          .invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
 }
 
-NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
   : ObjCTurboModule(\\"Sample2TurboModule\\", instance, jsInvoker) {
 
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc};
@@ -221,7 +221,7 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFu
          .invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
 }
 
-NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
   : ObjCTurboModule(\\"SampleTurboModule\\", instance, jsInvoker) {
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
 }
@@ -230,7 +230,7 @@ static facebook::jsi::Value __hostFunction_NativeSample2TurboModuleSpecJSI_voidF
          .invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
 }
 
-NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
   : ObjCTurboModule(\\"Sample2TurboModule\\", instance, jsInvoker) {
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc};
 }

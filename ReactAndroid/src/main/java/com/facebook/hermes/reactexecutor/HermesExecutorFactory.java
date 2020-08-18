@@ -1,11 +1,13 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.hermes.reactexecutor;
 
+import com.facebook.hermes.instrumentation.HermesSamplingProfiler;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 
@@ -28,10 +30,15 @@ public class HermesExecutorFactory implements JavaScriptExecutorFactory {
   }
 
   @Override
-  public void startSamplingProfiler() {}
+  public void startSamplingProfiler() {
+    HermesSamplingProfiler.enable();
+  }
 
   @Override
-  public void stopSamplingProfiler(String filename) {}
+  public void stopSamplingProfiler(String filename) {
+    HermesSamplingProfiler.dumpSampledTraceToFile(filename);
+    HermesSamplingProfiler.disable();
+  }
 
   @Override
   public String toString() {

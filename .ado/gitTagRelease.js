@@ -1,8 +1,6 @@
 // @ts-check
 // Used to apply the package updates: the git tag for the published release.
 
-const fs = require("fs");
-const path = require("path");
 const execSync = require("child_process").execSync;
 const {pkgJsonPath, publishBranchName, gatherVersionInfo} = require('./versionUtils');
 
@@ -22,7 +20,7 @@ function exec(command) {
 function doPublish() {
   console.log(`Target branch to publish to: ${publishBranchName}`);
 
-  const {releaseVersion, branchVersionSuffix} = gatherVersionInfo()
+  const {releaseVersion} = gatherVersionInfo()
 
   const tempPublishBranch = `publish-temp-${Date.now()}`;
   exec(`git checkout -b ${tempPublishBranch}`);

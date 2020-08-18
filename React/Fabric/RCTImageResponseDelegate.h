@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -11,9 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTImageResponseDelegate <NSObject>
 
-- (void)didReceiveImage:(UIImage *)image fromObserver:(void*)observer;
-- (void)didReceiveProgress:(float)progress fromObserver:(void*)observer;
-- (void)didReceiveFailureFromObserver:(void*)observer;
+- (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer;
+- (void)didReceiveProgress:(float)progress fromObserver:(void const *)observer;
+- (void)didReceiveFailureFromObserver:(void const *)observer;
 
 @end
 

@@ -212,12 +212,12 @@ try {
     if (
       tryExecNTimes(
         () => {
-          let destination = 'platform=iOS Simulator,name=iPhone 6s,OS=12.2';
+          let destination = 'platform=iOS Simulator,name=iPhone 6s,OS=12.4';
           let sdk = 'iphonesimulator';
           let scheme = 'HelloWorld';
 
           if (argv.tvos) {
-            destination = 'platform=tvOS Simulator,name=Apple TV,OS=11.4';
+            destination = 'platform=tvOS Simulator,name=Apple TV,OS=12.4';
             sdk = 'appletvsimulator';
             scheme = 'HelloWorld-tvOS';
           }

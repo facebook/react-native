@@ -17,7 +17,6 @@ const SafeAreaView = require('../../Components/SafeAreaView/SafeAreaView');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const Text = require('../../Text/Text');
 const View = require('../../Components/View/View');
-const YellowBoxImageSource = require('./YellowBoxImageSource');
 const YellowBoxPressable = require('./YellowBoxPressable');
 const YellowBoxStyle = require('./YellowBoxStyle');
 
@@ -43,7 +42,7 @@ const YellowBoxInspectorHeader = (props: Props): React.Node => {
       <View style={styles.header}>
         <YellowBoxInspectorHeaderButton
           disabled={props.warnings[prevIndex] == null}
-          image={YellowBoxImageSource.chevronLeft}
+          image={require('../../LogBox/UI/LogBoxImages/chevron-left.png')}
           onPress={() => props.onSelectIndex(prevIndex)}
         />
         <View style={styles.headerTitle}>
@@ -51,7 +50,7 @@ const YellowBoxInspectorHeader = (props: Props): React.Node => {
         </View>
         <YellowBoxInspectorHeaderButton
           disabled={props.warnings[nextIndex] == null}
-          image={YellowBoxImageSource.chevronRight}
+          image={require('../../LogBox/UI/LogBoxImages/chevron-right.png')}
           onPress={() => props.onSelectIndex(nextIndex)}
         />
       </View>
@@ -62,7 +61,7 @@ const YellowBoxInspectorHeader = (props: Props): React.Node => {
 const YellowBoxInspectorHeaderButton = (
   props: $ReadOnly<{|
     disabled: boolean,
-    image: string,
+    image: number,
     onPress?: ?() => void,
   |}>,
 ): React.Node => (
@@ -74,10 +73,7 @@ const YellowBoxInspectorHeaderButton = (
     onPress={props.disabled ? null : props.onPress}
     style={styles.headerButton}>
     {props.disabled ? null : (
-      <Image
-        source={{height: 16, uri: props.image, width: 16}}
-        style={styles.headerButtonImage}
-      />
+      <Image source={props.image} style={styles.headerButtonImage} />
     )}
   </YellowBoxPressable>
 );
@@ -99,6 +95,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerButtonImage: {
+    height: 14,
+    width: 8,
     tintColor: YellowBoxStyle.getTextColor(1),
   },
   headerTitle: {

@@ -19,32 +19,37 @@ const RootTagContext = require('./RootTagContext');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
-type Context = {
-  rootTag: number,
-};
+type Context = {rootTag: number, ...};
 
 type Props = $ReadOnly<{|
   children?: React.Node,
+  fabric?: boolean,
   rootTag: number,
+  showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
+  internal_excludeLogBox?: ?boolean,
 |}>;
 
 type State = {|
   inspector: ?React.Node,
   mainKey: number,
+  hasError: boolean,
 |};
 
 class AppContainer extends React.Component<Props, State> {
   state: State = {
     inspector: null,
     mainKey: 1,
+    hasError: false,
   };
   _mainRef: ?React.ElementRef<typeof View>;
   _subscription: ?EmitterSubscription = null;
 
+  static getDerivedStateFromError: any = undefined;
+
   static childContextTypes:
     | any
-    | $TEMPORARY$object<{|rootTag: React$PropType$Primitive<number>|}> = {
+    | {|rootTag: React$PropType$Primitive<number>|} = {
     rootTag: PropTypes.number,
   };
 
@@ -91,7 +96,10 @@ class AppContainer extends React.Component<Props, State> {
   render(): React.Node {
     let yellowBox = null;
     if (__DEV__) {
-      if (!global.__RCTProfileIsProfiling) {
+      if (
+        !global.__RCTProfileIsProfiling &&
+        !this.props.internal_excludeLogBox
+      ) {
         const YellowBox = require('../YellowBox/YellowBox');
         yellowBox = <YellowBox />;
       }
@@ -112,14 +120,22 @@ class AppContainer extends React.Component<Props, State> {
 
     const Wrapper = this.props.WrapperComponent;
     if (Wrapper != null) {
-      innerView = <Wrapper>{innerView}</Wrapper>;
+      innerView = (
+        <Wrapper
+          fabric={this.props.fabric === true}
+          showArchitectureIndicator={
+            this.props.showArchitectureIndicator === true
+          }>
+          {innerView}
+        </Wrapper>
+      );
     }
     return (
       <RootTagContext.Provider value={this.props.rootTag}>
         <View style={styles.appContainer} pointerEvents="box-none">
-          {innerView}
-          {yellowBox}
+          {!this.state.hasError && innerView}
           {this.state.inspector}
+          {yellowBox}
         </View>
       </RootTagContext.Provider>
     );

@@ -10,7 +10,7 @@
 
 'use strict';
 
-type Scene = {name: string};
+type Scene = {name: string, ...};
 
 let _listeners: Array<(scene: Scene) => void> = [];
 
@@ -28,7 +28,7 @@ const SceneTracker = {
 
   addActiveSceneChangedListener(
     callback: (scene: Scene) => void,
-  ): {remove: () => void} {
+  ): {remove: () => void, ...} {
     _listeners.push(callback);
     return {
       remove: () => {

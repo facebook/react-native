@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.vibration;
 
 import android.annotation.SuppressLint;
@@ -31,7 +32,9 @@ public class VibrationModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void vibrate(int duration) {
+  public void vibrate(double durationDouble) {
+    int duration = (int) durationDouble;
+
     Vibrator v = (Vibrator) getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
     if (v != null) {
       v.vibrate(duration);

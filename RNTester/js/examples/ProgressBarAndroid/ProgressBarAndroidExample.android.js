@@ -5,31 +5,25 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-const React = require('react');
-const {ProgressBarAndroid: ProgressBar} = require('react-native');
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
+const React = require('react');
+
+const {ProgressBarAndroid: ProgressBar} = require('react-native');
 
 import type {ProgressBarAndroidProps} from '../../../../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 
 type MovingBarProps = $ReadOnly<{|
-  ...$Diff<
-    ProgressBarAndroidProps,
-    {
-      progress: ?number,
-    },
-  >,
+  ...$Diff<ProgressBarAndroidProps, {progress: ?number, ...}>,
   indeterminate: false,
 |}>;
 
-type MovingBarState = {
-  progress: number,
-};
+type MovingBarState = {progress: number, ...};
 
 class MovingBar extends React.Component<MovingBarProps, MovingBarState> {
   _intervalID: ?IntervalID = null;
@@ -56,8 +50,8 @@ class MovingBar extends React.Component<MovingBarProps, MovingBarState> {
   }
 }
 
-class ProgressBarAndroidExample extends React.Component<{}> {
-  render() {
+class ProgressBarAndroidExample extends React.Component<{...}> {
+  render(): React.Node {
     return (
       <RNTesterPage title="ProgressBar Examples">
         <RNTesterBlock title="Horizontal Indeterminate ProgressBar">

@@ -69,7 +69,11 @@
   RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
     defaultLogFunction(level, source, fileName, lineNumber, message);
     if (level == RCTLogLevelTrace) {
-      [testNames addObject:message];
+      // message string is in the format:
+      // 'ActivityIndicatorExample', '\n    in EnumerateExamplePages (at renderApplication.js:46)'
+      NSArray *items = [message componentsSeparatedByString:@","];
+      NSString *testName = [items[0] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"'"]];
+      [testNames addObject:testName];
     }
   });
 

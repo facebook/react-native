@@ -13,7 +13,10 @@
 'use strict';
 
 const React = require('react');
+
 const ReactTestRenderer = require('react-test-renderer');
+const ShallowRenderer = require('react-test-renderer/shallow');
+const shallowRenderer = new ShallowRenderer();
 
 const {Switch, Text, TextInput, VirtualizedList} = require('react-native');
 
@@ -33,6 +36,9 @@ function byClickable(): Predicate {
         typeof node.props.onPress === 'function') ||
       // note: Special casing <Switch /> since it doesn't use touchable
       (node.type === Switch && node.props && node.props.disabled !== true) ||
+      // HACK: Find components that use `Pressability`.
+      node.instance?.state?.pressability != null ||
+      // TODO: Remove this after deleting `Touchable`.
       (node.instance &&
         typeof node.instance.touchableHandlePress === 'function'),
     'is clickable',
@@ -55,12 +61,13 @@ function byTextMatching(regex: RegExp): Predicate {
 
 function enter(instance: ReactTestInstance, text: string) {
   const input = instance.findByType(TextInput);
-  input.instance._onChange({nativeEvent: {text}});
+  input.props.onChange && input.props.onChange({nativeEvent: {text}});
+  input.props.onChangeText && input.props.onChangeText(text);
 }
 
 // Returns null if there is no error, otherwise returns an error message string.
 function maximumDepthError(
-  tree: {toJSON: () => ReactTestRendererNode},
+  tree: {toJSON: () => ReactTestRendererNode, ...},
   maxDepthLimit: number,
 ): ?string {
   const maxDepth = maximumDepthOfJSON(tree.toJSON());
@@ -91,6 +98,44 @@ function expectNoConsoleError() {
       expect(args).toBeFalsy();
     }
   });
+}
+
+function expectRendersMatchingSnapshot(
+  name: string,
+  ComponentProvider: () => React.Element<any>,
+  unmockComponent: () => mixed,
+) {
+  let instance;
+
+  jest.resetAllMocks();
+
+  instance = ReactTestRenderer.create(<ComponentProvider />);
+  expect(instance).toMatchSnapshot(
+    'should deep render when mocked (please verify output manually)',
+  );
+
+  jest.resetAllMocks();
+  unmockComponent();
+
+  instance = shallowRenderer.render(<ComponentProvider />);
+  expect(instance).toMatchSnapshot(
+    `should shallow render as <${name} /> when not mocked`,
+  );
+
+  jest.resetAllMocks();
+
+  instance = shallowRenderer.render(<ComponentProvider />);
+  expect(instance).toMatchSnapshot(
+    `should shallow render as <${name} /> when mocked`,
+  );
+
+  jest.resetAllMocks();
+  unmockComponent();
+
+  instance = ReactTestRenderer.create(<ComponentProvider />);
+  expect(instance).toMatchSnapshot(
+    'should deep render when not mocked (please verify output manually)',
+  );
 }
 
 // Takes a node from toJSON()
@@ -135,7 +180,7 @@ function tap(instance: ReactTestInstance) {
   } else {
     // Only tap when props.disabled isn't set (or there aren't any props)
     if (!touchable.props || !touchable.props.disabled) {
-      touchable.instance.touchableHandlePress({nativeEvent: {}});
+      touchable.props.onPress({nativeEvent: {}});
     }
   }
 }
@@ -158,6 +203,7 @@ export {byTextMatching};
 export {enter};
 export {expectNoConsoleWarn};
 export {expectNoConsoleError};
+export {expectRendersMatchingSnapshot};
 export {maximumDepthError};
 export {maximumDepthOfJSON};
 export {renderAndEnforceStrictMode};

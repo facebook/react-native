@@ -6,7 +6,7 @@ rn_android_library(
         [
             "*.java",
         ],
-        exclude = ["JSCallInvokerHolderImpl.java"],
+        exclude = ["CallInvokerHolderImpl.java"],
     ),
     required_for_source_only_abi = True,
     visibility = [
@@ -25,7 +25,8 @@ rn_android_library(
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/config:config"),
         react_native_target("java/com/facebook/react:react"),
-        ":jscallinvokerholder",
+        react_native_target("java/com/facebook/react/module/model:model"),
+        ":callinvokerholder",
     ],
     exported_deps = [
         react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
@@ -33,8 +34,8 @@ rn_android_library(
 )
 
 rn_android_library(
-    name = "jscallinvokerholder",
-    srcs = ["JSCallInvokerHolderImpl.java"],
+    name = "callinvokerholder",
+    srcs = ["CallInvokerHolderImpl.java"],
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
@@ -42,6 +43,6 @@ rn_android_library(
     deps = [
         react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
         react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
-        react_native_dep("java/com/facebook/jni:jni"),
+        react_native_dep("libraries/fbjni:java"),
     ],
 )

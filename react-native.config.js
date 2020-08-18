@@ -6,6 +6,7 @@
  *
  * @format
  */
+
 'use strict';
 
 const ios = require('@react-native-community/cli-platform-ios');

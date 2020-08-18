@@ -7,9 +7,11 @@
  * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 const fs = require('fs');
+const path = require('path');
 
 const capturedErrorDefaults = {
   componentName: 'A',
@@ -37,11 +39,13 @@ describe('ExceptionsManager', () => {
       };
     });
     // Make symbolication a no-op.
-    jest.mock('../Devtools/symbolicateStackTrace', () => {
-      return async function symbolicateStackTrace(stack) {
-        return stack;
-      };
-    });
+    jest.mock(
+      '../Devtools/symbolicateStackTrace',
+      () =>
+        async function symbolicateStackTrace(stack) {
+          return {stack};
+        },
+    );
     jest.spyOn(console, 'error').mockImplementation(() => {});
     ReactFiberErrorDialog = require('../ReactFiberErrorDialog');
     NativeExceptionsManager = require('../NativeExceptionsManager').default;
@@ -86,7 +90,7 @@ describe('ExceptionsManager', () => {
       expect(console.error).toBeCalledWith(formattedMessage);
     });
 
-    test('pops frames off the stack with framesToPop', () => {
+    test('does not pop frames off the stack with framesToPop', () => {
       function createError() {
         const error = new Error('Some error happened');
         error.framesToPop = 1;
@@ -102,7 +106,7 @@ describe('ExceptionsManager', () => {
       expect(nativeReportException.mock.calls.length).toBe(1);
       const exceptionData = nativeReportException.mock.calls[0][0];
       expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-        'const error = createError();',
+        "const error = new Error('Some error happened');",
       );
     });
 
@@ -299,14 +303,12 @@ describe('ExceptionsManager', () => {
 
       expect(nativeReportException.mock.calls.length).toBe(1);
       const exceptionData = nativeReportException.mock.calls[0][0];
-      expect(exceptionData.message).toBe(
-        'console.error: "Some error happened"',
-      );
-      expect(exceptionData.originalMessage).toBe('"Some error happened"');
+      expect(exceptionData.message).toBe('console.error: Some error happened');
+      expect(exceptionData.originalMessage).toBe('Some error happened');
       expect(exceptionData.name).toBe('console.error');
-      expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-        'console.error(message);',
-      );
+      expect(
+        getLineFromFrame(getFirstFrameInThisFile(exceptionData.stack)),
+      ).toBe('console.error(message);');
       expect(exceptionData.isFatal).toBe(false);
       expect(mockError.mock.calls[0]).toEqual([message]);
     });
@@ -319,15 +321,15 @@ describe('ExceptionsManager', () => {
       expect(nativeReportException.mock.calls.length).toBe(1);
       const exceptionData = nativeReportException.mock.calls[0][0];
       expect(exceptionData.message).toBe(
-        'console.error: 42, true, ["symbol" failed to stringify], {"y":null}',
+        'console.error: 42 true ["symbol" failed to stringify] {"y":null}',
       );
       expect(exceptionData.originalMessage).toBe(
-        '42, true, ["symbol" failed to stringify], {"y":null}',
+        '42 true ["symbol" failed to stringify] {"y":null}',
       );
       expect(exceptionData.name).toBe('console.error');
-      expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-        'console.error(...args);',
-      );
+      expect(
+        getLineFromFrame(getFirstFrameInThisFile(exceptionData.stack)),
+      ).toBe('console.error(...args);');
       expect(exceptionData.isFatal).toBe(false);
 
       expect(mockError).toHaveBeenCalledTimes(1);
@@ -366,7 +368,7 @@ describe('ExceptionsManager', () => {
       expect(mockError.mock.calls[0]).toEqual([message]);
     });
 
-    test('pops frames off the stack with framesToPop', () => {
+    test('does not pop frames off the stack with framesToPop', () => {
       function createError() {
         const error = new Error('Some error happened');
         error.framesToPop = 1;
@@ -379,7 +381,7 @@ describe('ExceptionsManager', () => {
       expect(nativeReportException.mock.calls.length).toBe(1);
       const exceptionData = nativeReportException.mock.calls[0][0];
       expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-        'const error = createError();',
+        "const error = new Error('Some error happened');",
       );
     });
   });
@@ -440,7 +442,7 @@ describe('ExceptionsManager', () => {
       expect(console.error.mock.calls[0]).toEqual([message]);
     });
 
-    test('pops frames off the stack with framesToPop', () => {
+    test('does not pop frames off the stack with framesToPop', () => {
       function createError() {
         const error = new Error('Some error happened');
         error.framesToPop = 1;
@@ -453,7 +455,81 @@ describe('ExceptionsManager', () => {
       expect(nativeReportException.mock.calls.length).toBe(1);
       const exceptionData = nativeReportException.mock.calls[0][0];
       expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-        'const error = createError();',
+        "const error = new Error('Some error happened');",
+      );
+    });
+  });
+
+  describe('unstable_setExceptionDecorator', () => {
+    test('modifying the exception data', () => {
+      const error = new Error('Some error happened');
+      const decorator = jest.fn().mockImplementation(data => ({
+        ...data,
+        message: 'decorated: ' + data.message,
+      }));
+
+      // Report the same exception with and without the decorator
+      ExceptionsManager.handleException(error, true);
+      ExceptionsManager.unstable_setExceptionDecorator(decorator);
+      ExceptionsManager.handleException(error, true);
+
+      expect(nativeReportException.mock.calls.length).toBe(2);
+      expect(decorator.mock.calls.length).toBe(1);
+
+      const withoutDecoratorInstalled = nativeReportException.mock.calls[0][0];
+      const afterDecorator = nativeReportException.mock.calls[1][0];
+      const beforeDecorator = decorator.mock.calls[0][0];
+
+      expect(afterDecorator.id).toEqual(beforeDecorator.id);
+
+      // id will change between successive exceptions
+      delete withoutDecoratorInstalled.id;
+      delete beforeDecorator.id;
+      delete afterDecorator.id;
+
+      expect(withoutDecoratorInstalled).toEqual(beforeDecorator);
+      expect(afterDecorator).toEqual({
+        ...beforeDecorator,
+        message: 'decorated: ' + beforeDecorator.message,
+      });
+    });
+
+    test('clearing a decorator', () => {
+      const error = new Error('Some error happened');
+      const decorator = jest.fn().mockImplementation(data => ({
+        ...data,
+        message: 'decorated: ' + data.message,
+      }));
+
+      ExceptionsManager.unstable_setExceptionDecorator(decorator);
+      ExceptionsManager.unstable_setExceptionDecorator(null);
+      ExceptionsManager.handleException(error, true);
+
+      expect(decorator).not.toHaveBeenCalled();
+      expect(nativeReportException).toHaveBeenCalled();
+    });
+
+    test('prevents decorator recursion', () => {
+      const error = new Error('Some error happened');
+      const decorator = jest.fn().mockImplementation(data => {
+        console.error('Logging an error within the decorator');
+        return {
+          ...data,
+          message: 'decorated: ' + data.message,
+        };
+      });
+
+      ExceptionsManager.installConsoleErrorReporter();
+      ExceptionsManager.unstable_setExceptionDecorator(decorator);
+      ExceptionsManager.handleException(error, true);
+
+      expect(decorator).toHaveBeenCalled();
+      expect(nativeReportException).toHaveBeenCalledTimes(2);
+      expect(nativeReportException.mock.calls[0][0].message).toMatch(
+        /Logging an error within the decorator/,
+      );
+      expect(nativeReportException.mock.calls[1][0].message).toMatch(
+        /decorated: .*Some error happened/,
       );
     });
   });
@@ -473,6 +549,10 @@ function getLineFromFrame({lineNumber /* 1-based */, file}) {
     linesByFile.set(cleanedFile, lines);
   }
   return (lines[lineNumber - 1] || '').trim();
+}
+
+function getFirstFrameInThisFile(stack) {
+  return stack.find(({file}) => file.endsWith(path.basename(module.filename)));
 }
 
 // Works around a parseErrorStack bug involving `new X` stack frames.

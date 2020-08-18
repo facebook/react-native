@@ -94,7 +94,7 @@ class Entity extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
+class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
   state = {fontWeight: 'bold', fontSize: 15};
 
   toggleWeight = () => {
@@ -218,6 +218,14 @@ class AdjustingFontSize extends React.Component<
           numberOfLines={4}
           style={{fontSize: 20, marginVertical: 6}}>
           {'Multiline text component shrinking is supported, watch as this reeeeaaaally loooooong teeeeeeext grooooows and then shriiiinks as you add text to me! ioahsdia soady auydoa aoisyd aosdy ' +
+            ' ' +
+            this.state.dynamicText}
+        </Text>
+
+        <Text
+          adjustsFontSizeToFit={true}
+          style={{fontSize: 20, marginVertical: 6, maxHeight: 50}}>
+          {'Text limited by height, watch as this reeeeaaaally loooooong teeeeeeext grooooows and then shriiiinks as you add text to me! ioahsdia soady auydoa aoisyd aosdy ' +
             ' ' +
             this.state.dynamicText}
         </Text>

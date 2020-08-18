@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,6 +7,7 @@
 
 #include "RawPropsKeyMap.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
@@ -14,31 +15,48 @@
 namespace facebook {
 namespace react {
 
-int RawPropsKeyMap::comparator(void const *lhs, void const *rhs) {
-  auto a = static_cast<RawPropsKeyMap::Item const *>(lhs);
-  auto b = static_cast<RawPropsKeyMap::Item const *>(rhs);
-
-  if (a->length != b->length) {
-    return a->length - b->length;
-  }
-
-  return std::memcmp(a->name, b->name, a->length);
+bool RawPropsKeyMap::hasSameName(Item const &lhs, Item const &rhs) noexcept {
+  return lhs.length == rhs.length &&
+      (std::memcmp(lhs.name, rhs.name, lhs.length) == 0);
 }
 
-void RawPropsKeyMap::insert(RawPropsKey const &key, RawPropsValueIndex value) {
+bool RawPropsKeyMap::shouldFirstOneBeBeforeSecondOne(
+    Item const &lhs,
+    Item const &rhs) noexcept {
+  if (lhs.length != rhs.length) {
+    return lhs.length < rhs.length;
+  }
+
+  return std::memcmp(lhs.name, rhs.name, rhs.length) < 0;
+}
+
+void RawPropsKeyMap::insert(
+    RawPropsKey const &key,
+    RawPropsValueIndex value) noexcept {
   auto item = Item{};
   item.value = value;
   key.render(item.name, &item.length);
   items_.push_back(item);
 }
 
-void RawPropsKeyMap::reindex() {
+void RawPropsKeyMap::reindex() noexcept {
   // Sorting `items_` by property names length and then lexicographically.
-  std::qsort(
-      items_.data(),
-      items_.size(),
-      sizeof(decltype(items_)::value_type),
-      &RawPropsKeyMap::comparator);
+  // Note, sort algorithm must be stable.
+  std::stable_sort(
+      items_.begin(),
+      items_.end(),
+      &RawPropsKeyMap::shouldFirstOneBeBeforeSecondOne);
+
+  // Filtering out duplicating keys.
+  // If some `*Props` object requests a prop more than once, only the first
+  // request will be fulfilled. E.g. `TextInputProps` class has a sub-property
+  // `backgroundColor` twice, the first time as part of `ViewProps` base-class
+  // and the second as part of `BaseTextProps` base-class. In this
+  // configuration, the only one which comes first (from `ViewProps`, which
+  // appear first) will be assigned.
+  items_.erase(
+      std::unique(items_.begin(), items_.end(), &RawPropsKeyMap::hasSameName),
+      items_.end());
 
   buckets_.resize(kPropNameLengthHardCap);
 
@@ -60,7 +78,7 @@ void RawPropsKeyMap::reindex() {
 
 RawPropsValueIndex RawPropsKeyMap::at(
     char const *name,
-    RawPropsPropNameLength length) {
+    RawPropsPropNameLength length) noexcept {
   assert(length > 0);
   assert(length < kPropNameLengthHardCap);
   // 1. Find the bucket.

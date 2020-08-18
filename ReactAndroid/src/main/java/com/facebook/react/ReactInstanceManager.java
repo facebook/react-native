@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
@@ -34,7 +35,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JS_VM_CALLS;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Process;
 import android.util.Log;
@@ -51,12 +54,12 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
@@ -65,6 +68,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -79,6 +84,7 @@ import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -87,6 +93,7 @@ import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.modules.fabric.ReactFabric;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.surface.ReactStage;
+import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -279,8 +286,8 @@ public class ReactInstanceManager {
       }
 
       @Override
-      public void onJSBundleLoadedFromServer(@Nullable NativeDeltaClient nativeDeltaClient) {
-        ReactInstanceManager.this.onJSBundleLoadedFromServer(nativeDeltaClient);
+      public void onJSBundleLoadedFromServer() {
+        ReactInstanceManager.this.onJSBundleLoadedFromServer();
       }
 
       @Override
@@ -296,6 +303,27 @@ public class ReactInstanceManager {
       @Override
       public JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
         return ReactInstanceManager.this.getJSExecutorFactory();
+      }
+
+      @Override
+      public @Nullable View createRootView(String appKey) {
+        Activity currentActivity = getCurrentActivity();
+        if (currentActivity != null) {
+          ReactRootView rootView = new ReactRootView(currentActivity);
+
+          rootView.startReactApplication(ReactInstanceManager.this, appKey, null);
+
+          return rootView;
+        }
+
+        return null;
+      }
+
+      @Override
+      public void destroyRootView(View rootView) {
+        if (rootView instanceof ReactRootView) {
+          ((ReactRootView) rootView).unmountReactApplication();
+        }
       }
     };
   }
@@ -316,7 +344,7 @@ public class ReactInstanceManager {
     return new ArrayList<>(mPackages);
   }
 
-  private static void initializeSoLoaderIfNecessary(Context applicationContext) {
+  static void initializeSoLoaderIfNecessary(Context applicationContext) {
     // Call SoLoader.initialize here, this is required for apps that does not use exopackage and
     // does not use SoLoader for loading other native code except from the one used by React Native
     // This way we don't need to require others to have additional initialization code and to
@@ -389,7 +417,7 @@ public class ReactInstanceManager {
                               && !devSettings.isRemoteJSDebugEnabled()) {
                             // If there is a up-to-date bundle downloaded from server,
                             // with remote JS debugging disabled, always use that.
-                            onJSBundleLoadedFromServer(null);
+                            onJSBundleLoadedFromServer();
                           } else {
                             // If dev server is down, disable the remote JS debugging.
                             devSettings.setRemoteJSDebugEnabled(false);
@@ -461,7 +489,9 @@ public class ReactInstanceManager {
       String action = intent.getAction();
       Uri uri = intent.getData();
 
-      if (Intent.ACTION_VIEW.equals(action) && uri != null) {
+      if (uri != null
+          && (Intent.ACTION_VIEW.equals(action)
+              || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
         DeviceEventManagerModule deviceEventManagerModule =
             currentContext.getNativeModule(DeviceEventManagerModule.class);
         deviceEventManagerModule.emitNewIntentReceived(uri);
@@ -472,10 +502,15 @@ public class ReactInstanceManager {
 
   private void toggleElementInspector() {
     ReactContext currentContext = getCurrentReactContext();
-    if (currentContext != null) {
+    if (currentContext != null && currentContext.hasActiveCatalystInstance()) {
       currentContext
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit("toggleElementInspector", null);
+    } else {
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Cannot toggleElementInspector, CatalystInstance not available"));
     }
   }
 
@@ -713,6 +748,19 @@ public class ReactInstanceManager {
     }
   }
 
+  /** Call this from {@link Activity#onConfigurationChanged()}. */
+  @ThreadConfined(UI)
+  public void onConfigurationChanged(Context updatedContext, @Nullable Configuration newConfig) {
+    UiThreadUtil.assertOnUiThread();
+
+    ReactContext currentReactContext = getCurrentReactContext();
+    if (currentReactContext != null) {
+      currentReactContext
+          .getNativeModule(AppearanceModule.class)
+          .onConfigurationChanged(updatedContext);
+    }
+  }
+
   @ThreadConfined(UI)
   public void showDevOptionsDialog() {
     UiThreadUtil.assertOnUiThread();
@@ -883,15 +931,12 @@ public class ReactInstanceManager {
   }
 
   @ThreadConfined(UI)
-  private void onJSBundleLoadedFromServer(@Nullable NativeDeltaClient nativeDeltaClient) {
+  private void onJSBundleLoadedFromServer() {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.onJSBundleLoadedFromServer()");
 
     JSBundleLoader bundleLoader =
-        nativeDeltaClient == null
-            ? JSBundleLoader.createCachedBundleFromNetworkLoader(
-                mDevSupportManager.getSourceUrl(), mDevSupportManager.getDownloadedJSBundleFile())
-            : JSBundleLoader.createDeltaFromNetworkLoader(
-                mDevSupportManager.getSourceUrl(), nativeDeltaClient);
+        JSBundleLoader.createCachedBundleFromNetworkLoader(
+            mDevSupportManager.getSourceUrl(), mDevSupportManager.getDownloadedJSBundleFile());
 
     recreateReactContextInBackground(mJavaScriptExecutorFactory, bundleLoader);
   }
@@ -1014,6 +1059,8 @@ public class ReactInstanceManager {
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
     }
 
+    // There is a race condition here - `finalListeners` can contain null entries
+    // See usage below for more details.
     ReactInstanceEventListener[] listeners =
         new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
     final ReactInstanceEventListener[] finalListeners =
@@ -1024,7 +1071,13 @@ public class ReactInstanceManager {
           @Override
           public void run() {
             for (ReactInstanceEventListener listener : finalListeners) {
-              listener.onReactContextInitialized(reactContext);
+              // Sometimes this listener is null - probably due to race
+              // condition between allocating listeners with a certain
+              // size, and getting a `final` version of the array on
+              // the following line.
+              if (listener != null) {
+                listener.onReactContextInitialized(reactContext);
+              }
             }
           }
         });
@@ -1050,6 +1103,10 @@ public class ReactInstanceManager {
   private void attachRootViewToInstance(final ReactRoot reactRoot) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
+
+    // UIManager is technically Nullable here, but if we can't get a UIManager
+    // at this point, something has probably gone horribly wrong so it's probably best
+    // to throw a NullPointerException.
     UIManager uiManager =
         UIManagerHelper.getUIManager(mCurrentReactContext, reactRoot.getUIManagerType());
 
@@ -1113,9 +1170,12 @@ public class ReactInstanceManager {
       }
     }
 
+    // Remove memory pressure listener before tearing down react context
+    // We cannot access the CatalystInstance after destroying the ReactContext.
+    mMemoryPressureRouter.removeMemoryPressureListener(reactContext.getCatalystInstance());
+
     reactContext.destroy();
     mDevSupportManager.onReactInstanceDestroyed(reactContext);
-    mMemoryPressureRouter.removeMemoryPressureListener(reactContext.getCatalystInstance());
   }
 
   /** @return instance of {@link ReactContext} configured a {@link CatalystInstance} set */
@@ -1160,8 +1220,16 @@ public class ReactInstanceManager {
               reactContext, catalystInstance.getJavaScriptContextHolder()));
 
       if (ReactFeatureFlags.useTurboModules) {
-        catalystInstance.setTurboModuleManager(
-            catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager));
+        JSIModule turboModuleManager =
+            catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager);
+        catalystInstance.setTurboModuleManager(turboModuleManager);
+
+        TurboModuleRegistry registry = (TurboModuleRegistry) turboModuleManager;
+
+        // Eagerly initialize TurboModules
+        for (String moduleName : registry.getEagerInitModuleNames()) {
+          registry.getModule(moduleName);
+        }
       }
     }
     if (mBridgeIdleDebugListener != null) {

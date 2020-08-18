@@ -9,7 +9,7 @@
 
 'use strict';
 
-const normalizeColor = require('../Color/normalizeColor');
+const normalizeColor = require('../StyleSheet/normalizeColor');
 
 const colorPropType = function(
   isRequired,

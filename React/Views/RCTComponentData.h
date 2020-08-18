@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -13,7 +13,7 @@
 
 @class RCTBridge;
 @class RCTShadowView;
-@class UIView;
+@class RCTUIView; // TODO(macOS ISS#2323203)
 
 @interface RCTComponentData : NSObject
 
@@ -24,10 +24,12 @@
 - (instancetype)initWithManagerClass:(Class)managerClass
                               bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
-- (RCTPlatformView *)createViewWithTag:(NSNumber *)tag; // TODO(macOS ISS#2323203)
+- (RCTPlatformView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag; // TODO(macOS ISS#2323203)
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView;
+
+@property (nonatomic, copy, nullable) void (^eventInterceptor)(NSString *eventName, NSDictionary *event, NSNumber *reactTag);
 
 - (NSDictionary<NSString *, id> *)viewConfig;
 

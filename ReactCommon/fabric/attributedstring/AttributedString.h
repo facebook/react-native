@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -35,13 +35,26 @@ class AttributedString : public Sealable, public DebugStringConvertible {
  public:
   class Fragment {
    public:
+    static std::string AttachmentCharacter();
+
     std::string string;
     TextAttributes textAttributes;
-    ShadowView shadowView;
     ShadowView parentShadowView;
+
+    /*
+     * Returns true is the Fragment represents an attachment.
+     * Equivalent to `string == AttachmentCharacter()`.
+     */
+    bool isAttachment() const;
 
     bool operator==(const Fragment &rhs) const;
     bool operator!=(const Fragment &rhs) const;
+  };
+
+  class Range {
+   public:
+    int location{0};
+    int length{0};
   };
 
   using Fragments = better::small_vector<Fragment, 1>;
@@ -99,7 +112,6 @@ struct hash<facebook::react::AttributedString::Fragment> {
         0,
         fragment.string,
         fragment.textAttributes,
-        fragment.shadowView,
         fragment.parentShadowView);
   }
 };

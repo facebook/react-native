@@ -6,15 +6,27 @@ exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_MULTIP
 
 exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES 1`] = `"codegenNativeCommands expected the same supportedCommands specified in the NativeCommands interface: hotspotUpdate, scrollTo"`;
 
-exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITH_NULLABLE_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.Ref<>"`;
+exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITH_NULLABLE_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.ElementRef<>"`;
 
 exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOUT_METHOD_NAMES 1`] = `"codegenNativeCommands must be passed options including the supported commands"`;
 
-exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOUT_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.Ref<>"`;
+exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOUT_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.ElementRef<>"`;
 
 exports[`RN Codegen Flow Parser Fails with error message NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE 1`] = `"key required_key_with_default must be optional if used with WithDefault<> annotation"`;
 
 exports[`RN Codegen Flow Parser Fails with error message NULLABLE_WITH_DEFAULT 1`] = `"WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it."`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", recieved \\"BooleanLiteralTypeAnnotation\\""`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_ENUM_INT 1`] = `"Arrays of int enums are not supported (see: \\"someProp\\")"`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_MIXED_ENUM 1`] = `"Mixed types are not supported (see \\"someProp\\")"`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", received \\"BooleanLiteralTypeAnnotation\\""`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_MIXED_ENUM 1`] = `"Mixed types are not supported (see \\"someProp\\")"`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_NUMBER_TYPE 1`] = `"Cannot use \\"NumberTypeAnnotation\\" type annotation for \\"someProp\\": must use a specific numeric type like Int32, Double, or Float"`;
 
 exports[`RN Codegen Flow Parser Fails with error message PROPS_CONFLICT_NAMES 1`] = `"A prop was already defined with the name isEnabled"`;
 
@@ -58,6 +70,22 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "default": true,
+                "type": "BooleanTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "boolean_null_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "BooleanTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "boolean_null_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
                 "type": "BooleanTypeAnnotation",
               },
             },
@@ -190,6 +218,22 @@ Object {
               },
             },
             Object {
+              "name": "float_null_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "FloatTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "float_null_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "FloatTypeAnnotation",
+              },
+            },
+            Object {
               "name": "int32_required",
               "optional": false,
               "typeAnnotation": Object {
@@ -243,6 +287,22 @@ Object {
                   },
                 ],
                 "type": "StringEnumTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "int_enum_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": 0,
+                "options": Array [
+                  Object {
+                    "value": 0,
+                  },
+                  Object {
+                    "value": 1,
+                  },
+                ],
+                "type": "Int32EnumTypeAnnotation",
               },
             },
             Object {
@@ -425,6 +485,38 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "PointPrimitive",
+                "type": "NativePrimitiveTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "name": "EdgeInsetsPrimitive",
+                "type": "NativePrimitiveTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "name": "EdgeInsetsPrimitive",
+                "type": "NativePrimitiveTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "name": "EdgeInsetsPrimitive",
+                "type": "NativePrimitiveTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "name": "EdgeInsetsPrimitive",
                 "type": "NativePrimitiveTypeAnnotation",
               },
             },
@@ -822,6 +914,50 @@ Object {
               },
             },
             Object {
+              "name": "array_insets_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "name": "EdgeInsetsPrimitive",
+                  "type": "NativePrimitiveTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_insets_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "name": "EdgeInsetsPrimitive",
+                  "type": "NativePrimitiveTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_insets_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "name": "EdgeInsetsPrimitive",
+                  "type": "NativePrimitiveTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_insets_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "name": "EdgeInsetsPrimitive",
+                  "type": "NativePrimitiveTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
               "name": "array_object_required",
               "optional": false,
               "typeAnnotation": Object {
@@ -897,6 +1033,203 @@ Object {
                     },
                   ],
                   "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_object_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "array_object_required",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "elementType": Object {
+                          "properties": Array [
+                            Object {
+                              "name": "prop",
+                              "optional": false,
+                              "typeAnnotation": Object {
+                                "default": null,
+                                "type": "StringTypeAnnotation",
+                              },
+                            },
+                          ],
+                          "type": "ObjectTypeAnnotation",
+                        },
+                        "type": "ArrayTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_object_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "array_object_optional_key",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "elementType": Object {
+                          "properties": Array [
+                            Object {
+                              "name": "prop",
+                              "optional": true,
+                              "typeAnnotation": Object {
+                                "default": null,
+                                "type": "StringTypeAnnotation",
+                              },
+                            },
+                          ],
+                          "type": "ObjectTypeAnnotation",
+                        },
+                        "type": "ArrayTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_object_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "array_object_optional_value",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "elementType": Object {
+                          "properties": Array [
+                            Object {
+                              "name": "prop",
+                              "optional": true,
+                              "typeAnnotation": Object {
+                                "default": null,
+                                "type": "StringTypeAnnotation",
+                              },
+                            },
+                          ],
+                          "type": "ObjectTypeAnnotation",
+                        },
+                        "type": "ArrayTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_object_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "array_object_optional_both",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "elementType": Object {
+                          "properties": Array [
+                            Object {
+                              "name": "prop",
+                              "optional": true,
+                              "typeAnnotation": Object {
+                                "default": null,
+                                "type": "StringTypeAnnotation",
+                              },
+                            },
+                          ],
+                          "type": "ObjectTypeAnnotation",
+                        },
+                        "type": "ArrayTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_of_object_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "elementType": Object {
+                    "properties": Array [
+                      Object {
+                        "name": "prop",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "default": null,
+                          "type": "StringTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_of_object_required_in_file",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "elementType": Object {
+                    "properties": Array [
+                      Object {
+                        "name": "prop",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "default": null,
+                          "type": "StringTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_of_object_required_with_spread",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "elementType": Object {
+                    "properties": Array [
+                      Object {
+                        "name": "prop",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "default": null,
+                          "type": "StringTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -5208,6 +5541,74 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "PointPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "name": "EdgeInsetsPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_optional_key",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "EdgeInsetsPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_optional_value",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "EdgeInsetsPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_optional_both",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "EdgeInsetsPrimitive",
                       "type": "NativePrimitiveTypeAnnotation",
                     },
                   },

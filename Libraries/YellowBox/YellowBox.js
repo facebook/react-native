@@ -12,12 +12,11 @@
 
 const React = require('react');
 
-import type {Category} from './Data/YellowBoxCategory';
-import type {
-  Registry,
-  Subscription,
-  IgnorePattern,
-} from './Data/YellowBoxRegistry';
+import type {Registry, IgnorePattern} from './Data/YellowBoxRegistry';
+import YellowBoxWarning from './Data/YellowBoxWarning';
+
+import * as LogBoxData from '../LogBox/Data/LogBoxData';
+import NativeLogBox from '../NativeModules/specs/NativeLogBox';
 
 type Props = $ReadOnly<{||}>;
 type State = {|
@@ -47,28 +46,45 @@ let YellowBox;
 if (__DEV__) {
   const Platform = require('../Utilities/Platform');
   const RCTLog = require('../Utilities/RCTLog');
-  const YellowBoxList = require('./UI/YellowBoxList');
+  const YellowBoxContainer = require('./YellowBoxContainer').default;
+  const LogBox = require('../LogBox/LogBox');
   const YellowBoxRegistry = require('./Data/YellowBoxRegistry');
+  const LogBoxNotificationContainer = require('../LogBox/LogBoxNotificationContainer')
+    .default;
 
+  // YellowBox needs to insert itself early,
+  // in order to access the component stacks appended by React DevTools.
   const {error, warn} = console;
+  let errorImpl = error;
+  let warnImpl = warn;
+  let _isLogBoxEnabled = false;
+  let _isInstalled = false;
+  (console: any).error = function(...args) {
+    errorImpl(...args);
+  };
+  (console: any).warn = function(...args) {
+    warnImpl(...args);
+  };
 
   // eslint-disable-next-line no-shadow
   YellowBox = class YellowBox extends React.Component<Props, State> {
     static ignoreWarnings(patterns: $ReadOnlyArray<IgnorePattern>): void {
+      LogBoxData.addIgnorePatterns(patterns);
       YellowBoxRegistry.addIgnorePatterns(patterns);
     }
 
     static install(): void {
-      (console: any).error = function(...args) {
-        error.call(console, ...args);
-        // Show YellowBox for the `warning` module.
-        if (typeof args[0] === 'string' && args[0].startsWith('Warning: ')) {
-          registerWarning(...args);
-        }
+      if (_isLogBoxEnabled) {
+        LogBox.install();
+        return;
+      }
+      _isInstalled = true;
+
+      errorImpl = function(...args) {
+        registerError(...args);
       };
 
-      (console: any).warn = function(...args) {
-        warn.call(console, ...args);
+      warnImpl = function(...args) {
         registerWarning(...args);
       };
 
@@ -91,51 +107,95 @@ if (__DEV__) {
     }
 
     static uninstall(): void {
-      (console: any).error = error;
-      (console: any).warn = error;
+      if (_isLogBoxEnabled) {
+        LogBox.uninstall();
+        return;
+      }
+      _isInstalled = false;
+      errorImpl = error;
+      warnImpl = warn;
       delete (console: any).disableYellowBox;
     }
 
-    _subscription: ?Subscription;
+    static __unstable_enableLogBox(): void {
+      if (NativeLogBox == null) {
+        // The native module is required to enable LogBox.
+        return;
+      }
 
-    state = {
-      registry: null,
-    };
+      if (_isInstalled) {
+        throw new Error(
+          'LogBox must be enabled before AppContainer is required so that it can properly wrap the console methods.\n\nPlease enable LogBox earlier in your app.\n\n',
+        );
+      }
+      _isLogBoxEnabled = true;
+
+      // TODO: Temporary hack to prevent cycles with the ExceptionManager.
+      global.__unstable_isLogBoxEnabled = true;
+    }
+
+    static __unstable_isLogBoxEnabled(): boolean {
+      return !!_isLogBoxEnabled;
+    }
 
     render(): React.Node {
-      // TODO: Ignore warnings that fire when rendering `YellowBox` itself.
-      return this.state.registry == null ? null : (
-        <YellowBoxList
-          onDismiss={this._handleDismiss}
-          onDismissAll={this._handleDismissAll}
-          registry={this.state.registry}
-        />
-      );
-    }
-
-    componentDidMount(): void {
-      this._subscription = YellowBoxRegistry.observe(registry => {
-        this.setState({registry});
-      });
-    }
-
-    componentWillUnmount(): void {
-      if (this._subscription != null) {
-        this._subscription.unsubscribe();
+      if (_isLogBoxEnabled) {
+        return <LogBoxNotificationContainer />;
       }
-    }
 
-    _handleDismiss = (category: Category): void => {
-      YellowBoxRegistry.delete(category);
-    };
-
-    _handleDismissAll(): void {
-      YellowBoxRegistry.clear();
+      // TODO: Ignore warnings that fire when rendering `YellowBox` itself.
+      return <YellowBoxContainer />;
     }
   };
 
   const registerWarning = (...args): void => {
-    YellowBoxRegistry.add({args, framesToPop: 2});
+    if (typeof args[0] === 'string' && args[0].startsWith('(ADVICE)')) {
+      return;
+    }
+
+    const {category, message, stack} = YellowBoxWarning.parse({
+      args,
+    });
+
+    if (!YellowBoxRegistry.isWarningIgnored(message)) {
+      YellowBoxRegistry.add({category, message, stack});
+      warn.call(console, ...args);
+    }
+  };
+
+  const registerError = (...args): void => {
+    // Only show YellowBox for the `warning` module, otherwise pass through and skip.
+    if (typeof args[0] !== 'string' || !args[0].startsWith('Warning: ')) {
+      error.call(console, ...args);
+      return;
+    }
+
+    const format = args[0].replace('Warning: ', '');
+    const filterResult = LogBoxData.checkWarningFilter(format);
+    if (filterResult.suppressCompletely) {
+      return;
+    }
+
+    args[0] = filterResult.finalFormat;
+    const {category, message, stack} = YellowBoxWarning.parse({
+      args,
+    });
+
+    if (YellowBoxRegistry.isWarningIgnored(message)) {
+      return;
+    }
+
+    if (filterResult.forceDialogImmediately === true) {
+      // This will pop a redbox. Do not downgrade. These are real bugs with same severity as throws.
+      error.call(console, message.content);
+    } else {
+      // Unfortunately, we need to add the Warning: prefix back so we don't show a redbox later.
+      args[0] = `Warning: ${filterResult.finalFormat}`;
+
+      // Note: YellowBox has no concept of "soft errors" so we're showing YellowBox for those.
+      YellowBoxRegistry.add({category, message, stack});
+      error.call(console, ...args);
+    }
   };
 } else {
   YellowBox = class extends React.Component<Props, State> {
@@ -151,6 +211,13 @@ if (__DEV__) {
       // Do nothing.
     }
 
+    static __unstable_enableLogBox(): void {
+      // Do nothing.
+    }
+    static __unstable_isLogBoxEnabled(): boolean {
+      return false;
+    }
+
     render(): React.Node {
       return null;
     }
@@ -161,4 +228,7 @@ module.exports = (YellowBox: Class<React.Component<Props, State>> & {
   ignoreWarnings($ReadOnlyArray<IgnorePattern>): void,
   install(): void,
   uninstall(): void,
+  __unstable_enableLogBox(): void,
+  __unstable_isLogBoxEnabled(): boolean,
+  ...
 });

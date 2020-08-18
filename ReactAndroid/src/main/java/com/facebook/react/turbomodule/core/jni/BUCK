@@ -32,19 +32,19 @@ rn_xplat_cxx_library(
     ],
     exported_deps = [
         "fbsource//xplat/jsi:jsi",
-        ":jscallinvokerholder",
+        ":callinvokerholder",
         react_native_xplat_target("turbomodule/core:core"),
     ],
 )
 
 rn_xplat_cxx_library(
-    name = "jscallinvokerholder",
+    name = "callinvokerholder",
     srcs = [
-        "ReactCommon/JSCallInvokerHolder.cpp",
+        "ReactCommon/CallInvokerHolder.cpp",
     ],
     header_namespace = "",
     exported_headers = {
-        "ReactCommon/JSCallInvokerHolder.h": "ReactCommon/JSCallInvokerHolder.h",
+        "ReactCommon/CallInvokerHolder.h": "ReactCommon/CallInvokerHolder.h",
     },
     compiler_flags = [
         "-fexceptions",
@@ -65,6 +65,6 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     exported_deps = [
-        react_native_xplat_target("jscallinvoker:jscallinvoker"),
+        react_native_xplat_target("callinvoker:callinvoker"),
     ],
 )

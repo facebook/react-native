@@ -10,8 +10,8 @@ fb_native.android_library(
     name = "appcompat",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":appcompat-binary",
         ":annotation",
+        ":appcompat-binary",
         ":collection",
         ":core",
         ":cursoradapter",
@@ -19,136 +19,135 @@ fb_native.android_library(
         ":legacy-support-core-utils",
         ":vectordrawable",
         ":vectordrawable-animated",
-    ]
+    ],
 )
 
 fb_native.android_library(
     name = "asynclayoutinflater",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":asynclayoutinflater-binary",
         ":annotation",
+        ":asynclayoutinflater-binary",
         ":core",
-    ]
+    ],
 )
 
 fb_native.android_library(
     name = "collection",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":collection-binary",
         ":annotation",
-    ]
+        ":collection-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "coordinatorlayout",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":coordinatorlayout-binary",
         ":annotation",
+        ":coordinatorlayout-binary",
         ":core",
         ":customview",
-    ]
+    ],
 )
 
 fb_native.android_library(
     name = "core",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":core-binary",
         ":annotation",
         ":collection",
+        ":core-binary",
         ":lifecycle-runtime",
         ":versionedparcelable",
-    ]
+    ],
 )
 
 fb_native.android_library(
     name = "core-common",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":core-common-binary",
         ":annotation",
-    ]
+        ":core-common-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "core-runtime",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":core-runtime-binary",
         ":core-common",
-    ]
+        ":core-runtime-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "cursoradapter",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":cursoradapter-binary",
         ":annotation",
-    ]
+        ":cursoradapter-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "customview",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":customview-binary",
         ":annotation",
         ":core",
-    ]
+        ":customview-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "documentfile",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":documentfile-binary",
         ":annotation",
-    ]
+        ":documentfile-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "drawerlayout",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":drawerlayout-binary",
         ":annotation",
         ":core",
         ":customview",
-    ]
+        ":drawerlayout-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "fragment",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":fragment-binary",
         ":annotation",
         ":core",
+        ":fragment-binary",
         ":legacy-support-core-ui",
         ":legacy-support-core-utils",
         ":lifecycle-viewmodel",
         ":loader",
-    ]
+    ],
 )
 
 fb_native.android_library(
     name = "interpolator",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":interpolator-binary",
         ":annotation",
-    ]
+        ":interpolator-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "legacy-support-core-ui",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":legacy-support-core-ui-binary",
         ":annotation",
         ":asynclayoutinflater",
         ":coordinatorlayout",
@@ -157,170 +156,170 @@ fb_native.android_library(
         ":customview",
         ":drawerlayout",
         ":interpolator",
+        ":legacy-support-core-ui-binary",
         ":legacy-support-core-utils",
         ":slidingpanelayout",
         ":swiperefreshlayout",
         ":viewpager",
-    ]
+    ],
 )
-
 
 fb_native.android_library(
     name = "legacy-support-core-utils",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":legacy-support-core-utils-binary",
         ":annotation",
         ":core",
         ":documentfile",
+        ":legacy-support-core-utils-binary",
         ":loader",
         ":localbroadcastmanager",
         ":print",
-    ]
+    ],
 )
 
 fb_native.android_library(
     name = "lifecycle-common",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":lifecycle-common-binary",
         ":annotation",
-    ]
+        ":lifecycle-common-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "lifecycle-livedata",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":lifecycle-livedata-binary",
         ":core-common",
         ":core-runtime",
+        ":lifecycle-livedata-binary",
         ":lifecycle-livedata-core",
-    ]
+    ],
 )
 
 fb_native.android_library(
     name = "lifecycle-livedata-core",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":lifecycle-livedata-core-binary",
         ":core-common",
         ":core-runtime",
         ":lifecycle-common",
-    ]
+        ":lifecycle-livedata-core-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "lifecycle-runtime",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":lifecycle-runtime-binary",
         ":annotation",
         ":core-common",
         ":lifecycle-common",
-    ]
+        ":lifecycle-runtime-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "lifecycle-viewmodel",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":lifecycle-viewmodel-binary",
         ":annotation",
-    ]
+        ":lifecycle-viewmodel-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "localbroadcastmanager",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":localbroadcastmanager-binary",
         ":annotation",
-    ]
+        ":localbroadcastmanager-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "loader",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":loader-binary",
         ":annotation",
         ":core",
         ":lifecycle-livedata",
         ":lifecycle-viewmodel",
-    ]
+        ":loader-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "print",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":print-binary",
         ":annotation",
-    ]
+        ":print-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "slidingpanelayout",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":slidingpanelayout-binary",
         ":annotation",
         ":core",
         ":customview",
-    ]
+        ":slidingpanelayout-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "swiperefreshlayout",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":swiperefreshlayout-binary",
         ":annotation",
         ":core",
         ":interpolator",
-    ]
+        ":swiperefreshlayout-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "vectordrawable",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":vectordrawable-binary",
         ":annotation",
         ":core",
-    ]
+        ":vectordrawable-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "vectordrawable-animated",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":vectordrawable-animated-binary",
         ":legacy-support-core-ui",
         ":vectordrawable",
-    ]
+        ":vectordrawable-animated-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "versionedparcelable",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":versionedparcelable-binary",
         ":annotation",
         ":collection",
-    ]
+        ":versionedparcelable-binary",
+    ],
 )
 
 fb_native.android_library(
     name = "viewpager",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":viewpager-binary",
         ":annotation",
         ":core",
         ":customview",
-    ]
+        ":viewpager-binary",
+    ],
 )
 
 # Internal targets
@@ -464,7 +463,6 @@ fb_native.android_prebuilt_aar(
     aar = ":versionedparcelable-binary-aar",
 )
 
-
 fb_native.android_prebuilt_aar(
     name = "viewpager-binary",
     aar = ":viewpager-binary-aar",
@@ -488,7 +486,6 @@ fb_native.remote_file(
     sha1 = "5ffa788d19a6863799f25cb50d4fdfb0ec649037",
     url = "mvn:androidx.asynclayoutinflater:asynclayoutinflater:aar:1.0.0",
 )
-
 
 fb_native.remote_file(
     name = "collection-binary.jar",

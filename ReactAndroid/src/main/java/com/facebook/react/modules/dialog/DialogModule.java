@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.dialog;
 
 import android.app.Activity;
@@ -233,7 +234,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
    */
   private @Nullable FragmentManagerHelper getFragmentManagerHelper() {
     Activity activity = getCurrentActivity();
-    if (activity == null) {
+    if (activity == null || !(activity instanceof FragmentActivity)) {
       return null;
     }
     return new FragmentManagerHelper(((FragmentActivity) activity).getSupportFragmentManager());

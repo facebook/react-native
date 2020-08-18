@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -42,11 +42,6 @@ RCT_EXPORT_MODULE()
   isEnabled = enabled;
 }
 
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 + (BOOL)requiresMainQueueSetup
 {
   return YES;
@@ -83,7 +78,7 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(RCTUIColor *)color back
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
 
       if (@available(iOS 11.0, *)) {
-        UIWindow *window = UIApplication.sharedApplication.keyWindow;
+        UIWindow *window = RCTSharedApplication().keyWindow;
         self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 30)];
         self->_label = [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top, screenSize.width, 30)];
       } else {
@@ -171,8 +166,8 @@ RCT_EXPORT_METHOD(hide)
 
 - (void)showWithURL:(NSURL *)URL
 {
-  RCTUIColor *color; // TODO(OSS Candidate ISS#2710739)
-  RCTUIColor *backgroundColor; // TODO(OSS Candidate ISS#2710739)
+  RCTUIColor *color; // TODO(macOS ISS#2323203)
+  RCTUIColor *backgroundColor; // TODO(macOS ISS#2323203)
   NSString *message;
   if (URL.fileURL) {
     // If dev mode is not enabled, we don't want to show this kind of notification
@@ -181,7 +176,7 @@ RCT_EXPORT_METHOD(hide)
 #endif
     color = [RCTUIColor whiteColor]; //TODO(OSS Candidate ISS#2710739) UIColor -> RCTUIColor
     backgroundColor = [RCTUIColor blackColor]; // TODO(OSS Candidate ISS#2710739)
-      message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
+    message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
   } else {
     color = [RCTUIColor whiteColor]; // TODO(OSS Candidate ISS#2710739)
     backgroundColor = [RCTUIColor colorWithHue:1./3 saturation:1 brightness:.35 alpha:1]; // TODO(OSS Candidate ISS#2710739)

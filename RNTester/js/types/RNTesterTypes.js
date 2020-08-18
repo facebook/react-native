@@ -26,7 +26,7 @@ export type RNTesterProps = $ReadOnly<{|
 
 export type RNTesterExampleModuleItem = $ReadOnly<{|
   title: string,
-  platform?: string | Array<string>, // TODO(macOS ISS#2323203)
+  platform?: string | Array<string>, // TODO(OSS Candidate ISS#2710739)
   description?: string,
   render: () => React.Node,
 |}>;
@@ -44,5 +44,9 @@ export type RNTesterExample = $ReadOnly<{|
   key: string,
   module: RNTesterExampleModule,
   supportsTVOS?: boolean,
-  skipTest?: {[string]: string}, // TODO(OSS Candidate ISS#2710739)
+  skipTest?: {
+    ios?: string,
+    macos?: string,
+    default?: string,
+  }, // TODO(OSS Candidate ISS#2710739)
 |}>;

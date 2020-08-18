@@ -1,14 +1,15 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react;
 
 import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.config.ReactFeatureFlags;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,18 +57,6 @@ public class NativeModuleRegistryBuilder {
                   + "This error may also be present if the package is present only once in getPackages() but is also automatically added later during build time by autolinking. Try removing the existing entry and rebuild.");
         }
         mModules.remove(existingNativeModule);
-      }
-      if (ReactFeatureFlags.useTurboModules && moduleHolder.isTurboModule()) {
-        // If this module is a TurboModule, and if TurboModules are enabled, don't add this module
-
-        // This condition is after checking for overrides, since if there is already a module,
-        // and we want to override it with a turbo module, we would need to remove the modules thats
-        // already in the list, and then NOT add the new module, since that will be directly exposed
-
-        // Note that is someone uses {@link NativeModuleRegistry#registerModules}, we will NOT check
-        // for TurboModules - assuming that people wanted to explicitly register native modules
-        // there
-        continue;
       }
       mModules.put(name, moduleHolder);
     }

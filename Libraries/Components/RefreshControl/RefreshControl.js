@@ -13,8 +13,6 @@
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 
-const nullthrows = require('nullthrows');
-
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import AndroidSwipeRefreshLayoutNativeComponent from './AndroidSwipeRefreshLayoutNativeComponent';
@@ -137,7 +135,7 @@ export type RefreshControlProps = $ReadOnly<{|
 class RefreshControl extends React.Component<RefreshControlProps> {
   static SIZE: any = RefreshLayoutConsts.SIZE;
 
-  _setNativePropsOnRef: ?({refreshing: boolean}) => void;
+  _setNativePropsOnRef: ?({refreshing: boolean, ...}) => void;
   _lastNativeRefreshing = false;
 
   componentDidMount() {

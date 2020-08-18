@@ -38,7 +38,7 @@ declare module 'prop-types' {
   declare var shape: React$PropType$Shape;
 
   declare function checkPropTypes<V>(
-    propTypes: {[_: $Keys<V>]: $npm$propTypes$ReactPropsCheckType},
+    propTypes: {[_: $Keys<V>]: $npm$propTypes$ReactPropsCheckType, ...},
     values: V,
     location: string,
     componentName: string,

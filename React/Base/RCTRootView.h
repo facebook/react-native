@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -115,7 +115,7 @@ NSString *const RCTContentDidAppearNotification;
  * with a blank screen. By default this is nil, but you can override it with
  * (for example) a UIActivityIndicatorView or a placeholder image.
  */
-@property (nonatomic, strong) RCTUIView *loadingView; // TODO(macOS ISS#3536887)
+@property (nonatomic, strong, nullable) RCTUIView *loadingView; // TODO(macOS ISS#3536887)
 
 /**
  * When set, any touches on the RCTRootView that are not matched up to any of the child

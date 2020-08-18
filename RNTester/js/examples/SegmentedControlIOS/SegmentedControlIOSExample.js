@@ -13,7 +13,7 @@
 const React = require('react');
 const {SegmentedControlIOS, Text, View, StyleSheet} = require('react-native');
 
-class BasicSegmentedControlExample extends React.Component<{}> {
+class BasicSegmentedControlExample extends React.Component<{...}> {
   render() {
     return (
       <View>
@@ -30,7 +30,7 @@ class BasicSegmentedControlExample extends React.Component<{}> {
   }
 }
 
-class PreSelectedSegmentedControlExample extends React.Component<{}> {
+class PreSelectedSegmentedControlExample extends React.Component<{...}> {
   render() {
     return (
       <View>
@@ -42,7 +42,7 @@ class PreSelectedSegmentedControlExample extends React.Component<{}> {
   }
 }
 
-class MomentarySegmentedControlExample extends React.Component<{}> {
+class MomentarySegmentedControlExample extends React.Component<{...}> {
   render() {
     return (
       <View>
@@ -54,7 +54,7 @@ class MomentarySegmentedControlExample extends React.Component<{}> {
   }
 }
 
-class DisabledSegmentedControlExample extends React.Component<{}> {
+class DisabledSegmentedControlExample extends React.Component<{...}> {
   render() {
     return (
       <View>
@@ -70,7 +70,7 @@ class DisabledSegmentedControlExample extends React.Component<{}> {
   }
 }
 
-class ColorSegmentedControlExample extends React.Component<{}> {
+class ColorSegmentedControlExample extends React.Component<{...}> {
   render() {
     return (
       <View>
@@ -94,7 +94,7 @@ class ColorSegmentedControlExample extends React.Component<{}> {
 }
 
 class EventSegmentedControlExample extends React.Component<
-  {},
+  {...},
   $FlowFixMeState,
 > {
   state = {

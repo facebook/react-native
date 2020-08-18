@@ -14,6 +14,7 @@ const React = require('react');
 
 const {StyleSheet, Text, View} = require('react-native');
 import {Platform} from 'react-native'; // TODO(macOS ISS#2323203)
+import {RNTesterThemeContext} from './RNTesterTheme';
 
 type Props = $ReadOnly<{|
   children?: React.Node,
@@ -30,17 +31,47 @@ class RNTesterBlock extends React.Component<Props, State> {
 
   render(): React.Node {
     const description = this.props.description ? (
-      <Text style={styles.descriptionText}>{this.props.description}</Text>
+      <RNTesterThemeContext.Consumer>
+        {theme => {
+          return (
+            <Text style={[styles.descriptionText, {color: theme.LabelColor}]}>
+              {this.props.description}
+            </Text>
+          );
+        }}
+      </RNTesterThemeContext.Consumer>
     ) : null;
 
     return (
-      <View style={styles.container}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>{this.props.title}</Text>
-          {description}
-        </View>
-        <View style={styles.children}>{this.props.children}</View>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => {
+          return (
+            <View
+              style={[
+                styles.container,
+                {
+                  borderColor: theme.SeparatorColor,
+                  backgroundColor: theme.SystemBackgroundColor,
+                },
+              ]}>
+              <View
+                style={[
+                  styles.titleContainer,
+                  {
+                    borderBottomColor: theme.SeparatorColor,
+                    backgroundColor: theme.QuaternarySystemFillColor,
+                  },
+                ]}>
+                <Text style={[styles.titleText, {color: theme.LabelColor}]}>
+                  {this.props.title}
+                </Text>
+                {description}
+              </View>
+              <View style={styles.children}>{this.props.children}</View>
+            </View>
+          );
+        }}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }

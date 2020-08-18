@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.view;
 
 import android.annotation.TargetApi;
@@ -24,7 +25,6 @@ import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
@@ -35,7 +35,7 @@ import java.util.Map;
 
 /** View manager for AndroidViews (plain React Views). */
 @ReactModule(name = ReactViewManager.REACT_CLASS)
-public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
+public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
 
   @VisibleForTesting public static final String REACT_CLASS = ViewProps.VIEW_CLASS_NAME;
 
@@ -171,12 +171,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
         fg == null
             ? null
             : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), fg));
-  }
-
-  @ReactProp(
-      name = com.facebook.react.uimanager.ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
-  public void setRemoveClippedSubviews(ReactViewGroup view, boolean removeClippedSubviews) {
-    view.setRemoveClippedSubviews(removeClippedSubviews);
   }
 
   @ReactProp(name = ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)
@@ -343,60 +337,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
       float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
       root.drawableHotspotChanged(x, y);
-    }
-  }
-
-  @Override
-  public void addView(ReactViewGroup parent, View child, int index) {
-    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
-    if (removeClippedSubviews) {
-      parent.addViewWithSubviewClippingEnabled(child, index);
-    } else {
-      parent.addView(child, index);
-    }
-  }
-
-  @Override
-  public int getChildCount(ReactViewGroup parent) {
-    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
-    if (removeClippedSubviews) {
-      return parent.getAllChildrenCount();
-    } else {
-      return parent.getChildCount();
-    }
-  }
-
-  @Override
-  public View getChildAt(ReactViewGroup parent, int index) {
-    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
-    if (removeClippedSubviews) {
-      return parent.getChildAtWithSubviewClippingEnabled(index);
-    } else {
-      return parent.getChildAt(index);
-    }
-  }
-
-  @Override
-  public void removeViewAt(ReactViewGroup parent, int index) {
-    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
-    if (removeClippedSubviews) {
-      View child = getChildAt(parent, index);
-      if (child.getParent() != null) {
-        parent.removeView(child);
-      }
-      parent.removeViewWithSubviewClippingEnabled(child);
-    } else {
-      parent.removeViewAt(index);
-    }
-  }
-
-  @Override
-  public void removeAllViews(ReactViewGroup parent) {
-    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
-    if (removeClippedSubviews) {
-      parent.removeAllViewsWithSubviewClippingEnabled();
-    } else {
-      parent.removeAllViews();
     }
   }
 }

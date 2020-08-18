@@ -27,11 +27,13 @@ export type Buttons = Array<{
   text?: string,
   onPress?: ?Function,
   style?: AlertButtonStyle,
+  ...
 }>;
 
 type Options = {
   cancelable?: ?boolean,
   onDismiss?: ?() => void,
+  ...
 };
 
 /**

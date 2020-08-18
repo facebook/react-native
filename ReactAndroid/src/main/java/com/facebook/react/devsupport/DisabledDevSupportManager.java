@@ -1,11 +1,13 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
+import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
@@ -40,6 +42,14 @@ public class DisabledDevSupportManager implements DevSupportManager {
   public void showNewJSError(String message, ReadableArray details, int errorCookie) {}
 
   @Override
+  public @Nullable View createRootView(String appKey) {
+    return null;
+  }
+
+  @Override
+  public void destroyRootView(View rootView) {}
+
+  @Override
   public void updateJSError(String message, ReadableArray details, int errorCookie) {}
 
   @Override
@@ -62,9 +72,6 @@ public class DisabledDevSupportManager implements DevSupportManager {
 
   @Override
   public void setRemoteJSDebugEnabled(boolean isRemoteJSDebugEnabled) {}
-
-  @Override
-  public void setReloadOnJSChangeEnabled(boolean isReloadOnJSChangeEnabled) {}
 
   @Override
   public void setFpsDebugEnabled(boolean isFpsDebugEnabled) {}

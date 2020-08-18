@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -43,19 +43,19 @@ const EVENT_DEFINITION = `
 
   object_required: {
     boolean_required: boolean,
-  }
+  },
 
   object_optional_key?: {
     string_optional_key?: string,
-  }
+  },
 
   object_optional_value: ?{
     float_optional_value: ?Float,
-  }
+  },
 
   object_optional_both?: ?{
     int32_optional_both?: ?Int32,
-  }
+  },
 
   object_required_nested_2_layers: {
     object_optional_nested_1_layer?: ?{
@@ -65,7 +65,7 @@ const EVENT_DEFINITION = `
       float_optional_value: ?Float,
       int32_optional_both?: ?Int32,
     }
-  }
+  },
 `;
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
@@ -76,7 +76,7 @@ const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -89,7 +89,7 @@ import type {
   WithDefault,
 } from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -105,7 +105,7 @@ type ModuleProps = $ReadOnly<{|
 export default (codegenNativeComponent<ModuleProps>('Module', {
   interfaceOnly: true,
   paperComponentName: 'RCTModule',
-}): NativeComponent<ModuleProps>);
+}): HostComponent<ModuleProps>);
 `;
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST = `
@@ -116,7 +116,7 @@ const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -129,7 +129,7 @@ import type {
   WithDefault,
 } from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -156,7 +156,7 @@ const NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -164,7 +164,7 @@ const NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION = `
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -172,7 +172,7 @@ type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>('Module', {
   deprecatedViewConfigName: 'DeprecateModuleName',
-}): NativeComponent<ModuleProps>);
+}): HostComponent<ModuleProps>);
 `;
 
 const ALL_PROP_TYPES_NO_EVENTS = `
@@ -183,7 +183,7 @@ const ALL_PROP_TYPES_NO_EVENTS = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -192,9 +192,9 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
-import type {ColorValue, ColorArrayValue, PointValue} from 'StyleSheetTypes';
+import type {ColorValue, ColorArrayValue, PointValue, EdgeInsetsValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -204,6 +204,10 @@ type ModuleProps = $ReadOnly<{|
   boolean_required: boolean,
   boolean_optional_key?: WithDefault<boolean, true>,
   boolean_optional_both?: WithDefault<boolean, true>,
+
+  // Boolean props, null default
+  boolean_null_optional_key?: WithDefault<boolean, null>,
+  boolean_null_optional_both?: WithDefault<boolean, null>,
 
   // String props
   string_required: string,
@@ -233,6 +237,10 @@ type ModuleProps = $ReadOnly<{|
   float_optional_key?: WithDefault<Float, 1.1>,
   float_optional_both?: WithDefault<Float, 1.1>,
 
+  // Float props, null default
+  float_null_optional_key?: WithDefault<Float, null>,
+  float_null_optional_both?: WithDefault<Float, null>,
+
   // Int32 props
   int32_required: Int32,
   int32_optional_key?: WithDefault<Int32, 1>,
@@ -241,6 +249,9 @@ type ModuleProps = $ReadOnly<{|
   // String enum props
   enum_optional_key?: WithDefault<'small' | 'large', 'small'>,
   enum_optional_both?: WithDefault<'small' | 'large', 'small'>,
+
+  // Int enum props
+  int_enum_optional_key?: WithDefault<0 | 1, 0>,
 
   // Object props
   object_optional_key?: $ReadOnly<{| prop: string |}>,
@@ -269,11 +280,17 @@ type ModuleProps = $ReadOnly<{|
   point_optional_key?: PointValue,
   point_optional_value: ?PointValue,
   point_optional_both?: ?PointValue,
+
+  // EdgeInsets props
+  insets_required: EdgeInsetsValue,
+  insets_optional_key?: EdgeInsetsValue,
+  insets_optional_value: ?EdgeInsetsValue,
+  insets_optional_both?: ?EdgeInsetsValue,
 |}>;
 
 export default (codegenNativeComponent<ModuleProps, Options>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const ARRAY_PROP_TYPES_NO_EVENTS = `
@@ -284,7 +301,7 @@ const ARRAY_PROP_TYPES_NO_EVENTS = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -293,9 +310,9 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
-import type {ColorValue, PointValue} from 'StyleSheetTypes';
+import type {ColorValue, PointValue, EdgeInsetsValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ObjectType = $ReadOnly<{| prop: string |}>;
 type ArrayObjectType = $ReadOnlyArray<$ReadOnly<{| prop: string |}>>;
@@ -362,16 +379,71 @@ type ModuleProps = $ReadOnly<{|
   array_point_optional_value: ?$ReadOnlyArray<PointValue>,
   array_point_optional_both?: ?$ReadOnlyArray<PointValue>,
 
+  // EdgeInsetsValue props
+  array_insets_required: $ReadOnlyArray<EdgeInsetsValue>,
+  array_insets_optional_key?: $ReadOnlyArray<EdgeInsetsValue>,
+  array_insets_optional_value: ?$ReadOnlyArray<EdgeInsetsValue>,
+  array_insets_optional_both?: ?$ReadOnlyArray<EdgeInsetsValue>,
+
   // Object props
   array_object_required: $ReadOnlyArray<$ReadOnly<{| prop: string |}>>,
   array_object_optional_key?: $ReadOnlyArray<$ReadOnly<{| prop: string |}>>,
   array_object_optional_value: ?ArrayObjectType,
   array_object_optional_both?: ?$ReadOnlyArray<ObjectType>,
+
+  // Nested array object types
+  array_of_array_object_required: $ReadOnlyArray<
+    $ReadOnly<{|
+      // This needs to be the same name as the top level array above
+      array_object_required: $ReadOnlyArray<$ReadOnly<{| prop: string |}>>,
+    |}>
+  >,
+  array_of_array_object_optional_key?: $ReadOnlyArray<
+    $ReadOnly<{|
+      // This needs to be the same name as the top level array above
+      array_object_optional_key: $ReadOnlyArray<$ReadOnly<{| prop?: string |}>>,
+    |}>
+  >,
+  array_of_array_object_optional_value: ?$ReadOnlyArray<
+    $ReadOnly<{|
+      // This needs to be the same name as the top level array above
+      array_object_optional_value: $ReadOnlyArray<$ReadOnly<{| prop: ?string |}>>,
+    |}>
+  >,
+  array_of_array_object_optional_both?: ?$ReadOnlyArray<
+    $ReadOnly<{|
+      // This needs to be the same name as the top level array above
+      array_object_optional_both: $ReadOnlyArray<$ReadOnly<{| prop?: ?string |}>>,
+    |}>
+  >,
+
+  // Nested array of array of object types
+  array_of_array_of_object_required: $ReadOnlyArray<
+    $ReadOnlyArray<
+      $ReadOnly<{|
+        prop: string,
+      |}>,
+    >,
+  >,
+
+  // Nested array of array of object types (in file)
+  array_of_array_of_object_required_in_file: $ReadOnlyArray<
+    $ReadOnlyArray<ObjectType>,
+  >,
+
+  // Nested array of array of object types (with spread)
+  array_of_array_of_object_required_with_spread: $ReadOnlyArray<
+    $ReadOnlyArray<
+      $ReadOnly<{|
+        ...ObjectType
+      |}>,
+    >,
+  >,
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const OBJECT_PROP_TYPES_NO_EVENTS = `
@@ -382,7 +454,7 @@ const OBJECT_PROP_TYPES_NO_EVENTS = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -391,9 +463,9 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
-import type {ColorValue, PointValue} from 'StyleSheetTypes';
+import type {ColorValue, PointValue, EdgeInsetsValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -442,6 +514,12 @@ type ModuleProps = $ReadOnly<{|
   point_optional_value: $ReadOnly<{|prop: ?PointValue|}>,
   point_optional_both: $ReadOnly<{|prop?: ?PointValue|}>,
 
+  // EdgeInsetsValue props
+  insets_required: $ReadOnly<{|prop: EdgeInsetsValue|}>,
+  insets_optional_key: $ReadOnly<{|prop?: EdgeInsetsValue|}>,
+  insets_optional_value: $ReadOnly<{|prop: ?EdgeInsetsValue|}>,
+  insets_optional_both: $ReadOnly<{|prop?: ?EdgeInsetsValue|}>,
+
   // Nested object props
   object_required: $ReadOnly<{|prop: $ReadOnly<{nestedProp: string}>|}>,
   object_optional_key?: $ReadOnly<{|prop: $ReadOnly<{nestedProp: string}>|}>,
@@ -451,7 +529,7 @@ type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROPS_ALIASED_LOCALLY = `
@@ -462,19 +540,19 @@ const PROPS_ALIASED_LOCALLY = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
 type DeepSpread = $ReadOnly<{|
   otherStringProp: string,
-|}>
+|}>;
 
 export type PropsInFile = $ReadOnly<{|
   ...DeepSpread,
@@ -485,18 +563,18 @@ export type PropsInFile = $ReadOnly<{|
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 
-  ...PropsInFile
+  ...PropsInFile,
 
   localType: $ReadOnly<{|
     ...PropsInFile
-  |}>
+  |}>,
 
   localArr: $ReadOnlyArray<PropsInFile>
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const EVENTS_DEFINED_INLINE_WITH_ALL_TYPES = `
@@ -507,12 +585,12 @@ const EVENTS_DEFINED_INLINE_WITH_ALL_TYPES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {
@@ -605,7 +683,7 @@ type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const EVENTS_DEFINED_AS_NULL_INLINE = `
@@ -616,7 +694,7 @@ const EVENTS_DEFINED_AS_NULL_INLINE = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -625,7 +703,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {BubblingEventHandler, DirectEventHandler} from 'CodegenTypese';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -654,7 +732,7 @@ type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROPS_AND_EVENTS_TYPES_EXPORTED = `
@@ -665,7 +743,7 @@ const PROPS_AND_EVENTS_TYPES_EXPORTED = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -675,7 +753,7 @@ import type {
   DirectEventHandler,
 } from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -697,7 +775,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROPS_AS_EXTERNAL_TYPES = `
@@ -708,14 +786,14 @@ const PROPS_AS_EXTERNAL_TYPES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 export type String = string;
 export type AnotherArray = $ReadOnlyArray<String>;
@@ -727,7 +805,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_WITH_ALL_TYPES = `
@@ -738,7 +816,7 @@ const COMMANDS_DEFINED_WITH_ALL_TYPES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -748,12 +826,20 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
+
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  // No props or events
+|}>;
+
+type NativeType = HostComponent<ModuleProps>;
 
 interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
   +scrollTo: (
-    viewRef: React.Ref<'RCTView'>,
+    viewRef: React.ElementRef<NativeType>,
     x: Float,
     y: Int32,
     z: Double,
@@ -761,18 +847,13 @@ interface NativeCommands {
   ) => void;
 }
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-  // No props or events
-|}>;
-
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate', 'scrollTo'],
 });
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): NativeType);
 `;
 
 const COMMANDS_WITH_EXTERNAL_TYPES = `
@@ -783,7 +864,7 @@ const COMMANDS_WITH_EXTERNAL_TYPES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -793,14 +874,21 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 export type Boolean = boolean;
 export type Int = Int32;
 export type Void = void;
 
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  // No props or events
+|}>;
+
+type NativeType = HostComponent<ModuleProps>;
+
 export type ScrollTo = (
-  viewRef: React.Ref<'RCTView'>,
+  viewRef: React.ElementRef<NativeType>,
   y: Int,
   animated: Boolean,
 ) => Void;
@@ -809,18 +897,13 @@ interface NativeCommands {
   +scrollTo: ScrollTo;
 }
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-  // No props or events
-|}>;
-
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['scrollTo'],
 });
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): NativeType);
 `;
 
 const COMMANDS_AND_EVENTS_TYPES_EXPORTED = `
@@ -831,7 +914,7 @@ const COMMANDS_AND_EVENTS_TYPES_EXPORTED = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -841,7 +924,7 @@ import type {
   DirectEventHandler,
 } from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -852,12 +935,6 @@ export type EventInFile = $ReadOnly<{|
 export type Boolean = boolean;
 export type Int = Int32;
 export type Void = void;
-
-export type ScrollTo = (viewRef: React.Ref<'RCTView'>, y: Int, animated: Boolean) => Void
-
-interface NativeCommands {
-  +scrollTo: ScrollTo;
-}
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -871,13 +948,21 @@ export type ModuleProps = $ReadOnly<{|
   onDirectEventDefinedInlineWithPaperName: DirectEventHandler<EventInFile, 'paperDirectEventDefinedInlineWithPaperName'>,
 |}>;
 
+type NativeType = HostComponent<ModuleProps>;
+
+export type ScrollTo = (viewRef: React.ElementRef<NativeType>, y: Int, animated: Boolean) => Void;
+
+interface NativeCommands {
+  +scrollTo: ScrollTo;
+}
+
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['scrollTo']
 });
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): NativeType);
 `;
 
 module.exports = {

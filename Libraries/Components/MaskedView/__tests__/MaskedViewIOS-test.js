@@ -6,7 +6,7 @@
  *
  * @format
  * @emails oncall+react_native
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -16,66 +16,25 @@ const Text = require('../../../Text/Text');
 const View = require('../../View/View');
 const MaskedViewIOS = require('../MaskedViewIOS');
 
-const render = require('../../../../jest/renderer');
+const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 
 describe('<MaskedViewIOS />', () => {
-  it('should render as <RCTMaskedView> when mocked', () => {
-    const instance = render.create(
-      <MaskedViewIOS
-        maskElement={
-          <View>
-            <Text>Basic Mask</Text>
-          </View>
-        }>
-        <View />
-      </MaskedViewIOS>,
+  it('should render as expected', () => {
+    ReactNativeTestTools.expectRendersMatchingSnapshot(
+      'MaskedViewIOS',
+      () => (
+        <MaskedViewIOS
+          maskElement={
+            <View>
+              <Text>Basic Mask</Text>
+            </View>
+          }>
+          <View />
+        </MaskedViewIOS>
+      ),
+      () => {
+        jest.dontMock('../MaskedViewIOS');
+      },
     );
-    expect(instance).toMatchSnapshot();
-  });
-
-  it('should shallow render as <MaskedViewIOS> when mocked', () => {
-    const output = render.shallow(
-      <MaskedViewIOS
-        maskElement={
-          <View>
-            <Text>Basic Mask</Text>
-          </View>
-        }>
-        <View />
-      </MaskedViewIOS>,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should shallow render as <MaskedViewIOS> when not mocked', () => {
-    jest.dontMock('../MaskedViewIOS');
-
-    const output = render.shallow(
-      <MaskedViewIOS
-        maskElement={
-          <View>
-            <Text>Basic Mask</Text>
-          </View>
-        }>
-        <View />
-      </MaskedViewIOS>,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should render as <RCTMaskedView> when not mocked', () => {
-    jest.dontMock('../MaskedViewIOS');
-
-    const instance = render.create(
-      <MaskedViewIOS
-        maskElement={
-          <View>
-            <Text>Basic Mask</Text>
-          </View>
-        }>
-        <View />
-      </MaskedViewIOS>,
-    );
-    expect(instance).toMatchSnapshot();
   });
 });

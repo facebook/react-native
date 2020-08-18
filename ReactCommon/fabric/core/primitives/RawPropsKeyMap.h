@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -27,28 +27,33 @@ class RawPropsKeyMap final {
   /*
    * Stores `value` with by given `key`.
    */
-  void insert(RawPropsKey const &key, RawPropsValueIndex value);
+  void insert(RawPropsKey const &key, RawPropsValueIndex value) noexcept;
 
   /*
    * Reindexes the stored data.
    * Must be called before `at` (after calling a bunch of `add`s).
    */
-  void reindex();
+  void reindex() noexcept;
 
   /*
    * Finds and returns the `value` (some index) by given `key`.
    * Returns `kRawPropsValueIndexEmpty` if the value wan't found.
    */
-  RawPropsValueIndex at(char const *name, RawPropsPropNameLength length);
+  RawPropsValueIndex at(
+      char const *name,
+      RawPropsPropNameLength length) noexcept;
 
  private:
-  static int comparator(void const *lhs, void const *rhs);
-
   struct Item {
     RawPropsValueIndex value;
     RawPropsPropNameLength length;
     char name[kPropNameLengthHardCap];
   };
+
+  static bool shouldFirstOneBeBeforeSecondOne(
+      Item const &lhs,
+      Item const &rhs) noexcept;
+  static bool hasSameName(Item const &lhs, Item const &rhs) noexcept;
 
   better::small_vector<Item, kNumberOfExplicitlySpecifedPropsSoftCap> items_{};
   better::small_vector<RawPropsPropNameLength, kPropNameLengthHardCap>

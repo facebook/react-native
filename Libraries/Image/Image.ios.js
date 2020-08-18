@@ -7,48 +7,46 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const DeprecatedImagePropType = require('../DeprecatedPropTypes/DeprecatedImagePropType');
-const NativeModules = require('../BatchedBridge/NativeModules');
 const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
 const StyleSheet = require('../StyleSheet/StyleSheet');
 
 const flattenStyle = require('../StyleSheet/flattenStyle');
-const requireNativeComponent = require('../ReactNative/requireNativeComponent');
 const resolveAssetSource = require('./resolveAssetSource');
-
-const ImageViewManager = NativeModules.ImageViewManager;
-
-const RCTImageView = requireNativeComponent('RCTImageView');
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
 import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
+import NativeImageLoaderIOS from './NativeImageLoaderIOS';
+
+const RCTImageView = require('./ImageViewNativeComponent');
 
 function getSize(
   uri: string,
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
 ) {
-  ImageViewManager.getSize(
-    uri,
-    success,
-    failure ||
-      function() {
-        console.warn('Failed to get size for image: ' + uri);
-      },
-  );
+  NativeImageLoaderIOS.getSize(uri)
+    .then(([width, height]) => success(width, height))
+    .catch(
+      failure ||
+        function() {
+          console.warn('Failed to get size for image ' + uri);
+        },
+    );
 }
 
 function getSizeWithHeaders(
   uri: string,
-  headers: {[string]: string},
+  headers: {[string]: string, ...},
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
 ): any {
-  return ImageViewManager.getSizeWithHeaders({uri, headers})
+  return NativeImageLoaderIOS.getSizeWithHeaders(uri, headers)
     .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
@@ -61,23 +59,23 @@ function getSizeWithHeaders(
 }
 
 function prefetch(url: string): any {
-  return ImageViewManager.prefetchImage(url);
+  return NativeImageLoaderIOS.prefetchImage(url);
 }
 
 async function queryCache(
   urls: Array<string>,
-): Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}> {
-  return await ImageViewManager.queryCache(urls);
+): Promise<{[string]: 'memory' | 'disk' | 'disk/memory', ...}> {
+  return await NativeImageLoaderIOS.queryCache(urls);
 }
 
-declare class ImageComponentType extends ReactNative.NativeComponent<ImagePropsType> {
-  static getSize: typeof getSize;
-  static getSizeWithHeaders: typeof getSizeWithHeaders;
-  static prefetch: typeof prefetch;
-  static queryCache: typeof queryCache;
-  static resolveAssetSource: typeof resolveAssetSource;
-  static propTypes: typeof DeprecatedImagePropType;
-}
+type ImageComponentStatics = $ReadOnly<{|
+  getSize: typeof getSize,
+  getSizeWithHeaders: typeof getSizeWithHeaders,
+  prefetch: typeof prefetch,
+  queryCache: typeof queryCache,
+  resolveAssetSource: typeof resolveAssetSource,
+  propTypes: typeof DeprecatedImagePropType,
+|}>;
 
 /**
  * A React component for displaying different types of images,
@@ -86,10 +84,7 @@ declare class ImageComponentType extends ReactNative.NativeComponent<ImagePropsT
  *
  * See https://facebook.github.io/react-native/docs/image.html
  */
-let Image = (
-  props: ImagePropsType,
-  forwardedRef: ?React.Ref<'RCTImageView'>,
-) => {
+let Image = (props: ImagePropsType, forwardedRef) => {
   const source = resolveAssetSource(props.source) || {
     uri: undefined,
     width: undefined,
@@ -140,7 +135,9 @@ let Image = (
   );
 };
 
-Image = React.forwardRef(Image);
+Image = React.forwardRef<ImagePropsType, React.ElementRef<typeof RCTImageView>>(
+  Image,
+);
 Image.displayName = 'Image';
 
 /**
@@ -206,7 +203,8 @@ const styles = StyleSheet.create({
   },
 });
 
-/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
-module.exports = (Image: Class<ImageComponentType>);
+module.exports = ((Image: any): React.AbstractComponent<
+  ImagePropsType,
+  React.ElementRef<typeof RCTImageView>,
+> &
+  ImageComponentStatics);

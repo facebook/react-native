@@ -22,17 +22,17 @@ Both macOS and Xcode are required.
 
 You'll need to have all the [prerequisites](https://github.com/facebook/react-native/tree/master/ReactAndroid#prerequisites) (SDK, NDK) for Building React Native installed.
 
-Start an Android emulator ([Genymotion](https://www.genymotion.com) is recommended).
+Start an Android emulator.
 
     cd react-native
-    ./gradlew :RNTester:android:app:installDebug
+    ./gradlew :RNTester:android:app:installJscDebug
     ./scripts/packager.sh
 
 _Note: Building for the first time can take a while._
 
 Open the RNTester app in your emulator.
-
-See [Running on Device](https://facebook.github.io/react-native/docs/running-on-device.html) in case you want to use a physical device.
+If you want to use a physical device, run `adb devices`, then `adb -s <device name> reverse tcp:8081 tcp:8081`.
+See [Running on Device](https://facebook.github.io/react-native/docs/running-on-device.html) for additional instructions on using a physical device.
 
 ### Running with Buck
 
@@ -70,7 +70,7 @@ When developing E2E tests, you may want to run in development mode, so that chan
     detox build -c ios.sim.debug
     detox test -c ios.sim.debug
 
-You will also need to have Metro Bundler running in another terminal. Note that if you've previously run the E2E tests in release mode, you may need to delete the `RNTester/build` folder before rerunning `detox build`.
+You will also need to have Metro running in another terminal. Note that if you've previously run the E2E tests in release mode, you may need to delete the `RNTester/build` folder before rerunning `detox build`.
 
 ## Building from source
 

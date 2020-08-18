@@ -44,6 +44,7 @@ function splitLayoutProps(
 ): {
   outer: DangerouslyImpreciseStyle,
   inner: DangerouslyImpreciseStyle,
+  ...
 } {
   const inner = {};
   const outer = {};

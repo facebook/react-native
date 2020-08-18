@@ -1,15 +1,17 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "ModuleRegistryBuilder.h"
 
+#include <memory>
 #include <string>
 #include <glog/logging.h>
 
 #include <cxxreact/CxxNativeModule.h>
-#include <folly/Memory.h>
 
 namespace facebook {
 namespace react {
@@ -45,14 +47,14 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
   std::vector<std::unique_ptr<NativeModule>> modules;
   if (javaModules) {
     for (const auto& jm : *javaModules) {
-      modules.emplace_back(folly::make_unique<JavaNativeModule>(
+      modules.emplace_back(std::make_unique<JavaNativeModule>(
                      winstance, jm, moduleMessageQueue));
     }
   }
   if (cxxModules) {
     for (const auto& cm : *cxxModules) {
       std::string moduleName = cm->getName();
-      modules.emplace_back(folly::make_unique<CxxNativeModule>(
+      modules.emplace_back(std::make_unique<CxxNativeModule>(
                              winstance, moduleName, cm->getProvider(moduleName), moduleMessageQueue));
     }
   }

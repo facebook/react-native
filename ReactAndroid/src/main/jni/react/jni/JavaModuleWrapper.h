@@ -1,12 +1,14 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
 #include <cxxreact/NativeModule.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <folly/Optional.h>
 
 #include "MethodInvoker.h"
@@ -19,7 +21,7 @@ class MessageQueueThread;
 
 struct JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
   static constexpr auto kJavaDescriptor =
-    "Lcom/facebook/react/bridge/JavaModuleWrapper$MethodDescriptor;";
+      "Lcom/facebook/react/bridge/JavaModuleWrapper$MethodDescriptor;";
 
   jni::local_ref<JReflectMethod::javaobject> getMethod() const;
   std::string getSignature() const;
@@ -28,12 +30,15 @@ struct JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
 };
 
 struct JavaModuleWrapper : jni::JavaClass<JavaModuleWrapper> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/JavaModuleWrapper;";
+  static constexpr auto kJavaDescriptor =
+      "Lcom/facebook/react/bridge/JavaModuleWrapper;";
 
   jni::local_ref<JBaseJavaModule::javaobject> getModule() {
     // This is the call which causes a lazy Java module to actually be
     // created.
-    static auto getModule = javaClassStatic()->getMethod<JBaseJavaModule::javaobject()>("getModule");
+    static auto getModule =
+        javaClassStatic()->getMethod<JBaseJavaModule::javaobject()>(
+            "getModule");
     return getModule(self());
   }
 
@@ -42,9 +47,13 @@ struct JavaModuleWrapper : jni::JavaClass<JavaModuleWrapper> {
     return getName(self())->toStdString();
   }
 
-  jni::local_ref<jni::JList<JMethodDescriptor::javaobject>::javaobject> getMethodDescriptors() {
-    static auto getMethods = getClass()
-      ->getMethod<jni::JList<JMethodDescriptor::javaobject>::javaobject()>("getMethodDescriptors");
+  jni::local_ref<jni::JList<JMethodDescriptor::javaobject>::javaobject>
+  getMethodDescriptors() {
+    static auto getMethods =
+        getClass()
+            ->getMethod<
+                jni::JList<JMethodDescriptor::javaobject>::javaobject()>(
+                "getMethodDescriptors");
     return getMethods(self());
   }
 };
@@ -52,18 +61,21 @@ struct JavaModuleWrapper : jni::JavaClass<JavaModuleWrapper> {
 class JavaNativeModule : public NativeModule {
  public:
   JavaNativeModule(
-    std::weak_ptr<Instance> instance,
-    jni::alias_ref<JavaModuleWrapper::javaobject> wrapper,
-    std::shared_ptr<MessageQueueThread> messageQueueThread)
-  : instance_(std::move(instance))
-  , wrapper_(make_global(wrapper))
-  , messageQueueThread_(std::move(messageQueueThread)) {}
+      std::weak_ptr<Instance> instance,
+      jni::alias_ref<JavaModuleWrapper::javaobject> wrapper,
+      std::shared_ptr<MessageQueueThread> messageQueueThread)
+      : instance_(std::move(instance)),
+        wrapper_(make_global(wrapper)),
+        messageQueueThread_(std::move(messageQueueThread)) {}
 
   std::string getName() override;
   folly::dynamic getConstants() override;
   std::vector<MethodDescriptor> getMethods() override;
-  void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) override;
-  MethodCallResult callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic&& params) override;
+  void invoke(unsigned int reactMethodId, folly::dynamic &&params, int callId)
+      override;
+  MethodCallResult callSerializableNativeHook(
+      unsigned int reactMethodId,
+      folly::dynamic &&params) override;
 
  private:
   std::weak_ptr<Instance> instance_;
@@ -76,15 +88,18 @@ class JavaNativeModule : public NativeModule {
 class NewJavaNativeModule : public NativeModule {
  public:
   NewJavaNativeModule(
-    std::weak_ptr<Instance> instance,
-    jni::alias_ref<JavaModuleWrapper::javaobject> wrapper,
-    std::shared_ptr<MessageQueueThread> messageQueueThread);
+      std::weak_ptr<Instance> instance,
+      jni::alias_ref<JavaModuleWrapper::javaobject> wrapper,
+      std::shared_ptr<MessageQueueThread> messageQueueThread);
 
   std::string getName() override;
   std::vector<MethodDescriptor> getMethods() override;
   folly::dynamic getConstants() override;
-  void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) override;
-  MethodCallResult callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic&& params) override;
+  void invoke(unsigned int reactMethodId, folly::dynamic &&params, int callId)
+      override;
+  MethodCallResult callSerializableNativeHook(
+      unsigned int reactMethodId,
+      folly::dynamic &&params) override;
 
  private:
   std::weak_ptr<Instance> instance_;
@@ -94,7 +109,10 @@ class NewJavaNativeModule : public NativeModule {
   std::vector<MethodInvoker> methods_;
   std::vector<MethodDescriptor> methodDescriptors_;
 
-  MethodCallResult invokeInner(unsigned int reactMethodId, folly::dynamic&& params);
+  MethodCallResult invokeInner(
+      unsigned int reactMethodId,
+      folly::dynamic &&params);
 };
 
-}}
+} // namespace react
+} // namespace facebook
