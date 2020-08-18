@@ -7,6 +7,7 @@
 
 package com.facebook.react.codegen.generator;
 
+import com.facebook.react.codegen.generator.model.RawSchema;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -28,6 +29,10 @@ public final class JavaGenerator {
   }
 
   public void build() throws FileNotFoundException, IOException {
+    final RawSchema rawSchema = SchemaJsonParser.parse(mSchemaFile);
+    // TODO (T71663018): remove - this is for debugging
+    System.out.println(rawSchema);
+
     final MethodSpec main =
         MethodSpec.methodBuilder("main")
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)

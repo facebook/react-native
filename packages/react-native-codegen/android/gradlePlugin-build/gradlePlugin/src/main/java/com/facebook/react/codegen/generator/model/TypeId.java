@@ -46,7 +46,7 @@ public final class TypeId {
   public String toString() {
     return String.format(
         "<moduleName = %s, typeName = %s>",
-        moduleName, EMPTY_TYPE_NAME.equals(typeName) ? moduleName : typeName);
+        moduleName, EMPTY_TYPE_NAME.equals(typeName) ? "\"\"" : typeName);
   }
 
   @Override

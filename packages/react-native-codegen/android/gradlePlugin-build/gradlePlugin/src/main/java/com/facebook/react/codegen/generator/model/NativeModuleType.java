@@ -13,6 +13,7 @@ import java.util.List;
 public final class NativeModuleType extends Type {
   public static String TYPE_NAME = "<NONE>"; // Not an actual type in the schema.
 
+  public final List<Type> aliases;
   public final List<Property> properties;
 
   public static class Property {
@@ -33,13 +34,15 @@ public final class NativeModuleType extends Type {
     }
   }
 
-  public NativeModuleType(final TypeId typeId, final List<Property> properties) {
+  public NativeModuleType(
+      final TypeId typeId, final List<Type> aliases, final List<Property> properties) {
     super(typeId);
+    this.aliases = Collections.unmodifiableList(aliases);
     this.properties = Collections.unmodifiableList(properties);
   }
 
   @Override
   public String toString() {
-    return getTypeId() + " -> " + properties;
+    return getTypeId() + "\n  aliases: " + aliases + "\n  properties: " + properties;
   }
 }

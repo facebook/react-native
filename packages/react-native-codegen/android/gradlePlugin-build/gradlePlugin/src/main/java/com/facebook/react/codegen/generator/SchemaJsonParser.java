@@ -37,7 +37,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -47,7 +46,7 @@ public final class SchemaJsonParser {
     final JsonParser parser = new JsonParser();
     final JsonElement rootElement = parser.parse(new FileReader(schemaFile));
 
-    final Map<String, List<NativeModuleType>> collection = new HashMap<>();
+    final Map<String, Map<String, NativeModuleType>> collection = new HashMap<>();
 
     if (rootElement.isJsonObject()) {
       final JsonObject root = rootElement.getAsJsonObject();
@@ -67,13 +66,16 @@ public final class SchemaJsonParser {
                 collection.put(
                     jsModuleName,
                     nativeModules.entrySet().stream()
-                        .map(
-                            nativeModuleEntry -> {
-                              return parseNativeModule(
-                                  TypeId.of(jsModuleName, nativeModuleEntry.getKey()),
-                                  nativeModuleEntry.getValue().getAsJsonObject());
-                            })
-                        .collect(Collectors.toList()));
+                        .collect(
+                            Collectors.toMap(
+                                Map.Entry::getKey,
+                                e -> {
+                                  return parseNativeModule(
+                                      // TODO (T71955395): NativeModule spec type name does not
+                                      // exist in the schema. For now assume it's "Spec".
+                                      TypeId.of(jsModuleName, "Spec"),
+                                      e.getValue().getAsJsonObject());
+                                })));
               });
     }
 
@@ -84,9 +86,21 @@ public final class SchemaJsonParser {
     final JsonObject aliases = json.getAsJsonObject("aliases");
     final JsonArray properties = json.getAsJsonArray("properties");
 
-    // TODO: parse aliases
+    final ImmutableList<Type> collectedAliases =
+        ImmutableList.copyOf(
+            aliases.entrySet().stream()
+                .map(
+                    entry -> {
+                      final String typeName = entry.getKey();
+                      final JsonObject typeAnnotation = entry.getValue().getAsJsonObject();
+                      // The alias name is the type name that other types can refer to.
+                      return parseTypeAnnotation(
+                          TypeId.of(typeId.moduleName, typeName), typeAnnotation);
+                    })
+                .collect(Collectors.toList()));
 
-    ImmutableList.Builder<NativeModuleType.Property> methods = new ImmutableList.Builder<>();
+    ImmutableList.Builder<NativeModuleType.Property> collectedPropertiesBuilder =
+        new ImmutableList.Builder<>();
     properties.forEach(
         p -> {
           final JsonObject node = p.getAsJsonObject();
@@ -94,13 +108,13 @@ public final class SchemaJsonParser {
           final JsonObject typeAnnotation = node.getAsJsonObject("typeAnnotation");
           // TODO (T71845349): "optional" field shouldn't be part of the Function's typeAnnotation.
           final boolean optional = typeAnnotation.get("optional").getAsBoolean();
-          final TypeId propertyTypeId = TypeId.of(typeId.moduleName, name);
-          methods.add(
+          final TypeId propertyTypeId = TypeId.of(typeId.moduleName);
+          collectedPropertiesBuilder.add(
               new NativeModuleType.Property(
                   name, parseTypeAnnotation(propertyTypeId, typeAnnotation), optional));
         });
 
-    return new NativeModuleType(typeId, methods.build());
+    return new NativeModuleType(typeId, collectedAliases, collectedPropertiesBuilder.build());
   }
 
   // Parse type information from a JSON "typeAnnotation" node.
@@ -115,8 +129,7 @@ public final class SchemaJsonParser {
 
     switch (type) {
       case AliasType.TYPE_NAME:
-        // TODO
-        parsedType = new AliasType(typeId, typeId);
+        parsedType = parseAliasTypeAnnotation(typeId, typeAnnotation);
         break;
       case AnyType.TYPE_NAME:
         parsedType = new AnyType(typeId);
@@ -152,9 +165,8 @@ public final class SchemaJsonParser {
         parsedType = new PromiseType(typeId);
         break;
       case ReservedFunctionValueType.TYPE_NAME:
-        // TODO
-        parsedType =
-            new ReservedFunctionValueType(typeId, ReservedFunctionValueType.ReservedName.RootTag);
+        parsedType = parseReservedFunctionValueTypeAnnotation(typeId, typeAnnotation);
+        break;
       case StringType.TYPE_NAME:
         parsedType = new StringType(typeId);
         break;
@@ -167,19 +179,20 @@ public final class SchemaJsonParser {
     return maybeCreateNullableType(nullable, parsedType);
   }
 
+  private static Type parseAliasTypeAnnotation(
+      final TypeId typeId, final JsonObject typeAnnotation) {
+    // For now, assume the alias lives inside the same file.
+    return new AliasType(
+        typeId, TypeId.of(typeId.moduleName, typeAnnotation.get("name").getAsString()));
+  }
+
   private static Type parseArrayTypeAnnotation(
       final TypeId typeId, final JsonObject typeAnnotation) {
     final JsonObject elementTypeAnnotation = typeAnnotation.getAsJsonObject("elementType");
     // TODO (T71847026): Some array types are missing elementType annotation.
     final Type elementType =
         elementTypeAnnotation != null
-            ? parseTypeAnnotation(
-                TypeId.of(
-                    typeId.moduleName,
-                    elementTypeAnnotation.has("name")
-                        ? elementTypeAnnotation.get("name").getAsString()
-                        : null),
-                elementTypeAnnotation)
+            ? parseTypeAnnotation(TypeId.of(typeId.moduleName), elementTypeAnnotation)
             : new AnyType(TypeId.of(typeId.moduleName));
 
     return new ArrayType(typeId, elementType);
@@ -201,8 +214,7 @@ public final class SchemaJsonParser {
                 FunctionType.createArgument(
                     name,
                     parseTypeAnnotation(
-                        TypeId.of(typeId.moduleName, name),
-                        node.getAsJsonObject("typeAnnotation"))));
+                        TypeId.of(typeId.moduleName), node.getAsJsonObject("typeAnnotation"))));
           });
     }
 
@@ -227,7 +239,7 @@ public final class SchemaJsonParser {
           final String name = node.has("name") ? node.get("name").getAsString() : null;
           final boolean optional = node.get("optional").getAsBoolean();
           final JsonObject propertyTypeAnnotation = node.getAsJsonObject("typeAnnotation");
-          final TypeId propertyTypeId = TypeId.of(typeId.moduleName, name);
+          final TypeId propertyTypeId = TypeId.of(typeId.moduleName);
 
           // TODO (T67898313): Some object properties are missing typeAnnotation.
           final Type propertyType =
@@ -239,6 +251,13 @@ public final class SchemaJsonParser {
         });
 
     return new ObjectType(typeId, propertiesList.build());
+  }
+
+  private static Type parseReservedFunctionValueTypeAnnotation(
+      final TypeId typeId, final JsonObject typeAnnotation) {
+    return new ReservedFunctionValueType(
+        typeId,
+        ReservedFunctionValueType.ReservedName.valueOf(typeAnnotation.get("name").getAsString()));
   }
 
   private static Type maybeCreateNullableType(final boolean nullable, final Type original) {

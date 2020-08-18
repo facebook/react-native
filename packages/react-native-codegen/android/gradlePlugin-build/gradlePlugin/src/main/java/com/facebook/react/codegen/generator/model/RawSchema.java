@@ -7,16 +7,16 @@
 
 package com.facebook.react.codegen.generator.model;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 
 /** Represents the parsed JSON schema without any type resolution. */
 public final class RawSchema {
 
-  public final Map<String, List<NativeModuleType>> modules;
+  public final Map<String, Map<String, NativeModuleType>> modules;
 
-  public RawSchema(final Map<String, List<NativeModuleType>> modules) {
-    this.modules = modules;
+  public RawSchema(final Map<String, Map<String, NativeModuleType>> modules) {
+    this.modules = Collections.unmodifiableMap(modules);
   }
 
   @Override
