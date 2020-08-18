@@ -850,7 +850,11 @@ static NSString *RCTSemanticColorNames()
     if ((value = [dictionary objectForKey:@"semantic"])) {
       if ([value isKindOfClass:[NSString class]]) {
         NSString *semanticName = value;
-        UIColor *color = RCTColorFromSemanticColorName(semanticName);
+        UIColor *color = [UIColor colorNamed:semanticName];
+        if (color != nil) {
+          return color;
+        }
+        color = RCTColorFromSemanticColorName(semanticName);
         if (color == nil) {
           RCTLogConvertError(
               json,
