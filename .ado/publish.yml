@@ -132,7 +132,7 @@ jobs:
       - task: CmdLine@2
         displayName: 'NuGet pack'
         inputs:
-          script: OUTPUT_DIR=$(Build.StagingDirectory)/final;NDK=ndk`cat ${ANDROID_SDK_ROOT}/ndk-bundle/source.properties 2>&1 | grep Pkg.Revision | awk '{ print $3}' | awk -F. '{ print $1 }'`; mono $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe pack $(System.DefaultWorkingDirectory)/ReactAndroid/ReactAndroid.nuspec -OutputDirectory $OUTPUT_DIR -Properties buildNumber=$(buildNumber)-$NDK;commitId=$(Build.SourceVersion)
+          script: NDK=ndk`cat ${ANDROID_SDK_ROOT}/ndk-bundle/source.properties 2>&1 | grep Pkg.Revision | awk '{ print $3}' | awk -F. '{ print $1 }'`; mono $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe pack $(System.DefaultWorkingDirectory)/ReactAndroid/ReactAndroid.nuspec -OutputDirectory $(System.DefaultWorkingDirectory) -Properties buildNumber=$(buildNumber)-$NDK;commitId=$(Build.SourceVersion)
 
       - task: CmdLine@2
         displayName: 'Npm pack'
