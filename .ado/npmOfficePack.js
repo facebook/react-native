@@ -40,7 +40,13 @@ function doPublish(fakeMode) {
 
   const npmTarFileName = `react-native-${releaseVersion}.tgz`;
   const npmTarPath = path.resolve(__dirname, '..', npmTarFileName);
-  const finalTarPath = path.join(process.env.BUILD_STAGINGDIRECTORY, 'final', npmTarFileName);
+  const finalTarDir = path.join(process.env.BUILD_STAGINGDIRECTORY, 'final');
+  const finalTarPath = path.join(finalTarDir, npmTarFileName);
+
+  if (!fs.existsSync(finalTarDir)) {
+    fs.mkdirSync(finalTarDir);
+  }
+
   console.log(`Copying tar file ${npmTarPath} to: ${finalTarPath}`)
   
   if(fakeMode) {
