@@ -133,6 +133,7 @@ include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
 include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 
 ifeq ($(BUILD_FABRIC),true)
+  include $(REACT_SRC_DIR)/viewmanagers/jni/Android.mk
   include $(REACT_SRC_DIR)/fabric/jni/Android.mk
 endif
 
