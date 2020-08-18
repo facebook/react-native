@@ -114,37 +114,7 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-      - task: UseNode@1
-        inputs:
-          version: '12.x'
-
-      - template: templates/apple-droid-node-patching.yml
-        parameters:
-          apply_office_patches: true
-
-      # This is currently required as the command task (strangely) always runs elevated .. 
-      # which makes all the files touched by the above patching step unreadable by following non-command tasks without sudo. 
-      # This makes all the files readable.
-      - task: CmdLine@2
-        displayName: chmod
-        inputs:
-          script: chmod -R +r .
-
-      # Install NuGet
-      - task: CmdLine@2
-        inputs:
-          script: mkdir $(System.DefaultWorkingDirectory)/nuget-bin/ && curl -o $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-        continueOnError: true
-
-      - task: CmdLine@2
-        displayName: "Rename package to react-native"
-        inputs:
-          script: node .ado/renamePackageForOffice.js
-
-      - task: CmdLine@2
-        displayName: npm install
-        inputs:
-          script: npm install
+      - template: templates/android-build-office.yml
 
       - task: CmdLine@2
         displayName: Bump package version
