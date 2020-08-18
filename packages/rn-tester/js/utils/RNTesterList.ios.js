@@ -15,6 +15,7 @@ import type {RNTesterExample} from '../types/RNTesterTypes';
 const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'ActivityIndicatorExample',
+    category: 'UI',
     module: require('../examples/ActivityIndicator/ActivityIndicatorExample'),
     supportsTVOS: true,
   },
@@ -27,7 +28,7 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'FlatListExample',
     module: require('../examples/FlatList/FlatListExample'),
-    category: 'ListViews',
+    category: 'ListView',
     supportsTVOS: true,
   },
   {
@@ -105,7 +106,7 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'SectionListExample',
     module: require('../examples/SectionList/SectionListExample'),
-    category: 'ListViews',
+    category: 'ListView',
     supportsTVOS: true,
   },
   {

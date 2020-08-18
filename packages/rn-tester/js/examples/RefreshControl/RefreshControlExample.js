@@ -115,6 +115,7 @@ class RefreshControlExample extends React.Component {
 }
 
 exports.title = 'RefreshControl';
+exports.category = 'Basic';
 exports.documentationURL = 'https://reactnative.dev/docs/refreshcontrol';
 exports.description = 'Adds pull-to-refresh support to a scrollview.';
 exports.simpleExampleContainer = true;

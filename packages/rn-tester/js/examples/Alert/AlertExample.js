@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'Alert';
+exports.category = 'UI';
 exports.description =
   'Alerts display a concise and informative message ' +
   'and prompt the user to make a decision.';

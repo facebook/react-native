@@ -28,6 +28,7 @@ const Item = Picker.Item;
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = 'Modal';
+exports.category = 'UI';
 exports.documentationURL = 'https://reactnative.dev/docs/modal';
 exports.description = 'Component for presenting modal views.';
 

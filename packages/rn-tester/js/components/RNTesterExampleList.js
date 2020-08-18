@@ -300,6 +300,12 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
       sections = [];
     }
 
+    const isEmpty = sections.filter(s => s.data.length).length === 0;
+
+    if (isEmpty) {
+      return <EmptyState />;
+    }
+
     return (
       <RNTesterThemeContext.Consumer>
         {theme => {
@@ -377,6 +383,30 @@ const ItemSeparator = ({highlighted}) => (
   </RNTesterThemeContext.Consumer>
 );
 
+const EmptyState = () => (
+  <View style={styles.emptyContainer}>
+    <View style={styles.emptyContainerInner}>
+      <Image
+        source={require('../assets/empty.png')}
+        resizeMode="contain"
+        style={styles.emptyImage}
+      />
+      <View>
+        <Text style={styles.heading}>Bookmarks are empty</Text>
+        <Text style={styles.subheading}>
+          Please tap the{' '}
+          <Image
+            source={require('../assets/bookmark-outline-gray.png')}
+            resizeMode="contain"
+            style={styles.bookmarkIcon}
+          />{' '}
+          icon to bookmark examples.
+        </Text>
+      </View>
+    </View>
+  </View>
+);
+
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
@@ -422,7 +452,6 @@ const styles = StyleSheet.create({
     height: 30,
     width: 30,
     borderRadius: 15,
-    // backgroundColor: 'blue',
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
@@ -436,6 +465,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: 100,
     justifyContent: 'space-between',
+  },
+  emptyContainer: {
+    flex: 1,
+    paddingHorizontal: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  emptyContainerInner: {
+    marginTop: -150,
+  },
+  emptyImage: {
+    maxWidth: '100%',
+    height: 300,
+  },
+  heading: {
+    fontSize: 24,
+    textAlign: 'center',
+  },
+  subheading: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  bookmarkIcon: {
+    width: 24,
+    height: 24,
+    transform: [{translateY: 4}],
   },
 });
 

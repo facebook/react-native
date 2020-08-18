@@ -30,6 +30,7 @@ const {
   Text,
   useColorScheme,
   View,
+  LogBox,
 } = require('react-native');
 
 import type {RNTesterExample} from './types/RNTesterTypes';
@@ -80,7 +81,7 @@ const Header = ({
           ]}>
           <View style={styles.header}>
             <View style={styles.headerCenter}>
-              <Text style={{...styles.title, ...{color: theme.LabelColor}}}>
+              <Text style={[styles.title, {color: theme.LabelColor}]}>
                 {title}
               </Text>
               {documentationURL && (
@@ -184,6 +185,12 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
 
   constructor() {
     super();
+
+    // RNTester App currently uses Async Storage from react-native for storing navigation state
+    // and bookmark items.
+    // TODO: Add Native Async Storage Module in RNTester
+    LogBox.ignoreLogs([new RegExp('has been extracted from react-native')]);
+
     this.state = {
       openExample: null,
       screen: 'component',

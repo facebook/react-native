@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'KeyboardAvoidingView';
+exports.category = 'Basic';
 exports.documentationURL = 'https://reactnative.dev/docs/keyboardavoidingview';
 exports.description =
   'Base component for views that automatically adjust their height or position to move out of the way of the keyboard.';

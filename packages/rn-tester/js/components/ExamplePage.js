@@ -36,7 +36,7 @@ export default function ExamplePage(props: Props): React.Node {
   return (
     <>
       <View style={styles.titleView}>
-        <Text style={{marginVertical: 8}}>{description}</Text>
+        <Text style={{marginVertical: 8, fontSize: 16}}>{description}</Text>
         <View style={styles.rowStyle}>
           <Text style={{color: theme.SecondaryLabelColor, width: 65}}>
             {category || 'Other'}

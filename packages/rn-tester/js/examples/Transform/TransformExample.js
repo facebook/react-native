@@ -237,7 +237,8 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'Transforms';
-exports.documentationURL = 'https://reactnative.dev/docs/transforms'
+exports.category = 'UI';
+exports.documentationURL = 'https://reactnative.dev/docs/transforms';
 exports.description = 'View transforms';
 exports.examples = [
   {

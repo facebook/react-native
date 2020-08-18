@@ -19,11 +19,10 @@ const styles = StyleSheet.create({
   container: {
     textDecorationLine: 'underline',
     position: 'absolute',
-    bottom: 3,
-    right: 25,
+    bottom: 0,
+    right: -15,
   },
   icon: {
-    width: 25,
-    height: 25,
+    height: 24,
   },
 });

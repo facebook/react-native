@@ -15,6 +15,7 @@ import type {RNTesterExample} from '../types/RNTesterTypes';
 const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'ActivityIndicatorExample',
+    category: 'UI',
     module: require('../examples/ActivityIndicator/ActivityIndicatorExample'),
   },
   {
@@ -24,7 +25,7 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'FlatListExample',
-    category: 'ListViews',
+    category: 'ListView',
     module: require('../examples/FlatList/FlatListExample'),
   },
   {
@@ -42,10 +43,12 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'ModalExample',
+    category: 'UI',
     module: require('../examples/Modal/ModalExample'),
   },
   {
     key: 'MultiColumnExample',
+    category: 'ListView',
     module: require('../examples/MultiColumn/MultiColumnExample'),
   },
   {
@@ -54,6 +57,7 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'PressableExample',
+    category: 'UI', 
     module: require('../examples/Pressable/PressableExample'),
   },
   {
@@ -77,11 +81,12 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'SectionListExample',
-    category: 'ListViews',
+    category: 'ListView',
     module: require('../examples/SectionList/SectionListExample'),
   },
   {
     key: 'StatusBarExample',
+    category: 'UI',
     module: require('../examples/StatusBar/StatusBarExample'),
   },
   {
@@ -101,6 +106,7 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'TouchableExample',
+    category: 'UI',
     module: require('../examples/Touchable/TouchableExample'),
   },
   {
@@ -113,6 +119,7 @@ const ComponentExamples: Array<RNTesterExample> = [
 const APIExamples: Array<RNTesterExample> = [
   {
     key: 'AccessibilityExample',
+    category: 'Basic',  
     module: require('../examples/Accessibility/AccessibilityExample'),
   },
   {
@@ -122,66 +129,82 @@ const APIExamples: Array<RNTesterExample> = [
   },
   {
     key: 'AlertExample',
+    category: 'UI',
     module: require('../examples/Alert/AlertExample'),
   },
   {
     key: 'AnimatedExample',
+    category: 'UI',
     module: require('../examples/Animated/AnimatedExample'),
   },
   {
     key: 'Animation - GratuitousAnimation',
+    category: 'UI',
     module: require('../examples/Animated/AnimatedGratuitousApp/AnExApp'),
   },
   {
     key: 'AppearanceExample',
+    category: 'UI',
     module: require('../examples/Appearance/AppearanceExample'),
   },
   {
     key: 'AppStateExample',
+    category: 'Basic',
     module: require('../examples/AppState/AppStateExample'),
   },
   {
     key: 'BorderExample',
+    category: 'UI',
     module: require('../examples/Border/BorderExample'),
   },
   {
     key: 'CrashExample',
+    category: 'Basic',
     module: require('../examples/Crash/CrashExample'),
   },
   {
     key: 'DevSettings',
+    category: 'Basic',
     module: require('../examples/DevSettings/DevSettingsExample'),
   },
   {
     key: 'Dimensions',
+    category: 'UI',
     module: require('../examples/Dimensions/DimensionsExample'),
   },
   {
     key: 'LayoutEventsExample',
+    category: 'UI',
     module: require('../examples/Layout/LayoutEventsExample'),
   },
   {
     key: 'LinkingExample',
+    category: 'Basic',
     module: require('../examples/Linking/LinkingExample'),
   },
   {
     key: 'LayoutAnimationExample',
+    category: 'UI',
     module: require('../examples/Layout/LayoutAnimationExample'),
   },
   {
     key: 'LayoutExample',
+    category: 'UI',
     module: require('../examples/Layout/LayoutExample'),
   },
   {
     key: 'NativeAnimationsExample',
+    category: 'UI',
     module: require('../examples/NativeAnimation/NativeAnimationsExample'),
   },
   {
     key: 'OrientationChangeExample',
+    category: 'UI',
     module: require('../examples/OrientationChange/OrientationChangeExample'),
   },
   {
     key: 'PanResponderExample',
+    category: 'Basic',
     module: require('../examples/PanResponder/PanResponderExample'),
   },
   {
@@ -191,22 +214,27 @@ const APIExamples: Array<RNTesterExample> = [
   },
   {
     key: 'PlatformColorExample',
+    category: 'UI',
     module: require('../examples/PlatformColor/PlatformColorExample'),
   },
   {
     key: 'PointerEventsExample',
+    category: 'Basic',
     module: require('../examples/PointerEvents/PointerEventsExample'),
   },
   {
     key: 'RTLExample',
+    category: 'Basic',
     module: require('../examples/RTL/RTLExample'),
   },
   {
     key: 'ShareExample',
+    category: 'Basic',
     module: require('../examples/Share/ShareExample'),
   },
   {
     key: 'TimerExample',
+    category: 'UI',
     module: require('../examples/Timer/TimerExample'),
   },
   {
@@ -216,18 +244,22 @@ const APIExamples: Array<RNTesterExample> = [
   },
   {
     key: 'TransformExample',
+    category: 'UI',
     module: require('../examples/Transform/TransformExample'),
   },
   {
     key: 'VibrationExample',
+    category: 'Basic',
     module: require('../examples/Vibration/VibrationExample'),
   },
   {
     key: 'WebSocketExample',
+    category: 'Basic',
     module: require('../examples/WebSocket/WebSocketExample'),
   },
   {
     key: 'XHRExample',
+    category: 'Basic',
     module: require('../examples/XHR/XHRExample'),
   },
 ];

@@ -643,6 +643,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'RTLExample';
+exports.category= 'UI';
 exports.description = 'Examples to show how to apply components to RTL layout.';
 exports.examples = [
   {
