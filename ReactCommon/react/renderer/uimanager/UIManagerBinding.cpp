@@ -89,7 +89,8 @@ void UIManagerBinding::startSurface(
   parameters["initialProps"] = initalProps;
   parameters["fabric"] = true;
 
-  if (runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
+  if (moduleName.compare("LogBox") != 0 &&
+      runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
     auto registry =
         runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");
     auto method = registry.getPropertyAsFunction(runtime, "renderSurface");
