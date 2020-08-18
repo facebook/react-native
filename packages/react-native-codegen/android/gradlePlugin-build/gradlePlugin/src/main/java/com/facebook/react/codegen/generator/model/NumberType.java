@@ -8,6 +8,7 @@
 package com.facebook.react.codegen.generator.model;
 
 public class NumberType extends Type {
+  public static final String TYPE_NAME = "NumberTypeAnnotation";
 
   public NumberType(final TypeId typeId) {
     super(typeId);

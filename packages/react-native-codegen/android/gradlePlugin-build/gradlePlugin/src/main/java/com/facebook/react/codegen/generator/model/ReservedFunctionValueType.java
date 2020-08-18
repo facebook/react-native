@@ -8,6 +8,8 @@
 package com.facebook.react.codegen.generator.model;
 
 public final class ReservedFunctionValueType extends Type {
+  public static final String TYPE_NAME = "ReservedFunctionValueTypeAnnotation";
+
   public enum ReservedName {
     RootTag,
   }

@@ -8,6 +8,7 @@
 package com.facebook.react.codegen.generator.model;
 
 public final class DoubleType extends NumberType {
+  public static final String TYPE_NAME = "DoubleTypeAnnotation";
 
   public DoubleType(final TypeId typeId) {
     super(typeId);

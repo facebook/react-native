@@ -8,6 +8,7 @@
 package com.facebook.react.codegen.generator.model;
 
 public final class BooleanType extends Type {
+  public static final String TYPE_NAME = "BooleanTypeAnnotation";
 
   public BooleanType(final TypeId typeId) {
     super(typeId);

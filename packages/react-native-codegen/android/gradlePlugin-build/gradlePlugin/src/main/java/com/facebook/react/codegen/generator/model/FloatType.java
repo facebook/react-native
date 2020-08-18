@@ -8,6 +8,7 @@
 package com.facebook.react.codegen.generator.model;
 
 public final class FloatType extends NumberType {
+  public static final String TYPE_NAME = "FloatTypeAnnotation";
 
   public FloatType(final TypeId typeId) {
     super(typeId);
