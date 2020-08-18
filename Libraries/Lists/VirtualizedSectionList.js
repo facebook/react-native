@@ -22,12 +22,12 @@ type Item = any;
 
 export type SectionBase<SectionItemT> = {
   /**
-   * The data for rendering items in this section.
+    The data for rendering items in this section.
    */
   data: $ReadOnlyArray<SectionItemT>,
   /**
-   * Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections,
-   * the array index will be used by default.
+    Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections,
+    the array index will be used by default.
    */
   key?: string,
   // Optional props will override list-wide props just for this section.
@@ -54,7 +54,7 @@ type RequiredProps<SectionT: SectionBase<any>> = {|
 
 type OptionalProps<SectionT: SectionBase<any>> = {|
   /**
-   * Default renderer for every item in every section.
+    Default renderer for every item in every section.
    */
   renderItem?: (info: {
     item: Item,
@@ -69,31 +69,31 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
     ...
   }) => null | React.Element<any>,
   /**
-   * Rendered at the top of each section. These stick to the top of the `ScrollView` by default on
-   * iOS. See `stickySectionHeadersEnabled`.
+    Rendered at the top of each section. These stick to the top of the `ScrollView` by default on
+    iOS. See `stickySectionHeadersEnabled`.
    */
   renderSectionHeader?: ?(info: {
     section: SectionT,
     ...
   }) => null | React.Element<any>,
   /**
-   * Rendered at the bottom of each section.
+    Rendered at the bottom of each section.
    */
   renderSectionFooter?: ?(info: {
     section: SectionT,
     ...
   }) => null | React.Element<any>,
   /**
-   * Rendered at the top and bottom of each section (note this is different from
-   * `ItemSeparatorComponent` which is only rendered between items). These are intended to separate
-   * sections from the headers above and below and typically have the same highlight response as
-   * `ItemSeparatorComponent`. Also receives `highlighted`, `[leading/trailing][Item/Separator]`,
-   * and any custom props from `separators.updateProps`.
+    Rendered at the top and bottom of each section (note this is different from
+    `ItemSeparatorComponent` which is only rendered between items). These are intended to separate
+    sections from the headers above and below and typically have the same highlight response as
+    `ItemSeparatorComponent`. Also receives `highlighted`, `[leading/trailing][Item/Separator]`,
+    and any custom props from `separators.updateProps`.
    */
   SectionSeparatorComponent?: ?React.ComponentType<any>,
   /**
-   * Makes section headers stick to the top of the screen until the next one pushes it off. Only
-   * enabled by default on iOS because that is the platform standard there.
+    Makes section headers stick to the top of the screen until the next one pushes it off. Only
+    enabled by default on iOS because that is the platform standard there.
    */
   stickySectionHeadersEnabled?: boolean,
   onEndReached?: ?({distanceFromEnd: number, ...}) => void,
@@ -110,10 +110,28 @@ export type Props<SectionT> = {|
   >,
 |};
 export type ScrollToLocationParamsType = {|
+  /**
+    Whether the list should do an animation while scrolling. Defaults to
+    `true`.
+   */
   animated?: ?boolean,
+  /**
+    Index within section for the item to scroll to. Required.
+   */
   itemIndex: number,
+  /**
+    Index for section that contains the item to scroll to. Required.
+   */
   sectionIndex: number,
+  /**
+   A fixed number of pixels to offset the final target position, e.g. to
+   compensate for sticky headers.
+   */
   viewOffset?: number,
+  /**
+    A value of 0 places the item specified by index at the top, 1 at the bottom,
+    and 0.5 centered in the middle.
+   */
   viewPosition?: number,
 |};
 
@@ -125,9 +143,9 @@ type DefaultProps = {|
 type State = {childProps: VirtualizedListProps, ...};
 
 /**
- * Right now this just flattens everything into one list and uses VirtualizedList under the
- * hood. The only operation that might not scale well is concatting the data arrays of all the
- * sections when new props are received, which should be plenty fast for up to ~10,000 items.
+  Right now this just flattens everything into one list and uses VirtualizedList under the
+  hood. The only operation that might not scale well is concatting the data arrays of all the
+  sections when new props are received, which should be plenty fast for up to ~10,000 items.
  */
 class VirtualizedSectionList<
   SectionT: SectionBase<any>,
