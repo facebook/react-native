@@ -47,7 +47,7 @@ jobs:
       - task: CmdLine@2
         displayName: chmod
         inputs:
-          script: chmod -R +r .
+          script: chmod -R +rw .
 
       - task: CmdLine@2
         displayName: "Rename package to react-native"
