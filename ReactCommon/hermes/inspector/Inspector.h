@@ -209,6 +209,12 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   folly::Future<folly::Unit> setPauseOnLoads(const PauseOnLoadMode mode);
 
   /**
+   * Set whether breakpoints are active (pause when hit). This does not require
+   * runtime modifications, but returns a future for consistency.
+   */
+  folly::Future<folly::Unit> setBreakpointsActive(bool active);
+
+  /**
    * If called during a script load event, return true if we should pause.
    * Assumed to be called from a script load event where we already hold
    * `mutex_`.
@@ -325,6 +331,9 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   // Whether we should enter a paused state when a script loads.
   PauseOnLoadMode pauseOnLoadMode_ = PauseOnLoadMode::None;
+
+  // Whether or not we should pause on breakpoints.
+  bool breakpointsActive_ = true;
 
   // All scripts loaded in to the VM, along with whether we've notified the
   // client about the script yet.

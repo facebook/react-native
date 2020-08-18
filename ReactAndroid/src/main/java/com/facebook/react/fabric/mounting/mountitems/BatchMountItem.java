@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.mounting.mountitems;
 
 import androidx.annotation.NonNull;
+import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -25,6 +26,7 @@ import com.facebook.systrace.Systrace;
  */
 @DoNotStrip
 public class BatchMountItem implements MountItem {
+  static final String TAG = "FabricBatchMountItem";
 
   private final int mRootTag;
   @NonNull private final MountItem[] mMountItems;
@@ -34,12 +36,10 @@ public class BatchMountItem implements MountItem {
   private final int mCommitNumber;
 
   public BatchMountItem(int rootTag, MountItem[] items, int size, int commitNumber) {
-    if (items == null) {
-      throw new NullPointerException();
-    }
-    if (size < 0 || size > items.length) {
+    int itemsLength = (items == null ? 0 : items.length);
+    if (size < 0 || size > itemsLength) {
       throw new IllegalArgumentException(
-          "Invalid size received by parameter size: " + size + " items.size = " + items.length);
+          "Invalid size received by parameter size: " + size + " items.size = " + itemsLength);
     }
     mRootTag = rootTag;
     mMountItems = items;
@@ -47,21 +47,18 @@ public class BatchMountItem implements MountItem {
     mCommitNumber = commitNumber;
   }
 
-  @Override
-  public void execute(@NonNull MountingManager mountingManager) {
+  private void beginMarkers(String reason) {
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews - " + mSize + " items");
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "FabricUIManager::" + reason + " - " + mSize + " items");
 
     if (mCommitNumber > 0) {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_BATCH_EXECUTION_START, null, mCommitNumber);
     }
+  }
 
-    for (int mountItemIndex = 0; mountItemIndex < mSize; mountItemIndex++) {
-      MountItem mountItem = mMountItems[mountItemIndex];
-      mountItem.execute(mountingManager);
-    }
-
+  private void endMarkers() {
     if (mCommitNumber > 0) {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_BATCH_EXECUTION_END, null, mCommitNumber);
@@ -70,8 +67,48 @@ public class BatchMountItem implements MountItem {
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
+  @Override
+  public void execute(@NonNull MountingManager mountingManager) {
+    beginMarkers("mountViews");
+
+    for (int mountItemIndex = 0; mountItemIndex < mSize; mountItemIndex++) {
+      MountItem mountItem = mMountItems[mountItemIndex];
+      mountItem.execute(mountingManager);
+    }
+
+    endMarkers();
+  }
+
+  /**
+   * In the case of teardown/stopSurface, we want to delete all views associated with a SurfaceID.
+   * It can be the case that a single BatchMountItem contains both the create *and* delete
+   * instruction for a view, so this needs to be failsafe.
+   *
+   * @param mountingManager
+   */
+  public void executeDeletes(@NonNull MountingManager mountingManager) {
+    beginMarkers("deleteViews");
+
+    for (int mountItemIndex = 0; mountItemIndex < mSize; mountItemIndex++) {
+      MountItem mountItem = mMountItems[mountItemIndex];
+      if (mountItem instanceof RemoveDeleteMultiMountItem) {
+        try {
+          ((RemoveDeleteMultiMountItem) mountItem).executeDeletes(mountingManager, true);
+        } catch (RuntimeException e) {
+          FLog.e(TAG, "Ignoring deletion exception", e);
+        }
+      }
+    }
+
+    endMarkers();
+  }
+
   public int getRootTag() {
     return mRootTag;
+  }
+
+  public int getSize() {
+    return mSize;
   }
 
   @Override

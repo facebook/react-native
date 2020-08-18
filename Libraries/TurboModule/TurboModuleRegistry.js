@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -16,26 +16,51 @@ import invariant from 'invariant';
 
 const turboModuleProxy = global.__turboModuleProxy;
 
-export function get<T: TurboModule>(name: string): ?T {
+function requireModule<T: TurboModule>(name: string, schema?: ?$FlowFixMe): ?T {
   // Bridgeless mode requires TurboModules
   if (!global.RN$Bridgeless) {
     // Backward compatibility layer during migration.
     const legacyModule = NativeModules[name];
     if (legacyModule != null) {
-      return ((legacyModule: any): T);
+      return ((legacyModule: $FlowFixMe): T);
     }
   }
 
   if (turboModuleProxy != null) {
-    const module: ?T = turboModuleProxy(name);
+    const module: ?T =
+      schema != null ? turboModuleProxy(name, schema) : turboModuleProxy(name);
     return module;
   }
 
   return null;
 }
 
+export function get<T: TurboModule>(name: string): ?T {
+  /**
+   * What is Schema?
+   *
+   * @react-native/babel-plugin-codegen will parse the NativeModule
+   * spec, and pass in the generated schema as the second argument
+   * to this function. The schem will then be used to perform method
+   * dispatch on, and translate arguments/return to and from the Native
+   * TurboModule object.
+   */
+  const schema = arguments.length === 2 ? arguments[1] : undefined;
+  return requireModule<T>(name, schema);
+}
+
 export function getEnforcing<T: TurboModule>(name: string): T {
-  const module = get(name);
+  /**
+   * What is Schema?
+   *
+   * @react-native/babel-plugin-codegen will parse the NativeModule
+   * spec, and pass in the generated schema as the second argument
+   * to this function. The schem will then be used to perform method
+   * dispatch on, and translate arguments/return to and from the Native
+   * TurboModule object.
+   */
+  const schema = arguments.length === 2 ? arguments[1] : undefined;
+  const module = requireModule<T>(name, schema);
   invariant(
     module != null,
     `TurboModuleRegistry.getEnforcing(...): '${name}' could not be found. ` +

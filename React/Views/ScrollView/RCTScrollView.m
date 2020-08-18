@@ -230,7 +230,17 @@
     [_customRefreshControl removeFromSuperview];
   }
   _customRefreshControl = refreshControl;
-  [self addSubview:_customRefreshControl];
+  // We have to set this because we can't always guarantee the
+  // `RCTCustomRefreshContolProtocol`'s superview will always be of class
+  // `UIScrollView` like we were previously
+  if ([_customRefreshControl respondsToSelector:@selector(setScrollView:)]) {
+    _customRefreshControl.scrollView = self;
+  }
+  if ([refreshControl isKindOfClass:UIRefreshControl.class]) {
+    self.refreshControl = (UIRefreshControl *)refreshControl;
+  } else {
+    [self addSubview:_customRefreshControl];
+  }
 }
 
 - (void)setPinchGestureEnabled:(BOOL)pinchGestureEnabled
@@ -421,7 +431,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 #if !TARGET_OS_TV
   // Adjust the refresh control frame if the scrollview layout changes.
   UIView<RCTCustomRefreshContolProtocol> *refreshControl = _scrollView.customRefreshControl;
-  if (refreshControl && refreshControl.isRefreshing) {
+  if (refreshControl && refreshControl.isRefreshing && ![refreshControl isKindOfClass:UIRefreshControl.class]) {
     refreshControl.frame =
         (CGRect){_scrollView.contentOffset, {_scrollView.frame.size.width, refreshControl.frame.size.height}};
   }
@@ -598,36 +608,6 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     _allowNextScrollNoMatterWhat = NO;
   }
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidScroll : scrollView);
-}
-
-- (NSArray<NSDictionary *> *)calculateChildFramesData
-{
-  NSMutableArray<NSDictionary *> *updatedChildFrames = [NSMutableArray new];
-  [[_contentView reactSubviews] enumerateObjectsUsingBlock:^(UIView *subview, NSUInteger idx, __unused BOOL *stop) {
-    // Check if new or changed
-    CGRect newFrame = subview.frame;
-    BOOL frameChanged = NO;
-    if (self->_cachedChildFrames.count <= idx) {
-      frameChanged = YES;
-      [self->_cachedChildFrames addObject:[NSValue valueWithCGRect:newFrame]];
-    } else if (!CGRectEqualToRect(newFrame, [self->_cachedChildFrames[idx] CGRectValue])) {
-      frameChanged = YES;
-      self->_cachedChildFrames[idx] = [NSValue valueWithCGRect:newFrame];
-    }
-
-    // Create JS frame object
-    if (frameChanged) {
-      [updatedChildFrames addObject:@{
-        @"index" : @(idx),
-        @"x" : @(newFrame.origin.x),
-        @"y" : @(newFrame.origin.y),
-        @"width" : @(newFrame.size.width),
-        @"height" : @(newFrame.size.height),
-      }];
-    }
-  }];
-
-  return updatedChildFrames;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView

@@ -8,8 +8,8 @@
 #import "RCTLegacyViewManagerInteropComponentView.h"
 
 #import <React/UIView+React.h>
-#import <react/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.h>
-#import <react/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewProps.h>
+#import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.h>
+#import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewProps.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import "RCTLegacyViewManagerInteropCoordinatorAdapter.h"
 
@@ -87,6 +87,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   [_viewsToBeMounted removeAllObjects];
   [_viewsToBeUnmounted removeAllObjects];
   _state.reset();
+  self.contentView = nil;
   [super prepareForRecycle];
 }
 

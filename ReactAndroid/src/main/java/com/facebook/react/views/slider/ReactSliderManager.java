@@ -72,11 +72,11 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
         float height,
         YogaMeasureMode heightMode) {
       if (!mMeasured) {
-        SeekBar reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
+        ReactSlider reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
         // reactSlider is used for measurements purposes, it is not necessary to set a
         // StateListAnimator.
         // It is not safe to access StateListAnimator from a background thread.
-        reactSlider.setStateListAnimator(null);
+        reactSlider.disableStateListAnimatorIfNeeded();
         final int spec =
             View.MeasureSpec.makeMeasureSpec(
                 ViewGroup.LayoutParams.WRAP_CONTENT, View.MeasureSpec.UNSPECIFIED);

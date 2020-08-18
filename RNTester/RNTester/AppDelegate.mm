@@ -153,6 +153,7 @@
   _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
                                                              delegate:self
                                                             jsInvoker:bridge.jsCallInvoker];
+  [bridge setRCTTurboModuleRegistry:_turboModuleManager];
 
 #if RCT_DEV
   /**

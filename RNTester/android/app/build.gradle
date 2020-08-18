@@ -7,6 +7,7 @@
 
 plugins {
     id("com.android.application")
+    id("com.facebook.react.codegen")
 }
 
 /**
@@ -60,7 +61,17 @@ plugins {
  *   // date; if you have any other folders that you want to ignore for performance reasons (gradle
  *   // indexes the entire tree), add them here. Alternatively, if you have JS files in android/
  *   // for example, you might want to remove it from here.
- *   inputExcludes: ["android/**", "ios/**"]
+ *   inputExcludes: ["android/**", "ios/**"],
+ *
+ *   // Root dir for all JS files for the app. Defaults to `root` above.
+ *   jsRootDir: "../..",
+ *
+ *   // Enable Fabric at build time and runtime.
+ *   enableFabric: true,
+ *
+ *   // Java package name to use for any codegen artifacts produced during build time.
+ *   // Defaults to "com.facebook.fbreact.specs".
+ *   codegenJavaPackageName: "com.facebook.fbreact.specs",
  * ]
  */
 
@@ -72,7 +83,9 @@ project.ext.react = [
     inputExcludes: ["android/**", "./**", ".gradle/**"],
     composeSourceMapsPath: "$rootDir/scripts/compose-source-maps.js",
     hermesCommand: "../../../node_modules/hermes-engine/%OS-BIN%/hermesc",
-    enableHermesForVariant: { def v -> v.name.contains("hermes") }
+    enableHermesForVariant: { def v -> v.name.contains("hermes") },
+    jsRootDir: "$rootDir/RNTester",
+    enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean(),
 ]
 
 apply from: "../../../react.gradle"
@@ -94,6 +107,11 @@ def enableSeparateBuildPerCPUArchitecture = true
 def enableProguardInReleaseBuilds = true
 
 /**
+ * Build and enable Fabric in RN Tester app.
+ */
+def enableFabric = project.ext.react.enableFabric
+
+/**
  * Use the international variant of JavaScriptCore
  * This variant includes the ICU i18n library to make APIs like `Date.toLocaleString`
  * and `String.localeCompare` work when using with locales other than en-US.
@@ -109,6 +127,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
     flavorDimensions "vm"
     productFlavors {
         hermes {
@@ -121,12 +143,13 @@ android {
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        buildConfigField("boolean", "ENABLE_FABRIC", "$enableFabric")
     }
     signingConfigs {
         release {
@@ -196,4 +219,11 @@ dependencies {
     // Use detox test library
     androidTestImplementation('com.wix:detox:+') { transitive = true }
     androidTestImplementation 'junit:junit:4.12'
+}
+
+react {
+    enableCodegen = System.getenv("USE_CODEGEN") ?: false
+    jsRootDir = file("$rootDir/RNTester")
+    reactNativeRootDir = file("$rootDir")
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }

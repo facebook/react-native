@@ -10,6 +10,8 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTUtils.h>
 
+#import "OCMock/OCMock.h"
+
 static NSString *const testFile = @"test.jsbundle";
 static NSString *const mainBundle = @"main.jsbundle";
 
@@ -24,7 +26,7 @@ static NSURL *localhostBundleURL()
       URLWithString:
           [NSString
               stringWithFormat:
-                  @"http://localhost:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runMdoule=true&app=com.apple.dt.xctest.tool",
+                  @"http://localhost:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.apple.dt.xctest.tool",
                   testFile]];
 }
 
@@ -34,7 +36,7 @@ static NSURL *ipBundleURL()
       URLWithString:
           [NSString
               stringWithFormat:
-                  @"http://192.168.1.1:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runMdoule=true&app=com.apple.dt.xctest.tool",
+                  @"http://192.168.1.1:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.apple.dt.xctest.tool",
                   testFile]];
 }
 
@@ -94,6 +96,8 @@ static NSURL *ipBundleURL()
 
 - (void)testIPURL
 {
+  id classMock = OCMClassMock([RCTBundleURLProvider class]);
+  [[[classMock stub] andReturnValue:@YES] isPackagerRunning:[OCMArg any]];
   RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
   settings.jsLocation = @"192.168.1.1";
   NSURL *URL = [settings jsBundleURLForBundleRoot:testFile fallbackResource:nil];

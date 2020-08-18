@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -26,7 +26,7 @@ const defineLazyObjectProperty = require('./defineLazyObjectProperty');
  * @see https://github.com/facebook/react-native/issues/934
  */
 function polyfillObjectProperty<T>(
-  object: Object,
+  object: {...},
   name: string,
   getValue: () => T,
 ): void {
@@ -36,7 +36,7 @@ function polyfillObjectProperty<T>(
     Object.defineProperty(object, backupName, descriptor);
   }
 
-  const {enumerable, writable, configurable} = descriptor || {};
+  const {enumerable, writable, configurable = false} = descriptor || {};
   if (descriptor && !configurable) {
     console.error('Failed to set polyfill. ' + name + ' is not configurable.');
     return;

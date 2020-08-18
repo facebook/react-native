@@ -15,6 +15,7 @@ import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
 
 type EndResult = {finished: boolean, ...};
 type EndCallback = (result: EndResult) => void;
+type SaveValueCallback = (value: number) => void;
 
 export type EventMapping = {|
   nativeEventPath: Array<string>,
@@ -27,7 +28,11 @@ export type AnimatedNodeConfig = Object;
 export type AnimatingNodeConfig = Object;
 
 export interface Spec extends TurboModule {
+  +startOperationBatch: () => void;
+  +finishOperationBatch: () => void;
+
   +createAnimatedNode: (tag: number, config: AnimatedNodeConfig) => void;
+  +getValue: (tag: number, saveValueCallback: SaveValueCallback) => void;
   +startListeningToAnimatedNodeValue: (tag: number) => void;
   +stopListeningToAnimatedNodeValue: (tag: number) => void;
   +connectAnimatedNodes: (parentTag: number, childTag: number) => void;

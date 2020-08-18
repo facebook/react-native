@@ -13,10 +13,31 @@
 
 const combine = require('./combine-js-to-schema');
 const fs = require('fs');
+// $FlowFixMe[untyped-import] glob is untyped
+const glob = require('glob');
+const path = require('path');
 
 const [outfile, ...fileList] = process.argv.slice(2);
 
-const formattedSchema = JSON.stringify(combine(fileList), null, 2);
+const allFiles = [];
+fileList.forEach(file => {
+  if (fs.lstatSync(file).isDirectory()) {
+    const dirFiles = glob
+      .sync(`${file}/**/*.js`, {
+        nodir: true,
+      })
+      .filter(
+        f =>
+          /^(Native.+|.+NativeComponent)/.test(path.basename(f)) &&
+          !f.includes('__tests'),
+      );
+    allFiles.push(...dirFiles);
+  } else {
+    allFiles.push(file);
+  }
+});
+
+const formattedSchema = JSON.stringify(combine(allFiles), null, 2);
 if (outfile != null) {
   fs.writeFileSync(outfile, formattedSchema);
 } else {

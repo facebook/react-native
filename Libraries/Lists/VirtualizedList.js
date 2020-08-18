@@ -1466,7 +1466,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const distanceFromEnd = contentLength - visibleLength - offset;
     const threshold = onEndReachedThreshold
       ? onEndReachedThreshold * visibleLength
-      : 0;
+      : 2;
     if (
       onEndReached &&
       this.state.last === getItemCount(data) - 1 &&
@@ -1491,10 +1491,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.initialScrollIndex > 0 &&
       !this._hasDoneInitialScroll
     ) {
-      this.scrollToIndex({
-        animated: false,
-        index: this.props.initialScrollIndex,
-      });
+      if (this.props.contentOffset == null) {
+        this.scrollToIndex({
+          animated: false,
+          index: this.props.initialScrollIndex,
+        });
+      }
       this._hasDoneInitialScroll = true;
     }
     if (this.props.onContentSizeChange) {
