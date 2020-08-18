@@ -12,6 +12,7 @@
 #include <fbjni/fbjni.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
+#include <react/renderer/components/rncore/ComponentDescriptors.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 
 namespace facebook {
@@ -29,6 +30,7 @@ CoreComponentsRegistry::sharedProviderRegistry() {
 
     providerRegistry->add(
         concreteComponentDescriptorProvider<ViewComponentDescriptor>());
+
     return providerRegistry;
   }();
 
@@ -41,6 +43,8 @@ CoreComponentsRegistry::initHybrid(
     ComponentFactory *delegate) {
   auto instance = makeCxxInstance(delegate);
 
+  // TODO T69453179: Codegen this file
+
   auto buildRegistryFunction =
       [](EventDispatcher::Weak const &eventDispatcher,
          ContextContainer::Shared const &contextContainer)
@@ -48,6 +52,14 @@ CoreComponentsRegistry::initHybrid(
     auto registry = CoreComponentsRegistry::sharedProviderRegistry()
                         ->createComponentDescriptorRegistry(
                             {eventDispatcher, contextContainer});
+
+    auto mutableRegistry =
+        std::const_pointer_cast<ComponentDescriptorRegistry>(registry);
+    mutableRegistry->setFallbackComponentDescriptor(
+        std::make_shared<UnimplementedNativeViewComponentDescriptor>(
+            ComponentDescriptorParameters{
+                eventDispatcher, contextContainer, nullptr}));
+
     return registry;
   };
 
