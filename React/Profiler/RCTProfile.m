@@ -22,6 +22,7 @@
 #import "RCTDefines.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
+#import "RCTReloadCommand.h"
 #import "RCTUIManager.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
@@ -378,10 +379,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 
 + (void)reload
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [RCTProfilingBridge() reloadWithReason:@"Profiling controls"];
-#pragma clang diagnostic pop
+  RCTTriggerReloadCommandListeners(@"Profiling controls");
 }
 
 + (void)toggle:(UIButton *)target
