@@ -12,6 +12,7 @@
 #include <fbjni/fbjni.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
+#include <react/renderer/components/image/ImageComponentDescriptor.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
@@ -33,6 +34,8 @@ CoreComponentsRegistry::sharedProviderRegistry() {
 
     providerRegistry->add(
         concreteComponentDescriptorProvider<ViewComponentDescriptor>());
+    providerRegistry->add(
+        concreteComponentDescriptorProvider<ImageComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<TextComponentDescriptor>());
     providerRegistry->add(
