@@ -10,6 +10,8 @@ package com.facebook.react.uimanager;
 import android.graphics.Rect;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 /**
  * Interface that should be implemented by {@link View} subclasses that support {@code
  * removeClippedSubviews} property. When this property is set for the {@link ViewGroup} subclass
@@ -54,4 +56,13 @@ public interface ReactClippingViewGroup {
 
   /** Get the current value of {@code removeClippedSubviews} property. */
   boolean getRemoveClippedSubviews();
+
+  /**
+   * Sets property {@code overflow} as a result of style update in JS.
+   */
+  void setOverflow(String overflow);
+
+  /** Get the current value of {@code overflow} property. */
+  @Nullable
+  String getOverflow();
 }

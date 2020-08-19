@@ -8,7 +8,6 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Matrix;
-import android.graphics.PointF;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,7 +24,7 @@ import com.facebook.react.touch.ReactHitSlopView;
 public class TouchTargetHelper {
 
   private static final float[] mEventCoords = new float[2];
-  private static final PointF mTempPoint = new PointF();
+  private static final TouchTestResult mTouchTestData = new TouchTestResult();
   private static final float[] mMatrixTransformCoords = new float[2];
   private static final Matrix mInverseMatrix = new Matrix();
 
@@ -115,23 +114,25 @@ public class TouchTargetHelper {
     int childrenCount = viewGroup.getChildCount();
     // Consider z-index when determining the touch target.
     ReactZIndexedViewGroup zIndexedViewGroup =
-        viewGroup instanceof ReactZIndexedViewGroup ? (ReactZIndexedViewGroup) viewGroup : null;
+            viewGroup instanceof ReactZIndexedViewGroup ? (ReactZIndexedViewGroup) viewGroup : null;
+
     for (int i = childrenCount - 1; i >= 0; i--) {
       int childIndex =
           zIndexedViewGroup != null ? zIndexedViewGroup.getZIndexMappedChildIndex(i) : i;
       View child = viewGroup.getChildAt(childIndex);
-      PointF childPoint = mTempPoint;
+      TouchTestResult touchTestData = mTouchTestData;
+
       if (isTransformedTouchPointInView(
-          eventCoords[0], eventCoords[1], viewGroup, child, childPoint)) {
+          eventCoords[0], eventCoords[1], viewGroup, child, touchTestData)) {
         // If it is contained within the child View, the childPoint value will contain the view
         // coordinates relative to the child
         // We need to store the existing X,Y for the viewGroup away as it is possible this child
         // will not actually be the target and so we restore them if not
         float restoreX = eventCoords[0];
         float restoreY = eventCoords[1];
-        eventCoords[0] = childPoint.x;
-        eventCoords[1] = childPoint.y;
-        View targetView = findTouchTargetViewWithPointerEvents(eventCoords, child);
+        eventCoords[0] = touchTestData.x;
+        eventCoords[1] = touchTestData.y;
+        View targetView = findTouchTargetViewWithPointerEvents(eventCoords, child, touchTestData.hittest);
         if (targetView != null) {
           return targetView;
         }
@@ -139,16 +140,17 @@ public class TouchTargetHelper {
         eventCoords[1] = restoreY;
       }
     }
-    return viewGroup;
+
+    return isLocalCoordinateInView(eventCoords[0], eventCoords[1], viewGroup) ? viewGroup : null;
   }
 
   /**
    * Returns whether the touch point is within the child View It is transform aware and will invert
-   * the transform Matrix to find the true local points This code is taken from {@link
-   * ViewGroup#isTransformedTouchPointInView()}
+   * the transform Matrix to find the true local points
    */
   private static boolean isTransformedTouchPointInView(
-      float x, float y, ViewGroup parent, View child, PointF outLocalPoint) {
+          float x, float y, ViewGroup parent, View child,
+          TouchTestResult outTestData) {
     float localX = x + parent.getScrollX() - child.getLeft();
     float localY = y + parent.getScrollY() - child.getTop();
     Matrix matrix = child.getMatrix();
@@ -162,25 +164,32 @@ public class TouchTargetHelper {
       localX = localXY[0];
       localY = localXY[1];
     }
-    if (child instanceof ReactHitSlopView && ((ReactHitSlopView) child).getHitSlopRect() != null) {
-      Rect hitSlopRect = ((ReactHitSlopView) child).getHitSlopRect();
-      if ((localX >= -hitSlopRect.left
-              && localX < (child.getRight() - child.getLeft()) + hitSlopRect.right)
-          && (localY >= -hitSlopRect.top
-              && localY < (child.getBottom() - child.getTop()) + hitSlopRect.bottom)) {
-        outLocalPoint.set(localX, localY);
-        return true;
-      }
 
-      return false;
+    boolean hittest = isLocalCoordinateInView(localX, localY, child);
+
+    String overflow = child instanceof ReactClippingViewGroup
+      ? ((ReactClippingViewGroup) child).getOverflow()
+      : null;
+
+    if (hittest || (overflow == null || overflow.equals(ViewProps.VISIBLE))) {
+      outTestData.set(localX, localY, hittest);
+      return true;
+    }
+
+    return false;
+  }
+
+  private static boolean isLocalCoordinateInView(
+          float x, float y, View view) {
+    if (view instanceof ReactHitSlopView && ((ReactHitSlopView) view).getHitSlopRect() != null) {
+      Rect hitSlopRect = ((ReactHitSlopView) view).getHitSlopRect();
+      return (x >= -hitSlopRect.left
+              && x < (view.getRight() - view.getLeft()) + hitSlopRect.right)
+              && (y >= -hitSlopRect.top
+              && y < (view.getBottom() - view.getTop()) + hitSlopRect.bottom);
     } else {
-      if ((localX >= 0 && localX < (child.getRight() - child.getLeft()))
-          && (localY >= 0 && localY < (child.getBottom() - child.getTop()))) {
-        outLocalPoint.set(localX, localY);
-        return true;
-      }
-
-      return false;
+      return (x >= 0 && x < (view.getRight() - view.getLeft()))
+              && (y >= 0 && y < (view.getBottom() - view.getTop()));
     }
   }
 
@@ -189,7 +198,7 @@ public class TouchTargetHelper {
    * its descendants are the touch target.
    */
   private static @Nullable View findTouchTargetViewWithPointerEvents(
-      float eventCoords[], View view) {
+      float eventCoords[], View view, boolean hittest) {
     PointerEvents pointerEvents =
         view instanceof ReactPointerEventsView
             ? ((ReactPointerEventsView) view).getPointerEvents()
@@ -212,8 +221,7 @@ public class TouchTargetHelper {
 
     } else if (pointerEvents == PointerEvents.BOX_ONLY) {
       // This view is the target, its children don't matter
-      return view;
-
+      return hittest ? view : null;
     } else if (pointerEvents == PointerEvents.BOX_NONE) {
       // This view can't be the target, but its children might.
       if (view instanceof ViewGroup) {
@@ -228,7 +236,7 @@ public class TouchTargetHelper {
         // Note that this currently only applies to Nodes/FlatViewGroup as it's the only class that
         // is both a ViewGroup and ReactCompoundView (ReactTextView is a ReactCompoundView but not a
         // ViewGroup).
-        if (view instanceof ReactCompoundView) {
+        if (view instanceof ReactCompoundView && hittest) {
           int reactTag =
               ((ReactCompoundView) view).reactTagForTouch(eventCoords[0], eventCoords[1]);
           if (reactTag != view.getId()) {
@@ -242,14 +250,16 @@ public class TouchTargetHelper {
     } else if (pointerEvents == PointerEvents.AUTO) {
       // Either this view or one of its children is the target
       if (view instanceof ReactCompoundViewGroup) {
-        if (((ReactCompoundViewGroup) view).interceptsTouchEvent(eventCoords[0], eventCoords[1])) {
+        if (((ReactCompoundViewGroup) view).interceptsTouchEvent(eventCoords[0], eventCoords[1]) &&
+                hittest) {
           return view;
         }
       }
       if (view instanceof ViewGroup) {
         return findTouchTargetView(eventCoords, (ViewGroup) view);
       }
-      return view;
+
+      return hittest ? view : null;
 
     } else {
       throw new JSApplicationIllegalArgumentException(
@@ -264,5 +274,22 @@ public class TouchTargetHelper {
       return ((ReactCompoundView) targetView).reactTagForTouch(eventX, eventY);
     }
     return targetView.getId();
+  }
+
+  private static class TouchTestResult {
+    TouchTestResult() {}
+
+    public float x;
+    public float y;
+    public boolean hittest;
+
+    /**
+     * Set the point's x and y coordinates
+     */
+    public final void set(float x, float y, boolean hittest) {
+      this.x = x;
+      this.y = y;
+      this.hittest = hittest;
+    }
   }
 }
