@@ -154,23 +154,37 @@ class MessageQueue {
      * "Private" methods
      */
 
+    // @brief 调用 Native 侧的函数（还是以 JS 的方式调用函数，是通过 JSCore 的方式调用到 Native 侧已经注册好的函数的）
+    // @param module moduleID
+    // @param method methodID
+    // @param args 参数列表
     __callFunction(module, method, args) {
         BridgeProfiling.profile(() => `${module}.${method}(${stringifySafe(args)})`);
         if (isFinite(module)) {
+            // 获取 JSMethodName
             method = this._methodTable[module][method];
+            // 获取 moduleName
             module = this._moduleTable[module];
         }
         if (__DEV__ && SPY_MODE) {
             console.log('N->JS : ' + module + '.' + method + '(' + JSON.stringify(args) + ')');
         }
+
+        // WARNING: JS 侧是否一定存在导入的 module 模块呢？？？？？
+        // 作用和 `let invariant = require('invariant');` 相同，导入 module
         module = this._require(module);
+        // 调用 JS 函数（iOS 会通过 JSCore 执行 Native 侧已经注入到 JSContext 中的方法）
         module[method].apply(module, args);
         BridgeProfiling.profileEnd();
     }
 
+    // @brief 调用回调
+    // @param cbID callbackID
+    // @param args 回调的参数列表
     __invokeCallback(cbID, args) {
         BridgeProfiling.profile(
             () => `MessageQueue.invokeCallback(${cbID}, ${stringifySafe(args)})`);
+        // 通过 callbackID 找到对应的 callback 实例（function 类型）
         let callback = this._callbacks[cbID];
         if (__DEV__) {
             let debug = this._debugInfo[cbID >> 1];
@@ -184,6 +198,7 @@ class MessageQueue {
         }
         this._callbacks[cbID & ~1] = null;
         this._callbacks[cbID | 1] = null;
+        // 调用 callback，JS 侧接收回调参数（猜测第一个参数 null 是因为不想改变 callback 函数的上下文，即函数中的 this 关键字）
         callback.apply(null, args);
         BridgeProfiling.profileEnd();
     }
