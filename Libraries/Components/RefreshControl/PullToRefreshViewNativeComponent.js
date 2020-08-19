@@ -44,6 +44,21 @@ type NativeProps = $ReadOnly<{|
    * Whether the view should be indicating an active refresh.
    */
   refreshing: boolean,
+  
+  /**
+   * Title font family.
+   */
+  titleFontFamily?: ?string;
+
+  /**
+   * Title font size.
+   */
+  titleFontSize?: ?Number;
+
+  /**
+   * Title title font weight.
+   */
+  titleFontWeight?: ?string;
 |}>;
 
 type ComponentType = HostComponent<NativeProps>;

@@ -85,6 +85,9 @@ class RefreshControlExample extends React.Component {
             tintColor="#ff0000"
             title="Loading..."
             titleColor="#00ff00"
+            titleFontFamily= 'Cochin'
+            titleFontSize={30}
+            titleFontWeight= 'bold'
             colors={['#ff0000', '#00ff00', '#0000ff']}
             progressBackgroundColor="#ffff00"
           />

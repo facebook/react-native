@@ -9,6 +9,7 @@
 #import "RCTRefreshableProtocol.h"
 
 #import "RCTUtils.h"
+#import <React/RCTFont.h>
 
 @interface RCTRefreshControl () <RCTRefreshableProtocol>
 @end
@@ -21,6 +22,9 @@
   BOOL _refreshingProgrammatically;
   NSString *_title;
   UIColor *_titleColor;
+  NSString *_titleFontFamily;
+  NSNumber *_titleFontSize;
+  NSString *_titleFontWeight;
 }
 
 - (instancetype)init
@@ -125,6 +129,39 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   [self _updateTitle];
 }
 
+- (void)setTitleFontSize:(NSNumber *)size
+{
+  _titleFontSize = size;
+  [self _updateTitle];
+}
+
+- (void)setTitleFontWeight:(NSString *)weight
+{
+  _titleFontWeight = weight;
+  [self _updateTitle];
+}
+
+- (void)setTitleFontFamily:(NSString *)name
+{
+  _titleFontFamily = name;
+  [self _updateTitle];
+}
+
+- (UIFont *)titleFont
+{
+    NSNumber *fontSize = 0;
+    if (_titleFontSize != nil) {
+        fontSize = _titleFontSize;
+    }
+  return [RCTFont updateFont:nil
+                  withFamily:_titleFontFamily
+                        size:_titleFontSize
+                      weight:_titleFontWeight
+                       style:nil
+                     variant:nil
+             scaleMultiplier:1];
+}
+
 - (void)_updateTitle
 {
   if (!_title) {
@@ -135,7 +172,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   if (_titleColor) {
     attributes[NSForegroundColorAttributeName] = _titleColor;
   }
-
+    
+  UIFont *font = [self titleFont];
+  if (font) {
+    attributes[NSFontAttributeName] = font;
+  }
   self.attributedTitle = [[NSAttributedString alloc] initWithString:_title attributes:attributes];
 }
 
