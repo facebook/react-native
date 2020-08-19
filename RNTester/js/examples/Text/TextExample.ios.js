@@ -10,7 +10,11 @@
 
 'use strict';
 
+import FBTextWithEntities from 'FBTextWithEntities.react';
+import RelayFBEnvironment from 'RelayFBEnvironment';
+
 const React = require('react');
+const ReactRelayFragmentMockRenderer = require('ReactRelayFragmentMockRenderer');
 const TextAncestor = require('../../../../Libraries/Text/TextAncestor');
 const TextInlineView = require('../../components/TextInlineView');
 const TextLegend = require('../../components/TextLegend');
@@ -18,6 +22,7 @@ const TextLegend = require('../../components/TextLegend');
 const {
   Button,
   LayoutAnimation,
+  Linking,
   Platform,
   Text,
   TextInput,
@@ -475,6 +480,65 @@ class TextWithCapBaseBox extends React.Component<*, *> {
         ]}>
         {this.props.children}
       </Text>
+    );
+  }
+}
+
+class LinkEntity extends React.Component<{
+  text: string,
+  entity: {url: string, ...},
+  ...
+}> {
+  render(): React.Node {
+    return (
+      <Text
+        onPress={() => {
+          Linking.openURL(this.props.entity.url);
+        }}
+        style={{
+          backgroundColor: 'white',
+          textDecorationLine: 'underline',
+          color: 'blue',
+        }}>
+        {this.props.text}
+      </Text>
+    );
+  }
+}
+
+class TextWithNestedLink extends React.Component<*, *> {
+  render() {
+    const mockdata = {
+      text: 'Click here to learn more.',
+      image_ranges: ([]: Array<$FlowFixMeEmpty>),
+      ranges: [
+        {
+          entity: {
+            __typename: 'ExternalUrl',
+            id: '',
+            name: '',
+            url: 'https://www.facebook.com',
+          },
+          offset: 14,
+          length: 11,
+        },
+      ],
+      aggregated_ranges: ([]: Array<$FlowFixMeEmpty>),
+      inline_style_ranges: ([]: Array<$FlowFixMeEmpty>),
+    };
+    return (
+      <View>
+        <ReactRelayFragmentMockRenderer
+          environment={RelayFBEnvironment}
+          render={() => (
+            <FBTextWithEntities
+              shouldTruncate={false}
+              text={mockdata}
+              TextEntityComponent={LinkEntity}
+            />
+          )}
+        />
+      </View>
     );
   }
 }
@@ -1148,6 +1212,12 @@ exports.examples = [
           </Text>
         </View>
       );
+    },
+  },
+  {
+    title: 'Text with Nested Link',
+    render: function(): React.Element<any> {
+      return <TextWithNestedLink />;
     },
   },
 ];
