@@ -18,7 +18,6 @@
 #import <React/RCTSurfacePresenterStub.h>
 
 #import <ReactCommon/RuntimeExecutor.h>
-#import <react/utils/CalledOnceMovableOnlyFunction.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
@@ -49,20 +48,7 @@ static RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
   auto bridgeWeakWrapper = wrapManagedObjectWeakly([bridge batchedBridge] ?: bridge);
 
   RuntimeExecutor runtimeExecutor = [bridgeWeakWrapper](
-                                        std::function<void(facebook::jsi::Runtime &)> &&callbackArgument) {
-
-#ifndef NDEBUG
-    // Here we wrap callback into a callable that will assert if the `callback` is not called before deallocation
-    // or called more than once.
-    // It's useful to see at which exact point in time those assumptions were violated.
-    auto sharedCallback = std::make_shared<CalledOnceMovableOnlyFunction<void, facebook::jsi::Runtime &>>(
-        [callback = std::move(callbackArgument)](facebook::jsi::Runtime &runtime) { callback(runtime); });
-    auto callback = std::function<void(facebook::jsi::Runtime &)>(
-        [sharedCallback](facebook::jsi::Runtime &runtime) { (*sharedCallback)(runtime); });
-#else
-    auto callback = std::move(callbackArgument);
-#endif
-
+                                        std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
     RCTBridge *bridge = unwrapManagedObjectWeakly(bridgeWeakWrapper);
 
     RCTAssert(bridge, @"RCTRuntimeExecutorFromBridge: Bridge must not be nil at the moment of scheduling a call.");
