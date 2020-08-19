@@ -20,6 +20,7 @@ const {
   TouchableWithoutFeedback,
   Alert,
   StyleSheet,
+  findNodeHandle,
 } = require('react-native');
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
@@ -750,6 +751,26 @@ class AnnounceForAccessibility extends React.Component<{}> {
   }
 }
 
+function SetAccessibilityFocus() {
+  const focusRef = React.createRef();
+  return (
+    <View>
+      <Button
+        onPress={() => {
+          if (focusRef.current != null) {
+            const reactTag = findNodeHandle(focusRef.current);
+            AccessibilityInfo.setAccessibilityFocus(reactTag);
+          }
+        }}
+        title="Set Accessibility Focus"
+      />
+      <Text ref={focusRef} accessible={true}>
+        Move focus here on button press.
+      </Text>
+    </View>
+  );
+}
+
 exports.title = 'Accessibility';
 exports.description = 'Examples of using Accessibility APIs.';
 exports.examples = [
@@ -787,6 +808,12 @@ exports.examples = [
     title: 'Check if the screen reader announces',
     render(): React.Element<typeof AnnounceForAccessibility> {
       return <AnnounceForAccessibility />;
+    },
+  },
+  {
+    title: 'Check if the screen reader focus sets ',
+    render(): React.Element<typeof SetAccessibilityFocus> {
+      return <SetAccessibilityFocus />;
     },
   },
 ];
