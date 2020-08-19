@@ -11,7 +11,7 @@ LOCAL_MODULE := fabricjni
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
-LOCAL_SHARED_LIBRARIES := libreactconfig libyoga libglog libfb libfbjni libglog_init libfolly_json libfolly_futures libreact_render_mounting libreactnativeutilsjni libreact_utils libreact_render_debug libreact_render_graphics libreact_render_core libreact_render_mapbuffer react_render_componentregistry libreact_render_components_view libreact_render_components_view libreact_render_components_unimplementedview libreact_render_components_root libreact_render_components_scrollview libbetter libreact_render_attributedstring libreact_render_uimanager libreact_render_templateprocessor libreact_render_scheduler libreact_render_animations libreact_render_imagemanager libreact_render_textlayoutmanager libreact_render_viewmanagers
+LOCAL_SHARED_LIBRARIES := libreactconfig libyoga libglog libfb libfbjni libglog_init libfolly_json libfolly_futures libreact_render_mounting libreactnativeutilsjni libreact_utils libreact_render_debug libreact_render_graphics libreact_render_core libreact_render_mapbuffer react_render_componentregistry libreact_render_components_view libreact_render_components_unimplementedview libreact_render_components_root libreact_render_components_scrollview libbetter libreact_render_attributedstring libreact_render_uimanager libreact_render_templateprocessor libreact_render_scheduler libreact_render_animations libreact_render_imagemanager libreact_render_textlayoutmanager libreact_render_viewmanagers react_render_components_text
 
 LOCAL_STATIC_LIBRARIES :=
 
@@ -42,6 +42,7 @@ $(call import-module,react/renderer/core)
 $(call import-module,react/renderer/components/root)
 $(call import-module,react/renderer/components/scrollview)
 $(call import-module,react/renderer/components/unimplementedview)
+$(call import-module,react/renderer/components/text)
 $(call import-module,react/renderer/components/view)
 $(call import-module,react/renderer/debug)
 $(call import-module,react/renderer/graphics)
@@ -53,4 +54,4 @@ $(call import-module,react/renderer/templateprocessor)
 $(call import-module,react/renderer/textlayoutmanager)
 $(call import-module,react/renderer/uimanager)
 
-#$(call import-module,react/fabric/viewmanagers/jni)
+# $(call import-module,react/fabric/viewmanagers/jni)
