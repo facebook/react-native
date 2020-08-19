@@ -335,7 +335,6 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
         [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
                                                             object:_parentBridge
                                                           userInfo:userInfo];
-
       } else {
 
         // 加载应用程序 JS 脚本完成
@@ -600,6 +599,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
     return;
   }
 
+  // `buckets`: key - moduleData，value - NSMutableOrderedSet<索引位置 i>
   NSMapTable *buckets = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
                                                   valueOptions:NSPointerFunctionsStrongMemory
                                                       capacity:_moduleDataByID.count];
@@ -609,6 +609,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
       // verify that class has been registered
       (void)_modulesByName[moduleData.name];
     }
+    // `set` 中保存的是当前遍历的索引位置 `i`
     NSMutableOrderedSet *set = [buckets objectForKey:moduleData];
     if (!set) {
       set = [[NSMutableOrderedSet alloc] init];
@@ -617,13 +618,14 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
     [set addObject:@(i)];
   }
 
-  for (RCTModuleData *moduleData in buckets) {
+  for (RCTModuleData *moduleData /* moduleData 为 key */ in buckets) {
     RCTProfileBeginFlowEvent();
 
     [moduleData dispatchBlock:^{
       RCTProfileEndFlowEvent();
       RCTProfileBeginEvent();
 
+      // calls 为 value
       NSOrderedSet *calls = [buckets objectForKey:moduleData];
       @autoreleasepool {
         for (NSNumber *indexObj in calls) {
@@ -666,12 +668,14 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 
   RCTProfileBeginEvent();
 
+  // 根据 moduleID（即 moduleData 的 uid）获取对应的 moduleData 实例
   RCTModuleData *moduleData = _moduleDataByID[moduleID];
   if (RCT_DEBUG && !moduleData) {
     RCTLogError(@"No module found for id '%zd'", moduleID);
     return NO;
   }
 
+  // 根据 methodID 在相应的 moduleData 实例中找到 method 实例
   RCTModuleMethod *method = moduleData.methods[methodID];
   if (RCT_DEBUG && !method) {
     RCTLogError(@"Unknown methodID: %zd for module: %zd (%@)", methodID, moduleID, moduleData.name);
@@ -679,6 +683,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   }
 
   @try {
+    // 调用该 method
     [method invokeWithBridge:self module:moduleData.instance arguments:params];
   }
   @catch (NSException *exception) {

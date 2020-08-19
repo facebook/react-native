@@ -41,7 +41,7 @@
 
 /// @brief 指定初始化方法
 /// @param javaScriptExecutor javaScript 语句执行器
-/// @param uid RCTModuleData 实例的唯一标识
+/// @param uid RCTModuleData 实例的唯一标识（外部的 moduleID）
 /// @param instance 实现了 `RCTBridgeModule` 协议的实例对象（OC 侧的具体实现）
 /// @return RCTModuleData 实例
 - (instancetype)initWithExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor

@@ -14,6 +14,9 @@
 /// @brief JS 侧函数调用类型
 typedef NS_ENUM(NSUInteger, RCTJavaScriptFunctionKind) {
   RCTJavaScriptFunctionKindNormal,  ///< 普通函数类型
+
+  /// @brief 导出方法中如果参数类型包含 `RCTPromiseResolveBlock` 或 `RCTPromiseRejectBlock`
+  ///        则认定该函数类型为 `RCTJavaScriptFunctionKindAsync`
   RCTJavaScriptFunctionKindAsync,   ///< 异步调用函数类型
 };
 
