@@ -154,6 +154,15 @@ module.exports = {
   accessibilityElementsHidden: PropTypes.bool,
 
   /**
+   * A value indicating whether the focus of a group of nested accessibility elements
+   * can be captured separately from their parent element.
+   *
+   * @platform ios
+   *
+   */
+  accessibilitySplitFocus: PropTypes.bool,
+
+  /**
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs an accessibility custom action.
    *

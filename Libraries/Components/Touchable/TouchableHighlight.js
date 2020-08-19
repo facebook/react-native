@@ -305,6 +305,7 @@ class TouchableHighlight extends React.Component<Props, State> {
         accessibilityLiveRegion={this.props.accessibilityLiveRegion}
         accessibilityViewIsModal={this.props.accessibilityViewIsModal}
         accessibilityElementsHidden={this.props.accessibilityElementsHidden}
+        accessibilitySplitFocus={this.props.accessibilitySplitFocus}
         style={StyleSheet.compose(
           this.props.style,
           this.state.extraStyles?.underlay,
