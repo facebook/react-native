@@ -7,7 +7,6 @@
 
 #import "RCTUIManagerUtils.h"
 
-#import <libkern/OSAtomic.h>
 #import <stdatomic.h>
 
 #import "RCTAssert.h"
