@@ -712,7 +712,7 @@ public class NativeViewHierarchyManager {
     Rect visibleWindowFrame = new Rect();
     v.getWindowVisibleDisplayFrame(visibleWindowFrame);
     outputBuffer[0] = outputBuffer[0] - visibleWindowFrame.left;
-    outputBuffer[1] = outputBuffer[1] - visibleWindowFrame.top;
+    outputBuffer[1] = outputBuffer[1] + visibleWindowFrame.top;
 
     // outputBuffer[0,1] already contain what we want
     outputBuffer[2] = v.getWidth();
