@@ -70,7 +70,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
       ReactHorizontalScrollView view,
       ReactStylesDiffMap props,
       @Nullable StateWrapper stateWrapper) {
-    view.updateState(stateWrapper);
+    view.getFabricViewStateManager().setStateWrapper(stateWrapper);
     return null;
   }
 

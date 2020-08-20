@@ -6,7 +6,7 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <react/components/view/TouchEventEmitter.h>
+#import <react/renderer/components/view/TouchEventEmitter.h>
 
 @protocol RCTTouchableComponentViewProtocol <NSObject>
 - (facebook::react::SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point;

@@ -21,7 +21,7 @@ module.exports = {
     ),
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(jest-)?react-native|@react-native-community)',
+    'node_modules/(?!((jest-)?react-native|@react-native(-community)?)/)',
   ],
   setupFiles: [require.resolve('./jest/setup.js')],
   testEnvironment: 'node',

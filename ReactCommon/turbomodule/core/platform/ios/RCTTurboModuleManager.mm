@@ -656,7 +656,8 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   __weak __typeof(self) weakSelf = self;
-  auto turboModuleProvider = [weakSelf](const std::string &name) -> std::shared_ptr<react::TurboModule> {
+  auto turboModuleProvider =
+      [weakSelf](const std::string &name, const jsi::Value *schema) -> std::shared_ptr<react::TurboModule> {
     if (!weakSelf) {
       return nullptr;
     }

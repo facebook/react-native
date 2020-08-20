@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -13,7 +13,8 @@
 const Systrace = require('../Performance/Systrace');
 
 const infoLog = require('./infoLog');
-const performanceNow = global.nativeQPLTimestamp ?? global.performance.now;
+const performanceNow =
+  global.nativeQPLTimestamp ?? global.performance.now.bind(global.performance);
 
 type Timespan = {
   description?: string,
@@ -24,7 +25,8 @@ type Timespan = {
 };
 
 export type IPerformanceLogger = {
-  addTimespan(string, number, string | void): void,
+  addTimeAnnotation(string, number, string | void): void,
+  addTimespan(string, number, number, string | void): void,
   startTimespan(string, string | void): void,
   stopTimespan(string, options?: {update?: boolean}): void,
   clear(): void,
@@ -34,10 +36,10 @@ export type IPerformanceLogger = {
   getTimespans(): {[key: string]: Timespan, ...},
   hasTimespan(string): boolean,
   logTimespans(): void,
-  addTimespans(Array<number>, Array<string>): void,
-  setExtra(string, any): void,
-  getExtras(): {[key: string]: any, ...},
-  removeExtra(string): ?any,
+  addTimeAnnotations(Array<number>, Array<string>): void,
+  setExtra(string, mixed): void,
+  getExtras(): {[key: string]: mixed, ...},
+  removeExtra(string): ?mixed,
   logExtras(): void,
   markPoint(string, number | void): void,
   getPoints(): {[key: string]: number, ...},
@@ -58,7 +60,7 @@ const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally 
 function createPerformanceLogger(): IPerformanceLogger {
   const result: IPerformanceLogger & {
     _timespans: {[key: string]: Timespan, ...},
-    _extras: {[key: string]: any, ...},
+    _extras: {[key: string]: mixed, ...},
     _points: {[key: string]: number, ...},
     ...
   } = {
@@ -66,7 +68,7 @@ function createPerformanceLogger(): IPerformanceLogger {
     _extras: {},
     _points: {},
 
-    addTimespan(key: string, lengthInMs: number, description?: string) {
+    addTimeAnnotation(key: string, durationInMs: number, description?: string) {
       if (this._timespans[key]) {
         if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
@@ -79,7 +81,31 @@ function createPerformanceLogger(): IPerformanceLogger {
 
       this._timespans[key] = {
         description: description,
-        totalTime: lengthInMs,
+        totalTime: durationInMs,
+      };
+    },
+
+    addTimespan(
+      key: string,
+      startTime: number,
+      endTime: number,
+      description?: string,
+    ) {
+      if (this._timespans[key]) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
+          infoLog(
+            'PerformanceLogger: Attempting to add a timespan that already exists ',
+            key,
+          );
+        }
+        return;
+      }
+
+      this._timespans[key] = {
+        description,
+        startTime,
+        endTime,
+        totalTime: endTime - (startTime || 0),
       };
     },
 
@@ -199,14 +225,18 @@ function createPerformanceLogger(): IPerformanceLogger {
       }
     },
 
-    addTimespans(newTimespans: Array<number>, labels: Array<string>) {
-      for (let ii = 0, l = newTimespans.length; ii < l; ii += 2) {
+    addTimeAnnotations(durationsInMs: Array<number>, labels: Array<string>) {
+      for (let ii = 0, l = durationsInMs.length; ii < l; ii += 2) {
         const label = labels[ii / 2];
-        this.addTimespan(label, newTimespans[ii + 1] - newTimespans[ii], label);
+        this.addTimespan(
+          label,
+          durationsInMs[ii + 1] - durationsInMs[ii],
+          label,
+        );
       }
     },
 
-    setExtra(key: string, value: any) {
+    setExtra(key: string, value: mixed) {
       if (this._extras[key]) {
         if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
@@ -223,7 +253,7 @@ function createPerformanceLogger(): IPerformanceLogger {
       return this._extras;
     },
 
-    removeExtra(key: string): ?any {
+    removeExtra(key: string): ?mixed {
       const value = this._extras[key];
       delete this._extras[key];
       return value;
