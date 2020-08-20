@@ -417,9 +417,28 @@ struct RCTInstanceCallback : public InstanceCallback {
   // Prepare executor factory (shared_ptr for copy into block)
   std::shared_ptr<JSExecutorFactory> executorFactory;
   if (!self.executorClass) {
-    if ([self.delegate conformsToProtocol:@protocol(RCTCxxBridgeDelegate)]) {
-      id<RCTCxxBridgeDelegate> cxxDelegate = (id<RCTCxxBridgeDelegate>)self.delegate;
-      executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
+    SEL jsExecutorFactoryForBridgeSEL = @selector(jsExecutorFactoryForBridge:);
+    if ([self.delegate respondsToSelector:jsExecutorFactoryForBridgeSEL]) {
+      // Normally, `RCTCxxBridgeDelegate` protocol uses `std::unique_ptr` to return the js executor object.
+      // However, we needed to change the signature of `jsExecutorFactoryForBridge` to return `void *` instead. See https://github.com/expo/expo/pull/9862.
+      // This change works great in Expo Go because we have full control over modules initialization,
+      // but if someone is using our fork in the bare app, crashes may occur (`EXC_BAD_ACCESS`).
+      // To fix it, we need to get the return type of `jsExecutorFactoryForBridge` and handle two cases:
+      // - method returns `void *`
+      // - method returns `std::unique_ptr<JSExecutorFactory>`
+      Method m = class_getInstanceMethod([self.delegate class], jsExecutorFactoryForBridgeSEL);
+      char returnType[128];
+      method_getReturnType(m, returnType, sizeof(returnType));
+      
+      if(strcmp(returnType, @encode(void *)) == 0) {
+        // `jsExecutorFactoryForBridge` returns `void *`
+        id<RCTCxxBridgeDelegate> cxxDelegate = (id<RCTCxxBridgeDelegate>)self.delegate;
+        executorFactory.reset(reinterpret_cast<JSExecutorFactory *>([cxxDelegate jsExecutorFactoryForBridge:self]));
+      } else {
+        // `jsExecutorFactoryForBridge` returns `std::unique_ptr<JSExecutorFactory>`
+        id<RCTCxxBridgeTurboModuleDelegate> cxxDelegate = (id<RCTCxxBridgeTurboModuleDelegate>)self.delegate;
+        executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
+      }
     }
     if (!executorFactory) {
       auto installBindings = RCTJSIExecutorRuntimeInstaller(nullptr);

@@ -26,6 +26,15 @@ class JSExecutorFactory;
  * If not implemented, or returns an empty pointer, JSIExecutorFactory
  * will be used with a JSCRuntime.
  */
+- (void *)jsExecutorFactoryForBridge:(RCTBridge *)bridge;
+
+@end
+
+@protocol RCTCxxBridgeTurboModuleDelegate <RCTBridgeDelegate>
+
+/**
+ * The RCTCxxBridgeDelegate used outside of the Expo Go.
+ */
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge;
 
 @end
