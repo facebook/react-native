@@ -14,10 +14,13 @@ import {Platform, Linking} from 'react-native';
 import {AsyncStorage} from 'react-native';
 const RNTesterNavigationReducer = require('./RNTesterNavigationReducer');
 const URIActionMap = require('./URIActionMap');
+import type {RNTesterExample} from '../types/RNTesterTypes';
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
-export const initializeAsyncStore = context => {
+type Context = $FlowFixMe;
+
+export const initializeAsyncStore = (context: Context) => {
   Linking.getInitialURL().then(url => {
     AsyncStorage.getItem(APP_STATE_KEY, (err, storedString) => {
       const exampleAction = URIActionMap(
@@ -27,7 +30,9 @@ export const initializeAsyncStore = context => {
       const launchAction = exampleAction || urlAction;
       if (err || !storedString) {
         const initialAction = launchAction || {type: 'RNTesterListAction'};
-        context.setState(RNTesterNavigationReducer(null, initialAction));
+        context.setState(
+          RNTesterNavigationReducer(context.state, initialAction),
+        );
         return;
       }
 
@@ -86,7 +91,11 @@ export const initializeAsyncStore = context => {
   });
 };
 
-export const addApi = (apiName, api, context) => {
+export const addApi = (
+  apiName: string,
+  api: RNTesterExample,
+  context: $FlowFixMe,
+) => {
   const stateApi = Object.assign({}, context.state.Api);
   stateApi[apiName] = api;
   context.setState({
@@ -96,7 +105,11 @@ export const addApi = (apiName, api, context) => {
   AsyncStorage.setItem('Api', JSON.stringify(stateApi));
 };
 
-export const addComponent = (componentName, component, context) => {
+export const addComponent = (
+  componentName: string,
+  component: RNTesterExample,
+  context: Context,
+) => {
   const stateComponent = Object.assign({}, context.state.Components);
   stateComponent[componentName] = component;
   context.setState({
@@ -106,7 +119,7 @@ export const addComponent = (componentName, component, context) => {
   AsyncStorage.setItem('Components', JSON.stringify(stateComponent));
 };
 
-export const removeApi = (apiName, context) => {
+export const removeApi = (apiName: string, context: Context) => {
   const stateApi = Object.assign({}, context.state.Api);
   delete stateApi[apiName];
   context.setState({
@@ -115,7 +128,7 @@ export const removeApi = (apiName, context) => {
   AsyncStorage.setItem('Api', JSON.stringify(stateApi));
 };
 
-export const removeComponent = (componentName, context) => {
+export const removeComponent = (componentName: string, context: Context) => {
   const stateComponent = Object.assign({}, context.state.Components);
   delete stateComponent[componentName];
   context.setState({
@@ -124,14 +137,22 @@ export const removeComponent = (componentName, context) => {
   AsyncStorage.setItem('Components', JSON.stringify(stateComponent));
 };
 
-export const checkBookmarks = (title, key, context) => {
+export const checkBookmarks = (
+  title: string,
+  key: string,
+  context: Context,
+): boolean => {
   if (key === 'APIS' || key === 'RECENT_APIS') {
     return context.state.Api[title] === undefined;
   }
   return context.state.Components[title] === undefined;
 };
 
-export const updateRecentlyViewedList = (item, key, context) => {
+export const updateRecentlyViewedList = (
+  item: RNTesterExample,
+  key: string,
+  context: Context,
+) => {
   const openedItem = item;
   if (key === 'COMPONENTS' || key === 'RECENT_COMPONENTS') {
     let componentsCopy = [...context.state.recentComponents];

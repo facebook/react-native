@@ -34,7 +34,10 @@ const {
 } = require('react-native');
 
 import type {RNTesterExample} from './types/RNTesterTypes';
-import type {RNTesterAction} from './utils/RNTesterActions';
+import type {
+  RNTesterAction,
+  RNTesterExampleAction,
+} from './utils/RNTesterActions';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 import RNTesterDocumentationURL from './components/RNTesterDocumentationURL';
@@ -43,6 +46,7 @@ import {
   RNTesterBookmarkContext,
   bookmarks,
 } from './components/RNTesterBookmark';
+import type {RNTesterBookmark} from './components/RNTesterBookmark';
 
 type Props = {exampleFromAppetizeParams?: ?string, ...};
 
@@ -135,17 +139,19 @@ const RNTesterExampleContainerViaHook = ({
 
 const RNTesterExampleListViaHook = ({
   onNavigate,
-  updateRecentlyViewedList,
+  UpdateRecentlyViewedList,
   recentComponents,
   recentApis,
   bookmark,
   list,
   screen,
 }: {
-  onNavigate?: () => mixed,
-  updateRecentlyViewedList?: () => mixed,
+  onNavigate?: (item: RNTesterExampleAction, key: string) => mixed,
+  UpdateRecentlyViewedList?: (item: RNTesterExample, key: string) => mixed,
   recentComponents: Array<RNTesterExample>,
   recentApis: Array<RNTesterExample>,
+  bookmark: RNTesterBookmark,
+  screen: string,
   list: {
     ComponentExamples: Array<RNTesterExample>,
     APIExamples: Array<RNTesterExample>,
@@ -170,7 +176,7 @@ const RNTesterExampleListViaHook = ({
             onNavigate={onNavigate}
             recentComponents={recentComponents}
             recentApis={recentApis}
-            updateRecentlyViewedList={updateRecentlyViewedList}
+            updateRecentlyViewedList={UpdateRecentlyViewedList}
             list={list}
             screen={screen}
           />
@@ -244,6 +250,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
       RemoveComponent: this.state.RemoveComponent,
       checkBookmark: this.state.checkBookmark,
     };
+
     if (!this.state) {
       return null;
     }
@@ -272,7 +279,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
           key={this.state.screen}
           title={'RNTester'}
           onNavigate={this._handleAction}
-          updateRecentlyViewedList={this.state.updateRecentlyViewedList}
+          UpdateRecentlyViewedList={this.state.updateRecentlyViewedList}
           recentComponents={this.state.recentComponents}
           recentApis={this.state.recentApis}
           bookmark={bookmark}

@@ -11,11 +11,26 @@
 'use strict';
 
 const RNTesterList = require('./RNTesterList');
+import type {RNTesterExample} from '../types/RNTesterTypes';
 
-export type RNTesterNavigationState = {openExample: ?string, ...};
+export type RNTesterNavigationState = {
+  openExample: ?string,
+  screen: string,
+  Components: {...},
+  Api: {...},
+  recentComponents: Array<RNTesterExample>,
+  recentApis: Array<RNTesterExample>,
+  AddApi: (apiName: string, api: RNTesterExample) => mixed,
+  AddComponent: (componentName: string, component: RNTesterExample) => mixed,
+  RemoveApi: (apiName: string) => mixed,
+  RemoveComponent: (componentName: string) => mixed,
+  checkBookmark: (title: string, key: string) => mixed,
+  updateRecentlyViewedList: (item: RNTesterExample, key: string) => mixed,
+  ...
+};
 
 function RNTesterNavigationReducer(
-  state: ?RNTesterNavigationState,
+  state: RNTesterNavigationState,
   action: any,
 ): RNTesterNavigationState {
   if (
@@ -27,6 +42,7 @@ function RNTesterNavigationReducer(
     (state.openExample && action.type === 'RNTesterBackAction')
   ) {
     return {
+      ...state,
       screen: action.screen ?? 'component',
       // A null openExample will cause the views to display the RNTester example list
       openExample: null,
@@ -35,6 +51,7 @@ function RNTesterNavigationReducer(
 
   if (action.screen === 'bookmark' && action.type === 'RNTesterBackAction') {
     return {
+      ...state,
       screen: 'component',
       openExample: null,
     };
@@ -45,6 +62,7 @@ function RNTesterNavigationReducer(
     const ExampleModule = RNTesterList.Modules[action.openExample];
     if (ExampleModule) {
       return {
+        ...state,
         openExample: action.openExample,
       };
     }

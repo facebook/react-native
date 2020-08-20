@@ -38,6 +38,7 @@ import {
   RNTesterBookmarkContext,
   bookmarks,
 } from './components/RNTesterBookmark';
+import type {RNTesterBookmark} from './components/RNTesterBookmark';
 
 import {
   initializeAsyncStore,
@@ -56,7 +57,14 @@ type Props = {exampleFromAppetizeParams?: ?string, ...};
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
-const Header = ({title, documentationURL}: {title: string, ...}) => (
+const Header = ({
+  title,
+  documentationURL,
+}: {
+  title: string,
+  documentationURL?: string,
+  ...
+}) => (
   <RNTesterThemeContext.Consumer>
     {theme => {
       return (
@@ -100,7 +108,7 @@ const RNTesterExampleContainerViaHook = ({
 const RNTesterExampleListViaHook = ({
   title,
   onNavigate,
-  updateRecentlyViewedList,
+  UpdateRecentlyViewedList,
   recentComponents,
   recentApis,
   bookmark,
@@ -108,8 +116,9 @@ const RNTesterExampleListViaHook = ({
   screen,
 }: {
   title: string,
+  screen: string,
   onNavigate?: () => mixed,
-  updateRecentlyViewedList?: () => mixed,
+  UpdateRecentlyViewedList?: (item: RNTesterExample, key: string) => mixed,
   recentComponents: Array<RNTesterExample>,
   recentApis: Array<RNTesterExample>,
   list: {
@@ -117,6 +126,7 @@ const RNTesterExampleListViaHook = ({
     APIExamples: Array<RNTesterExample>,
     ...
   },
+  bookmark: RNTesterBookmark,
   ...
 }) => {
   const colorScheme = useColorScheme();
@@ -136,7 +146,7 @@ const RNTesterExampleListViaHook = ({
             onNavigate={onNavigate}
             recentComponents={recentComponents}
             recentApis={recentApis}
-            updateRecentlyViewedList={updateRecentlyViewedList}
+            updateRecentlyViewedList={UpdateRecentlyViewedList}
             list={list}
             screen={screen}
           />
@@ -251,7 +261,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
          * when making Flow check .android.js files. */
         onNavigate={this._handleAction}
-        updateRecentlyViewedList={this.state.updateRecentlyViewedList}
+        UpdateRecentlyViewedList={this.state.updateRecentlyViewedList}
         recentComponents={this.state.recentComponents}
         recentApis={this.state.recentApis}
         bookmark={bookmark}

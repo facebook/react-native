@@ -20,15 +20,20 @@ const {
   Image,
 } = require('react-native');
 import {RNTesterThemeContext} from './RNTesterTheme';
+import type {RNTesterExample} from '../types/RNTesterTypes';
 
 type Props = {
   filter: Function,
   render: Function,
-  content: Object,
   disableSearch?: boolean,
   testID?: string,
   hideFilterPills?: boolean,
   page: string, // possible values -> examples_page, components_page, bookmarks_page
+  sections: Array<{
+    data: Array<RNTesterExample>,
+    title: string,
+    key: string,
+  }>,
   ...
 };
 
@@ -149,6 +154,9 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   searchRow: {
     paddingHorizontal: 20,
     paddingVertical: 10,

@@ -11,18 +11,19 @@
 'use strict';
 
 import * as React from 'react';
+import type {RNTesterExample} from '../types/RNTesterTypes';
 
 export type RNTesterBookmark = {
-  Components: Object,
-  Api: Object,
-  AddComponent: Function,
-  RemoveComponent: Function,
-  AddApi: Function,
-  RemoveApi: Function,
-  checkBookmark: Function,
+  Components: {...},
+  Api: {...},
+  AddApi: (apiName: string, api: RNTesterExample) => mixed,
+  AddComponent: (componentName: string, component: RNTesterExample) => mixed,
+  RemoveApi: (apiName: string) => mixed,
+  RemoveComponent: (componentName: string) => mixed,
+  checkBookmark: (title: string, key: string) => mixed,
 };
 
-export const bookmarks = {
+export const bookmarks: RNTesterBookmark = {
   Components: {},
   Api: {},
   AddComponent: () => {},

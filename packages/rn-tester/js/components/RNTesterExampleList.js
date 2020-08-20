@@ -9,6 +9,7 @@
  */
 
 'use strict';
+import type {RNTesterBookmark} from './RNTesterBookmark.js';
 
 const RNTesterActions = require('../utils/RNTesterActions');
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
@@ -31,7 +32,11 @@ import {RNTesterThemeContext} from './RNTesterTheme';
 import {RNTesterBookmarkContext} from './RNTesterBookmark';
 
 type Props = {
+  screen: string,
   onNavigate: Function,
+  updateRecentlyViewedList: Function,
+  recentApis: Array<RNTesterExample>,
+  recentComponents: Array<RNTesterExample>,
   list: {
     ComponentExamples: Array<RNTesterExample>,
     APIExamples: Array<RNTesterExample>,
@@ -41,16 +46,24 @@ type Props = {
   ...
 };
 
-type ButtonState = {|active: boolean|};
+type State = {
+  components: Array<RNTesterExample>,
+  api: Array<RNTesterExample>,
+  recentComponents: Array<RNTesterExample>,
+  recentApis: Array<RNTesterExample>,
+  updateRecentlyViewedList: Function,
+};
+
+type ButtonState = {active: boolean, key: string, ...};
 type ButtonProps = {
   item: Object,
   section: Object,
-  active: Boolean,
+  active: boolean,
   onNavigate: Function,
   onPress?: Function,
   onShowUnderlay?: Function,
   onHideUnderlay?: Function,
-  updateRecentlyViewedList?: Function,
+  updateRecentlyViewedList: Function,
   ...
 };
 
@@ -197,10 +210,10 @@ const renderSectionHeader = ({section}) => (
   </RNTesterThemeContext.Consumer>
 );
 
-class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
-  static contextType = RNTesterBookmarkContext;
+class RNTesterExampleList extends React.Component<Props, State> {
+  static contextType: React.Context<RNTesterBookmark> = RNTesterBookmarkContext;
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       components: props.list.ComponentExamples,
@@ -212,7 +225,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
     };
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): State {
     if (
       nextProps.recentComponents.every(
         (component, index) => component !== prevState.recentComponents[index],
@@ -222,11 +235,12 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
       )
     ) {
       return {
+        ...prevState,
         recentComponents: nextProps.recentComponents,
         recentApis: nextProps.recentApis,
       };
     }
-    return null;
+    return prevState;
   }
 
   render(): React.Node {
@@ -238,6 +252,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
 
     const {screen} = this.props;
     let sections = [];
+
     if (screen === 'component') {
       if (this.state.recentComponents.length > 0) {
         sections = [
@@ -257,6 +272,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
           {
             data: this.state.components,
             key: 'COMPONENTS',
+            title: 'Components',
           },
         ];
       }
@@ -319,6 +335,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
               <RNTesterExampleFilter
                 testID="explorer_search"
                 page="components_page"
+                // $FlowFixMe
                 sections={sections}
                 filter={filter}
                 render={({filteredSections}) => (
