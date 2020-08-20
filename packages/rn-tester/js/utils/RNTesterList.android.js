@@ -57,7 +57,7 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'PressableExample',
-    category: 'UI', 
+    category: 'UI',
     module: require('../examples/Pressable/PressableExample'),
   },
   {
@@ -119,7 +119,7 @@ const ComponentExamples: Array<RNTesterExample> = [
 const APIExamples: Array<RNTesterExample> = [
   {
     key: 'AccessibilityExample',
-    category: 'Basic',  
+    category: 'Basic',
     module: require('../examples/Accessibility/AccessibilityExample'),
   },
   {

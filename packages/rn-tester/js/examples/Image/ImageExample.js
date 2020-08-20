@@ -13,7 +13,6 @@
 const React = require('react');
 
 const {
-  ActivityIndicator,
   Image,
   StyleSheet,
   Text,

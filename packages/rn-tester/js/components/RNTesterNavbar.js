@@ -160,8 +160,8 @@ const styles = StyleSheet.create({
   },
   activeBar: {
       borderTopWidth:2,
-      borderColor:'#005DFF'
-  }
+      borderColor:'#005DFF',
+  },
 });
 
 module.exports = RNTesterNavbar;
