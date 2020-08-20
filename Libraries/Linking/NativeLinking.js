@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -26,7 +26,7 @@ export interface Spec extends TurboModule {
     action: string,
     extras: ?Array<{
       key: string,
-      value: string | number | boolean,
+      value: string | number | boolean, // TODO(T67672788): Union types are not type safe
       ...
     }>,
   ) => Promise<void>;

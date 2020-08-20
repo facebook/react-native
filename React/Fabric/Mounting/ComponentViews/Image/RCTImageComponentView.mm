@@ -10,13 +10,13 @@
 #import <React/RCTImageBlurUtils.h>
 #import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
-#import <react/components/image/ImageComponentDescriptor.h>
-#import <react/components/image/ImageEventEmitter.h>
-#import <react/components/image/ImageProps.h>
-#import <react/imagemanager/ImageInstrumentation.h>
-#import <react/imagemanager/ImageRequest.h>
-#import <react/imagemanager/RCTImageInstrumentationProxy.h>
-#import <react/imagemanager/RCTImagePrimitivesConversions.h>
+#import <react/renderer/components/image/ImageComponentDescriptor.h>
+#import <react/renderer/components/image/ImageEventEmitter.h>
+#import <react/renderer/components/image/ImageProps.h>
+#import <react/renderer/imagemanager/ImageInstrumentation.h>
+#import <react/renderer/imagemanager/ImageRequest.h>
+#import <react/renderer/imagemanager/RCTImageInstrumentationProxy.h>
+#import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
 
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
@@ -103,11 +103,6 @@ using namespace facebook::react;
 
     // TODO (T58941612): Tracking for visibility should be done directly on this class.
     // For now, we consolidate instrumentation logic in the image loader, so that pre-Fabric gets the same treatment.
-    auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
-        data.getImageRequest().getSharedImageInstrumentation());
-    if (instrumentation) {
-      instrumentation->trackNativeImageView(self);
-    }
   }
 }
 

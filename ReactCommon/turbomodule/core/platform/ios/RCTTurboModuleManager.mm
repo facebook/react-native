@@ -182,9 +182,6 @@ static Class getFallbackClassFromName(const char *name)
     _bridge = bridge;
     _invalidating = false;
 
-    // Necessary to allow NativeModules to lookup TurboModules
-    [bridge setRCTTurboModuleLookupDelegate:self];
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeWillInvalidateModules:)
                                                  name:RCTBridgeWillInvalidateModulesNotification
@@ -399,6 +396,17 @@ static Class getFallbackClassFromName(const char *name)
       };
 
       if ([self _requiresMainQueueSetup:moduleClass]) {
+        /**
+         * When TurboModule eager initialization is enabled, there shouldn't be any TurboModule initializations on the
+         * main queue.
+         * TODO(T69449176) Roll out TurboModule eager initialization, and remove this check.
+         */
+        if (RCTTurboModuleEagerInitEnabled() && !RCTIsMainQueue()) {
+          RCTLogWarn(
+              @"TurboModule \"%@\" requires synchronous dispatch onto the main queue to be initialized. This may lead to deadlock.",
+              moduleClass);
+        }
+
         RCTUnsafeExecuteOnMainQueueSync(work);
       } else {
         work();
@@ -463,8 +471,8 @@ static Class getFallbackClassFromName(const char *name)
 
   TurboModulePerfLogger::moduleCreateSetUpStart(moduleName, moduleId);
 
-  if ([module respondsToSelector:@selector(setTurboModuleLookupDelegate:)]) {
-    [module setTurboModuleLookupDelegate:self];
+  if ([module respondsToSelector:@selector(setTurboModuleRegistry:)]) {
+    [module setTurboModuleRegistry:self];
   }
 
   /**
@@ -648,7 +656,8 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   __weak __typeof(self) weakSelf = self;
-  auto turboModuleProvider = [weakSelf](const std::string &name) -> std::shared_ptr<react::TurboModule> {
+  auto turboModuleProvider =
+      [weakSelf](const std::string &name, const jsi::Value *schema) -> std::shared_ptr<react::TurboModule> {
     if (!weakSelf) {
       return nullptr;
     }
@@ -690,7 +699,7 @@ static Class getFallbackClassFromName(const char *name)
   });
 }
 
-#pragma mark RCTTurboModuleLookupDelegate
+#pragma mark RCTTurboModuleRegistry
 
 - (id)moduleForName:(const char *)moduleName
 {
@@ -712,6 +721,24 @@ static Class getFallbackClassFromName(const char *name)
 {
   std::unique_lock<std::mutex> guard(_turboModuleHoldersMutex);
   return _turboModuleHolders.find(moduleName) != _turboModuleHolders.end();
+}
+
+- (NSArray<NSString *> *)eagerInitModuleNames
+{
+  if ([_delegate respondsToSelector:@selector(getEagerInitModuleNames)]) {
+    return [_delegate getEagerInitModuleNames];
+  }
+
+  return @[];
+}
+
+- (NSArray<NSString *> *)eagerInitMainQueueModuleNames
+{
+  if ([_delegate respondsToSelector:@selector(getEagerInitMainQueueModuleNames)]) {
+    return [_delegate getEagerInitMainQueueModuleNames];
+  }
+
+  return @[];
 }
 
 #pragma mark Invalidation logic
