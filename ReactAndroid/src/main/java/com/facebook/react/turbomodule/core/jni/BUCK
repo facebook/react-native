@@ -35,6 +35,7 @@ rn_xplat_cxx_library(
         ":callinvokerholder",
         "//xplat/jsi:jsi",
         react_native_xplat_target("turbomodule/core:core"),
+        react_native_target("java/com/facebook/react/reactperflogger/jni:jni"),
     ],
 )
 

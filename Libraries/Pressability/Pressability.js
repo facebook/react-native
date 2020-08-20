@@ -419,6 +419,10 @@ export default class Pressability {
     this._cancelLongPressDelayTimeout();
     this._cancelPressDelayTimeout();
     this._cancelPressOutDelayTimeout();
+
+    // Ensure that, if any async event handlers are fired after unmount
+    // due to a race, we don't call any configured callbacks.
+    this._config = Object.freeze({});
   }
 
   /**
@@ -755,16 +759,7 @@ export default class Pressability {
   }
 
   _measureCallback = (left, top, width, height, pageX, pageY) => {
-    if (
-      !(
-        left > 0 ||
-        top > 0 ||
-        width > 0 ||
-        height > 0 ||
-        pageX > 0 ||
-        pageY > 0
-      )
-    ) {
+    if (!left && !top && !width && !height && !pageX && !pageY) {
       return;
     }
     this._responderRegion = {

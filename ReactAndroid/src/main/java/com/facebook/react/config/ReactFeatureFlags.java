@@ -23,9 +23,6 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
-  /** Should we output debug logs to debug the TurboModule infra? */
-  public static volatile boolean enableTurboModuleDebugLogs = false;
-
   /*
    * This feature flag enables logs for Fabric
    */
@@ -44,27 +41,6 @@ public class ReactFeatureFlags {
    * inside view manager will be called instead.
    */
   public static boolean useViewManagerDelegatesForCommands = false;
-
-  /**
-   * Should this application use Catalyst Teardown V2? This is an experiment to use a V2 of the
-   * CatalystInstanceImpl `destroy` method.
-   */
-  public static boolean useCatalystTeardownV2 = false;
-
-  /**
-   * When the ReactContext is destroyed, should the CatalystInstance immediately be nullified? This
-   * is the safest thing to do since the CatalystInstance shouldn't be used, and should be
-   * garbage-collected after it's destroyed, but this is a breaking change in that many native
-   * modules assume that a ReactContext will always have a CatalystInstance. This will be deleted
-   * and the CatalystInstance will always be destroyed in some future release.
-   */
-  public static boolean nullifyCatalystInstanceOnDestroy = false;
-
-  /**
-   * Temporary flag. See UIImplementation: if this flag is enabled, ViewCommands will be queued and
-   * executed before any other types of UI operations.
-   */
-  public static boolean allowEarlyViewCommandExecution = false;
 
   /**
    * This react flag enables a custom algorithm for the getChildVisibleRect() method in the classes
@@ -89,4 +65,10 @@ public class ReactFeatureFlags {
 
   /** Feature flag to configure initialization of Fabric surfaces. */
   public static boolean enableFabricStartSurfaceWithLayoutMetrics = true;
+
+  /** Feature flag to use stopSurface when ReactRootView is unmounted. */
+  public static boolean enableStopSurfaceOnRootViewUnmount = false;
+
+  /** Use experimental SetState retry mechanism in view? */
+  public static boolean enableExperimentalStateUpdateRetry = false;
 }

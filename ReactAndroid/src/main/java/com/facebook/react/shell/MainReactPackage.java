@@ -21,8 +21,6 @@ import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.blob.FileReaderModule;
-import com.facebook.react.modules.camera.CameraRollManager;
-import com.facebook.react.modules.camera.ImageEditingManager;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.datepicker.DatePickerDialogModule;
@@ -37,7 +35,6 @@ import com.facebook.react.modules.share.ShareModule;
 import com.facebook.react.modules.sound.SoundManagerModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
-import com.facebook.react.modules.timepicker.TimePickerDialogModule;
 import com.facebook.react.modules.toast.ToastModule;
 import com.facebook.react.modules.vibration.VibrationModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
@@ -60,8 +57,8 @@ import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.text.ReactVirtualTextViewManager;
 import com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager;
 import com.facebook.react.views.textinput.ReactTextInputManager;
+import com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager;
 import com.facebook.react.views.view.ReactViewManager;
-import com.facebook.react.views.viewpager.ReactViewPagerManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,13 +73,11 @@ import java.util.Map;
       BlobModule.class,
       FileReaderModule.class,
       AsyncStorageModule.class,
-      CameraRollManager.class,
       ClipboardModule.class,
       DatePickerDialogModule.class,
       DialogModule.class,
       FrescoModule.class,
       I18nManagerModule.class,
-      ImageEditingManager.class,
       ImageLoaderModule.class,
       ImageStoreManager.class,
       IntentModule.class,
@@ -92,7 +87,6 @@ import java.util.Map;
       ShareModule.class,
       SoundManagerModule.class,
       StatusBarModule.class,
-      TimePickerDialogModule.class,
       ToastModule.class,
       VibrationModule.class,
       WebSocketModule.class,
@@ -123,8 +117,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new FileReaderModule(context);
       case AsyncStorageModule.NAME:
         return new AsyncStorageModule(context);
-      case CameraRollManager.NAME:
-        return new CameraRollManager(context);
       case ClipboardModule.NAME:
         return new ClipboardModule(context);
       case DatePickerDialogModule.FRAGMENT_TAG:
@@ -135,8 +127,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new FrescoModule(context, true, mConfig != null ? mConfig.getFrescoConfig() : null);
       case I18nManagerModule.NAME:
         return new I18nManagerModule(context);
-      case ImageEditingManager.NAME:
-        return new ImageEditingManager(context);
       case ImageLoaderModule.NAME:
         return new ImageLoaderModule(context);
       case ImageStoreManager.NAME:
@@ -155,8 +145,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new StatusBarModule(context);
       case SoundManagerModule.NAME:
         return new SoundManagerModule(context);
-      case TimePickerDialogModule.FRAGMENT_TAG:
-        return new TimePickerDialogModule(context);
       case ToastModule.NAME:
         return new ToastModule(context);
       case VibrationModule.NAME:
@@ -191,8 +179,9 @@ public class MainReactPackage extends TurboReactPackage {
     viewManagers.add(new ReactTextInputManager());
     viewManagers.add(new ReactTextViewManager());
     viewManagers.add(new ReactViewManager());
-    viewManagers.add(new ReactViewPagerManager());
     viewManagers.add(new ReactVirtualTextViewManager());
+
+    viewManagers.add(new ReactUnimplementedViewManager());
 
     return viewManagers;
   }
@@ -213,13 +202,11 @@ public class MainReactPackage extends TurboReactPackage {
             BlobModule.class,
             FileReaderModule.class,
             AsyncStorageModule.class,
-            CameraRollManager.class,
             ClipboardModule.class,
             DatePickerDialogModule.class,
             DialogModule.class,
             FrescoModule.class,
             I18nManagerModule.class,
-            ImageEditingManager.class,
             ImageLoaderModule.class,
             ImageStoreManager.class,
             IntentModule.class,
@@ -229,7 +216,6 @@ public class MainReactPackage extends TurboReactPackage {
             ShareModule.class,
             StatusBarModule.class,
             SoundManagerModule.class,
-            TimePickerDialogModule.class,
             ToastModule.class,
             VibrationModule.class,
             WebSocketModule.class

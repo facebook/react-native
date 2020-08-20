@@ -76,6 +76,7 @@ void asyncMethodCallArgConversionEnd(
     const char *methodName);
 void asyncMethodCallDispatch(const char *moduleName, const char *methodName);
 void asyncMethodCallEnd(const char *moduleName, const char *methodName);
+void asyncMethodCallFail(const char *moduleName, const char *methodName);
 
 /**
  * Pre-processing async method call batch

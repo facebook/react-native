@@ -249,6 +249,13 @@ void asyncMethodCallEnd(const char *moduleName, const char *methodName) {
   }
 }
 
+void asyncMethodCallFail(const char *moduleName, const char *methodName) {
+  NativeModulePerfLogger *logger = g_perfLogger.get();
+  if (logger != nullptr) {
+    logger->asyncMethodCallFail(moduleName, methodName);
+  }
+}
+
 void asyncMethodCallBatchPreprocessStart() {
   NativeModulePerfLogger *logger = g_perfLogger.get();
   if (logger != nullptr) {

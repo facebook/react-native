@@ -34,6 +34,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
@@ -42,6 +43,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -49,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Native module to allow JS to create and update native Views.
@@ -117,6 +120,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
   private final List<UIManagerModuleListener> mListeners = new ArrayList<>();
+  private final CopyOnWriteArrayList<UIManagerListener> mUIManagerListeners =
+      new CopyOnWriteArrayList<>();
   private @Nullable Map<String, WritableMap> mViewManagerConstantsCache;
   private volatile int mViewManagerConstantsCacheSize;
 
@@ -154,7 +159,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
-    mEventDispatcher = new EventDispatcher(reactContext);
+    mEventDispatcher = new EventDispatcherImpl(reactContext);
     mModuleConstants = createConstants(viewManagerResolver);
     mCustomDirectEvents = UIManagerModuleConstants.getDirectEventTypeConstants();
     mViewManagerRegistry = new ViewManagerRegistry(viewManagerResolver);
@@ -176,7 +181,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
-    mEventDispatcher = new EventDispatcher(reactContext);
+    mEventDispatcher = new EventDispatcherImpl(reactContext);
     mCustomDirectEvents = MapBuilder.newHashMap();
     mModuleConstants = createConstants(viewManagersList, null, mCustomDirectEvents);
     mViewManagerRegistry = new ViewManagerRegistry(viewManagersList);
@@ -352,18 +357,28 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   /** Resolves Direct Event name exposed to JS from the one known to the Native side. */
+  @Deprecated
   public CustomEventNamesResolver getDirectEventNamesResolver() {
     return new CustomEventNamesResolver() {
       @Override
-      public @Nullable String resolveCustomEventName(String eventName) {
-        Map<String, String> customEventType =
-            (Map<String, String>) mCustomDirectEvents.get(eventName);
-        if (customEventType != null) {
-          return customEventType.get("registrationName");
-        }
-        return eventName;
+      public @Nullable String resolveCustomEventName(@Nullable String eventName) {
+        return resolveCustomDirectEventName(eventName);
       }
     };
+  }
+
+  @Override
+  @Deprecated
+  @Nullable
+  public String resolveCustomDirectEventName(@Nullable String eventName) {
+    if (eventName != null) {
+      Map<String, String> customEventType =
+          (Map<String, String>) mCustomDirectEvents.get(eventName);
+      if (customEventType != null) {
+        return customEventType.get("registrationName");
+      }
+    }
+    return eventName;
   }
 
   @Override
@@ -431,6 +446,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       final WritableMap initialProps,
       int widthMeasureSpec,
       int heightMeasureSpec) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void stopSurface(final int surfaceId) {
     throw new UnsupportedOperationException();
   }
 
@@ -793,6 +813,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     for (UIManagerModuleListener listener : mListeners) {
       listener.willDispatchViewUpdates(this);
     }
+    for (UIManagerListener listener : mUIManagerListeners) {
+      listener.willDispatchViewUpdates(this);
+    }
     try {
       mUIImplementation.dispatchViewUpdates(batchId);
     } finally {
@@ -850,12 +873,22 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mUIImplementation.prependUIBlock(block);
   }
 
+  @Deprecated
   public void addUIManagerListener(UIManagerModuleListener listener) {
     mListeners.add(listener);
   }
 
+  @Deprecated
   public void removeUIManagerListener(UIManagerModuleListener listener) {
     mListeners.remove(listener);
+  }
+
+  public void addUIManagerEventListener(UIManagerListener listener) {
+    mUIManagerListeners.add(listener);
+  }
+
+  public void removeUIManagerEventListener(UIManagerListener listener) {
+    mUIManagerListeners.remove(listener);
   }
 
   /**
@@ -928,5 +961,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         .getUIViewOperationQueue()
         .getNativeViewHierarchyManager()
         .resolveView(tag);
+  }
+
+  @Override
+  public void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event) {
+    getReactApplicationContext()
+        .getJSModule(RCTEventEmitter.class)
+        .receiveEvent(targetTag, eventName, event);
   }
 }
