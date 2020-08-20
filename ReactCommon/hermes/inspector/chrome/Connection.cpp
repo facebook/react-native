@@ -81,6 +81,7 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::debugger::ResumeRequest &req) override;
   void handle(const m::debugger::SetBreakpointRequest &req) override;
   void handle(const m::debugger::SetBreakpointByUrlRequest &req) override;
+  void handle(const m::debugger::SetBreakpointsActiveRequest &req) override;
   void handle(
       const m::debugger::SetInstrumentationBreakpointRequest &req) override;
   void handle(const m::debugger::SetPauseOnExceptionsRequest &req) override;
@@ -655,6 +656,16 @@ void Connection::Impl::handle(
         }
 
         sendResponseToClient(resp);
+      })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::debugger::SetBreakpointsActiveRequest &req) {
+  inspector_->setBreakpointsActive(req.active)
+      .via(executor_.get())
+      .thenValue([this, id = req.id](const Unit &unit) {
+        sendResponseToClient(m::makeOkResponse(id));
       })
       .thenError<std::exception>(sendErrorToClient(req.id));
 }

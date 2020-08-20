@@ -419,15 +419,26 @@ public class DevServerHelper {
   }
 
   private String createBundleURL(String mainModuleID, BundleType type, String host) {
+    return createBundleURL(mainModuleID, type, host, false, true);
+  }
+
+  private String createSplitBundleURL(String mainModuleID, String host) {
+    return createBundleURL(mainModuleID, BundleType.BUNDLE, host, true, false);
+  }
+
+  private String createBundleURL(
+      String mainModuleID, BundleType type, String host, boolean modulesOnly, boolean runModule) {
     return String.format(
         Locale.US,
-        "http://%s/%s.%s?platform=android&dev=%s&minify=%s&app=%s",
+        "http://%s/%s.%s?platform=android&dev=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
         host,
         mainModuleID,
         type.typeID(),
         getDevMode(),
         getJSMinifyMode(),
-        mPackageName);
+        mPackageName,
+        modulesOnly ? "true" : "false",
+        runModule ? "true" : "false");
   }
 
   private String createBundleURL(String mainModuleID, BundleType type) {
@@ -452,6 +463,11 @@ public class DevServerHelper {
         jsModulePath,
         BundleType.BUNDLE,
         mSettings.getPackagerConnectionSettings().getDebugServerHost());
+  }
+
+  public String getDevServerSplitBundleURL(String jsModulePath) {
+    return createSplitBundleURL(
+        jsModulePath, mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
   public void isPackagerRunning(final PackagerStatusCallback callback) {

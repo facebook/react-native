@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -18,6 +18,22 @@ export interface Spec extends TurboModule {
   +removeListeners: (count: number) => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>(
-  'TVNavigationEventEmitter',
-): ?Spec);
+let NativeModule: ?Spec = null;
+
+const wrapperModule = {
+  addListener(eventName: string) {
+    if (NativeModule == null) {
+      NativeModule = TurboModuleRegistry.get<Spec>('TVNavigationEventEmitter');
+    }
+    NativeModule && NativeModule.addListener(eventName);
+  },
+
+  removeListeners(count: number) {
+    if (NativeModule == null) {
+      NativeModule = TurboModuleRegistry.get<Spec>('TVNavigationEventEmitter');
+    }
+    NativeModule && NativeModule.removeListeners(count);
+  },
+};
+
+export default wrapperModule;

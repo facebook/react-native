@@ -27,9 +27,9 @@
   RCTSurfaceStage _stage;
 }
 
-+ (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
-                             moduleName:(NSString *)moduleName
-                      initialProperties:(NSDictionary *)initialProperties
++ (id<RCTSurfaceProtocol>)createSurfaceWithBridge:(RCTBridge *)bridge
+                                       moduleName:(NSString *)moduleName
+                                initialProperties:(NSDictionary *)initialProperties
 {
   return [[RCTSurface alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
@@ -43,14 +43,15 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
              initialProperties:(NSDictionary *)initialProperties
                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
 {
-  RCTSurface *surface = [[self class] createSurfaceWithBridge:bridge
-                                                   moduleName:moduleName
-                                            initialProperties:initialProperties];
+  id<RCTSurfaceProtocol> surface = [[self class] createSurfaceWithBridge:bridge
+                                                              moduleName:moduleName
+                                                       initialProperties:initialProperties];
   [surface start];
   return [self initWithSurface:surface sizeMeasureMode:sizeMeasureMode];
 }
 
-- (instancetype)initWithSurface:(RCTSurface *)surface sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
+                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
 {
   if (self = [super initWithFrame:CGRectZero]) {
     _surface = surface;
@@ -78,8 +79,9 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 
   RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
       self.bounds.size, _sizeMeasureMode, &minimumSize, &maximumSize);
+  CGRect windowFrame = [self.window convertRect:self.frame fromView:self.superview];
 
-  [_surface setMinimumSize:minimumSize maximumSize:maximumSize];
+  [_surface setMinimumSize:minimumSize maximumSize:maximumSize viewportOffset:windowFrame.origin];
 }
 
 - (CGSize)intrinsicContentSize

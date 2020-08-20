@@ -229,8 +229,20 @@ namespace facebook {
   namespace react {
 
     
+    static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_startOperationBatch(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "startOperationBatch", @selector(startOperationBatch), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_finishOperationBatch(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "finishOperationBatch", @selector(finishOperationBatch), args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_createAnimatedNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "createAnimatedNode", @selector(createAnimatedNode:config:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getValue", @selector(getValue:saveValueCallback:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_startListeningToAnimatedNodeValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -309,7 +321,16 @@ namespace facebook {
     NativeAnimatedModuleSpecJSI::NativeAnimatedModuleSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
+        methodMap_["startOperationBatch"] = MethodMetadata {0, __hostFunction_NativeAnimatedModuleSpecJSI_startOperationBatch};
+        
+        
+        methodMap_["finishOperationBatch"] = MethodMetadata {0, __hostFunction_NativeAnimatedModuleSpecJSI_finishOperationBatch};
+        
+        
         methodMap_["createAnimatedNode"] = MethodMetadata {2, __hostFunction_NativeAnimatedModuleSpecJSI_createAnimatedNode};
+        
+        
+        methodMap_["getValue"] = MethodMetadata {2, __hostFunction_NativeAnimatedModuleSpecJSI_getValue};
         
         
         methodMap_["startListeningToAnimatedNodeValue"] = MethodMetadata {1, __hostFunction_NativeAnimatedModuleSpecJSI_startListeningToAnimatedNodeValue};
@@ -365,6 +386,186 @@ namespace facebook {
         
         
         methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeAnimatedModuleSpecJSI_removeListeners};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+@implementation RCTCxxConvert (NativeAnimatedTurboModule_EndResult)
++ (RCTManagedPointer *)JS_NativeAnimatedTurboModule_EndResult:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAnimatedTurboModule::EndResult>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeAnimatedTurboModule_EventMapping)
++ (RCTManagedPointer *)JS_NativeAnimatedTurboModule_EventMapping:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAnimatedTurboModule::EventMapping>(json);
+}
+@end
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_startOperationBatch(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "startOperationBatch", @selector(startOperationBatch), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_finishOperationBatch(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "finishOperationBatch", @selector(finishOperationBatch), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_createAnimatedNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "createAnimatedNode", @selector(createAnimatedNode:config:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getValue", @selector(getValue:saveValueCallback:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_startListeningToAnimatedNodeValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "startListeningToAnimatedNodeValue", @selector(startListeningToAnimatedNodeValue:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_stopListeningToAnimatedNodeValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "stopListeningToAnimatedNodeValue", @selector(stopListeningToAnimatedNodeValue:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_connectAnimatedNodes(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "connectAnimatedNodes", @selector(connectAnimatedNodes:childTag:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_disconnectAnimatedNodes(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "disconnectAnimatedNodes", @selector(disconnectAnimatedNodes:childTag:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_startAnimatingNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "startAnimatingNode", @selector(startAnimatingNode:nodeTag:config:endCallback:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_stopAnimation(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "stopAnimation", @selector(stopAnimation:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_setAnimatedNodeValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setAnimatedNodeValue", @selector(setAnimatedNodeValue:value:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_setAnimatedNodeOffset(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setAnimatedNodeOffset", @selector(setAnimatedNodeOffset:offset:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_flattenAnimatedNodeOffset(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "flattenAnimatedNodeOffset", @selector(flattenAnimatedNodeOffset:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_extractAnimatedNodeOffset(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "extractAnimatedNodeOffset", @selector(extractAnimatedNodeOffset:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_connectAnimatedNodeToView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "connectAnimatedNodeToView", @selector(connectAnimatedNodeToView:viewTag:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_disconnectAnimatedNodeFromView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "disconnectAnimatedNodeFromView", @selector(disconnectAnimatedNodeFromView:viewTag:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_restoreDefaultValues(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "restoreDefaultValues", @selector(restoreDefaultValues:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_dropAnimatedNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "dropAnimatedNode", @selector(dropAnimatedNode:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_addAnimatedEventToView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "addAnimatedEventToView", @selector(addAnimatedEventToView:eventName:eventMapping:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_removeAnimatedEventFromView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "removeAnimatedEventFromView", @selector(removeAnimatedEventFromView:eventName:animatedNodeTag:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "addListener", @selector(addListener:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_removeListeners(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "removeListeners", @selector(removeListeners:), args, count);
+    }
+
+
+    NativeAnimatedTurboModuleSpecJSI::NativeAnimatedTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+      : ObjCTurboModule(params) {
+        
+        methodMap_["startOperationBatch"] = MethodMetadata {0, __hostFunction_NativeAnimatedTurboModuleSpecJSI_startOperationBatch};
+        
+        
+        methodMap_["finishOperationBatch"] = MethodMetadata {0, __hostFunction_NativeAnimatedTurboModuleSpecJSI_finishOperationBatch};
+        
+        
+        methodMap_["createAnimatedNode"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_createAnimatedNode};
+        
+        
+        methodMap_["getValue"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_getValue};
+        
+        
+        methodMap_["startListeningToAnimatedNodeValue"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_startListeningToAnimatedNodeValue};
+        
+        
+        methodMap_["stopListeningToAnimatedNodeValue"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_stopListeningToAnimatedNodeValue};
+        
+        
+        methodMap_["connectAnimatedNodes"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_connectAnimatedNodes};
+        
+        
+        methodMap_["disconnectAnimatedNodes"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_disconnectAnimatedNodes};
+        
+        
+        methodMap_["startAnimatingNode"] = MethodMetadata {4, __hostFunction_NativeAnimatedTurboModuleSpecJSI_startAnimatingNode};
+        
+        
+        methodMap_["stopAnimation"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_stopAnimation};
+        
+        
+        methodMap_["setAnimatedNodeValue"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_setAnimatedNodeValue};
+        
+        
+        methodMap_["setAnimatedNodeOffset"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_setAnimatedNodeOffset};
+        
+        
+        methodMap_["flattenAnimatedNodeOffset"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_flattenAnimatedNodeOffset};
+        
+        
+        methodMap_["extractAnimatedNodeOffset"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_extractAnimatedNodeOffset};
+        
+        
+        methodMap_["connectAnimatedNodeToView"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_connectAnimatedNodeToView};
+        
+        
+        methodMap_["disconnectAnimatedNodeFromView"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_disconnectAnimatedNodeFromView};
+        
+        
+        methodMap_["restoreDefaultValues"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_restoreDefaultValues};
+        
+        
+        methodMap_["dropAnimatedNode"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_dropAnimatedNode};
+        
+        
+        methodMap_["addAnimatedEventToView"] = MethodMetadata {3, __hostFunction_NativeAnimatedTurboModuleSpecJSI_addAnimatedEventToView};
+        
+        setMethodArgConversionSelector(@"addAnimatedEventToView", 2, @"JS_NativeAnimatedTurboModule_EventMapping:");
+        
+        methodMap_["removeAnimatedEventFromView"] = MethodMetadata {3, __hostFunction_NativeAnimatedTurboModuleSpecJSI_removeAnimatedEventFromView};
+        
+        
+        methodMap_["addListener"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_addListener};
+        
+        
+        methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_removeListeners};
         
         
 
@@ -696,83 +897,6 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
-@implementation RCTCxxConvert (NativeCameraRollManager_GetPhotosParams)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_GetPhotosParams:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeCameraRollManager::GetPhotosParams>(json);
-}
-@end
-namespace facebook {
-  namespace react {
-
-    
-    static facebook::jsi::Value __hostFunction_NativeCameraRollManagerSpecJSI_getPhotos(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "getPhotos", @selector(getPhotos:resolve:reject:), args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeCameraRollManagerSpecJSI_saveToCameraRoll(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "saveToCameraRoll", @selector(saveToCameraRoll:type:resolve:reject:), args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeCameraRollManagerSpecJSI_deletePhotos(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "deletePhotos", @selector(deletePhotos:resolve:reject:), args, count);
-    }
-
-
-    NativeCameraRollManagerSpecJSI::NativeCameraRollManagerSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
-        methodMap_["getPhotos"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerSpecJSI_getPhotos};
-        
-        setMethodArgConversionSelector(@"getPhotos", 0, @"JS_NativeCameraRollManager_GetPhotosParams:");
-        
-        methodMap_["saveToCameraRoll"] = MethodMetadata {2, __hostFunction_NativeCameraRollManagerSpecJSI_saveToCameraRoll};
-        
-        
-        methodMap_["deletePhotos"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerSpecJSI_deletePhotos};
-        
-        
-
-    }
-
-  } // namespace react
-} // namespace facebook
-@implementation RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierImage)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierImage:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeCameraRollManager::PhotoIdentifierImage>(json);
-}
-@end
-@implementation RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierNodeLocation)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierNodeLocation:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeCameraRollManager::PhotoIdentifierNodeLocation>(json);
-}
-@end
-@implementation RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierNode)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierNode:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeCameraRollManager::PhotoIdentifierNode>(json);
-}
-@end
-@implementation RCTCxxConvert (NativeCameraRollManager_PhotoIdentifier)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifier:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeCameraRollManager::PhotoIdentifier>(json);
-}
-@end
-@implementation RCTCxxConvert (NativeCameraRollManager_PhotoIdentifiersPagePage_info)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifiersPagePage_info:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeCameraRollManager::PhotoIdentifiersPagePage_info>(json);
-}
-@end
-@implementation RCTCxxConvert (NativeCameraRollManager_PhotoIdentifiersPage)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifiersPage:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeCameraRollManager::PhotoIdentifiersPage>(json);
-}
-@end
 namespace facebook {
   namespace react {
 
@@ -978,6 +1102,26 @@ namespace facebook {
         
         
         methodMap_["setIsShakeToShowDevMenuEnabled"] = MethodMetadata {1, __hostFunction_NativeDevSettingsSpecJSI_setIsShakeToShowDevMenuEnabled};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeDevSplitBundleLoaderSpecJSI_loadBundle(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "loadBundle", @selector(loadBundle:resolve:reject:), args, count);
+    }
+
+
+    NativeDevSplitBundleLoaderSpecJSI::NativeDevSplitBundleLoaderSpecJSI(const ObjCTurboModule::InitParams &params)
+      : ObjCTurboModule(params) {
+        
+        methodMap_["loadBundle"] = MethodMetadata {1, __hostFunction_NativeDevSplitBundleLoaderSpecJSI_loadBundle};
         
         
 

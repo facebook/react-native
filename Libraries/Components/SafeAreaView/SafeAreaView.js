@@ -8,9 +8,9 @@
  * @format
  */
 
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const View = require('../View/View');
+import Platform from '../../Utilities/Platform';
+import * as React from 'react';
+import View from '../View/View';
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';

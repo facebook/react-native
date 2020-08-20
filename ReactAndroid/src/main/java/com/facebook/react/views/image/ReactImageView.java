@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
-import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.controller.ForwardingControllerListener;
 import com.facebook.drawee.drawable.AutoRotateDrawable;
@@ -199,7 +198,7 @@ public class ReactImageView extends GenericDraweeView {
   private final RoundedCornerPostprocessor mRoundedCornerPostprocessor;
   private final TilePostprocessor mTilePostprocessor;
   private @Nullable IterativeBoxBlurPostProcessor mIterativeBoxBlurPostProcessor;
-  private @Nullable ControllerListener mControllerListener;
+  private @Nullable ReactImageDownloadListener mDownloadListener;
   private @Nullable ControllerListener mControllerForTesting;
   private @Nullable GlobalImageLoadListener mGlobalImageLoadListener;
   private @Nullable Object mCallerContext;
@@ -231,17 +230,24 @@ public class ReactImageView extends GenericDraweeView {
 
   public void setShouldNotifyLoadEvents(boolean shouldNotify) {
     if (!shouldNotify) {
-      mControllerListener = null;
+      mDownloadListener = null;
     } else {
       final EventDispatcher mEventDispatcher =
           UIManagerHelper.getEventDispatcherForReactTag((ReactContext) getContext(), getId());
 
-      mControllerListener =
-          new BaseControllerListener<ImageInfo>() {
+      mDownloadListener =
+          new ReactImageDownloadListener<ImageInfo>() {
+            @Override
+            public void onProgressChange(int loaded, int total) {
+              // TODO: Somehow get image size and convert `loaded` and `total` to image bytes.
+              mEventDispatcher.dispatchEvent(
+                  ImageLoadEvent.createProgressEvent(
+                      getId(), mImageSource.getSource(), loaded, total));
+            }
+
             @Override
             public void onSubmit(String id, Object callerContext) {
-              mEventDispatcher.dispatchEvent(
-                  new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_START));
+              mEventDispatcher.dispatchEvent(ImageLoadEvent.createLoadStartEvent(getId()));
             }
 
             @Override
@@ -249,22 +255,18 @@ public class ReactImageView extends GenericDraweeView {
                 String id, @Nullable final ImageInfo imageInfo, @Nullable Animatable animatable) {
               if (imageInfo != null) {
                 mEventDispatcher.dispatchEvent(
-                    new ImageLoadEvent(
+                    ImageLoadEvent.createLoadEvent(
                         getId(),
-                        ImageLoadEvent.ON_LOAD,
                         mImageSource.getSource(),
                         imageInfo.getWidth(),
                         imageInfo.getHeight()));
-                mEventDispatcher.dispatchEvent(
-                    new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
+                mEventDispatcher.dispatchEvent(ImageLoadEvent.createLoadEndEvent(getId()));
               }
             }
 
             @Override
             public void onFailure(String id, Throwable throwable) {
-              mEventDispatcher.dispatchEvent(
-                  new ImageLoadEvent(
-                      getId(), ImageLoadEvent.ON_ERROR, true, throwable.getMessage()));
+              mEventDispatcher.dispatchEvent(ImageLoadEvent.createErrorEvent(getId(), throwable));
             }
           };
     }
@@ -273,11 +275,12 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   public void setBlurRadius(float blurRadius) {
-    int pixelBlurRadius = (int) PixelUtil.toPixelFromDIP(blurRadius);
+    // Divide `blurRadius` by 2 to more closely match other platforms.
+    int pixelBlurRadius = (int) PixelUtil.toPixelFromDIP(blurRadius) / 2;
     if (pixelBlurRadius == 0) {
       mIterativeBoxBlurPostProcessor = null;
     } else {
-      mIterativeBoxBlurPostProcessor = new IterativeBoxBlurPostProcessor(pixelBlurRadius);
+      mIterativeBoxBlurPostProcessor = new IterativeBoxBlurPostProcessor(2, pixelBlurRadius);
     }
     mIsDirty = true;
   }
@@ -543,15 +546,19 @@ public class ReactImageView extends GenericDraweeView {
       mDraweeControllerBuilder.setLowResImageRequest(cachedImageRequest);
     }
 
-    if (mControllerListener != null && mControllerForTesting != null) {
+    if (mDownloadListener != null && mControllerForTesting != null) {
       ForwardingControllerListener combinedListener = new ForwardingControllerListener();
-      combinedListener.addListener(mControllerListener);
+      combinedListener.addListener(mDownloadListener);
       combinedListener.addListener(mControllerForTesting);
       mDraweeControllerBuilder.setControllerListener(combinedListener);
     } else if (mControllerForTesting != null) {
       mDraweeControllerBuilder.setControllerListener(mControllerForTesting);
-    } else if (mControllerListener != null) {
-      mDraweeControllerBuilder.setControllerListener(mControllerListener);
+    } else if (mDownloadListener != null) {
+      mDraweeControllerBuilder.setControllerListener(mDownloadListener);
+    }
+
+    if (mDownloadListener != null) {
+      hierarchy.setProgressBarImage(mDownloadListener);
     }
 
     setController(mDraweeControllerBuilder.build());
