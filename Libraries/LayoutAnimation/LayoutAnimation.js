@@ -24,17 +24,20 @@ import Platform from '../Utilities/Platform';
 export type LayoutAnimationConfig = LayoutAnimationConfig_;
 
 type OnAnimationDidEndCallback = () => void;
+type OnAnimationDidFailCallback = () => void;
 
 function configureNext(
   config: LayoutAnimationConfig,
   onAnimationDidEnd?: OnAnimationDidEndCallback,
+  onAnimationDidFail?: OnAnimationDidFailCallback,
 ) {
   if (!Platform.isTesting) {
     if (UIManager?.configureNextLayoutAnimation) {
       UIManager.configureNextLayoutAnimation(
         config,
         onAnimationDidEnd ?? function() {},
-        function() {} /* unused onError */,
+        onAnimationDidFail ??
+          function() {} /* this should never be called in Non-Fabric */,
       );
     }
     const FabricUIManager: FabricUIManagerSpec = global?.nativeFabricUIManager;
@@ -42,7 +45,8 @@ function configureNext(
       global?.nativeFabricUIManager?.configureNextLayoutAnimation(
         config,
         onAnimationDidEnd ?? function() {},
-        function() {} /* unused onError */,
+        onAnimationDidFail ??
+          function() {} /* this will only be called if configuration fails */,
       );
     }
   }

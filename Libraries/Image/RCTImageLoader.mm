@@ -314,17 +314,17 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
 #pragma mark - RCTImageLoaderProtocol 2/3
 
-- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
-                                                  callback:(RCTImageLoaderCompletionBlock)callback
+- (nullable RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                           callback:(RCTImageLoaderCompletionBlock)callback
 {
     return [self loadImageWithURLRequest:imageURLRequest
                                 priority:RCTImageLoaderPriorityImmediate
                                 callback:callback];
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
-                                                  priority:(RCTImageLoaderPriority)priority
-                                                  callback:(RCTImageLoaderCompletionBlock)callback {
+- (nullable RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                           priority:(RCTImageLoaderPriority)priority
+                                                           callback:(RCTImageLoaderCompletionBlock)callback {
     return [self loadImageWithURLRequest:imageURLRequest
                                     size:CGSizeZero
                                    scale:1
@@ -336,14 +336,14 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                          completionBlock:callback];
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
-                                                      size:(CGSize)size
-                                                     scale:(CGFloat)scale
-                                                   clipped:(BOOL)clipped
-                                                resizeMode:(RCTResizeMode)resizeMode
-                                             progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                          partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
-                                           completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
+- (nullable RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                               size:(CGSize)size
+                                                              scale:(CGFloat)scale
+                                                            clipped:(BOOL)clipped
+                                                         resizeMode:(RCTResizeMode)resizeMode
+                                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                                   partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
+                                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
     return [self loadImageWithURLRequest:imageURLRequest
                                     size:size
@@ -356,15 +356,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                          completionBlock:completionBlock];
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
-                                                      size:(CGSize)size
-                                                     scale:(CGFloat)scale
-                                                   clipped:(BOOL)clipped
-                                                resizeMode:(RCTResizeMode)resizeMode
-                                                  priority:(RCTImageLoaderPriority)priority
-                                             progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                          partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
-                                           completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
+- (nullable RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+                                                               size:(CGSize)size
+                                                              scale:(CGFloat)scale
+                                                            clipped:(BOOL)clipped
+                                                         resizeMode:(RCTResizeMode)resizeMode
+                                                           priority:(RCTImageLoaderPriority)priority
+                                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                                   partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
+                                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
   RCTImageURLLoaderRequest *request = [self loadImageWithURLRequest:imageURLRequest
                                                                size:size
@@ -1163,7 +1163,11 @@ RCT_EXPORT_METHOD(getSizeWithHeaders:(NSString *)uri
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  NSURLRequest *request = [RCTConvert NSURLRequest:uri];
+  NSURL *URL = [RCTConvert NSURL:uri];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+  [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
+    [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+  }];
   [self getImageSizeForURLRequest:request
    block:^(NSError *error, CGSize size) {
      if (error) {

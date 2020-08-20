@@ -6,7 +6,6 @@
  */
 
 #include <ReactCommon/TurboModulePerfLogger.h>
-#include <fb/xplat_init.h>
 #include <fbjni/fbjni.h>
 #include <reactperflogger/JNativeModulePerfLogger.h>
 
@@ -21,7 +20,7 @@ void jniEnableCppLogging(
 }
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
-  return facebook::xplat::initialize(vm, [] {
+  return facebook::jni::initialize(vm, [] {
     // TODO: dvacca ramanpreet unify this with the way
     // "ComponentDescriptorFactory" is defined in Fabric
     facebook::react::TurboModuleManager::registerNatives();

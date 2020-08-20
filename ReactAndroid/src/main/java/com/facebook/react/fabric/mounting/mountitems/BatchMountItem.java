@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.mounting.mountitems;
 
 import androidx.annotation.NonNull;
+import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -25,6 +26,7 @@ import com.facebook.systrace.Systrace;
  */
 @DoNotStrip
 public class BatchMountItem implements MountItem {
+  static final String TAG = "FabricBatchMountItem";
 
   private final int mRootTag;
   @NonNull private final MountItem[] mMountItems;
@@ -77,13 +79,24 @@ public class BatchMountItem implements MountItem {
     endMarkers();
   }
 
+  /**
+   * In the case of teardown/stopSurface, we want to delete all views associated with a SurfaceID.
+   * It can be the case that a single BatchMountItem contains both the create *and* delete
+   * instruction for a view, so this needs to be failsafe.
+   *
+   * @param mountingManager
+   */
   public void executeDeletes(@NonNull MountingManager mountingManager) {
     beginMarkers("deleteViews");
 
     for (int mountItemIndex = 0; mountItemIndex < mSize; mountItemIndex++) {
       MountItem mountItem = mMountItems[mountItemIndex];
       if (mountItem instanceof RemoveDeleteMultiMountItem) {
-        ((RemoveDeleteMultiMountItem) mountItem).executeDeletes(mountingManager, true);
+        try {
+          ((RemoveDeleteMultiMountItem) mountItem).executeDeletes(mountingManager, true);
+        } catch (RuntimeException e) {
+          FLog.e(TAG, "Ignoring deletion exception", e);
+        }
       }
     }
 

@@ -7,6 +7,7 @@
 
 plugins {
     id("com.android.library")
+    id("com.facebook.react.codegen")
     id("maven")
     id("de.undercouch.download")
 }
@@ -31,6 +32,11 @@ def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 //   - folly-deprecate-dynamic-initializer
 //   - glog-0.3.5
 def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
+
+// The 'USE_FABRIC' environment variable will build Fabric C++ code into the bundle
+// USE_FABRIC=0 will build RN excluding fabric
+// USE_FABRIC=1 will build RN including fabric
+def enableFabric = (System.getenv('USE_FABRIC') ?: '0').toBoolean()
 
 // The Boost library is a very large download (>100MB).
 // If Boost is already present on your system, define the REACT_NATIVE_BOOST_PATH env variable
@@ -166,7 +172,7 @@ task prepareJSC {
         def jscPackagePath = findNodeModulePath(projectDir, "jsc-android")
         if (!jscPackagePath) {
             throw new GradleScriptException("Could not find the jsc-android npm package", null)
-        } 
+        }
 
         def jscDist = file("$jscPackagePath/dist")
         if (!jscDist.exists()) {
@@ -223,7 +229,7 @@ task downloadNdkBuildDependencies {
 def findNodeModulePath(baseDir, packageName) {
     def basePath = baseDir.toPath().normalize()
     // Node's module resolution algorithm searches up to the root directory,
-    // after which the base path will be null 
+    // after which the base path will be null
     while (basePath) {
         def candidatePath = Paths.get(basePath.toString(), "node_modules", packageName)
         if (candidatePath.toFile().exists()) {
@@ -311,6 +317,7 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
+            "BUILD_FABRIC=$enableFabric",
             "-C", file("src/main/jni/react/jni").absolutePath,
             "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
     )
@@ -382,16 +389,12 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion(16)
+        minSdkVersion(19)
         targetSdkVersion(28)
         versionCode(1)
         versionName("1.0")
 
         consumerProguardFiles("proguard-rules.pro")
-
-        ndk {
-            moduleName("reactnativejni")
-        }
 
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
@@ -468,3 +471,10 @@ dependencies {
 }
 
 apply(from: "release.gradle")
+
+react {
+    enableCodegen = System.getenv("USE_CODEGEN") ?: false
+    jsRootDir = file("../Libraries")
+    reactNativeRootDir = file("$rootDir")
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
+}

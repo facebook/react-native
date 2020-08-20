@@ -12,10 +12,10 @@
 #import <React/RCTAssert.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTUtils.h>
-#import <react/core/LayoutableShadowNode.h>
-#import <react/core/RawProps.h>
-#import <react/debug/SystraceSection.h>
-#import <react/mounting/TelemetryController.h>
+#import <react/renderer/core/LayoutableShadowNode.h>
+#import <react/renderer/core/RawProps.h>
+#import <react/renderer/debug/SystraceSection.h>
+#import <react/renderer/mounting/TelemetryController.h>
 
 #import "RCTComponentViewProtocol.h"
 #import "RCTComponentViewRegistry.h"

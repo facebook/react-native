@@ -90,6 +90,20 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
+     * C++ class for module 'AnimatedTurboModule'
+     */
+
+    class JSI_EXPORT NativeAnimatedTurboModuleSpecJSI : public JavaTurboModule {
+    public:
+      NativeAnimatedTurboModuleSpecJSI(const JavaTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    /**
      * C++ class for module 'AnimationsDebugModule'
      */
 
