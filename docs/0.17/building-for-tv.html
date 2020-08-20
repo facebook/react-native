@@ -145,11 +145,11 @@
 <ul>
 <li><em>TV remote/keyboard input</em>: A new native class, <code>RCTTVRemoteHandler</code>, sets up gesture recognizers for TV remote events. When TV remote events occur, this class fires notifications that are picked up by <code>RCTTVNavigationEventEmitter</code> (a subclass of <code>RCTEventEmitter</code>), that fires a JS event. This event will be picked up by instances of the <code>TVEventHandler</code> JavaScript object. Application code that needs to implement custom handling of TV remote events can create an instance of <code>TVEventHandler</code> and listen for these events, as in the following code:</li>
 </ul>
-<p><block class="android"></p>
+<p><block class="android" /></p>
 <ul>
 <li><em>TV remote/keyboard input</em>: A new native class, <code>ReactAndroidTVRootViewHelper</code>, sets up key events handlers for TV remote events. When TV remote events occur, this class fires a JS event. This event will be picked up by instances of the <code>TVEventHandler</code> JavaScript object. Application code that needs to implement custom handling of TV remote events can create an instance of <code>TVEventHandler</code> and listen for these events, as in the following code:</li>
 </ul>
-<p><block class="ios android"></p>
+<p><block class="ios android" /></p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">var</span> TVEventHandler <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'TVEventHandler'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 <span class="token keyword">class</span> <span class="token class-name">Game2048</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>

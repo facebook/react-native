@@ -125,7 +125,7 @@
 </thead>
 <tbody>
 <tr><td>key</td><td>string</td><td>Yes</td><td>Key of the item to fetch.</td></tr>
-<tr><td>callback</td><td>?(error: ?Error, result: ?string) =&gt; void</td><td>No</td><td>Function that will be called with a result if found or any error.</td></tr>
+<tr><td>callback</td><td><code>?(error: ?Error, result: ?string) =&gt; void</code></td><td>No</td><td>Function that will be called with a result if found or any error.</td></tr>
 </tbody>
 </table>
 <hr>
@@ -141,7 +141,7 @@
 <tbody>
 <tr><td>key</td><td>string</td><td>Yes</td><td>Key of the item to set.</td></tr>
 <tr><td>value</td><td>string</td><td>Yes</td><td>Value to set for the <code>key</code>.</td></tr>
-<tr><td>callback</td><td>?(error: ?Error) =&gt; void</td><td>No</td><td>Function that will be called with any error.</td></tr>
+<tr><td>callback</td><td><code>?(error: ?Error) =&gt; void</code></td><td>No</td><td>Function that will be called with any error.</td></tr>
 </tbody>
 </table>
 <hr>
@@ -156,7 +156,7 @@
 </thead>
 <tbody>
 <tr><td>key</td><td>string</td><td>Yes</td><td>Key of the item to remove.</td></tr>
-<tr><td>callback</td><td>?(error: ?Error) =&gt; void</td><td>No</td><td>Function that will be called with any error.</td></tr>
+<tr><td>callback</td><td><code>?(error: ?Error) =&gt; void</code></td><td>No</td><td>Function that will be called with any error.</td></tr>
 </tbody>
 </table>
 <hr>
@@ -173,7 +173,7 @@
 <tbody>
 <tr><td>key</td><td>string</td><td>Yes</td><td>Key of the item to modify.</td></tr>
 <tr><td>value</td><td>string</td><td>Yes</td><td>New value to merge for the <code>key</code>.</td></tr>
-<tr><td>callback</td><td>?(error: ?Error) =&gt; void</td><td>No</td><td>Function that will be called with any error.</td></tr>
+<tr><td>callback</td><td><code>?(error: ?Error) =&gt; void</code></td><td>No</td><td>Function that will be called with any error.</td></tr>
 </tbody>
 </table>
 <p>Example:</p>
@@ -219,7 +219,7 @@ AsyncStorage<span class="token punctuation">.</span><span class="token function"
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>callback</td><td>?(error: ?Error) =&gt; void</td><td>No</td><td>Function that will be called with any error.</td></tr>
+<tr><td>callback</td><td><code>?(error: ?Error) =&gt; void</code></td><td>No</td><td>Function that will be called with any error.</td></tr>
 </tbody>
 </table>
 <hr>
@@ -233,7 +233,7 @@ AsyncStorage<span class="token punctuation">.</span><span class="token function"
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>callback</td><td>?(error: ?Error, keys: ?Array<string>) =&gt; void</td><td>No</td><td>Function that will be called the keys found and any error.</td></tr>
+<tr><td>callback</td><td><code>?(error: ?Error, keys: ?Array&lt;string&gt;) =&gt; void</code></td><td>No</td><td>Function that will be called the keys found and any error.</td></tr>
 </tbody>
 </table>
 <hr>
@@ -255,8 +255,8 @@ AsyncStorage<span class="token punctuation">.</span><span class="token function"
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>keys</td><td>Array<string></td><td>Yes</td><td>Array of key for the items to get.</td></tr>
-<tr><td>callback</td><td>?(errors: ?Array<Error>, result: ?Array&lt;Array<string>&gt;) =&gt; void</td><td>No</td><td>Function that will be called with a key-value array of the results, plus an array of any key-specific errors found.</td></tr>
+<tr><td>keys</td><td><code>Array&lt;string&gt;</code></td><td>Yes</td><td>Array of key for the items to get.</td></tr>
+<tr><td>callback</td><td><code>?(errors: ?Array&lt;Error&gt;, result: ?Array&lt;Array&lt;string&gt;&gt;) =&gt; void</code></td><td>No</td><td>Function that will be called with a key-value array of the results, plus an array of any key-specific errors found.</td></tr>
 </tbody>
 </table>
 <p>Example:</p>
@@ -284,8 +284,8 @@ AsyncStorage<span class="token punctuation">.</span><span class="token function"
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>keyValuePairs</td><td>Array&lt;Array<string>&gt;</td><td>Yes</td><td>Array of key-value array for the items to set.</td></tr>
-<tr><td>callback</td><td>?(errors: ?Array<Error>) =&gt; void</td><td>No</td><td>Function that will be called with an array of any key-specific errors found.</td></tr>
+<tr><td>keyValuePairs</td><td><code>Array&lt;Array&lt;string&gt;&gt;</code></td><td>Yes</td><td>Array of key-value array for the items to set.</td></tr>
+<tr><td>callback</td><td><code>?(errors: ?Array&lt;Error&gt;) =&gt; void</code></td><td>No</td><td>Function that will be called with an array of any key-specific errors found.</td></tr>
 </tbody>
 </table>
 <hr>
@@ -299,8 +299,8 @@ AsyncStorage<span class="token punctuation">.</span><span class="token function"
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>keys</td><td>Array<string></td><td>Yes</td><td>Array of key for the items to delete.</td></tr>
-<tr><td>callback</td><td>?(errors: ?Array<Error>) =&gt; void</td><td>No</td><td>Function that will be called an array of any key-specific errors found.</td></tr>
+<tr><td>keys</td><td><code>Array&lt;string&gt;</code></td><td>Yes</td><td>Array of key for the items to delete.</td></tr>
+<tr><td>callback</td><td><code>?(errors: ?Array&lt;Error&gt;) =&gt; void</code></td><td>No</td><td>Function that will be called an array of any key-specific errors found.</td></tr>
 </tbody>
 </table>
 <p>Example:</p>
@@ -322,8 +322,8 @@ AsyncStorage<span class="token punctuation">.</span><span class="token function"
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>keyValuePairs</td><td>Array&lt;Array<string>&gt;</td><td>Yes</td><td>Array of key-value array for the items to merge.</td></tr>
-<tr><td>callback</td><td>?(errors: ?Array<Error>) =&gt; void</td><td>No</td><td>Function that will be called with an array of any key-specific errors found.</td></tr>
+<tr><td>keyValuePairs</td><td><code>Array&lt;Array&lt;string&gt;&gt;</code></td><td>Yes</td><td>Array of key-value array for the items to merge.</td></tr>
+<tr><td>callback</td><td><code>?(errors: ?Array&lt;Error&gt;) =&gt; void</code></td><td>No</td><td>Function that will be called with an array of any key-specific errors found.</td></tr>
 </tbody>
 </table>
 <p>Example:</p>

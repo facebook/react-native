@@ -429,9 +429,9 @@ MapView<span class="token punctuation">.</span>propTypes <span class="token oper
 </span></code></pre>
 <p><code>callNativeMethod</code> is our custom iOS method which for example changes the <code>backgroundColor</code> which is exposed through <code>MyNativeView</code>. This method uses <code>UIManager.dispatchViewManagerCommand</code> which needs 3 parameters:</p>
 <ul>
-<li>(nonnull NSNumber *)reactTag  -  id of react view.</li>
-<li>commandID:(NSInteger)commandID  -  Id of the native method that should be called</li>
-<li>commandArgs:(NSArray<id> *)commandArgs  -  Args of the native method that we can pass from JS to native.</li>
+<li><code>(nonnull NSNumber \*)reactTag</code>  -  id of react view.</li>
+<li><code>commandID:(NSInteger)commandID</code>  -  Id of the native method that should be called</li>
+<li><code>commandArgs:(NSArray&lt;id&gt; \*)commandArgs</code>  -  Args of the native method that we can pass from JS to native.</li>
 </ul>
 <p><code>RNCMyNativeViewManager.m</code></p>
 <pre><code class="hljs css language-objectivec"><span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTViewManager.h&gt;</span></span>
