@@ -6,6 +6,7 @@
  *
  * @flow
  * @format
+ * @generate-docs
  */
 
 'use strict';
@@ -41,82 +42,99 @@ type DrawerSlideEvent = $ReadOnly<{|
 
 type Props = $ReadOnly<{|
   /**
-   * Determines whether the keyboard gets dismissed in response to a drag.
-   *   - 'none' (the default), drags do not dismiss the keyboard.
-   *   - 'on-drag', the keyboard is dismissed when a drag begins.
+    Determines whether the keyboard gets dismissed in response to a drag.
+
+    - 'none' (the default), drags do not dismiss the keyboard.
+    - 'on-drag', the keyboard is dismissed when a drag begins.
    */
   keyboardDismissMode?: ?('none' | 'on-drag'),
 
   /**
-   * Specifies the background color of the drawer. The default value is white.
-   * If you want to set the opacity of the drawer, use rgba. Example:
-   *
-   * ```
-   * return (
-   *   <DrawerLayoutAndroid drawerBackgroundColor="rgba(0,0,0,0.5)">
-   *   </DrawerLayoutAndroid>
-   * );
-   * ```
+    Specifies the background color of the drawer. If you want to set the opacity
+    of the drawer, use rgba. Example:
+
+    ```jsx
+    return (
+      <DrawerLayoutAndroid drawerBackgroundColor="rgba(0,0,0,0.5)" />
+    );
+    ```
+
+    @default white
    */
   drawerBackgroundColor: ColorValue,
 
   /**
-   * Specifies the side of the screen from which the drawer will slide in.
+    Specifies the side of the screen from which the drawer will slide in.
+
+    @default left
    */
   drawerPosition: ?('left' | 'right'),
 
   /**
-   * Specifies the width of the drawer, more precisely the width of the view that be pulled in
-   * from the edge of the window.
+    Specifies the width of the drawer, more precisely the width of the view that
+    be pulled in from the edge of the window.
    */
   drawerWidth?: ?number,
 
   /**
-   * Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
-   * - unlocked (default), meaning that the drawer will respond (open/close) to touch gestures.
-   * - locked-closed, meaning that the drawer will stay closed and not respond to gestures.
-   * - locked-open, meaning that the drawer will stay opened and not respond to gestures.
-   * The drawer may still be opened and closed programmatically (`openDrawer`/`closeDrawer`).
+    Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
+
+    - unlocked (default), meaning that the drawer will respond (open/close) to
+      touch gestures.
+    - locked-closed, meaning that the drawer will stay closed and not respond to
+      gestures.
+    - locked-open, meaning that the drawer will stay opened and not respond to
+      gestures. The drawer may still be opened and closed programmatically
+      (`openDrawer`/`closeDrawer`).
    */
   drawerLockMode?: ?('unlocked' | 'locked-closed' | 'locked-open'),
 
   /**
-   * Function called whenever there is an interaction with the navigation view.
+    Function called whenever there is an interaction with the navigation view.
    */
   onDrawerSlide?: ?DirectEventHandler<DrawerSlideEvent>,
 
   /**
-   * Function called when the drawer state has changed. The drawer can be in 3 states:
-   * - Idle, meaning there is no interaction with the navigation view happening at the time
-   * - Dragging, meaning there is currently an interaction with the navigation view
-   * - Settling, meaning that there was an interaction with the navigation view, and the
-   * navigation view is now finishing its closing or opening animation
+    Function called when the drawer state has changed. The drawer can be in 3
+    states:
+
+    - idle, meaning there is no interaction with the navigation view happening
+      at the time
+    - dragging, meaning there is currently an interaction with the navigation
+      view
+    - settling, meaning that there was an interaction with the navigation view,
+      and the navigation view is now finishing its closing or opening animation
    */
   onDrawerStateChanged?: ?(state: DrawerStates) => mixed,
 
   /**
-   * Function called whenever the navigation view has been opened.
+    Function called whenever the navigation view has been opened.
    */
   onDrawerOpen?: ?() => mixed,
 
   /**
-   * Function called whenever the navigation view has been closed.
+    Function called whenever the navigation view has been closed.
    */
   onDrawerClose?: ?() => mixed,
 
   /**
-   * The navigation view that will be rendered to the side of the screen and can be pulled in.
+    The navigation view that will be rendered to the side of the screen and can
+    be pulled in.
    */
   renderNavigationView: () => React.Element<any>,
 
   /**
-   * Make the drawer take the entire screen and draw the background of the
-   * status bar to allow it to open over the status bar. It will only have an
-   * effect on API 21+.
+    Make the drawer take the entire screen and draw the background of the status
+    bar to allow it to open over the status bar. It will only have an effect on
+    API 21+.
    */
   statusBarBackgroundColor?: ?ColorValue,
 
   children?: React.Node,
+
+  /**
+    @type ViewStyleProps
+   */
   style?: ?ViewStyleProp,
 |}>;
 
@@ -125,35 +143,74 @@ type State = {|
 |};
 
 /**
- * React component that wraps the platform `DrawerLayout` (Android only). The
- * Drawer (typically used for navigation) is rendered with `renderNavigationView`
- * and direct children are the main view (where your content goes). The navigation
- * view is initially not visible on the screen, but can be pulled in from the
- * side of the window specified by the `drawerPosition` prop and its width can
- * be set by the `drawerWidth` prop.
- *
- * Example:
- *
- * ```
- * render: function() {
- *   var navigationView = (
- *     <View style={{flex: 1, backgroundColor: '#fff'}}>
- *       <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>I'm in the Drawer!</Text>
- *     </View>
- *   );
- *   return (
- *     <DrawerLayoutAndroid
- *       drawerWidth={300}
- *       drawerPosition="left"
- *       renderNavigationView={() => navigationView}>
- *       <View style={{flex: 1, alignItems: 'center'}}>
- *         <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>Hello</Text>
- *         <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>World!</Text>
- *       </View>
- *     </DrawerLayoutAndroid>
- *   );
- * },
- * ```
+  React component that wraps the platform `DrawerLayout` (Android only). The
+  Drawer (typically used for navigation) is rendered with `renderNavigationView`
+  and direct children are the main view (where your content goes). The
+  navigation view is initially not visible on the screen, but can be pulled in
+  from the side of the window specified by the `drawerPosition` prop and its
+  width can be set by the `drawerWidth` prop.
+
+  ```SnackPlayer name=DrawerLayoutAndroid%20Component%20Example&supportedPlatforms=android
+  import React, { useState } from "react";
+  import { Button, DrawerLayoutAndroid, Text, StyleSheet, View } from "react-native";
+
+  const App = () => {
+    const [drawerPosition, setDrawerPosition] = useState("left");
+    const changeDrawerPosition = () => {
+      if (drawerPosition === "left") {
+        setDrawerPosition("right");
+      } else {
+        setDrawerPosition("left");
+      }
+    };
+
+    const navigationView = (
+      <View style={styles.navigationContainer}>
+        <Text style={{ margin: 10, fontSize: 15 }}>I'm in the Drawer!</Text>
+      </View>
+    );
+
+    return (
+      <DrawerLayoutAndroid
+        drawerWidth={300}
+        drawerPosition={drawerPosition}
+        renderNavigationView={() => navigationView}
+      >
+        <View style={styles.container}>
+          <Text style={{ margin: 10, fontSize: 15 }}>
+            DrawerLayoutAndroid example
+          </Text>
+          <Button
+            title="Change Drawer Position"
+            onPress={() => changeDrawerPosition()}
+          />
+          <Text style={{ margin: 10, fontSize: 15 }}>
+            Drawer on the {drawerPosition}! Swipe from the side to see!
+          </Text>
+        </View>
+      </DrawerLayoutAndroid>
+    );
+  };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingTop: 50,
+      backgroundColor: "#ecf0f1",
+      padding: 8
+    },
+    navigationContainer: {
+      flex: 1,
+      paddingTop: 50,
+      backgroundColor: "#fff",
+      padding: 8
+    }
+  });
+
+  export default App;
+  ```
  */
 class DrawerLayoutAndroid extends React.Component<Props, State> {
   static get positions(): mixed {
@@ -266,14 +323,23 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
   };
 
   /**
-   * Opens the drawer.
+    ```jsx
+    openDrawer();
+    ```
+
+    Opens the drawer.
    */
   openDrawer() {
     Commands.openDrawer(nullthrows(this._nativeRef.current));
   }
 
   /**
-   * Closes the drawer.
+    ```jsx
+    closeDrawer();
+    ```
+
+    Closes the drawer.
+
    */
   closeDrawer() {
     Commands.closeDrawer(nullthrows(this._nativeRef.current));
