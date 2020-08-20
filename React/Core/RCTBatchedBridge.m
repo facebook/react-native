@@ -72,7 +72,9 @@ id<RCTJavaScriptExecutor> RCTGetLatestExecutor(void)
   CADisplayLink *_jsDisplayLink;
   /// @brief RCTModuleData 实例集合中遵守了 `RCTFrameUpdateObserver` 协议的实例
   NSMutableSet<RCTModuleData *> *_frameUpdateObservers;
+  /// @brief 将要调用 JS 侧的调用集合
   NSMutableArray *_scheduledCalls;
+  /// @brief 将要回调给 JS 侧的回调集合
   RCTSparseArray *_scheduledCallbacks;
 }
 
@@ -431,10 +433,11 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
 {
   NSArray *ids = [moduleDotMethod componentsSeparatedByString:@"."];
 
-  // 这里只是做一个包装，在 JS 侧业务层实际处理的 module 和 method 应该是
-  // 数组 ids 中的元素，即 ids[0] 和 ids[1]，分别对应 module 和 method，
-  // `BatchedBridge` 在 JS 侧 BatchedBridge.js 文件中，为 `MessageQueue` 类型对象
-  // `callFunctionReturnFlushedQueue` 在 JS 侧 MessageQueue.js 文件中，为出入口方法名称
+  // @NOTE: `callFunctionReturnFlushedQueue` 相当于一个标识，主动调用 JS 侧的函数
+  //        这里只是做一个包装，在 JS 侧业务层实际处理的 module 和 method 应该是
+  //      数组 ids 中的元素，即 ids[0] 和 ids[1]，分别对应 module 和 method，
+  //      `BatchedBridge` 在 JS 侧 BatchedBridge.js 文件中，为 `MessageQueue` 类型对象
+  //      `callFunctionReturnFlushedQueue` 在 JS 侧 MessageQueue.js 文件中，为出入口方法名称
   [self _invokeAndProcessModule:@"BatchedBridge"
                          method:@"callFunctionReturnFlushedQueue"
                       arguments:@[ids[0], ids[1], args ?: @[]]];
@@ -448,6 +451,8 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
   RCTAssertJSThread();
 
   dispatch_block_t block = ^{
+    // @NOTE: `callFunctionReturnFlushedQueue` 相当于一个标识，主动调用 JS 侧的函数
+    // 这里相当于调用 JS 侧的 `JSTimersExecution.callTimers` 函数
     [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
                                    method:@"callFunctionReturnFlushedQueue"
                                 arguments:@[@"JSTimersExecution", @"callTimers", @[@[timer]]]];

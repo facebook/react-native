@@ -12,21 +12,28 @@
 'use strict';
 
 // Dirty hack to support old (RK) and new (RCT) native module name conventions
+
+// @brief Native 模块前缀修正（规范）器
 function nativeModulePrefixNormalizer(
-  modules: {[key: string]: any}
+    // {'strippedName': 'moduleName'}
+    // @eg: {'AlertManager': 'RCTAlertManager'}
+    modules: {
+        [key: string]: any
+    }
 ): void {
-  Object.keys(modules).forEach((moduleName) => {
-    var strippedName = moduleName.replace(/^(RCT|RK)/, '');
-    if (modules['RCT' + strippedName] && modules['RK' + strippedName]) {
-      throw new Error(
-        'Module cannot be registered as both RCT and RK: ' + moduleName
-      );
-    }
-    if (strippedName !== moduleName) {
-      modules[strippedName] = modules[moduleName];
-      delete modules[moduleName];
-    }
-  });
+    Object.keys(modules).forEach((moduleName) => {
+        // `strippedName` 干掉 `RCT / RK` 前缀的 moduleName
+        var strippedName = moduleName.replace(/^(RCT|RK)/, '');
+        if (modules['RCT' + strippedName] && modules['RK' + strippedName]) {
+            throw new Error(
+                'Module cannot be registered as both RCT and RK: ' + moduleName
+            );
+        }
+        if (strippedName !== moduleName) {
+            modules[strippedName] = modules[moduleName];
+            delete modules[moduleName];
+        }
+    });
 }
 
 module.exports = nativeModulePrefixNormalizer;

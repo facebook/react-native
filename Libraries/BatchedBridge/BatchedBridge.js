@@ -13,8 +13,8 @@
 let MessageQueue = require('MessageQueue');
 
 let BatchedBridge = new MessageQueue(
-  __fbBatchedBridgeConfig.remoteModuleConfig,
-  __fbBatchedBridgeConfig.localModulesConfig,
+    __fbBatchedBridgeConfig.remoteModuleConfig, // MessageQueue 中的 RemoteModules 属性，map 类型
+    __fbBatchedBridgeConfig.localModulesConfig,
 );
 
 module.exports = BatchedBridge;

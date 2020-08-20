@@ -11,6 +11,7 @@
  */
 'use strict';
 
+// 导出 MessageQueue 中的 RemoteModules 属性变量并赋值给 NativeModules 变量
 var NativeModules = require('BatchedBridge').RemoteModules;
 
 var nativeModulePrefixNormalizer = require('nativeModulePrefixNormalizer');

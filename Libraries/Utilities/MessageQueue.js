@@ -89,6 +89,7 @@ class MessageQueue {
         this._callbacks = [];
         this._callbackID = 0;
 
+        // 把当前的 this 绑定给数组中的几个函数，以此来指定函数中的 this 实例
         [
             'processBatch',
             'invokeCallbackAndReturnFlushedQueue',
@@ -112,12 +113,24 @@ class MessageQueue {
     /**
      * Public APIs
      */
+    // @brief 批处理，可能是主动调用 JS 侧，也可能是 Native 侧处理完回调
+    //        给 JS 侧（见 - [RCTBatchedBridge _jsThreadUpdate:]）
+    // @param batch 批量数组，单个数组元素格式如下：
+    //              {
+    //                @"module": module,
+    //                @"method": method,
+    //                @"args": args,
+    //              }
+    // @return 返回刷新前的队列（`flushedQueue()` 的返回值）
     processBatch(batch) {
         guard(() => {
             ReactUpdates.batchedUpdates(() => {
                 batch.forEach((call) => {
+                    // 如果 call.method 是 `callFunctionReturnFlushedQueue`，
+                    // 则调用 `__callFunction`，否则则执行回调分发
                     let method = call.method === 'callFunctionReturnFlushedQueue' ?
                         '__callFunction' : '__invokeCallback';
+                    // 相当于 this.__callFunction 或 this.__invokeCallback
                     guard(() => this[method].apply(this, call.args));
                 });
                 BridgeProfiling.profile('ReactUpdates.batchedUpdates()');
@@ -127,21 +140,34 @@ class MessageQueue {
         return this.flushedQueue();
     }
 
+    // @brief 调用 Native 侧的函数（通过 JSCore）并返回刷新前的队列
+    // @param module moduleID
+    // @param method methodID
+    // @param args 参数列表
+    // @return 返回刷新前的队列（`flushedQueue()` 的返回值）
     callFunctionReturnFlushedQueue(module, method, args) {
         guard(() => this.__callFunction(module, method, args));
         return this.flushedQueue();
     }
 
+    // @brief 执行 callback 回调，并返回刷新前的队列
+    // @param cbID callbackID
+    // @param args 参数列表
+    // @return 返回刷新前的队列（`flushedQueue()` 的返回值）
     invokeCallbackAndReturnFlushedQueue(cbID, args) {
         guard(() => this.__invokeCallback(cbID, args));
         return this.flushedQueue();
     }
 
+    // @brief 刷新队列
+    // @return 返回刷新之前的队列，如果队列中没有任何有效元素，则返回 null
     flushedQueue() {
         BridgeProfiling.profile('JSTimersExecution.callImmediates()');
         guard(() => JSTimersExecution.callImmediates());
         BridgeProfiling.profileEnd();
+        // 记录刷新前的队列
         let queue = this._queue;
+        // 重置 `this._queue`
         this._queue = [
             [],
             [],
@@ -154,7 +180,7 @@ class MessageQueue {
      * "Private" methods
      */
 
-    // @brief 调用 Native 侧的函数（还是以 JS 的方式调用函数，是通过 JSCore 的方式调用到 Native 侧已经注册好的函数的）
+    // @brief 调用 Native 侧的函数（还是以 JS 的方式调用函数，是通过 JSCore 的方式调用到 Native 侧已经注册好的函数的，相当于 request）
     // @param module moduleID
     // @param method methodID
     // @param args 参数列表
@@ -178,7 +204,7 @@ class MessageQueue {
         BridgeProfiling.profileEnd();
     }
 
-    // @brief 调用回调
+    // @brief 接收并分发回调（相当于 response）
     // @param cbID callbackID
     // @param args 回调的参数列表
     __invokeCallback(cbID, args) {
@@ -329,8 +355,10 @@ class MessageQueue {
 
                 this._debugInfo[this._callbackID >> 1] = [module, method];
             }
+            // 保存 onFail 回调
             onFail && params.push(this._callbackID);
             this._callbacks[this._callbackID++] = onFail;
+            // 保存 onSucc 回调
             onSucc && params.push(this._callbackID);
             this._callbacks[this._callbackID++] = onSucc;
         }

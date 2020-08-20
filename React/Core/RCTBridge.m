@@ -66,6 +66,8 @@ void RCTRegisterModule(Class moduleClass)
 /**
  * This function returns the module name for a given class.
  */
+/// @brief 根据给定的 moduleClass 生成一个 moduleName
+/// @return 一般情况下会返回该类的字符串 `NSStringFromClass(cls)`
 NSString *RCTBridgeModuleNameForClass(Class cls)
 {
   NSString *name = nil;
