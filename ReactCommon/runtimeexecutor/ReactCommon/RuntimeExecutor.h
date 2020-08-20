@@ -48,7 +48,7 @@ inline static void executeAsynchronously(
  * Executes a `callback` in a *synchronous* manner using given
  * `RuntimeExecutor`.
  * Use this method when the caller needs to *be blocked* by executing the
- * callback but does not concerted about the particular thread on which the
+ * callback but does not concerned about the particular thread on which the
  * `callback` will be executed.
  */
 inline static void executeSynchronously_CAN_DEADLOCK(

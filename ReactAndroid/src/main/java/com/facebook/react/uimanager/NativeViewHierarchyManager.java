@@ -284,11 +284,16 @@ public class NativeViewHierarchyManager {
     StringBuilder stringBuilder = new StringBuilder();
 
     if (null != viewToManage) {
-      stringBuilder.append("View tag:" + viewToManage.getId() + "\n");
+      stringBuilder.append(
+          "View tag:"
+              + viewToManage.getId()
+              + " View Type:"
+              + viewToManage.getClass().toString()
+              + "\n");
       stringBuilder.append("  children(" + viewManager.getChildCount(viewToManage) + "): [\n");
-      for (int index = 0; index < viewManager.getChildCount(viewToManage); index += 16) {
+      for (int index = 0; viewManager.getChildAt(viewToManage, index) != null; index += 16) {
         for (int innerOffset = 0;
-            ((index + innerOffset) < viewManager.getChildCount(viewToManage)) && innerOffset < 16;
+            viewManager.getChildAt(viewToManage, index + innerOffset) != null && innerOffset < 16;
             innerOffset++) {
           stringBuilder.append(
               viewManager.getChildAt(viewToManage, index + innerOffset).getId() + ",");
@@ -396,7 +401,7 @@ public class NativeViewHierarchyManager {
                   + constructManageChildrenErrorMessage(
                       viewToManage, viewManager, indicesToRemove, viewsToAdd, tagsToDelete));
         }
-        if (indexToRemove >= viewManager.getChildCount(viewToManage)) {
+        if (viewManager.getChildAt(viewToManage, indexToRemove) == null) {
           if (mRootTags.get(tag) && viewManager.getChildCount(viewToManage) == 0) {
             // This root node has already been removed (likely due to a threading issue caused by
             // async js execution). Ignore this root removal.

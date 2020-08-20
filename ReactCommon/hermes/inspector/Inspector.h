@@ -209,6 +209,12 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   folly::Future<folly::Unit> setPauseOnLoads(const PauseOnLoadMode mode);
 
   /**
+   * Set whether breakpoints are active (pause when hit). This does not require
+   * runtime modifications, but returns a future for consistency.
+   */
+  folly::Future<folly::Unit> setBreakpointsActive(bool active);
+
+  /**
    * If called during a script load event, return true if we should pause.
    * Assumed to be called from a script load event where we already hold
    * `mutex_`.
@@ -228,6 +234,16 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   void breakpointResolved(
       facebook::hermes::debugger::Debugger &debugger,
       facebook::hermes::debugger::BreakpointID breakpointId) override;
+
+  /**
+   * Get whether we started with pauseOnFirstStatement, and have not yet had a
+   * debugger attach and ask to resume from that point. This matches the
+   * semantics of when CDP Debugger.runIfWaitingForDebugger should resume.
+   *
+   * It's not named "isPausedOnStart" because the VM and inspector is not
+   * necessarily paused; we could be in a RunningWaitPause state.
+   */
+  bool isAwaitingDebuggerOnStart();
 
  private:
   friend class InspectorState;
@@ -292,6 +308,7 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   void installConsoleFunction(
       jsi::Object &console,
+      std::shared_ptr<jsi::Object> &originalConsole,
       const std::string &name,
       const std::string &chromeType);
 
@@ -315,6 +332,9 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   // Whether we should enter a paused state when a script loads.
   PauseOnLoadMode pauseOnLoadMode_ = PauseOnLoadMode::None;
 
+  // Whether or not we should pause on breakpoints.
+  bool breakpointsActive_ = true;
+
   // All scripts loaded in to the VM, along with whether we've notified the
   // client about the script yet.
   struct LoadedScriptInfo {
@@ -333,6 +353,10 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   // Trigger a fake console.log if we're currently in a superseded file.
   void alertIfPausedInSupersededFile();
+
+  // Are we currently waiting for a debugger to attach, because we
+  // requested 'pauseOnFirstStatement'?
+  bool awaitingDebuggerOnStart_;
 };
 
 } // namespace inspector

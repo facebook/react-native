@@ -38,6 +38,7 @@ Pod::Spec.new do |s|
 
   s.subspec "turbomodule" do |ss|
     ss.dependency "React-callinvoker", version
+    ss.dependency "React-perflogger", version
     ss.dependency "React-Core", version
     ss.dependency "React-cxxreact", version
     ss.dependency "React-jsi", version

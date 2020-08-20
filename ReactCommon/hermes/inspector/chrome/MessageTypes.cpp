@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<575de63c36edd2a9a0f191501fd4f662>>
+// @generated SignedSource<<addf39d6b92b8dc857e6e5ffe2a441d4>>
 
 #include "MessageTypes.h"
 
@@ -35,6 +35,8 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.setBreakpoint", makeUnique<debugger::SetBreakpointRequest>},
       {"Debugger.setBreakpointByUrl",
        makeUnique<debugger::SetBreakpointByUrlRequest>},
+      {"Debugger.setBreakpointsActive",
+       makeUnique<debugger::SetBreakpointsActiveRequest>},
       {"Debugger.setInstrumentationBreakpoint",
        makeUnique<debugger::SetInstrumentationBreakpointRequest>},
       {"Debugger.setPauseOnExceptions",
@@ -50,6 +52,8 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
+      {"Runtime.runIfWaitingForDebugger",
+       makeUnique<runtime::RunIfWaitingForDebuggerRequest>},
   };
 
   dynamic obj = folly::parseJson(str);
@@ -507,6 +511,35 @@ void debugger::SetBreakpointByUrlRequest::accept(
   handler.handle(*this);
 }
 
+debugger::SetBreakpointsActiveRequest::SetBreakpointsActiveRequest()
+    : Request("Debugger.setBreakpointsActive") {}
+
+debugger::SetBreakpointsActiveRequest::SetBreakpointsActiveRequest(
+    const dynamic &obj)
+    : Request("Debugger.setBreakpointsActive") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(active, params, "active");
+}
+
+dynamic debugger::SetBreakpointsActiveRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "active", active);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void debugger::SetBreakpointsActiveRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 debugger::SetInstrumentationBreakpointRequest::
     SetInstrumentationBreakpointRequest()
     : Request("Debugger.setInstrumentationBreakpoint") {}
@@ -780,6 +813,28 @@ dynamic runtime::GetPropertiesRequest::toDynamic() const {
 }
 
 void runtime::GetPropertiesRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+runtime::RunIfWaitingForDebuggerRequest::RunIfWaitingForDebuggerRequest()
+    : Request("Runtime.runIfWaitingForDebugger") {}
+
+runtime::RunIfWaitingForDebuggerRequest::RunIfWaitingForDebuggerRequest(
+    const dynamic &obj)
+    : Request("Runtime.runIfWaitingForDebugger") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic runtime::RunIfWaitingForDebuggerRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void runtime::RunIfWaitingForDebuggerRequest::accept(
+    RequestHandler &handler) const {
   handler.handle(*this);
 }
 

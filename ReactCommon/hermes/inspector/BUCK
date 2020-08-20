@@ -50,9 +50,8 @@ fb_xplat_cxx_library(
     header_namespace = "hermes/inspector",
     exported_headers = CHROME_EXPORTED_HEADERS,
     compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
-    fbandroid_labels = ["supermodule:android/default/public.hermes"],
     fbobjc_header_path_prefix = "hermes/inspector/chrome",
-    fbobjc_labels = ["supermodule:ios/default/public.hermes"],
+    labels = ["supermodule:xplat/default/public.hermes"],
     macosx_tests_override = [],
     tests = [":chrome-tests"],
     visibility = [
@@ -118,9 +117,8 @@ fb_xplat_cxx_library(
     fbandroid_deps = [
         "//fbandroid/native/fb:fb",
     ],
-    fbandroid_labels = ["supermodule:android/default/public.hermes"],
     fbobjc_header_path_prefix = "hermes/inspector/detail",
-    fbobjc_labels = ["supermodule:ios/default/public.hermes"],
+    labels = ["supermodule:xplat/default/public.hermes"],
     macosx_tests_override = [],
     tests = [":detail-tests"],
     visibility = [
@@ -192,9 +190,8 @@ fb_xplat_cxx_library(
     exported_headers = INSPECTOR_EXPORTED_HEADERS,
     compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
     cxx_tests = [":inspector-tests"],
-    fbandroid_labels = ["supermodule:android/default/public.hermes"],
     fbobjc_header_path_prefix = "hermes/inspector",
-    fbobjc_labels = ["supermodule:ios/default/public.hermes"],
+    labels = ["supermodule:xplat/default/public.hermes"],
     macosx_tests_override = [],
     visibility = [
         "PUBLIC",

@@ -6,7 +6,7 @@
  */
 
 #import <React/RCTUIImageViewAnimated.h>
-#import <React/RCTWeakProxy.h>
+#import <React/RCTDisplayWeakRefreshable.h>
 
 #import <mach/mach.h>
 #import <objc/runtime.h>
@@ -29,7 +29,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   return (vm_stat.free_count - vm_stat.speculative_count) * page_size;
 }
 
-@interface RCTUIImageViewAnimated () <CALayerDelegate>
+@interface RCTUIImageViewAnimated () <CALayerDelegate, RCTDisplayRefreshable>
 
 @property (nonatomic, assign) NSUInteger maxBufferSize;
 @property (nonatomic, strong, readwrite) UIImage *currentFrame;
@@ -153,7 +153,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   }
 
   if (!_displayLink) {
-    _displayLink = [CADisplayLink displayLinkWithTarget:[RCTWeakProxy weakProxyWithTarget:self] selector:@selector(displayDidRefresh:)];
+    _displayLink = [RCTDisplayWeakRefreshable displayLinkWithWeakRefreshable:self];
     NSString *runLoopMode = [NSProcessInfo processInfo].activeProcessorCount > 1 ? NSRunLoopCommonModes : NSDefaultRunLoopMode;
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:runLoopMode];
   }
@@ -185,14 +185,8 @@ static NSUInteger RCTDeviceFreeMemory() {
 #else
   // displaylink.duration -- time interval between frames, assuming maximumFramesPerSecond
   // displayLink.preferredFramesPerSecond (>= iOS 10) -- Set to 30 for displayDidRefresh to be called at 30 fps
-  // displayLink.frameInterval (< iOS 10) -- # of frames that must pass before each displayDidRefresh. After iOS 10, when this is set to 2, preferredFramesPerSecond becomes 30 fps.
   // durationToNextRefresh -- Time interval to the next time displayDidRefresh is called
-  NSTimeInterval durationToNextRefresh;
-  if (@available(iOS 10.0, *)) {
-    durationToNextRefresh = displayLink.targetTimestamp - displayLink.timestamp;
-  } else {
-    durationToNextRefresh = displayLink.duration * displayLink.frameInterval;
-  }
+  NSTimeInterval durationToNextRefresh = displayLink.targetTimestamp - displayLink.timestamp;
 #endif
   NSUInteger totalFrameCount = self.totalFrameCount;
   NSUInteger currentFrameIndex = self.currentFrameIndex;
@@ -285,6 +279,8 @@ static NSUInteger RCTDeviceFreeMemory() {
   if (_currentFrame) {
     layer.contentsScale = self.animatedImageScale;
     layer.contents = (__bridge id)_currentFrame.CGImage;
+  } else {
+    [super displayLayer:layer];
   }
 }
 

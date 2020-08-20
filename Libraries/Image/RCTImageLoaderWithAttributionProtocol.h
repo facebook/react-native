@@ -28,6 +28,7 @@ RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
                                                 scale:(CGFloat)scale
                                               clipped:(BOOL)clipped
                                            resizeMode:(RCTResizeMode)resizeMode
+                                             priority: (RCTImageLoaderPriority)priority
                                           attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
                                         progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                      partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
@@ -43,6 +44,11 @@ RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
  * Image instrumentation - start tracking the on-screen visibility of the native image view.
  */
 - (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(UIView *)imageView;
+
+/**
+ * Image instrumentation - notify that the request was cancelled.
+ */
+- (void)trackURLImageRequestDidDestroy:(RCTImageURLLoaderRequest *)loaderRequest;
 
 /**
  * Image instrumentation - notify that the native image view was destroyed.

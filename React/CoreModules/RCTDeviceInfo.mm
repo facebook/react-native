@@ -122,14 +122,19 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 - (NSDictionary<NSString *, id> *)getConstants
 {
-  return @{
-    @"Dimensions" : RCTExportedDimensions(_bridge),
-    // Note:
-    // This prop is deprecated and will be removed in a future release.
-    // Please use this only for a quick and temporary solution.
-    // Use <SafeAreaView> instead.
-    @"isIPhoneX_deprecated" : @(RCTIsIPhoneX()),
-  };
+  __block NSDictionary<NSString *, id> *constants;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    constants = @{
+      @"Dimensions" : RCTExportedDimensions(self->_bridge),
+      // Note:
+      // This prop is deprecated and will be removed in a future release.
+      // Please use this only for a quick and temporary solution.
+      // Use <SafeAreaView> instead.
+      @"isIPhoneX_deprecated" : @(RCTIsIPhoneX()),
+    };
+  });
+
+  return constants;
 }
 
 - (void)didReceiveNewContentSizeMultiplier

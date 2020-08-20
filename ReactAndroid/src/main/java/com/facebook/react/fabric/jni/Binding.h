@@ -9,23 +9,32 @@
 
 #include <fbjni/fbjni.h>
 #include <react/jni/JMessageQueueThread.h>
+#include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/ReadableNativeMap.h>
-#include <react/scheduler/Scheduler.h>
-#include <react/scheduler/SchedulerDelegate.h>
+#include <react/renderer/animations/LayoutAnimationDriver.h>
+#include <react/renderer/scheduler/Scheduler.h>
+#include <react/renderer/scheduler/SchedulerDelegate.h>
+#include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
 #include <memory>
 #include <mutex>
-#include "ComponentFactoryDelegate.h"
+#include "ComponentFactory.h"
 #include "EventBeatManager.h"
+#include "JBackgroundExecutor.h"
 
 namespace facebook {
 namespace react {
 
 class Instance;
 
-class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
+class Binding : public jni::HybridClass<Binding>,
+                public SchedulerDelegate,
+                public LayoutAnimationStatusDelegate {
  public:
   constexpr static const char *const kJavaDescriptor =
       "Lcom/facebook/react/fabric/Binding;";
+
+  constexpr static auto UIManagerJavaDescriptor =
+      "com/facebook/react/fabric/FabricUIManager";
 
   static void registerNatives();
 
@@ -45,11 +54,11 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
   void installFabricUIManager(
-      jlong jsContextNativePointer,
+      jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
       jni::alias_ref<jobject> javaUIManager,
       EventBeatManager *eventBeatManager,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
-      ComponentFactoryDelegate *componentsRegistry,
+      ComponentFactory *componentsRegistry,
       jni::alias_ref<jobject> reactNativeConfig);
 
   void startSurface(
@@ -73,32 +82,41 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
   void stopSurface(jint surfaceId);
 
   void schedulerDidFinishTransaction(
-      MountingCoordinator::Shared const &mountingCoordinator);
+      MountingCoordinator::Shared const &mountingCoordinator) override;
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
-      const ShadowView &shadowView);
+      const ShadowView &shadowView) override;
 
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       std::string const &commandName,
-      folly::dynamic const args);
-
-  void setPixelDensity(float pointScaleFactor);
+      folly::dynamic const args) override;
 
   void schedulerDidSetJSResponder(
       SurfaceId surfaceId,
       const ShadowView &shadowView,
       const ShadowView &initialShadowView,
-      bool blockNativeResponder);
+      bool blockNativeResponder) override;
 
-  void schedulerDidClearJSResponder();
+  void schedulerDidClearJSResponder() override;
+
+  void setPixelDensity(float pointScaleFactor);
+
+  void driveCxxAnimations();
 
   void uninstallFabricUIManager();
 
   // Private member variables
   jni::global_ref<jobject> javaUIManager_;
   std::mutex javaUIManagerMutex_;
+
+  // LayoutAnimations
+  virtual void onAnimationStarted() override;
+  virtual void onAllAnimationsComplete() override;
+  LayoutAnimationDriver *getAnimationDriver();
+  std::shared_ptr<LayoutAnimationDriver> animationDriver_;
+  std::unique_ptr<JBackgroundExecutor> backgroundExecutor_;
 
   std::shared_ptr<Scheduler> scheduler_;
   std::mutex schedulerMutex_;
@@ -108,11 +126,10 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
   float pointScaleFactor_ = 1;
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
-  bool shouldCollateRemovesAndDeletes_{false};
   bool collapseDeleteCreateMountingInstructions_{false};
   bool disablePreallocateViews_{false};
   bool disableVirtualNodePreallocation_{false};
-  bool enableOptimizedMovesDiffer_{false};
+  bool enableFabricLogs_{false};
 };
 
 } // namespace react

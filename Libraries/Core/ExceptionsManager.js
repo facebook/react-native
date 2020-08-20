@@ -11,7 +11,6 @@
 'use strict';
 
 import type {ExtendedError} from './Devtools/parseErrorStack';
-import * as LogBoxData from '../LogBox/Data/LogBoxData';
 import type {ExceptionData} from './NativeExceptionsManager';
 
 class SyntheticError extends Error {
@@ -60,7 +59,7 @@ function reportException(
   const NativeExceptionsManager = require('./NativeExceptionsManager').default;
   if (NativeExceptionsManager) {
     const parseErrorStack = require('./Devtools/parseErrorStack');
-    const stack = parseErrorStack(e);
+    const stack = parseErrorStack(e?.stack);
     const currentExceptionID = ++exceptionID;
     const originalMessage = e.message || '';
     let message = originalMessage;
@@ -76,7 +75,8 @@ function reportException(
     message =
       e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
 
-    const isHandledByLogBox = e.forceRedbox !== true;
+    const isHandledByLogBox =
+      e.forceRedbox !== true && !global.RN$Bridgeless && !global.RN$Express;
 
     const data = preprocessException({
       message,
@@ -104,7 +104,8 @@ function reportException(
       console.error(data.message);
     }
 
-    if (isHandledByLogBox) {
+    if (__DEV__ && isHandledByLogBox) {
+      const LogBoxData = require('../LogBox/Data/LogBoxData');
       LogBoxData.addException({
         ...data,
         isComponentError: !!e.isComponentError,
@@ -113,7 +114,7 @@ function reportException(
 
     NativeExceptionsManager.reportException(data);
 
-    if (__DEV__) {
+    if (__DEV__ && !global.RN$Express) {
       if (e.preventSymbolication === true) {
         return;
       }

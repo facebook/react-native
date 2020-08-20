@@ -6,7 +6,7 @@ rn_android_library(
         ["**/*.java"],
     ),
     is_androidx = True,
-    labels = ["supermodule:android/default/public.react_native.infra"],
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
         "PUBLIC",
     ],

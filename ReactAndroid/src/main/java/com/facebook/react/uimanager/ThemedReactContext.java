@@ -71,6 +71,10 @@ public class ThemedReactContext extends ReactContext {
     return mSurfaceID;
   }
 
+  public ReactApplicationContext getReactApplicationContext() {
+    return mReactApplicationContext;
+  }
+
   @Override
   public boolean isBridgeless() {
     return mReactApplicationContext.isBridgeless();

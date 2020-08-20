@@ -10,17 +10,33 @@
 
 'use strict';
 
+const View = require('../../Components/View/View');
+const Platform = require('../../Utilities/Platform');
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('react');
+const NativeAnimatedHelper = require('./NativeAnimatedHelper');
 
 const invariant = require('invariant');
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
+let animatedComponentNextId = 1;
+
 export type AnimatedComponentType<
   Props: {+[string]: mixed, ...},
   Instance,
-> = React.AbstractComponent<$ObjMap<Props, () => any>, Instance>;
+> = React.AbstractComponent<
+  $ObjMap<
+    Props &
+      $ReadOnly<{
+        passthroughAnimatedPropExplicitValues?: React.ElementConfig<
+          typeof View,
+        >,
+      }>,
+    () => any,
+  >,
+  Instance,
+>;
 
 function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
   Component: React.AbstractComponent<Props, Instance>,
@@ -38,6 +54,9 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
+
+    // Only to be used in this file, and only in Fabric.
+    _animatedComponentId: number = -1;
 
     _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement
@@ -60,24 +79,11 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       this._eventDetachers = [];
     }
 
-    // The system is best designed when setNativeProps is implemented. It is
-    // able to avoid re-rendering and directly set the attributes that changed.
-    // However, setNativeProps can only be implemented on leaf native
-    // components. If you want to animate a composite component, you need to
-    // re-render it. In this case, we have a fallback that uses forceUpdate.
-    _animatedPropsCallback = () => {
+    _isFabric = (): boolean => {
       if (this._component == null) {
-        // AnimatedProps is created in will-mount because it's used in render.
-        // But this callback may be invoked before mount in async mode,
-        // In which case we should defer the setNativeProps() call.
-        // React may throw away uncommitted work in async mode,
-        // So a deferred call won't always be invoked.
-        this._invokeAnimatedPropsCallbackOnMount = true;
-      } else if (
-        process.env.NODE_ENV === 'test' ||
-        // For animating properties of non-leaf/non-native components
-        typeof this._component.setNativeProps !== 'function' ||
-        // In Fabric, force animations to go through forceUpdate and skip setNativeProps
+        return false;
+      }
+      return (
         // eslint-disable-next-line dot-notation
         this._component['_internalInstanceHandle']?.stateNode?.canonical !=
           null ||
@@ -95,12 +101,55 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
           this._component.getNativeScrollRef()['_internalInstanceHandle']
             ?.stateNode?.canonical != null) ||
         (this._component.getScrollResponder != null &&
+          this._component.getScrollResponder() != null &&
           this._component.getScrollResponder().getNativeScrollRef != null &&
           this._component.getScrollResponder().getNativeScrollRef() != null &&
           this._component.getScrollResponder().getNativeScrollRef()[
             // eslint-disable-next-line dot-notation
             '_internalInstanceHandle'
           ]?.stateNode?.canonical != null)
+      );
+    };
+
+    _waitForUpdate = (): void => {
+      if (this._isFabric()) {
+        if (this._animatedComponentId === -1) {
+          this._animatedComponentId = animatedComponentNextId++;
+        }
+        NativeAnimatedHelper.API.setWaitingForIdentifier(
+          this._animatedComponentId,
+        );
+      }
+    };
+
+    _markUpdateComplete = (): void => {
+      if (this._isFabric()) {
+        NativeAnimatedHelper.API.unsetWaitingForIdentifier(
+          this._animatedComponentId,
+        );
+      }
+    };
+
+    // The system is best designed when setNativeProps is implemented. It is
+    // able to avoid re-rendering and directly set the attributes that changed.
+    // However, setNativeProps can only be implemented on leaf native
+    // components. If you want to animate a composite component, you need to
+    // re-render it. In this case, we have a fallback that uses forceUpdate.
+    // This fallback is also called in Fabric.
+    _animatedPropsCallback = () => {
+      if (this._component == null) {
+        // AnimatedProps is created in will-mount because it's used in render.
+        // But this callback may be invoked before mount in async mode,
+        // In which case we should defer the setNativeProps() call.
+        // React may throw away uncommitted work in async mode,
+        // So a deferred call won't always be invoked.
+        this._invokeAnimatedPropsCallbackOnMount = true;
+      } else if (
+        process.env.NODE_ENV === 'test' ||
+        // For animating properties of non-leaf/non-native components
+        typeof this._component.setNativeProps !== 'function' ||
+        // In Fabric, force animations to go through forceUpdate and skip setNativeProps
+        this._isFabric()
       ) {
         this.forceUpdate();
       } else if (!this._propsAnimated.__isNative) {
@@ -118,6 +167,10 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
 
     _attachProps(nextProps) {
       const oldPropsAnimated = this._propsAnimated;
+
+      if (nextProps === oldPropsAnimated) {
+        return;
+      }
 
       this._propsAnimated = new AnimatedProps(
         nextProps,
@@ -160,11 +213,19 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     });
 
     render() {
-      const props = this._propsAnimated.__getValue();
+      const {style = {}, ...props} = this._propsAnimated.__getValue() || {};
+      const {style: passthruStyle = {}, ...passthruProps} =
+        this.props.passthroughAnimatedPropExplicitValues || {};
+      const mergedStyle = {...style, ...passthruStyle};
       return (
         <Component
           {...props}
+          {...passthruProps}
+          style={mergedStyle}
           ref={this._setComponentRef}
+          nativeID={
+            this._isFabric() ? 'animatedComponent' : undefined
+          } /* TODO: T68258846. */
           // The native driver updates views directly through the UI thread so we
           // have to make sure the view doesn't get optimized away because it cannot
           // go through the NativeViewHierarchyManager since it operates on the shadow
@@ -177,6 +238,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     }
 
     UNSAFE_componentWillMount() {
+      this._waitForUpdate();
       this._attachProps(this.props);
     }
 
@@ -188,9 +250,11 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
 
       this._propsAnimated.setNativeView(this._component);
       this._attachNativeEvents();
+      this._markUpdateComplete();
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
+      this._waitForUpdate();
       this._attachProps(newProps);
     }
 
@@ -202,11 +266,13 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
         this._detachNativeEvents();
         this._attachNativeEvents();
       }
+      this._markUpdateComplete();
     }
 
     componentWillUnmount() {
       this._propsAnimated && this._propsAnimated.__detach();
       this._detachNativeEvents();
+      this._markUpdateComplete();
     }
   }
 

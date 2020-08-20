@@ -17,7 +17,7 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
-    labels = ["supermodule:android/default/public.react_native.infra"],
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     platforms = ANDROID,
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
@@ -35,6 +35,7 @@ rn_xplat_cxx_library(
         ":callinvokerholder",
         "//xplat/jsi:jsi",
         react_native_xplat_target("turbomodule/core:core"),
+        react_native_target("java/com/facebook/react/reactperflogger/jni:jni"),
     ],
 )
 
@@ -56,7 +57,7 @@ rn_xplat_cxx_library(
     fbandroid_deps = [
         FBJNI_TARGET,
     ],
-    labels = ["supermodule:android/default/public.react_native.infra"],
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     platforms = ANDROID,
     preferred_linkage = "static",
     preprocessor_flags = [

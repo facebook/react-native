@@ -11,7 +11,10 @@
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
 #include <glog/logging.h>
+#include <jsi/jsi.h>
+#include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
+#include "ErrorUtils.h"
 #include "Instance.h"
 #include "JSBigString.h"
 #include "MessageQueueThread.h"
@@ -24,6 +27,8 @@
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
+#include <jsi/jsi/jsi.h>
+
 using fbsystrace::FbSystraceAsyncFlow;
 #endif
 
@@ -55,10 +60,14 @@ class JsToNativeBridge : public react::ExecutorDelegate {
     m_batchHadNativeModuleOrTurboModuleCalls =
         m_batchHadNativeModuleOrTurboModuleCalls || !calls.empty();
 
+    std::vector<MethodCall> methodCalls = parseMethodCalls(std::move(calls));
+    BridgeNativeModulePerfLogger::asyncMethodCallBatchPreprocessEnd(
+        (int)methodCalls.size());
+
     // An exception anywhere in here stops processing of the batch.  This
     // was the behavior of the Android bridge, and since exception handling
     // terminates the whole bridge, there's not much point in continuing.
-    for (auto &call : parseMethodCalls(std::move(calls))) {
+    for (auto &call : methodCalls) {
       m_registry->callNativeMethod(
           call.moduleId, call.methodId, std::move(call.arguments), call.callId);
     }
@@ -342,7 +351,11 @@ RuntimeExecutor NativeToJsBridge::getRuntimeExecutor() {
             [callback = std::move(callback)](JSExecutor *executor) {
               jsi::Runtime *runtime =
                   (jsi::Runtime *)executor->getJavaScriptContext();
-              callback(*runtime);
+              try {
+                callback(*runtime);
+              } catch (jsi::JSError &originalError) {
+                handleJSError(*runtime, originalError, true);
+              }
             });
       };
   return runtimeExecutor;

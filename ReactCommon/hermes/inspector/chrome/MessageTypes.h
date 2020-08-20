@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<d3d8ca811a2e56cf4794f5dc4171bbdb>>
+// @generated SignedSource<<0563169b47d73a70d7540528f28d1d13>>
 
 #pragma once
 
@@ -38,6 +38,7 @@ struct SetBreakpointByUrlRequest;
 struct SetBreakpointByUrlResponse;
 struct SetBreakpointRequest;
 struct SetBreakpointResponse;
+struct SetBreakpointsActiveRequest;
 struct SetInstrumentationBreakpointRequest;
 struct SetInstrumentationBreakpointResponse;
 struct SetPauseOnExceptionsRequest;
@@ -61,6 +62,7 @@ struct InternalPropertyDescriptor;
 struct PropertyDescriptor;
 struct RemoteObject;
 using RemoteObjectId = std::string;
+struct RunIfWaitingForDebuggerRequest;
 using ScriptId = std::string;
 struct StackTrace;
 using Timestamp = double;
@@ -88,6 +90,7 @@ struct RequestHandler {
   virtual void handle(const debugger::ResumeRequest &req) = 0;
   virtual void handle(const debugger::SetBreakpointRequest &req) = 0;
   virtual void handle(const debugger::SetBreakpointByUrlRequest &req) = 0;
+  virtual void handle(const debugger::SetBreakpointsActiveRequest &req) = 0;
   virtual void handle(
       const debugger::SetInstrumentationBreakpointRequest &req) = 0;
   virtual void handle(const debugger::SetPauseOnExceptionsRequest &req) = 0;
@@ -101,6 +104,7 @@ struct RequestHandler {
   virtual void handle(const heapProfiler::TakeHeapSnapshotRequest &req) = 0;
   virtual void handle(const runtime::EvaluateRequest &req) = 0;
   virtual void handle(const runtime::GetPropertiesRequest &req) = 0;
+  virtual void handle(const runtime::RunIfWaitingForDebuggerRequest &req) = 0;
 };
 
 /// NoopRequestHandler can be subclassed to only handle some requests.
@@ -114,6 +118,7 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const debugger::ResumeRequest &req) override {}
   void handle(const debugger::SetBreakpointRequest &req) override {}
   void handle(const debugger::SetBreakpointByUrlRequest &req) override {}
+  void handle(const debugger::SetBreakpointsActiveRequest &req) override {}
   void handle(
       const debugger::SetInstrumentationBreakpointRequest &req) override {}
   void handle(const debugger::SetPauseOnExceptionsRequest &req) override {}
@@ -127,6 +132,7 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const heapProfiler::TakeHeapSnapshotRequest &req) override {}
   void handle(const runtime::EvaluateRequest &req) override {}
   void handle(const runtime::GetPropertiesRequest &req) override {}
+  void handle(const runtime::RunIfWaitingForDebuggerRequest &req) override {}
 };
 
 /// Types
@@ -351,6 +357,16 @@ struct debugger::SetBreakpointByUrlRequest : public Request {
   folly::Optional<std::string> condition;
 };
 
+struct debugger::SetBreakpointsActiveRequest : public Request {
+  SetBreakpointsActiveRequest();
+  explicit SetBreakpointsActiveRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  bool active{};
+};
+
 struct debugger::SetInstrumentationBreakpointRequest : public Request {
   SetInstrumentationBreakpointRequest();
   explicit SetInstrumentationBreakpointRequest(const folly::dynamic &obj);
@@ -453,6 +469,14 @@ struct runtime::GetPropertiesRequest : public Request {
 
   runtime::RemoteObjectId objectId{};
   folly::Optional<bool> ownProperties;
+};
+
+struct runtime::RunIfWaitingForDebuggerRequest : public Request {
+  RunIfWaitingForDebuggerRequest();
+  explicit RunIfWaitingForDebuggerRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
 };
 
 /// Responses

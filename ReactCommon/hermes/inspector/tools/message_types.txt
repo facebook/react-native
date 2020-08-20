@@ -10,6 +10,7 @@ Debugger.resumed
 Debugger.scriptParsed
 Debugger.setBreakpoint
 Debugger.setBreakpointByUrl
+Debugger.setBreakpointsActive
 Debugger.setInstrumentationBreakpoint
 Debugger.setPauseOnExceptions
 Debugger.stepInto
@@ -24,3 +25,4 @@ Runtime.consoleAPICalled
 Runtime.evaluate
 Runtime.executionContextCreated
 Runtime.getProperties
+Runtime.runIfWaitingForDebugger
