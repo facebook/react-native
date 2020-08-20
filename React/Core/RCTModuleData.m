@@ -63,6 +63,13 @@ RCT_NOT_IMPLEMENTED(-init);
 
 - (void)generateConfig
 {
+  //  {
+  //    'moduleID': xxx,
+  //    'constants': {'xxx': 'xxx'},
+  //    'methods': {
+  //      'JSMethodName': {'methodID': xxx, 'type': xxx},
+  //    }
+  //  }
   NSMutableDictionary *config = [[NSMutableDictionary alloc] init];
   config[@"moduleID"] = _uid;
   config[@"methods"] = [[NSMutableDictionary alloc] init];

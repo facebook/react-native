@@ -86,7 +86,9 @@ class MessageQueue {
         //    ...,
         // }
         this._methodTable = {};
+        // 回调函数数组
         this._callbacks = [];
+        // 回调函数对应的索引 id
         this._callbackID = 0;
 
         // 把当前的 this 绑定给数组中的几个函数，以此来指定函数中的 this 实例
@@ -263,7 +265,7 @@ class MessageQueue {
     //  {
     //      'moduleName': {
     //          'methodName': {
-    //              'JSMethodName': __nativeCall 函数实例,
+    //              'JSMethodName': __nativeCall 函数实例（根据配置信息为该放到生成 js function 并添加到集合当中）,
     //              ...,
     //          }
     //      },
@@ -299,7 +301,8 @@ class MessageQueue {
         return module;
     }
 
-    // @brief 获取单个 method 包装数据
+    // @brief 获取单个 method 包装数据，如调用 
+    //        `NativeModules.MyCustomModule.customMethod(arg, (response) => {});` 实际是调用这里包装好的函数
     // @param module moduleID
     // @param method methodID
     // @param type 函数类型
@@ -335,6 +338,7 @@ class MessageQueue {
                 let onSucc = hasSuccCB ? lastArg : null;
                 let onFail = hasErrorCB ? secondLastArg : null;
                 args = args.slice(0, args.length - numCBs);
+                // 将 `self.__nativeCall` 函数作为返回值
                 return self.__nativeCall(module, method, args, onFail, onSucc);
             };
         }

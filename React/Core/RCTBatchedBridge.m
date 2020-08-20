@@ -732,6 +732,7 @@ RCT_NOT_IMPLEMENTED(-initWithBundleURL:(__unused NSURL *)bundleURL
     }
   }
 
+  // 将 `主动调用 JS` 和 `向 JS 侧发送回调` 两种类型的调用收集到一起
   NSArray *calls = [_scheduledCallbacks.allObjects arrayByAddingObjectsFromArray:_scheduledCalls];
 
   RCT_IF_DEV(
