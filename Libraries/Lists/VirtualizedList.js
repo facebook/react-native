@@ -6,6 +6,7 @@
  *
  * @flow
  * @format
+ * @generate-docs
  */
 
 'use strict';
@@ -74,39 +75,63 @@ type ViewabilityHelperCallbackTuple = {
 
 type RequiredProps = {|
   /**
-   * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
-   * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
+    The default accessor functions assume this is an array of objects with shape
+    `{key: string}` but you can override `getItem`, `getItemCount`, and
+    `keyExtractor` to handle any type of index-based data.
    */
   data?: any,
   /**
-   * A generic accessor for extracting an item from any sort of data blob.
+    ```jsx
+    (data: any, index: number) => object;
+    ```
+
+    A generic accessor for extracting an item from any sort of data blob.
    */
   getItem: (data: any, index: number) => ?Item,
   /**
-   * Determines how many items are in the data blob.
+    ```jsx
+    (data: any) => number;
+    ```
+
+    Determines how many items are in the data blob.
    */
   getItemCount: (data: any) => number,
 |};
 type OptionalProps = {|
+  /**
+    ```jsx
+    (info: any) => ?React.Element<any>
+    ```
+
+    Takes an item from `data` and renders it into the list
+   */
   renderItem?: ?RenderItemType<Item>,
   /**
-   * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
-   * implementation, but with a significant perf hit.
+    `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
+    implementation, but with a significant perf hit.
    */
   debug?: ?boolean,
   /**
-   * DEPRECATED: Virtualization provides significant performance and memory optimizations, but fully
-   * unmounts react instances that are outside of the render window. You should only need to disable
-   * this for debugging purposes.
+    > **Deprecated**: Virtualization provides significant performance and memory optimizations, but fully
+    unmounts react instances that are outside of the render window. You should only need to disable
+    this for debugging purposes.
    */
   disableVirtualization?: ?boolean,
   /**
-   * A marker property for telling the list to re-render (since it implements `PureComponent`). If
-   * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
-   * `data` prop, stick it here and treat it immutably.
+    A marker property for telling the list to re-render (since it implements `PureComponent`). If
+    any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
+    `data` prop, stick it here and treat it immutably.
    */
   extraData?: any,
   // e.g. height, y
+  /**
+    ```jsx
+    (
+        data: any,
+        index: number,
+      ) => {length: number, offset: number, index: number}
+    ```
+   */
   getItemLayout?: (
     data: any,
     index: number,
@@ -118,118 +143,127 @@ type OptionalProps = {|
   },
   horizontal?: ?boolean,
   /**
-   * How many items to render in the initial batch. This should be enough to fill the screen but not
-   * much more. Note these items will never be unmounted as part of the windowed rendering in order
-   * to improve perceived performance of scroll-to-top actions.
+    How many items to render in the initial batch. This should be enough to fill the screen but not
+    much more. Note these items will never be unmounted as part of the windowed rendering in order
+    to improve perceived performance of scroll-to-top actions.
    */
   initialNumToRender: number,
   /**
-   * Instead of starting at the top with the first item, start at `initialScrollIndex`. This
-   * disables the "scroll to top" optimization that keeps the first `initialNumToRender` items
-   * always rendered and immediately renders the items starting at this initial index. Requires
-   * `getItemLayout` to be implemented.
+    Instead of starting at the top with the first item, start at `initialScrollIndex`. This
+    disables the "scroll to top" optimization that keeps the first `initialNumToRender` items
+    always rendered and immediately renders the items starting at this initial index. Requires
+    `getItemLayout` to be implemented.
    */
   initialScrollIndex?: ?number,
   /**
-   * Reverses the direction of scroll. Uses scale transforms of -1.
+    Reverses the direction of scroll. Uses scale transforms of -1.
    */
   inverted?: ?boolean,
+  /**
+    ```jsx
+    (item: object, index: number) => string;
+    ```
+
+    Used to extract a unique key for a given item at the specified index. Key is
+    used for caching and as the react key to track item re-ordering. The default
+    extractor checks `item.key`, then falls back to using the index, like React
+    does.
+   */
   keyExtractor: (item: Item, index: number) => string,
   /**
-   * Each cell is rendered using this element. Can be a React Component Class,
-   * or a render function. Defaults to using View.
+    Each cell is rendered using this element. Can be a React Component Class,or
+    a render function. Defaults to using [`View`](view).
    */
   CellRendererComponent?: ?React.ComponentType<any>,
   /**
-   * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
-   * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
-   * which will update the `highlighted` prop, but you can also add custom props with
-   * `separators.updateProps`.
+    Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
+    `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
+    which will update the `highlighted` prop, but you can also add custom props with
+    `separators.updateProps`.
    */
   ItemSeparatorComponent?: ?React.ComponentType<any>,
   /**
-   * Takes an item from `data` and renders it into the list. Example usage:
-   *
-   *     <FlatList
-   *       ItemSeparatorComponent={Platform.OS !== 'android' && ({highlighted}) => (
-   *         <View style={[style.separator, highlighted && {marginLeft: 0}]} />
-   *       )}
-   *       data={[{title: 'Title Text', key: 'item1'}]}
-   *       ListItemComponent={({item, separators}) => (
-   *         <TouchableHighlight
-   *           onPress={() => this._onPress(item)}
-   *           onShowUnderlay={separators.highlight}
-   *           onHideUnderlay={separators.unhighlight}>
-   *           <View style={{backgroundColor: 'white'}}>
-   *             <Text>{item.title}</Text>
-   *           </View>
-   *         </TouchableHighlight>
-   *       )}
-   *     />
-   *
-   * Provides additional metadata like `index` if you need it, as well as a more generic
-   * `separators.updateProps` function which let's you set whatever props you want to change the
-   * rendering of either the leading separator or trailing separator in case the more common
-   * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
-   * your use-case.
+    Each data item is rendered using this element. Can be a React Component
+    Class, or a render function
    */
   ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
-   * Rendered when the list is empty. Can be a React Component Class, a render function, or
-   * a rendered element.
+    Rendered when the list is empty. Can be a React Component Class, a render function, or
+    a rendered element.
    */
   ListEmptyComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
-   * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
-   * a rendered element.
+    Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
+    a rendered element.
    */
   ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
-   * Styling for internal View for ListFooterComponent
+    Styling for internal View for ListFooterComponent
+
+    @type ViewStyleProp
    */
   ListFooterComponentStyle?: ViewStyleProp,
   /**
-   * Rendered at the top of all the items. Can be a React Component Class, a render function, or
-   * a rendered element.
+    Rendered at the top of all the items. Can be a React Component Class, a render function, or
+    a rendered element.
    */
   ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
-   * Styling for internal View for ListHeaderComponent
+    Styling for internal View for ListHeaderComponent
+
+    @type ViewStyleProp
    */
   ListHeaderComponentStyle?: ViewStyleProp,
   /**
-   * A unique identifier for this list. If there are multiple VirtualizedLists at the same level of
-   * nesting within another VirtualizedList, this key is necessary for virtualization to
-   * work properly.
+    A unique identifier for this list. If there are multiple VirtualizedLists at the same level of
+    nesting within another VirtualizedList, this key is necessary for virtualization to
+    work properly.
    */
   listKey?: string,
   /**
-   * The maximum number of items to render in each incremental render batch. The more rendered at
-   * once, the better the fill rate, but responsiveness may suffer because rendering content may
-   * interfere with responding to button taps or other interactions.
+    The maximum number of items to render in each incremental render batch. The more rendered at
+    once, the better the fill rate, but responsiveness may suffer because rendering content may
+    interfere with responding to button taps or other interactions.
    */
   maxToRenderPerBatch: number,
   /**
-   * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
-   * content.
+    ```jsx
+    (info: {distanceFromEnd: number}) => void
+    ```
+
+    Called once when the scroll position gets within `onEndReachedThreshold` of
+    the rendered content.
    */
   onEndReached?: ?(info: {distanceFromEnd: number, ...}) => void,
   /**
-   * How far from the end (in units of visible length of the list) the bottom edge of the
-   * list must be from the end of the content to trigger the `onEndReached` callback.
-   * Thus a value of 0.5 will trigger `onEndReached` when the end of the content is
-   * within half the visible length of the list.
+    How far from the end (in units of visible length of the list) the bottom edge of the
+    list must be from the end of the content to trigger the `onEndReached` callback.
+    Thus a value of 0.5 will trigger `onEndReached` when the end of the content is
+    within half the visible length of the list.
    */
   onEndReachedThreshold?: ?number,
   /**
-   * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
-   * sure to also set the `refreshing` prop correctly.
+    ```jsx
+    () => void
+    ```
+
+    If provided, a standard `RefreshControl` will be added for "Pull to Refresh"
+    functionality. Make sure to also set the `refreshing` prop correctly.
    */
   onRefresh?: ?() => void,
   /**
-   * Used to handle failures when scrolling to an index that has not been measured yet. Recommended
-   * action is to either compute your own offset and `scrollTo` it, or scroll as far as possible and
-   * then try again after more items have been rendered.
+    ```jsx
+    (info: {
+        index: number,
+        highestMeasuredFrameIndex: number,
+        averageItemLength: number,
+      }) => void
+    ```
+
+    Used to handle failures when scrolling to an index that has not been measured
+    yet. Recommended action is to either compute your own offset and `scrollTo` it,
+    or scroll as far as possible and then try again after more items have been
+    rendered.
    */
   onScrollToIndexFailed?: ?(info: {
     index: number,
@@ -238,8 +272,15 @@ type OptionalProps = {|
     ...
   }) => void,
   /**
-   * Called when the viewability of rows changes, as defined by the
-   * `viewabilityConfig` prop.
+    ```jsx
+    (info: {
+        viewableItems: array,
+        changed: array,
+      }) => void
+    ```
+
+    Called when the viewability of rows changes, as defined by the
+    `viewabilityConfig` prop.
    */
   onViewableItemsChanged?: ?(info: {
     viewableItems: Array<ViewToken>,
@@ -248,54 +289,62 @@ type OptionalProps = {|
   }) => void,
   persistentScrollbar?: ?boolean,
   /**
-   * Set this when offset is needed for the loading indicator to show correctly.
-   * @platform android
+    Set this when offset is needed for the loading indicator to show correctly.
+    @platform android
    */
   progressViewOffset?: number,
   /**
-   * A custom refresh control element. When set, it overrides the default
-   * <RefreshControl> component built internally. The onRefresh and refreshing
-   * props are also ignored. Only works for vertical VirtualizedList.
+    A custom refresh control element. When set, it overrides the default
+    <RefreshControl> component built internally. The onRefresh and refreshing
+    props are also ignored. Only works for vertical VirtualizedList.
    */
   refreshControl?: ?React.Element<any>,
   /**
-   * Set this true while waiting for new data from a refresh.
+    Set this true while waiting for new data from a refresh.
    */
   refreshing?: ?boolean,
   /**
-   * Note: may have bugs (missing content) in some circumstances - use at your own risk.
-   *
-   * This may improve scroll performance for large lists.
+    This may improve scroll performance for large lists.
+
+    > Note: May have bugs (missing content) in some circumstances - use at your own risk.
    */
   removeClippedSubviews?: boolean,
   /**
-   * Render a custom scroll component, e.g. with a differently styled `RefreshControl`.
+    ```jsx
+    (props: object) => element;
+    ```
+
+    Render a custom scroll component, e.g. with a differently styled `RefreshControl`.
    */
   renderScrollComponent?: (props: Object) => React.Element<any>,
   /**
-   * Amount of time between low-pri item render batches, e.g. for rendering items quite a ways off
-   * screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
+    Amount of time between low-pri item render batches, e.g. for rendering items quite a ways off
+    screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
    */
   updateCellsBatchingPeriod: number,
   /**
-   * See `ViewabilityHelper` for flow type and further documentation.
+    See `ViewabilityHelper.js` for flow type and further documentation.
+
+    @type ViewabilityConfig
    */
   viewabilityConfig?: ViewabilityConfig,
   /**
-   * List of ViewabilityConfig/onViewableItemsChanged pairs. A specific onViewableItemsChanged
-   * will be called when its corresponding ViewabilityConfig's conditions are met.
+    List of `ViewabilityConfig`/`onViewableItemsChanged` pairs. A specific
+    `onViewableItemsChanged` will be called when its corresponding
+    `ViewabilityConfig`'s conditions are met. See `ViewabilityHelper.js` for
+    flow type and further documentation.
    */
   viewabilityConfigCallbackPairs?: Array<ViewabilityConfigCallbackPair>,
   /**
-   * Determines the maximum number of items rendered outside of the visible area, in units of
-   * visible lengths. So if your list fills the screen, then `windowSize={21}` (the default) will
-   * render the visible screen area plus up to 10 screens above and 10 below the viewport. Reducing
-   * this number will reduce memory consumption and may improve performance, but will increase the
-   * chance that fast scrolling may reveal momentary blank areas of unrendered content.
+    Determines the maximum number of items rendered outside of the visible area, in units of
+    visible lengths. So if your list fills the screen, then `windowSize={21}` (the default) will
+    render the visible screen area plus up to 10 screens above and 10 below the viewport. Reducing
+    this number will reduce memory consumption and may improve performance, but will increase the
+    chance that fast scrolling may reveal momentary blank areas of unrendered content.
    */
   windowSize: number,
   /**
-   * The legacy implementation is no longer supported.
+    The legacy implementation is no longer supported.
    */
   legacyImplementation?: empty,
 |};
@@ -327,37 +376,111 @@ type State = {
 };
 
 /**
- * Base implementation for the more convenient [`<FlatList>`](https://reactnative.dev/docs/flatlist.html)
- * and [`<SectionList>`](https://reactnative.dev/docs/sectionlist.html) components, which are also better
- * documented. In general, this should only really be used if you need more flexibility than
- * `FlatList` provides, e.g. for use with immutable data instead of plain arrays.
- *
- * Virtualization massively improves memory consumption and performance of large lists by
- * maintaining a finite render window of active items and replacing all items outside of the render
- * window with appropriately sized blank space. The window adapts to scrolling behavior, and items
- * are rendered incrementally with low-pri (after any running interactions) if they are far from the
- * visible area, or with hi-pri otherwise to minimize the potential of seeing blank space.
- *
- * Some caveats:
- *
- * - Internal state is not preserved when content scrolls out of the render window. Make sure all
- *   your data is captured in the item data or external stores like Flux, Redux, or Relay.
- * - This is a `PureComponent` which means that it will not re-render if `props` remain shallow-
- *   equal. Make sure that everything your `renderItem` function depends on is passed as a prop
- *   (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on
- *   changes. This includes the `data` prop and parent component state.
- * - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
- *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
- *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
- *   and we are working on improving it behind the scenes.
- * - By default, the list looks for a `key` or `id` prop on each item and uses that for the React key.
- *   Alternatively, you can provide a custom `keyExtractor` prop.
- *
+  Base implementation for the more convenient [`<FlatList>`](flatlist) and
+  [`<SectionList>`](sectionlist) components, which are also better documented.
+  In general, this should only really be used if you need more flexibility than
+  [`FlatList`](flatlist) provides, e.g. for use with immutable data instead of
+  plain arrays.
+
+  Virtualization massively improves memory consumption and performance of large
+  lists by maintaining a finite render window of active items and replacing all
+  items outside of the render window with appropriately sized blank space. The
+  window adapts to scrolling behavior, and items are rendered incrementally with
+  low-pri (after any running interactions) if they are far from the visible area,
+  or with hi-pri otherwise to minimize the potential of seeing blank space.
+
+  ```SnackPlayer name=VirtualizedListExample
+  import React from 'react';
+  import { SafeAreaView, View, VirtualizedList, StyleSheet, Text } from 'react-native';
+  import Constants from 'expo-constants';
+
+  const DATA = [];
+
+  const getItem = (data, index) => {
+    return {
+      id: Math.random().toString(12).substring(0),
+      title: `Item ${index+1}`
+    }
+  }
+
+  const getItemCount = (data) => {
+    return 50;
+  }
+
+  const Item = ({ title })=> {
+    return (
+      <View style={styles.item}>
+        <Text style={styles.title}>{title}</Text>
+      </View>
+    );
+  }
+
+  const VirtualizedListExample = () => {
+    return (
+      <SafeAreaView style={styles.container}>
+        <VirtualizedList
+          data={DATA}
+          initialNumToRender={4}
+          renderItem={({ item }) => <Item title={item.title} />}
+          keyExtractor={item => item.key}
+          getItemCount={getItemCount}
+          getItem={getItem}
+        />
+      </SafeAreaView>
+    );
+  }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      marginTop: Constants.statusBarHeight,
+    },
+    item: {
+      backgroundColor: '#f9c2ff',
+      height: 150,
+      justifyContent: 'center',
+      marginVertical: 8,
+      marginHorizontal: 16,
+      padding: 20,
+    },
+    title: {
+      fontSize: 32,
+    },
+  });
+
+  export default VirtualizedListExample;
+  ```
+
+  Some caveats:
+
+  - Internal state is not preserved when content scrolls out of the render window. Make sure all
+    your data is captured in the item data or external stores like Flux, Redux, or Relay.
+  - This is a `PureComponent` which means that it will not re-render if `props` remain shallow-
+    equal. Make sure that everything your `renderItem` function depends on is passed as a prop
+    (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on
+    changes. This includes the `data` prop and parent component state.
+  - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
+    offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
+    blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
+    and we are working on improving it behind the scenes.
+  - By default, the list looks for a `key` or `id` prop on each item and uses that for the React key.
+    Alternatively, you can provide a custom `keyExtractor` prop.
  */
 class VirtualizedList extends React.PureComponent<Props, State> {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
 
   // scrollToEnd may be janky without getItemLayout prop
+
+  /**
+    ```jsx
+    scrollToEnd((params: object));
+
+    Valid `params` consist of:
+
+    - 'animated' (boolean). Optional default is true.
+
+    ```
+   */
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
@@ -389,10 +512,30 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   // scrollToIndex may be janky without getItemLayout prop
+
+  /**
+    ```jsx
+    scrollToIndex((params: object));
+    ```
+    @param params See below
+   */
   scrollToIndex(params: {
+    /**
+      Whether the list should do an animation while scrolling. Optional
+     */
     animated?: ?boolean,
+    /**
+      The index to scroll to. Required.
+     */
     index: number,
+    /**
+      A fixed number of pixels to offset the final target position. Optional
+     */
     viewOffset?: number,
+    /**
+      A value of `0` places the item specified by index at the top, `1` at the
+      bottom, and `0.5` centered in the middle. Optional
+     */
     viewPosition?: number,
     ...
   }) {
@@ -462,9 +605,27 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   // scrollToItem may be janky without getItemLayout prop. Required linear scan through items -
   // use scrollToIndex instead if possible.
+
+  /**
+    ```jsx
+    scrollToItem((params: object));
+    ```
+
+    @param params See below
+   */
   scrollToItem(params: {
+    /**
+      Whether the list should do an animation while scrolling. Optional
+     */
     animated?: ?boolean,
+    /**
+      Required
+     */
     item: Item,
+    /**
+      A value of `0` places the item specified by index at the top, `1` at the
+      bottom, and `0.5` centered in the middle. Optional
+     */
     viewPosition?: number,
     ...
   }) {
@@ -480,16 +641,27 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   /**
-   * Scroll to a specific content pixel offset in the list.
-   *
-   * Param `offset` expects the offset to scroll to.
-   * In case of `horizontal` is true, the offset is the x-value,
-   * in any other case the offset is the y-value.
-   *
-   * Param `animated` (`true` by default) defines whether the list
-   * should do an animation while scrolling.
+    ```jsx
+    scrollToOffset((params: object));
+    ```
+
+    Scroll to a specific content pixel offset in the list.
+
+    @param params See below
    */
-  scrollToOffset(params: {animated?: ?boolean, offset: number, ...}) {
+  scrollToOffset(params: {
+    /**
+      (`true` by default) defines whether the list
+      should do an animation while scrolling.
+     */
+    animated?: ?boolean, 
+    /**
+      expects the offset to scroll to.
+      In case of `horizontal` is true, the offset is the x-value,
+      in any other case the offset is the y-value.
+     */
+    offset: number, ...
+  }) {
     const {animated, offset} = params;
 
     if (this._scrollRef == null) {
@@ -510,6 +682,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
+  /**
+    ```jsx
+    recordInteraction();
+    ```
+   */
   recordInteraction() {
     this._nestedChildLists.forEach(childList => {
       childList.ref && childList.ref.recordInteraction();
@@ -519,7 +696,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     });
     this._updateViewableItems(this.props.data);
   }
-
+  /**
+    ```jsx
+    flashScrollIndicators();
+    ```
+   */
   flashScrollIndicators() {
     if (this._scrollRef == null) {
       return;
@@ -529,9 +710,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   /**
-   * Provides a handle to the underlying scroll responder.
-   * Note that `this._scrollRef` might not be a `ScrollView`, so we
-   * need to check that it responds to `getScrollResponder` before calling it.
+    ```jsx
+    getScrollResponder () => ?ScrollResponderType;
+    ```
+
+    Provides a handle to the underlying scroll responder. Note that
+    `this._scrollRef` might not be a `ScrollView`, so we need to check that it
+    responds to `getScrollResponder` before calling it.
    */
   getScrollResponder(): ?ScrollResponderType {
     if (this._scrollRef && this._scrollRef.getScrollResponder) {
@@ -539,6 +724,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
+  /**
+   ```jsx
+    getScrollableNode () => ?number;
+    ```
+   */
   getScrollableNode(): ?number {
     if (this._scrollRef && this._scrollRef.getScrollableNode) {
       return this._scrollRef.getScrollableNode();
@@ -547,6 +737,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
+  /**
+    ```jsx
+    getScrollRef () => | ?React.ElementRef<typeof ScrollView>
+        | ?React.ElementRef<typeof View>;
+    ```
+   */
   getScrollRef():
     | ?React.ElementRef<typeof ScrollView>
     | ?React.ElementRef<typeof View> {
@@ -557,6 +753,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
+  /**
+    ```jsx
+    setNativeProps((props: Object));
+    ```
+   */
   setNativeProps(props: Object) {
     if (this._scrollRef) {
       this._scrollRef.setNativeProps(props);
@@ -607,7 +808,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _getScrollMetrics = () => {
     return this._scrollMetrics;
   };
-
+  /**
+    ```jsx
+    hasMore () => boolean;
+    ```
+   */
   hasMore(): boolean {
     return this._hasMore;
   }
