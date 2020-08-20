@@ -101,7 +101,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
       [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLFragmentAllowedCharacterSet]];
       path = [path stringByAddingPercentEncodingWithAllowedCharacters:urlAllowedCharacterSet];
       URL = [NSURL URLWithString:path];
-      if (URL) {
+      if (URL.scheme) {
         return URL;
       }
     }
