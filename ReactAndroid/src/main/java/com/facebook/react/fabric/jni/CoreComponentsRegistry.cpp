@@ -36,6 +36,8 @@ CoreComponentsRegistry::sharedProviderRegistry() {
         std::make_shared<ComponentDescriptorProviderRegistry>();
 
     providerRegistry->add(concreteComponentDescriptorProvider<
+                          ActivityIndicatorViewComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
                           AndroidTextInputComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<ViewComponentDescriptor>());
