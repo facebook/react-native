@@ -26,8 +26,6 @@ const {
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 
-// ---------------------------
-
 const ExampleCard = ({
   onShowUnderlay,
   onHideUnderlay,
@@ -120,7 +118,6 @@ const renderSectionHeader = ({section}) => (
   </RNTesterThemeContext.Consumer>
 );
 
-// TODO: add flow types
 const RNTesterExampleList: React$AbstractComponent<any, void> = React.memo(
   ({sections, toggleBookmark, handleExampleCardPress}) => {
     const theme = React.useContext(RNTesterThemeContext);
@@ -191,8 +188,6 @@ const ItemSeparator = ({highlighted}) => (
     }}
   </RNTesterThemeContext.Consumer>
 );
-
-// ----------------------------
 
 const styles = StyleSheet.create({
   listContainer: {

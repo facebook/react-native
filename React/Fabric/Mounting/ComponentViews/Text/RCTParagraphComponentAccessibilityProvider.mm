@@ -65,7 +65,7 @@ using namespace facebook::react;
   firstElement.isAccessibilityElement = YES;
   firstElement.accessibilityTraits = UIAccessibilityTraitStaticText;
   firstElement.accessibilityLabel = accessibilityLabel;
-  firstElement.accessibilityFrameInContainerSpace = _view.bounds;
+  firstElement.accessibilityFrame = UIAccessibilityConvertFrameToScreenCoordinates(_view.bounds, _view);
   [firstElement setAccessibilityActivationPoint:CGPointMake(
                                                     firstElement.accessibilityFrame.origin.x + 1.0,
                                                     firstElement.accessibilityFrame.origin.y + 1.0)];
@@ -98,7 +98,8 @@ using namespace facebook::react;
                                        numberOfButtons++;
                                      }
                                      element.accessibilityLabel = fragmentText;
-                                     element.accessibilityFrameInContainerSpace = fragmentRect;
+                                     element.accessibilityFrame =
+                                         UIAccessibilityConvertFrameToScreenCoordinates(fragmentRect, self->_view);
                                      [elements addObject:element];
                                    }];
 

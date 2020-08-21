@@ -349,6 +349,3 @@ afterEvaluate {
         }
     }
 }
-
-apply(from: "$rootDir/architecture.gradle");
-generateNativeArtifactsFromJavaScript(project.react);

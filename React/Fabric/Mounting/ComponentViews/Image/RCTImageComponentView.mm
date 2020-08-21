@@ -103,11 +103,6 @@ using namespace facebook::react;
 
     // TODO (T58941612): Tracking for visibility should be done directly on this class.
     // For now, we consolidate instrumentation logic in the image loader, so that pre-Fabric gets the same treatment.
-    auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
-        data.getImageRequest().getSharedImageInstrumentation());
-    if (instrumentation) {
-      instrumentation->trackNativeImageView(self);
-    }
   }
 }
 

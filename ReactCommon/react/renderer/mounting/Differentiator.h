@@ -22,7 +22,8 @@ enum class DifferentiatorMode { Classic, OptimizedMoves };
  */
 ShadowViewMutationList calculateShadowViewMutations(
     ShadowNode const &oldRootShadowNode,
-    ShadowNode const &newRootShadowNode);
+    ShadowNode const &newRootShadowNode,
+    bool enableReparentingDetection = false);
 
 /*
  * Generates a list of `ShadowViewNodePair`s that represents a layer of a

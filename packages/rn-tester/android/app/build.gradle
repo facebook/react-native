@@ -190,7 +190,7 @@ dependencies {
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
-    def hermesPath = '$projectDir/../../../../node_modules/hermes-engine/android/'
+    def hermesPath = '$projectDir/../../../../../node_modules/hermes-engine/android/'
     hermesDebugImplementation files(hermesPath + "hermes-debug.aar")
     fabricDebugImplementation files(hermesPath + "hermes-debug.aar")
     hermesReleaseImplementation files(hermesPath + "hermes-release.aar")

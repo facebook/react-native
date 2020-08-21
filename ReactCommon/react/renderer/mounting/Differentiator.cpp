@@ -14,6 +14,16 @@
 #include <algorithm>
 #include "ShadowView.h"
 
+// Uncomment this to enable verbose diffing logs, which can be useful for
+// debugging. #define DEBUG_LOGS_DIFFER
+
+#ifdef DEBUG_LOGS_DIFFER
+#include <glog/logging.h>
+#define DEBUG_LOGS(code) code
+#else
+#define DEBUG_LOGS(code)
+#endif
+
 namespace facebook {
 namespace react {
 
@@ -295,9 +305,21 @@ static void calculateShadowViewMutations(
     auto const &newChildPair = newChildPairs[index];
 
     if (oldChildPair.shadowView.tag != newChildPair.shadowView.tag) {
+      DEBUG_LOGS({
+        LOG(ERROR) << "Differ Branch 1.1: Tags Different: ["
+                   << oldChildPair.shadowView.tag << "] ["
+                   << newChildPair.shadowView.tag << "]";
+      });
+
       // Totally different nodes, updating is impossible.
       break;
     }
+
+    DEBUG_LOGS({
+      LOG(ERROR) << "Differ Branch 1.2: Same tags, update and recurse: ["
+                 << oldChildPair.shadowView.tag << "] ["
+                 << newChildPair.shadowView.tag << "]";
+    });
 
     if (oldChildPair.shadowView != newChildPair.shadowView) {
       updateMutations.push_back(ShadowViewMutation::UpdateMutation(
@@ -327,6 +349,12 @@ static void calculateShadowViewMutations(
     for (; index < oldChildPairs.size(); index++) {
       auto const &oldChildPair = oldChildPairs[index];
 
+      DEBUG_LOGS({
+        LOG(ERROR)
+            << "Differ Branch 2: Deleting Tag/Tree (may be reparented): ["
+            << oldChildPair.shadowView.tag << "]";
+      });
+
       deleteMutations.push_back(
           ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
       removeMutations.push_back(ShadowViewMutation::RemoveMutation(
@@ -345,6 +373,12 @@ static void calculateShadowViewMutations(
     // since the rest will all be create+insert.
     for (; index < newChildPairs.size(); index++) {
       auto const &newChildPair = newChildPairs[index];
+
+      DEBUG_LOGS({
+        LOG(ERROR)
+            << "Differ Branch 3: Creating Tag/Tree (may be reparented): ["
+            << newChildPair.shadowView.tag << "]";
+      });
 
       insertMutations.push_back(ShadowViewMutation::InsertMutation(
           parentShadowView, newChildPair.shadowView, index));
@@ -388,6 +422,13 @@ static void calculateShadowViewMutations(
         int oldTag = oldChildPair.shadowView.tag;
 
         if (newTag == oldTag) {
+          DEBUG_LOGS({
+            LOG(ERROR) << "Differ Branch 5: Matched Tags at indices: "
+                       << oldIndex << " " << newIndex << ": ["
+                       << oldChildPair.shadowView.tag << "]["
+                       << newChildPair.shadowView.tag << "]";
+          });
+
           // Generate Update instructions
           if (oldChildPair.shadowView != newChildPair.shadowView) {
             updateMutations.push_back(ShadowViewMutation::UpdateMutation(
@@ -430,6 +471,12 @@ static void calculateShadowViewMutations(
         // remove the node from its old position now.
         auto const insertedIt = newInsertedPairs.find(oldTag);
         if (insertedIt != newInsertedPairs.end()) {
+          DEBUG_LOGS({
+            LOG(ERROR)
+                << "Differ Branch 6: Removing tag that was already inserted: "
+                << oldIndex << ": [" << oldChildPair.shadowView.tag << "]";
+          });
+
           removeMutations.push_back(ShadowViewMutation::RemoveMutation(
               parentShadowView, oldChildPair.shadowView, oldIndex));
 
@@ -466,8 +513,15 @@ static void calculateShadowViewMutations(
         // generate remove+delete for this node and its subtree.
         auto const newIt = newRemainingPairs.find(oldTag);
         if (newIt == newRemainingPairs.end()) {
+          DEBUG_LOGS({
+            LOG(ERROR)
+                << "Differ Branch 8: Removing tag/tree that was not reinserted (may be reparented): "
+                << oldIndex << ": [" << oldChildPair.shadowView.tag << "]";
+          });
+
           removeMutations.push_back(ShadowViewMutation::RemoveMutation(
               parentShadowView, oldChildPair.shadowView, oldIndex));
+
           deleteMutations.push_back(
               ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
 
@@ -488,6 +542,11 @@ static void calculateShadowViewMutations(
       // inserted or matched yet. We're not sure yet if the new node is in the
       // old list - generate an insert instruction for the new node.
       auto const &newChildPair = newChildPairs[newIndex];
+      DEBUG_LOGS({
+        LOG(ERROR)
+            << "Differ Branch 9: Inserting tag/tree that was not yet removed from hierarchy (may be reparented): "
+            << newIndex << ": [" << newChildPair.shadowView.tag << "]";
+      });
       insertMutations.push_back(ShadowViewMutation::InsertMutation(
           parentShadowView, newChildPair.shadowView, newIndex));
       newInsertedPairs.insert({newChildPair.shadowView.tag, &newChildPair});
@@ -506,6 +565,13 @@ static void calculateShadowViewMutations(
       }
 
       auto const &newChildPair = *it->second;
+
+      DEBUG_LOGS({
+        LOG(ERROR)
+            << "Differ Branch 9: Inserting tag/tree that was not yet removed from hierarchy (may be reparented): "
+            << newIndex << ": [" << newChildPair.shadowView.tag << "]";
+      });
+
       createMutations.push_back(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
 
@@ -550,7 +616,8 @@ static void calculateShadowViewMutations(
 
 ShadowViewMutation::List calculateShadowViewMutations(
     ShadowNode const &oldRootShadowNode,
-    ShadowNode const &newRootShadowNode) {
+    ShadowNode const &newRootShadowNode,
+    bool enableReparentingDetection) {
   SystraceSection s("calculateShadowViewMutations");
 
   // Root shadow nodes must be belong the same family.

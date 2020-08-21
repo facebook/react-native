@@ -92,7 +92,7 @@ package-lock.json
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
 /packages/rn-tester/Pods/*
-!/packages/rn-tester/Pods/__offline_mirrors
+!/packages/rn-tester/Pods/__offline_mirrors__
 
 # react-native-codegen
 /packages/react-native-codegen/lib
