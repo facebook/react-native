@@ -12,6 +12,7 @@
 #include <fbjni/fbjni.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
+#include <react/renderer/components/androidtextinput/AndroidTextInputComponentDescriptor.h>
 #include <react/renderer/components/image/ImageComponentDescriptor.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
@@ -32,6 +33,8 @@ CoreComponentsRegistry::sharedProviderRegistry() {
     auto providerRegistry =
         std::make_shared<ComponentDescriptorProviderRegistry>();
 
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          AndroidTextInputComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<ViewComponentDescriptor>());
     providerRegistry->add(
