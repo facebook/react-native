@@ -29,6 +29,7 @@ import {RNTesterReducer, RNTesterActionsType} from './utils/RNTesterReducer';
 
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 import {Header} from './components/RNTesterHeader';
+import {RNTesterEmptyBookmarksState} from './components/RNTesterEmptyBookmarksState';
 
 const APP_STATE_KEY = 'RNTesterAppState.v3';
 
@@ -47,6 +48,8 @@ const ExampleListsContainer = ({
   handleExampleCardPress,
   isVisible,
 }) => {
+  const isBookmarkEmpty = examplesList.bookmarks.length === 0;
+
   return (
     <DisplayIfVisible isVisible={isVisible}>
       <Header title={title} theme={theme} />
@@ -65,11 +68,15 @@ const ExampleListsContainer = ({
         />
       </DisplayIfVisible>
       <DisplayIfVisible isVisible={screen === Screens.BOOKMARKS}>
-        <RNTesterExampleList
-          sections={examplesList.bookmarks}
-          toggleBookmark={toggleBookmark}
-          handleExampleCardPress={handleExampleCardPress}
-        />
+        {isBookmarkEmpty ? (
+          <RNTesterEmptyBookmarksState />
+        ) : (
+          <RNTesterExampleList
+            sections={examplesList.bookmarks}
+            toggleBookmark={toggleBookmark}
+            handleExampleCardPress={handleExampleCardPress}
+          />
+        )}
       </DisplayIfVisible>
     </DisplayIfVisible>
   );
