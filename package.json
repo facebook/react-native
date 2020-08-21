@@ -78,6 +78,7 @@
     "test-ios": "./scripts/objc-test.sh test"
   },
   "workspaces": [
+    "packages/!(eslint-config-react-native-community)",
     "repo-config"
   ],
   "peerDependencies": {

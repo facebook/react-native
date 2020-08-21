@@ -11,7 +11,7 @@
   "dependencies": {
     "@babel/core": "^7.0.0",
     "@babel/generator": "^7.5.0",
-    "@react-native-community/eslint-plugin": "file:../packages/eslint-plugin-react-native-community",
+    "@react-native-community/eslint-plugin": "*",
     "@reactions/component": "^2.0.2",
     "async": "^2.4.0",
     "babel-eslint": "^10.1.0",
