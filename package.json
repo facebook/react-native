@@ -118,6 +118,9 @@
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.1.4"
   },
+  "devDependencies": {
+    "react": "16.13.1"
+  },
   "detox": {
     "test-runner": "jest",
     "runner-config": "packages/rn-tester/e2e/config.json",
