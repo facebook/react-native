@@ -13,6 +13,9 @@ def use_react_native! (options={})
   # Include DevSupport dependency
   production = options[:production] ||= false
 
+  # Include Hermes dependencies
+  hermes_enabled = options[:hermes_enabled] ||= false
+
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "#{prefix}/Libraries/FBReactNativeSpec"
@@ -56,6 +59,11 @@ def use_react_native! (options={})
     pod 'React-jsi/Fabric', :path => "#{prefix}/ReactCommon/jsi"
     pod 'React-RCTFabric', :path => "#{prefix}/React"
     pod 'Folly/Fabric', :podspec => "#{prefix}/third-party-podspecs/Folly.podspec"
+  end
+
+  if hermes_enabled
+    pod 'React-Core/Hermes', :path => "#{prefix}/"
+    pod 'hermes', :path => "../node_modules/hermes-engine-darwin"
   end
 end
 
