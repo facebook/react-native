@@ -89,7 +89,7 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
            * This is a fake list item. It is needed to provide the ScrollView some bottom padding.
            * The height of this item is basically ScreenHeight - the height of (Header + bottom navbar)
            * */}
-          <View style={{height: 320}} />
+          <View style={{height: 350}} />
         </ScrollView>
       );
     } else {
@@ -149,6 +149,9 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   searchRow: {
     paddingHorizontal: 20,
     paddingVertical: 10,

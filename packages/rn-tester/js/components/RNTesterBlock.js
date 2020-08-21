@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 0,
     borderWidth: 1,
-    marginVertical: 15,
+    marginTop: 30,
     marginHorizontal: 20,
     backgroundColor: 'white',
   },
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   children: {
-    paddingVertical: 10,
+    paddingTop: 10,
     paddingHorizontal: 10,
     margin: 10,
   },

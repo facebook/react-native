@@ -10,7 +10,13 @@
 
 'use strict';
 
-const {BackHandler, StyleSheet, useColorScheme, View} = require('react-native');
+const {
+  BackHandler,
+  StyleSheet,
+  useColorScheme,
+  View,
+  LogBox,
+} = require('react-native');
 
 const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
 const RNTesterExampleList = require('./components/RNTesterExampleList');
@@ -32,6 +38,11 @@ import {Header} from './components/RNTesterHeader';
 import {RNTesterEmptyBookmarksState} from './components/RNTesterEmptyBookmarksState';
 
 const APP_STATE_KEY = 'RNTesterAppState.v3';
+
+// RNTester App currently uses Async Storage from react-native for storing navigation state
+// and bookmark items.
+// TODO: Add Native Async Storage Module in RNTester
+LogBox.ignoreLogs([new RegExp('has been extracted from react-native')]);
 
 const DisplayIfVisible = ({isVisible, children}) => (
   <View style={[styles.container, !isVisible && styles.hidden]}>
@@ -173,7 +184,12 @@ const RNTesterApp = () => {
     <RNTesterThemeContext.Provider value={theme}>
       {ExampleModule && (
         <View style={styles.container}>
-          <Header onBack={handleBackPress} title={title} theme={theme} />
+          <Header
+            onBack={handleBackPress}
+            title={title}
+            theme={theme}
+            documentationURL={ExampleModule.documentationURL}
+          />
           <RNTesterExampleContainer module={ExampleModule} />
         </View>
       )}
