@@ -51,6 +51,8 @@ CoreComponentsRegistry::sharedProviderRegistry() {
         concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<ParagraphComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          AndroidDrawerLayoutComponentDescriptor>());
 
     return providerRegistry;
   }();
