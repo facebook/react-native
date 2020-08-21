@@ -23,6 +23,7 @@ exports.displayName = 'ButtonExample';
 exports.framework = 'React';
 exports.category = 'UI';
 exports.title = 'Button';
+exports.documentationURL = 'https://reactnative.dev/docs/button';
 exports.description = 'Simple React Native button component.';
 
 exports.examples = [

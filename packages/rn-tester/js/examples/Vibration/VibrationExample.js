@@ -23,6 +23,8 @@ const {
 
 exports.framework = 'React';
 exports.title = 'Vibration';
+exports.category = 'Basic';
+exports.documentationURL = 'https://reactnative.dev/docs/vibration';
 exports.description = 'Vibration API';
 
 let pattern, patternLiteral, patternDescription;
