@@ -17,12 +17,11 @@ const RNTesterNavbar = ({handleNavBarPress, screen}) => {
         {/** component and APIs tab  */}
         <View style={styles.buttonContainer}>
           {/** left tab with Components  */}
-            {/** @attention attach navigation endpoints here */}
             <Pressable
               testID="components-tab"
               onPress={() =>  handleNavBarPress({ screen: 'components'})}
               style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
-              <View style={styles.pressableContent} collapsable={false}>
+               <View style={[styles.pressableContent, isComponentActive ? styles.activeBar : null]} collapsable={false}>
                 <Image
                   style={styles.componentIcon}
                   source={
@@ -71,7 +70,7 @@ const RNTesterNavbar = ({handleNavBarPress, screen}) => {
           testID="apis-tab"
           onPress={() =>  handleNavBarPress({ screen: 'apis'})}
           style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
-            <View style={styles.pressableContent} collapsable={false}>
+            <View style={[styles.pressableContent, isAPIActive ? styles.activeBar : null]} collapsable={false}>
               <Image
                 style={styles.apiIcon}
                 source={
@@ -131,10 +130,14 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   activeText: {
-    color: 'black',
+    color: '#5E5F62',
   },
   inactiveText: {
     color: '#B1B4BA',
+  },
+  activeBar: {
+    borderTopWidth:2,
+    borderColor:'#005DFF',
   },
   centralBoxCutout: {
     height: '100%',
