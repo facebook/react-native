@@ -14,6 +14,7 @@
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/components/androidtextinput/AndroidTextInputComponentDescriptor.h>
 #include <react/renderer/components/image/ImageComponentDescriptor.h>
+#include <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
@@ -40,6 +41,8 @@ CoreComponentsRegistry::sharedProviderRegistry() {
         concreteComponentDescriptorProvider<ViewComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<ImageComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          ModalHostViewComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<TextComponentDescriptor>());
     providerRegistry->add(
