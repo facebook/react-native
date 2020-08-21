@@ -101,16 +101,22 @@ const RNTesterApp = () => {
     [bookmarks, recentlyUsed],
   );
 
+  const handleBackPress = React.useCallback(() => {
+    if (openExample) {
+      dispatch({type: RNTesterActionsType.BACK_BUTTON_PRESS});
+    }
+  }, [dispatch, openExample]);
+
   // Setup hardware back button press listener
   React.useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', () => {
       if (openExample) {
-        dispatch({type: RNTesterActionsType.BACK_BUTTON_PRESS});
+        handleBackPress();
         return true;
       }
       return false;
     });
-  }, [dispatch, openExample]);
+  }, [openExample, handleBackPress]);
 
   const handleExampleCardPress = React.useCallback(
     ({exampleType, key}) => {
@@ -160,7 +166,7 @@ const RNTesterApp = () => {
     <RNTesterThemeContext.Provider value={theme}>
       {ExampleModule && (
         <View style={styles.container}>
-          <Header title={title} theme={theme} />
+          <Header onBack={handleBackPress} title={title} theme={theme} />
           <RNTesterExampleContainer module={ExampleModule} />
         </View>
       )}
