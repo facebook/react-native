@@ -10,19 +10,7 @@
 
 'use strict';
 
-import type {ComponentType} from 'react';
 import * as React from 'react';
-
-export type RNTesterProps = $ReadOnly<{|
-  navigator?: ?$ReadOnlyArray<
-    $ReadOnly<{|
-      title: string,
-      component: ComponentType<any>,
-      backButtonTitle: string,
-      passProps: any,
-    |}>,
-  >,
-|}>;
 
 export type RNTesterExampleModuleItem = $ReadOnly<{|
   title: string,
