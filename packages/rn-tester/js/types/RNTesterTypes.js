@@ -26,6 +26,8 @@ export type RNTesterExampleModule = $ReadOnly<{|
   framework?: string,
   examples: Array<RNTesterExampleModuleItem>,
   simpleExampleContainer?: ?boolean,
+  category?: string,
+  documentationURL?: string,
 |}>;
 
 export type RNTesterExample = $ReadOnly<{|
@@ -34,4 +36,22 @@ export type RNTesterExample = $ReadOnly<{|
   category?: string,
   supportsTVOS?: boolean,
   documentationURL?: string,
+  isBookmarked?: boolean,
+  exampleType?: 'components' | 'apis',
 |}>;
+
+export type SectionData = {
+  key: string,
+  title: string,
+  data: Array<RNTesterExample>,
+};
+
+export type ExamplesList = $ReadOnly<{|
+  components: SectionData[],
+  apis: SectionData[],
+  bookmarks: SectionData[],
+|}>;
+
+export type ScreenTypes = 'components' | 'apis' | 'bookmarks' | null;
+
+export type ComponentList = null | {components: string[], apis: string[]};

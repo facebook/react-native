@@ -10,32 +10,33 @@
 
 'use strict';
 
-const {
+import {
   BackHandler,
   StyleSheet,
   useColorScheme,
   View,
   LogBox,
-} = require('react-native');
+} from 'react-native';
+import * as React from 'react';
 
-const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
-const RNTesterExampleList = require('./components/RNTesterExampleList');
-const RNTesterList = require('./utils/RNTesterList');
-const React = require('react');
-const RNTesterNavBar = require('./components/RNTesterNavbar');
+import RNTesterExampleContainer from './components/RNTesterExampleContainer';
+import RNTesterExampleList from './components/RNTesterExampleList';
+import RNTesterNavBar from './components/RNTesterNavbar';
+import RNTesterList from './utils/RNTesterList';
 import {
   Screens,
   initialState,
   getExamplesListWithBookmarksAndRecentlyUsed,
   getInitialStateFromAsyncStorage,
 } from './utils';
-
 import {useAsyncStorageReducer} from './utils/useAsyncStorageReducer';
 import {RNTesterReducer, RNTesterActionsType} from './utils/RNTesterReducer';
-
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 import {Header} from './components/RNTesterHeader';
 import {RNTesterEmptyBookmarksState} from './components/RNTesterEmptyBookmarksState';
+
+import type {RNTesterTheme} from './components/RNTesterTheme';
+import type {ExamplesList} from './types/RNTesterTypes';
 
 const APP_STATE_KEY = 'RNTesterAppState.v3';
 
@@ -50,6 +51,16 @@ const DisplayIfVisible = ({isVisible, children}) => (
   </View>
 );
 
+type ExampleListsContainerProps = $ReadOnly<{|
+  theme: RNTesterTheme,
+  screen: string,
+  title: string,
+  examplesList: ExamplesList,
+  toggleBookmark: (args: {exampleType: string, key: string}) => mixed,
+  handleExampleCardPress: (args: {exampleType: string, key: string}) => mixed,
+  isVisible: boolean,
+|}>;
+
 const ExampleListsContainer = ({
   theme,
   screen,
@@ -58,7 +69,7 @@ const ExampleListsContainer = ({
   toggleBookmark,
   handleExampleCardPress,
   isVisible,
-}) => {
+}: ExampleListsContainerProps) => {
   const isBookmarkEmpty = examplesList.bookmarks.length === 0;
 
   return (
@@ -93,7 +104,7 @@ const ExampleListsContainer = ({
   );
 };
 
-const RNTesterApp = () => {
+const RNTesterApp = (): React.Node => {
   const [state, dispatch] = useAsyncStorageReducer(
     RNTesterReducer,
     initialState,

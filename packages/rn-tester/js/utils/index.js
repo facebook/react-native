@@ -1,6 +1,24 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
 import {AsyncStorage} from 'react-native';
 
 import RNTesterList from './RNTesterList';
+
+import type {
+  ExamplesList,
+  ScreenTypes,
+  ComponentList,
+} from '../types/RNTesterTypes';
 
 export const Screens = {
   COMPONENTS: 'components',
@@ -8,14 +26,21 @@ export const Screens = {
   BOOKMARKS: 'bookmarks',
 };
 
-export const initialState = {
+export type InitialState = {
+  openExample: null | string,
+  screen: ScreenTypes,
+  bookmarks: ComponentList,
+  recentlyUsed: ComponentList,
+};
+
+export const initialState: InitialState = {
   openExample: null,
   screen: null,
   bookmarks: null,
   recentlyUsed: null,
 };
 
-const filterEmptySections = examplesList => {
+const filterEmptySections = (examplesList: ExamplesList): any => {
   const filteredSections = {};
   const sectionKeys = Object.keys(examplesList);
 
@@ -31,7 +56,10 @@ const filterEmptySections = examplesList => {
 export const getExamplesListWithBookmarksAndRecentlyUsed = ({
   bookmarks,
   recentlyUsed,
-}) => {
+}: {
+  bookmarks: ComponentList,
+  recentlyUsed: ComponentList,
+}): ExamplesList | null => {
   // Return early if state has not been initialized from storage
   if (!bookmarks || !recentlyUsed) {
     return null;
@@ -43,9 +71,9 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
     exampleType: Screens.COMPONENTS,
   }));
 
-  const recentlyUsedComponents = recentlyUsed.components.map(k =>
-    components.find(c => c.key === k),
-  );
+  const recentlyUsedComponents = recentlyUsed.components
+    .map(k => components.find(c => c.key === k))
+    .filter(Boolean);
 
   const bookmarkedComponents = components.filter(c => c.isBookmarked);
 
@@ -55,13 +83,13 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
     exampleType: Screens.APIS,
   }));
 
-  const recentlyUsedAPIs = recentlyUsed.apis.map(k =>
-    apis.find(c => c.key === k),
-  );
+  const recentlyUsedAPIs = recentlyUsed.apis
+    .map(k => apis.find(c => c.key === k))
+    .filter(Boolean);
 
   const bookmarkedAPIs = apis.filter(c => c.isBookmarked);
 
-  const examplesList = {
+  const examplesList: ExamplesList = {
     [Screens.COMPONENTS]: [
       {
         key: 'RECENT_COMPONENTS',
@@ -103,7 +131,9 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
   return filterEmptySections(examplesList);
 };
 
-export const getInitialStateFromAsyncStorage = async storageKey => {
+export const getInitialStateFromAsyncStorage = async (
+  storageKey: string,
+): Promise<InitialState> => {
   const initialStateString = await AsyncStorage.getItem(storageKey);
 
   if (!initialStateString) {

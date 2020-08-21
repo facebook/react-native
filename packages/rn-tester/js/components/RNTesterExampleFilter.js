@@ -21,14 +21,16 @@ const {
 } = require('react-native');
 import {RNTesterThemeContext} from './RNTesterTheme';
 
+import type {SectionData} from '../types/RNTesterTypes';
+
 type Props = {
   filter: Function,
   render: Function,
-  content: Object,
   disableSearch?: boolean,
   testID?: string,
   hideFilterPills?: boolean,
-  page: string, // possible values -> examples_page, components_page, bookmarks_page
+  page: 'examples_page' | 'components_page' | 'bookmarks_page',
+  sections: SectionData[],
   ...
 };
 

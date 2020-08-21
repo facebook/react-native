@@ -10,19 +10,19 @@
 
 'use strict';
 
+import * as React from 'react';
+import {RNTesterThemeContext} from './RNTesterTheme';
+import {StyleSheet, Text, View} from 'react-native';
+
 type Props = $ReadOnly<{|
   children?: React.Node,
   title?: ?string,
   description?: ?string,
 |}>;
 
-import React, {useContext} from 'react';
-import {RNTesterThemeContext} from './RNTesterTheme';
-import {StyleSheet, Text, View} from 'react-native';
-
 /** functional component for generating example blocks */
-const RNTesterBlock = ({description, title, children}: Props) => {
-  const theme = useContext(RNTesterThemeContext);
+const RNTesterBlock = ({description, title, children}: Props): React.Node => {
+  const theme = React.useContext(RNTesterThemeContext);
   return (
     <View style={[[styles.container], {borderColor: theme.SeparatorColor}]}>
       <View style={[styles.titleContainer]}>

@@ -18,8 +18,7 @@ import {
   Platform,
   StyleSheet,
 } from 'react-native';
-
-import React from 'react';
+import * as React from 'react';
 import RNTesterDocumentationURL from './RNTesterDocumentationURL';
 import {RNTesterThemeContext} from './RNTesterTheme';
 
@@ -101,7 +100,7 @@ export const Header = ({
   title: string,
   documentationURL?: string,
   ...
-}) =>
+}): React.Node =>
   Platform.OS === 'ios' ? (
     <HeaderIOS
       documentationURL={documentationURL}
