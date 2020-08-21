@@ -1,3 +1,11 @@
+export const RNTesterActionsType = {
+  'INIT_FROM_STORAGE': 'INIT_FROM_STORAGE',
+  'NAVBAR_PRESS': 'NAVBAR_PRESS',
+  'EXAMPLE_CARD_PRESS': 'EXAMPLE_CARD_PRESS',
+  'BOOKMARK_PRESS': 'BOOKMARK_PRESS',
+  'BACK_BUTTON_PRESS': 'BACK_BUTTON_PRESS',
+};
+
 const getUpdatedBookmarks = ({exampleType, key, bookmarks}) => {
   const updatedBookmarks = {...bookmarks};
   if (bookmarks[exampleType].includes(key)) {
@@ -27,40 +35,29 @@ const getUpdatedRecentlyUsed = ({exampleType, key, recentlyUsed}) => {
 
 export const RNTesterReducer = (state, action) => {
   switch (action.type) {
-    case 'initialize_state_from_storage':
+    case RNTesterActionsType.INIT_FROM_STORAGE:
       return action.data;
-    case 'update_screen':
+    case RNTesterActionsType.NAVBAR_PRESS:
       return {
         ...state,
         openExample: null,
-        screen: action.data,
+        screen: action.data.screen,
       };
-    case 'update_open_example':
+    case RNTesterActionsType.EXAMPLE_CARD_PRESS:
       return {
         ...state,
-        openExample: action.data?.key,
-        recentlyUsed: action.data
-          ? getUpdatedRecentlyUsed({
-              ...action.data,
-              recentlyUsed: state.recentlyUsed,
-            })
-          : state.recentlyUsed,
+        openExample: action.data.key,
+        recentlyUsed: getUpdatedRecentlyUsed({exampleType: action.data.exampleType, key: action.data.key, recentlyUsed: state.recentlyUsed}),
       };
-    case 'toggle_bookmark':
+    case RNTesterActionsType.BOOKMARK_PRESS:
       return {
         ...state,
-        bookmarks: getUpdatedBookmarks({
-          ...action.data,
-          bookmarks: state.bookmarks,
-        }),
+        bookmarks: getUpdatedBookmarks({exampleType: action.data.exampleType, key: action.data.key, bookmarks: state.bookmarks}),
       };
-    case 'update_recently_used':
+    case RNTesterActionsType.BACK_BUTTON_PRESS:
       return {
         ...state,
-        recentlyUsed: getUpdatedRecentlyUsed({
-          ...action.data,
-          recentlyUsed: state.recentlyUsed,
-        }),
+        openExample: null,
       };
     default:
       throw new Error(`Invalid action type ${action.type}`);

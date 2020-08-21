@@ -25,7 +25,7 @@ import {
 } from './utils';
 
 import {useAsyncStorageReducer} from './utils/useAsyncStorageReducer';
-import {RNTesterReducer} from './utils/RNTesterReducer';
+import {RNTesterReducer, RNTesterActionsType} from './utils/RNTesterReducer';
 
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 import {Header} from './components/RNTesterHeader';
@@ -86,7 +86,7 @@ const RNTesterApp = () => {
     getInitialStateFromAsyncStorage(APP_STATE_KEY).then(
       initialStateFromStorage => {
         dispatch({
-          type: 'initialize_state_from_storage',
+          type: RNTesterActionsType.INIT_FROM_STORAGE,
           data: initialStateFromStorage,
         });
       },
@@ -105,7 +105,7 @@ const RNTesterApp = () => {
   React.useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', () => {
       if (openExample) {
-        dispatch({type: 'update_open_example', data: null});
+        dispatch({type: RNTesterActionsType.BACK_BUTTON_PRESS});
         return true;
       }
       return false;
@@ -114,21 +114,30 @@ const RNTesterApp = () => {
 
   const handleExampleCardPress = React.useCallback(
     ({exampleType, key}) => {
-      dispatch({type: 'update_open_example', data: {exampleType, key}});
+      dispatch({
+        type: RNTesterActionsType.EXAMPLE_CARD_PRESS,
+        data: {exampleType, key},
+      });
     },
     [dispatch],
   );
 
   const toggleBookmark = React.useCallback(
     ({exampleType, key}) => {
-      dispatch({type: 'toggle_bookmark', data: {exampleType, key}});
+      dispatch({
+        type: RNTesterActionsType.BOOKMARK_PRESS,
+        data: {exampleType, key},
+      });
     },
     [dispatch],
   );
 
-  const updateScreen = React.useCallback(
-    ({screen}) => {
-      dispatch({type: 'update_screen', data: screen});
+  const handleNavBarPress = React.useCallback(
+    args => {
+      dispatch({
+        type: RNTesterActionsType.NAVBAR_PRESS,
+        data: {screen: args.screen},
+      });
     },
     [dispatch],
   );
@@ -166,7 +175,7 @@ const RNTesterApp = () => {
         toggleBookmark={toggleBookmark}
       />
       <View style={styles.bottomNavbar}>
-        <RNTesterNavBar screen={screen} updateScreen={updateScreen} />
+        <RNTesterNavBar screen={screen} handleNavBarPress={handleNavBarPress} />
       </View>
     </RNTesterThemeContext.Provider>
   );

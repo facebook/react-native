@@ -3,7 +3,7 @@ import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 
-const RNTesterNavbar = ({updateScreen, screen}) => {
+const RNTesterNavbar = ({handleNavBarPress, screen}) => {
   const theme = React.useContext(RNTesterThemeContext);
 
   /** to be attached to navigation framework */
@@ -20,7 +20,7 @@ const RNTesterNavbar = ({updateScreen, screen}) => {
             {/** @attention attach navigation endpoints here */}
             <Pressable
               testID="components-tab"
-              onPress={() =>  updateScreen({ screen: 'components'})}
+              onPress={() =>  handleNavBarPress({ screen: 'components'})}
               style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
               <View style={styles.pressableContent} collapsable={false}>
                 <Image
@@ -51,7 +51,7 @@ const RNTesterNavbar = ({updateScreen, screen}) => {
           <View style={styles.floatContainer}>
             <Pressable
               testID="bookmarks-tab"
-              onPress={() =>  updateScreen({ screen: 'bookmarks'})}>
+              onPress={() =>  handleNavBarPress({ screen: 'bookmarks'})}>
                 <View style={[styles.floatingButton, {backgroundColor: theme.BorderColor}]} >
                 <Image
                     style={styles.bookmarkIcon}
@@ -69,7 +69,7 @@ const RNTesterNavbar = ({updateScreen, screen}) => {
           {/** right tab with Components  */}
          <Pressable
           testID="apis-tab"
-          onPress={() =>  updateScreen({ screen: 'apis'})}
+          onPress={() =>  handleNavBarPress({ screen: 'apis'})}
           style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
             <View style={styles.pressableContent} collapsable={false}>
               <Image
