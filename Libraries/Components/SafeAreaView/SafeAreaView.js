@@ -17,6 +17,9 @@ import type {ViewProps} from '../View/ViewPropTypes';
 
 type Props = $ReadOnly<{|
   ...ViewProps,
+  /**
+    @default true
+   */
   emulateUnlessSupported?: boolean,
 |}>;
 
@@ -26,13 +29,40 @@ let exported: React.AbstractComponent<
 >;
 
 /**
- * Renders nested content and automatically applies paddings reflect the portion
- * of the view that is not covered by navigation bars, tab bars, toolbars, and
- * other ancestor views.
- *
- * Moreover, and most importantly, Safe Area's paddings reflect physical
- * limitation of the screen, such as rounded corners or camera notches (aka
- * sensor housing area on iPhone X).
+  The purpose of `SafeAreaView` is to render content within the safe area
+  boundaries of a device. It is currently only applicable to iOS devices with
+  iOS version 11 or later.
+
+  `SafeAreaView` renders nested content and automatically applies padding to
+  reflect the portion of the view that is not covered by navigation bars, tab
+  bars, toolbars, and other ancestor views. Moreover, and most importantly, Safe
+  Area's paddings reflect the physical limitation of the screen, such as rounded
+  corners or camera notches (i.e. the sensor housing area on iPhone X).
+
+  To use, wrap your top level view with a `SafeAreaView` with a `flex: 1` style
+  applied to it. You may also want to use a background color that matches your
+  application's design.
+
+  ```SnackPlayer name=SafeAreaView
+  import React from 'react';
+  import { StyleSheet, Text, SafeAreaView } from 'react-native';
+
+  const App = () => {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text>Page content</Text>
+      </SafeAreaView>
+    );
+  }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+  });
+
+  export default App;
+  ```
  */
 if (Platform.OS === 'android') {
   exported = React.forwardRef<Props, React.ElementRef<HostComponent<mixed>>>(
