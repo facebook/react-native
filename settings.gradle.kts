@@ -15,7 +15,7 @@ pluginManagement {
 
 include(
     ":ReactAndroid",
-    ":RNTester:android:app"
+    ":packages:rn-tester:android:app"
 )
 
 // Include this to enable codegen Gradle plugin.

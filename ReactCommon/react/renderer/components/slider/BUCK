@@ -46,15 +46,15 @@ rn_xplat_cxx_library(
     fbandroid_exported_headers = subdir_glob(
         [
             ("", "*.h"),
-            ("platform/android", "*.h"),
+            ("platform/android/react/renderer/components/slider", "*.h"),
         ],
         prefix = "react/renderer/components/slider",
     ),
     fbandroid_headers = glob(
-        ["platform/android/*.h"],
+        ["platform/android/react/renderer/components/slider/*.h"],
     ),
     fbandroid_srcs = glob(
-        ["platform/android/*.cpp"],
+        ["platform/android/react/renderer/components/slider/*.cpp"],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),

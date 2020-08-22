@@ -8,17 +8,25 @@
 package com.facebook.react.views.progressbar;
 
 import android.content.Context;
+import android.util.Pair;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.viewmanagers.AndroidProgressBarManagerDelegate;
 import com.facebook.react.viewmanagers.AndroidProgressBarManagerInterface;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
+import java.util.WeakHashMap;
 
 /**
  * Manages instances of ProgressBar. ProgressBar is wrapped in a ProgressBarContainerView because
@@ -32,6 +40,8 @@ public class ReactProgressBarViewManager
     implements AndroidProgressBarManagerInterface<ProgressBarContainerView> {
 
   public static final String REACT_CLASS = "AndroidProgressBar";
+
+  private final WeakHashMap<Integer, Pair<Integer, Integer>> mMeasuredStyles = new WeakHashMap<>();
 
   /* package */ static final String PROP_STYLE = "styleAttr";
   /* package */ static final String PROP_INDETERMINATE = "indeterminate";
@@ -153,5 +163,35 @@ public class ReactProgressBarViewManager
     } else {
       throw new JSApplicationIllegalArgumentException("Unknown ProgressBar style: " + styleStr);
     }
+  }
+
+  @Override
+  public long measure(
+      Context context,
+      ReadableMap localData,
+      ReadableMap props,
+      ReadableMap state,
+      float width,
+      YogaMeasureMode widthMode,
+      float height,
+      YogaMeasureMode heightMode,
+      @Nullable float[] attachmentsPositions) {
+
+    final Integer style =
+        ReactProgressBarViewManager.getStyleFromString(props.getString(PROP_STYLE));
+    Pair<Integer, Integer> value = mMeasuredStyles.get(style);
+    if (value == null) {
+      ProgressBar progressBar = ReactProgressBarViewManager.createProgressBar(context, style);
+
+      final int spec =
+          View.MeasureSpec.makeMeasureSpec(
+              ViewGroup.LayoutParams.WRAP_CONTENT, View.MeasureSpec.UNSPECIFIED);
+      progressBar.measure(spec, spec);
+      value = Pair.create(progressBar.getMeasuredWidth(), progressBar.getMeasuredHeight());
+      mMeasuredStyles.put(style, value);
+    }
+
+    return YogaMeasureOutput.make(
+        PixelUtil.toDIPFromPixel(value.first), PixelUtil.toDIPFromPixel(value.second));
   }
 }

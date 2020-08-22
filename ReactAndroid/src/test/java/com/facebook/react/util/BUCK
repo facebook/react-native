@@ -3,7 +3,6 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_tar
 rn_robolectric_test(
     name = "util",
     srcs = glob(["**/*.java"]),
-    # Please change the contact to the oncall of your team
     contacts = ["oncall+test_ownership_2020@xmail.facebook.com"],
     visibility = [
         "PUBLIC",
