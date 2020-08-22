@@ -14,6 +14,7 @@
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/components/androidpicker/AndroidDialogPickerComponentDescriptor.h>
 #include <react/renderer/components/androidpicker/AndroidDropdownPickerComponentDescriptor.h>
+#include <react/renderer/components/androidswitch/AndroidSwitchComponentDescriptor.h>
 #include <react/renderer/components/androidtextinput/AndroidTextInputComponentDescriptor.h>
 #include <react/renderer/components/image/ImageComponentDescriptor.h>
 #include <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
@@ -48,6 +49,8 @@ CoreComponentsRegistry::sharedProviderRegistry() {
         concreteComponentDescriptorProvider<ImageComponentDescriptor>());
     providerRegistry->add(concreteComponentDescriptorProvider<
                           ModalHostViewComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          AndroidSwitchComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<TextComponentDescriptor>());
     providerRegistry->add(
