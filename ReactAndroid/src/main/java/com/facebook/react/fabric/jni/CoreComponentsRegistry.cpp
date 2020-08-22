@@ -40,6 +40,8 @@ CoreComponentsRegistry::sharedProviderRegistry() {
         std::make_shared<ComponentDescriptorProviderRegistry>();
 
     providerRegistry->add(concreteComponentDescriptorProvider<
+                          AndroidSwipeRefreshLayoutComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
                           ActivityIndicatorViewComponentDescriptor>());
     providerRegistry->add(concreteComponentDescriptorProvider<
                           AndroidTextInputComponentDescriptor>());
