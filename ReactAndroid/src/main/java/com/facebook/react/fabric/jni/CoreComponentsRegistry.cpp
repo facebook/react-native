@@ -18,6 +18,7 @@
 #include <react/renderer/components/androidtextinput/AndroidTextInputComponentDescriptor.h>
 #include <react/renderer/components/image/ImageComponentDescriptor.h>
 #include <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
+#include <react/renderer/components/progressbar/AndroidProgressBarComponentDescriptor.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/renderer/components/slider/SliderComponentDescriptor.h>
@@ -39,6 +40,8 @@ CoreComponentsRegistry::sharedProviderRegistry() {
     auto providerRegistry =
         std::make_shared<ComponentDescriptorProviderRegistry>();
 
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          AndroidProgressBarComponentDescriptor>());
     providerRegistry->add(concreteComponentDescriptorProvider<
                           AndroidSwipeRefreshLayoutComponentDescriptor>());
     providerRegistry->add(concreteComponentDescriptorProvider<
@@ -90,7 +93,6 @@ CoreComponentsRegistry::initHybrid(
     auto registry = CoreComponentsRegistry::sharedProviderRegistry()
                         ->createComponentDescriptorRegistry(
                             {eventDispatcher, contextContainer});
-
     auto mutableRegistry =
         std::const_pointer_cast<ComponentDescriptorRegistry>(registry);
     mutableRegistry->setFallbackComponentDescriptor(
