@@ -14,7 +14,6 @@ import type {ViewProps} from './ViewPropTypes';
 
 const React = require('react');
 import ViewNativeComponent from './ViewNativeComponent';
-const TextAncestor = require('../../Text/TextAncestor');
 
 export type Props = ViewProps;
 
@@ -29,11 +28,7 @@ const View: React.AbstractComponent<
   ViewProps,
   React.ElementRef<typeof ViewNativeComponent>,
 > = React.forwardRef((props: ViewProps, forwardedRef) => {
-  return (
-    <TextAncestor.Provider value={false}>
-      <ViewNativeComponent {...props} ref={forwardedRef} />
-    </TextAncestor.Provider>
-  );
+  return <ViewNativeComponent {...props} ref={forwardedRef} />;
 });
 
 View.displayName = 'View';
