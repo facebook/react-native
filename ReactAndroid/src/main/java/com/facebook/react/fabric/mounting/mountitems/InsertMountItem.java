@@ -39,9 +39,9 @@ public class InsertMountItem implements MountItem {
   public String toString() {
     return "InsertMountItem ["
         + mReactTag
-        + "] - parentTag: "
+        + "] - parentTag: ["
         + mParentReactTag
-        + " - index: "
+        + "] - index: "
         + mIndex;
   }
 }
