@@ -230,10 +230,10 @@
 <p>If the network activity indicator should be visible.</p>
 <table>
 <thead>
-<tr><th>Type</th><th>Required</th><th>Default</th></tr>
+<tr><th>Type</th><th>Default</th></tr>
 </thead>
 <tbody>
-<tr><td>boolean</td><td>No</td><td><code>false</code></td></tr>
+<tr><td>boolean</td><td><code>false</code></td></tr>
 </tbody>
 </table>
 <hr>
@@ -241,10 +241,10 @@
 <p>The transition effect when showing and hiding the status bar using the <code>hidden</code> prop.</p>
 <table>
 <thead>
-<tr><th>Type</th><th>Required</th><th>Default</th></tr>
+<tr><th>Type</th><th>Default</th></tr>
 </thead>
 <tbody>
-<tr><td><a href="statusbar#statusbaranimation">StatusBarAnimation</a></td><td>No</td><td><code>'fade'</code></td></tr>
+<tr><td><a href="statusbar#statusbaranimation">StatusBarAnimation</a></td><td><code>'fade'</code></td></tr>
 </tbody>
 </table>
 <hr>
@@ -252,10 +252,10 @@
 <p>If the status bar is translucent. When translucent is set to <code>true</code>, the app will draw under the status bar. This is useful when using a semi transparent status bar color.</p>
 <table>
 <thead>
-<tr><th>Type</th><th>Required</th><th>Default</th></tr>
+<tr><th>Type</th><th>Default</th></tr>
 </thead>
 <tbody>
-<tr><td>boolean</td><td>No</td><td><code>false</code></td></tr>
+<tr><td>boolean</td><td><code>false</code></td></tr>
 </tbody>
 </table>
 <h2><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
@@ -266,10 +266,10 @@
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>entry</td><td>any</td><td>Yes</td><td>Entry returned from <code>pushStackEntry</code>.</td></tr>
+<tr><td>entry <div class="label basic required">Required</div></td><td>any</td><td>Entry returned from <code>pushStackEntry</code>.</td></tr>
 </tbody>
 </table>
 <hr>
@@ -280,10 +280,10 @@
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>props</td><td>any</td><td>Yes</td><td>Object containing the StatusBar props to use in the stack entry.</td></tr>
+<tr><td>props <div class="label basic required">Required</div></td><td>any</td><td>Object containing the StatusBar props to use in the stack entry.</td></tr>
 </tbody>
 </table>
 <hr>
@@ -294,11 +294,11 @@
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>entry</td><td>any</td><td>Yes</td><td>Entry returned from <code>pushStackEntry</code> to replace.</td></tr>
-<tr><td>props</td><td>any</td><td>Yes</td><td>Object containing the StatusBar props to use in the replacement stack entry.</td></tr>
+<tr><td>entry <div class="label basic required">Required</div></td><td>any</td><td>Entry returned from <code>pushStackEntry</code> to replace.</td></tr>
+<tr><td>props <div class="label basic required">Required</div></td><td>any</td><td>Object containing the StatusBar props to use in the replacement stack entry.</td></tr>
 </tbody>
 </table>
 <hr>
@@ -309,11 +309,11 @@
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>color</td><td>string</td><td>Yes</td><td>Background color.</td></tr>
-<tr><td>animated</td><td>boolean</td><td>No</td><td>Animate the style change.</td></tr>
+<tr><td>color <div class="label basic required">Required</div></td><td>string</td><td>Background color.</td></tr>
+<tr><td>animated</td><td>boolean</td><td>Animate the style change.</td></tr>
 </tbody>
 </table>
 <hr>
@@ -324,11 +324,11 @@
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>style</td><td><a href="statusbar#statusbarstyle">StatusBarStyle</a></td><td>Yes</td><td>Status bar style to set.</td></tr>
-<tr><td>animated</td><td>boolean</td><td>No</td><td>Animate the style change.</td></tr>
+<tr><td>style <div class="label basic required">Required</div></td><td><a href="statusbar#statusbarstyle">StatusBarStyle</a></td><td>Status bar style to set.</td></tr>
+<tr><td>animated</td><td>boolean</td><td>Animate the style change.</td></tr>
 </tbody>
 </table>
 <hr>
@@ -339,11 +339,11 @@
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>hidden</td><td>boolean</td><td>Yes</td><td>Hide the status bar.</td></tr>
-<tr><td>animation <div class="label ios">iOS</div></td><td><a href="statusbar#statusbaranimation">StatusBarAnimation</a></td><td>No</td><td>Animation when changing the status bar hidden property.</td></tr>
+<tr><td>hidden <div class="label basic required">Required</div></td><td>boolean</td><td>Hide the status bar.</td></tr>
+<tr><td>animation <div class="label ios">iOS</div></td><td><a href="statusbar#statusbaranimation">StatusBarAnimation</a></td><td>Animation when changing the status bar hidden property.</td></tr>
 </tbody>
 </table>
 <hr>
@@ -354,10 +354,10 @@
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>visible</td><td>boolean</td><td>Yes</td><td>Show the indicator.</td></tr>
+<tr><td>visible <div class="label basic required">Required</div></td><td>boolean</td><td>Show the indicator.</td></tr>
 </tbody>
 </table>
 <hr>
@@ -368,10 +368,10 @@
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+<tr><th>Name</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>translucent</td><td>boolean</td><td>Yes</td><td>Set as translucent.</td></tr>
+<tr><td>translucent <div class="label basic required">Required</div></td><td>boolean</td><td>Set as translucent.</td></tr>
 </tbody>
 </table>
 <h2><a class="anchor" aria-hidden="true" id="type-definitions"></a><a href="#type-definitions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Type Definitions</h2>
