@@ -14,7 +14,7 @@ source $(dirname $0)/validate-android-device-env.sh
 set -e
 
 echo "Compiling native code..."
-./gradlew :ReactAndroid:packageReactNdkLibsForBuck
+./gradlew :packages:react-native:ReactAndroid:packageReactNdkLibsForBuck
 
 echo "Building JS bundle..."
 node cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js

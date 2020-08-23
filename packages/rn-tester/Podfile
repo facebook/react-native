@@ -1,4 +1,4 @@
-require_relative '../../scripts/react_native_pods'
+require_relative '../react-native/scripts/react_native_pods'
 
 source 'https://cdn.cocoapods.org/'
 platform :ios, '10.0'
@@ -12,7 +12,7 @@ def pods()
   project 'RNTesterPods.xcodeproj'
 
   # Enable TurboModule
-  prefix_path = "../.."
+  prefix_path = "../react-native"
   use_react_native!(path:prefix_path)
   pod 'ReactCommon/turbomodule/samples', :path => "#{prefix_path}/ReactCommon"
 
@@ -57,7 +57,7 @@ def frameworks_pre_install(installer)
 end
 
 def codegen_pre_install(installer)
-  system("../../scripts/generate-native-modules-specs.sh")
+  system("../react-native/scripts/generate-native-modules-specs.sh")
 end
 
 pre_install do |installer|

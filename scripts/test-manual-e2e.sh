@@ -36,7 +36,7 @@ success "Preparing version $PACKAGE_VERSION"
 repo_root=$(pwd)
 
 rm -rf android
-./gradlew :ReactAndroid:installArchives || error "Couldn't generate artifacts"
+./gradlew :packages:react-native:ReactAndroid:installArchives || error "Couldn't generate artifacts"
 
 success "Generated artifacts for Maven"
 

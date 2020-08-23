@@ -53,7 +53,7 @@ else
 fi
 
 # MAJOR is something like "23"
-MAJOR=`grep compileSdkVersion $(dirname $0)/../ReactAndroid/build.gradle | sed 's/[^[:digit:]]//g'`
+MAJOR=`grep compileSdkVersion $(dirname $0)/../packages/react-native/ReactAndroid/build.gradle | sed 's/[^[:digit:]]//g'`
 
 # Check that we have the right major version of the Android SDK.
 PLATFORM_DIR="$ANDROID_HOME/platforms/android-$MAJOR"

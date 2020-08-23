@@ -38,7 +38,7 @@ import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterAction} from './utils/RNTesterActions';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
-import type {ColorSchemeName} from '../../../Libraries/Utilities/NativeAppearance';
+import type {ColorSchemeName} from 'react-native/Libraries/Utilities/NativeAppearance';
 
 type Props = {exampleFromAppetizeParams?: ?string, ...};
 

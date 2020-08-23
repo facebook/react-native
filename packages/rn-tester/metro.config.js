@@ -10,6 +10,8 @@
 
 'use strict';
 
+const path = require('path');
+
 const getPolyfills = require('react-native/rn-get-polyfills');
 
 /**
@@ -17,9 +19,13 @@ const getPolyfills = require('react-native/rn-get-polyfills');
  * integration tests during local development or on CI services.
  */
 module.exports = {
+  watchFolders: [
+    `${path.resolve(__dirname, '..', '..', 'node_modules')}`,
+    `${path.resolve(__dirname, '..')}`,
+  ],
   resolver: {
     extraNodeModules: {
-      'react-native': __dirname,
+      'react-native': `${require.resolve('react-native')}`,
     },
   },
   serializer: {

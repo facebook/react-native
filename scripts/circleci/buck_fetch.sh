@@ -6,8 +6,8 @@
 
 set -ex
 
-buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
-buck fetch ReactAndroid/src/main/java/com/facebook/react
-buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
-buck fetch ReactAndroid/src/test/...
-buck fetch ReactAndroid/src/androidTest/...
+buck fetch packages/react-native/ReactAndroid/src/test/java/com/facebook/react/modules
+buck fetch packages/react-native/ReactAndroid/src/main/java/com/facebook/react
+buck fetch packages/react-native/ReactAndroid/src/main/java/com/facebook/react/shell
+buck fetch packages/react-native/ReactAndroid/src/test/...
+buck fetch packages/react-native/ReactAndroid/src/androidTest/...

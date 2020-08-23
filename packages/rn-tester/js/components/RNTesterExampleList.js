@@ -23,7 +23,7 @@ const {
   View,
 } = require('react-native');
 
-import type {ViewStyleProp} from '../../../../Libraries/StyleSheet/StyleSheet';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {RNTesterExample} from '../types/RNTesterTypes';
 
 import {RNTesterThemeContext} from './RNTesterTheme';

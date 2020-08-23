@@ -12,10 +12,10 @@
 module.exports = {
   transform: {
     '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$':
-      '<rootDir>/jest/assetFileTransformer.js',
-    '.*': './jest/preprocessor.js',
+      '<rootDir>/packages/react-native/jest/assetFileTransformer.js',
+    '.*': './packages/react-native/jest/preprocessor.js',
   },
-  setupFiles: ['./jest/setup.js'],
+  setupFiles: ['./packages/react-native/jest/setup.js'],
   timers: 'fake',
   testRegex: '/__tests__/.*-test\\.js$',
   testPathIgnorePatterns: [
@@ -43,6 +43,6 @@ module.exports = {
   coveragePathIgnorePatterns: [
     '/__tests__/',
     '/vendor/',
-    '<rootDir>/Libraries/react-native/',
+    '<rootDir>/packages/react-native/Libraries/react-native/',
   ],
 };

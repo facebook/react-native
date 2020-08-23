@@ -52,7 +52,7 @@ push() {
   local SPEC_DIR="$SPEC_REPO_DIR/$POD_NAME/$(version $SPEC_NAME)"
   local SPEC_PATH="$SPEC_DIR/$SPEC_NAME.json"
   mkdir -p $SPEC_DIR
-  env INSTALL_YOGA_WITHOUT_PATH_OPTION=1 INSTALL_YOGA_FROM_LOCATION="$ROOT" pod ipc spec $SPEC_NAME > $SPEC_PATH
+  env INSTALL_YOGA_WITHOUT_PATH_OPTION=1 INSTALL_YOGA_FROM_LOCATION="$ROOT/packages/react-native" pod ipc spec $SPEC_NAME > $SPEC_PATH
 }
 
 # Perform linting and publishing of podspec in cwd.
@@ -67,10 +67,10 @@ process() {
 }
 
 # Make third-party deps accessible
-cd "$ROOT/third-party-podspecs"
+cd "$ROOT/packages/react-native/third-party-podspecs"
 push Folly.podspec
 push DoubleConversion.podspec
 push glog.podspec
 
-process "$ROOT/ReactCommon/yoga"
+process "$ROOT/packages/react-native/ReactCommon/yoga"
 process "$ROOT" _ignore_me_subspec_for_linting_

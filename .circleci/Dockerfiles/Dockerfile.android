@@ -26,9 +26,9 @@ ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
 ADD .buckconfig /app/.buckconfig
 ADD .buckjavaargs /app/.buckjavaargs
 ADD tools /app/tools
-ADD ReactAndroid /app/ReactAndroid
-ADD ReactCommon /app/ReactCommon
-ADD React /app/React
+ADD packages/react-native/ReactAndroid /app/ReactAndroid
+ADD packages/react-native/ReactCommon /app/ReactCommon
+ADD packages/react-native/React /app/React
 ADD keystores /app/keystores
 
 WORKDIR /app

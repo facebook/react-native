@@ -88,7 +88,7 @@ project.ext.react = [
     enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean(),
 ]
 
-apply from: "../../../../react.gradle"
+apply from: "../../../react-native/react.gradle"
 
 /**
  * Set this to true to create three separate APKs instead of one:

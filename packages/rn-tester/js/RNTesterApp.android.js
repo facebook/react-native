@@ -18,7 +18,7 @@ const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
 const React = require('react');
 const URIActionMap = require('./utils/URIActionMap');
 
-const nativeImageSource = require('../../../Libraries/Image/nativeImageSource');
+const nativeImageSource = require('react-native/Libraries/Image/nativeImageSource');
 
 const {
   AppRegistry,

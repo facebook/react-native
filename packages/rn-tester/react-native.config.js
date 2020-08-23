@@ -9,4 +9,6 @@
 
 'use strict';
 
-module.exports = require('react-native/Libraries/Components/UnimplementedViews/UnimplementedView');
+const {commands, platforms} = require('react-native/react-native.config');
+
+module.exports = {commands, platforms};
