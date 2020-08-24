@@ -26,7 +26,7 @@ using namespace facebook::react;
 
 @implementation RCTImageComponentView {
   UIImageView *_imageView;
-  ImageShadowNode::ConcreteState::Shared _state;
+  ImageShadowNode::ConcreteStateTeller _stateTeller;
   ImageResponseObserverCoordinator const *_coordinator;
   RCTImageResponseObserverProxy _imageResponseObserverProxy;
 }
@@ -84,9 +84,9 @@ using namespace facebook::react;
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _state = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
+  _stateTeller.setConcreteState(state);
   auto _oldState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(oldState);
-  auto data = _state->getData();
+  auto data = _stateTeller.getData().value();
 
   // This call (setting `coordinator`) must be unconditional (at the same block as setting `State`)
   // because the setter stores a raw pointer to object that `State` owns.
@@ -120,7 +120,7 @@ using namespace facebook::react;
   [super prepareForRecycle];
   self.coordinator = nullptr;
   _imageView.image = nil;
-  _state.reset();
+  _stateTeller.invalidate();
 }
 
 - (void)dealloc
@@ -132,7 +132,7 @@ using namespace facebook::react;
 
 - (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
 {
-  if (!_eventEmitter || !_state) {
+  if (!_eventEmitter || !_stateTeller.isValid()) {
     // Notifications are delivered asynchronously and might arrive after the view is already recycled.
     // In the future, we should incorporate an `EventEmitter` into a separate object owned by `ImageRequest` or `State`.
     // See for more info: T46311063.
@@ -158,12 +158,12 @@ using namespace facebook::react;
   }
 
   void (^didSetImage)() = ^() {
-    if (!self->_state) {
+    auto data = self->_stateTeller.getData();
+    if (!data.hasValue()) {
       return;
     }
-    auto data = self->_state->getData();
     auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
-        data.getImageRequest().getSharedImageInstrumentation());
+        data.value().getImageRequest().getSharedImageInstrumentation());
     if (instrumentation) {
       instrumentation->didSetImage();
     }
