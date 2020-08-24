@@ -19,15 +19,21 @@ namespace facebook {
 namespace react {
 
 /*
- * State for <Paragraph> component.
- * Represents what to render and how to render.
+ * State for <TextInput> component.
  */
 class AndroidTextInputState final {
  public:
   int64_t mostRecentEventCount{0};
 
+  /**
+   * Stores an opaque cache ID used on the Java side to refer to a specific
+   * AttributedString for measurement purposes only.
+   */
+  int cachedAttributedStringId{0};
+
   /*
    * All content of <TextInput> component represented as an `AttributedString`.
+   * Only set if changed from the React tree's perspective.
    */
   AttributedString attributedString{};
 
@@ -76,49 +82,6 @@ class AndroidTextInputState final {
   float defaultThemePaddingTop{NAN};
   float defaultThemePaddingBottom{NAN};
 
-#ifdef ANDROID
-  AttributedString updateAttributedString(
-      TextAttributes const &defaultTextAttributes,
-      ShadowView const &defaultParentShadowView,
-      AttributedString const &original,
-      folly::dynamic const &data) {
-    if (data["textChanged"].empty()) {
-      return original;
-    }
-
-    // TODO: parse other attributes besides just string?
-    // on the other hand, not much should be driven from Java
-    // TODO: it'd be really nice to treat these as operational transforms
-    // instead of having to pass the whole string across.
-    // Unfortunately we don't have a good way of communicating from Java to C++
-    // *which* version of the State changes should be applied to; and if there's
-    // a conflict, we don't have any recourse of any way to bail out of a
-    // commit.
-
-    auto str = AttributedString{};
-
-    int i = 0;
-    folly::dynamic fragments = data["textChanged"]["fragments"];
-    for (auto const &fragment : original.getFragments()) {
-      str.appendFragment(AttributedString::Fragment{
-          fragments.size() > i ? fragments[i]["string"].getString() : "",
-          fragment.textAttributes,
-          fragment.parentShadowView});
-      i++;
-    }
-
-    if (fragments.size() > original.getFragments().size()) {
-      for (; i < fragments.size(); i++) {
-        str.appendFragment(
-            AttributedString::Fragment{fragments[i]["string"].getString(),
-                                       defaultTextAttributes,
-                                       defaultParentShadowView});
-      }
-    }
-
-    return str;
-  }
-
   AndroidTextInputState(
       int64_t mostRecentEventCount,
       AttributedString const &attributedString,
@@ -132,6 +95,7 @@ class AndroidTextInputState final {
       float defaultThemePaddingTop,
       float defaultThemePaddingBottom)
       : mostRecentEventCount(mostRecentEventCount),
+        cachedAttributedStringId(0),
         attributedString(attributedString),
         reactTreeAttributedString(reactTreeAttributedString),
         paragraphAttributes(paragraphAttributes),
@@ -150,11 +114,10 @@ class AndroidTextInputState final {
                                      "mostRecentEventCount",
                                      previousState.mostRecentEventCount)
                                  .getInt()),
-        attributedString(updateAttributedString(
-            previousState.defaultTextAttributes,
-            previousState.defaultParentShadowView,
-            previousState.attributedString,
-            data)),
+        cachedAttributedStringId(
+            data.getDefault("cacheId", previousState.cachedAttributedStringId)
+                .getInt()),
+        attributedString(previousState.attributedString),
         reactTreeAttributedString(previousState.reactTreeAttributedString),
         paragraphAttributes(previousState.paragraphAttributes),
         defaultTextAttributes(previousState.defaultTextAttributes),
@@ -178,7 +141,6 @@ class AndroidTextInputState final {
                     previousState.defaultThemePaddingBottom)
                 .getDouble()){};
   folly::dynamic getDynamic() const;
-#endif
 };
 
 } // namespace react
