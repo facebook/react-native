@@ -81,13 +81,6 @@ class ShadowTree final {
 
   MountingCoordinator::Shared getMountingCoordinator() const;
 
-  /*
-   * Temporary.
-   * Do not use.
-   */
-  void setEnableNewStateReconciliation(bool value) {
-    enableNewStateReconciliation_ = value;
-  }
   void setEnableReparentingDetection(bool value) {
     enableReparentingDetection_ = value;
   }
