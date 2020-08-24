@@ -62,7 +62,7 @@ RCT_EXPORT_MODULE();
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
-  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge];
+  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge surfacePresenter:bridge.surfacePresenter];
   [bridge.eventDispatcher addDispatchObserver:self];
   [bridge.uiManager.observerCoordinator addObserver:self];
   [bridge.surfacePresenter addObserver:self];

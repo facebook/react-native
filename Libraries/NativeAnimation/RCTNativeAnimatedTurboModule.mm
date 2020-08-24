@@ -20,7 +20,7 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 @implementation RCTNativeAnimatedTurboModule
 {
   RCTNativeAnimatedNodesManager *_nodesManager;
-
+  __weak id<RCTSurfacePresenterStub> _surfacePresenter;
   // Operations called after views have been updated.
   NSMutableArray<AnimatedOperation> *_operations;
   // Operations called before views have been updated.
@@ -50,7 +50,7 @@ RCT_EXPORT_MODULE();
   [_nodesManager stopAnimationLoop];
   [self.bridge.eventDispatcher removeDispatchObserver:self];
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
-  [self.bridge.surfacePresenter removeObserver:self];
+  [_surfacePresenter removeObserver:self];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -64,10 +64,11 @@ RCT_EXPORT_MODULE();
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
-  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge];
+  _surfacePresenter = bridge.surfacePresenter;
+  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge surfacePresenter:_surfacePresenter];
   [bridge.eventDispatcher addDispatchObserver:self];
   [bridge.uiManager.observerCoordinator addObserver:self];
-  [bridge.surfacePresenter addObserver:self];
+  [_surfacePresenter addObserver:self];
 }
 
 #pragma mark -- API
