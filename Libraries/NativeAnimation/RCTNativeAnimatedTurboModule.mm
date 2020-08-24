@@ -71,6 +71,17 @@ RCT_EXPORT_MODULE();
   [_surfacePresenter addObserver:self];
 }
 
+/*
+ * In bridgeless mode, `setBridge` is never called during initializtion. Instead this selector is invoked via
+ * BridgelessTurboModuleSetup.
+ */
+- (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
+{
+  _surfacePresenter = surfacePresenter;
+  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge surfacePresenter:_surfacePresenter];
+  [_surfacePresenter addObserver:self];
+}
+
 #pragma mark -- API
 
 RCT_EXPORT_METHOD(startOperationBatch)

@@ -8,6 +8,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTNativeAnimatedModule.h>
 #import <React/RCTNativeAnimatedNodesManager.h>
+#import <React/RCTLog.h>
 
 #import <RCTTypeSafety/RCTConvertHelpers.h>
 
@@ -66,6 +67,14 @@ RCT_EXPORT_MODULE();
   [bridge.eventDispatcher addDispatchObserver:self];
   [bridge.uiManager.observerCoordinator addObserver:self];
   [bridge.surfacePresenter addObserver:self];
+}
+
+/*
+ * This selector should only be invoked in bridgeless mode, which is not compatible with this non turbo module.
+ */
+- (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
+{
+  RCTLogWarn(@"setSurfacePresenter should only be invoked in RCTNativeAnimatedTurboModule");
 }
 
 #pragma mark -- API
