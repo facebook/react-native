@@ -99,7 +99,7 @@ RCT_EXPORT_MODULE()
     _dismissalBlock([modalHostView reactViewController], viewController, animated, nil);
   } else {
     self.dismissWaitingBlock = ^{
-      [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
+      [viewController.presentingViewController dismissViewControllerAnimated:animated completion:nil];
     };
     if (viewController.presentingViewController) {
       self.dismissWaitingBlock();
