@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 Pod::Spec.new do |spec|
-  spec.name = 'Folly'
+  spec.name = 'RCT-Folly'
   spec.version = '2020.01.13.00'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
@@ -13,6 +13,7 @@ Pod::Spec.new do |spec|
   spec.source = { :git => 'https://github.com/facebook/folly.git',
                   :tag => "v#{spec.version}" }
   spec.module_name = 'folly'
+  spec.header_mappings_dir = '.'
   spec.dependency 'boost-for-react-native'
   spec.dependency 'DoubleConversion'
   spec.dependency 'glog'
@@ -36,7 +37,19 @@ Pod::Spec.new do |spec|
                       'folly/lang/CString.cpp',
                       'folly/memory/detail/MallocImpl.cpp',
                       'folly/net/NetOps.cpp',
-                      'folly/portability/SysUio.cpp'
+                      'folly/portability/SysUio.cpp',
+                      'folly/*.h',
+                      'folly/container/*.h',
+                      'folly/container/detail/*.h',
+                      'folly/detail/*.h',
+                      'folly/functional/*.h',
+                      'folly/hash/*.h',
+                      'folly/lang/*.h',
+                      'folly/memory/*.h',
+                      'folly/memory/detail/*.h',
+                      'folly/net/*.h',
+                      'folly/net/detail/*.h',
+                      'folly/portability/*.h'
 
   # workaround for https://github.com/facebook/react-native/issues/14326
   spec.preserve_paths = 'folly/*.h',
@@ -55,6 +68,9 @@ Pod::Spec.new do |spec|
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\"" }
+
+  # TODO: The boost spec should really be selecting these files so that dependents of Folly can also access the required headers.
+  spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\"" }
 
   spec.default_subspec = 'Default'
 
