@@ -28,6 +28,21 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
 RCT_EXPORT_MODULE();
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _operations = [NSMutableArray new];
+    _preOperations = [NSMutableArray new];
+    _animIdIsManagedByFabric = [NSMutableDictionary new];
+  }
+  return self;
+}
+
 - (void)invalidate
 {
   [_nodesManager stopAnimationLoop];
@@ -47,12 +62,7 @@ RCT_EXPORT_MODULE();
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
-
   _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge];
-  _operations = [NSMutableArray new];
-  _preOperations = [NSMutableArray new];
-  _animIdIsManagedByFabric = [NSMutableDictionary new];
-
   [bridge.eventDispatcher addDispatchObserver:self];
   [bridge.uiManager.observerCoordinator addObserver:self];
   [bridge.surfacePresenter addObserver:self];
