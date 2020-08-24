@@ -1677,16 +1677,18 @@ static void calculateShadowViewMutations(
           }
 
           // Update subtrees
-          auto oldGrandChildPairs =
-              sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
-          auto newGrandChildPairs =
-              sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
-          calculateShadowViewMutations(
-              *(newGrandChildPairs.size() ? &downwardMutations
-                                          : &destructiveDownwardMutations),
-              oldChildPair.shadowView,
-              std::move(oldGrandChildPairs),
-              std::move(newGrandChildPairs));
+          if (oldChildPair.shadowNode != newChildPair.shadowNode) {
+            auto oldGrandChildPairs =
+                sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
+            auto newGrandChildPairs =
+                sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
+            calculateShadowViewMutations(
+                *(newGrandChildPairs.size() ? &downwardMutations
+                                            : &destructiveDownwardMutations),
+                oldChildPair.shadowView,
+                std::move(oldGrandChildPairs),
+                std::move(newGrandChildPairs));
+          }
 
           newIndex++;
           oldIndex++;
@@ -1724,16 +1726,18 @@ static void calculateShadowViewMutations(
           }
 
           // Update subtrees
-          auto oldGrandChildPairs =
-              sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
-          auto newGrandChildPairs =
-              sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
-          calculateShadowViewMutations(
-              *(newGrandChildPairs.size() ? &downwardMutations
-                                          : &destructiveDownwardMutations),
-              oldChildPair.shadowView,
-              std::move(oldGrandChildPairs),
-              std::move(newGrandChildPairs));
+          if (oldChildPair.shadowNode != newChildPair.shadowNode) {
+            auto oldGrandChildPairs =
+                sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
+            auto newGrandChildPairs =
+                sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
+            calculateShadowViewMutations(
+                *(newGrandChildPairs.size() ? &downwardMutations
+                                            : &destructiveDownwardMutations),
+                oldChildPair.shadowView,
+                std::move(oldGrandChildPairs),
+                std::move(newGrandChildPairs));
+          }
 
           newInsertedPairs.erase(insertedIt);
           oldIndex++;
