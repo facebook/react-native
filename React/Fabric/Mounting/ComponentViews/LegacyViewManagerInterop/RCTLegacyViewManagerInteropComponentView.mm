@@ -22,7 +22,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   NSMutableArray<NSDictionary *> *_viewsToBeMounted;
   NSMutableArray<UIView *> *_viewsToBeUnmounted;
   RCTLegacyViewManagerInteropCoordinatorAdapter *_adapter;
-  LegacyViewManagerInteropShadowNode::ConcreteState::Shared _state;
+  LegacyViewManagerInteropShadowNode::ConcreteStateTeller _stateTeller;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -64,9 +64,9 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (RCTLegacyViewManagerInteropCoordinator *)coordinator
 {
-  if (_state != nullptr) {
-    const auto &state = _state->getData();
-    return unwrapManagedObject(state.coordinator);
+  auto data = _stateTeller.getData();
+  if (data.hasValue()) {
+    return unwrapManagedObject(data.value().coordinator);
   } else {
     return nil;
   }
@@ -74,9 +74,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN
 {
-  const auto &state = _state->getData();
-  RCTLegacyViewManagerInteropCoordinator *coordinator = unwrapManagedObject(state.coordinator);
-  return coordinator.componentViewName;
+  return self.coordinator.componentViewName;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -86,7 +84,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   _adapter = nil;
   [_viewsToBeMounted removeAllObjects];
   [_viewsToBeUnmounted removeAllObjects];
-  _state.reset();
+  _stateTeller.invalidate();
   self.contentView = nil;
   [super prepareForRecycle];
 }
@@ -111,7 +109,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _state = std::static_pointer_cast<LegacyViewManagerInteropShadowNode::ConcreteState const>(state);
+  _stateTeller.setConcreteState(state);
 }
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
