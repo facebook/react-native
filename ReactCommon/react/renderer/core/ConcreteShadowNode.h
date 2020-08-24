@@ -132,6 +132,7 @@ class ConcreteShadowNode : public BaseShadowNodeT {
     Sealable::ensureUnsealed();
     state_ = std::make_shared<ConcreteState const>(
         std::make_shared<ConcreteStateData const>(std::move(data)), *state_);
+    BaseShadowNodeT::getFamily().setMostRecentState(state_);
   }
 };
 
