@@ -15,12 +15,13 @@ const UIManager = require('./UIManager');
 
 const insetsDiffer = require('../Utilities/differ/insetsDiffer');
 const invariant = require('invariant');
-const matricesDiffer = require('../Utilities/differ/matricesDiffer');
 const pointsDiffer = require('../Utilities/differ/pointsDiffer');
 const processColor = require('../StyleSheet/processColor');
 const processColorArray = require('../StyleSheet/processColorArray');
+const processTransform = require('../StyleSheet/processTransform');
 const resolveAssetSource = require('../Image/resolveAssetSource');
 const sizesDiffer = require('../Utilities/differ/sizesDiffer');
+const transformsDiffer = require('../Utilities/differ/transformsDiffer');
 const warning = require('fbjs/lib/warning');
 
 function getNativeComponentAttributes(uiViewClassName: string): any {
@@ -148,7 +149,7 @@ function getDifferForType(
   switch (typeName) {
     // iOS Types
     case 'CATransform3D':
-      return matricesDiffer;
+      return transformsDiffer;
     case 'CGPoint':
       return pointsDiffer;
     case 'CGSize':
