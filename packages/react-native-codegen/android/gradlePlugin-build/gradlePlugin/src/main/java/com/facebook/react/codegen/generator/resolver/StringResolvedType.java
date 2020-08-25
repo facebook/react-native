@@ -9,7 +9,6 @@ package com.facebook.react.codegen.generator.resolver;
 
 import com.facebook.react.codegen.generator.model.StringType;
 import com.facebook.react.codegen.generator.model.TypeData;
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 
 public final class StringResolvedType extends ResolvedType<StringType> {
@@ -25,6 +24,6 @@ public final class StringResolvedType extends ResolvedType<StringType> {
 
   @Override
   public TypeName getNativeType(final NativeTypeContext typeContext) {
-    return TypeUtils.makeNullable(ClassName.get(String.class), mNullable);
+    return TypeUtils.makeNullable(ClassNames.STRING, mNullable);
   }
 }

@@ -7,18 +7,12 @@
 
 package com.facebook.react.codegen.generator.resolver;
 
-import com.squareup.javapoet.AnnotationSpec;
+import com.facebook.react.codegen.generator.model.CodegenException;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
-import javax.annotation.Nullable;
 
 public class TypeUtils {
-
-  public static class Annotations {
-    public static final AnnotationSpec OVERRIDE = AnnotationSpec.builder(Override.class).build();
-    public static final AnnotationSpec NULLABLE = AnnotationSpec.builder(Nullable.class).build();
-  }
 
   public static TypeName getNativeClassName(TypeName className) {
     while (className instanceof ParameterizedTypeName) {
@@ -28,7 +22,7 @@ public class TypeUtils {
     return (className instanceof TypeVariableName) ? TypeName.OBJECT : className.box();
   }
 
-  public static TypeName makeNullable(TypeName typeName, boolean isNullable) {
+  public static TypeName makeNullable(final TypeName typeName, final boolean isNullable) {
     if (isNullable) {
       if (typeName.isPrimitive()) {
         return typeName.box();
@@ -38,5 +32,12 @@ public class TypeUtils {
       }
     }
     return typeName;
+  }
+
+  public static void assertCondition(final boolean condition, final String errorMessage)
+      throws CodegenException {
+    if (!condition) {
+      throw new CodegenException(errorMessage);
+    }
   }
 }
