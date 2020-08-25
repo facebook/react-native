@@ -117,8 +117,8 @@ void StubViewTree::mutate(
             strChildList.append(std::to_string(child->tag));
             strChildList.append(", ");
           }
-          LOG(ERROR) << "StubView: BEFORE REMOVE: Children of " << parentTag << ": "
-                     << strChildList;
+          LOG(ERROR) << "StubView: BEFORE REMOVE: Children of " << parentTag
+                     << ": " << strChildList;
         });
         STUB_VIEW_ASSERT(childIsCorrect);
         parentStubView->children.erase(
