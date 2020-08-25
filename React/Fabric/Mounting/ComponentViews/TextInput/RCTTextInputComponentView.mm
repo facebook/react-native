@@ -249,9 +249,9 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
+  _stateTeller.invalidate();
   _backedTextInputView.attributedText = nil;
   _mostRecentEventCount = 0;
-  _stateTeller.invalidate();
   _comingFromJS = NO;
   _lastStringStateWasUpdatedWith = nil;
   _ignoreNextTextInputCall = NO;
