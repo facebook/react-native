@@ -38,10 +38,10 @@ public abstract class NativeBlobModuleSpec extends ReactContextBaseJavaModule im
   public abstract void addNetworkingHandler();
 
   @ReactMethod
-  public abstract void createFromParts(ReadableArray parts, String withId);
+  public abstract void addWebSocketHandler(double id);
 
   @ReactMethod
-  public abstract void addWebSocketHandler(double id);
+  public abstract void createFromParts(ReadableArray parts, String withId);
 
   @ReactMethod
   public abstract void release(String blobId);
