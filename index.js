@@ -119,6 +119,7 @@ module.exports = {
   get Button(): Button {
     return require('./Libraries/Components/Button');
   },
+  // $FlowFixMe[value-as-type]
   get DatePickerIOS(): DatePickerIOS {
     warnOnce(
       'DatePickerIOS-merged',
@@ -128,6 +129,7 @@ module.exports = {
     );
     return require('./Libraries/Components/DatePicker/DatePickerIOS');
   },
+  // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
     return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid');
   },
@@ -167,6 +169,7 @@ module.exports = {
     );
     return require('./Libraries/Components/Picker/Picker');
   },
+  // $FlowFixMe[value-as-type]
   get PickerIOS(): PickerIOS {
     warnOnce(
       'pickerios-moved',
@@ -179,6 +182,7 @@ module.exports = {
   get Pressable(): Pressable {
     return require('./Libraries/Components/Pressable/Pressable').default;
   },
+  // $FlowFixMe[value-as-type]
   get ProgressBarAndroid(): ProgressBarAndroid {
     warnOnce(
       'progress-bar-android-moved',
@@ -188,6 +192,7 @@ module.exports = {
     );
     return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid');
   },
+  // $FlowFixMe[value-as-type]
   get ProgressViewIOS(): ProgressViewIOS {
     warnOnce(
       'progress-view-ios-moved',
@@ -206,6 +211,7 @@ module.exports = {
   get SectionList(): SectionList {
     return require('./Libraries/Lists/SectionList');
   },
+  // $FlowFixMe[value-as-type]
   get SegmentedControlIOS(): SegmentedControlIOS {
     warnOnce(
       'segmented-control-ios-moved',
@@ -283,6 +289,7 @@ module.exports = {
   get AppState(): AppState {
     return require('./Libraries/AppState/AppState');
   },
+  // $FlowFixMe[value-as-type]
   get AsyncStorage(): AsyncStorage {
     warnOnce(
       'async-storage-moved',
@@ -403,6 +410,7 @@ module.exports = {
   get Systrace(): Systrace {
     return require('./Libraries/Performance/Systrace');
   },
+  // $FlowFixMe[value-as-type]
   get ToastAndroid(): ToastAndroid {
     return require('./Libraries/Components/ToastAndroid/ToastAndroid');
   },
@@ -477,6 +485,7 @@ module.exports = {
       );
   },
   // Prop Types
+  // $FlowFixMe[value-as-type]
   get ColorPropType(): DeprecatedColorPropType {
     return require('./Libraries/DeprecatedPropTypes/DeprecatedColorPropType');
   },

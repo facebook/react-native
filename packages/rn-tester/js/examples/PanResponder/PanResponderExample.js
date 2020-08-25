@@ -147,6 +147,7 @@ exports.simpleExampleContainer = true;
 exports.examples = [
   {
     title: 'Basic gesture handling',
+    // $FlowFixMe[value-as-type]
     render: function(): React.Element<typeof PanResponderExample> {
       return <PanResponderExample />;
     },
