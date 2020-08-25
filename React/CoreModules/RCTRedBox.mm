@@ -14,7 +14,9 @@
 #import <React/RCTErrorInfo.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTJSStackFrame.h>
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import <React/RCTRedBoxExtraDataViewController.h>
+#endif
 #import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
@@ -766,14 +768,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 #endif // ]TODO(macOS ISS#2323203)
 
-@interface RCTRedBox () <RCTInvalidating, RCTRedBoxWindowActionDelegate, RCTRedBoxExtraDataActionDelegate, NativeRedBoxSpec>
+@interface RCTRedBox () <
+  RCTInvalidating,
+  RCTRedBoxWindowActionDelegate,
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+  RCTRedBoxExtraDataActionDelegate,
+#endif
+  NativeRedBoxSpec
+>
 @end
 
 @implementation RCTRedBox
 {
     RCTRedBoxWindow *_window;
     NSMutableArray<id<RCTErrorCustomizer>> *_errorCustomizers;
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     RCTRedBoxExtraDataViewController *_extraDataViewController;
+#endif
     NSMutableArray<NSString *> *_customButtonTitles;
     NSMutableArray<RCTRedBoxButtonPressHandler> *_customButtonHandlers;
 }
@@ -922,22 +933,20 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)loadExtraDataViewController {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     dispatch_async(dispatch_get_main_queue(), ^{
         // Make sure the CMD+E shortcut doesn't call this twice
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
         if (self->_extraDataViewController != nil && ![self->_window.rootViewController presentedViewController]) {
             [self->_window.rootViewController presentViewController:self->_extraDataViewController animated:YES completion:nil];
         }
-#else // [TODO(macOS ISS#2323203)
-      if (self->_extraDataViewController != nil && [NSApp modalWindow] == nil) {
-        [[[NSApp keyWindow] contentViewController] presentViewControllerAsModalWindow:self->_extraDataViewController];
-      }
-#endif // ]TODO(macOS ISS#2323203)
     });
+#endif
 }
 
 RCT_EXPORT_METHOD(setExtraData:(NSDictionary *)extraData forIdentifier:(NSString *)identifier) {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     [_extraDataViewController addExtraData:extraData forIdentifier:identifier];
+#endif
 }
 
 RCT_EXPORT_METHOD(dismiss)
