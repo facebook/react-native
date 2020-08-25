@@ -97,7 +97,7 @@ class PixelRatio {
    *  - Settings > Display & Brightness > Text Size on iOS.
    */
   static getFontScale(): number {
-    return Dimensions.get('window').fontScale || PixelRatio.get();
+    return Dimensions.get('window').fontScale || 1;
   }
 
   /**
