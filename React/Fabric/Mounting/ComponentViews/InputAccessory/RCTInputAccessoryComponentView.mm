@@ -10,6 +10,7 @@
 #import <React/RCTBackedTextInputViewProtocol.h>
 #import <React/RCTConversions.h>
 #import <React/RCTSurfaceTouchHandler.h>
+#import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 #import <react/renderer/components/inputaccessory/InputAccessoryComponentDescriptor.h>
 #import <react/renderer/components/rncore/Props.h>
@@ -120,17 +121,17 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
   _stateTeller.setConcreteState(state);
-  CGSize oldScreenSize = RCTCGSizeFromSize(_stateTeller.getData().value().screenSize);
-  CGSize screenSize = [[UIScreen mainScreen] bounds].size;
-  screenSize.height = std::nan("");
-  if (oldScreenSize.width != screenSize.width) {
-    auto stateData = InputAccessoryState{RCTSizeFromCGSize(screenSize)};
+  CGSize oldViewportSize = RCTCGSizeFromSize(_stateTeller.getData().value().viewportSize);
+  CGSize viewportSize = RCTViewportSize();
+  viewportSize.height = std::nan("");
+  if (oldViewportSize.width != viewportSize.width) {
+    auto stateData = InputAccessoryState{RCTSizeFromCGSize(viewportSize)};
     _stateTeller.updateState(std::move(stateData));
   }
 }
 
-- (void)updateLayoutMetrics:(const facebook::react::LayoutMetrics &)layoutMetrics
-           oldLayoutMetrics:(const facebook::react::LayoutMetrics &)oldLayoutMetrics
+- (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
+           oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
 {
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 
