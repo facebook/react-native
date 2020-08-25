@@ -46,12 +46,10 @@ public final class SchemaJsonParser {
 
   public static TypeData parse(final File schemaFile) throws FileNotFoundException, IOException {
     final SchemaJsonParser parser = new SchemaJsonParser();
-    parser.buildTypeData(schemaFile);
-    System.out.println(parser.mTypeData);
-    return parser.mTypeData;
+    return parser.buildTypeData(schemaFile);
   }
 
-  private void buildTypeData(final File schemaFile) throws FileNotFoundException, IOException {
+  private TypeData buildTypeData(final File schemaFile) throws FileNotFoundException, IOException {
     final JsonParser parser = new JsonParser();
     final JsonElement rootElement = parser.parse(new FileReader(schemaFile));
 
@@ -87,6 +85,8 @@ public final class SchemaJsonParser {
                         });
               });
     }
+
+    return mTypeData;
   }
 
   // Parse type information from a JSON "typeAnnotation" node.

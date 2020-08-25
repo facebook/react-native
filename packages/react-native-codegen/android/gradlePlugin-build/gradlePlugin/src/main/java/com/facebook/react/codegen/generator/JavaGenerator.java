@@ -8,6 +8,7 @@
 package com.facebook.react.codegen.generator;
 
 import com.facebook.react.codegen.generator.model.TypeData;
+import com.facebook.react.codegen.generator.resolver.TypeResolver;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -30,6 +31,13 @@ public final class JavaGenerator {
 
   public void build() throws FileNotFoundException, IOException {
     TypeData typeData = SchemaJsonParser.parse(mSchemaFile);
+    typeData
+        .getAllTypes()
+        .forEach(
+            t -> {
+              // TODO: Ask each resolved type to produce its own code if it supports it.
+              TypeResolver.resolveType(typeData.getType(t), typeData, false);
+            });
 
     final MethodSpec main =
         MethodSpec.methodBuilder("main")

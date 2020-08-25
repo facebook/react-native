@@ -9,6 +9,7 @@ package com.facebook.react.codegen.generator.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 /** A collection of all types information based on the parsed schema. */
@@ -28,6 +29,10 @@ public final class TypeData {
 
   public @Nullable Type getType(final TypeId typeId) {
     return mTypes.get(typeId);
+  }
+
+  public Set<TypeId> getAllTypes() {
+    return mTypes.keySet();
   }
 
   @Override
