@@ -17,22 +17,21 @@ public final class NullableResolvedType extends ResolvedType<NullableType> {
 
   private NullableResolvedType(final NullableType type, final boolean nullable) {
     super(type, nullable);
+    throw new UnsupportedOperationException();
   }
 
-  public static NullableResolvedType create(
+  public static ResolvedType create(
       final NullableType type, final TypeData typeData, final boolean nullable) {
-    return new NullableResolvedType(type, nullable);
+    return resolveType(type.innerType, typeData, true);
   }
 
   @Override
   public TypeName getNativeType(final NativeTypeContext typeContext) {
-    // TODO
-    return TypeName.VOID;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public @Nullable TypeSpec getGeneratedCode(final String packageName) {
-    // TODO
     throw new UnsupportedOperationException();
   }
 }

@@ -7,10 +7,10 @@
 
 package com.facebook.react.codegen.generator.model;
 
-public abstract class NumberType extends Type {
-  public static final String TYPE_NAME = "NumberTypeAnnotation";
+public class CodegenException extends RuntimeException {
+  private static final long serialVersionUID = 1L;
 
-  public NumberType(final TypeId typeId) {
-    super(typeId);
+  public CodegenException(final String message) {
+    super(message);
   }
 }

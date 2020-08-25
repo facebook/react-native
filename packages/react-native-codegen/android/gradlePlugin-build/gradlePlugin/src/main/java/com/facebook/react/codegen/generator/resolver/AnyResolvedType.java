@@ -10,8 +10,6 @@ package com.facebook.react.codegen.generator.resolver;
 import com.facebook.react.codegen.generator.model.AnyType;
 import com.facebook.react.codegen.generator.model.TypeData;
 import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import javax.annotation.Nullable;
 
 public final class AnyResolvedType extends ResolvedType<AnyType> {
 
@@ -26,13 +24,13 @@ public final class AnyResolvedType extends ResolvedType<AnyType> {
 
   @Override
   public TypeName getNativeType(final NativeTypeContext typeContext) {
-    // TODO
-    return TypeName.VOID;
-  }
-
-  @Override
-  public @Nullable TypeSpec getGeneratedCode(final String packageName) {
-    // TODO
-    throw new UnsupportedOperationException();
+    switch (typeContext) {
+      case FUNCTION_ARGUMENT:
+        return TypeUtils.makeNullable(ReactClassNames.REACT_READABLE_MAP, mNullable);
+      case FUNCTION_RETURN:
+        return TypeUtils.makeNullable(ReactClassNames.REACT_WRITABLE_MAP, mNullable);
+      default:
+        return TypeUtils.makeNullable(TypeName.OBJECT, mNullable);
+    }
   }
 }

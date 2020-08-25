@@ -26,13 +26,11 @@ public final class VoidResolvedType extends ResolvedType<VoidType> {
 
   @Override
   public TypeName getNativeType(final NativeTypeContext typeContext) {
-    // TODO
-    return TypeName.VOID;
+    return TypeUtils.makeNullable(TypeName.VOID, mNullable);
   }
 
   @Override
   public @Nullable TypeSpec getGeneratedCode(final String packageName) {
-    // TODO
     throw new UnsupportedOperationException();
   }
 }

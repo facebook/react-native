@@ -8,14 +8,13 @@
 package com.facebook.react.codegen.generator;
 
 import com.facebook.react.codegen.generator.model.TypeData;
+import com.facebook.react.codegen.generator.resolver.ResolvedType;
 import com.facebook.react.codegen.generator.resolver.TypeResolver;
 import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import javax.lang.model.element.Modifier;
 
 // TODO: Implement proper generator - this is a sample usage of JavaPoet
 public final class JavaGenerator {
@@ -35,26 +34,18 @@ public final class JavaGenerator {
         .getAllTypes()
         .forEach(
             t -> {
-              // TODO: Ask each resolved type to produce its own code if it supports it.
-              TypeResolver.resolveType(typeData.getType(t), typeData, false);
+              ResolvedType resolvedType =
+                  TypeResolver.resolveType(typeData.getType(t), typeData, false);
+              TypeSpec spec = resolvedType.getGeneratedCode(mJavaPackageName);
+              if (spec != null) {
+                final JavaFile javaFile = JavaFile.builder(mJavaPackageName, spec).build();
+                System.out.println(javaFile.toString());
+                try {
+                  javaFile.writeTo(mOutputDir);
+                } catch (IOException ex) {
+                  // TODO: Handle this in a different way.
+                }
+              }
             });
-
-    final MethodSpec main =
-        MethodSpec.methodBuilder("main")
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-            .returns(void.class)
-            .addParameter(String[].class, "args")
-            .addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet!")
-            .build();
-
-    final TypeSpec helloWorld =
-        TypeSpec.classBuilder("ReactNativeCodegen")
-            .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-            .addMethod(main)
-            .build();
-
-    final JavaFile javaFile = JavaFile.builder(mJavaPackageName, helloWorld).build();
-
-    javaFile.writeTo(mOutputDir);
   }
 }

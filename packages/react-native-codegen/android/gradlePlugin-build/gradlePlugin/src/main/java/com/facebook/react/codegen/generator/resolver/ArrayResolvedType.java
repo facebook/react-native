@@ -9,30 +9,37 @@ package com.facebook.react.codegen.generator.resolver;
 
 import com.facebook.react.codegen.generator.model.ArrayType;
 import com.facebook.react.codegen.generator.model.TypeData;
+import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import javax.annotation.Nullable;
 
 public final class ArrayResolvedType extends ResolvedType<ArrayType> {
 
-  private ArrayResolvedType(final ArrayType type, final boolean nullable) {
+  private final ResolvedType mElementResolvedType;
+
+  private ArrayResolvedType(final ArrayType type, final TypeData typeData, final boolean nullable) {
     super(type, nullable);
+    mElementResolvedType = resolveType(mType.elementType, typeData, nullable);
   }
 
   public static ArrayResolvedType create(
       final ArrayType type, final TypeData typeData, final boolean nullable) {
-    return new ArrayResolvedType(type, nullable);
+    return new ArrayResolvedType(type, typeData, nullable);
+  }
+
+  public ResolvedType getElementResolvedType() {
+    return mElementResolvedType;
   }
 
   @Override
   public TypeName getNativeType(final NativeTypeContext typeContext) {
-    // TODO
-    return TypeName.VOID;
-  }
-
-  @Override
-  public @Nullable TypeSpec getGeneratedCode(final String packageName) {
-    // TODO
-    throw new UnsupportedOperationException();
+    switch (typeContext) {
+      case FUNCTION_ARGUMENT:
+        return TypeUtils.makeNullable(ReactClassNames.REACT_READABLE_ARRAY, mNullable);
+      case FUNCTION_RETURN:
+        return TypeUtils.makeNullable(ReactClassNames.REACT_WRITABLE_ARRAY, mNullable);
+      default:
+        return TypeUtils.makeNullable(
+            ArrayTypeName.of(mElementResolvedType.getNativeType(typeContext)), mNullable);
+    }
   }
 }

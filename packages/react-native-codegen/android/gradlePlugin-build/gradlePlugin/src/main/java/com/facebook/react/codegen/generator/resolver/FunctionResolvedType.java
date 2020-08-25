@@ -10,29 +10,41 @@ package com.facebook.react.codegen.generator.resolver;
 import com.facebook.react.codegen.generator.model.FunctionType;
 import com.facebook.react.codegen.generator.model.TypeData;
 import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class FunctionResolvedType extends ResolvedType<FunctionType> {
+  private final Map<String, ResolvedType> mResolvedArgTypes;
+  private final ResolvedType mResolvedReturnType;
 
-  private FunctionResolvedType(final FunctionType type, final boolean nullable) {
+  private FunctionResolvedType(
+      final FunctionType type, final TypeData typeData, final boolean nullable) {
     super(type, nullable);
+    mResolvedReturnType = resolveType(type.returnType, typeData, nullable);
+    mResolvedArgTypes =
+        Collections.unmodifiableMap(
+            type.parameters.stream()
+                .collect(
+                    Collectors.toMap(
+                        item -> item.name, item -> resolveType(item.type, typeData, false))));
   }
 
   public static FunctionResolvedType create(
       final FunctionType type, final TypeData typeData, final boolean nullable) {
-    return new FunctionResolvedType(type, nullable);
+    return new FunctionResolvedType(type, typeData, nullable);
+  }
+
+  public ResolvedType getResolvedReturnType() {
+    return mResolvedReturnType;
+  }
+
+  public Map<String, ResolvedType> getResolvedArgTypes() {
+    return mResolvedArgTypes;
   }
 
   @Override
   public TypeName getNativeType(final NativeTypeContext typeContext) {
-    // TODO
-    return TypeName.VOID;
-  }
-
-  @Override
-  public @Nullable TypeSpec getGeneratedCode(final String packageName) {
-    // TODO
-    throw new UnsupportedOperationException();
+    return TypeUtils.makeNullable(ReactClassNames.REACT_CALLBACK, mNullable);
   }
 }

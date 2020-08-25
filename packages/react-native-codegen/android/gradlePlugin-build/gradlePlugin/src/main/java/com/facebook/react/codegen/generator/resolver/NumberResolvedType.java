@@ -7,11 +7,13 @@
 
 package com.facebook.react.codegen.generator.resolver;
 
+import com.facebook.react.codegen.generator.model.CodegenException;
+import com.facebook.react.codegen.generator.model.DoubleType;
+import com.facebook.react.codegen.generator.model.FloatType;
+import com.facebook.react.codegen.generator.model.Int32Type;
 import com.facebook.react.codegen.generator.model.NumberType;
 import com.facebook.react.codegen.generator.model.TypeData;
 import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import javax.annotation.Nullable;
 
 public final class NumberResolvedType extends ResolvedType<NumberType> {
 
@@ -26,13 +28,15 @@ public final class NumberResolvedType extends ResolvedType<NumberType> {
 
   @Override
   public TypeName getNativeType(final NativeTypeContext typeContext) {
-    // TODO
-    return TypeName.VOID;
-  }
-
-  @Override
-  public @Nullable TypeSpec getGeneratedCode(final String packageName) {
-    // TODO
-    throw new UnsupportedOperationException();
+    if (mType instanceof Int32Type) {
+      return TypeUtils.makeNullable(TypeName.INT, mNullable);
+    }
+    if (mType instanceof FloatType) {
+      return TypeUtils.makeNullable(TypeName.FLOAT, mNullable);
+    }
+    if (mType instanceof DoubleType) {
+      return TypeUtils.makeNullable(TypeName.DOUBLE, mNullable);
+    }
+    throw new CodegenException("Unsupported NumberType: " + mType.getClass());
   }
 }

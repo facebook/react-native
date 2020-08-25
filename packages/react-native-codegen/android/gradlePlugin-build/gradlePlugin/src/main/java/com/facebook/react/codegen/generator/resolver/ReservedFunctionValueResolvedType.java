@@ -7,6 +7,8 @@
 
 package com.facebook.react.codegen.generator.resolver;
 
+import com.facebook.react.codegen.generator.model.CodegenException;
+import com.facebook.react.codegen.generator.model.DoubleType;
 import com.facebook.react.codegen.generator.model.ReservedFunctionValueType;
 import com.facebook.react.codegen.generator.model.TypeData;
 import com.squareup.javapoet.TypeName;
@@ -19,22 +21,28 @@ public final class ReservedFunctionValueResolvedType
   private ReservedFunctionValueResolvedType(
       final ReservedFunctionValueType type, final boolean nullable) {
     super(type, nullable);
+    throw new UnsupportedOperationException();
   }
 
-  public static ReservedFunctionValueResolvedType create(
+  public static ResolvedType create(
       final ReservedFunctionValueType type, final TypeData typeData, final boolean nullable) {
-    return new ReservedFunctionValueResolvedType(type, nullable);
+    switch (type.reservedName) {
+      case RootTag:
+        return resolveType(new DoubleType(type.getTypeId()), typeData, nullable);
+      default:
+        break;
+    }
+
+    throw new CodegenException("Unsupported ReservedFunctionValueType: " + type);
   }
 
   @Override
   public TypeName getNativeType(final NativeTypeContext typeContext) {
-    // TODO
-    return TypeName.VOID;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public @Nullable TypeSpec getGeneratedCode(final String packageName) {
-    // TODO
     throw new UnsupportedOperationException();
   }
 }

@@ -27,7 +27,6 @@ import com.facebook.react.codegen.generator.model.VoidType;
 public final class TypeResolver {
   public static ResolvedType resolveType(
       final Type type, final TypeData typeData, final boolean nullable) {
-    System.out.println("Resolving: " + type);
 
     if (type instanceof AliasType) {
       return AliasResolvedType.create((AliasType) type, typeData, nullable);

@@ -11,6 +11,7 @@ import com.facebook.react.codegen.generator.model.AliasType;
 import com.facebook.react.codegen.generator.model.AnyType;
 import com.facebook.react.codegen.generator.model.ArrayType;
 import com.facebook.react.codegen.generator.model.BooleanType;
+import com.facebook.react.codegen.generator.model.CodegenException;
 import com.facebook.react.codegen.generator.model.DoubleType;
 import com.facebook.react.codegen.generator.model.FloatType;
 import com.facebook.react.codegen.generator.model.FunctionType;
@@ -44,12 +45,14 @@ import java.util.stream.Collectors;
 public final class SchemaJsonParser {
   private final TypeData mTypeData = new TypeData();
 
-  public static TypeData parse(final File schemaFile) throws FileNotFoundException, IOException {
+  public static TypeData parse(final File schemaFile)
+      throws CodegenException, FileNotFoundException, IOException {
     final SchemaJsonParser parser = new SchemaJsonParser();
     return parser.buildTypeData(schemaFile);
   }
 
-  private TypeData buildTypeData(final File schemaFile) throws FileNotFoundException, IOException {
+  private TypeData buildTypeData(final File schemaFile)
+      throws CodegenException, FileNotFoundException, IOException {
     final JsonParser parser = new JsonParser();
     final JsonElement rootElement = parser.parse(new FileReader(schemaFile));
 
@@ -90,8 +93,7 @@ public final class SchemaJsonParser {
   }
 
   // Parse type information from a JSON "typeAnnotation" node.
-  private Type parseTypeAnnotation(final TypeId typeId, final JsonObject typeAnnotation)
-      throws IllegalStateException {
+  private Type parseTypeAnnotation(final TypeId typeId, final JsonObject typeAnnotation) {
     final String type = typeAnnotation.get("type").getAsString();
     // TODO (T71824250): Support NullableTypeAnnotation in the schema instead of a field here.
     final boolean nullable =
@@ -128,7 +130,8 @@ public final class SchemaJsonParser {
         parsedType = new Int32Type(typeId);
         break;
       case NumberType.TYPE_NAME:
-        parsedType = new NumberType(typeId);
+        // Use double type for generic numbers.
+        parsedType = new DoubleType(typeId);
         break;
       case ObjectType.TYPE_NAME:
         parsedType = parseObjectTypeAnnotation(typeId, typeAnnotation);
@@ -145,7 +148,7 @@ public final class SchemaJsonParser {
       case VoidType.TYPE_NAME:
         return VoidType.VOID;
       default:
-        throw new IllegalStateException("Found invalid type annotation: " + type);
+        throw new CodegenException("Found invalid type annotation: " + type);
     }
 
     final Type finalType = maybeCreateNullableType(nullable, parsedType);

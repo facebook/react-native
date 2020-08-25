@@ -7,11 +7,10 @@
 
 package com.facebook.react.codegen.generator.resolver;
 
+import com.facebook.react.codegen.generator.model.CodegenException;
 import com.facebook.react.codegen.generator.model.GenericObjectType;
 import com.facebook.react.codegen.generator.model.TypeData;
 import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import javax.annotation.Nullable;
 
 public final class GenericObjectResolvedType extends ResolvedType<GenericObjectType> {
 
@@ -26,13 +25,16 @@ public final class GenericObjectResolvedType extends ResolvedType<GenericObjectT
 
   @Override
   public TypeName getNativeType(final NativeTypeContext typeContext) {
-    // TODO
-    return TypeName.VOID;
-  }
+    switch (typeContext) {
+      case FUNCTION_ARGUMENT:
+        return TypeUtils.makeNullable(ReactClassNames.REACT_READABLE_MAP, mNullable);
+      case FUNCTION_RETURN:
+        return TypeUtils.makeNullable(ReactClassNames.REACT_WRITABLE_MAP, mNullable);
+      default:
+        break;
+    }
 
-  @Override
-  public @Nullable TypeSpec getGeneratedCode(final String packageName) {
-    // TODO
-    throw new UnsupportedOperationException();
+    throw new CodegenException(
+        "Unsupported GenericObjectType: " + mType + " - typeContext: " + typeContext);
   }
 }
