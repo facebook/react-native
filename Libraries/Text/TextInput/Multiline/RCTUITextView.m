@@ -220,7 +220,7 @@ static UIColor *defaultPlaceholderColor()
 {
   CGSize contentSize = super.contentSize;
   CGSize placeholderSize = _placeholderView.isHidden ? CGSizeZero : self.placeholderSize;
-  // When a text input is empty, it actually displays a placehoder.
+  // When a text input is empty, it actually displays a placeholder.
   // So, we have to consider `placeholderSize` as a minimum `contentSize`.
   // Returning size DOES contain `textContainerInset` (aka `padding`).
   return CGSizeMake(
