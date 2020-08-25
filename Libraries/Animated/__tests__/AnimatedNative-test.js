@@ -12,7 +12,7 @@
 
 jest
   .clearAllMocks()
-  .mock('../../../BatchedBridge/NativeModules', () => ({
+  .mock('../../BatchedBridge/NativeModules', () => ({
     NativeAnimatedModule: {},
     PlatformConstants: {
       getConstants() {
@@ -21,9 +21,9 @@ jest
     },
   }))
   .mock('../NativeAnimatedModule')
-  .mock('../../../EventEmitter/NativeEventEmitter')
+  .mock('../../EventEmitter/NativeEventEmitter')
   // findNodeHandle is imported from ReactNative so mock that whole module.
-  .setMock('../../../Renderer/shims/ReactNative', {findNodeHandle: () => 1});
+  .setMock('../../Renderer/shims/ReactNative', {findNodeHandle: () => 1});
 
 import TestRenderer from 'react-test-renderer';
 import * as React from 'react';

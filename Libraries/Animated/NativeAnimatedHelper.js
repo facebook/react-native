@@ -12,8 +12,8 @@
 
 import NativeAnimatedNonTurboModule from './NativeAnimatedModule';
 import NativeAnimatedTurboModule from './NativeAnimatedTurboModule';
-import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
-import Platform from '../../Utilities/Platform';
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import Platform from '../Utilities/Platform';
 import type {EventConfig} from './AnimatedEvent';
 import type {
   EventMapping,

@@ -12,7 +12,7 @@
 
 const AnimatedValue = require('./nodes/AnimatedValue');
 const NativeAnimatedHelper = require('./NativeAnimatedHelper');
-const ReactNative = require('../../Renderer/shims/ReactNative');
+const ReactNative = require('../Renderer/shims/ReactNative');
 
 const invariant = require('invariant');
 

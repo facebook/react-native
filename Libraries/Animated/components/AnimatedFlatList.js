@@ -12,7 +12,7 @@
 
 import * as React from 'react';
 
-const FlatList = require('../../../Lists/FlatList');
+const FlatList = require('../../Lists/FlatList');
 const createAnimatedComponent = require('../createAnimatedComponent');
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';

@@ -12,12 +12,14 @@
 
 import * as React from 'react';
 
-const View = require('../../../Components/View/View');
+const Image = require('../../Image/Image');
 const createAnimatedComponent = require('../createAnimatedComponent');
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-module.exports = (createAnimatedComponent(View): AnimatedComponentType<
-  React.ElementConfig<typeof View>,
-  React.ElementRef<typeof View>,
+module.exports = (createAnimatedComponent(
+  (Image: $FlowFixMe),
+): AnimatedComponentType<
+  React.ElementConfig<typeof Image>,
+  React.ElementRef<typeof Image>,
 >);

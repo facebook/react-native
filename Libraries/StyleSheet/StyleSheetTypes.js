@@ -10,7 +10,7 @@
 
 'use strict';
 
-const AnimatedNode = require('../Animated/src/nodes/AnimatedNode');
+const AnimatedNode = require('../Animated/nodes/AnimatedNode');
 
 import type {NativeColorValue} from './PlatformColorValueTypes';
 

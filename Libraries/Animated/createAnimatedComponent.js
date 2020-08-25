@@ -10,15 +10,15 @@
 
 'use strict';
 
-const View = require('../../Components/View/View');
-const Platform = require('../../Utilities/Platform');
+const View = require('../Components/View/View');
+const Platform = require('../Utilities/Platform');
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('react');
 const NativeAnimatedHelper = require('./NativeAnimatedHelper');
 
 const invariant = require('invariant');
-const setAndForwardRef = require('../../Utilities/setAndForwardRef');
+const setAndForwardRef = require('../Utilities/setAndForwardRef');
 
 let animatedComponentNextId = 1;
 

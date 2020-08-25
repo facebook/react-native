@@ -13,7 +13,7 @@
 import TestRenderer from 'react-test-renderer';
 import * as React from 'react';
 
-jest.mock('../../../BatchedBridge/NativeModules', () => ({
+jest.mock('../../BatchedBridge/NativeModules', () => ({
   NativeAnimatedModule: {},
   PlatformConstants: {
     getConstants() {
@@ -689,13 +689,13 @@ describe('Animated tests', () => {
     let InteractionManager;
 
     beforeEach(() => {
-      jest.mock('../../../Interaction/InteractionManager');
+      jest.mock('../../Interaction/InteractionManager');
       Animated = require('../Animated');
-      InteractionManager = require('../../../Interaction/InteractionManager');
+      InteractionManager = require('../../Interaction/InteractionManager');
     });
 
     afterEach(() => {
-      jest.unmock('../../../Interaction/InteractionManager');
+      jest.unmock('../../Interaction/InteractionManager');
     });
 
     it('registers an interaction by default', () => {

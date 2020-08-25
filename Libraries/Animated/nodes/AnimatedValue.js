@@ -12,7 +12,7 @@
 
 const AnimatedInterpolation = require('./AnimatedInterpolation');
 const AnimatedWithChildren = require('./AnimatedWithChildren');
-const InteractionManager = require('../../../Interaction/InteractionManager');
+const InteractionManager = require('../../Interaction/InteractionManager');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
 import type Animation, {EndCallback} from '../animations/Animation';

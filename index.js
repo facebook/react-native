@@ -47,7 +47,7 @@ import typeof VirtualizedList from './Libraries/Lists/VirtualizedList';
 import typeof VirtualizedSectionList from './Libraries/Lists/VirtualizedSectionList';
 import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
 import typeof Alert from './Libraries/Alert/Alert';
-import typeof Animated from './Libraries/Animated/src/Animated';
+import typeof Animated from './Libraries/Animated/Animated';
 import typeof Appearance from './Libraries/Utilities/Appearance';
 import typeof AppRegistry from './Libraries/ReactNative/AppRegistry';
 import typeof AppState from './Libraries/AppState/AppState';
@@ -58,7 +58,7 @@ import typeof DatePickerAndroid from './Libraries/Components/DatePickerAndroid/D
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
 import typeof DevSettings from './Libraries/Utilities/DevSettings';
 import typeof Dimensions from './Libraries/Utilities/Dimensions';
-import typeof Easing from './Libraries/Animated/src/Easing';
+import typeof Easing from './Libraries/Animated/Easing';
 import typeof ReactNative from './Libraries/Renderer/shims/ReactNative';
 import typeof I18nManager from './Libraries/ReactNative/I18nManager';
 import typeof ImagePickerIOS from './Libraries/Image/ImagePickerIOS';
@@ -278,7 +278,7 @@ module.exports = {
     return require('./Libraries/Alert/Alert');
   },
   get Animated(): Animated {
-    return require('./Libraries/Animated/src/Animated');
+    return require('./Libraries/Animated/Animated');
   },
   get Appearance(): Appearance {
     return require('./Libraries/Utilities/Appearance');
@@ -330,7 +330,7 @@ module.exports = {
     return require('./Libraries/Utilities/Dimensions');
   },
   get Easing(): Easing {
-    return require('./Libraries/Animated/src/Easing');
+    return require('./Libraries/Animated/Easing');
   },
   get findNodeHandle(): $PropertyType<ReactNative, 'findNodeHandle'> {
     return require('./Libraries/Renderer/shims/ReactNative').findNodeHandle;
