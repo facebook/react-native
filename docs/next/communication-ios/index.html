@@ -205,7 +205,7 @@ rootView.appProperties = @{<span class="hljs-string">@"images"</span> : imageLis
 }
 </code></pre>
 <p>In the example we have a <code>FlexibleSizeExampleView</code> view that holds a root view. We create the root view, initialize it and set the delegate. The delegate will handle size updates. Then, we set the root view's size flexibility to <code>RCTRootViewSizeFlexibilityHeight</code>, which means that <code>rootViewDidChangeIntrinsicSize:</code> method will be called every time the React Native content changes its height. Finally, we set the root view's width and position. Note that we set there height as well, but it has no effect as we made the height RN-dependent.</p>
-<p>You can checkout full source code of the example <a href="https://github.com/facebook/react-native/blob/master/RNTester/RNTester/NativeExampleViews/FlexibleSizeExampleView.m">here</a>.</p>
+<p>You can checkout full source code of the example <a href="https://github.com/facebook/react-native/blob/master/packages/rn-tester/RNTester/NativeExampleViews/FlexibleSizeExampleView.m">here</a>.</p>
 <p>It's fine to change root view's size flexibility mode dynamically. Changing flexibility mode of a root view will schedule a layout recalculation and the delegate <code>rootViewDidChangeIntrinsicSize:</code> method will be called once the content size is known.</p>
 <blockquote>
 <p><strong><em>Note:</em></strong> React Native layout calculation is performed on a separate thread, while native UI view updates are done on the main thread. This may cause temporary UI inconsistencies between native and React Native. This is a known problem and our team is working on synchronizing UI updates coming from different sources.</p>
