@@ -20,7 +20,6 @@ type Props = $ReadOnly<{|
   description?: ?string,
 |}>;
 
-/** functional component for generating example blocks */
 const RNTesterBlock = ({description, title, children}: Props): React.Node => {
   const theme = React.useContext(RNTesterThemeContext);
   return (

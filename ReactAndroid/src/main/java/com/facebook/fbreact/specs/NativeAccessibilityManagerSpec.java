@@ -32,13 +32,13 @@ public abstract class NativeAccessibilityManagerSpec extends ReactContextBaseJav
   public abstract void getCurrentReduceTransparencyState(Callback onSuccess, Callback onError);
 
   @ReactMethod
-  public abstract void getCurrentInvertColorsState(Callback onSuccess, Callback onError);
+  public abstract void getCurrentBoldTextState(Callback onSuccess, Callback onError);
 
   @ReactMethod
   public abstract void getCurrentGrayscaleState(Callback onSuccess, Callback onError);
 
   @ReactMethod
-  public abstract void getCurrentBoldTextState(Callback onSuccess, Callback onError);
+  public abstract void getCurrentInvertColorsState(Callback onSuccess, Callback onError);
 
   @ReactMethod
   public abstract void setAccessibilityFocus(double reactTag);

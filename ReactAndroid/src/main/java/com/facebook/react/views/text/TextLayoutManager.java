@@ -21,6 +21,7 @@ import android.text.TextPaint;
 import android.util.LayoutDirection;
 import android.util.LruCache;
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
@@ -33,6 +34,7 @@ import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** Class responsible of creating {@link Spanned} object for the JS representation of Text */
 public class TextLayoutManager {
@@ -57,7 +59,10 @@ public class TextLayoutManager {
   private static final String INCLUDE_FONT_PADDING_KEY = "includeFontPadding";
   private static final String TEXT_BREAK_STRATEGY_KEY = "textBreakStrategy";
   private static final String MAXIMUM_NUMBER_OF_LINES_KEY = "maximumNumberOfLines";
-  private static LruCache<String, Spannable> sSpannableCache = new LruCache<>(spannableCacheSize);
+  private static final LruCache<String, Spannable> sSpannableCache =
+      new LruCache<>(spannableCacheSize);
+  private static final ConcurrentHashMap<Integer, Spannable> sTagToSpannableCache =
+      new ConcurrentHashMap<>();
 
   public static boolean isRTL(ReadableMap attributedString) {
     ReadableArray fragments = attributedString.getArray("fragments");
@@ -68,6 +73,14 @@ public class TextLayoutManager {
       return textAttributes.mLayoutDirection == LayoutDirection.RTL;
     }
     return false;
+  }
+
+  public static void setCachedSpannabledForTag(int reactTag, @NonNull Spannable sp) {
+    sTagToSpannableCache.put(reactTag, sp);
+  }
+
+  public static void deleteCachedSpannableForTag(int reactTag) {
+    sTagToSpannableCache.remove(reactTag);
   }
 
   private static void buildSpannableFromFragment(
@@ -227,8 +240,17 @@ public class TextLayoutManager {
 
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     TextPaint textPaint = sTextPaintInstance;
-    Spannable text =
-        getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+    Spannable text;
+    if (attributedString.hasKey("cacheId")) {
+      int cacheId = attributedString.getInt("cacheId");
+      if (sTagToSpannableCache.containsKey(cacheId)) {
+        text = sTagToSpannableCache.get(attributedString.getInt("cacheId"));
+      } else {
+        return 0;
+      }
+    } else {
+      text = getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+    }
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(

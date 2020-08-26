@@ -48,7 +48,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 @end
 
 @implementation RCTScrollViewComponentView {
-  ScrollViewShadowNode::ConcreteState::Shared _state;
+  ScrollViewShadowNode::ConcreteStateTeller _stateTeller;
   CGSize _contentSize;
   NSTimeInterval _lastScrollEventDispatchTime;
   NSTimeInterval _scrollEventThrottle;
@@ -227,8 +227,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
   assert(std::dynamic_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state));
-  _state = std::static_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state);
-  auto &data = _state->getData();
+  _stateTeller.setConcreteState(state);
+  auto data = _stateTeller.getData().value();
 
   auto contentOffset = RCTCGPointFromPoint(data.contentOffset);
   if (!oldState && !CGPointEqualToPoint(contentOffset, CGPointZero)) {
@@ -284,11 +284,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)_updateStateWithContentOffset
 {
-  if (!_state) {
-    return;
-  }
   auto contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
-  _state->updateState([contentOffset](ScrollViewShadowNode::ConcreteState::Data const &data) {
+  _stateTeller.updateState([contentOffset](ScrollViewShadowNode::ConcreteState::Data const &data) {
     auto newData = data;
     newData.contentOffset = contentOffset;
     return newData;
@@ -299,7 +296,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 {
   const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
   _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
-  _state.reset();
+  _stateTeller.invalidate();
   _isUserTriggeredScrolling = NO;
   [super prepareForRecycle];
 }

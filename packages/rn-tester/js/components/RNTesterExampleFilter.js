@@ -20,6 +20,7 @@ const {
   Image,
 } = require('react-native');
 import {RNTesterThemeContext} from './RNTesterTheme';
+import type {RNTesterExample} from '../types/RNTesterTypes';
 
 import type {SectionData} from '../types/RNTesterTypes';
 

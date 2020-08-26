@@ -11,6 +11,7 @@ import com.facebook.react.codegen.generator.model.AliasType;
 import com.facebook.react.codegen.generator.model.AnyType;
 import com.facebook.react.codegen.generator.model.ArrayType;
 import com.facebook.react.codegen.generator.model.BooleanType;
+import com.facebook.react.codegen.generator.model.CodegenException;
 import com.facebook.react.codegen.generator.model.DoubleType;
 import com.facebook.react.codegen.generator.model.FloatType;
 import com.facebook.react.codegen.generator.model.FunctionType;
@@ -21,12 +22,13 @@ import com.facebook.react.codegen.generator.model.NullableType;
 import com.facebook.react.codegen.generator.model.NumberType;
 import com.facebook.react.codegen.generator.model.ObjectType;
 import com.facebook.react.codegen.generator.model.PromiseType;
-import com.facebook.react.codegen.generator.model.RawSchema;
 import com.facebook.react.codegen.generator.model.ReservedFunctionValueType;
 import com.facebook.react.codegen.generator.model.StringType;
 import com.facebook.react.codegen.generator.model.Type;
+import com.facebook.react.codegen.generator.model.TypeData;
 import com.facebook.react.codegen.generator.model.TypeId;
 import com.facebook.react.codegen.generator.model.VoidType;
+import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -41,8 +43,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class SchemaJsonParser {
+  private final TypeData mTypeData = new TypeData();
 
-  public static RawSchema parse(final File schemaFile) throws FileNotFoundException, IOException {
+  public static TypeData parse(final File schemaFile)
+      throws CodegenException, FileNotFoundException, IOException {
+    final SchemaJsonParser parser = new SchemaJsonParser();
+    return parser.buildTypeData(schemaFile);
+  }
+
+  private TypeData buildTypeData(final File schemaFile)
+      throws CodegenException, FileNotFoundException, IOException {
     final JsonParser parser = new JsonParser();
     final JsonElement rootElement = parser.parse(new FileReader(schemaFile));
 
@@ -63,63 +73,27 @@ public final class SchemaJsonParser {
                   return;
                 }
 
-                collection.put(
-                    jsModuleName,
-                    nativeModules.entrySet().stream()
-                        .collect(
-                            Collectors.toMap(
-                                Map.Entry::getKey,
-                                e -> {
-                                  return parseNativeModule(
-                                      // TODO (T71955395): NativeModule spec type name does not
-                                      // exist in the schema. For now assume it's "Spec".
-                                      TypeId.of(jsModuleName, "Spec"),
-                                      e.getValue().getAsJsonObject());
-                                })));
+                nativeModules
+                    .entrySet()
+                    .forEach(
+                        e -> {
+                          final Type parsedType =
+                              parseNativeModule(
+                                  // TODO (T71955395): NativeModule spec type name does not
+                                  // exist in the schema. For now assume it's "Spec".
+                                  // The final type name will be the output class name.
+                                  TypeId.of(jsModuleName, "Native" + e.getKey() + "Spec"),
+                                  e.getValue().getAsJsonObject());
+                          mTypeData.addType(parsedType);
+                        });
               });
     }
 
-    return new RawSchema(collection);
-  }
-
-  private static NativeModuleType parseNativeModule(final TypeId typeId, final JsonObject json) {
-    final JsonObject aliases = json.getAsJsonObject("aliases");
-    final JsonArray properties = json.getAsJsonArray("properties");
-
-    final ImmutableList<Type> collectedAliases =
-        ImmutableList.copyOf(
-            aliases.entrySet().stream()
-                .map(
-                    entry -> {
-                      final String typeName = entry.getKey();
-                      final JsonObject typeAnnotation = entry.getValue().getAsJsonObject();
-                      // The alias name is the type name that other types can refer to.
-                      return parseTypeAnnotation(
-                          TypeId.of(typeId.moduleName, typeName), typeAnnotation);
-                    })
-                .collect(Collectors.toList()));
-
-    ImmutableList.Builder<NativeModuleType.Property> collectedPropertiesBuilder =
-        new ImmutableList.Builder<>();
-    properties.forEach(
-        p -> {
-          final JsonObject node = p.getAsJsonObject();
-          final String name = node.has("name") ? node.get("name").getAsString() : null;
-          final JsonObject typeAnnotation = node.getAsJsonObject("typeAnnotation");
-          // TODO (T71845349): "optional" field shouldn't be part of the Function's typeAnnotation.
-          final boolean optional = typeAnnotation.get("optional").getAsBoolean();
-          final TypeId propertyTypeId = TypeId.of(typeId.moduleName);
-          collectedPropertiesBuilder.add(
-              new NativeModuleType.Property(
-                  name, parseTypeAnnotation(propertyTypeId, typeAnnotation), optional));
-        });
-
-    return new NativeModuleType(typeId, collectedAliases, collectedPropertiesBuilder.build());
+    return mTypeData;
   }
 
   // Parse type information from a JSON "typeAnnotation" node.
-  private static Type parseTypeAnnotation(final TypeId typeId, final JsonObject typeAnnotation)
-      throws IllegalStateException {
+  private Type parseTypeAnnotation(final TypeId typeId, final JsonObject typeAnnotation) {
     final String type = typeAnnotation.get("type").getAsString();
     // TODO (T71824250): Support NullableTypeAnnotation in the schema instead of a field here.
     final boolean nullable =
@@ -156,7 +130,8 @@ public final class SchemaJsonParser {
         parsedType = new Int32Type(typeId);
         break;
       case NumberType.TYPE_NAME:
-        parsedType = new NumberType(typeId);
+        // Use double type for generic numbers.
+        parsedType = new DoubleType(typeId);
         break;
       case ObjectType.TYPE_NAME:
         parsedType = parseObjectTypeAnnotation(typeId, typeAnnotation);
@@ -173,63 +148,99 @@ public final class SchemaJsonParser {
       case VoidType.TYPE_NAME:
         return VoidType.VOID;
       default:
-        throw new IllegalStateException("Found invalid type annotation: " + type);
+        throw new CodegenException("Found invalid type annotation: " + type);
     }
 
-    return maybeCreateNullableType(nullable, parsedType);
+    final Type finalType = maybeCreateNullableType(nullable, parsedType);
+    mTypeData.addType(finalType);
+    return finalType;
   }
 
-  private static Type parseAliasTypeAnnotation(
-      final TypeId typeId, final JsonObject typeAnnotation) {
+  private NativeModuleType parseNativeModule(final TypeId typeId, final JsonObject json) {
+    final JsonObject aliases = json.getAsJsonObject("aliases");
+    final JsonArray properties = json.getAsJsonArray("properties");
+
+    final ImmutableList<Type> collectedAliases =
+        ImmutableList.copyOf(
+            aliases.entrySet().stream()
+                .map(
+                    entry -> {
+                      final String typeName = entry.getKey();
+                      final JsonObject typeAnnotation = entry.getValue().getAsJsonObject();
+                      // The alias name is the type name that other types can refer to.
+                      return parseTypeAnnotation(
+                          TypeId.of(typeId.moduleName, typeName), typeAnnotation);
+                    })
+                .collect(Collectors.toList()));
+
+    ImmutableList.Builder<NativeModuleType.Property> collectedPropertiesBuilder =
+        new ImmutableList.Builder<>();
+    properties.forEach(
+        p -> {
+          final JsonObject node = p.getAsJsonObject();
+          final String name = node.has("name") ? node.get("name").getAsString() : null;
+          final JsonObject typeAnnotation = node.getAsJsonObject("typeAnnotation");
+          // TODO (T71845349): "optional" field shouldn't be part of the Function's typeAnnotation.
+          final boolean optional = typeAnnotation.get("optional").getAsBoolean();
+          final TypeId propertyTypeId =
+              TypeId.expandOf(typeId, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name));
+          collectedPropertiesBuilder.add(
+              new NativeModuleType.Property(
+                  name, parseTypeAnnotation(propertyTypeId, typeAnnotation), optional));
+        });
+
+    return new NativeModuleType(typeId, collectedAliases, collectedPropertiesBuilder.build());
+  }
+
+  private Type parseAliasTypeAnnotation(final TypeId typeId, final JsonObject typeAnnotation) {
     // For now, assume the alias lives inside the same file.
     return new AliasType(
         typeId, TypeId.of(typeId.moduleName, typeAnnotation.get("name").getAsString()));
   }
 
-  private static Type parseArrayTypeAnnotation(
-      final TypeId typeId, final JsonObject typeAnnotation) {
+  private Type parseArrayTypeAnnotation(final TypeId typeId, final JsonObject typeAnnotation) {
     final JsonObject elementTypeAnnotation = typeAnnotation.getAsJsonObject("elementType");
+    final TypeId elementTypeId = TypeId.expandOf(typeId, "ElementType");
     // TODO (T71847026): Some array types are missing elementType annotation.
     final Type elementType =
         elementTypeAnnotation != null
-            ? parseTypeAnnotation(TypeId.of(typeId.moduleName), elementTypeAnnotation)
-            : new AnyType(TypeId.of(typeId.moduleName));
-
+            ? parseTypeAnnotation(elementTypeId, elementTypeAnnotation)
+            : new AnyType(elementTypeId);
     return new ArrayType(typeId, elementType);
   }
 
-  private static Type parseFunctionTypeAnnotation(
-      final TypeId typeId, final JsonObject typeAnnotation) {
+  private Type parseFunctionTypeAnnotation(final TypeId typeId, final JsonObject typeAnnotation) {
     final JsonArray params = typeAnnotation.getAsJsonArray("params");
 
     ImmutableList.Builder<FunctionType.ArgumentType> paramsList = new ImmutableList.Builder<>();
 
     // TODO (T71846321): Some functions are missing params specification.
     if (params != null) {
-      params.forEach(
-          p -> {
-            final JsonObject node = p.getAsJsonObject();
-            final String name = node.has("name") ? node.get("name").getAsString() : null;
-            paramsList.add(
-                FunctionType.createArgument(
-                    name,
-                    parseTypeAnnotation(
-                        TypeId.of(typeId.moduleName), node.getAsJsonObject("typeAnnotation"))));
-          });
+      for (int i = 0; i < params.size(); i++) {
+        final JsonElement p = params.get(i);
+        final JsonObject node = p.getAsJsonObject();
+        final String name = node.has("name") ? node.get("name").getAsString() : ("Arg" + i);
+        paramsList.add(
+            FunctionType.createArgument(
+                name,
+                parseTypeAnnotation(
+                    TypeId.expandOf(
+                        typeId, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name)),
+                    node.getAsJsonObject("typeAnnotation"))));
+      }
     }
 
     // TODO (T71846321): Some functions are missing a return type.
     final JsonObject returnTypeAnnotation = typeAnnotation.getAsJsonObject("returnTypeAnnotation");
     final Type returnType =
         returnTypeAnnotation != null
-            ? parseTypeAnnotation(TypeId.of(typeId.moduleName), returnTypeAnnotation)
+            ? parseTypeAnnotation(TypeId.expandOf(typeId, "ReturnType"), returnTypeAnnotation)
             : VoidType.VOID;
 
     return new FunctionType(typeId, paramsList.build(), returnType);
   }
 
-  private static Type parseObjectTypeAnnotation(
-      final TypeId typeId, final JsonObject typeAnnotation) {
+  private Type parseObjectTypeAnnotation(final TypeId typeId, final JsonObject typeAnnotation) {
     final JsonArray properties = typeAnnotation.getAsJsonArray("properties");
 
     ImmutableList.Builder<ObjectType.Property> propertiesList = new ImmutableList.Builder<>();
@@ -239,7 +250,8 @@ public final class SchemaJsonParser {
           final String name = node.has("name") ? node.get("name").getAsString() : null;
           final boolean optional = node.get("optional").getAsBoolean();
           final JsonObject propertyTypeAnnotation = node.getAsJsonObject("typeAnnotation");
-          final TypeId propertyTypeId = TypeId.of(typeId.moduleName);
+          final TypeId propertyTypeId =
+              TypeId.expandOf(typeId, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name));
 
           // TODO (T67898313): Some object properties are missing typeAnnotation.
           final Type propertyType =
@@ -253,14 +265,14 @@ public final class SchemaJsonParser {
     return new ObjectType(typeId, propertiesList.build());
   }
 
-  private static Type parseReservedFunctionValueTypeAnnotation(
+  private Type parseReservedFunctionValueTypeAnnotation(
       final TypeId typeId, final JsonObject typeAnnotation) {
     return new ReservedFunctionValueType(
         typeId,
         ReservedFunctionValueType.ReservedName.valueOf(typeAnnotation.get("name").getAsString()));
   }
 
-  private static Type maybeCreateNullableType(final boolean nullable, final Type original) {
+  private Type maybeCreateNullableType(final boolean nullable, final Type original) {
     if (!nullable || original instanceof VoidType) {
       return original;
     }

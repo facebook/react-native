@@ -47,7 +47,6 @@ fb_native.sh_binary(
         "buck_tests/generate-tests.js",
         "package.json",
         "//xplat/js:setup_env",
-        "yarn.lock",
     ],
     visibility = ["PUBLIC"],
 )

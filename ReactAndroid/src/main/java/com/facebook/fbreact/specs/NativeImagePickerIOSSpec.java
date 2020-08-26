@@ -30,11 +30,11 @@ public abstract class NativeImagePickerIOSSpec extends ReactContextBaseJavaModul
       Callback cancelCallback);
 
   @ReactMethod
-  public abstract void openSelectDialog(ReadableMap config, Callback successCallback,
-      Callback cancelCallback);
+  public abstract void canUseCamera(Callback callback);
 
   @ReactMethod
-  public abstract void canUseCamera(Callback callback);
+  public abstract void openSelectDialog(ReadableMap config, Callback successCallback,
+      Callback cancelCallback);
 
   @ReactMethod
   public abstract void canRecordVideos(Callback callback);

@@ -12,6 +12,18 @@
 #include <string>
 #include <vector>
 
+#ifndef JSINSPECTOR_EXPORT
+#ifdef _MSC_VER
+#ifdef CREATE_SHARED_LIBRARY
+#define JSINSPECTOR_EXPORT __declspec(dllexport)
+#else
+#define JSINSPECTOR_EXPORT
+#endif // CREATE_SHARED_LIBRARY
+#else // _MSC_VER
+#define JSINSPECTOR_EXPORT __attribute__((visibility("default")))
+#endif // _MSC_VER
+#endif // !defined(JSINSPECTOR_EXPORT)
+
 namespace facebook {
 namespace react {
 
@@ -27,7 +39,7 @@ struct InspectorPage {
 };
 
 /// IRemoteConnection allows the VM to send debugger messages to the client.
-class IRemoteConnection : public IDestructible {
+class JSINSPECTOR_EXPORT IRemoteConnection : public IDestructible {
  public:
   virtual ~IRemoteConnection() = 0;
   virtual void onMessage(std::string message) = 0;
@@ -35,7 +47,7 @@ class IRemoteConnection : public IDestructible {
 };
 
 /// ILocalConnection allows the client to send debugger messages to the VM.
-class ILocalConnection : public IDestructible {
+class JSINSPECTOR_EXPORT ILocalConnection : public IDestructible {
  public:
   virtual ~ILocalConnection() = 0;
   virtual void sendMessage(std::string message) = 0;
@@ -43,7 +55,7 @@ class ILocalConnection : public IDestructible {
 };
 
 /// IInspector tracks debuggable JavaScript targets (pages).
-class IInspector : public IDestructible {
+class JSINSPECTOR_EXPORT IInspector : public IDestructible {
  public:
   using ConnectFunc = std::function<std::unique_ptr<ILocalConnection>(
       std::unique_ptr<IRemoteConnection>)>;

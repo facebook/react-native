@@ -35,10 +35,10 @@ public abstract class NativeWebSocketModuleSpec extends ReactContextBaseJavaModu
   public abstract void ping(double socketID);
 
   @ReactMethod
-  public abstract void close(double code, String reason, double socketID);
+  public abstract void send(String message, double forSocketID);
 
   @ReactMethod
-  public abstract void send(String message, double forSocketID);
+  public abstract void close(double code, String reason, double socketID);
 
   @ReactMethod
   public abstract void connect(String url, ReadableArray protocols, ReadableMap options,

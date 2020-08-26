@@ -21,7 +21,7 @@ namespace jsi {
 /// controls the instrumentation of.
 /// None of these functions should return newly created jsi values, nor should
 /// it modify the values of any jsi values in the heap (although GCs are fine).
-class Instrumentation {
+class JSI_EXPORT Instrumentation {
  public:
   virtual ~Instrumentation() = default;
 

@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
 import React from 'react';
 import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
 
@@ -6,85 +15,98 @@ import {RNTesterThemeContext} from './RNTesterTheme';
 const RNTesterNavbar = ({handleNavBarPress, screen}) => {
   const theme = React.useContext(RNTesterThemeContext);
 
-  /** to be attached to navigation framework */
-  const isAPIActive =  screen === 'apis';
-  const isComponentActive =   screen === 'components';
-  const isBookmarkActive =   screen === 'bookmarks';
+  const isAPIActive = screen === 'apis';
+  const isComponentActive = screen === 'components';
+  const isBookmarkActive = screen === 'bookmarks';
 
   return (
     <View>
       {/** Bottom Navbar code */}
-        {/** component and APIs tab  */}
-        <View style={styles.buttonContainer}>
-          {/** left tab with Components  */}
-            <Pressable
-              testID="components-tab"
-              onPress={() =>  handleNavBarPress({ screen: 'components'})}
-              style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
-               <View style={[styles.pressableContent, isComponentActive ? styles.activeBar : null]} collapsable={false}>
-                <Image
-                  style={styles.componentIcon}
-                  source={
-                    isComponentActive
-                      ? require('./../assets/bottom-nav-components-icon-active.png')
-                      : require('./../assets/bottom-nav-components-icon-inactive.png')
-                  }
-                />
-                <Text
-                  style={
-                    isComponentActive ? styles.activeText : styles.inactiveText
-                  }>
-                  Components
-                </Text>
-              </View>
-            </Pressable>
-
-          {/** central tab with bookmark icon  */}
-          <View style={styles.centerBox}>
+      {/** component and APIs tab  */}
+      <View style={styles.buttonContainer}>
+        {/** left tab with Components  */}
+        <Pressable
+          testID="components-tab"
+          onPress={() => handleNavBarPress({screen: 'components'})}
+          style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
+          <View
+            style={[
+              styles.pressableContent,
+              isComponentActive ? styles.activeBar : null,
+            ]}
+            collapsable={false}>
             <Image
-              style={styles.centralBoxCutout}
-              source={require('./../assets/bottom-nav-center-box.png')}
+              style={styles.componentIcon}
+              source={
+                isComponentActive
+                  ? require('./../assets/bottom-nav-components-icon-active.png')
+                  : require('./../assets/bottom-nav-components-icon-inactive.png')
+              }
             />
+            <Text
+              style={
+                isComponentActive ? styles.activeText : styles.inactiveText
+              }>
+              Components
+            </Text>
+          </View>
+        </Pressable>
+
+        {/** central tab with bookmark icon  */}
+        <View style={styles.centerBox}>
+          <Image
+            style={styles.centralBoxCutout}
+            source={require('./../assets/bottom-nav-center-box.png')}
+          />
 
           {/** floating button in center  */}
           <View style={styles.floatContainer}>
             <Pressable
               testID="bookmarks-tab"
-              onPress={() =>  handleNavBarPress({ screen: 'bookmarks'})}>
-                <View style={[styles.floatingButton, {backgroundColor: theme.BorderColor}]} >
+              onPress={() => handleNavBarPress({screen: 'bookmarks'})}>
+              <View
+                style={[
+                  styles.floatingButton,
+                  {backgroundColor: theme.BorderColor},
+                ]}>
                 <Image
-                    style={styles.bookmarkIcon}
-                    source={
+                  style={styles.bookmarkIcon}
+                  source={
                     isBookmarkActive
-                        ? require('../assets/bottom-nav-bookmark-fill.png')
-                        : require('../assets/bottom-nav-bookmark-outline.png')
-                    }
+                      ? require('../assets/bottom-nav-bookmark-fill.png')
+                      : require('../assets/bottom-nav-bookmark-outline.png')
+                  }
                 />
-                </View>
+              </View>
             </Pressable>
-            </View>
           </View>
-
-          {/** right tab with Components  */}
-         <Pressable
-          testID="apis-tab"
-          onPress={() =>  handleNavBarPress({ screen: 'apis'})}
-          style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
-            <View style={[styles.pressableContent, isAPIActive ? styles.activeBar : null]} collapsable={false}>
-              <Image
-                style={styles.apiIcon}
-                source={
-                  isAPIActive
-                    ? require('./../assets/bottom-nav-apis-icon-active.png')
-                    : require('./../assets/bottom-nav-apis-icon-inactive.png')
-                }
-              />
-              <Text style={isAPIActive ? styles.activeText : styles.inactiveText}>
-                APIs
-              </Text>
-            </View>
-         </Pressable>
         </View>
+
+        {/** right tab with Components  */}
+        <Pressable
+          testID="apis-tab"
+          onPress={() => handleNavBarPress({screen: 'apis'})}
+          style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
+          <View
+            style={[
+              styles.pressableContent,
+              isAPIActive ? styles.activeBar : null,
+            ]}
+            collapsable={false}>
+            <Image
+              style={styles.apiIcon}
+              source={
+                isAPIActive
+                  ? require('./../assets/bottom-nav-apis-icon-active.png')
+                  : require('./../assets/bottom-nav-apis-icon-inactive.png')
+              }
+            />
+            <Text style={isAPIActive ? styles.activeText : styles.inactiveText}>
+              APIs
+            </Text>
+          </View>
+        </Pressable>
+      </View>
     </View>
   );
 };
@@ -136,8 +158,8 @@ const styles = StyleSheet.create({
     color: '#B1B4BA',
   },
   activeBar: {
-    borderTopWidth:2,
-    borderColor:'#005DFF',
+    borderTopWidth: 2,
+    borderColor: '#005DFF',
   },
   centralBoxCutout: {
     height: '100%',

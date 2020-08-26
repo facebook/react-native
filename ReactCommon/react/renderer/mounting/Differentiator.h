@@ -13,7 +13,7 @@
 namespace facebook {
 namespace react {
 
-enum class DifferentiatorMode { Classic, OptimizedMoves };
+enum class ReparentMode { Flatten, Unflatten };
 
 /*
  * Calculates a list of view mutations which describes how the old
@@ -31,6 +31,15 @@ ShadowViewMutationList calculateShadowViewMutations(
  */
 ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
     ShadowNode const &shadowNode);
+
+/**
+ * Generates a list of `ShadowViewNodePair`s that represents a layer of a
+ * flattened view hierarchy. The V2 version preserves nodes even if they do
+ * not form views and their children are flattened.
+ */
+ShadowViewNodePair::List sliceChildShadowNodeViewPairsV2(
+    ShadowNode const &shadowNode,
+    bool allowFlattened = false);
 
 } // namespace react
 } // namespace facebook

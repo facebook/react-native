@@ -23,6 +23,8 @@ export type RNTesterExampleModule = $ReadOnly<{|
   title: string,
   description: string,
   displayName?: ?string,
+  documentationURL?: ?string,
+  category?: ?string,
   framework?: string,
   examples: Array<RNTesterExampleModuleItem>,
   simpleExampleContainer?: ?boolean,
