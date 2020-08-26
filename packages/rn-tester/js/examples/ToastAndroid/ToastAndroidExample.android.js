@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'Toast Example';
+exports.category = 'Android';
 exports.description =
   'Example that demonstrates the use of an Android Toast to provide feedback.';
 exports.examples = [

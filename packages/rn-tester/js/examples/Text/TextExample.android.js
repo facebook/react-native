@@ -878,7 +878,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
-exports.title = '<Text>';
+exports.title = 'Text';
+exports.documentationURL = 'https://reactnative.dev/docs/text';
+exports.category = 'Basic';
 exports.description = 'Base component for rendering styled text.';
 exports.examples = [
   {
