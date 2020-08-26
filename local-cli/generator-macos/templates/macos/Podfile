@@ -85,7 +85,7 @@ abstract_target 'Shared' do
     #
     # Be sure to first install the `hermes-engine-darwin` npm package, e.g.:
     #
-    #   $ yarn add --dev 'hermes-engine-darwin@^0.4.3'
+    #   $ yarn add 'hermes-engine-darwin@^0.4.3'
     #
     # pod 'React-Core/Hermes', :path => '../node_modules/react-native-macos/'
     # pod 'hermes', :path => '../node_modules/hermes-engine-darwin'
