@@ -78,13 +78,13 @@ abstract_target 'Shared' do
   pod 'boost-for-react-native', :podspec => '../node_modules/react-native-macos/third-party-podspecs/boost-for-react-native.podspec'
 
   target 'HelloWorld-macOS' do
-    platform :macos, '10.14'
+    platform :macos, '10.13'
     use_native_modules!
 
     # Enables Hermes
     #
     # Be sure to first install the `hermes-engine-darwin` npm package, e.g.:
-    # 
+    #
     #   $ yarn add --dev 'hermes-engine-darwin@^0.4.3'
     #
     # pod 'React-Core/Hermes', :path => '../node_modules/react-native-macos/'

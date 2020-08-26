@@ -63,7 +63,7 @@ def pods(options = {})
   # use_react_native!(path: "..", fabric_enabled: true)
 end
 
-  
+
 def flipper_pods()
   flipperkit_version = '0.30.1'
   pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
@@ -116,7 +116,7 @@ target 'RNTester' do
 end
 
 target 'RNTester-macOS' do
-  platform :osx, '10.14'
+  platform :osx, '10.13'
   pods(:hermes_enabled => true)
 end
 
@@ -127,7 +127,7 @@ target 'RNTesterUnitTests' do
 end
 
 target 'RNTester-macOSUnitTests' do
-  platform :osx, '10.14'
+  platform :osx, '10.13'
   pods()
   pod 'React-RCTTest', :path => "RCTTest"
 end
@@ -139,7 +139,7 @@ target 'RNTesterIntegrationTests' do
 end
 
 target 'RNTester-macOSIntegrationTests' do
-  platform :osx, '10.14'
+  platform :osx, '10.13'
   pods()
   pod 'React-RCTTest', :path => "RCTTest"
 end
@@ -156,7 +156,7 @@ target 'iosSimulatorBuild' do
 end
 
 target 'macOSBuild' do
-  platform :osx, '10.14'
+  platform :osx, '10.13'
   pods()
 end
 # ]TODO(macOS ISS#2323203)

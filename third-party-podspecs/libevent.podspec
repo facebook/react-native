@@ -469,7 +469,7 @@ CONFIG_WITHOUT_OPENSSL = <<-END_OF_CONFIG
 #ifdef __USE_UNUSED_DEFINITIONS__
 /* Define to necessary symbol if this constant uses a non-standard name on your system. */
 /* XXX: Hello, this isn't even used, nor is it defined anywhere... - Ellzey */
-#define EVENT__PTHREAD_CREATE_JOINABLE 
+#define EVENT__PTHREAD_CREATE_JOINABLE
 #endif
 
 /* The size of `pthread_t', as computed by sizeof. */
@@ -544,7 +544,7 @@ Pod::Spec.new do |spec|
   spec.homepage        = "https://libevent.org"
   spec.license         = { :type => "BSD 3-Clause", :file => "LICENSE" }
   spec.author          = "Niels Provos and Nick Mathewson"
-  spec.platforms       = { :osx => "10.14" }
+  spec.platforms       = { :osx => "10.13" }
   spec.source          = { :git => "https://github.com/libevent/libevent.git", :tag => "release-#{spec.version}-stable" }
   spec.default_subspec = "core"
   spec.prepare_command = "touch evconfig-private.h; echo -e #{Shellwords.escape(CONFIG_WITHOUT_OPENSSL)} > include/event2/event-config.h"

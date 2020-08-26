@@ -116,5 +116,5 @@ Pod::Spec.new do |spec|
   # ]TODO(macOS GH#214)
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "9.0", :tvos => "9.2", :osx => "10.14" } # TODO(macOS GH#214)
+  spec.platforms = { :ios => "9.0", :tvos => "9.2", :osx => "10.13" } # TODO(macOS GH#214)
 end
