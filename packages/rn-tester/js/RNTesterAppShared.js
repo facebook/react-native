@@ -184,7 +184,7 @@ const RNTesterApp = (): React.Node => {
     return null;
   }
 
-  const ExampleModule = RNTesterList.Modules[openExample];
+  const ExampleModule = openExample && RNTesterList.Modules[openExample];
   const title = Screens.COMPONENTS
     ? 'Components'
     : Screens.APIS
@@ -207,7 +207,7 @@ const RNTesterApp = (): React.Node => {
 
       <ExampleListsContainer
         isVisible={!ExampleModule}
-        screen={screen}
+        screen={screen || Screens.COMPONENTS}
         title={title}
         theme={theme}
         examplesList={examplesList}
@@ -215,7 +215,11 @@ const RNTesterApp = (): React.Node => {
         toggleBookmark={toggleBookmark}
       />
       <View style={styles.bottomNavbar}>
-        <RNTesterNavBar screen={screen} handleNavBarPress={handleNavBarPress} />
+        <RNTesterNavBar
+          screen={screen || Screens.COMPONENTS}
+          isExamplePageOpen={!!ExampleModule}
+          handleNavBarPress={handleNavBarPress}
+        />
       </View>
     </RNTesterThemeContext.Provider>
   );

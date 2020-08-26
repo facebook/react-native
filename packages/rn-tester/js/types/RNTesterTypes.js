@@ -57,3 +57,10 @@ export type ExamplesList = $ReadOnly<{|
 export type ScreenTypes = 'components' | 'apis' | 'bookmarks' | null;
 
 export type ComponentList = null | {components: string[], apis: string[]};
+
+export type RNTesterState = {
+  openExample: null | string,
+  screen: ScreenTypes,
+  bookmarks: ComponentList,
+  recentlyUsed: ComponentList,
+};

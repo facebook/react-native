@@ -5,26 +5,34 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  */
 
-import React from 'react';
+import * as React from 'react';
 import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 
-const RNTesterNavbar = ({handleNavBarPress, screen}) => {
+type Props = $ReadOnly<{|
+  handleNavBarPress: (data: {screen: string}) => void,
+  screen: string,
+  isExamplePageOpen: boolean,
+|}>;
+
+const RNTesterNavbar = ({
+  handleNavBarPress,
+  screen,
+  isExamplePageOpen,
+}: Props): React.Node => {
   const theme = React.useContext(RNTesterThemeContext);
 
-  const isAPIActive = screen === 'apis';
-  const isComponentActive = screen === 'components';
-  const isBookmarkActive = screen === 'bookmarks';
+  const isAPIActive = screen === 'apis' && !isExamplePageOpen;
+  const isComponentActive = screen === 'components' && !isExamplePageOpen;
+  const isBookmarkActive = screen === 'bookmarks' && !isExamplePageOpen;
 
   return (
     <View>
-      {/** Bottom Navbar code */}
-      {/** component and APIs tab  */}
       <View style={styles.buttonContainer}>
-        {/** left tab with Components  */}
         <Pressable
           testID="components-tab"
           onPress={() => handleNavBarPress({screen: 'components'})}
@@ -52,14 +60,12 @@ const RNTesterNavbar = ({handleNavBarPress, screen}) => {
           </View>
         </Pressable>
 
-        {/** central tab with bookmark icon  */}
         <View style={styles.centerBox}>
           <Image
             style={styles.centralBoxCutout}
             source={require('./../assets/bottom-nav-center-box.png')}
           />
 
-          {/** floating button in center  */}
           <View style={styles.floatContainer}>
             <Pressable
               testID="bookmarks-tab"
@@ -82,7 +88,6 @@ const RNTesterNavbar = ({handleNavBarPress, screen}) => {
           </View>
         </View>
 
-        {/** right tab with Components  */}
         <Pressable
           testID="apis-tab"
           onPress={() => handleNavBarPress({screen: 'apis'})}

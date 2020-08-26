@@ -16,7 +16,7 @@ import RNTesterList from './RNTesterList';
 
 import type {
   ExamplesList,
-  ScreenTypes,
+  RNTesterState,
   ComponentList,
 } from '../types/RNTesterTypes';
 
@@ -26,14 +26,7 @@ export const Screens = {
   BOOKMARKS: 'bookmarks',
 };
 
-export type InitialState = {
-  openExample: null | string,
-  screen: ScreenTypes,
-  bookmarks: ComponentList,
-  recentlyUsed: ComponentList,
-};
-
-export const initialState: InitialState = {
+export const initialState: RNTesterState = {
   openExample: null,
   screen: null,
   bookmarks: null,
@@ -133,7 +126,7 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
 
 export const getInitialStateFromAsyncStorage = async (
   storageKey: string,
-): Promise<InitialState> => {
+): Promise<RNTesterState> => {
   const initialStateString = await AsyncStorage.getItem(storageKey);
 
   if (!initialStateString) {
