@@ -11,15 +11,9 @@
 'use strict';
 
 const React = require('react');
-const {
-  Alert,
-  Image,
-  NativeModules,
-  StyleSheet,
-  Text,
-  View,
-} = require('react-native');
-const ScreenshotManager = NativeModules.ScreenshotManager;
+const {Alert, Image, StyleSheet, Text, View} = require('react-native');
+
+import {NativeModule as ScreenshotManager} from '../../../NativeModuleExample/NativeScreenshotManager';
 
 class ScreenshotExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
@@ -37,10 +31,20 @@ class ScreenshotExample extends React.Component<{...}, $FlowFixMeState> {
     );
   }
 
+  // TODO(macOS ISS#2323203): alert needs two string arguments, passing an error results in crashing
   takeScreenshot = () => {
-    ScreenshotManager.takeScreenshot('window', {format: 'jpeg', quality: 0.8}) // See UIManager.js for options
-      .then(uri => this.setState({uri}))
-      .catch(error => Alert.alert(error));
+    if (ScreenshotManager !== undefined && ScreenshotManager !== null) {
+      ScreenshotManager.takeScreenshot('window', {format: 'jpeg', quality: 0.8}) // See UIManager.js for options
+        .then(uri => this.setState({uri}))
+        .catch(error =>
+          Alert.alert('ScreenshotManager.takeScreenshot', error.message),
+        );
+    } else {
+      Alert.alert(
+        'ScreenshotManager.takeScreenshot',
+        'The turbo module is not installed.',
+      );
+    }
   };
 }
 

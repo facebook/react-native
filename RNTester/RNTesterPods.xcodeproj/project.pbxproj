@@ -67,10 +67,11 @@
 		7BD4120C2ED6C1CC8686E344 /* libPods-macOSBuild.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB624ED465B02C53F121EBC8 /* libPods-macOSBuild.a */; };
 		7C718C7B78F06C4CD1D1771A /* libPods-RNTester-macOSIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B8A3294D74D7AC1BE88DC4E /* libPods-RNTester-macOSIntegrationTests.a */; };
 		8BBFF9F061783A02D50DD2EC /* libPods-RNTesterIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8210317F3CE28B1945488740 /* libPods-RNTesterIntegrationTests.a */; };
-		9F15345F233AB2C4006DFE44 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F15345E233AB2C4006DFE44 /* AppDelegate.m */; };
+		9F15345F233AB2C4006DFE44 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F15345E233AB2C4006DFE44 /* AppDelegate.mm */; };
 		9F153461233AB2C7006DFE44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F153460233AB2C7006DFE44 /* Assets.xcassets */; };
 		9F153467233AB2C7006DFE44 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F153466233AB2C7006DFE44 /* main.m */; };
 		A13DC98BDCE5EE508FFA7BE7 /* libPods-RNTester-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A355204268D03CF69ABC11D /* libPods-RNTester-macOS.a */; };
+		B2F2040A24E76D7600863BE1 /* ScreenshotMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2F2040924E76D7600863BE1 /* ScreenshotMacOS.mm */; };
 		CDFF3988A89A5269C488653F /* libPods-iosDeviceBuild.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 287A4762E82517B7FACCE7D3 /* libPods-iosDeviceBuild.a */; };
 		E59A0FBD0170A092274A6207 /* libPods-RNTesterUnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 72247071A1BF06D54F0FECC7 /* libPods-RNTesterUnitTests.a */; };
 		E7C1241A22BEC44B00DA25C0 /* RNTesterIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7C1241922BEC44B00DA25C0 /* RNTesterIntegrationTests.m */; };
@@ -218,7 +219,7 @@
 		9EAC9B16F3BA65B8E1511E5E /* Pods-RNTester-macOSUnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-macOSUnitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RNTester-macOSUnitTests/Pods-RNTester-macOSUnitTests.release.xcconfig"; sourceTree = "<group>"; };
 		9F15345B233AB2C4006DFE44 /* RNTester-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RNTester-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F15345D233AB2C4006DFE44 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		9F15345E233AB2C4006DFE44 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		9F15345E233AB2C4006DFE44 /* AppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
 		9F153460233AB2C7006DFE44 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9F153465233AB2C7006DFE44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F153466233AB2C7006DFE44 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -230,6 +231,8 @@
 		9F15347C233AB2C7006DFE44 /* RNTesterIntegrationTests_macOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNTesterIntegrationTests_macOS.m; sourceTree = "<group>"; };
 		9F15347E233AB2C7006DFE44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A112BDF7485AEF790F6D3E26 /* Pods-iosDeviceBuild.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosDeviceBuild.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iosDeviceBuild/Pods-iosDeviceBuild.debug.xcconfig"; sourceTree = "<group>"; };
+		B2F2040824E76D7600863BE1 /* ScreenshotMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScreenshotMacOS.h; path = NativeModuleExample/ScreenshotMacOS.h; sourceTree = SOURCE_ROOT; };
+		B2F2040924E76D7600863BE1 /* ScreenshotMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ScreenshotMacOS.mm; path = NativeModuleExample/ScreenshotMacOS.mm; sourceTree = SOURCE_ROOT; };
 		C81D39A606858D29861E5930 /* Pods-iosSimulatorBuild.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosSimulatorBuild.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iosSimulatorBuild/Pods-iosSimulatorBuild.debug.xcconfig"; sourceTree = "<group>"; };
 		E65D2B0329006BC5338BB7D5 /* libPods-iosSimulatorBuild.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iosSimulatorBuild.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E68A0B7D2448B4F300228B0B /* RNTesterUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNTesterUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -532,9 +535,11 @@
 		9F15345C233AB2C4006DFE44 /* RNTester-macOS */ = {
 			isa = PBXGroup;
 			children = (
+				B2F2040824E76D7600863BE1 /* ScreenshotMacOS.h */,
+				B2F2040924E76D7600863BE1 /* ScreenshotMacOS.mm */,
 				5101985523AD9EE600118BF1 /* Main.storyboard */,
 				9F15345D233AB2C4006DFE44 /* AppDelegate.h */,
-				9F15345E233AB2C4006DFE44 /* AppDelegate.m */,
+				9F15345E233AB2C4006DFE44 /* AppDelegate.mm */,
 				5101985823AD9F5B00118BF1 /* ViewController.h */,
 				5101985923AD9F5B00118BF1 /* ViewController.m */,
 				9F153460233AB2C7006DFE44 /* Assets.xcassets */,
@@ -1257,10 +1262,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2F2040A24E76D7600863BE1 /* ScreenshotMacOS.mm in Sources */,
 				5101985A23AD9F5B00118BF1 /* ViewController.m in Sources */,
 				9F153467233AB2C7006DFE44 /* main.m in Sources */,
 				38CB64352445042D009035CC /* RNTesterTurboModuleProvider.mm in Sources */,
-				9F15345F233AB2C4006DFE44 /* AppDelegate.m in Sources */,
+				9F15345F233AB2C4006DFE44 /* AppDelegate.mm in Sources */,
 				38B2630C2444F628006AB4D5 /* FlexibleSizeExampleView.m in Sources */,
 				38B2630B2444F5EB006AB4D5 /* UpdatePropertiesExampleView.m in Sources */,
 			);

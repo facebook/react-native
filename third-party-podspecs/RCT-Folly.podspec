@@ -60,6 +60,9 @@ Pod::Spec.new do |spec|
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\"" }
 
+  # TODO: The boost spec should really be selecting these files so that dependents of Folly can also access the required headers.
+  spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\"" }
+
   spec.default_subspec = 'Default'
 
   spec.subspec 'Default' do
