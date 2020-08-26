@@ -15,6 +15,7 @@ const SampleTurboModuleExample = require('./SampleTurboModuleExample');
 
 exports.displayName = (undefined: ?string);
 exports.title = 'TurboModule';
+exports.category = 'Basic';
 exports.description = 'Usage of TurboModule';
 exports.examples = [
   {

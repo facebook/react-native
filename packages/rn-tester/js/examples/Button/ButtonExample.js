@@ -21,7 +21,9 @@ function onButtonPress(buttonName) {
 
 exports.displayName = 'ButtonExample';
 exports.framework = 'React';
-exports.title = '<Button>';
+exports.category = 'UI';
+exports.title = 'Button';
+exports.documentationURL = 'https://reactnative.dev/docs/button';
 exports.description = 'Simple React Native button component.';
 
 exports.examples = [

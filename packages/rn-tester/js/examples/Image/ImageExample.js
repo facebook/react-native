@@ -13,7 +13,6 @@
 const React = require('react');
 
 const {
-  ActivityIndicator,
   Image,
   StyleSheet,
   Text,
@@ -402,7 +401,8 @@ const styles = StyleSheet.create({
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
-exports.title = '<Image>';
+exports.title = 'Image';
+exports.category = 'Basic';
 exports.description =
   'Base component for displaying different types of images.';
 
