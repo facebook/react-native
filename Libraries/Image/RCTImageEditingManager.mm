@@ -10,7 +10,6 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConvert.h>
 #import <React/RCTImageLoader.h>
-#import <React/RCTImageStoreManager.h>
 #import <React/RCTImageUtils.h>
 #import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTLog.h>
@@ -78,17 +77,6 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
        transform = RCTTransformFromTargetRect(croppedImage.size, targetRect);
        croppedImage = RCTTransformImage(croppedImage, targetSize, image.scale, transform);
      }
-
-     // Store image
-     [self->_bridge.imageStoreManager storeImage:croppedImage withBlock:^(NSString *croppedImageTag) {
-       if (!croppedImageTag) {
-         NSString *errorMessage = @"Error storing cropped image in RCTImageStoreManager";
-         RCTLogWarn(@"%@", errorMessage);
-         errorCallback(@[RCTJSErrorFromNSError(RCTErrorWithMessage(errorMessage))]);
-         return;
-       }
-       successCallback(@[croppedImageTag]);
-     }];
    }];
 }
 

@@ -1525,53 +1525,6 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 
-namespace JS {
-  namespace NativeImageStore {
-    struct SpecAddImageFromBase64ErrorCallbackError {
-      NSString *message() const;
-
-      SpecAddImageFromBase64ErrorCallbackError(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeImageStore_SpecAddImageFromBase64ErrorCallbackError)
-+ (RCTManagedPointer *)JS_NativeImageStore_SpecAddImageFromBase64ErrorCallbackError:(id)json;
-@end
-@protocol NativeImageStoreSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)getBase64ForTag:(NSString *)uri
-        successCallback:(RCTResponseSenderBlock)successCallback
-          errorCallback:(RCTResponseSenderBlock)errorCallback;
-- (void)hasImageForTag:(NSString *)uri
-              callback:(RCTResponseSenderBlock)callback;
-- (void)removeImageForTag:(NSString *)uri;
-- (void)addImageFromBase64:(NSString *)base64ImageData
-           successCallback:(RCTResponseSenderBlock)successCallback
-             errorCallback:(RCTResponseSenderBlock)errorCallback;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'ImageStore'
-     */
-
-    class JSI_EXPORT NativeImageStoreSpecJSI : public ObjCTurboModule {
-    public:
-      NativeImageStoreSpecJSI(const ObjCTurboModule::InitParams &params);
-
-    };
-  } // namespace react
-} // namespace facebook
-@protocol NativeJSCHeapCaptureSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)captureComplete:(NSString *)path
-                  error:(NSString * _Nullable)error;
-
-@end
 namespace facebook {
   namespace react {
     /**
@@ -3289,11 +3242,6 @@ inline bool JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig::showVideos() c
 {
   id const p = _v[@"showVideos"];
   return RCTBridgingToBool(p);
-}
-inline NSString *JS::NativeImageStore::SpecAddImageFromBase64ErrorCallbackError::message() const
-{
-  id const p = _v[@"message"];
-  return RCTBridgingToString(p);
 }
 inline JS::NativeJSDevSupport::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];

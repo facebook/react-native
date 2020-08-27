@@ -21,7 +21,6 @@ Class RCTImageClassProvider(const char *name) {
     {"GIFImageDecoder", RCTGIFImageDecoderCls},
     {"ImageEditingManager", RCTImageEditingManagerCls},
     {"ImageLoader", RCTImageLoaderCls},
-    {"ImageStoreManager", RCTImageStoreManagerCls},
     {"LocalAssetImageLoader", RCTLocalAssetImageLoaderCls},
   };
 
