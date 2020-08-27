@@ -415,7 +415,9 @@ public class MountingManager {
           new Runnable() {
             @Override
             public void run() {
-              FLog.e(TAG, "removeViewAt: [" + parentTag + "] idx: " + index + " AFTER");
+              FLog.e(
+                  TAG,
+                  "removeViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " AFTER");
               logViewHierarchy(parentView);
             }
           });
