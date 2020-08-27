@@ -32,6 +32,7 @@ class RCTNetworking extends NativeEventEmitter {
     timeout: number,
     callback: (requestId: number) => void,
     withCredentials: boolean,
+    improvedEvent?: boolean = false,
   ) {
     const body = convertRequestBody(data);
     NativeNetworkingIOS.sendRequest(
@@ -44,6 +45,7 @@ class RCTNetworking extends NativeEventEmitter {
         incrementalUpdates,
         timeout,
         withCredentials,
+        improvedEvent,
       },
       callback,
     );

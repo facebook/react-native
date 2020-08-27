@@ -140,7 +140,7 @@ describe('XMLHttpRequest', function() {
     xhr.open('GET', 'blabla');
     xhr.send();
     setRequestId(2);
-    xhr.__didReceiveData(requestId, 'Some data');
+    xhr._didReceiveData([requestId, 'Some data']);
     expect(xhr.responseText).toBe('Some data');
   });
 
@@ -148,8 +148,8 @@ describe('XMLHttpRequest', function() {
     xhr.open('GET', 'blabla');
     xhr.send();
     setRequestId(3);
-    xhr.__didCompleteResponse(requestId, 'Timeout', true);
-    xhr.__didCompleteResponse(requestId, 'Timeout', true);
+    xhr._didCompleteResponse([requestId, 'Timeout', true]);
+    xhr._didCompleteResponse([requestId, 'Timeout', true]);
 
     expect(xhr.readyState).toBe(xhr.DONE);
 
@@ -168,7 +168,7 @@ describe('XMLHttpRequest', function() {
     xhr.open('GET', 'blabla');
     xhr.send();
     setRequestId(4);
-    xhr.__didCompleteResponse(requestId, 'Generic error');
+    xhr._didCompleteResponse([requestId, 'Generic error']);
 
     expect(xhr.readyState).toBe(xhr.DONE);
 
@@ -189,7 +189,7 @@ describe('XMLHttpRequest', function() {
     xhr.open('GET', 'blabla');
     xhr.send();
     setRequestId(5);
-    xhr.__didCompleteResponse(requestId, null);
+    xhr._didCompleteResponse([requestId, null]);
 
     expect(xhr.readyState).toBe(xhr.DONE);
 
@@ -214,7 +214,7 @@ describe('XMLHttpRequest', function() {
     const handleProgress = jest.fn();
     xhr.upload.addEventListener('progress', handleProgress);
     setRequestId(6);
-    xhr.__didUploadProgress(requestId, 42, 100);
+    xhr._didUploadProgress([requestId, 42, 100]);
 
     expect(xhr.upload.onprogress.mock.calls.length).toBe(1);
     expect(handleProgress.mock.calls.length).toBe(1);
@@ -229,10 +229,11 @@ describe('XMLHttpRequest', function() {
     xhr.open('GET', 'blabla');
     xhr.send();
     setRequestId(7);
-    xhr.__didReceiveResponse(requestId, 200, {
+    const header = {
       'Content-Type': 'text/plain; charset=utf-8',
       'Content-Length': '32',
-    });
+    };
+    xhr._didReceiveResponse([requestId, 200, header]);
 
     expect(xhr.getAllResponseHeaders()).toBe(
       'Content-Type: text/plain; charset=utf-8\r\n' + 'Content-Length: 32',
