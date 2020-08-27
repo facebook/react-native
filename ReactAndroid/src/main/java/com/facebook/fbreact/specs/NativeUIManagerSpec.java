@@ -30,58 +30,42 @@ public abstract class NativeUIManagerSpec extends ReactContextBaseJavaModule imp
     super(reactContext);
   }
 
-  @ReactMethod(
-      isBlockingSynchronousMethod = true
-  )
-  public abstract WritableArray getDefaultEventTypes();
+  @ReactMethod
+  public abstract void blur(Double reactTag);
 
   @ReactMethod
-  public abstract void setLayoutAnimationEnabledExperimental(boolean enabled);
+  public abstract void clearJSResponder();
 
   @ReactMethod
   public abstract void configureNextLayoutAnimation(ReadableMap config, Callback callback,
       Callback errorCallback);
 
   @ReactMethod
-  public abstract void focus(Double reactTag);
+  public abstract void createView(Double reactTag, String viewName, double rootTag,
+      ReadableMap props);
 
   @ReactMethod
-  public abstract void blur(Double reactTag);
-
-  @ReactMethod
-  public abstract void removeSubviewsFromContainerWithID(double containerID);
-
-  @ReactMethod
-  public abstract void setJSResponder(Double reactTag, boolean blockNativeResponder);
-
-  @ReactMethod
-  public abstract void measureLayout(Double reactTag, Double ancestorReactTag,
-      Callback errorCallback, Callback callback);
-
-  @ReactMethod
-  public abstract void clearJSResponder();
-
-  @ReactMethod(
-      isBlockingSynchronousMethod = true
-  )
-  public abstract WritableMap getConstantsForViewManager(String viewManagerName);
-
-  @ReactMethod
-  public abstract void updateView(double reactTag, String viewName, ReadableMap props);
+  public abstract void dismissPopupMenu();
 
   @ReactMethod
   public abstract void dispatchViewManagerCommand(Double reactTag, double commandID,
       ReadableArray commandArgs);
 
   @ReactMethod
-  public abstract void createView(Double reactTag, String viewName, double rootTag,
-      ReadableMap props);
+  public abstract void findSubviewIn(Double reactTag, ReadableArray point, Callback callback);
 
   @ReactMethod
-  public abstract void measureInWindow(Double reactTag, Callback callback);
+  public abstract void focus(Double reactTag);
 
-  @ReactMethod
-  public abstract void sendAccessibilityEvent(Double reactTag, double eventType);
+  @ReactMethod(
+      isBlockingSynchronousMethod = true
+  )
+  public abstract WritableMap getConstantsForViewManager(String viewManagerName);
+
+  @ReactMethod(
+      isBlockingSynchronousMethod = true
+  )
+  public abstract WritableArray getDefaultEventTypes();
 
   @ReactMethod(
       isBlockingSynchronousMethod = true
@@ -89,36 +73,52 @@ public abstract class NativeUIManagerSpec extends ReactContextBaseJavaModule imp
   public abstract WritableMap lazilyLoadView(String name);
 
   @ReactMethod
-  public abstract void viewIsDescendantOf(Double reactTag, Double ancestorReactTag,
-      Callback callback);
-
-  @ReactMethod
-  public abstract void findSubviewIn(Double reactTag, ReadableArray point, Callback callback);
-
-  @ReactMethod
   public abstract void manageChildren(Double containerTag, ReadableArray moveFromIndices,
       ReadableArray moveToIndices, ReadableArray addChildReactTags, ReadableArray addAtIndices,
       ReadableArray removeAtIndices);
 
   @ReactMethod
-  public abstract void showPopupMenu(Double reactTag, ReadableArray items, Callback error,
-      Callback success);
-
-  @ReactMethod
-  public abstract void replaceExistingNonRootView(Double reactTag, Double newReactTag);
-
-  @ReactMethod
-  public abstract void dismissPopupMenu();
-
-  @ReactMethod
   public abstract void measure(Double reactTag, Callback callback);
+
+  @ReactMethod
+  public abstract void measureInWindow(Double reactTag, Callback callback);
+
+  @ReactMethod
+  public abstract void measureLayout(Double reactTag, Double ancestorReactTag,
+      Callback errorCallback, Callback callback);
 
   @ReactMethod
   public abstract void measureLayoutRelativeToParent(Double reactTag, Callback errorCallback,
       Callback callback);
 
   @ReactMethod
+  public abstract void removeSubviewsFromContainerWithID(double containerID);
+
+  @ReactMethod
+  public abstract void replaceExistingNonRootView(Double reactTag, Double newReactTag);
+
+  @ReactMethod
+  public abstract void sendAccessibilityEvent(Double reactTag, double eventType);
+
+  @ReactMethod
   public abstract void setChildren(Double containerTag, ReadableArray reactTags);
+
+  @ReactMethod
+  public abstract void setJSResponder(Double reactTag, boolean blockNativeResponder);
+
+  @ReactMethod
+  public abstract void setLayoutAnimationEnabledExperimental(boolean enabled);
+
+  @ReactMethod
+  public abstract void showPopupMenu(Double reactTag, ReadableArray items, Callback error,
+      Callback success);
+
+  @ReactMethod
+  public abstract void updateView(double reactTag, String viewName, ReadableMap props);
+
+  @ReactMethod
+  public abstract void viewIsDescendantOf(Double reactTag, Double ancestorReactTag,
+      Callback callback);
 
   protected abstract Map<String, Object> getTypedExportedConstants();
 

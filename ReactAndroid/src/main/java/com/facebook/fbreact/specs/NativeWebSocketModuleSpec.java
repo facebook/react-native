@@ -26,16 +26,7 @@ public abstract class NativeWebSocketModuleSpec extends ReactContextBaseJavaModu
   }
 
   @ReactMethod
-  public abstract void sendBinary(String base64String, double forSocketID);
-
-  @ReactMethod
-  public abstract void removeListeners(double count);
-
-  @ReactMethod
-  public abstract void ping(double socketID);
-
-  @ReactMethod
-  public abstract void send(String message, double forSocketID);
+  public abstract void addListener(String eventName);
 
   @ReactMethod
   public abstract void close(double code, String reason, double socketID);
@@ -45,5 +36,14 @@ public abstract class NativeWebSocketModuleSpec extends ReactContextBaseJavaModu
       double socketID);
 
   @ReactMethod
-  public abstract void addListener(String eventName);
+  public abstract void ping(double socketID);
+
+  @ReactMethod
+  public abstract void removeListeners(double count);
+
+  @ReactMethod
+  public abstract void send(String message, double forSocketID);
+
+  @ReactMethod
+  public abstract void sendBinary(String base64String, double forSocketID);
 }

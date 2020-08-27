@@ -30,16 +30,16 @@ public abstract class NativeNetworkingAndroidSpec extends ReactContextBaseJavaMo
   public abstract void abortRequest(double requestId);
 
   @ReactMethod
-  public abstract void removeListeners(double count);
+  public abstract void addListener(String eventName);
 
   @ReactMethod
   public abstract void clearCookies(Callback callback);
 
   @ReactMethod
+  public abstract void removeListeners(double count);
+
+  @ReactMethod
   public abstract void sendRequest(String method, String url, double requestId,
       ReadableArray headers, ReadableMap data, String responseType, boolean useIncrementalUpdates,
       double timeout, boolean withCredentials);
-
-  @ReactMethod
-  public abstract void addListener(String eventName);
 }

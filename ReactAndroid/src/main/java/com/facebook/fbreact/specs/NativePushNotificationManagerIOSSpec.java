@@ -28,53 +28,53 @@ public abstract class NativePushNotificationManagerIOSSpec extends ReactContextB
   }
 
   @ReactMethod
-  public abstract void getInitialNotification(Promise promise);
-
-  @ReactMethod
-  public abstract void removeListeners(double count);
-
-  @ReactMethod
-  public abstract void setApplicationIconBadgeNumber(double num);
-
-  @ReactMethod
-  public abstract void scheduleLocalNotification(ReadableMap notification);
-
-  @ReactMethod
-  public abstract void requestPermissions(ReadableMap permission, Promise promise);
-
-  @ReactMethod
-  public abstract void checkPermissions(Callback callback);
-
-  @ReactMethod
-  public abstract void getScheduledLocalNotifications(Callback callback);
-
-  @ReactMethod
-  public abstract void removeAllDeliveredNotifications();
-
-  @ReactMethod
-  public abstract void onFinishRemoteNotification(String notificationId, String fetchResult);
-
-  @ReactMethod
   public abstract void abandonPermissions();
 
   @ReactMethod
-  public abstract void cancelLocalNotifications(ReadableMap userInfo);
+  public abstract void addListener(String eventType);
 
   @ReactMethod
   public abstract void cancelAllLocalNotifications();
 
   @ReactMethod
-  public abstract void removeDeliveredNotifications(ReadableArray identifiers);
+  public abstract void cancelLocalNotifications(ReadableMap userInfo);
 
   @ReactMethod
-  public abstract void getDeliveredNotifications(Callback callback);
+  public abstract void checkPermissions(Callback callback);
 
   @ReactMethod
   public abstract void getApplicationIconBadgeNumber(Callback callback);
 
   @ReactMethod
+  public abstract void getDeliveredNotifications(Callback callback);
+
+  @ReactMethod
+  public abstract void getInitialNotification(Promise promise);
+
+  @ReactMethod
+  public abstract void getScheduledLocalNotifications(Callback callback);
+
+  @ReactMethod
+  public abstract void onFinishRemoteNotification(String notificationId, String fetchResult);
+
+  @ReactMethod
   public abstract void presentLocalNotification(ReadableMap notification);
 
   @ReactMethod
-  public abstract void addListener(String eventType);
+  public abstract void removeAllDeliveredNotifications();
+
+  @ReactMethod
+  public abstract void removeDeliveredNotifications(ReadableArray identifiers);
+
+  @ReactMethod
+  public abstract void removeListeners(double count);
+
+  @ReactMethod
+  public abstract void requestPermissions(ReadableMap permission, Promise promise);
+
+  @ReactMethod
+  public abstract void scheduleLocalNotification(ReadableMap notification);
+
+  @ReactMethod
+  public abstract void setApplicationIconBadgeNumber(double num);
 }

@@ -30,11 +30,11 @@ public abstract class NativeImageLoaderIOSSpec extends ReactContextBaseJavaModul
   public abstract void getSize(String uri, Promise promise);
 
   @ReactMethod
+  public abstract void getSizeWithHeaders(String uri, ReadableMap headers, Promise promise);
+
+  @ReactMethod
   public abstract void prefetchImage(String uri, Promise promise);
 
   @ReactMethod
   public abstract void queryCache(ReadableArray uris, Promise promise);
-
-  @ReactMethod
-  public abstract void getSizeWithHeaders(String uri, ReadableMap headers, Promise promise);
 }

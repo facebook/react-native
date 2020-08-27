@@ -29,11 +29,11 @@ public abstract class NativePermissionsAndroidSpec extends ReactContextBaseJavaM
   public abstract void checkPermission(String permission, Promise promise);
 
   @ReactMethod
+  public abstract void requestMultiplePermissions(ReadableArray permissions, Promise promise);
+
+  @ReactMethod
   public abstract void requestPermission(String permission, Promise promise);
 
   @ReactMethod
   public abstract void shouldShowRequestPermissionRationale(String permission, Promise promise);
-
-  @ReactMethod
-  public abstract void requestMultiplePermissions(ReadableArray permissions, Promise promise);
 }
