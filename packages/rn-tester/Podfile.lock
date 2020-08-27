@@ -5,7 +5,7 @@ PODS:
   - DoubleConversion (1.1.6)
   - FBLazyVector (1000.0.0)
   - FBReactNativeSpec (1000.0.0):
-    - Folly (= 2020.01.13.00)
+    - RCT-Folly (= 2020.01.13.00)
     - RCTRequired (= 1000.0.0)
     - RCTTypeSafety (= 1000.0.0)
     - React-Core (= 1000.0.0)
@@ -57,23 +57,23 @@ PODS:
   - FlipperKit/SKIOSNetworkPlugin (0.41.5):
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
-  - Folly (2020.01.13.00):
-    - boost-for-react-native
-    - DoubleConversion
-    - Folly/Default (= 2020.01.13.00)
-    - glog
-  - Folly/Default (2020.01.13.00):
-    - boost-for-react-native
-    - DoubleConversion
-    - glog
   - glog (0.3.5)
   - OpenSSL-Universal (1.0.2.19):
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
+  - RCT-Folly (2020.01.13.00):
+    - boost-for-react-native
+    - DoubleConversion
+    - glog
+    - RCT-Folly/Default (= 2020.01.13.00)
+  - RCT-Folly/Default (2020.01.13.00):
+    - boost-for-react-native
+    - DoubleConversion
+    - glog
   - RCTRequired (1000.0.0)
   - RCTTypeSafety (1000.0.0):
     - FBLazyVector (= 1000.0.0)
-    - Folly (= 2020.01.13.00)
+    - RCT-Folly (= 2020.01.13.00)
     - RCTRequired (= 1000.0.0)
     - React-Core (= 1000.0.0)
   - React (1000.0.0):
@@ -91,8 +91,8 @@ PODS:
     - React-RCTVibration (= 1000.0.0)
   - React-callinvoker (1000.0.0)
   - React-Core (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -100,8 +100,8 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/CoreModulesHeaders (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -109,16 +109,16 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/Default (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/DevSupport (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default (= 1000.0.0)
     - React-Core/RCTWebSocket (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
@@ -128,8 +128,8 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/RCTActionSheetHeaders (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -137,8 +137,8 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/RCTAnimationHeaders (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -146,8 +146,8 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/RCTBlobHeaders (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -155,8 +155,8 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/RCTImageHeaders (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -164,8 +164,8 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/RCTLinkingHeaders (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -173,8 +173,8 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/RCTNetworkHeaders (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -182,8 +182,8 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/RCTPushNotificationHeaders (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -191,8 +191,8 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/RCTSettingsHeaders (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -200,8 +200,8 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/RCTTextHeaders (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -209,8 +209,8 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/RCTVibrationHeaders (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -218,8 +218,8 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - Yoga
   - React-Core/RCTWebSocket (1000.0.0):
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/Default (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -228,7 +228,7 @@ PODS:
     - Yoga
   - React-CoreModules (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
-    - Folly (= 2020.01.13.00)
+    - RCT-Folly (= 2020.01.13.00)
     - RCTTypeSafety (= 1000.0.0)
     - React-Core/CoreModulesHeaders (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -237,8 +237,8 @@ PODS:
   - React-cxxreact (1000.0.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-callinvoker (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsinspector (= 1000.0.0)
@@ -247,18 +247,18 @@ PODS:
   - React-jsi (1000.0.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-jsi/Default (= 1000.0.0)
   - React-jsi/Default (1000.0.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
   - React-jsiexecutor (1000.0.0):
     - DoubleConversion
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
@@ -268,14 +268,14 @@ PODS:
     - React-Core/RCTActionSheetHeaders (= 1000.0.0)
   - React-RCTAnimation (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
-    - Folly (= 2020.01.13.00)
+    - RCT-Folly (= 2020.01.13.00)
     - RCTTypeSafety (= 1000.0.0)
     - React-Core/RCTAnimationHeaders (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTBlob (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
-    - Folly (= 2020.01.13.00)
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/RCTBlobHeaders (= 1000.0.0)
     - React-Core/RCTWebSocket (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -283,7 +283,7 @@ PODS:
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTImage (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
-    - Folly (= 2020.01.13.00)
+    - RCT-Folly (= 2020.01.13.00)
     - RCTTypeSafety (= 1000.0.0)
     - React-Core/RCTImageHeaders (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -296,7 +296,7 @@ PODS:
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTNetwork (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
-    - Folly (= 2020.01.13.00)
+    - RCT-Folly (= 2020.01.13.00)
     - RCTTypeSafety (= 1000.0.0)
     - React-Core/RCTNetworkHeaders (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -309,13 +309,13 @@ PODS:
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTSettings (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
-    - Folly (= 2020.01.13.00)
+    - RCT-Folly (= 2020.01.13.00)
     - RCTTypeSafety (= 1000.0.0)
     - React-Core/RCTSettingsHeaders (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTTest (1000.0.0):
-    - Folly (= 2020.01.13.00)
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core (= 1000.0.0)
     - React-CoreModules (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -324,7 +324,7 @@ PODS:
     - React-Core/RCTTextHeaders (= 1000.0.0)
   - React-RCTVibration (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
-    - Folly (= 2020.01.13.00)
+    - RCT-Folly (= 2020.01.13.00)
     - React-Core/RCTVibrationHeaders (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
@@ -332,8 +332,8 @@ PODS:
     - React-jsi (= 1000.0.0)
   - ReactCommon/turbomodule/core (1000.0.0):
     - DoubleConversion
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-callinvoker (= 1000.0.0)
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
@@ -341,8 +341,8 @@ PODS:
     - React-perflogger (= 1000.0.0)
   - ReactCommon/turbomodule/samples (1000.0.0):
     - DoubleConversion
-    - Folly (= 2020.01.13.00)
     - glog
+    - RCT-Folly (= 2020.01.13.00)
     - React-callinvoker (= 1000.0.0)
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
@@ -376,8 +376,8 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitReactPlugin (~> 0.41.1)
   - FlipperKit/FlipperKitUserDefaultsPlugin (~> 0.41.1)
   - FlipperKit/SKIOSNetworkPlugin (~> 0.41.1)
-  - Folly (from `../../third-party-podspecs/Folly.podspec`)
   - glog (from `../../third-party-podspecs/glog.podspec`)
+  - RCT-Folly (from `../../third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../../Libraries/RCTRequired`)
   - RCTTypeSafety (from `../../Libraries/TypeSafety`)
   - React (from `../../`)
@@ -429,10 +429,10 @@ EXTERNAL SOURCES:
     :path: "../../Libraries/FBLazyVector"
   FBReactNativeSpec:
     :path: "../../Libraries/FBReactNativeSpec"
-  Folly:
-    :podspec: "../../third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../../third-party-podspecs/glog.podspec"
+  RCT-Folly:
+    :podspec: "../../third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
     :path: "../../Libraries/RCTRequired"
   RCTTypeSafety:
@@ -490,7 +490,7 @@ SPEC CHECKSUMS:
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 8ea0285646adaf7fa725c20ed737c49ee5ea680a
-  FBReactNativeSpec: e8f07c749b9cf184c819f5a8ca44b91ab61fca12
+  FBReactNativeSpec: 29b1b8a11346e71351f3a2ba126439810edee362
   Flipper: 33585e2d9810fe5528346be33bcf71b37bb7ae13
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: c12092ea368353b58e992843a990a3225d4533c3
@@ -498,33 +498,33 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: bc68102cd4952a258a23c9c1b316c7bec1fecf83
-  Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
+  RCT-Folly: b39288cedafe50da43317ec7d91bcc8cc0abbf33
   RCTRequired: 34582e9b3ebe69f244e091f37218d318406d5c4a
-  RCTTypeSafety: 1ade47a69b092cddf1e4ea21e0c5bdc65cc950b4
+  RCTTypeSafety: 84db212a990ce622a28f1bcb1ac68c658e722373
   React: cafb3c2321f7df55ce90dbf29d513799a79e4418
   React-callinvoker: 0dada022d38b73e6e15b33e2a96476153f79bbf6
-  React-Core: 6c6f6c40bb1e031de8a0fafce08c010edfef09ab
-  React-CoreModules: d13d148c851af5780f864be74bc2165140923dc7
-  React-cxxreact: 4661b3295e62c6eaada084e2f826c70c71ef11ea
-  React-jsi: fe94132da767bfc4801968c2a12abae43e9a833e
-  React-jsiexecutor: 959bb48c75a3bfc1b1d2b991087a6d8df721cbcf
+  React-Core: d377a770bb13aa5120a6ce553f75f0e1cbc1aafe
+  React-CoreModules: f38b671f8df4c1c744ed69f00264539a7c4024b4
+  React-cxxreact: de6de17eac6bbaa4f9fad46b66e7f0c4aaaf863d
+  React-jsi: 652ad7cb7ff8c87e0e9fb11e9ebcbbc70cdfe865
+  React-jsiexecutor: f20d2b5986dbe3d0e94ccbf2d8da24e0d9c42cc9
   React-jsinspector: 7fbf9b42b58b02943a0d89b0ba9fff0070f2de98
   React-perflogger: 1f668f3e4d1adef1fafb3b95e7d6cf922113fe31
   React-RCTActionSheet: 51c43beeb74ef41189e87fe9823e53ebf6210359
-  React-RCTAnimation: 9d09196c641c1ebfef3a4e9ae670bcda5fadb420
-  React-RCTBlob: 715489626cf44d28ee51e5277a4d559167351696
-  React-RCTImage: 19151d2d071b05c3832a0b212473cafa4ea8948f
-  React-RCTLinking: 7c94c0f2fcc658cb4043dacb4f6621dca2f8f8b5
-  React-RCTNetwork: 7596e84acacd5d0674e9743b55c5bf61a626af69
-  React-RCTPushNotification: 88c9f47ff0d4391d5136d70745f15713cdc5f6bb
-  React-RCTSettings: a29c61f85f535ba2eff54d80bef2ea3cdb6e5fba
-  React-RCTTest: cfe25fcf70b04a747dba4326105db398250caa9a
+  React-RCTAnimation: 62f271148b71d0200773b4959e99a80f624182d4
+  React-RCTBlob: b81d69c4dc7f7891a6a3ec969bba9b0a9801b062
+  React-RCTImage: 37646ebc761e9f68781867e9e802afdadd18a3dc
+  React-RCTLinking: b5c261eb3befe7d5c62a4706ae904943e73f9c82
+  React-RCTNetwork: 2f6c4ba283c9c2ea768fecc6c681d3ab9448b5f5
+  React-RCTPushNotification: a4f86ef3d7c0cb3ee570108a62e39fcd296a5030
+  React-RCTSettings: 5a76683d9cf7408b5f8c3306cda3eaf4db191fce
+  React-RCTTest: 090e9816044220c39462be109dab6d473d94b1c9
   React-RCTText: 6c01963d3e562109f5548262b09b1b2bc260dd60
-  React-RCTVibration: d42d73dafd9f63cf758656ee743aa80c566798ff
+  React-RCTVibration: 0997fcaf753c7ac0a341177db120eebc438484cf
   React-runtimeexecutor: 60dd6204a13f68a1aa1118870edcc604a791df2b
-  ReactCommon: 511b4a9ea129c129c6dbc982942007d195903a9a
+  ReactCommon: 1f231b4fbed866032aa084ca23973063bbb51927
   Yoga: f7fa200d8c49f97b54c9421079e781fb900b5cae
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 

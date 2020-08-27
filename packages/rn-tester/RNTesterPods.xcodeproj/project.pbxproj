@@ -586,7 +586,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n\"$SRCROOT/../../scripts/react-native-xcode.sh\" $SRCROOT/../../packages/rn-tester/js/RNTesterApp.ios.js\n";
+			shellScript = "export NODE_BINARY=node\nexport PROJECT_ROOT=$SRCROOT/..\nexport SOURCEMAP_FILE=../sourcemap.ios.map\n# export FORCE_BUNDLING=true\n\"$SRCROOT/../../scripts/react-native-xcode.sh\" $SRCROOT/../../packages/rn-tester/js/RNTesterApp.ios.js\n";
 		};
 		C1C7A9D58CE1D09515F20577 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -743,36 +743,6 @@
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
 				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${PODS_ROOT}/Headers/Public\"",
-					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
-					"\"${PODS_ROOT}/Headers/Public/React-ART\"",
-					"\"${PODS_ROOT}/Headers/Public/React-Core\"",
-					"\"${PODS_ROOT}/Headers/Public/React-Fabric\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTActionSheet\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTAnimation\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTBlob\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTFabric\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTGeolocation\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTImage\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTLinking\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTNetwork\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTPushNotification\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTSettings\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTText\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTVibration\"",
-					"\"${PODS_ROOT}/Headers/Public/React-cxxreact\"",
-					"\"${PODS_ROOT}/Headers/Public/React-fishhook\"",
-					"\"${PODS_ROOT}/Headers/Public/React-jsi\"",
-					"\"${PODS_ROOT}/Headers/Public/React-jsiexecutor\"",
-					"\"${PODS_ROOT}/Headers/Public/React-jsinspector\"",
-					"\"${PODS_ROOT}/Headers/Public/glog\"",
-					"\"${PODS_ROOT}/Headers/Public/libevent\"",
-					"\"$(PODS_ROOT)/boost-for-react-native\"",
-					"\"$(PODS_ROOT)/Folly\"",
-					"\"$(PODS_ROOT)/DoubleConversion\"",
-				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -811,36 +781,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				DEVELOPMENT_TEAM = "";
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${PODS_ROOT}/Headers/Public\"",
-					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
-					"\"${PODS_ROOT}/Headers/Public/React-ART\"",
-					"\"${PODS_ROOT}/Headers/Public/React-Core\"",
-					"\"${PODS_ROOT}/Headers/Public/React-Fabric\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTActionSheet\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTAnimation\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTBlob\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTFabric\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTGeolocation\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTImage\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTLinking\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTNetwork\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTPushNotification\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTSettings\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTText\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTVibration\"",
-					"\"${PODS_ROOT}/Headers/Public/React-cxxreact\"",
-					"\"${PODS_ROOT}/Headers/Public/React-fishhook\"",
-					"\"${PODS_ROOT}/Headers/Public/React-jsi\"",
-					"\"${PODS_ROOT}/Headers/Public/React-jsiexecutor\"",
-					"\"${PODS_ROOT}/Headers/Public/React-jsinspector\"",
-					"\"${PODS_ROOT}/Headers/Public/glog\"",
-					"\"${PODS_ROOT}/Headers/Public/libevent\"",
-					"\"$(PODS_ROOT)/boost-for-react-native\"",
-					"\"$(PODS_ROOT)/Folly\"",
-					"\"$(PODS_ROOT)/DoubleConversion\"",
-				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
