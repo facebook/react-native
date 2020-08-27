@@ -49,6 +49,18 @@ describe('PerformanceLogger', () => {
     perfLogger.addTimeAnnotation(TIMESPAN_1, 1);
     expect(perfLogger.getTimespans()[TIMESPAN_1]).toBe(old);
   });
+  it('adds multiple time annotations', () => {
+    let perfLogger = createPerformanceLogger();
+    perfLogger.addTimeAnnotations([0, 5, 5, 10], [TIMESPAN_1, TIMESPAN_2]);
+    expect(perfLogger.getTimespans()[TIMESPAN_1]).toEqual({
+      description: TIMESPAN_1,
+      totalTime: 5,
+    });
+    expect(perfLogger.getTimespans()[TIMESPAN_2]).toEqual({
+      description: TIMESPAN_2,
+      totalTime: 5,
+    });
+  });
 
   it('adds a timespan with start and end timestamps', () => {
     let perfLogger = createPerformanceLogger();

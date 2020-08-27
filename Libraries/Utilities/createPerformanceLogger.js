@@ -228,7 +228,7 @@ function createPerformanceLogger(): IPerformanceLogger {
     addTimeAnnotations(durationsInMs: Array<number>, labels: Array<string>) {
       for (let ii = 0, l = durationsInMs.length; ii < l; ii += 2) {
         const label = labels[ii / 2];
-        this.addTimespan(
+        this.addTimeAnnotation(
           label,
           durationsInMs[ii + 1] - durationsInMs[ii],
           label,
