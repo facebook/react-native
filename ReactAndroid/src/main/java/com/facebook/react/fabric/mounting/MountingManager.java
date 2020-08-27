@@ -366,7 +366,16 @@ public class MountingManager {
 
     // Verify that the view we're about to remove has the same tag we expect
     View view = viewGroupManager.getChildAt(parentView, index);
-    if (view != null && view.getId() != tag) {
+    int actualTag = (view != null ? view.getId() : -1);
+    if (actualTag != tag) {
+      int tagActualIndex = -1;
+      for (int i = 0; i < parentView.getChildCount(); i++) {
+        if (parentView.getChildAt(i).getId() == tag) {
+          tagActualIndex = i;
+          break;
+        }
+      }
+
       throw new IllegalStateException(
           "Tried to delete view ["
               + tag
@@ -375,7 +384,9 @@ public class MountingManager {
               + "] at index "
               + index
               + ", but got view tag "
-              + view.getId());
+              + actualTag
+              + " - actual index of view: "
+              + tagActualIndex);
     }
 
     try {
