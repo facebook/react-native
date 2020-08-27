@@ -23,6 +23,7 @@ void SurfaceTelemetry::incorporate(
   numberOfTransactions_++;
   numberOfMutations_ += numberOfMutations;
   numberOfTextMeasurements_ += telemetry.getNumberOfTextMeasurements();
+  lastRevisionNumber_ = telemetry.getRevisionNumber();
 
   while (recentCommitTelemetries_.size() >=
          kMaxNumberOfRecordedCommitTelemetries) {
@@ -58,6 +59,10 @@ int SurfaceTelemetry::getNumberOfMutations() const {
 
 int SurfaceTelemetry::getNumberOfTextMeasurements() const {
   return numberOfTextMeasurements_;
+}
+
+int SurfaceTelemetry::getLastRevisionNumber() const {
+  return lastRevisionNumber_;
 }
 
 std::vector<MountingTelemetry> SurfaceTelemetry::getRecentCommitTelemetries()

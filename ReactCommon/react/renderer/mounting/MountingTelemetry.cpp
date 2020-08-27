@@ -30,7 +30,6 @@ void MountingTelemetry::willCommit() {
   assert(commitStartTime_ == kTelemetryUndefinedTimePoint);
   assert(commitEndTime_ == kTelemetryUndefinedTimePoint);
   commitStartTime_ = telemetryTimePointNow();
-  commitNumber_++;
 }
 
 void MountingTelemetry::didCommit() {
@@ -77,6 +76,10 @@ void MountingTelemetry::didMount() {
   assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
   assert(mountEndTime_ == kTelemetryUndefinedTimePoint);
   mountEndTime_ = telemetryTimePointNow();
+}
+
+void MountingTelemetry::setRevisionNumber(int revisionNumber) {
+  revisionNumber_ = revisionNumber;
 }
 
 TelemetryTimePoint MountingTelemetry::getDiffStartTime() const {
@@ -131,8 +134,8 @@ int MountingTelemetry::getNumberOfTextMeasurements() const {
   return numberOfTextMeasurements_;
 }
 
-int MountingTelemetry::getCommitNumber() const {
-  return commitNumber_;
+int MountingTelemetry::getRevisionNumber() const {
+  return revisionNumber_;
 }
 
 } // namespace react

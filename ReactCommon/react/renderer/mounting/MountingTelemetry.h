@@ -42,6 +42,8 @@ class MountingTelemetry final {
   void willMount();
   void didMount();
 
+  void setRevisionNumber(int revisionNumber);
+
   /*
    * Reading
    */
@@ -55,8 +57,7 @@ class MountingTelemetry final {
   TelemetryTimePoint getMountEndTime() const;
 
   int getNumberOfTextMeasurements() const;
-
-  int getCommitNumber() const;
+  int getRevisionNumber() const;
 
  private:
   TelemetryTimePoint diffStartTime_{kTelemetryUndefinedTimePoint};
@@ -69,8 +70,7 @@ class MountingTelemetry final {
   TelemetryTimePoint mountEndTime_{kTelemetryUndefinedTimePoint};
 
   int numberOfTextMeasurements_{0};
-
-  int commitNumber_{0};
+  int revisionNumber_{0};
 };
 
 } // namespace react

@@ -57,6 +57,8 @@ TEST(MountingTelemetryTest, normalUseCase) {
   sleep<TelemetryClock>(0.1);
   telemetry.didCommit();
 
+  telemetry.setRevisionNumber(42);
+
   telemetry.unsetAsThreadLocal();
 
   sleep<TelemetryClock>(0.3);
@@ -77,6 +79,7 @@ TEST(MountingTelemetryTest, normalUseCase) {
   EXPECT_EQ_WITH_THRESHOLD(mountDuration, 100, threshold);
 
   EXPECT_EQ(telemetry.getNumberOfTextMeasurements(), 3);
+  EXPECT_EQ(telemetry.getRevisionNumber(), 42);
 }
 
 TEST(MountingTelemetryTest, abnormalUseCases) {

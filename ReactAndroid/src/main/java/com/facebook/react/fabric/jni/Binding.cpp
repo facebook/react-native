@@ -609,7 +609,8 @@ void Binding::schedulerDidFinishTransaction(
       }
     }
   }
-  int64_t commitNumber = telemetry.getCommitNumber();
+
+  auto revisionNumber = telemetry.getRevisionNumber();
 
   std::vector<local_ref<jobject>> queue;
   // Upper bound estimation of mount items to be delivered to Java side.
@@ -813,7 +814,7 @@ void Binding::schedulerDidFinishTransaction(
       surfaceId,
       position == 0 ? nullptr : mountItemsArray.get(),
       position,
-      commitNumber);
+      revisionNumber);
 
   static auto scheduleMountItem =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
@@ -833,7 +834,7 @@ void Binding::schedulerDidFinishTransaction(
   scheduleMountItem(
       localJavaUIManager,
       batch.get(),
-      telemetry.getCommitNumber(),
+      telemetry.getRevisionNumber(),
       telemetryTimePointToMilliseconds(telemetry.getCommitStartTime()),
       telemetryTimePointToMilliseconds(telemetry.getDiffStartTime()),
       telemetryTimePointToMilliseconds(telemetry.getDiffEndTime()),

@@ -361,6 +361,7 @@ bool ShadowTree::tryCommit(
   emitLayoutEvents(affectedLayoutableNodes);
 
   telemetry.didCommit();
+  telemetry.setRevisionNumber(revisionNumber);
 
   mountingCoordinator_->push(
       ShadowTreeRevision{newRootShadowNode, revisionNumber, telemetry});
