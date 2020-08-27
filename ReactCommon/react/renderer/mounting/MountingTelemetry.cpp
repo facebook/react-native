@@ -12,6 +12,20 @@
 namespace facebook {
 namespace react {
 
+using ThreadLocalMountingTelemetry = ThreadStorage<MountingTelemetry *>;
+
+MountingTelemetry *MountingTelemetry::threadLocalTelemetry() {
+  return ThreadLocalMountingTelemetry::getInstance().get().value_or(nullptr);
+}
+
+void MountingTelemetry::setAsThreadLocal() {
+  ThreadLocalMountingTelemetry::getInstance().set(this);
+}
+
+void MountingTelemetry::unsetAsThreadLocal() {
+  ThreadLocalMountingTelemetry::getInstance().set(nullptr);
+}
+
 void MountingTelemetry::willCommit() {
   assert(commitStartTime_ == kTelemetryUndefinedTimePoint);
   assert(commitEndTime_ == kTelemetryUndefinedTimePoint);
@@ -41,6 +55,10 @@ void MountingTelemetry::willLayout() {
   assert(layoutStartTime_ == kTelemetryUndefinedTimePoint);
   assert(layoutEndTime_ == kTelemetryUndefinedTimePoint);
   layoutStartTime_ = telemetryTimePointNow();
+}
+
+void MountingTelemetry::didMeasureText() {
+  numberOfTextMeasurements_++;
 }
 
 void MountingTelemetry::didLayout() {
@@ -107,6 +125,10 @@ TelemetryTimePoint MountingTelemetry::getMountEndTime() const {
   assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
   assert(mountEndTime_ != kTelemetryUndefinedTimePoint);
   return mountEndTime_;
+}
+
+int MountingTelemetry::getNumberOfTextMeasurements() const {
+  return numberOfTextMeasurements_;
 }
 
 int MountingTelemetry::getCommitNumber() const {

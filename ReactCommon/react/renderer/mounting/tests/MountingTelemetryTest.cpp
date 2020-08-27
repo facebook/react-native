@@ -42,13 +42,22 @@ TEST(MountingTelemetryTest, normalUseCase) {
   auto threshold = int64_t{70};
   auto telemetry = MountingTelemetry{};
 
+  telemetry.setAsThreadLocal();
+
   telemetry.willCommit();
   sleep<TelemetryClock>(0.1);
   telemetry.willLayout();
   sleep<TelemetryClock>(0.2);
+
+  telemetry.didMeasureText();
+  MountingTelemetry::threadLocalTelemetry()->didMeasureText();
+  MountingTelemetry::threadLocalTelemetry()->didMeasureText();
+
   telemetry.didLayout();
   sleep<TelemetryClock>(0.1);
   telemetry.didCommit();
+
+  telemetry.unsetAsThreadLocal();
 
   sleep<TelemetryClock>(0.3);
 
@@ -66,6 +75,8 @@ TEST(MountingTelemetryTest, normalUseCase) {
   EXPECT_EQ_WITH_THRESHOLD(commitDuration, 400, threshold);
   EXPECT_EQ_WITH_THRESHOLD(layoutDuration, 200, threshold);
   EXPECT_EQ_WITH_THRESHOLD(mountDuration, 100, threshold);
+
+  EXPECT_EQ(telemetry.getNumberOfTextMeasurements(), 3);
 }
 
 TEST(MountingTelemetryTest, abnormalUseCases) {

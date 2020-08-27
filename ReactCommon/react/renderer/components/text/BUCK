@@ -69,6 +69,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/textlayoutmanager:textlayoutmanager"),
         react_native_xplat_target("react/renderer/components/view:view"),
         react_native_xplat_target("react/renderer/uimanager:uimanager"),
+        react_native_xplat_target("react/renderer/mounting:mounting"),
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
     ],
 )
