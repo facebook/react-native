@@ -488,6 +488,9 @@ export type Props = $ReadOnly<{|
    * The following values work on Android only:
    *
    * - `visible-password`
+   *
+   * On Android devices manufactured by Xiaomi with Android Q, 'email-address'
+   * type will be replaced in native by 'default' to prevent a system related crash.
    */
   keyboardType?: ?KeyboardType,
 
