@@ -217,8 +217,8 @@ bool Connection::Impl::disconnect() {
 
   inspector_->disable().via(executor_.get()).thenValue([this](auto &&) {
     // HACK:  We purposely call RemoteConnection::onDisconnect on a *different*
-    // rather than on this thread (the executor thread). This is to prevent this
-    // scenario:
+    // thread, rather than on this thread (the executor thread). This is to
+    // prevent this scenario:
     //
     // 1. RemoteConnection::onDisconnect runs on the executor thread
     // 2. onDisconnect through a long chain of calls causes the Connection

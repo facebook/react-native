@@ -28,6 +28,7 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -441,13 +442,34 @@ public class ReactModalHostView extends ViewGroup
 
     @UiThread
     public void updateState(final int width, final int height) {
+      final float realWidth = PixelUtil.toDIPFromPixel(width);
+      final float realHeight = PixelUtil.toDIPFromPixel(height);
+
+      // Check incoming state values. If they're already the correct value, return early to prevent
+      // infinite UpdateState/SetState loop.
+      ReadableMap currentState = getFabricViewStateManager().getState();
+      if (currentState != null) {
+        float delta = (float) 0.9;
+        float stateScreenHeight =
+            currentState.hasKey("screenHeight")
+                ? (float) currentState.getDouble("screenHeight")
+                : 0;
+        float stateScreenWidth =
+            currentState.hasKey("screenWidth") ? (float) currentState.getDouble("screenWidth") : 0;
+
+        if (Math.abs(stateScreenWidth - realWidth) < delta
+            && Math.abs(stateScreenHeight - realHeight) < delta) {
+          return;
+        }
+      }
+
       mFabricViewStateManager.setState(
           new FabricViewStateManager.StateUpdateCallback() {
             @Override
             public WritableMap getStateUpdate() {
               WritableMap map = new WritableNativeMap();
-              map.putDouble("screenWidth", PixelUtil.toDIPFromPixel(width));
-              map.putDouble("screenHeight", PixelUtil.toDIPFromPixel(height));
+              map.putDouble("screenWidth", realWidth);
+              map.putDouble("screenHeight", realHeight);
               return map;
             }
           });

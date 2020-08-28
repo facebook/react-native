@@ -37,7 +37,7 @@ class InputAccessoryComponentDescriptor final
     auto stateData = state->getData();
 
     layoutableShadowNode->setSize(
-        Size{stateData.screenSize.width, stateData.screenSize.height});
+        Size{stateData.viewportSize.width, stateData.viewportSize.height});
     layoutableShadowNode->setPositionType(YGPositionTypeAbsolute);
 
     ConcreteComponentDescriptor::adopt(shadowNode);

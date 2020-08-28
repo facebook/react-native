@@ -20,6 +20,7 @@ namespace react {
 
 /*
  * Describes a view that can be mounted.
+ * This is exposed to the mounting layer.
  */
 struct ShadowView final {
   ShadowView() = default;
@@ -57,6 +58,8 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
 
 /*
  * Describes pair of a `ShadowView` and a `ShadowNode`.
+ * This is not exposed to the mounting layer.
+ *
  */
 struct ShadowViewNodePair final {
   using List = better::
@@ -64,6 +67,12 @@ struct ShadowViewNodePair final {
 
   ShadowView shadowView;
   ShadowNode const *shadowNode;
+  bool flattened{false};
+  bool isConcreteView{true};
+
+  int mountIndex{0};
+
+  bool inOtherTree{false};
 
   /*
    * The stored pointer to `ShadowNode` represents an identity of the pair.

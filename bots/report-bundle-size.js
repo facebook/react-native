@@ -138,7 +138,7 @@ function getFileSize(path) {
  */
 function android_getApkSize(engine, arch) {
   return getFileSize(
-    `RNTester/android/app/build/outputs/apk/${engine}/release/app-${engine}-${arch}-release.apk`,
+    `packages/rn-tester/android/app/build/outputs/apk/${engine}/release/app-${engine}-${arch}-release.apk`,
   );
 }
 
@@ -171,7 +171,7 @@ function report(target) {
       reportSizeStats(
         {
           'ios-universal': getFileSize(
-            'RNTester/build/Build/Products/Release-iphonesimulator/RNTester.app/RNTester',
+            'packages/rn-tester/build/Build/Products/Release-iphonesimulator/RNTester.app/RNTester',
           ),
         },
         '\\| ios \\| - \\| universal \\|',

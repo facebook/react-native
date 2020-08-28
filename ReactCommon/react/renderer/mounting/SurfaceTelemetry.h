@@ -34,6 +34,8 @@ class SurfaceTelemetry final {
 
   int getNumberOfTransactions() const;
   int getNumberOfMutations() const;
+  int getNumberOfTextMeasurements() const;
+  int getLastRevisionNumber() const;
 
   std::vector<MountingTelemetry> getRecentCommitTelemetries() const;
 
@@ -51,6 +53,8 @@ class SurfaceTelemetry final {
 
   int numberOfTransactions_{};
   int numberOfMutations_{};
+  int numberOfTextMeasurements_{};
+  int lastRevisionNumber_{};
 
   better::small_vector<MountingTelemetry, kMaxNumberOfRecordedCommitTelemetries>
       recentCommitTelemetries_{};

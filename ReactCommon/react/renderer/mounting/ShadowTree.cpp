@@ -327,7 +327,9 @@ bool ShadowTree::tryCommit(
   affectedLayoutableNodes.reserve(1024);
 
   telemetry.willLayout();
+  telemetry.setAsThreadLocal();
   newRootShadowNode->layoutIfNeeded(&affectedLayoutableNodes);
+  telemetry.unsetAsThreadLocal();
   telemetry.didLayout();
 
   // Seal the shadow node so it can no longer be mutated
@@ -359,6 +361,7 @@ bool ShadowTree::tryCommit(
   emitLayoutEvents(affectedLayoutableNodes);
 
   telemetry.didCommit();
+  telemetry.setRevisionNumber(revisionNumber);
 
   mountingCoordinator_->push(
       ShadowTreeRevision{newRootShadowNode, revisionNumber, telemetry});

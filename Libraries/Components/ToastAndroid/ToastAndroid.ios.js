@@ -10,11 +10,9 @@
 
 'use strict';
 
-const warning = require('fbjs/lib/warning');
-
 const ToastAndroid = {
   show: function(message: string, duration: number): void {
-    warning(false, 'ToastAndroid is not supported on this platform.');
+    console.warn('ToastAndroid is not supported on this platform.');
   },
 
   showWithGravity: function(
@@ -22,7 +20,7 @@ const ToastAndroid = {
     duration: number,
     gravity: number,
   ): void {
-    warning(false, 'ToastAndroid is not supported on this platform.');
+    console.warn('ToastAndroid is not supported on this platform.');
   },
 
   showWithGravityAndOffset: function(
@@ -32,7 +30,7 @@ const ToastAndroid = {
     xOffset: number,
     yOffset: number,
   ): void {
-    warning(false, 'ToastAndroid is not supported on this platform.');
+    console.warn('ToastAndroid is not supported on this platform.');
   },
 };
 

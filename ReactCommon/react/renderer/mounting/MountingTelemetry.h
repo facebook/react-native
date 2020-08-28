@@ -11,6 +11,7 @@
 #include <cstdint>
 
 #include <react/utils/Telemetry.h>
+#include <react/utils/ThreadStorage.h>
 
 namespace facebook {
 namespace react {
@@ -22,6 +23,13 @@ namespace react {
 class MountingTelemetry final {
  public:
   /*
+   * Thread-local Telemetry instance
+   */
+  static MountingTelemetry *threadLocalTelemetry();
+  void setAsThreadLocal();
+  void unsetAsThreadLocal();
+
+  /*
    * Signaling
    */
   void willDiff();
@@ -29,9 +37,12 @@ class MountingTelemetry final {
   void willCommit();
   void didCommit();
   void willLayout();
+  void didMeasureText();
   void didLayout();
   void willMount();
   void didMount();
+
+  void setRevisionNumber(int revisionNumber);
 
   /*
    * Reading
@@ -45,7 +56,8 @@ class MountingTelemetry final {
   TelemetryTimePoint getMountStartTime() const;
   TelemetryTimePoint getMountEndTime() const;
 
-  int getCommitNumber() const;
+  int getNumberOfTextMeasurements() const;
+  int getRevisionNumber() const;
 
  private:
   TelemetryTimePoint diffStartTime_{kTelemetryUndefinedTimePoint};
@@ -57,7 +69,8 @@ class MountingTelemetry final {
   TelemetryTimePoint mountStartTime_{kTelemetryUndefinedTimePoint};
   TelemetryTimePoint mountEndTime_{kTelemetryUndefinedTimePoint};
 
-  int commitNumber_{0};
+  int numberOfTextMeasurements_{0};
+  int revisionNumber_{0};
 };
 
 } // namespace react

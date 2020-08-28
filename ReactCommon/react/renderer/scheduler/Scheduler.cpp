@@ -246,6 +246,9 @@ void Scheduler::renderTemplateToSurface(
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("Scheduler::stopSurface");
 
+  // Stop any ongoing animations.
+  uiManager_->stopSurfaceForAnimationDelegate(surfaceId);
+
   // Note, we have to do in inside `visit` function while the Shadow Tree
   // is still being registered.
   uiManager_->getShadowTreeRegistry().visit(

@@ -179,7 +179,7 @@ RCT_EXPORT_MODULE()
             [self flushEventsQueue];
           }
                   queue:RCTJSThread];
-    } else {
+    } else if (_dispatchToJSThread) {
       _dispatchToJSThread(^{
         [self flushEventsQueue];
       });

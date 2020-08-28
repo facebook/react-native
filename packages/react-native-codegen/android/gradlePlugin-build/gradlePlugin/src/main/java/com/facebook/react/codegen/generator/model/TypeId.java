@@ -42,6 +42,10 @@ public final class TypeId {
     return of(typeId.moduleName, typeId.typeName);
   }
 
+  public static TypeId expandOf(final TypeId typeId, String suffix) {
+    return of(typeId.moduleName, typeId.typeName + suffix);
+  }
+
   @Override
   public String toString() {
     return String.format(

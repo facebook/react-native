@@ -12,11 +12,24 @@
 namespace facebook {
 namespace react {
 
+using ThreadLocalMountingTelemetry = ThreadStorage<MountingTelemetry *>;
+
+MountingTelemetry *MountingTelemetry::threadLocalTelemetry() {
+  return ThreadLocalMountingTelemetry::getInstance().get().value_or(nullptr);
+}
+
+void MountingTelemetry::setAsThreadLocal() {
+  ThreadLocalMountingTelemetry::getInstance().set(this);
+}
+
+void MountingTelemetry::unsetAsThreadLocal() {
+  ThreadLocalMountingTelemetry::getInstance().set(nullptr);
+}
+
 void MountingTelemetry::willCommit() {
   assert(commitStartTime_ == kTelemetryUndefinedTimePoint);
   assert(commitEndTime_ == kTelemetryUndefinedTimePoint);
   commitStartTime_ = telemetryTimePointNow();
-  commitNumber_++;
 }
 
 void MountingTelemetry::didCommit() {
@@ -43,6 +56,10 @@ void MountingTelemetry::willLayout() {
   layoutStartTime_ = telemetryTimePointNow();
 }
 
+void MountingTelemetry::didMeasureText() {
+  numberOfTextMeasurements_++;
+}
+
 void MountingTelemetry::didLayout() {
   assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
   assert(layoutEndTime_ == kTelemetryUndefinedTimePoint);
@@ -59,6 +76,10 @@ void MountingTelemetry::didMount() {
   assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
   assert(mountEndTime_ == kTelemetryUndefinedTimePoint);
   mountEndTime_ = telemetryTimePointNow();
+}
+
+void MountingTelemetry::setRevisionNumber(int revisionNumber) {
+  revisionNumber_ = revisionNumber;
 }
 
 TelemetryTimePoint MountingTelemetry::getDiffStartTime() const {
@@ -109,8 +130,12 @@ TelemetryTimePoint MountingTelemetry::getMountEndTime() const {
   return mountEndTime_;
 }
 
-int MountingTelemetry::getCommitNumber() const {
-  return commitNumber_;
+int MountingTelemetry::getNumberOfTextMeasurements() const {
+  return numberOfTextMeasurements_;
+}
+
+int MountingTelemetry::getRevisionNumber() const {
+  return revisionNumber_;
 }
 
 } // namespace react
