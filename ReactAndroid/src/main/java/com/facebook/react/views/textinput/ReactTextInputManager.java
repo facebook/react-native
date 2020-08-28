@@ -702,7 +702,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_LOCALITY);
     } else if ("postal-address-region".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_REGION);
-    } else if ("postal-address-street-address".equals(autoCompleteType)) {
+    } else if ("street-address".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_STREET_ADDRESS);
     } else if ("postal-code".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_POSTAL_CODE);
