@@ -266,7 +266,9 @@ void Binding::installFabricUIManager(
       reactNativeConfig_->getBool(
           "react_fabric:enabled_collapse_delete_create_mounting_instructions") &&
       !reactNativeConfig_->getBool(
-          "react_fabric:enable_reparenting_detection_android");
+          "react_fabric:enable_reparenting_detection_android") &&
+      !reactNativeConfig_->getBool(
+          "react_fabric:enabled_layout_animations_android");
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
