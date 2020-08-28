@@ -184,6 +184,8 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   bool shouldOverridePullTransaction() const override;
 
+  void stopSurface(SurfaceId surfaceId) override;
+
   // This is used to "hijack" the diffing process to figure out which mutations
   // should be animated. The mutations returned by this function will be
   // executed immediately.
@@ -226,6 +228,9 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       SurfaceId surfaceId,
       ShadowViewMutationList &mutations,
       bool deletesOnly = false) const;
+
+  mutable std::mutex surfaceIdsToStopMutex_;
+  mutable std::vector<SurfaceId> surfaceIdsToStop_{};
 
  protected:
   bool mutatedViewIsVirtual(ShadowViewMutation const &mutation) const;

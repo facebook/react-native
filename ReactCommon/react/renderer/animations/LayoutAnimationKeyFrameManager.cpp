@@ -316,6 +316,11 @@ bool LayoutAnimationKeyFrameManager::shouldOverridePullTransaction() const {
   return shouldAnimateFrame();
 }
 
+void LayoutAnimationKeyFrameManager::stopSurface(SurfaceId surfaceId) {
+  std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
+  surfaceIdsToStop_.push_back(surfaceId);
+}
+
 bool LayoutAnimationKeyFrameManager::shouldAnimateFrame() const {
   // There is potentially a race here between getting and setting
   // `currentMutation_`. We don't want to lock around this because then we're
@@ -779,6 +784,35 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           .count();
 
   bool inflightAnimationsExistInitially = !inflightAnimations_.empty();
+
+  // Execute stopSurface on any ongoing animations
+  if (inflightAnimationsExistInitially) {
+    std::vector<SurfaceId> surfaceIdsToStop{};
+    {
+      std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
+      surfaceIdsToStop = surfaceIdsToStop_;
+      surfaceIdsToStop_ = {};
+    }
+
+    for (auto it = inflightAnimations_.begin();
+         it != inflightAnimations_.end();) {
+      const auto &animation = *it;
+
+      if (std::find(
+              surfaceIdsToStop.begin(),
+              surfaceIdsToStop.end(),
+              animation.surfaceId) != surfaceIdsToStop.end()) {
+#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
+        LOG(ERROR)
+            << "LayoutAnimations: stopping animation due to stopSurface on "
+            << surfaceId;
+#endif
+        it = inflightAnimations_.erase(it);
+      } else {
+        it++;
+      }
+    }
+  }
 
   if (!mutations.empty()) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
