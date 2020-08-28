@@ -37,6 +37,7 @@ fb_native.android_library(
     visibility = ["PUBLIC"],
     exported_deps = [
         ":core",
+        ":autofill-binary",
     ],
 )
 
