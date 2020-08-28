@@ -369,11 +369,33 @@ public class MountingManager {
     int actualTag = (view != null ? view.getId() : -1);
     if (actualTag != tag) {
       int tagActualIndex = -1;
-      for (int i = 0; i < parentView.getChildCount(); i++) {
+      int parentChildrenCount = parentView.getChildCount();
+      for (int i = 0; i < parentChildrenCount; i++) {
         if (parentView.getChildAt(i).getId() == tag) {
           tagActualIndex = i;
           break;
         }
+      }
+
+      // TODO T74425739: previously, we did not do this check and `removeViewAt` would be executed
+      // below, sometimes crashing there. *However*, interestingly enough, `removeViewAt` would not
+      // complain if you removed views from an already-empty parent. This seems necessary currently
+      // for certain ViewManagers that remove their own children - like BottomSheet?
+      // This workaround seems not-great, but for now, we just return here for
+      // backwards-compatibility. Essentially, if a view has already been removed from the
+      // hierarchy, we treat it as a noop.
+      if (tagActualIndex == -1) {
+        FLog.e(
+            TAG,
+            "removeViewAt: ["
+                + tag
+                + "] -> ["
+                + parentTag
+                + "] @"
+                + index
+                + ": view already removed from parent! Children in parent: "
+                + parentChildrenCount);
+        return;
       }
 
       throw new IllegalStateException(
