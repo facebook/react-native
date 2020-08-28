@@ -199,15 +199,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 
 #pragma mark - Accessibility
 
-- (NSString *)accessibilityLabel
-{
-  NSString *label = super.accessibilityLabel;
-  if (label) {
-    return label;
-  }
-  return nil;
-}
-
 - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
   if (!self.accessibilityActions.count) {
