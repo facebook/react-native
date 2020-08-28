@@ -28,7 +28,7 @@ import {
   initialState,
   getExamplesListWithBookmarksAndRecentlyUsed,
   getInitialStateFromAsyncStorage,
-} from './utils';
+} from './utils/testerStateUtils';
 import {useAsyncStorageReducer} from './utils/useAsyncStorageReducer';
 import {RNTesterReducer, RNTesterActionsType} from './utils/RNTesterReducer';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
@@ -40,10 +40,10 @@ import type {ExamplesList} from './types/RNTesterTypes';
 
 const APP_STATE_KEY = 'RNTesterAppState.v3';
 
-// RNTester App currently uses Async Storage from react-native for storing navigation state
+// RNTester App currently uses AsyncStorage from react-native for storing navigation state
 // and bookmark items.
-// TODO: Add Native Async Storage Module in RNTester
-LogBox.ignoreLogs([new RegExp('has been extracted from react-native')]);
+// TODO: Vendor AsyncStorage or create our own.
+LogBox.ignoreLogs([/AsyncStorage has been extracted from react-native/]);
 
 const DisplayIfVisible = ({isVisible, children}) => (
   <View style={[styles.container, !isVisible && styles.hidden]}>
@@ -110,6 +110,9 @@ const RNTesterApp = (): React.Node => {
     initialState,
     APP_STATE_KEY,
   );
+  const colorScheme = useColorScheme();
+
+  const {openExample, screen, bookmarks, recentlyUsed} = state;
 
   React.useEffect(() => {
     getInitialStateFromAsyncStorage(APP_STATE_KEY).then(
@@ -121,8 +124,6 @@ const RNTesterApp = (): React.Node => {
       },
     );
   }, [dispatch]);
-
-  const {openExample, screen, bookmarks, recentlyUsed} = state;
 
   const examplesList = React.useMemo(
     () =>
@@ -177,7 +178,6 @@ const RNTesterApp = (): React.Node => {
     [dispatch],
   );
 
-  const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? themes.dark : themes.light;
 
   if (examplesList === null) {

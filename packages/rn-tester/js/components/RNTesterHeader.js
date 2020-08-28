@@ -30,7 +30,6 @@ const HeaderIOS = ({
   onBack?: () => mixed,
   title: string,
   documentationURL?: string,
-  ...
 }) => {
   const theme = React.useContext(RNTesterThemeContext);
   return (
@@ -74,7 +73,6 @@ const HeaderAndroid = ({
 }: {
   title: string,
   documentationURL?: string,
-  ...
 }) => {
   const theme = React.useContext(RNTesterThemeContext);
   return (
