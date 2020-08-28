@@ -15,7 +15,7 @@ import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import {RootTagContext, createRootTag} from './RootTag';
-import PropTypes from 'prop-types';
+import type {RootTag} from './RootTag';
 import * as React from 'react';
 
 type Context = {rootTag: number, ...};
@@ -47,11 +47,7 @@ class AppContainer extends React.Component<Props, State> {
 
   static getDerivedStateFromError: any = undefined;
 
-  static childContextTypes:
-    | any
-    | {|rootTag: React$PropType$Primitive<number>|} = {
-    rootTag: PropTypes.number,
-  };
+  static childContextTypes: React.Context<RootTag> = RootTagContext;
 
   getChildContext(): Context {
     return {
