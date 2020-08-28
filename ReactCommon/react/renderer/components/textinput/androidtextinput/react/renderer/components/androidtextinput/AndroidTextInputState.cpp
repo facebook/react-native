@@ -18,10 +18,8 @@ folly::dynamic AndroidTextInputState::getDynamic() const {
   // Java doesn't need all fields, so we don't pass them along.
   folly::dynamic newState = folly::dynamic::object();
   newState["mostRecentEventCount"] = mostRecentEventCount;
-  if (mostRecentEventCount != 0) {
-    newState["attributedString"] = toDynamic(attributedString);
-    newState["hash"] = newState["attributedString"]["hash"];
-  }
+  newState["attributedString"] = toDynamic(attributedString);
+  newState["hash"] = newState["attributedString"]["hash"];
   newState["paragraphAttributes"] =
       toDynamic(paragraphAttributes); // TODO: can we memoize this in Java?
   return newState;
