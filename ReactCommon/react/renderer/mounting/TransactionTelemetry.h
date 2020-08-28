@@ -20,12 +20,12 @@ namespace react {
  * Represents telemetry data associated with a particular revision of
  * `ShadowTree`.
  */
-class MountingTelemetry final {
+class TransactionTelemetry final {
  public:
   /*
    * Thread-local Telemetry instance
    */
-  static MountingTelemetry *threadLocalTelemetry();
+  static TransactionTelemetry *threadLocalTelemetry();
   void setAsThreadLocal();
   void unsetAsThreadLocal();
 

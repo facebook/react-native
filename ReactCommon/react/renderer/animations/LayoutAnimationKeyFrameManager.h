@@ -192,7 +192,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   better::optional<MountingTransaction> pullTransaction(
       SurfaceId surfaceId,
       MountingTransaction::Number number,
-      MountingTelemetry const &telemetry,
+      TransactionTelemetry const &telemetry,
       ShadowViewMutationList mutations) const override;
 
   // LayoutAnimationStatusDelegate - this is for the platform to get

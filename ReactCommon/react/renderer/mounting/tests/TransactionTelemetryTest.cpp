@@ -10,7 +10,7 @@
 
 #include <gtest/gtest.h>
 
-#include <react/renderer/mounting/MountingTelemetry.h>
+#include <react/renderer/mounting/TransactionTelemetry.h>
 #include <react/utils/Telemetry.h>
 
 using namespace facebook::react;
@@ -26,7 +26,7 @@ void sleep(double durationInSeconds) {
   }
 }
 
-TEST(MountingTelemetryTest, timepoints) {
+TEST(TransactionTelemetryTest, timepoints) {
   auto threshold = int64_t{70};
 
   auto timepointA = telemetryTimePointNow();
@@ -38,9 +38,9 @@ TEST(MountingTelemetryTest, timepoints) {
   EXPECT_EQ_WITH_THRESHOLD(duration, 100, threshold);
 }
 
-TEST(MountingTelemetryTest, normalUseCase) {
+TEST(TransactionTelemetryTest, normalUseCase) {
   auto threshold = int64_t{70};
-  auto telemetry = MountingTelemetry{};
+  auto telemetry = TransactionTelemetry{};
 
   telemetry.setAsThreadLocal();
 
@@ -50,8 +50,8 @@ TEST(MountingTelemetryTest, normalUseCase) {
   sleep<TelemetryClock>(0.2);
 
   telemetry.didMeasureText();
-  MountingTelemetry::threadLocalTelemetry()->didMeasureText();
-  MountingTelemetry::threadLocalTelemetry()->didMeasureText();
+  TransactionTelemetry::threadLocalTelemetry()->didMeasureText();
+  TransactionTelemetry::threadLocalTelemetry()->didMeasureText();
 
   telemetry.didLayout();
   sleep<TelemetryClock>(0.1);
@@ -82,25 +82,25 @@ TEST(MountingTelemetryTest, normalUseCase) {
   EXPECT_EQ(telemetry.getRevisionNumber(), 42);
 }
 
-TEST(MountingTelemetryTest, abnormalUseCases) {
+TEST(TransactionTelemetryTest, abnormalUseCases) {
   // Calling `did` before `will` should crash.
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        auto telemetry = MountingTelemetry{};
+        auto telemetry = TransactionTelemetry{};
         telemetry.didDiff();
       },
       "diffStartTime_");
 
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        auto telemetry = MountingTelemetry{};
+        auto telemetry = TransactionTelemetry{};
         telemetry.didCommit();
       },
       "commitStartTime_");
 
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        auto telemetry = MountingTelemetry{};
+        auto telemetry = TransactionTelemetry{};
         telemetry.didMount();
       },
       "mountStartTime_");
@@ -109,7 +109,7 @@ TEST(MountingTelemetryTest, abnormalUseCases) {
   // should crash.
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        auto telemetry = MountingTelemetry{};
+        auto telemetry = TransactionTelemetry{};
         telemetry.willCommit();
         telemetry.getCommitStartTime();
       },
@@ -117,7 +117,7 @@ TEST(MountingTelemetryTest, abnormalUseCases) {
 
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        auto telemetry = MountingTelemetry{};
+        auto telemetry = TransactionTelemetry{};
         telemetry.willCommit();
         telemetry.getCommitEndTime();
       },

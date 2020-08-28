@@ -775,7 +775,7 @@ better::optional<MountingTransaction>
 LayoutAnimationKeyFrameManager::pullTransaction(
     SurfaceId surfaceId,
     MountingTransaction::Number transactionNumber,
-    MountingTelemetry const &telemetry,
+    TransactionTelemetry const &telemetry,
     ShadowViewMutationList mutations) const {
   // Current time in milliseconds
   uint64_t now =

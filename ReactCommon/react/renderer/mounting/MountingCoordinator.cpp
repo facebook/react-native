@@ -131,7 +131,7 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   ShadowViewMutation::List diffMutations{};
   auto telemetry =
       (lastRevision_.hasValue() ? lastRevision_->getTelemetry()
-                                : MountingTelemetry{});
+                                : TransactionTelemetry{});
   if (!lastRevision_.hasValue()) {
     telemetry.willLayout();
     telemetry.didLayout();
