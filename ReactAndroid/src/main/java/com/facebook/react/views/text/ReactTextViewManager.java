@@ -8,7 +8,6 @@
 package com.facebook.react.views.text;
 
 import android.content.Context;
-import android.text.Layout;
 import android.text.Spannable;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
@@ -84,49 +83,24 @@ public class ReactTextViewManager
   @Override
   public Object updateState(
       ReactTextView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    // TODO T55794595: Add support for updating state with null stateWrapper
     ReadableNativeMap state = stateWrapper.getState();
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
-
     Spannable spanned =
         TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
     view.setSpanned(spanned);
 
-    TextAttributeProps textViewProps = new TextAttributeProps(props);
-
     int textBreakStrategy =
-        getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
-
-    // TODO add justificationMode prop into local Data
-    int justificationMode = Layout.JUSTIFICATION_MODE_NONE;
+        TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
     return new ReactTextUpdate(
         spanned,
         state.hasKey("mostRecentEventCount") ? state.getInt("mostRecentEventCount") : -1,
         false, // TODO add this into local Data
-        textViewProps.getTextAlign(),
+        TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
         textBreakStrategy,
-        justificationMode);
-  }
-
-  private int getTextBreakStrategy(@Nullable String textBreakStrategy) {
-    int androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
-    if (textBreakStrategy != null) {
-      switch (textBreakStrategy) {
-        case "simple":
-          androidTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
-          break;
-        case "balanced":
-          androidTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
-          break;
-        default:
-          androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
-          break;
-      }
-    }
-    return androidTextBreakStrategy;
+        TextAttributeProps.getJustificationMode(props));
   }
 
   @Override
@@ -146,7 +120,7 @@ public class ReactTextViewManager
       YogaMeasureMode widthMode,
       float height,
       YogaMeasureMode heightMode,
-      @Nullable int[] attachmentsPositions) {
+      @Nullable float[] attachmentsPositions) {
 
     return TextLayoutManager.measureText(
         context,
@@ -156,7 +130,8 @@ public class ReactTextViewManager
         widthMode,
         height,
         heightMode,
-        mReactTextViewManagerCallback);
+        mReactTextViewManagerCallback,
+        attachmentsPositions);
   }
 
   @Override

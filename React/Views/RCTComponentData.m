@@ -31,9 +31,7 @@ static SEL selectorForType(NSString *type)
   return NSSelectorFromString([RCTParseType(&input) stringByAppendingString:@":"]);
 }
 
-
-@implementation RCTComponentData
-{
+@implementation RCTComponentData {
   id<RCTComponent> _defaultView; // Only needed for RCT_CUSTOM_VIEW_PROPERTY
   RCTPropBlockDictionary *_viewPropBlocks;
   RCTPropBlockDictionary *_shadowPropBlocks;
@@ -42,8 +40,7 @@ static SEL selectorForType(NSString *type)
 
 @synthesize manager = _manager;
 
-- (instancetype)initWithManagerClass:(Class)managerClass
-                              bridge:(RCTBridge *)bridge
+- (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge
 {
   if ((self = [super init])) {
     _bridge = bridge;
@@ -64,7 +61,7 @@ static SEL selectorForType(NSString *type)
   return _manager;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (UIView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag
 {
@@ -103,7 +100,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-static RCTPropBlock createEventSetter(NSString *propName, SEL setter,InterceptorBlock eventInterceptor, RCTBridge *bridge)
+static RCTPropBlock
+createEventSetter(NSString *propName, SEL setter, InterceptorBlock eventInterceptor, RCTBridge *bridge)
 {
   __weak RCTBridge *weakBridge = bridge;
   return ^(id target, id json) {
@@ -204,13 +202,15 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
   // Get type
   SEL type = NULL;
   NSString *keyPath = nil;
-  SEL selector = NSSelectorFromString([NSString stringWithFormat:@"propConfig%@_%@", isShadowView ? @"Shadow" : @"", name]);
+  SEL selector =
+      NSSelectorFromString([NSString stringWithFormat:@"propConfig%@_%@", isShadowView ? @"Shadow" : @"", name]);
   if ([_managerClass respondsToSelector:selector]) {
-    NSArray<NSString *> *typeAndKeyPath = ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(_managerClass, selector);
+    NSArray<NSString *> *typeAndKeyPath = ((NSArray<NSString *> * (*)(id, SEL)) objc_msgSend)(_managerClass, selector);
     type = selectorForType(typeAndKeyPath[0]);
     keyPath = typeAndKeyPath.count > 1 ? typeAndKeyPath[1] : nil;
   } else {
-    return ^(__unused id view, __unused id json) {};
+    return ^(__unused id view, __unused id json) {
+    };
   }
 
   // Check for custom setter
@@ -218,7 +218,8 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     // Get custom setter. There is no default view in the shadow case, so the selector is different.
     NSString *selectorString;
     if (!isShadowView) {
-      selectorString = [NSString stringWithFormat:@"set_%@:for%@View:withDefaultView:", name, isShadowView ? @"Shadow" : @""];
+      selectorString =
+          [NSString stringWithFormat:@"set_%@:for%@View:withDefaultView:", name, isShadowView ? @"Shadow" : @""];
     } else {
       selectorString = [NSString stringWithFormat:@"set_%@:forShadowView:", name];
     }
@@ -241,9 +242,8 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     SEL getter = NSSelectorFromString(key);
 
     // Get property setter
-    SEL setter = NSSelectorFromString([NSString stringWithFormat:@"set%@%@:",
-                                       [key substringToIndex:1].uppercaseString,
-                                       [key substringFromIndex:1]]);
+    SEL setter = NSSelectorFromString(
+        [NSString stringWithFormat:@"set%@%@:", [key substringToIndex:1].uppercaseString, [key substringFromIndex:1]]);
 
     // Build setter block
     void (^setterBlock)(id target, id json) = nil;
@@ -256,10 +256,10 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
       NSMethodSignature *typeSignature = [[RCTConvert class] methodSignatureForSelector:type];
       if (!typeSignature) {
         RCTLogError(@"No +[RCTConvert %@] function found.", NSStringFromSelector(type));
-        return ^(__unused id<RCTComponent> view, __unused id json){};
+        return ^(__unused id<RCTComponent> view, __unused id json) {
+        };
       }
       switch (typeSignature.methodReturnType[0]) {
-
 #define RCT_CASE(_value, _type)                                       \
   case _value: {                                                      \
     __block BOOL setDefaultValue = NO;                                \
@@ -334,11 +334,13 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     RCTPropBlock unwrappedBlock = propBlock;
     __weak __typeof(self) weakSelf = self;
     propBlock = ^(id<RCTComponent> view, id json) {
-      NSString *logPrefix = [NSString stringWithFormat:@"Error setting property '%@' of %@ with tag #%@: ",
-                             name, weakSelf.name, view.reactTag];
-      RCTPerformBlockWithLogPrefix(^{
-        unwrappedBlock(view, json);
-      }, logPrefix);
+      NSString *logPrefix = [NSString
+          stringWithFormat:@"Error setting property '%@' of %@ with tag #%@: ", name, weakSelf.name, view.reactTag];
+      RCTPerformBlockWithLogPrefix(
+          ^{
+            unwrappedBlock(view, json);
+          },
+          logPrefix);
     };
 #endif
     propBlocks[name] = [propBlock copy];
@@ -400,10 +402,15 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     }
 
     NSString *name = @(underscorePos + 1);
-    NSString *type = ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(_managerClass, selector)[0];
+    NSString *type = ((NSArray<NSString *> * (*)(id, SEL)) objc_msgSend)(_managerClass, selector)[0];
     if (RCT_DEBUG && propTypes[name] && ![propTypes[name] isEqualToString:type]) {
-      RCTLogError(@"Property '%@' of component '%@' redefined from '%@' "
-                  "to '%@'", name, _name, propTypes[name], type);
+      RCTLogError(
+          @"Property '%@' of component '%@' redefined from '%@' "
+           "to '%@'",
+          name,
+          _name,
+          propTypes[name],
+          type);
     }
 
     if ([type isEqualToString:@"RCTBubblingEventBlock"]) {
@@ -421,19 +428,22 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 #if RCT_DEBUG
   for (NSString *event in bubblingEvents) {
     if ([directEvents containsObject:event]) {
-      RCTLogError(@"Component '%@' registered '%@' as both a bubbling event "
-                  "and a direct event", _name, event);
+      RCTLogError(
+          @"Component '%@' registered '%@' as both a bubbling event "
+           "and a direct event",
+          _name,
+          event);
     }
   }
 #endif
-  
+
   Class superClass = [_managerClass superclass];
-  
+
   return @{
-    @"propTypes": propTypes,
-    @"directEvents": directEvents,
-    @"bubblingEvents": bubblingEvents,
-    @"baseModuleName": superClass == [NSObject class] ? (id)kCFNull : moduleNameForClass(superClass),
+    @"propTypes" : propTypes,
+    @"directEvents" : directEvents,
+    @"bubblingEvents" : bubblingEvents,
+    @"baseModuleName" : superClass == [NSObject class] ? (id)kCFNull : moduleNameForClass(superClass),
   };
 }
 
@@ -453,9 +463,9 @@ static NSString *moduleNameForClass(Class managerClass)
   if ([name hasSuffix:@"Manager"]) {
     name = [name substringToIndex:name.length - @"Manager".length];
   }
-  
+
   RCTAssert(name.length, @"Invalid moduleName '%@'", name);
-  
+
   return name;
 }
 

@@ -47,7 +47,8 @@ static BOOL devSettingsMenuEnabled = YES;
 static BOOL devSettingsMenuEnabled = NO;
 #endif
 
-void RCTDevSettingsSetEnabled(BOOL enabled) {
+void RCTDevSettingsSetEnabled(BOOL enabled)
+{
   devSettingsMenuEnabled = enabled;
 }
 
@@ -208,7 +209,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"didPressMenuItem"];
+  return @[ @"didPressMenuItem" ];
 }
 
 - (void)_updateSettingWithValue:(id)value forKey:(NSString *)key
@@ -221,7 +222,7 @@ RCT_EXPORT_MODULE()
   return [_dataSource settingForKey:key];
 }
 
-- (BOOL)isNuclideDebuggingAvailable
+- (BOOL)isDeviceDebuggingAvailable
 {
 #if RCT_ENABLE_INSPECTOR
   return self.bridge.isInspectable;
@@ -249,14 +250,14 @@ RCT_EXPORT_METHOD(reload)
   RCTTriggerReloadCommandListeners(@"Unknown From JS");
 }
 
-RCT_EXPORT_METHOD(reloadWithReason : (NSString *) reason)
+RCT_EXPORT_METHOD(reloadWithReason : (NSString *)reason)
 {
   RCTTriggerReloadCommandListeners(reason);
 }
 
 RCT_EXPORT_METHOD(onFastRefresh)
 {
-    [self.bridge onFastRefresh];
+  [self.bridge onFastRefresh];
 }
 
 RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
@@ -353,12 +354,14 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 }
 
-RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
+RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 {
   __weak __typeof(self) weakSelf = self;
-  [self.bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:title handler:^{
-    [weakSelf sendEventWithName:@"didPressMenuItem" body:@{@"title": title}];
-  }]];
+  [self.bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:title
+                                                           handler:^{
+                                                             [weakSelf sendEventWithName:@"didPressMenuItem"
+                                                                                    body:@{@"title" : title}];
+                                                           }]];
 }
 
 - (BOOL)isElementInspectorShown
@@ -400,7 +403,7 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 #endif
 }
 
-- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL
+- (void)setupHMRClientWithBundleURL:(NSURL *)bundleURL
 {
   if (bundleURL && !bundleURL.fileURL) { // isHotLoadingAvailable check
     NSString *const path = [bundleURL.path substringFromIndex:1]; // Strip initial slash.
@@ -409,10 +412,24 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
     if (self.bridge) {
       [self.bridge enqueueJSCall:@"HMRClient"
                           method:@"setup"
-                            args:@[@"ios", path, host, RCTNullIfNil(port), @(YES)]
+                            args:@[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]
                       completion:NULL];
     } else {
-      self.invokeJS(@"HMRClient", @"setup", @[@"ios", path, host, RCTNullIfNil(port), @(YES)]);
+      self.invokeJS(@"HMRClient", @"setup", @[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]);
+    }
+  }
+}
+
+- (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL
+{
+  if (bundleURL && !bundleURL.fileURL) { // isHotLoadingAvailable check
+    if (self.bridge) {
+      [self.bridge enqueueJSCall:@"HMRClient"
+                          method:@"registerBundle"
+                            args:@[ [bundleURL absoluteString] ]
+                      completion:NULL];
+    } else {
+      self.invokeJS(@"HMRClient", @"registerBundle", @[ [bundleURL absoluteString] ]);
     }
   }
 }
@@ -450,9 +467,10 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
   });
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(params);
 }
 
 @end
@@ -505,7 +523,10 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 - (void)toggleElementInspector
 {
 }
-- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL
+- (void)setupHMRClientWithBundleURL:(NSURL *)bundleURL
+{
+}
+- (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL
 {
 }
 - (void)addMenuItem:(NSString *)title
@@ -515,9 +536,10 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 {
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(params);
 }
 
 @end
@@ -537,6 +559,7 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 
 @end
 
-Class RCTDevSettingsCls(void) {
+Class RCTDevSettingsCls(void)
+{
   return RCTDevSettings.class;
 }

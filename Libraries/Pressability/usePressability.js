@@ -13,7 +13,7 @@
 import Pressability, {
   type EventHandlers,
   type PressabilityConfig,
-} from './Pressability.js';
+} from './Pressability';
 import {useEffect, useRef} from 'react';
 
 export default function usePressability(

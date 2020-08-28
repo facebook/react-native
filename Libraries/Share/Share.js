@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -74,7 +74,10 @@ class Share {
    *  - `dialogTitle`
    *
    */
-  static share(content: Content, options: Options = {}): Promise<Object> {
+  static share(
+    content: Content,
+    options: Options = {},
+  ): Promise<{action: string, activityType: ?string}> {
     invariant(
       typeof content === 'object' && content !== null,
       'Content to share must be a valid object',
@@ -94,7 +97,7 @@ class Share {
         'ShareModule should be registered on Android.',
       );
       invariant(
-        !content.title || typeof content.title === 'string',
+        content.title == null || typeof content.title === 'string',
         'Invalid title: title should be a string.',
       );
 
@@ -104,7 +107,12 @@ class Share {
           typeof content.message === 'string' ? content.message : undefined,
       };
 
-      return NativeShareModule.share(newContent, options.dialogTitle);
+      return NativeShareModule.share(newContent, options.dialogTitle).then(
+        result => ({
+          activityType: null,
+          ...result,
+        }),
+      );
     } else if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         const tintColor = processColor(options.tintColor);
@@ -125,7 +133,7 @@ class Share {
               typeof content.message === 'string' ? content.message : undefined,
             url: typeof content.url === 'string' ? content.url : undefined,
             subject: options.subject,
-            tintColor: tintColor != null ? tintColor : undefined,
+            tintColor: typeof tintColor === 'number' ? tintColor : undefined,
             excludedActivityTypes: options.excludedActivityTypes,
           },
           error => reject(error),
@@ -138,6 +146,7 @@ class Share {
             } else {
               resolve({
                 action: 'dismissedAction',
+                activityType: null,
               });
             }
           },

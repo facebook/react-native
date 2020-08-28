@@ -41,9 +41,10 @@ public interface ReactRoot {
   /** Return native view for root */
   ViewGroup getRootViewGroup();
 
-  /** @return Cached values for widthMeasureSpec and heightMeasureSpec */
+  /** @return Cached values for widthMeasureSpec. */
   int getWidthMeasureSpec();
 
+  /** @return Cached values for and heightMeasureSpec. */
   int getHeightMeasureSpec();
 
   /** Sets a flag that determines whether to log that content appeared on next view added. */

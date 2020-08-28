@@ -15,6 +15,7 @@ const React = require('react');
 
 const invariant = require('invariant');
 const processColor = require('../../StyleSheet/processColor');
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
@@ -62,7 +63,7 @@ type AndroidProps = $ReadOnly<{|
    * The background color of the status bar.
    * @platform android
    */
-  backgroundColor?: ?string,
+  backgroundColor?: ?ColorValue,
   /**
    * If the status bar is translucent.
    * When translucent is set to true, the app will draw under the status bar.
@@ -86,7 +87,7 @@ type IOSProps = $ReadOnly<{|
    *
    * @platform ios
    */
-  showHideTransition?: ?('fade' | 'slide'),
+  showHideTransition?: ?('fade' | 'slide' | 'none'),
 |}>;
 
 type Props = $ReadOnly<{|
@@ -466,9 +467,7 @@ class StatusBar extends React.Component<Props> {
         const processedColor = processColor(mergedProps.backgroundColor.value);
         if (processedColor == null) {
           console.warn(
-            `\`StatusBar._updatePropsStack\`: Color ${
-              mergedProps.backgroundColor.value
-            } parsed to null or undefined`,
+            `\`StatusBar._updatePropsStack\`: Color ${mergedProps.backgroundColor.value} parsed to null or undefined`,
           );
         } else {
           invariant(

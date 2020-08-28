@@ -452,10 +452,12 @@ function CustomRippleRadius() {
 
       <TouchableNativeFeedback
         onPress={() => console.log('custom TNF has been clicked')}
-        background={TouchableNativeFeedback.SelectableBackgroundBorderless(50)}>
+        background={TouchableNativeFeedback.SelectableBackgroundBorderless(
+          150,
+        )}>
         <View>
           <Text style={[styles.button, styles.nativeFeedbackButton]}>
-            radius 50
+            radius 150
           </Text>
         </View>
       </TouchableNativeFeedback>
@@ -647,18 +649,18 @@ exports.examples = [
     },
   },
   {
+    title: 'Custom Ripple Radius (Android-only)',
+    description: ('Ripple radius on TouchableNativeFeedback can be controlled': string),
+    render: function(): React.Element<any> {
+      return <CustomRippleRadius />;
+    },
+  },
+  {
     title: 'Disabled Touchable*',
     description: ('<Touchable*> components accept disabled prop which prevents ' +
       'any interaction with component': string),
     render: function(): React.Element<any> {
       return <TouchableDisabled />;
-    },
-  },
-  {
-    title: 'Custom Ripple Radius (Android-only)',
-    description: ('Ripple radius on TouchableNativeFeedback can be controlled': string),
-    render: function(): React.Element<any> {
-      return <CustomRippleRadius />;
     },
   },
 ];

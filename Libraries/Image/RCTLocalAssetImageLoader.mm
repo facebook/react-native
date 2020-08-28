@@ -41,36 +41,27 @@ RCT_EXPORT_MODULE()
   return NO;
 }
 
- - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
-                                               size:(CGSize)size
-                                              scale:(CGFloat)scale
-                                         resizeMode:(RCTResizeMode)resizeMode
-                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
-                                 partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
-                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+ - (nullable RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                                        size:(CGSize)size
+                                                       scale:(CGFloat)scale
+                                                  resizeMode:(RCTResizeMode)resizeMode
+                                             progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                          partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
+                                           completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
-  __block auto cancelled = std::make_shared<std::atomic<bool>>(false);
-  RCTExecuteOnMainQueue(^{
-    if (cancelled->load()) {
-      return;
+  UIImage *image = RCTImageFromLocalAssetURL(imageURL);
+  if (image) {
+    if (progressHandler) {
+      progressHandler(1, 1);
     }
+    completionHandler(nil, image);
+  } else {
+    NSString *message = [NSString stringWithFormat:@"Could not find image %@", imageURL];
+    RCTLogWarn(@"%@", message);
+    completionHandler(RCTErrorWithMessage(message), nil);
+  }
 
-    UIImage *image = RCTImageFromLocalAssetURL(imageURL);
-    if (image) {
-      if (progressHandler) {
-        progressHandler(1, 1);
-      }
-      completionHandler(nil, image);
-    } else {
-      NSString *message = [NSString stringWithFormat:@"Could not find image %@", imageURL];
-      RCTLogWarn(@"%@", message);
-      completionHandler(RCTErrorWithMessage(message), nil);
-    }
-  });
-
-  return ^{
-    cancelled->store(true);
-  };
+  return nil;
 }
 
 @end

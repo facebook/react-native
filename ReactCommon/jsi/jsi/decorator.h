@@ -256,7 +256,7 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   WeakObject createWeakObject(const Object& o) override {
     return plain_.createWeakObject(o);
   };
-  Value lockWeakObject(const WeakObject& wo) override {
+  Value lockWeakObject(WeakObject& wo) override {
     return plain_.lockWeakObject(wo);
   };
 
@@ -335,6 +335,14 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain().instrumentation().collectGarbage();
   }
 
+  void startTrackingHeapObjectStackTraces() override {
+    plain().instrumentation().startTrackingHeapObjectStackTraces();
+  }
+
+  void stopTrackingHeapObjectStackTraces() override {
+    plain().instrumentation().stopTrackingHeapObjectStackTraces();
+  }
+
   void createSnapshotToFile(const std::string& path) override {
     plain().instrumentation().createSnapshotToFile(path);
   }
@@ -397,6 +405,44 @@ struct AfterCaller<T, decltype((void)&T::after)> {
   static void after(T& t) {
     t.after();
   }
+};
+
+// It's possible to use multiple decorators by nesting
+// WithRuntimeDecorator<...>, but this specialization allows use of
+// std::tuple of decorator classes instead.  See testlib.cpp for an
+// example.
+template <typename... T>
+struct BeforeCaller<std::tuple<T...>> {
+  static void before(std::tuple<T...>& tuple) {
+    all_before<0, T...>(tuple);
+  }
+
+ private:
+  template <size_t N, typename U, typename... Rest>
+  static void all_before(std::tuple<T...>& tuple) {
+    detail::BeforeCaller<U>::before(std::get<N>(tuple));
+    all_before<N + 1, Rest...>(tuple);
+  }
+
+  template <size_t N>
+  static void all_before(std::tuple<T...>&) {}
+};
+
+template <typename... T>
+struct AfterCaller<std::tuple<T...>> {
+  static void after(std::tuple<T...>& tuple) {
+    all_after<0, T...>(tuple);
+  }
+
+ private:
+  template <size_t N, typename U, typename... Rest>
+  static void all_after(std::tuple<T...>& tuple) {
+    all_after<N + 1, Rest...>(tuple);
+    detail::AfterCaller<U>::after(std::get<N>(tuple));
+  }
+
+  template <size_t N>
+  static void all_after(std::tuple<T...>&) {}
 };
 
 } // namespace detail
@@ -587,7 +633,7 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::createWeakObject(o);
   };
-  Value lockWeakObject(const WeakObject& wo) override {
+  Value lockWeakObject(WeakObject& wo) override {
     Around around{with_};
     return RD::lockWeakObject(wo);
   };
@@ -681,41 +727,6 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
   };
 
   With& with_;
-};
-
-// Nesting WithRuntimeDecorator will work, but using this as the With
-// type will be easier to read, write, and understand.
-template <typename... T>
-class WithTuple : public std::tuple<T...> {
- public:
-  using std::tuple<T...>::tuple;
-
-  void before() {
-    all_before<0, T...>();
-  }
-
-  void after() {
-    all_after<0, T...>();
-  }
-
- private:
-  template <size_t N, typename U, typename... Rest>
-  void all_before() {
-    detail::BeforeCaller<U>::before(std::get<N>(*this));
-    all_before<N + 1, Rest...>();
-  }
-
-  template <size_t N>
-  void all_before() {}
-
-  template <size_t N, typename U, typename... Rest>
-  void all_after() {
-    all_after<N + 1, Rest...>();
-    detail::AfterCaller<U>::after(std::get<N>(*this));
-  }
-
-  template <size_t N>
-  void all_after() {}
 };
 
 } // namespace jsi

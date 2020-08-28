@@ -48,6 +48,7 @@ R jsArg(
 }
 
 template <typename T>
+// NOLINTNEXTLINE (T62192316)
 typename detail::is_dynamic<T>::type &jsArgAsDynamic(T &&args, size_t n) {
   try {
     return args[n];

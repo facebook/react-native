@@ -10,8 +10,8 @@
 
 'use strict';
 
-const registerGeneratedViewConfig = require('../../Utilities/registerGeneratedViewConfig');
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+import registerGeneratedViewConfig from '../../Utilities/registerGeneratedViewConfig';
+import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import ScrollViewViewConfig from './ScrollViewViewConfig';
 
 import type {

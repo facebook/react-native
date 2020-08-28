@@ -40,7 +40,9 @@ def use_react_native! (options={})
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector"
-  pod 'ReactCommon/callinvoker', :path => "#{prefix}/ReactCommon"
+  pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
+  pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
+  pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon"
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
 
@@ -57,12 +59,34 @@ def use_react_native! (options={})
   end
 end
 
-def use_flipper!(version = '~> 0.30.2')
-  pod 'FlipperKit', version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitLayoutPlugin', version, :configuration => 'Debug'
-  pod 'FlipperKit/SKIOSNetworkPlugin', version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitReactPlugin', version, :configuration => 'Debug'
+def use_flipper!(versions = {}, configurations: ['Debug'])
+  versions['Flipper'] ||= '~> 0.41.1'
+  versions['Flipper-DoubleConversion'] ||= '1.1.7'
+  versions['Flipper-Folly'] ||= '~> 2.2'
+  versions['Flipper-Glog'] ||= '0.3.6'
+  versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
+  versions['Flipper-RSocket'] ||= '~> 1.1'
+  pod 'FlipperKit', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configurations => configurations
+  # List all transitive dependencies for FlipperKit pods
+  # to avoid them being linked in Release builds
+  pod 'Flipper', versions['Flipper'], :configurations => configurations
+  pod 'Flipper-DoubleConversion', versions['Flipper-DoubleConversion'], :configurations => configurations
+  pod 'Flipper-Folly', versions['Flipper-Folly'], :configurations => configurations
+  pod 'Flipper-Glog', versions['Flipper-Glog'], :configurations => configurations
+  pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configurations => configurations
+  pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configurations => configurations
+  pod 'FlipperKit/Core', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/CppBridge', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FBDefines', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configurations => configurations
 end
 
 # Post Install processing for Flipper

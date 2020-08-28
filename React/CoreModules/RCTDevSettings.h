@@ -37,7 +37,7 @@
 @property (nonatomic, readonly) BOOL isHotLoadingAvailable;
 @property (nonatomic, readonly) BOOL isLiveReloadAvailable;
 @property (nonatomic, readonly) BOOL isRemoteDebuggingAvailable;
-@property (nonatomic, readonly) BOOL isNuclideDebuggingAvailable;
+@property (nonatomic, readonly) BOOL isDeviceDebuggingAvailable;
 @property (nonatomic, readonly) BOOL isJSCSamplingProfilerAvailable;
 
 /**
@@ -82,9 +82,14 @@
 - (void)toggleElementInspector;
 
 /**
- * If loading bundle from metro, sets up HMRClient.
+ * Set up the HMRClient if loading the bundle from Metro.
  */
-- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL;
+- (void)setupHMRClientWithBundleURL:(NSURL *)bundleURL;
+
+/**
+ * Register additional bundles with the HMRClient.
+ */
+- (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL;
 
 #if RCT_DEV_MENU
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler

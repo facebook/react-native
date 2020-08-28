@@ -16,7 +16,7 @@ import type {
   ViewStyleProp,
   DangerouslyImpreciseStyle,
 } from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PointProp} from '../../StyleSheet/PointPropType';
@@ -77,7 +77,6 @@ export type ScrollViewNativeProps = $ReadOnly<{
   snapToOffsets?: ?$ReadOnlyArray<number>,
   snapToStart?: ?boolean,
   zoomScale?: ?number,
-  DEPRECATED_sendUpdatedChildFrames?: ?boolean,
   // Overrides
   style?: {...ViewStyleProp, ...} | DangerouslyImpreciseStyle,
   onResponderGrant?: ?(e: any) => void | boolean,

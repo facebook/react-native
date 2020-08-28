@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "SampleTurboCxxModule.h"
+#include "SampleTurboCxxModule.h"
 
-#import <ReactCommon/TurboModuleUtils.h>
+#include <ReactCommon/TurboModuleUtils.h>
 
 using namespace facebook;
 

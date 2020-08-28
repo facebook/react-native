@@ -23,7 +23,6 @@ import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -33,10 +32,17 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class ReactContext extends ContextWrapper {
 
+  private static final String TAG = "ReactContext";
   private static final String EARLY_JS_ACCESS_EXCEPTION_MESSAGE =
       "Tried to access a JS module before the React instance was fully set up. Calls to "
           + "ReactContext#getJSModule should only happen once initialize() has been called on your "
           + "native module.";
+  private static final String LATE_JS_ACCESS_EXCEPTION_MESSAGE =
+      "Tried to access a JS module after the React instance was destroyed.";
+  private static final String EARLY_NATIVE_MODULE_EXCEPTION_MESSAGE =
+      "Trying to call native module before CatalystInstance has been set!";
+  private static final String LATE_NATIVE_MODULE_EXCEPTION_MESSAGE =
+      "Trying to call native module after CatalystInstance has been destroyed!";
 
   private final CopyOnWriteArraySet<LifecycleEventListener> mLifecycleEventListeners =
       new CopyOnWriteArraySet<>();
@@ -47,6 +53,7 @@ public class ReactContext extends ContextWrapper {
 
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
+  private volatile boolean mDestroyed = false;
   private @Nullable CatalystInstance mCatalystInstance;
   private @Nullable LayoutInflater mInflater;
   private @Nullable MessageQueueThread mUiMessageQueueThread;
@@ -67,6 +74,11 @@ public class ReactContext extends ContextWrapper {
     }
     if (mCatalystInstance != null) {
       throw new IllegalStateException("ReactContext has been already initialized");
+    }
+    if (mDestroyed) {
+      ReactSoftException.logSoftException(
+          TAG,
+          new IllegalStateException("Cannot initialize ReactContext after it has been destroyed."));
     }
 
     mCatalystInstance = catalystInstance;
@@ -104,6 +116,11 @@ public class ReactContext extends ContextWrapper {
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
   }
 
+  private void raiseCatalystInstanceMissingException() {
+    throw new IllegalStateException(
+        mDestroyed ? LATE_NATIVE_MODULE_EXCEPTION_MESSAGE : EARLY_NATIVE_MODULE_EXCEPTION_MESSAGE);
+  }
+
   // We override the following method so that views inflated with the inflater obtained from this
   // context return the ReactContext in #getContext(). The default implementation uses the base
   // context instead, so it couldn't be cast to ReactContext.
@@ -124,6 +141,9 @@ public class ReactContext extends ContextWrapper {
    */
   public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
     if (mCatalystInstance == null) {
+      if (mDestroyed) {
+        throw new IllegalStateException(LATE_JS_ACCESS_EXCEPTION_MESSAGE);
+      }
       throw new IllegalStateException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
     }
     return mCatalystInstance.getJSModule(jsInterface);
@@ -131,17 +151,16 @@ public class ReactContext extends ContextWrapper {
 
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
-      throw new IllegalStateException(
-          "Trying to call native module before CatalystInstance has been set!");
+      raiseCatalystInstanceMissingException();
     }
     return mCatalystInstance.hasNativeModule(nativeModuleInterface);
   }
 
   /** @return the instance of the specified module interface associated with this ReactContext. */
+  @Nullable
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
-      throw new IllegalStateException(
-          "Trying to call native module before CatalystInstance has been set!");
+      raiseCatalystInstanceMissingException();
     }
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
   }
@@ -164,7 +183,7 @@ public class ReactContext extends ContextWrapper {
 
   public void addLifecycleEventListener(final LifecycleEventListener listener) {
     mLifecycleEventListeners.add(listener);
-    if (hasActiveCatalystInstance()) {
+    if (hasActiveCatalystInstance() || isBridgeless()) {
       switch (mLifecycleState) {
         case BEFORE_CREATE:
         case BEFORE_RESUME:
@@ -273,11 +292,9 @@ public class ReactContext extends ContextWrapper {
   public void destroy() {
     UiThreadUtil.assertOnUiThread();
 
+    mDestroyed = true;
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
-      if (ReactFeatureFlags.nullifyCatalystInstanceOnDestroy) {
-        mCatalystInstance = null;
-      }
     }
   }
 
@@ -428,11 +445,32 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance.getJavaScriptContextHolder();
   }
 
-  public JSIModule getJSIModule(JSIModuleType moduleType) {
+  public @Nullable JSIModule getJSIModule(JSIModuleType moduleType) {
     if (!hasActiveCatalystInstance()) {
       throw new IllegalStateException(
           "Unable to retrieve a JSIModule if CatalystInstance is not active.");
     }
     return mCatalystInstance.getJSIModule(moduleType);
+  }
+
+  /**
+   * Get the sourceURL for the JS bundle from the CatalystInstance. This method is needed for
+   * compatibility with bridgeless mode, which has no CatalystInstance.
+   *
+   * @return The JS bundle URL set when the bundle was loaded
+   */
+  public @Nullable String getSourceURL() {
+    return mCatalystInstance.getSourceURL();
+  }
+
+  /**
+   * Register a JS segment after loading it from cache or server, make sure mCatalystInstance is
+   * properly initialised and not null before calling.
+   *
+   * @param segmentId
+   * @param path
+   */
+  public void registerSegment(int segmentId, String path) {
+    Assertions.assertNotNull(mCatalystInstance).registerSegment(segmentId, path);
   }
 }

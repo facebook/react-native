@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -63,11 +63,11 @@ type TBackHandler = {|
   +exitApp: () => void,
   +addEventListener: (
     eventName: BackPressEventName,
-    handler: Function,
+    handler: () => ?boolean,
   ) => {remove: () => void, ...},
   +removeEventListener: (
     eventName: BackPressEventName,
-    handler: Function,
+    handler: () => ?boolean,
   ) => void,
 |};
 const BackHandler: TBackHandler = {
@@ -87,7 +87,7 @@ const BackHandler: TBackHandler = {
    */
   addEventListener: function(
     eventName: BackPressEventName,
-    handler: Function,
+    handler: () => ?boolean,
   ): {remove: () => void, ...} {
     if (_backPressSubscriptions.indexOf(handler) === -1) {
       _backPressSubscriptions.push(handler);
@@ -102,7 +102,7 @@ const BackHandler: TBackHandler = {
    */
   removeEventListener: function(
     eventName: BackPressEventName,
-    handler: Function,
+    handler: () => ?boolean,
   ): void {
     if (_backPressSubscriptions.indexOf(handler) !== -1) {
       _backPressSubscriptions.splice(

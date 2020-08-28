@@ -190,10 +190,12 @@ std::size_t countJsArgs(const std::string &signature) {
 
 MethodInvoker::MethodInvoker(
     alias_ref<JReflectMethod::javaobject> method,
+    std::string methodName,
     std::string signature,
     std::string traceName,
     bool isSync)
     : method_(method->getMethodID()),
+      methodName_(methodName),
       signature_(signature),
       jsArgCount_(countJsArgs(signature) - 2),
       traceName_(std::move(traceName)),
@@ -201,6 +203,10 @@ MethodInvoker::MethodInvoker(
   CHECK(signature_.at(1) == '.') << "Improper module method signature";
   CHECK(isSync_ || signature_.at(0) == 'v')
       << "Non-sync hooks cannot have a non-void return type";
+}
+
+std::string MethodInvoker::getMethodName() const {
+  return methodName_;
 }
 
 MethodCallResult MethodInvoker::invoke(

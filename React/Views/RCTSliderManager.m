@@ -19,12 +19,10 @@ RCT_EXPORT_MODULE()
 - (UIView *)view
 {
   RCTSlider *slider = [RCTSlider new];
-  [slider addTarget:self action:@selector(sliderValueChanged:)
-   forControlEvents:UIControlEventValueChanged];
-  [slider addTarget:self action:@selector(sliderTouchEnd:)
-   forControlEvents:(UIControlEventTouchUpInside |
-                     UIControlEventTouchUpOutside |
-                     UIControlEventTouchCancel)];
+  [slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
+  [slider addTarget:self
+                action:@selector(sliderTouchEnd:)
+      forControlEvents:(UIControlEventTouchUpInside | UIControlEventTouchUpOutside | UIControlEventTouchCancel)];
   return slider;
 }
 
@@ -32,15 +30,11 @@ static void RCTSendSliderEvent(RCTSlider *sender, BOOL continuous)
 {
   float value = sender.value;
 
-  if (sender.step > 0 &&
-      sender.step <= (sender.maximumValue - sender.minimumValue)) {
-
+  if (sender.step > 0 && sender.step <= (sender.maximumValue - sender.minimumValue)) {
     value =
-      MAX(sender.minimumValue,
-        MIN(sender.maximumValue,
-          sender.minimumValue + round((sender.value - sender.minimumValue) / sender.step) * sender.step
-        )
-      );
+        MAX(sender.minimumValue,
+            MIN(sender.maximumValue,
+                sender.minimumValue + round((sender.value - sender.minimumValue) / sender.step) * sender.step));
 
     [sender setValue:value animated:YES];
   }
@@ -48,13 +42,13 @@ static void RCTSendSliderEvent(RCTSlider *sender, BOOL continuous)
   if (continuous) {
     if (sender.onValueChange && sender.lastValue != value) {
       sender.onValueChange(@{
-        @"value": @(value),
+        @"value" : @(value),
       });
     }
   } else {
     if (sender.onSlidingComplete) {
       sender.onSlidingComplete(@{
-        @"value": @(value),
+        @"value" : @(value),
       });
     }
   }

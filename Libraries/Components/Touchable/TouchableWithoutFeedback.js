@@ -12,9 +12,9 @@
 
 import Pressability, {
   type PressabilityConfig,
-} from '../../Pressability/Pressability.js';
-import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
-import TVTouchable from './TVTouchable.js';
+} from '../../Pressability/Pressability';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
+import TVTouchable from './TVTouchable';
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
@@ -179,6 +179,7 @@ function createPressabilityConfig(props: Props): PressabilityConfig {
     delayLongPress: props.delayLongPress,
     delayPressIn: props.delayPressIn,
     delayPressOut: props.delayPressOut,
+    minPressDuration: 0,
     pressRectOffset: props.pressRetentionOffset,
     android_disableSound: props.touchSoundDisabled,
     onBlur: props.onBlur,

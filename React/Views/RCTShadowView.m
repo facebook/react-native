@@ -32,8 +32,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   META_PROP_COUNT,
 };
 
-@implementation RCTShadowView
-{
+@implementation RCTShadowView {
   NSDictionary *_lastParentProperties;
   NSMutableArray<RCTShadowView *> *_reactSubviews;
   BOOL _recomputePadding;
@@ -67,45 +66,48 @@ static void RCTPrint(YGNodeRef node)
   printf("%s(%lld), ", shadowView.viewName.UTF8String, (long long)shadowView.reactTag.integerValue);
 }
 
-#define RCT_SET_YGVALUE(ygvalue, setter, ...)    \
-switch (ygvalue.unit) {                          \
-  case YGUnitAuto:                               \
-  case YGUnitUndefined:                          \
-    setter(__VA_ARGS__, YGUndefined);            \
-    break;                                       \
-  case YGUnitPoint:                              \
-    setter(__VA_ARGS__, ygvalue.value);          \
-    break;                                       \
-  case YGUnitPercent:                            \
-    setter##Percent(__VA_ARGS__, ygvalue.value); \
-    break;                                       \
-}
+#define RCT_SET_YGVALUE(ygvalue, setter, ...)      \
+  switch (ygvalue.unit) {                          \
+    case YGUnitAuto:                               \
+    case YGUnitUndefined:                          \
+      setter(__VA_ARGS__, YGUndefined);            \
+      break;                                       \
+    case YGUnitPoint:                              \
+      setter(__VA_ARGS__, ygvalue.value);          \
+      break;                                       \
+    case YGUnitPercent:                            \
+      setter##Percent(__VA_ARGS__, ygvalue.value); \
+      break;                                       \
+  }
 
 #define RCT_SET_YGVALUE_AUTO(ygvalue, setter, ...) \
-switch (ygvalue.unit) {                            \
-  case YGUnitAuto:                                 \
-    setter##Auto(__VA_ARGS__);                     \
-    break;                                         \
-  case YGUnitUndefined:                            \
-    setter(__VA_ARGS__, YGUndefined);              \
-    break;                                         \
-  case YGUnitPoint:                                \
-    setter(__VA_ARGS__, ygvalue.value);            \
-    break;                                         \
-  case YGUnitPercent:                              \
-    setter##Percent(__VA_ARGS__, ygvalue.value);   \
-    break;                                         \
-}
+  switch (ygvalue.unit) {                          \
+    case YGUnitAuto:                               \
+      setter##Auto(__VA_ARGS__);                   \
+      break;                                       \
+    case YGUnitUndefined:                          \
+      setter(__VA_ARGS__, YGUndefined);            \
+      break;                                       \
+    case YGUnitPoint:                              \
+      setter(__VA_ARGS__, ygvalue.value);          \
+      break;                                       \
+    case YGUnitPercent:                            \
+      setter##Percent(__VA_ARGS__, ygvalue.value); \
+      break;                                       \
+  }
 
-static void RCTProcessMetaPropsPadding(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
+static void RCTProcessMetaPropsPadding(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node)
+{
   if (![[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
     RCT_SET_YGVALUE(metaProps[META_PROP_START], YGNodeStyleSetPadding, node, YGEdgeStart);
     RCT_SET_YGVALUE(metaProps[META_PROP_END], YGNodeStyleSetPadding, node, YGEdgeEnd);
     RCT_SET_YGVALUE(metaProps[META_PROP_LEFT], YGNodeStyleSetPadding, node, YGEdgeLeft);
     RCT_SET_YGVALUE(metaProps[META_PROP_RIGHT], YGNodeStyleSetPadding, node, YGEdgeRight);
   } else {
-    YGValue start = metaProps[META_PROP_START].unit == YGUnitUndefined ? metaProps[META_PROP_LEFT] : metaProps[META_PROP_START];
-    YGValue end = metaProps[META_PROP_END].unit == YGUnitUndefined ? metaProps[META_PROP_RIGHT] : metaProps[META_PROP_END];
+    YGValue start =
+        metaProps[META_PROP_START].unit == YGUnitUndefined ? metaProps[META_PROP_LEFT] : metaProps[META_PROP_START];
+    YGValue end =
+        metaProps[META_PROP_END].unit == YGUnitUndefined ? metaProps[META_PROP_RIGHT] : metaProps[META_PROP_END];
     RCT_SET_YGVALUE(start, YGNodeStyleSetPadding, node, YGEdgeStart);
     RCT_SET_YGVALUE(end, YGNodeStyleSetPadding, node, YGEdgeEnd);
   }
@@ -116,15 +118,18 @@ static void RCTProcessMetaPropsPadding(const YGValue metaProps[META_PROP_COUNT],
   RCT_SET_YGVALUE(metaProps[META_PROP_ALL], YGNodeStyleSetPadding, node, YGEdgeAll);
 }
 
-static void RCTProcessMetaPropsMargin(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
+static void RCTProcessMetaPropsMargin(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node)
+{
   if (![[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
     RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_START], YGNodeStyleSetMargin, node, YGEdgeStart);
     RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_END], YGNodeStyleSetMargin, node, YGEdgeEnd);
     RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_LEFT], YGNodeStyleSetMargin, node, YGEdgeLeft);
     RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_RIGHT], YGNodeStyleSetMargin, node, YGEdgeRight);
   } else {
-    YGValue start = metaProps[META_PROP_START].unit == YGUnitUndefined ? metaProps[META_PROP_LEFT] : metaProps[META_PROP_START];
-    YGValue end = metaProps[META_PROP_END].unit == YGUnitUndefined ? metaProps[META_PROP_RIGHT] : metaProps[META_PROP_END];
+    YGValue start =
+        metaProps[META_PROP_START].unit == YGUnitUndefined ? metaProps[META_PROP_LEFT] : metaProps[META_PROP_START];
+    YGValue end =
+        metaProps[META_PROP_END].unit == YGUnitUndefined ? metaProps[META_PROP_RIGHT] : metaProps[META_PROP_END];
     RCT_SET_YGVALUE_AUTO(start, YGNodeStyleSetMargin, node, YGEdgeStart);
     RCT_SET_YGVALUE_AUTO(end, YGNodeStyleSetMargin, node, YGEdgeEnd);
   }
@@ -135,15 +140,18 @@ static void RCTProcessMetaPropsMargin(const YGValue metaProps[META_PROP_COUNT], 
   RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_ALL], YGNodeStyleSetMargin, node, YGEdgeAll);
 }
 
-static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
+static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node)
+{
   if (![[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
     YGNodeStyleSetBorder(node, YGEdgeStart, metaProps[META_PROP_START].value);
     YGNodeStyleSetBorder(node, YGEdgeEnd, metaProps[META_PROP_END].value);
     YGNodeStyleSetBorder(node, YGEdgeLeft, metaProps[META_PROP_LEFT].value);
     YGNodeStyleSetBorder(node, YGEdgeRight, metaProps[META_PROP_RIGHT].value);
   } else {
-    const float start = YGFloatIsUndefined(metaProps[META_PROP_START].value) ? metaProps[META_PROP_LEFT].value : metaProps[META_PROP_START].value;
-    const float end = YGFloatIsUndefined(metaProps[META_PROP_END].value) ? metaProps[META_PROP_RIGHT].value : metaProps[META_PROP_END].value;
+    const float start = YGFloatIsUndefined(metaProps[META_PROP_START].value) ? metaProps[META_PROP_LEFT].value
+                                                                             : metaProps[META_PROP_START].value;
+    const float end = YGFloatIsUndefined(metaProps[META_PROP_END].value) ? metaProps[META_PROP_RIGHT].value
+                                                                         : metaProps[META_PROP_END].value;
     YGNodeStyleSetBorder(node, YGEdgeStart, start);
     YGNodeStyleSetBorder(node, YGEdgeEnd, end);
   }
@@ -194,8 +202,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     _reactSubviews = [NSMutableArray array];
 
     _yogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
-     YGNodeSetContext(_yogaNode, (__bridge void *)self);
-     YGNodeSetPrintFunc(_yogaNode, RCTPrint);
+    YGNodeSetContext(_yogaNode, (__bridge void *)self);
+    YGNodeSetPrintFunc(_yogaNode, RCTPrint);
   }
   return self;
 }
@@ -259,10 +267,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 {
   YGNodeRef yogaNode = _yogaNode;
 
-  CGSize oldMinimumSize = (CGSize){
-    RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinWidth(yogaNode), 0.0),
-    RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinHeight(yogaNode), 0.0)
-  };
+  CGSize oldMinimumSize = (CGSize){RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinWidth(yogaNode), 0.0),
+                                   RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinHeight(yogaNode), 0.0)};
 
   if (!CGSizeEqualToSize(oldMinimumSize, minimumSize)) {
     YGNodeStyleSetMinWidth(yogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));
@@ -270,11 +276,10 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   }
 
   YGNodeCalculateLayout(
-    yogaNode,
-    RCTYogaFloatFromCoreGraphicsFloat(maximumSize.width),
-    RCTYogaFloatFromCoreGraphicsFloat(maximumSize.height),
-    RCTYogaLayoutDirectionFromUIKitLayoutDirection(layoutDirection)
-  );
+      yogaNode,
+      RCTYogaFloatFromCoreGraphicsFloat(maximumSize.width),
+      RCTYogaFloatFromCoreGraphicsFloat(maximumSize.height),
+      RCTYogaLayoutDirectionFromUIKitLayoutDirection(layoutDirection));
 
   RCTAssert(!YGNodeIsDirty(yogaNode), @"Attempt to get layout metrics from dirtied Yoga node.");
 
@@ -289,14 +294,12 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   layoutContext.absolutePosition.x += layoutMetrics.frame.origin.x;
   layoutContext.absolutePosition.y += layoutMetrics.frame.origin.y;
 
-  [self layoutWithMetrics:layoutMetrics
-            layoutContext:layoutContext];
+  [self layoutWithMetrics:layoutMetrics layoutContext:layoutContext];
 
   [self layoutSubviewsWithContext:layoutContext];
 }
 
-- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics
-            layoutContext:(RCTLayoutContext)layoutContext
+- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics layoutContext:(RCTLayoutContext)layoutContext
 {
   if (!RCTLayoutMetricsEqualToLayoutMetrics(self.layoutMetrics, layoutMetrics)) {
     self.layoutMetrics = layoutMetrics;
@@ -328,8 +331,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     layoutContext.absolutePosition.x += childLayoutMetrics.frame.origin.x;
     layoutContext.absolutePosition.y += childLayoutMetrics.frame.origin.y;
 
-    [childShadowView layoutWithMetrics:childLayoutMetrics
-                         layoutContext:layoutContext];
+    [childShadowView layoutWithMetrics:childLayoutMetrics layoutContext:layoutContext];
 
     // Recursive call.
     [childShadowView layoutSubviewsWithContext:layoutContext];
@@ -349,15 +351,14 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   YGNodeStyleSetMaxHeight(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(maximumSize.height));
 
   YGNodeCalculateLayout(
-    constraintYogaNode,
-    YGUndefined,
-    YGUndefined,
-    RCTYogaLayoutDirectionFromUIKitLayoutDirection(self.layoutMetrics.layoutDirection)
-  );
+      constraintYogaNode,
+      YGUndefined,
+      YGUndefined,
+      RCTYogaLayoutDirectionFromUIKitLayoutDirection(self.layoutMetrics.layoutDirection));
 
   CGSize measuredSize = (CGSize){
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetWidth(constraintYogaNode)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetHeight(constraintYogaNode)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetWidth(constraintYogaNode)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetHeight(constraintYogaNode)),
   };
 
   YGNodeRemoveChild(constraintYogaNode, clonedYogaNode);
@@ -384,7 +385,11 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 - (NSString *)description
 {
   NSString *description = super.description;
-  description = [[description substringToIndex:description.length - 1] stringByAppendingFormat:@"; viewName: %@; reactTag: %@; frame: %@>", self.viewName, self.reactTag, NSStringFromCGRect(self.layoutMetrics.frame)];
+  description = [[description substringToIndex:description.length - 1]
+      stringByAppendingFormat:@"; viewName: %@; reactTag: %@; frame: %@>",
+                              self.viewName,
+                              self.reactTag,
+                              NSStringFromCGRect(self.layoutMetrics.frame)];
   return description;
 }
 
@@ -411,16 +416,16 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
 // Margin
 
-#define RCT_MARGIN_PROPERTY(prop, metaProp)       \
-- (void)setMargin##prop:(YGValue)value            \
-{                                                 \
-  _marginMetaProps[META_PROP_##metaProp] = value; \
-  _recomputeMargin = YES;                         \
-}                                                 \
-- (YGValue)margin##prop                           \
-{                                                 \
-  return _marginMetaProps[META_PROP_##metaProp];  \
-}
+#define RCT_MARGIN_PROPERTY(prop, metaProp)         \
+  -(void)setMargin##prop : (YGValue)value           \
+  {                                                 \
+    _marginMetaProps[META_PROP_##metaProp] = value; \
+    _recomputeMargin = YES;                         \
+  }                                                 \
+  -(YGValue)margin##prop                            \
+  {                                                 \
+    return _marginMetaProps[META_PROP_##metaProp];  \
+  }
 
 RCT_MARGIN_PROPERTY(, ALL)
 RCT_MARGIN_PROPERTY(Vertical, VERTICAL)
@@ -434,16 +439,16 @@ RCT_MARGIN_PROPERTY(End, END)
 
 // Padding
 
-#define RCT_PADDING_PROPERTY(prop, metaProp)       \
-- (void)setPadding##prop:(YGValue)value            \
-{                                                  \
-  _paddingMetaProps[META_PROP_##metaProp] = value; \
-  _recomputePadding = YES;                         \
-}                                                  \
-- (YGValue)padding##prop                           \
-{                                                  \
-  return _paddingMetaProps[META_PROP_##metaProp];  \
-}
+#define RCT_PADDING_PROPERTY(prop, metaProp)         \
+  -(void)setPadding##prop : (YGValue)value           \
+  {                                                  \
+    _paddingMetaProps[META_PROP_##metaProp] = value; \
+    _recomputePadding = YES;                         \
+  }                                                  \
+  -(YGValue)padding##prop                            \
+  {                                                  \
+    return _paddingMetaProps[META_PROP_##metaProp];  \
+  }
 
 RCT_PADDING_PROPERTY(, ALL)
 RCT_PADDING_PROPERTY(Vertical, VERTICAL)
@@ -457,16 +462,16 @@ RCT_PADDING_PROPERTY(End, END)
 
 // Border
 
-#define RCT_BORDER_PROPERTY(prop, metaProp)             \
-- (void)setBorder##prop##Width:(float)value             \
-{                                                       \
-  _borderMetaProps[META_PROP_##metaProp].value = value; \
-  _recomputeBorder = YES;                               \
-}                                                       \
-- (float)border##prop##Width                            \
-{                                                       \
-  return _borderMetaProps[META_PROP_##metaProp].value;  \
-}
+#define RCT_BORDER_PROPERTY(prop, metaProp)               \
+  -(void)setBorder##prop##Width : (float)value            \
+  {                                                       \
+    _borderMetaProps[META_PROP_##metaProp].value = value; \
+    _recomputeBorder = YES;                               \
+  }                                                       \
+  -(float)border##prop##Width                             \
+  {                                                       \
+    return _borderMetaProps[META_PROP_##metaProp].value;  \
+  }
 
 RCT_BORDER_PROPERTY(, ALL)
 RCT_BORDER_PROPERTY(Top, TOP)
@@ -477,25 +482,25 @@ RCT_BORDER_PROPERTY(Start, START)
 RCT_BORDER_PROPERTY(End, END)
 
 // Dimensions
-#define RCT_DIMENSION_PROPERTY(setProp, getProp, cssProp)           \
-- (void)set##setProp:(YGValue)value                                 \
-{                                                                   \
-  RCT_SET_YGVALUE_AUTO(value, YGNodeStyleSet##cssProp, _yogaNode);  \
-}                                                                   \
-- (YGValue)getProp                                                  \
-{                                                                   \
-  return YGNodeStyleGet##cssProp(_yogaNode);                        \
-}
+#define RCT_DIMENSION_PROPERTY(setProp, getProp, cssProp)            \
+  -(void)set##setProp : (YGValue)value                               \
+  {                                                                  \
+    RCT_SET_YGVALUE_AUTO(value, YGNodeStyleSet##cssProp, _yogaNode); \
+  }                                                                  \
+  -(YGValue)getProp                                                  \
+  {                                                                  \
+    return YGNodeStyleGet##cssProp(_yogaNode);                       \
+  }
 
-#define RCT_MIN_MAX_DIMENSION_PROPERTY(setProp, getProp, cssProp)   \
-- (void)set##setProp:(YGValue)value                                 \
-{                                                                   \
-  RCT_SET_YGVALUE(value, YGNodeStyleSet##cssProp, _yogaNode);       \
-}                                                                   \
-- (YGValue)getProp                                                  \
-{                                                                   \
-  return YGNodeStyleGet##cssProp(_yogaNode);                        \
-}
+#define RCT_MIN_MAX_DIMENSION_PROPERTY(setProp, getProp, cssProp) \
+  -(void)set##setProp : (YGValue)value                            \
+  {                                                               \
+    RCT_SET_YGVALUE(value, YGNodeStyleSet##cssProp, _yogaNode);   \
+  }                                                               \
+  -(YGValue)getProp                                               \
+  {                                                               \
+    return YGNodeStyleGet##cssProp(_yogaNode);                    \
+  }
 
 RCT_DIMENSION_PROPERTY(Width, width, Width)
 RCT_DIMENSION_PROPERTY(Height, height, Height)
@@ -506,16 +511,15 @@ RCT_MIN_MAX_DIMENSION_PROPERTY(MaxHeight, maxHeight, MaxHeight)
 
 // Position
 
-#define RCT_POSITION_PROPERTY(setProp, getProp, edge)               \
-- (void)set##setProp:(YGValue)value                                 \
-{                                                                   \
-  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);  \
-}                                                                   \
-- (YGValue)getProp                                                  \
-{                                                                   \
-  return YGNodeStyleGetPosition(_yogaNode, edge);                   \
-}
-
+#define RCT_POSITION_PROPERTY(setProp, getProp, edge)                \
+  -(void)set##setProp : (YGValue)value                               \
+  {                                                                  \
+    RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge); \
+  }                                                                  \
+  -(YGValue)getProp                                                  \
+  {                                                                  \
+    return YGNodeStyleGetPosition(_yogaNode, edge);                  \
+  }
 
 RCT_POSITION_PROPERTY(Top, top, YGEdgeTop)
 RCT_POSITION_PROPERTY(Bottom, bottom, YGEdgeBottom)
@@ -551,10 +555,7 @@ RCT_POSITION_PROPERTY(End, end, YGEdgeEnd)
   YGValue width = YGNodeStyleGetWidth(_yogaNode);
   YGValue height = YGNodeStyleGetHeight(_yogaNode);
 
-  return CGSizeMake(
-    width.unit == YGUnitPoint ? width.value : NAN,
-    height.unit == YGUnitPoint ? height.value : NAN
-  );
+  return CGSizeMake(width.unit == YGUnitPoint ? width.value : NAN, height.unit == YGUnitPoint ? height.value : NAN);
 }
 
 - (void)setSize:(CGSize)size
@@ -565,7 +566,8 @@ RCT_POSITION_PROPERTY(End, end, YGEdgeEnd)
 
 // IntrinsicContentSize
 
-static inline YGSize RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
+static inline YGSize
+RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
 {
   RCTShadowView *shadowView = (__bridge RCTShadowView *)YGNodeGetContext(node);
 
@@ -640,14 +642,14 @@ static inline YGSize RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasure
 }
 
 #define RCT_STYLE_PROPERTY(setProp, getProp, cssProp, type) \
-- (void)set##setProp:(type)value                            \
-{                                                           \
-  YGNodeStyleSet##cssProp(_yogaNode, value);                \
-}                                                           \
-- (type)getProp                                             \
-{                                                           \
-  return YGNodeStyleGet##cssProp(_yogaNode);                \
-}
+  -(void)set##setProp : (type)value                         \
+  {                                                         \
+    YGNodeStyleSet##cssProp(_yogaNode, value);              \
+  }                                                         \
+  -(type)getProp                                            \
+  {                                                         \
+    return YGNodeStyleGet##cssProp(_yogaNode);              \
+  }
 
 RCT_STYLE_PROPERTY(Flex, flex, Flex, float)
 RCT_STYLE_PROPERTY(FlexGrow, flexGrow, FlexGrow, float)

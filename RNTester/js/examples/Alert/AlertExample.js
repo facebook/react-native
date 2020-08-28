@@ -18,8 +18,6 @@ const {
   View,
 } = require('react-native');
 
-const RNTesterBlock = require('../../components/RNTesterBlock');
-
 // corporate ipsum > lorem ipsum
 const alertMessage =
   'Credibly reintermediate next-generation potentialities after goal-oriented ' +
@@ -125,22 +123,6 @@ class SimpleAlertExampleBlock extends React.Component<Props> {
   }
 }
 
-class AlertExample extends React.Component {
-  static title = 'Alert';
-
-  static description =
-    'Alerts display a concise and informative message ' +
-    'and prompt the user to make a decision.';
-
-  render() {
-    return (
-      <RNTesterBlock title={'Alert'}>
-        <SimpleAlertExampleBlock />
-      </RNTesterBlock>
-    );
-  }
-}
-
 const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
@@ -152,7 +134,17 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = {
-  AlertExample,
-  SimpleAlertExampleBlock,
-};
+exports.title = 'Alert';
+exports.description =
+  'Alerts display a concise and informative message ' +
+  'and prompt the user to make a decision.';
+exports.examples = [
+  {
+    title: 'Alerts',
+    render(): React.Node {
+      return <SimpleAlertExampleBlock />;
+    },
+  },
+];
+
+exports.SimpleAlertExampleBlock = SimpleAlertExampleBlock;

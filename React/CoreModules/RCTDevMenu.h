@@ -17,7 +17,6 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 
 #endif
 
-
 @class RCTDevMenuItem;
 
 /**
@@ -68,8 +67,7 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 /**
  * Deprecated. Use the `-addItem:` method instead.
  */
-- (void)addItem:(NSString *)title
-        handler:(void(^)(void))handler DEPRECATED_ATTRIBUTE;
+- (void)addItem:(NSString *)title handler:(void (^)(void))handler DEPRECATED_ATTRIBUTE;
 
 /**
  * Add custom item to the development menu. The handler will be called
@@ -79,7 +77,7 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 
 @end
 
-typedef NSString *(^RCTDevMenuItemTitleBlock)(void);
+typedef NSString * (^RCTDevMenuItemTitleBlock)(void);
 
 /**
  * Developer menu item, used to expose additional functionality via the menu.
@@ -90,16 +88,14 @@ typedef NSString *(^RCTDevMenuItemTitleBlock)(void);
  * This creates an item with a simple push-button interface, used to trigger an
  * action.
  */
-+ (instancetype)buttonItemWithTitle:(NSString *)title
-                            handler:(dispatch_block_t)handler;
++ (instancetype)buttonItemWithTitle:(NSString *)title handler:(dispatch_block_t)handler;
 
 /**
  * This creates an item with a simple push-button interface, used to trigger an
  * action. getTitleForPresentation is called each time the item is about to be
  * presented, and should return the item's title.
  */
-+ (instancetype)buttonItemWithTitleBlock:(RCTDevMenuItemTitleBlock)titleBlock
-                                 handler:(dispatch_block_t)handler;
++ (instancetype)buttonItemWithTitleBlock:(RCTDevMenuItemTitleBlock)titleBlock handler:(dispatch_block_t)handler;
 
 @end
 

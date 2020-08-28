@@ -10,8 +10,7 @@
 namespace facebook {
 namespace react {
 
-CallInvokerHolder::CallInvokerHolder(
-    std::shared_ptr<CallInvoker> callInvoker)
+CallInvokerHolder::CallInvokerHolder(std::shared_ptr<CallInvoker> callInvoker)
     : _callInvoker(callInvoker) {}
 
 std::shared_ptr<CallInvoker> CallInvokerHolder::getCallInvoker() {

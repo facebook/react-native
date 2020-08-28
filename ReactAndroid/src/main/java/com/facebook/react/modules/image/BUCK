@@ -4,6 +4,7 @@ rn_android_library(
     name = "image",
     srcs = glob(["*.java"]),
     is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
         "PUBLIC",
     ],
@@ -20,6 +21,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/fresco:fresco"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/views/imagehelper:imagehelper"),
+        react_native_target("java/com/facebook/react/views/image:image"),
     ],
     exported_deps = [
         react_native_target("java/com/facebook/fbreact/specs:FBReactNativeSpec"),

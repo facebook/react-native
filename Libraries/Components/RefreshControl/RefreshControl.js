@@ -13,7 +13,7 @@
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import AndroidSwipeRefreshLayoutNativeComponent, {
   Commands as AndroidSwipeRefreshLayoutCommands,
@@ -83,7 +83,7 @@ export type RefreshControlProps = $ReadOnly<{|
   /**
    * Called when the view starts refreshing.
    */
-  onRefresh?: ?() => void,
+  onRefresh?: ?() => void | Promise<void>,
 
   /**
    * Whether the view should be indicating an active refresh.

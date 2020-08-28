@@ -20,6 +20,7 @@ const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const TextAncestor = require('../Text/TextAncestor');
 
+const ImageAnalyticsTagContext = require('./ImageAnalyticsTagContext').default;
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const resolveAssetSource = require('./resolveAssetSource');
 
@@ -95,6 +96,10 @@ const ImageProps = {
   ]): React$PropType$Primitive<{uri?: string, ...} | number>),
   progressiveRenderingEnabled: PropTypes.bool,
   fadeDuration: PropTypes.number,
+  /**
+   * Analytics Tag used by this Image
+   */
+  internal_analyticTag: PropTypes.string,
   /**
    * Invoked on load start
    */
@@ -288,15 +293,28 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   };
 
   return (
-    <TextAncestor.Consumer>
-      {hasTextAncestor =>
-        hasTextAncestor ? (
-          <TextInlineImageNativeComponent {...nativeProps} />
-        ) : (
-          <ImageViewNativeComponent {...nativeProps} />
-        )
-      }
-    </TextAncestor.Consumer>
+    <ImageAnalyticsTagContext.Consumer>
+      {analyticTag => {
+        const nativePropsWithAnalytics =
+          analyticTag !== null
+            ? {
+                ...nativeProps,
+                internal_analyticTag: analyticTag,
+              }
+            : nativeProps;
+        return (
+          <TextAncestor.Consumer>
+            {hasTextAncestor =>
+              hasTextAncestor ? (
+                <TextInlineImageNativeComponent {...nativePropsWithAnalytics} />
+              ) : (
+                <ImageViewNativeComponent {...nativePropsWithAnalytics} />
+              )
+            }
+          </TextAncestor.Consumer>
+        );
+      }}
+    </ImageAnalyticsTagContext.Consumer>
   );
 };
 

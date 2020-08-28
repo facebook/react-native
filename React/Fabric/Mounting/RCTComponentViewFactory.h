@@ -10,7 +10,7 @@
 #import <React/RCTComponentViewDescriptor.h>
 #import <React/RCTComponentViewProtocol.h>
 
-#import <react/uimanager/ComponentDescriptorRegistry.h>
+#import <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

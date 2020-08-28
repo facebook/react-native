@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -54,11 +54,11 @@ type TBackHandler = {|
   +exitApp: () => void,
   +addEventListener: (
     eventName: BackPressEventName,
-    handler: Function,
+    handler: () => ?boolean,
   ) => {remove: () => void, ...},
   +removeEventListener: (
     eventName: BackPressEventName,
-    handler: Function,
+    handler: () => ?boolean,
   ) => void,
 |};
 
@@ -93,7 +93,7 @@ if (Platform.isTV) {
 
     addEventListener: function(
       eventName: BackPressEventName,
-      handler: Function,
+      handler: () => ?boolean,
     ): {remove: () => void, ...} {
       _backPressSubscriptions.add(handler);
       return {
@@ -103,7 +103,7 @@ if (Platform.isTV) {
 
     removeEventListener: function(
       eventName: BackPressEventName,
-      handler: Function,
+      handler: () => ?boolean,
     ): void {
       _backPressSubscriptions.delete(handler);
     },
@@ -111,12 +111,15 @@ if (Platform.isTV) {
 } else {
   BackHandler = {
     exitApp: emptyFunction,
-    addEventListener(_eventName: BackPressEventName, _handler: Function) {
+    addEventListener(_eventName: BackPressEventName, _handler: () => ?boolean) {
       return {
         remove: emptyFunction,
       };
     },
-    removeEventListener(_eventName: BackPressEventName, _handler: Function) {},
+    removeEventListener(
+      _eventName: BackPressEventName,
+      _handler: () => ?boolean,
+    ) {},
   };
 }
 

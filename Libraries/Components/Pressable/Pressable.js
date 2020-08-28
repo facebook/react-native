@@ -12,18 +12,20 @@
 
 import * as React from 'react';
 import {useMemo, useState, useRef, useImperativeHandle} from 'react';
-import useAndroidRippleForView from './useAndroidRippleForView.js';
+import useAndroidRippleForView, {
+  type RippleConfig,
+} from './useAndroidRippleForView';
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
   AccessibilityRole,
   AccessibilityState,
   AccessibilityValue,
-} from '../View/ViewAccessibility.js';
-import usePressability from '../../Pressability/usePressability.js';
-import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect.js';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes.js';
-import type {LayoutEvent, PressEvent} from '../../Types/CoreEventTypes.js';
+} from '../View/ViewAccessibility';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
+import usePressability from '../../Pressability/usePressability';
+import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect';
+import type {LayoutEvent, PressEvent} from '../../Types/CoreEventTypes';
 import View from '../View/View';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
@@ -76,7 +78,7 @@ type Props = $ReadOnly<{|
    * Additional distance outside of this view in which a touch is considered a
    * press before `onPressOut` is triggered.
    */
-  pressRectOffset?: ?RectOrSize,
+  pressRetentionOffset?: ?RectOrSize,
 
   /**
    * Called when this view's layout changes.
@@ -122,7 +124,7 @@ type Props = $ReadOnly<{|
   /**
    * Enables the Android ripple effect and configures its color.
    */
-  android_rippleColor?: ?ColorValue,
+  android_ripple?: ?RippleConfig,
 
   /**
    * Used only for documentation or testing (e.g. snapshot testing).
@@ -138,7 +140,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
   const {
     accessible,
     android_disableSound,
-    android_rippleColor,
+    android_ripple,
     children,
     delayLongPress,
     disabled,
@@ -147,7 +149,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     onPress,
     onPressIn,
     onPressOut,
-    pressRectOffset,
+    pressRetentionOffset,
     style,
     testOnly_pressed,
     ...restProps
@@ -156,7 +158,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
   const viewRef = useRef<React.ElementRef<typeof View> | null>(null);
   useImperativeHandle(forwardedRef, () => viewRef.current);
 
-  const android_ripple = useAndroidRippleForView(android_rippleColor, viewRef);
+  const android_rippleConfig = useAndroidRippleForView(android_ripple, viewRef);
 
   const [pressed, setPressed] = usePressState(testOnly_pressed === true);
 
@@ -166,24 +168,24 @@ function Pressable(props: Props, forwardedRef): React.Node {
     () => ({
       disabled,
       hitSlop,
-      pressRectOffset,
+      pressRectOffset: pressRetentionOffset,
       android_disableSound,
       delayLongPress,
       onLongPress,
       onPress,
       onPressIn(event: PressEvent): void {
-        if (android_ripple != null) {
-          android_ripple.onPressIn(event);
+        if (android_rippleConfig != null) {
+          android_rippleConfig.onPressIn(event);
         }
         setPressed(true);
         if (onPressIn != null) {
           onPressIn(event);
         }
       },
-      onPressMove: android_ripple?.onPressMove,
+      onPressMove: android_rippleConfig?.onPressMove,
       onPressOut(event: PressEvent): void {
-        if (android_ripple != null) {
-          android_ripple.onPressOut(event);
+        if (android_rippleConfig != null) {
+          android_rippleConfig.onPressOut(event);
         }
         setPressed(false);
         if (onPressOut != null) {
@@ -193,7 +195,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     }),
     [
       android_disableSound,
-      android_ripple,
+      android_rippleConfig,
       delayLongPress,
       disabled,
       hitSlop,
@@ -201,7 +203,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       onPress,
       onPressIn,
       onPressOut,
-      pressRectOffset,
+      pressRetentionOffset,
       setPressed,
     ],
   );
@@ -211,13 +213,15 @@ function Pressable(props: Props, forwardedRef): React.Node {
     <View
       {...restProps}
       {...eventHandlers}
-      {...android_ripple?.viewProps}
+      {...android_rippleConfig?.viewProps}
       accessible={accessible !== false}
       focusable={focusable !== false}
       hitSlop={hitSlop}
       ref={viewRef}
-      style={typeof style === 'function' ? style({pressed}) : style}>
+      style={typeof style === 'function' ? style({pressed}) : style}
+      collapsable={false}>
       {typeof children === 'function' ? children({pressed}) : children}
+      {__DEV__ ? <PressabilityDebugView color="red" hitSlop={hitSlop} /> : null}
     </View>
   );
 }
@@ -227,10 +231,10 @@ function usePressState(forcePressed: boolean): [boolean, (boolean) => void] {
   return [pressed || forcePressed, setPressed];
 }
 
-const MemodPressable = React.memo(React.forwardRef(Pressable));
-MemodPressable.displayName = 'Pressable';
+const MemoedPressable = React.memo(React.forwardRef(Pressable));
+MemoedPressable.displayName = 'Pressable';
 
-export default (MemodPressable: React.AbstractComponent<
+export default (MemoedPressable: React.AbstractComponent<
   Props,
   React.ElementRef<typeof View>,
 >);

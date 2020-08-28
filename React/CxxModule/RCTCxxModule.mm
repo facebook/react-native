@@ -16,8 +16,7 @@
 
 using namespace facebook::react;
 
-@implementation RCTCxxModule
-{
+@implementation RCTCxxModule {
   std::unique_ptr<facebook::xplat::module::CxxModule> _module;
 }
 
@@ -37,9 +36,11 @@ using namespace facebook::react;
     _module = [self createModule];
 
     if (_module) {
-      RCTAssert([RCTBridgeModuleNameForClass([self class]) isEqualToString:@(_module->getName().c_str())],
-                @"CxxModule class name %@ does not match runtime name %s",
-                RCTBridgeModuleNameForClass([self class]), _module->getName().c_str());
+      RCTAssert(
+          [RCTBridgeModuleNameForClass([self class]) isEqualToString:@(_module->getName().c_str())],
+          @"CxxModule class name %@ does not match runtime name %s",
+          RCTBridgeModuleNameForClass([self class]),
+          _module->getName().c_str());
     }
   }
 }

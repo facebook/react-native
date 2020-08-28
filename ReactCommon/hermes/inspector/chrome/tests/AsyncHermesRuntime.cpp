@@ -87,6 +87,10 @@ folly::Future<jsi::Value> AsyncHermesRuntime::getStoredValue() {
   return storedValue_.getFuture();
 }
 
+bool AsyncHermesRuntime::hasStoredValue() {
+  return storedValue_.isFulfilled();
+}
+
 jsi::Value AsyncHermesRuntime::awaitStoredValue(
     std::chrono::milliseconds timeout) {
   return getStoredValue().get(timeout);

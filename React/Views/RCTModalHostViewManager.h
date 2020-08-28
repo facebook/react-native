@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <React/RCTConvert.h>
 #import <React/RCTInvalidating.h>
 #import <React/RCTViewManager.h>
-#import <React/RCTConvert.h>
 
 @interface RCTConvert (RCTModalHostView)
 
@@ -15,7 +15,11 @@
 
 @end
 
-typedef void (^RCTModalViewInteractionBlock)(UIViewController *reactViewController, UIViewController *viewController, BOOL animated, dispatch_block_t completionBlock);
+typedef void (^RCTModalViewInteractionBlock)(
+    UIViewController *reactViewController,
+    UIViewController *viewController,
+    BOOL animated,
+    dispatch_block_t completionBlock);
 
 @interface RCTModalHostViewManager : RCTViewManager <RCTInvalidating>
 

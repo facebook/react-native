@@ -22,10 +22,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/Button/ButtonExample'),
   },
   {
-    key: 'CheckBoxExample',
-    module: require('../examples/CheckBox/CheckBoxExample'),
-  },
-  {
     key: 'FlatListExample',
     module: require('../examples/FlatList/FlatListExample'),
   },
@@ -126,7 +122,7 @@ const APIExamples: Array<RNTesterExample> = [
   },
   {
     key: 'AlertExample',
-    module: require('../examples/Alert/AlertExample').AlertExample,
+    module: require('../examples/Alert/AlertExample'),
   },
   {
     key: 'AnimatedExample',
@@ -147,6 +143,10 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'BorderExample',
     module: require('../examples/Border/BorderExample'),
+  },
+  {
+    key: 'BoxShadowExample',
+    module: require('../examples/BoxShadow/BoxShadowExample'),
   },
   {
     key: 'ClipboardExample',
@@ -199,6 +199,10 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'PermissionsExampleAndroid',
     module: require('../examples/PermissionsAndroid/PermissionsExample'),
+  },
+  {
+    key: 'PlatformColorExample',
+    module: require('../examples/PlatformColor/PlatformColorExample'),
   },
   {
     key: 'PointerEventsExample',

@@ -39,6 +39,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -94,29 +95,19 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private int mLastWidth = 0;
   private int mLastHeight = 0;
   private @UIManagerType int mUIManagerType = DEFAULT;
-  private final boolean mUseSurface;
 
   public ReactRootView(Context context) {
     super(context);
-    mUseSurface = false;
-    init();
-  }
-
-  public ReactRootView(Context context, boolean useSurface) {
-    super(context);
-    mUseSurface = useSurface;
     init();
   }
 
   public ReactRootView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    mUseSurface = false;
     init();
   }
 
   public ReactRootView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
-    mUseSurface = false;
     init();
   }
 
@@ -126,15 +117,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    // TODO: T60453649 - Add test automation to verify behavior of onMeasure
-    setAllowImmediateUIOperationExecution(false);
-
-    if (mUseSurface) {
-      super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-      setAllowImmediateUIOperationExecution(true);
-      return;
-    }
-
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.onMeasure");
     try {
       boolean measureSpecsUpdated =
@@ -185,7 +167,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mLastHeight = height;
 
     } finally {
-      setAllowImmediateUIOperationExecution(true);
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
@@ -203,9 +184,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    EventDispatcher eventDispatcher =
-        reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-    mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, eventDispatcher);
+    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+
+    if (uiManager != null) {
+      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+      mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, eventDispatcher);
+    }
   }
 
   @Override
@@ -288,9 +272,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    EventDispatcher eventDispatcher =
-        reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-    mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
+    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+
+    if (uiManager != null) {
+      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+      mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
+    }
   }
 
   @Override
@@ -304,9 +291,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    if (mUseSurface) {
-      super.onLayout(changed, left, top, right, bottom);
-    }
     // No-op since UIManagerModule handles actually laying out children.
   }
 
@@ -390,10 +374,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mAppProperties = initialProperties;
       mInitialUITemplate = initialUITemplate;
 
-      if (mUseSurface) {
-        // TODO initialize surface here
-      }
-
       mReactInstanceManager.createReactContextInBackground();
 
       attachToReactInstanceManager();
@@ -444,43 +424,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   /**
-   * In Fabric, it is possible for MountItems to be scheduled during onMeasure calls, specifically:
-   *
-   * <p>ReactRootView.onMeasure -> ReactRootView.updateRootLayoutSpecs ->
-   * FabricUIManager.updateRootLayoutSpecs -> Binding.setConstraints -> (C++) commit new tree ->
-   * (C++ Android binding) diff tree, schedule mount items -> FabricUIManager.scheduleMountItem
-   *
-   * <p>If called on the main thread, `scheduleMountItem` will execute MountItems synchronously,
-   * causing all ShadowNode updates to be flushed to the view hierarchy, on the main thread, during
-   * an onMeasure call.
-   *
-   * <p>Use this method to disable immediate execution of mount items.
-   *
-   * <p>This is a noop outside in pre-Fabric React Native.
-   */
-  private void setAllowImmediateUIOperationExecution(boolean flag) {
-    final ReactInstanceManager reactInstanceManager = mReactInstanceManager;
-
-    if (reactInstanceManager == null) {
-      return;
-    }
-
-    final ReactContext reactApplicationContext = reactInstanceManager.getCurrentReactContext();
-
-    if (reactApplicationContext == null) {
-      return;
-    }
-
-    @Nullable
-    UIManager uiManager = UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
-    // Ignore calling setAllowImmediateUIOperationExecution if UIManager is not properly
-    // initialized.
-    if (uiManager != null) {
-      uiManager.setAllowImmediateUIOperationExecution(flag);
-    }
-  }
-
-  /**
    * Unmount the react application at this root view, reclaiming any JS memory associated with that
    * application. If {@link #startReactApplication} is called, this method must be called before the
    * ReactRootView is garbage collected (typically in your Activity's onDestroy, or in your
@@ -489,6 +432,24 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @ThreadConfined(UI)
   public void unmountReactApplication() {
     UiThreadUtil.assertOnUiThread();
+    // Stop surface in Fabric.
+    // Calling FabricUIManager.stopSurface causes the C++ Binding.stopSurface
+    // to be called synchronously over the JNI, which causes an empty tree
+    // to be committed via the Scheduler, which will cause mounting instructions
+    // to be queued up and synchronously executed to delete and remove
+    // all the views in the hierarchy.
+    if (mReactInstanceManager != null && ReactFeatureFlags.enableStopSurfaceOnRootViewUnmount) {
+      final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
+      if (reactApplicationContext != null && getUIManagerType() == FABRIC) {
+        @Nullable
+        UIManager uiManager =
+            UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
+        if (uiManager != null) {
+          FLog.e(TAG, "stopSurface for surfaceId: " + this.getId());
+          uiManager.stopSurface(this.getId());
+        }
+      }
+    }
 
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);
@@ -568,26 +529,20 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       CatalystInstance catalystInstance = reactContext.getCatalystInstance();
       String jsAppModuleName = getJSModuleName();
 
-      if (mUseSurface) {
-        // TODO call surface's runApplication
-      } else {
-        if (mWasMeasured) {
-          updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
-        }
-
-        WritableNativeMap appParams = new WritableNativeMap();
-        appParams.putDouble("rootTag", getRootViewTag());
-        @Nullable Bundle appProperties = getAppProperties();
-        if (appProperties != null) {
-          appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
-        }
-
-        mShouldLogContentAppeared = true;
-
-        // TODO T62192299: remove this
-        FLog.e(TAG, "runApplication: call AppRegistry.runApplication");
-        catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+      if (mWasMeasured) {
+        updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
       }
+
+      WritableNativeMap appParams = new WritableNativeMap();
+      appParams.putDouble("rootTag", getRootViewTag());
+      @Nullable Bundle appProperties = getAppProperties();
+      if (appProperties != null) {
+        appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
+      }
+
+      mShouldLogContentAppeared = true;
+
+      catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
@@ -729,7 +684,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         sendEvent(
             "keyboardDidHide",
             createKeyboardEventPayload(
-                PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
+                PixelUtil.toDIPFromPixel(mLastHeight),
                 0,
                 PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
                 0));
@@ -789,10 +744,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
 
     private void emitUpdateDimensionsEvent() {
-      mReactInstanceManager
-          .getCurrentReactContext()
-          .getNativeModule(DeviceInfoModule.class)
-          .emitUpdateDimensionsEvent();
+      DeviceInfoModule deviceInfo =
+          mReactInstanceManager.getCurrentReactContext().getNativeModule(DeviceInfoModule.class);
+
+      if (deviceInfo != null) {
+        deviceInfo.emitUpdateDimensionsEvent();
+      }
     }
 
     private WritableMap createKeyboardEventPayload(

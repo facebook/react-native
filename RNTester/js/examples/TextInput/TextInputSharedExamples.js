@@ -161,9 +161,9 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
           ref={ref => {
             this.inputRef = ref;
           }}
-          multiline={false}
+          multiline={true}
           onChangeText={text => {
-            this.setState({text: text.replace(/\s/g, '')});
+            this.setState({text: text.replace(/ /g, '')});
           }}
           style={styles.default}
           value={this.state.text}

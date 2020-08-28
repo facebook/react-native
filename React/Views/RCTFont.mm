@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTAssert.h"
 #import "RCTFont.h"
+#import "RCTAssert.h"
 #import "RCTLog.h"
 
 #import <CoreText/CoreText.h>
@@ -80,11 +80,13 @@ static BOOL isCondensedFont(UIFont *font)
 
 static RCTFontHandler defaultFontHandler;
 
-void RCTSetDefaultFontHandler(RCTFontHandler handler) {
+void RCTSetDefaultFontHandler(RCTFontHandler handler)
+{
   defaultFontHandler = handler;
 }
 
-BOOL RCTHasFontHandlerSet() {
+BOOL RCTHasFontHandlerSet()
+{
   return defaultFontHandler != nil;
 }
 
@@ -92,7 +94,8 @@ BOOL RCTHasFontHandlerSet() {
 // is not defined pre-iOS 8.2.
 // Furthermore, UIFontWeight's are lossy floats, so we must use an inexact compare to figure out
 // which one we actually have.
-static inline BOOL CompareFontWeights(UIFontWeight firstWeight, UIFontWeight secondWeight) {
+static inline BOOL CompareFontWeights(UIFontWeight firstWeight, UIFontWeight secondWeight)
+{
 #if CGFLOAT_IS_DOUBLE
   return fabs(firstWeight - secondWeight) < 0.01;
 #else
@@ -171,26 +174,34 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
              scaleMultiplier:1];
 }
 
-RCT_ENUM_CONVERTER(RCTFontWeight, (@{
-                                     @"normal": @(UIFontWeightRegular),
-                                     @"bold": @(UIFontWeightBold),
-                                     @"100": @(UIFontWeightUltraLight),
-                                     @"200": @(UIFontWeightThin),
-                                     @"300": @(UIFontWeightLight),
-                                     @"400": @(UIFontWeightRegular),
-                                     @"500": @(UIFontWeightMedium),
-                                     @"600": @(UIFontWeightSemibold),
-                                     @"700": @(UIFontWeightBold),
-                                     @"800": @(UIFontWeightHeavy),
-                                     @"900": @(UIFontWeightBlack),
-                                     }), UIFontWeightRegular, doubleValue)
+RCT_ENUM_CONVERTER(
+    RCTFontWeight,
+    (@{
+      @"normal" : @(UIFontWeightRegular),
+      @"bold" : @(UIFontWeightBold),
+      @"100" : @(UIFontWeightUltraLight),
+      @"200" : @(UIFontWeightThin),
+      @"300" : @(UIFontWeightLight),
+      @"400" : @(UIFontWeightRegular),
+      @"500" : @(UIFontWeightMedium),
+      @"600" : @(UIFontWeightSemibold),
+      @"700" : @(UIFontWeightBold),
+      @"800" : @(UIFontWeightHeavy),
+      @"900" : @(UIFontWeightBlack),
+    }),
+    UIFontWeightRegular,
+    doubleValue)
 
 typedef BOOL RCTFontStyle;
-RCT_ENUM_CONVERTER(RCTFontStyle, (@{
-                                    @"normal": @NO,
-                                    @"italic": @YES,
-                                    @"oblique": @YES,
-                                    }), NO, boolValue)
+RCT_ENUM_CONVERTER(
+    RCTFontStyle,
+    (@{
+      @"normal" : @NO,
+      @"italic" : @YES,
+      @"oblique" : @YES,
+    }),
+    NO,
+    boolValue)
 
 typedef NSDictionary RCTFontVariantDescriptor;
 + (RCTFontVariantDescriptor *)RCTFontVariantDescriptor:(id)json
@@ -199,32 +210,34 @@ typedef NSDictionary RCTFontVariantDescriptor;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     mapping = @{
-      @"small-caps": @{
-          UIFontFeatureTypeIdentifierKey: @(kLowerCaseType),
-          UIFontFeatureSelectorIdentifierKey: @(kLowerCaseSmallCapsSelector),
-          },
-      @"oldstyle-nums": @{
-          UIFontFeatureTypeIdentifierKey: @(kNumberCaseType),
-          UIFontFeatureSelectorIdentifierKey: @(kLowerCaseNumbersSelector),
-          },
-      @"lining-nums": @{
-          UIFontFeatureTypeIdentifierKey: @(kNumberCaseType),
-          UIFontFeatureSelectorIdentifierKey: @(kUpperCaseNumbersSelector),
-          },
-      @"tabular-nums": @{
-          UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
-          UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector),
-          },
-      @"proportional-nums": @{
-          UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
-          UIFontFeatureSelectorIdentifierKey: @(kProportionalNumbersSelector),
-          },
-      };
+      @"small-caps" : @{
+        UIFontFeatureTypeIdentifierKey : @(kLowerCaseType),
+        UIFontFeatureSelectorIdentifierKey : @(kLowerCaseSmallCapsSelector),
+      },
+      @"oldstyle-nums" : @{
+        UIFontFeatureTypeIdentifierKey : @(kNumberCaseType),
+        UIFontFeatureSelectorIdentifierKey : @(kLowerCaseNumbersSelector),
+      },
+      @"lining-nums" : @{
+        UIFontFeatureTypeIdentifierKey : @(kNumberCaseType),
+        UIFontFeatureSelectorIdentifierKey : @(kUpperCaseNumbersSelector),
+      },
+      @"tabular-nums" : @{
+        UIFontFeatureTypeIdentifierKey : @(kNumberSpacingType),
+        UIFontFeatureSelectorIdentifierKey : @(kMonospacedNumbersSelector),
+      },
+      @"proportional-nums" : @{
+        UIFontFeatureTypeIdentifierKey : @(kNumberSpacingType),
+        UIFontFeatureSelectorIdentifierKey : @(kProportionalNumbersSelector),
+      },
+    };
   });
   RCTFontVariantDescriptor *value = mapping[json];
   if (RCT_DEBUG && !value && [json description].length > 0) {
-    RCTLogError(@"Invalid RCTFontVariantDescriptor '%@'. should be one of: %@", json,
-                [[mapping allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]);
+    RCTLogError(
+        @"Invalid RCTFontVariantDescriptor '%@'. should be one of: %@",
+        json,
+        [[mapping allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]);
   }
   return value;
 }
@@ -328,8 +341,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
   CGFloat closestWeight = INFINITY;
   for (NSString *name in [UIFont fontNamesForFamilyName:familyName]) {
     UIFont *match = [UIFont fontWithName:name size:fontSize];
-    if (isItalic == isItalicFont(match) &&
-        isCondensed == isCondensedFont(match)) {
+    if (isItalic == isItalicFont(match) && isCondensed == isCondensedFont(match)) {
       CGFloat testWeight = weightOfFont(match);
       if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
         font = match;
@@ -350,9 +362,8 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
   // Apply font variants to font object
   if (variant) {
     NSArray *fontFeatures = [RCTConvert RCTFontVariantDescriptorArray:variant];
-    UIFontDescriptor *fontDescriptor = [font.fontDescriptor fontDescriptorByAddingAttributes:@{
-      UIFontDescriptorFeatureSettingsAttribute: fontFeatures
-    }];
+    UIFontDescriptor *fontDescriptor = [font.fontDescriptor
+        fontDescriptorByAddingAttributes:@{UIFontDescriptorFeatureSettingsAttribute : fontFeatures}];
     font = [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
   }
 

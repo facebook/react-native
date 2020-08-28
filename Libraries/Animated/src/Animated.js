@@ -11,38 +11,38 @@
 'use strict';
 
 import Platform from '../../Utilities/Platform';
-const View = require('../../Components/View/View');
-const React = require('react');
-import type {AnimatedComponentType} from './createAnimatedComponent';
+import typeof AnimatedFlatList from './components/AnimatedFlatList';
+import typeof AnimatedImage from './components/AnimatedImage';
+import typeof AnimatedScrollView from './components/AnimatedScrollView';
+import typeof AnimatedSectionList from './components/AnimatedSectionList';
+import typeof AnimatedText from './components/AnimatedText';
+import typeof AnimatedView from './components/AnimatedView';
 
 const AnimatedMock = require('./AnimatedMock');
 const AnimatedImplementation = require('./AnimatedImplementation');
 
-//TODO(T57411659): Remove the bridgeless check when Animated perf regressions are fixed.
-const Animated = ((Platform.isTesting || global.RN$Bridgeless
+const Animated = ((Platform.isTesting ||
+(Platform.OS === 'android' && global.RN$Bridgeless)
   ? AnimatedMock
   : AnimatedImplementation): typeof AnimatedMock);
 
 module.exports = {
-  get FlatList(): any {
+  get FlatList(): AnimatedFlatList {
     return require('./components/AnimatedFlatList');
   },
-  get Image(): any {
+  get Image(): AnimatedImage {
     return require('./components/AnimatedImage');
   },
-  get ScrollView(): any {
+  get ScrollView(): AnimatedScrollView {
     return require('./components/AnimatedScrollView');
   },
-  get SectionList(): any {
+  get SectionList(): AnimatedSectionList {
     return require('./components/AnimatedSectionList');
   },
-  get Text(): any {
+  get Text(): AnimatedText {
     return require('./components/AnimatedText');
   },
-  get View(): AnimatedComponentType<
-    React.ElementConfig<typeof View>,
-    React.ElementRef<typeof View>,
-  > {
+  get View(): AnimatedView {
     return require('./components/AnimatedView');
   },
   ...Animated,

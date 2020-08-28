@@ -196,7 +196,7 @@ static void jni_YGConfigSetLoggerJNI(
       delete context;
       YGConfigSetContext(config, nullptr);
     }
-    config->setLogger(nullptr);
+    YGConfigSetLogger(config, nullptr);
   }
 }
 
@@ -388,6 +388,13 @@ static void jni_YGNodeCalculateLayoutJNI(
     if (throwable.get()) {
       env->Throw(throwable.get());
     }
+  } catch (const std::logic_error& ex) {
+    env->ExceptionClear();
+    jclass cl = env->FindClass("Ljava/lang/IllegalStateException;");
+    static const jmethodID methodId = facebook::yoga::vanillajni::getMethodId(
+        env, cl, "<init>", "(Ljava/lang/String;)V");
+    auto throwable = env->NewObject(cl, methodId, env->NewStringUTF(ex.what()));
+    env->Throw(static_cast<jthrowable>(throwable));
   }
 }
 

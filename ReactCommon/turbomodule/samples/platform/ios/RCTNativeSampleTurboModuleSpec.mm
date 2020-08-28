@@ -70,6 +70,16 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getObj
       .invokeObjCMethod(rt, ObjectKind, "getObject", @selector(getObject:), args, count);
 }
 
+static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getRootTag(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count)
+{
+  return static_cast<ObjCTurboModule &>(turboModule)
+      .invokeObjCMethod(rt, NumberKind, "getRootTag", @selector(getRootTag:), args, count);
+}
+
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getValue(
     facebook::jsi::Runtime &rt,
     TurboModule &turboModule,
@@ -111,10 +121,8 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getCon
       .invokeObjCMethod(rt, ObjectKind, "getConstants", @selector(getConstants), args, count);
 }
 
-NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
-    id<RCTTurboModule> instance,
-    std::shared_ptr<CallInvoker> jsInvoker)
-    : ObjCTurboModule("SampleTurboModule", instance, jsInvoker)
+NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params)
 {
   methodMap_["voidFunc"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
   methodMap_["getBool"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getBool};
@@ -122,6 +130,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
   methodMap_["getString"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getString};
   methodMap_["getArray"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getArray};
   methodMap_["getObject"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObject};
+  methodMap_["getRootTag"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getRootTag};
   methodMap_["getValue"] = MethodMetadata{3, __hostFunction_NativeSampleTurboModuleSpecJSI_getValue};
   methodMap_["getValueWithCallback"] =
       MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithCallback};

@@ -44,4 +44,5 @@ Pod::Spec.new do |s|
   s.dependency "RCTTypeSafety", version
   s.dependency "React-Core/RCTPushNotificationHeaders", version
   s.dependency "ReactCommon/turbomodule/core", version
+  s.dependency "React-jsi", version
 end

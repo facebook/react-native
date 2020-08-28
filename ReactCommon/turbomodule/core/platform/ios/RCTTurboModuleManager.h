@@ -5,15 +5,23 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
+#import <memory>
+
 #import "RCTTurboModule.h"
+
+#import <ReactCommon/RuntimeExecutor.h>
 
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
 // TODO: Move to xplat codegen.
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                       instance:(id<RCTTurboModule>)instance
-                                                      jsInvoker:
-                                                          (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+                                                     initParams:
+                                                         (const facebook::react::ObjCTurboModule::InitParams &)params;
+@optional
+- (NSArray<NSString *> *)getEagerInitModuleNames;
+- (NSArray<NSString *> *)getEagerInitMainQueueModuleNames;
 
 @optional
 
@@ -36,13 +44,13 @@
 
 @end
 
-@interface RCTTurboModuleManager : NSObject <RCTTurboModuleLookupDelegate>
+@interface RCTTurboModuleManager : NSObject <RCTTurboModuleRegistry>
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
-- (void)installJSBindingWithRuntime:(facebook::jsi::Runtime *)runtime;
+- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor;
 
 - (void)invalidate;
 

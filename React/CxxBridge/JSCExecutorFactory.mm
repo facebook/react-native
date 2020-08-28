@@ -10,31 +10,34 @@
 #import <React/RCTLog.h>
 #import <jsi/JSCRuntime.h>
 
-#import<memory>
+#import <memory>
 
 namespace facebook {
 namespace react {
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
-    std::shared_ptr<MessageQueueThread> __unused jsQueue) {
-  auto installBindings = [runtimeInstaller=runtimeInstaller_](jsi::Runtime &runtime) {
+    std::shared_ptr<MessageQueueThread> __unused jsQueue)
+{
+  auto installBindings = [runtimeInstaller = runtimeInstaller_](jsi::Runtime &runtime) {
     react::Logger iosLoggingBinder = [](const std::string &message, unsigned int logLevel) {
-      _RCTLogJavaScriptInternal(
-        static_cast<RCTLogLevel>(logLevel),
-        [NSString stringWithUTF8String:message.c_str()]);
+      _RCTLogJavaScriptInternal(static_cast<RCTLogLevel>(logLevel), [NSString stringWithUTF8String:message.c_str()]);
     };
     react::bindNativeLogger(runtime, iosLoggingBinder);
+
+    react::PerformanceNow iosPerformanceNowBinder = []() {
+      // CACurrentMediaTime() returns the current absolute time, in seconds
+      return CACurrentMediaTime() * 1000;
+    };
+    react::bindNativePerformanceNow(runtime, iosPerformanceNowBinder);
+
     // Wrap over the original runtimeInstaller
     if (runtimeInstaller) {
       runtimeInstaller(runtime);
     }
   };
   return std::make_unique<JSIExecutor>(
-      facebook::jsc::makeJSCRuntime(),
-      delegate,
-      JSIExecutor::defaultTimeoutInvoker,
-      std::move(installBindings));
+      facebook::jsc::makeJSCRuntime(), delegate, JSIExecutor::defaultTimeoutInvoker, std::move(installBindings));
 }
 
 } // namespace react

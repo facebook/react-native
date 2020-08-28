@@ -10,11 +10,12 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <objc/runtime.h>
-#import <react/components/view/ViewComponentDescriptor.h>
-#import <react/components/view/ViewEventEmitter.h>
-#import <react/components/view/ViewProps.h>
+#import <react/renderer/components/view/ViewComponentDescriptor.h>
+#import <react/renderer/components/view/ViewEventEmitter.h>
+#import <react/renderer/components/view/ViewProps.h>
 
 #import "RCTConversions.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -48,18 +49,6 @@ using namespace facebook::react;
 
   if (_contentView) {
     [self addSubview:_contentView];
-  }
-}
-
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-
-  if (_borderLayer) {
-    _borderLayer.frame = self.layer.bounds;
-  }
-
-  if (_contentView) {
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
   }
 }
@@ -179,18 +168,16 @@ using namespace facebook::react;
 
   // `hitSlop`
   if (oldViewProps.hitSlop != newViewProps.hitSlop) {
-    self.hitTestEdgeInsets = RCTUIEdgeInsetsFromEdgeInsets(newViewProps.hitSlop);
+    self.hitTestEdgeInsets = {-newViewProps.hitSlop.top,
+                              -newViewProps.hitSlop.left,
+                              -newViewProps.hitSlop.bottom,
+                              -newViewProps.hitSlop.right};
   }
 
   // `overflow`
   if (oldViewProps.getClipsContentToBounds() != newViewProps.getClipsContentToBounds()) {
     self.clipsToBounds = newViewProps.getClipsContentToBounds();
     needsInvalidateLayer = YES;
-  }
-
-  // `zIndex`
-  if (oldViewProps.zIndex != newViewProps.zIndex) {
-    self.layer.zPosition = (CGFloat)newViewProps.zIndex;
   }
 
   // `border`
@@ -229,9 +216,21 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityElementsHidden = newViewProps.accessibilityElementsHidden;
   }
 
+  // `accessibilityTraits`
   if (oldViewProps.accessibilityTraits != newViewProps.accessibilityTraits) {
     self.accessibilityElement.accessibilityTraits =
         RCTUIAccessibilityTraitsFromAccessibilityTraits(newViewProps.accessibilityTraits);
+  }
+
+  // `accessibilityState`
+  if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {
+    self.accessibilityTraits &= ~(UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected);
+    if (newViewProps.accessibilityState.selected) {
+      self.accessibilityTraits |= UIAccessibilityTraitSelected;
+    }
+    if (newViewProps.accessibilityState.disabled) {
+      self.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+    }
   }
 
   // `accessibilityIgnoresInvertColors`
@@ -263,6 +262,14 @@ using namespace facebook::react;
 
   _layoutMetrics = layoutMetrics;
   _needsInvalidateLayer = YES;
+
+  if (_borderLayer) {
+    _borderLayer.frame = self.layer.bounds;
+  }
+
+  if (_contentView) {
+    _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+  }
 }
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
@@ -285,9 +292,10 @@ using namespace facebook::react;
 - (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
   // This is a classic textbook implementation of `hitTest:` with a couple of improvements:
-  //   * It takes layers' `zIndex` property into an account;
   //   * It does not stop algorithm if some touch is outside the view
   //     which does not have `clipToBounds` enabled.
+  //   * Taking `layer.zIndex` field into an account is not required because
+  //     lists of `ShadowView`s are already sorted based on `zIndex` prop.
 
   if (!self.userInteractionEnabled || self.hidden || self.alpha < 0.01) {
     return nil;
@@ -299,14 +307,7 @@ using namespace facebook::react;
     return nil;
   }
 
-  NSArray<__kindof UIView *> *sortedSubviews =
-      [self.subviews sortedArrayUsingComparator:^NSComparisonResult(UIView *a, UIView *b) {
-        // Ensure sorting is stable by treating equal `zIndex` as ascending so
-        // that original order is preserved.
-        return a.layer.zPosition > b.layer.zPosition ? NSOrderedDescending : NSOrderedAscending;
-      }];
-
-  for (UIView *subview in [sortedSubviews reverseObjectEnumerator]) {
+  for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
     UIView *hitView = [subview hitTest:[subview convertPoint:point fromView:self] withEvent:event];
     if (hitView) {
       return hitView;
@@ -515,13 +516,46 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
+- (NSString *)accessibilityValue
+{
+  auto const &props = *std::static_pointer_cast<ViewProps const>(_props);
+
+  // Handle Switch.
+  if ((self.accessibilityTraits & AccessibilityTraitSwitch) == AccessibilityTraitSwitch) {
+    if (props.accessibilityState.checked == AccessibilityState::Checked) {
+      return @"1";
+    } else if (props.accessibilityState.checked == AccessibilityState::Unchecked) {
+      return @"0";
+    }
+  }
+
+  // Handle states which haven't already been handled.
+  if (props.accessibilityState.checked == AccessibilityState::Checked) {
+    return @"checked";
+  }
+  if (props.accessibilityState.checked == AccessibilityState::Unchecked) {
+    return @"unchecked";
+  }
+  if (props.accessibilityState.checked == AccessibilityState::Mixed) {
+    return @"mixed";
+  }
+  if (props.accessibilityState.expanded) {
+    return @"expanded";
+  }
+  if (props.accessibilityState.busy) {
+    return @"busy";
+  }
+
+  return nil;
+}
+
 #pragma mark - Accessibility Events
 
 - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
   auto const &accessibilityActions = _props->accessibilityActions;
 
-  if (accessibilityActions.size() == 0) {
+  if (accessibilityActions.empty()) {
     return nil;
   }
 
@@ -587,3 +621,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTViewCls(void)
+{
+  return RCTViewComponentView.class;
+}

@@ -11,6 +11,7 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
@@ -27,7 +28,7 @@ public class AndroidDrawerLayoutManagerDelegate<T extends View, U extends BaseVi
         mViewManager.setKeyboardDismissMode(view, (String) value);
         break;
       case "drawerBackgroundColor":
-        mViewManager.setDrawerBackgroundColor(view, value == null ? null : ((Double) value).intValue());
+        mViewManager.setDrawerBackgroundColor(view, ColorPropConverter.getColor(value, view.getContext()));
         break;
       case "drawerPosition":
         mViewManager.setDrawerPosition(view, (String) value);
@@ -39,20 +40,21 @@ public class AndroidDrawerLayoutManagerDelegate<T extends View, U extends BaseVi
         mViewManager.setDrawerLockMode(view, (String) value);
         break;
       case "statusBarBackgroundColor":
-        mViewManager.setStatusBarBackgroundColor(view, value == null ? null : ((Double) value).intValue());
+        mViewManager.setStatusBarBackgroundColor(view, ColorPropConverter.getColor(value, view.getContext()));
         break;
       default:
         super.setProperty(view, propName, value);
     }
   }
 
-  public void receiveCommand(AndroidDrawerLayoutManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+  @Override
+  public void receiveCommand(T view, String commandName, ReadableArray args) {
     switch (commandName) {
       case "openDrawer":
-        viewManager.openDrawer(view);
+        mViewManager.openDrawer(view);
         break;
       case "closeDrawer":
-        viewManager.closeDrawer(view);
+        mViewManager.closeDrawer(view);
         break;
     }
   }

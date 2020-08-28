@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 // that pulls in all of fabric which doesn't compile in open source yet, so we mirror the protocol
 // and duplicate the category here for now.
 
-
 @protocol RCTSurfacePresenterObserver <NSObject>
 
 @optional
@@ -27,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTSurfacePresenterStub <NSObject>
 
+- (nullable UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag;
 - (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer;

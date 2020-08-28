@@ -66,6 +66,22 @@ const EVENT_DEFINITION = `
       int32_optional_both?: ?Int32,
     }
   },
+
+  object_readonly_required: $ReadOnly<{
+    boolean_required: boolean,
+  }>,
+
+  object_readonly_optional_key?: $ReadOnly<{
+    string_optional_key?: string,
+  }>,
+
+  object_readonly_optional_value: ?$ReadOnly<{
+    float_optional_value: ?Float,
+  }>,
+
+  object_readonly_optional_both?: ?$ReadOnly<{
+    int32_optional_both?: ?Int32,
+  }>,
 `;
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
@@ -144,6 +160,7 @@ type ModuleProps = $ReadOnly<{|
 
 export default codegenNativeComponent<ModuleProps>('Module', {
   interfaceOnly: true,
+  excludedPlatforms: ['android'],
   paperComponentName: 'RCTModule',
 });
 `;
@@ -275,6 +292,12 @@ type ModuleProps = $ReadOnly<{|
   color_array_optional_value: ?ColorArrayValue,
   color_array_optional_both?: ?ColorArrayValue,
 
+  // ProcessedColorValue props
+  processed_color_required: ProcessedColorValue,
+  processed_color_optional_key?: ProcessedColorValue,
+  processed_color_optional_value: ?ProcessedColorValue,
+  processed_color_optional_both?: ?ProcessedColorValue,
+
   // PointValue props
   point_required: PointValue,
   point_optional_key?: PointValue,
@@ -310,7 +333,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
-import type {ColorValue, PointValue, EdgeInsetsValue} from 'StyleSheetTypes';
+import type {ColorValue, PointValue, ProcessColorValue, EdgeInsetsValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
@@ -507,6 +530,12 @@ type ModuleProps = $ReadOnly<{|
   color_optional_key: $ReadOnly<{|prop?: ColorValue|}>,
   color_optional_value: $ReadOnly<{|prop: ?ColorValue|}>,
   color_optional_both: $ReadOnly<{|prop?: ?ColorValue|}>,
+
+  // ProcessedColorValue props
+  processed_color_required: $ReadOnly<{|prop: ProcessedColorValue|}>,
+  processed_color_optional_key: $ReadOnly<{|prop?: ProcessedColorValue|}>,
+  processed_color_optional_value: $ReadOnly<{|prop: ?ProcessedColorValue|}>,
+  processed_color_optional_both: $ReadOnly<{|prop?: ?ProcessedColorValue|}>,
 
   // PointValue props
   point_required: $ReadOnly<{|prop: PointValue|}>,
@@ -825,6 +854,7 @@ const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float} from 'CodegenTypes';
+import type {RootTag} from 'RCTExport';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
@@ -837,6 +867,7 @@ export type ModuleProps = $ReadOnly<{|
 type NativeType = HostComponent<ModuleProps>;
 
 interface NativeCommands {
+  +handleRootTag: (viewRef: React.ElementRef<NativeType>, rootTag: RootTag) => void;
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
   +scrollTo: (
     viewRef: React.ElementRef<NativeType>,
@@ -848,7 +879,7 @@ interface NativeCommands {
 }
 
 export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['hotspotUpdate', 'scrollTo'],
+  supportedCommands: ['handleRootTag', 'hotspotUpdate', 'scrollTo'],
 });
 
 export default (codegenNativeComponent<ModuleProps>(

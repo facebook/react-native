@@ -31,6 +31,7 @@ class NativeModule {
  public:
   virtual ~NativeModule() {}
   virtual std::string getName() = 0;
+  virtual std::string getSyncMethodName(unsigned int methodId) = 0;
   virtual std::vector<MethodDescriptor> getMethods() = 0;
   virtual folly::dynamic getConstants() = 0;
   virtual void

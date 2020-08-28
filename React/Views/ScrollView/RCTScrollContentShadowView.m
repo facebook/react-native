@@ -13,8 +13,7 @@
 
 @implementation RCTScrollContentShadowView
 
-- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics
-            layoutContext:(RCTLayoutContext)layoutContext
+- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics layoutContext:(RCTLayoutContext)layoutContext
 {
   if (layoutMetrics.layoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
     // Motivation:

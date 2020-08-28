@@ -112,13 +112,9 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
         return;
       }
       if (xhr.status === 200) {
-        let responseType = `Response is a string, ${
-          xhr.response.length
-        } characters long.`;
+        let responseType = `Response is a string, ${xhr.response.length} characters long.`;
         if (xhr.response instanceof ArrayBuffer) {
-          responseType = `Response is an ArrayBuffer, ${
-            xhr.response.byteLength
-          } bytes long.`;
+          responseType = `Response is an ArrayBuffer, ${xhr.response.byteLength} bytes long.`;
         }
         Alert.alert('Download complete!', responseType);
       } else if (xhr.status !== 0) {

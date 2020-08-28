@@ -14,7 +14,6 @@ import type {SyntheticEvent, LayoutEvent} from '../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../StyleSheet/EdgeInsetsPropType';
 import type {ImageSource} from './ImageSource';
 import type {ViewStyleProp, ImageStyleProp} from '../StyleSheet/StyleSheet';
-import type {DimensionValue} from '../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 
 export type ImageLoadEvent = SyntheticEvent<
@@ -22,9 +21,8 @@ export type ImageLoadEvent = SyntheticEvent<
     source: $ReadOnly<{|
       width: number,
       height: number,
-      url: string,
+      uri: string,
     |}>,
-    uri?: string, // Only on Android
   |}>,
 >;
 
@@ -68,6 +66,11 @@ export type ImageProps = {|
    * See https://reactnative.dev/docs/image.html#accessible
    */
   accessible?: ?boolean,
+
+  /**
+   * Internal prop to set an "Analytics Tag" that can will be set on the Image
+   */
+  internal_analyticTag?: ?string,
 
   /**
    * The text that's read by the screen reader when the user interacts with
@@ -148,10 +151,6 @@ export type ImageProps = {|
    * See https://reactnative.dev/docs/image.html#style
    */
   style?: ?ImageStyleProp,
-
-  // Can be set via props or style, for now
-  height?: ?DimensionValue,
-  width?: ?DimensionValue,
 
   /**
    * Determines how to resize the image when the frame doesn't match the raw
