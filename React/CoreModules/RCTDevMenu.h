@@ -25,26 +25,6 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 @interface RCTDevMenu : NSObject
 
 /**
- * Deprecated, use RCTDevSettings instead.
- */
-@property (nonatomic, assign) BOOL shakeToShow DEPRECATED_ATTRIBUTE;
-
-/**
- * Deprecated, use RCTDevSettings instead.
- */
-@property (nonatomic, assign) BOOL profilingEnabled DEPRECATED_ATTRIBUTE;
-
-/**
- * Deprecated, use RCTDevSettings instead.
- */
-@property (nonatomic, assign) BOOL liveReloadEnabled DEPRECATED_ATTRIBUTE;
-
-/**
- * Deprecated, use RCTDevSettings instead.
- */
-@property (nonatomic, assign) BOOL hotLoadingEnabled DEPRECATED_ATTRIBUTE;
-
-/**
  * Presented items in development menu
  */
 @property (nonatomic, copy, readonly) NSArray<RCTDevMenuItem *> *presentedItems;
@@ -58,16 +38,6 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
  * Manually show the dev menu (can be called from JS).
  */
 - (void)show;
-
-/**
- * Deprecated, use `RCTReloadCommand` instead.
- */
-- (void)reload DEPRECATED_ATTRIBUTE;
-
-/**
- * Deprecated. Use the `-addItem:` method instead.
- */
-- (void)addItem:(NSString *)title handler:(void (^)(void))handler DEPRECATED_ATTRIBUTE;
 
 /**
  * Add custom item to the development menu. The handler will be called

@@ -801,10 +801,6 @@ namespace facebook {
 @protocol NativeDevMenuSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)show;
-- (void)reload;
-- (void)debugRemotely:(BOOL)enableDebug;
-- (void)setProfilingEnabled:(BOOL)enabled;
-- (void)setHotLoadingEnabled:(BOOL)enabled;
 
 @end
 namespace facebook {

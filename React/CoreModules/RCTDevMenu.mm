@@ -462,55 +462,6 @@ RCT_EXPORT_METHOD(show)
   };
 }
 
-#pragma mark - deprecated methods and properties
-
-#define WARN_DEPRECATED_DEV_MENU_EXPORT() \
-  RCTLogWarn(@"Using deprecated method %s, use RCTDevSettings instead", __func__)
-
-- (void)setShakeToShow:(BOOL)shakeToShow
-{
-  _bridge.devSettings.isShakeToShowDevMenuEnabled = shakeToShow;
-}
-
-- (BOOL)shakeToShow
-{
-  return _bridge.devSettings.isShakeToShowDevMenuEnabled;
-}
-
-RCT_EXPORT_METHOD(reload)
-{
-  WARN_DEPRECATED_DEV_MENU_EXPORT();
-  RCTTriggerReloadCommandListeners(@"Unknown from JS");
-}
-
-RCT_EXPORT_METHOD(debugRemotely : (BOOL)enableDebug)
-{
-  WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isDebuggingRemotely = enableDebug;
-}
-
-RCT_EXPORT_METHOD(setProfilingEnabled : (BOOL)enabled)
-{
-  WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isProfilingEnabled = enabled;
-}
-
-- (BOOL)profilingEnabled
-{
-  return _bridge.devSettings.isProfilingEnabled;
-}
-
-RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
-{
-  WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isHotLoadingEnabled = enabled;
-}
-
-- (BOOL)hotLoadingEnabled
-{
-  return _bridge.devSettings.isHotLoadingEnabled;
-}
-
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
@@ -538,11 +489,9 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 - (void)addItem:(RCTDevMenu *)item
 {
 }
-
 - (void)debugRemotely:(BOOL)enableDebug
 {
 }
-
 - (BOOL)isActionSheetShown
 {
   return NO;
@@ -551,7 +500,6 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 {
   return @"DevMenu";
 }
-
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
