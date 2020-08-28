@@ -28,6 +28,19 @@
 namespace facebook {
 namespace react {
 
+#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
+void PrintMutationInstruction(
+    std::string message,
+    ShadowViewMutation const &mutation);
+void PrintMutationInstructionRelative(
+    std::string message,
+    ShadowViewMutation const &mutation,
+    ShadowViewMutation const &relativeMutation);
+#else
+#define PrintMutationInstruction(a, b)
+#define PrintMutationInstructionRelative(a, b, c)
+#endif
+
 // This corresponds exactly with JS.
 enum class AnimationType {
   None,
@@ -93,6 +106,8 @@ struct AnimationKeyFrame {
   // If an animation interrupts an existing one, the starting state may actually
   // be halfway through the intended transition.
   double initialProgress;
+
+  bool invalidated{false};
 };
 
 class LayoutAnimationCallbackWrapper {
@@ -194,11 +209,23 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   void adjustImmediateMutationIndicesForDelayedMutations(
       SurfaceId surfaceId,
-      ShadowViewMutation &mutation) const;
+      ShadowViewMutation &mutation,
+      ShadowViewMutationList *auxiliaryMutations = nullptr) const;
 
   void adjustDelayedMutationIndicesForMutation(
       SurfaceId surfaceId,
+      ShadowViewMutation const &mutation,
+      bool lastAnimationOnly = false) const;
+
+  void adjustLastAnimationDelayedMutationIndicesForMutation(
+      SurfaceId surfaceId,
       ShadowViewMutation const &mutation) const;
+
+  std::vector<std::tuple<AnimationKeyFrame, AnimationConfig, LayoutAnimation *>>
+  getAndEraseConflictingAnimations(
+      SurfaceId surfaceId,
+      ShadowViewMutationList &mutations,
+      bool deletesOnly = false) const;
 
  protected:
   bool mutatedViewIsVirtual(ShadowViewMutation const &mutation) const;
@@ -248,6 +275,51 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable std::vector<std::unique_ptr<LayoutAnimationCallbackWrapper>>
       callbackWrappersPending_{};
 };
+
+static inline bool shouldFirstComeBeforeSecondRemovesOnly(
+    ShadowViewMutation const &lhs,
+    ShadowViewMutation const &rhs) noexcept {
+  // Make sure that removes on the same level are sorted - highest indices must
+  // come first.
+  return (lhs.type == ShadowViewMutation::Type::Remove &&
+          lhs.type == rhs.type) &&
+      (lhs.parentShadowView.tag == rhs.parentShadowView.tag) &&
+      (lhs.index > rhs.index);
+}
+
+static inline bool shouldFirstComeBeforeSecondMutation(
+    ShadowViewMutation const &lhs,
+    ShadowViewMutation const &rhs) noexcept {
+  if (lhs.type != rhs.type) {
+    // Deletes always come last
+    if (lhs.type == ShadowViewMutation::Type::Delete) {
+      return false;
+    }
+    if (rhs.type == ShadowViewMutation::Type::Delete) {
+      return true;
+    }
+
+    // Remove comes before insert
+    if (lhs.type == ShadowViewMutation::Type::Remove &&
+        rhs.type == ShadowViewMutation::Type::Insert) {
+      return true;
+    }
+    if (rhs.type == ShadowViewMutation::Type::Remove &&
+        lhs.type == ShadowViewMutation::Type::Insert) {
+      return false;
+    }
+  } else {
+    // Make sure that removes on the same level are sorted - highest indices
+    // must come first.
+    if (lhs.type == ShadowViewMutation::Type::Remove &&
+        lhs.parentShadowView.tag == rhs.parentShadowView.tag &&
+        lhs.index > rhs.index) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 } // namespace react
 } // namespace facebook
