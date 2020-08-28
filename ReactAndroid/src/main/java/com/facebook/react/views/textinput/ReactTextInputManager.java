@@ -661,7 +661,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else if ("username".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_USERNAME);
     } else if ("username-new".equals(autoCompleteType)) {
-      setAutofillHints(view, HintConstants.AUTOFILL_HINT_USERNAME_NEW);
+      setAutofillHints(view, HintConstants.AUTOFILL_HINT_NEW_USERNAME);
     } else if ("password".equals(autoCompleteType)) {
       setAutofillHints(view, HintConstants.AUTOFILL_HINT_PASSWORD);
     } else if ("password-new".equals(autoCompleteType)) {
