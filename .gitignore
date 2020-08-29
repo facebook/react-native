@@ -101,7 +101,7 @@ package-lock.json
 
 # react-native-codegen
 /packages/react-native-codegen/lib
-/ReactCommon/fabric/components/rncore/
+/ReactCommon/react/renderer/components/rncore/
 /schema-native-modules.json
 /schema-rncore.json
 

@@ -5,7 +5,7 @@
 
 require "json"
 
-package = JSON.parse(File.read(File.join(__dir__, "..", "..", "..", "package.json")))
+package = JSON.parse(File.read(File.join(__dir__, "..", "..", "..", "..", "package.json")))
 version = package['version']
 
 source = { :git => 'https://github.com/facebook/react-native.git' }
@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
   s.exclude_files          = "**/tests/*",
                              "**/android/*",
                              "**/cxx/*"
-  s.header_dir             = "react/graphics"
+  s.header_dir             = "react/renderer/graphics"
   s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO", "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
 
   s.dependency "Folly/Fabric", folly_version
