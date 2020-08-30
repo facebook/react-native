@@ -120,18 +120,34 @@ class RewriteExampleInvalidCharacters extends React.Component<
 > {
   constructor(props) {
     super(props);
-    this.state = {text: ''};
+    this.state = {text: '', selection: { start: -1, end: -1 }};
   }
+
+  onSelectionChangeHandler = ({nativeEvent: {selection}}) => {
+    const { start, end } = selection;
+    const { text } = this.state;
+    const maxEnd = text.length;
+    const validEnd = end > maxEnd ? maxEnd : end;
+    const validStart = start > maxEnd ? maxEnd : start;
+    const newSelection = { start: validStart, end: validEnd };
+    this.setState({selection: newSelection}, () => console.log("onSelectionChangeHandler selection", this.state.selection));
+  }
+
   render() {
+    const { text, selection: { start, end}} = this.state;
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
           testID="rewrite_no_sp_input"
           autoCorrect={false}
-          multiline={false}
+          multiline={true}
           onChangeText={text => {
-            this.setState({text: text.replace(/\s/g, '')});
+            const newText = text.replace(/\s/g, '');
+            const newEnd = end - 1;
+            this.setState({text: newText, selection: { start: newEnd, end: newEnd }});
           }}
+          onSelectionChange={this.onSelectionChangeHandler}
+          selection={{start: start, end: end}}
           style={styles.default}
           value={this.state.text}
         />
