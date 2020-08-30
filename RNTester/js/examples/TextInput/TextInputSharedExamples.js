@@ -130,7 +130,7 @@ class RewriteExampleInvalidCharacters extends React.Component<
     const validEnd = end > maxEnd ? maxEnd : end;
     const validStart = start > maxEnd ? maxEnd : start;
     const newSelection = { start: validStart, end: validEnd };
-    this.setState({selection: newSelection}, () => console.log("onSelectionChangeHandler selection", this.state.selection));
+    this.setState({selection: newSelection});
   }
 
   render() {
