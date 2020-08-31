@@ -44,7 +44,7 @@ Pod::Spec.new do |s|
   s.dependency "React-Core", version
   s.dependency "React-Fabric", version
   s.dependency "React-RCTImage", version
-  s.dependency "Folly/Fabric", folly_version
+  s.dependency "RCT-Folly/Fabric", folly_version
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = "Tests/**/*.{mm}"
