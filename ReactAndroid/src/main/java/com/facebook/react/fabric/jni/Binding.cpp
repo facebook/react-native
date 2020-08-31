@@ -11,7 +11,7 @@
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
-#import <better/set.h>
+#include <better/set.h>
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
