@@ -10,9 +10,9 @@ fb_native.android_library(
     visibility = ["PUBLIC"],
 )
 
-fb_native.android_prebuilt_aar(
+fb_native.prebuilt_jar(
     name = "annotation-binary",
-    aar = ":annotation-binary-aar",
+    binary_jar = ":annotation-binary.jar",
 )
 
 fb_native.prebuilt_jar(
@@ -26,9 +26,9 @@ fb_native.android_prebuilt_aar(
 )
 
 fb_native.remote_file(
-    name = "annotation-binary-aar",
+    name = "annotation-binary.jar",
     sha1 = "dc58463712cb3e5f03d8ee5ac9743b9ced9afa77",
-    url = "mvn:com.facebook.soloader:annotation:aar:0.9.0",
+    url = "mvn:com.facebook.soloader:annotation:jar:0.9.0",
 )
 
 fb_native.remote_file(
