@@ -20,7 +20,10 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
 import android.util.LruCache;
+import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
@@ -31,9 +34,15 @@ import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** Class responsible of creating {@link Spanned} object for the JS representation of Text */
 public class TextLayoutManager {
+
+  // TODO T67606397: Refactor configuration of fabric logs
+  private static final boolean ENABLE_MEASURE_LOGGING = false;
+
+  private static final String TAG = "TextLayoutManager";
 
   // It's important to pass the ANTI_ALIAS_FLAG flag to the constructor rather than setting it
   // later by calling setFlags. This is because the latter approach triggers a bug on Android 4.4.2.
@@ -50,7 +59,10 @@ public class TextLayoutManager {
   private static final String INCLUDE_FONT_PADDING_KEY = "includeFontPadding";
   private static final String TEXT_BREAK_STRATEGY_KEY = "textBreakStrategy";
   private static final String MAXIMUM_NUMBER_OF_LINES_KEY = "maximumNumberOfLines";
-  private static LruCache<String, Spannable> sSpannableCache = new LruCache<>(spannableCacheSize);
+  private static final LruCache<String, Spannable> sSpannableCache =
+      new LruCache<>(spannableCacheSize);
+  private static final ConcurrentHashMap<Integer, Spannable> sTagToSpannableCache =
+      new ConcurrentHashMap<>();
 
   public static boolean isRTL(ReadableMap attributedString) {
     ReadableArray fragments = attributedString.getArray("fragments");
@@ -61,6 +73,14 @@ public class TextLayoutManager {
       return textAttributes.mLayoutDirection == LayoutDirection.RTL;
     }
     return false;
+  }
+
+  public static void setCachedSpannabledForTag(int reactTag, @NonNull Spannable sp) {
+    sTagToSpannableCache.put(reactTag, sp);
+  }
+
+  public static void deleteCachedSpannableForTag(int reactTag) {
+    sTagToSpannableCache.remove(reactTag);
   }
 
   private static void buildSpannableFromFragment(
@@ -80,7 +100,7 @@ public class TextLayoutManager {
       sb.append(TextTransform.apply(fragment.getString("string"), textAttributes.mTextTransform));
 
       int end = sb.length();
-      int reactTag = fragment.getInt("reactTag");
+      int reactTag = fragment.hasKey("reactTag") ? fragment.getInt("reactTag") : View.NO_ID;
       if (fragment.hasKey(ViewProps.IS_ATTACHMENT)
           && fragment.getBoolean(ViewProps.IS_ATTACHMENT)) {
         float width = PixelUtil.toPixelFromSP(fragment.getDouble(ViewProps.WIDTH));
@@ -220,8 +240,17 @@ public class TextLayoutManager {
 
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     TextPaint textPaint = sTextPaintInstance;
-    Spannable text =
-        getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+    Spannable text;
+    if (attributedString.hasKey("cacheId")) {
+      int cacheId = attributedString.getInt("cacheId");
+      if (sTagToSpannableCache.containsKey(cacheId)) {
+        text = sTagToSpannableCache.get(attributedString.getInt("cacheId"));
+      } else {
+        return 0;
+      }
+    } else {
+      text = getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+    }
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
@@ -421,8 +450,26 @@ public class TextLayoutManager {
       }
     }
 
-    return YogaMeasureOutput.make(
-        PixelUtil.toSPFromPixel(calculatedWidth), PixelUtil.toSPFromPixel(calculatedHeight));
+    float widthInSP = PixelUtil.toSPFromPixel(calculatedWidth);
+    float heightInSP = PixelUtil.toSPFromPixel(calculatedHeight);
+
+    if (ENABLE_MEASURE_LOGGING) {
+      FLog.e(
+          TAG,
+          "TextMeasure call ('"
+              + text
+              + "'): w: "
+              + calculatedWidth
+              + " px - h: "
+              + calculatedHeight
+              + " px - w : "
+              + widthInSP
+              + " sp - h: "
+              + heightInSP
+              + " sp");
+    }
+
+    return YogaMeasureOutput.make(widthInSP, heightInSP);
   }
 
   // TODO T31905686: This class should be private

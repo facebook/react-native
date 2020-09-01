@@ -10,25 +10,24 @@
 
 'use strict';
 
-const React = require('react');
 const Dimensions = require('../Utilities/Dimensions');
 const FrameRateLogger = require('../Interaction/FrameRateLogger');
 const Keyboard = require('./Keyboard/Keyboard');
+const Platform = require('../Utilities/Platform');
+const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative');
 const TextInputState = require('./TextInput/TextInputState');
 const UIManager = require('../ReactNative/UIManager');
-const Platform = require('../Utilities/Platform');
-import Commands from './ScrollView/ScrollViewCommands';
 
 const invariant = require('invariant');
-const performanceNow = require('fbjs/lib/performanceNow');
 
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {PressEvent, ScrollEvent} from '../Types/CoreEventTypes';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import type {KeyboardEvent} from './Keyboard/Keyboard';
 import typeof ScrollView from './ScrollView/ScrollView';
 import type {Props as ScrollViewProps} from './ScrollView/ScrollView';
-import type {KeyboardEvent} from './Keyboard/Keyboard';
-import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import Commands from './ScrollView/ScrollViewCommands';
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -119,10 +118,10 @@ export type State = {|
 |};
 
 const ScrollResponderMixin = {
-  _subscriptionKeyboardWillShow: (null: ?EmitterSubscription),
-  _subscriptionKeyboardWillHide: (null: ?EmitterSubscription),
-  _subscriptionKeyboardDidShow: (null: ?EmitterSubscription),
-  _subscriptionKeyboardDidHide: (null: ?EmitterSubscription),
+  _subscriptionKeyboardWillShow: (null: ?EventSubscription),
+  _subscriptionKeyboardWillHide: (null: ?EventSubscription),
+  _subscriptionKeyboardDidShow: (null: ?EventSubscription),
+  _subscriptionKeyboardDidHide: (null: ?EventSubscription),
   scrollResponderMixinGetInitialState: function(): State {
     return {
       isTouching: false,
@@ -224,7 +223,6 @@ const ScrollResponderMixin = {
     // and a new touch starts with a non-textinput target (in which case the
     // first tap should be sent to the scroll view and dismiss the keyboard,
     // then the second tap goes to the actual interior view)
-    const currentlyFocusedTextInput = TextInputState.currentlyFocusedInput();
     const {keyboardShouldPersistTaps} = this.props;
     const keyboardNeverPersistTaps =
       !keyboardShouldPersistTaps || keyboardShouldPersistTaps === 'never';
@@ -241,7 +239,7 @@ const ScrollResponderMixin = {
 
     if (
       keyboardNeverPersistTaps &&
-      currentlyFocusedTextInput != null &&
+      this.keyboardWillOpenTo !== null &&
       e.target != null &&
       !TextInputState.isTextInput(e.target)
     ) {
@@ -385,7 +383,7 @@ const ScrollResponderMixin = {
    * Invoke this from an `onMomentumScrollBegin` event.
    */
   scrollResponderHandleMomentumScrollBegin: function(e: ScrollEvent) {
-    this.state.lastMomentumScrollBeginTime = performanceNow();
+    this.state.lastMomentumScrollBeginTime = global.performance.now();
     this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
   },
 
@@ -394,7 +392,7 @@ const ScrollResponderMixin = {
    */
   scrollResponderHandleMomentumScrollEnd: function(e: ScrollEvent) {
     FrameRateLogger.endScroll();
-    this.state.lastMomentumScrollEndTime = performanceNow();
+    this.state.lastMomentumScrollEndTime = global.performance.now();
     this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e);
   },
 
@@ -435,7 +433,7 @@ const ScrollResponderMixin = {
    * a touch has just started or ended.
    */
   scrollResponderIsAnimating: function(): boolean {
-    const now = performanceNow();
+    const now = global.performance.now();
     const timeSinceLastMomentumScrollEnd =
       now - this.state.lastMomentumScrollEndTime;
     const isAnimating =

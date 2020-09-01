@@ -30,12 +30,17 @@ using namespace facebook::react;
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
+  RCTAssert(childComponentView.superview == nil, @"Attempt to mount already mounted component view.");
   [self insertSubview:childComponentView atIndex:index];
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   RCTAssert(childComponentView.superview == self, @"Attempt to unmount improperly mounted component view.");
+  RCTAssert(
+      [self.subviews objectAtIndex:index] == childComponentView,
+      @"Attempt to unmount improperly mounted component view.");
+
   [childComponentView removeFromSuperview];
 }
 

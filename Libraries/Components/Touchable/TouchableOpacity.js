@@ -16,8 +16,8 @@ import Pressability, {
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import TVTouchable from './TVTouchable';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
-import Animated from 'react-native/Libraries/Animated/src/Animated';
-import Easing from 'react-native/Libraries/Animated/src/Easing';
+import Animated from 'react-native/Libraries/Animated/Animated';
+import Easing from 'react-native/Libraries/Animated/Easing';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import flattenStyle from 'react-native/Libraries/StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
@@ -147,6 +147,7 @@ class TouchableOpacity extends React.Component<Props, State> {
       delayLongPress: this.props.delayLongPress,
       delayPressIn: this.props.delayPressIn,
       delayPressOut: this.props.delayPressOut,
+      minPressDuration: 0,
       pressRectOffset: this.props.pressRetentionOffset,
       onBlur: event => {
         if (Platform.isTV) {

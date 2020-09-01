@@ -31,7 +31,7 @@ import type {PressEvent} from '../../Types/CoreEventTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
-const {useEffect, useRef, useState} = React;
+const {useLayoutEffect, useRef, useState} = React;
 
 type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
 
@@ -486,6 +486,9 @@ export type Props = $ReadOnly<{|
    * The following values work on Android only:
    *
    * - `visible-password`
+   *
+   * On Android devices manufactured by Xiaomi with Android Q, 'email-address'
+   * type will be replaced in native by 'default' to prevent a system related crash.
    */
   keyboardType?: ?KeyboardType,
 
@@ -869,7 +872,7 @@ function InternalTextInput(props: Props): React.Node {
   // This is necessary in case native updates the text and JS decides
   // that the update should be ignored and we should stick with the value
   // that we have in JS.
-  useEffect(() => {
+  useLayoutEffect(() => {
     const nativeUpdate = {};
 
     if (lastNativeText !== props.value && typeof props.value === 'string') {
@@ -912,7 +915,7 @@ function InternalTextInput(props: Props): React.Node {
     viewCommands,
   ]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const inputRefValue = inputRef.current;
 
     if (inputRefValue != null) {
@@ -920,17 +923,12 @@ function InternalTextInput(props: Props): React.Node {
 
       return () => {
         TextInputState.unregisterInput(inputRefValue);
+
+        if (TextInputState.currentlyFocusedInput() === inputRefValue) {
+          nullthrows(inputRefValue).blur();
+        }
       };
     }
-  }, [inputRef]);
-
-  useEffect(() => {
-    // When unmounting we need to blur the input
-    return () => {
-      if (isFocused()) {
-        nullthrows(inputRef.current).blur();
-      }
-    };
   }, [inputRef]);
 
   function clear(): void {
@@ -1095,8 +1093,7 @@ function InternalTextInput(props: Props): React.Node {
     const style = [props.style];
     const autoCapitalize = props.autoCapitalize || 'sentences';
     let children = props.children;
-    let childCount = 0;
-    React.Children.forEach(children, () => ++childCount);
+    const childCount = React.Children.count(children);
     invariant(
       !(props.value && childCount),
       'Cannot specify both value and children.',

@@ -222,7 +222,11 @@ ModuleRegistry &Instance::getModuleRegistry() {
 }
 
 void Instance::handleMemoryPressure(int pressureLevel) {
-  nativeToJsBridge_->handleMemoryPressure(pressureLevel);
+  if (nativeToJsBridge_) {
+    // This class resets `nativeToJsBridge_` only in the destructor,
+    // hence a race is not possible there.
+    nativeToJsBridge_->handleMemoryPressure(pressureLevel);
+  }
 }
 
 std::shared_ptr<CallInvoker> Instance::getJSCallInvoker() {

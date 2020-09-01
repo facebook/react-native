@@ -22,7 +22,6 @@ const ViewabilityHelper = require('./ViewabilityHelper');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
-const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('./VirtualizeUtils');
 
@@ -850,11 +849,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   render(): React.Node {
     if (__DEV__) {
       const flatStyles = flattenStyle(this.props.contentContainerStyle);
-      warning(
-        flatStyles == null || flatStyles.flexWrap !== 'wrap',
-        '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
-          'Consider using `numColumns` with `FlatList` instead.',
-      );
+      if (flatStyles != null && flatStyles.flexWrap === 'wrap') {
+        console.warn(
+          '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
+            'Consider using `numColumns` with `FlatList` instead.',
+        );
+      }
     }
     const {
       ListEmptyComponent,
@@ -1112,9 +1112,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               this.context == null
             ) {
               // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
-              console.warn(
+              console.error(
                 'VirtualizedLists should never be nested inside plain ScrollViews with the same ' +
-                  'orientation - use another VirtualizedList-backed container instead.',
+                  'orientation because it can break windowing and other functionality - use another ' +
+                  'VirtualizedList-backed container instead.',
               );
               this._hasWarned.nesting = true;
             }
@@ -1465,7 +1466,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const distanceFromEnd = contentLength - visibleLength - offset;
     const threshold = onEndReachedThreshold
       ? onEndReachedThreshold * visibleLength
-      : 0;
+      : 2;
     if (
       onEndReached &&
       this.state.last === getItemCount(data) - 1 &&
@@ -1490,10 +1491,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.initialScrollIndex > 0 &&
       !this._hasDoneInitialScroll
     ) {
-      this.scrollToIndex({
-        animated: false,
-        index: this.props.initialScrollIndex,
-      });
+      if (this.props.contentOffset == null) {
+        this.scrollToIndex({
+          animated: false,
+          index: this.props.initialScrollIndex,
+        });
+      }
       this._hasDoneInitialScroll = true;
     }
     if (this.props.onContentSizeChange) {

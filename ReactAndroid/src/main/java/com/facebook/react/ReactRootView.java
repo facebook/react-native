@@ -39,6 +39,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -431,6 +432,24 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @ThreadConfined(UI)
   public void unmountReactApplication() {
     UiThreadUtil.assertOnUiThread();
+    // Stop surface in Fabric.
+    // Calling FabricUIManager.stopSurface causes the C++ Binding.stopSurface
+    // to be called synchronously over the JNI, which causes an empty tree
+    // to be committed via the Scheduler, which will cause mounting instructions
+    // to be queued up and synchronously executed to delete and remove
+    // all the views in the hierarchy.
+    if (mReactInstanceManager != null && ReactFeatureFlags.enableStopSurfaceOnRootViewUnmount) {
+      final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
+      if (reactApplicationContext != null && getUIManagerType() == FABRIC) {
+        @Nullable
+        UIManager uiManager =
+            UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
+        if (uiManager != null) {
+          FLog.e(TAG, "stopSurface for surfaceId: " + this.getId());
+          uiManager.stopSurface(this.getId());
+        }
+      }
+    }
 
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);
@@ -523,8 +542,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
       mShouldLogContentAppeared = true;
 
-      // TODO T62192299: remove this
-      FLog.e(TAG, "runApplication: call AppRegistry.runApplication");
       catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -667,7 +684,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         sendEvent(
             "keyboardDidHide",
             createKeyboardEventPayload(
-                PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
+                PixelUtil.toDIPFromPixel(mLastHeight),
                 0,
                 PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
                 0));

@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -37,15 +38,15 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.uimanager.StateWrapper;
+import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.text.ReactSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 
@@ -61,7 +62,8 @@ import java.util.ArrayList;
  * called this explicitly. This is the default behavior on other platforms as well.
  * VisibleForTesting from {@link TextInputEventsTestCase}.
  */
-public class ReactEditText extends AppCompatEditText {
+public class ReactEditText extends AppCompatEditText
+    implements FabricViewStateManager.HasFabricViewStateManager {
 
   private final InputMethodManager mInputMethodManager;
   // This flag is set to true when we set the text of the EditText explicitly. In that case, no
@@ -99,8 +101,7 @@ public class ReactEditText extends AppCompatEditText {
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
-  protected @Nullable JavaOnlyMap mAttributedString = null;
-  protected @Nullable StateWrapper mStateWrapper = null;
+  private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
   protected boolean mDisableTextDiffing = false;
 
   protected boolean mIsSettingTextFromState = false;
@@ -149,6 +150,11 @@ public class ReactEditText extends AppCompatEditText {
             return super.performAccessibilityAction(host, action, args);
           }
         });
+  }
+
+  @Override
+  protected void finalize() {
+    TextLayoutManager.deleteCachedSpannableForTag(getId());
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -383,10 +389,24 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   public void setInputType(int type) {
     Typeface tf = super.getTypeface();
-    super.setInputType(type);
-    mStagedInputType = type;
     // Input type password defaults to monospace font, so we need to re-apply the font
     super.setTypeface(tf);
+
+    int inputType = type;
+
+    // Set InputType to TYPE_CLASS_TEXT (the default one for Android) to fix a crash on Xiaomi
+    // devices with Android Q. This crash happens when focusing on a email EditText within a
+    // ScrollView, a prompt will be triggered but the system fail to locate it properly.
+    // Here is an example post discussing about this issue:
+    // https://github.com/facebook/react-native/issues/27204
+    if (inputType == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        && Build.VERSION.SDK_INT == Build.VERSION_CODES.Q
+        && Build.MANUFACTURER.startsWith("Xiaomi")) {
+      inputType = InputType.TYPE_CLASS_TEXT;
+    }
+
+    super.setInputType(inputType);
+    mStagedInputType = inputType;
 
     /**
      * If set forces multiline on input, because of a restriction on Android source that enables
@@ -401,7 +421,7 @@ public class ReactEditText extends AppCompatEditText {
     // We override the KeyListener so that all keys on the soft input keyboard as well as hardware
     // keyboards work. Some KeyListeners like DigitsKeyListener will display the keyboard but not
     // accept all input from it
-    mKeyListener.setInputType(type);
+    mKeyListener.setInputType(inputType);
     setKeyListener(mKeyListener);
   }
 
@@ -480,16 +500,13 @@ public class ReactEditText extends AppCompatEditText {
       return;
     }
 
-    if (reactTextUpdate.mAttributedString != null) {
-      mAttributedString = JavaOnlyMap.deepClone(reactTextUpdate.mAttributedString);
-    }
-
     // The current text gets replaced with the text received from JS. However, the spans on the
     // current text need to be adapted to the new text. Since TextView#setText() will remove or
     // reset some of these spans even if they are set directly, SpannableStringBuilder#replace() is
     // used instead (this is also used by the keyboard implementation underneath the covers).
     SpannableStringBuilder spannableStringBuilder =
         new SpannableStringBuilder(reactTextUpdate.getText());
+
     manageSpans(spannableStringBuilder);
     mContainsImages = reactTextUpdate.containsImages();
 
@@ -514,6 +531,11 @@ public class ReactEditText extends AppCompatEditText {
       if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
         setBreakStrategy(reactTextUpdate.getTextBreakStrategy());
       }
+    }
+
+    // Update cached spans (in Fabric only)
+    if (this.getFabricViewStateManager() != null) {
+      TextLayoutManager.setCachedSpannabledForTag(getId(), spannableStringBuilder);
     }
   }
 
@@ -605,7 +627,7 @@ public class ReactEditText extends AppCompatEditText {
     // wrapper 100% of the time.
     // Since the LocalData object is constructed by getting values from the underlying EditText
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
-    if (mStateWrapper == null) {
+    if (!mFabricViewStateManager.hasStateWrapper()) {
       ReactContext reactContext = getReactContext(this);
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
@@ -820,6 +842,11 @@ public class ReactEditText extends AppCompatEditText {
     }
   }
 
+  @Override
+  public FabricViewStateManager getFabricViewStateManager() {
+    return mFabricViewStateManager;
+  }
+
   /**
    * This class will redirect *TextChanged calls to the listeners only in the case where the text is
    * changed by the user, and not explicitly set by JS.
@@ -840,6 +867,10 @@ public class ReactEditText extends AppCompatEditText {
         for (TextWatcher listener : mListeners) {
           listener.onTextChanged(s, start, before, count);
         }
+      }
+
+      if (getFabricViewStateManager() != null) {
+        TextLayoutManager.setCachedSpannabledForTag(getId(), new SpannableString(getText()));
       }
 
       onContentSizeChange();

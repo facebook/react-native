@@ -10,8 +10,12 @@
 
 'use strict';
 
-import type {ObjectParamTypeAnnotation} from '../../../CodegenSchema';
+import type {
+  ObjectParamTypeAnnotation,
+  ObjectTypeAliasTypeShape,
+} from '../../../CodegenSchema';
 const {flatObjects, capitalizeFirstLetter} = require('./Utils');
+const {getTypeAliasTypeAnnotation} = require('../Utils');
 
 const structTemplate = `
 namespace JS {
@@ -54,6 +58,7 @@ inline JS::Native::_MODULE_NAME_::::::_STRUCT_NAME_::::Builder::Builder(::_STRUC
 function getBuilderInputFieldDeclaration(
   property: ObjectParamTypeAnnotation,
   name: string,
+  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
 ): string {
   function markRequiredIfNecessary(annotation) {
     if (!property.optional) {
@@ -62,14 +67,34 @@ function getBuilderInputFieldDeclaration(
     return 'folly::Optional<' + annotation + '> ' + property.name + ';';
   }
   const {typeAnnotation} = property;
-  switch (typeAnnotation.type) {
+
+  // TODO(T67898313): Workaround for NativeLinking's use of union type. This check may be removed once typeAnnotation is non-optional.
+  if (!typeAnnotation) {
+    throw new Error(
+      `Cannot get array element type, property ${property.name} does not contain a type annotation`,
+    );
+  }
+
+  const realTypeAnnotation =
+    typeAnnotation.type === 'TypeAliasTypeAnnotation'
+      ? getTypeAliasTypeAnnotation(typeAnnotation.name, aliases)
+      : typeAnnotation;
+
+  const variableName =
+    typeAnnotation.type === 'TypeAliasTypeAnnotation'
+      ? typeAnnotation.name
+      : `${name}${capitalizeFirstLetter(property.name)}`;
+
+  switch (realTypeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
-      switch (typeAnnotation.name) {
+      switch (realTypeAnnotation.name) {
         case 'RootTag':
           return markRequiredIfNecessary('double');
         default:
-          (typeAnnotation.name: empty);
-          throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
+          (realTypeAnnotation.name: empty);
+          throw new Error(
+            `Unknown prop type, found: ${realTypeAnnotation.name}"`,
+          );
       }
     case 'StringTypeAnnotation':
       if (property.optional) {
@@ -84,9 +109,7 @@ function getBuilderInputFieldDeclaration(
       return markRequiredIfNecessary('bool');
     case 'ObjectTypeAnnotation':
       return markRequiredIfNecessary(
-        `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-          property.name,
-        )}::Builder`,
+        `JS::Native::_MODULE_NAME_::::${variableName}::Builder`,
       );
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
@@ -98,7 +121,7 @@ function getBuilderInputFieldDeclaration(
       return markRequiredIfNecessary('std::vector<id<NSObject>>');
     case 'FunctionTypeAnnotation':
     default:
-      throw new Error(`Unknown prop type, found: ${typeAnnotation.type}"`);
+      throw new Error(`Unknown prop type, found: ${realTypeAnnotation.type}"`);
   }
 }
 
@@ -151,15 +174,35 @@ function unsafeGetter(name: string, optional: boolean) {
   `.trim();
 }
 
-function getObjectProperty(property: ObjectParamTypeAnnotation): string {
+function getObjectProperty(
+  property: ObjectParamTypeAnnotation,
+  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
+): string {
   const {typeAnnotation} = property;
-  switch (typeAnnotation.type) {
+
+  // TODO(T67898313): Workaround for NativeLinking's use of union type. This check may be removed once typeAnnotation is non-optional.
+  if (!typeAnnotation) {
+    throw new Error(
+      `Cannot get array element type, property ${property.name} does not contain a type annotation`,
+    );
+  }
+
+  const type =
+    typeAnnotation.type === 'TypeAliasTypeAnnotation'
+      ? getTypeAliasTypeAnnotation(typeAnnotation.name, aliases).type
+      : typeAnnotation.type;
+
+  switch (type) {
     case 'ReservedFunctionValueTypeAnnotation':
+      if (typeAnnotation.name == null) {
+        throw new Error(`Prop type ${type} has no name.`);
+      }
       switch (typeAnnotation.name) {
         case 'RootTag':
           return numberGetter(property.name, property.optional);
         default:
-          (typeAnnotation.name: empty);
+          // TODO (T65847278): Figure out why this does not work.
+          // (typeAnnotation.name: empty);
           throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
       }
     case 'NumberTypeAnnotation':
@@ -178,7 +221,7 @@ function getObjectProperty(property: ObjectParamTypeAnnotation): string {
       return arrayGetter(property.name, property.optional);
     case 'FunctionTypeAnnotation':
     default:
-      throw new Error(`Unknown prop type, found: ${typeAnnotation.type}"`);
+      throw new Error(`Unknown prop type, found: ${type}"`);
   }
 }
 
@@ -192,8 +235,9 @@ function generateStructsForConstants(
       |}>,
     |}>,
   >,
+  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
 ): string {
-  return flatObjects(annotations, true)
+  return flatObjects(annotations, true, aliases)
     .reduce(
       (acc, object) =>
         acc.concat(
@@ -202,14 +246,18 @@ function generateStructsForConstants(
               /::_INPUT_::/g,
               object.properties
                 .map(property =>
-                  getBuilderInputFieldDeclaration(property, object.name),
+                  getBuilderInputFieldDeclaration(
+                    property,
+                    object.name,
+                    aliases,
+                  ),
                 )
                 .join('\n          '),
             )
             .replace(
               /::_PROPERTIES_::/g,
               object.properties
-                .map(property => getObjectProperty(property))
+                .map(property => getObjectProperty(property, aliases))
                 .join('\n'),
             )
             .replace(/::_STRUCT_NAME_::/g, object.name),

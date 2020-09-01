@@ -41,9 +41,9 @@ static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSi
 static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 {
   NSDictionary *dict = @{
+    @"uri": source.request.URL.absoluteString,
     @"width": @(source.size.width),
     @"height": @(source.size.height),
-    @"url": source.request.URL.absoluteString,
   };
   return @{ @"source": dict };
 }
@@ -216,6 +216,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 
+- (void)setInternal_analyticTag:(NSString *)internal_analyticTag {
+    if (_internal_analyticTag != internal_analyticTag) {
+        _internal_analyticTag = internal_analyticTag;
+        _needsReload = YES;
+    }
+}
+
 - (void)cancelImageLoad
 {
   [_loaderRequest cancel];
@@ -338,9 +345,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                                                               scale:imageScale
                                                                            clipped:NO
                                                                         resizeMode:_resizeMode
+                                                                          priority:RCTImageLoaderPriorityImmediate
                                                                        attribution:{
                                                                                    .nativeViewTag = [self.reactTag intValue],
                                                                                    .surfaceId = [self.rootTag intValue],
+                                                                                   .analyticTag = self.internal_analyticTag
                                                                                    }
                                                                      progressBlock:progressHandler
                                                                   partialLoadBlock:partialLoadHandler
