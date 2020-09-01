@@ -6,7 +6,7 @@ trigger:
   branches:
     include:
       - master
-      - fabric
+      - '*-stable'
   paths:
     exclude:
       - package.json
@@ -43,6 +43,9 @@ jobs:
         inputs:
           command: 'publish'
           publishEndpoint: 'npmjs'
+          script: |
+            node scripts/bump-oss-version.js --nightly
+            npm publish --tag nightly
         condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
       - task: Npm@1
@@ -70,6 +73,7 @@ jobs:
       vmImage: vs2017-win2016
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+    condition: eq(variables['Build.SourceBranchName'], 'master')
     steps:
       - checkout: self # self represents the repo where the initial Pipelines YAML file was found
         clean: true # whether to fetch clean each time
