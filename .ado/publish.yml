@@ -45,20 +45,12 @@ jobs:
           script: node scripts/bump-oss-version.js --nightly
         condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
 
-      - task: Npm@1
-        displayName: "Publish latest react-native-macos to npmjs.org"
-        inputs:
-          command: 'custom'
-          customCommand: publish --tag nightly
-          publishEndpoint: 'npmjs'
+      - script: npm publish --tag nightly --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+        displayName: Publish nightly react-native-macos to npmjs.org
         condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
-      - task: Npm@1
-        displayName: "Publish stable react-native-macos to npmjs.org"
-        inputs:
-          command: 'custom'
-          customCommand: publish --tag $(Build.SourceBranchName)
-          publishEndpoint: 'npmjs'
+      - script: npm publish --tag $(Build.SourceBranchName) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+        displayName: Publish stable react-native-macos to npmjs.org
         condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
 
       - task: CmdLine@2
