@@ -1,7 +1,19 @@
-import React from 'react';
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import * as React from 'react';
 import {View, Image, Text, StyleSheet} from 'react-native';
 
-export const RNTesterEmptyBookmarksState = () => (
+export const RNTesterEmptyBookmarksState = (): React.Node => (
   <View style={styles.emptyContainer}>
     <View style={styles.emptyContainerInner}>
       <Image
