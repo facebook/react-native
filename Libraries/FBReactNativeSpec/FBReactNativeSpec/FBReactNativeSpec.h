@@ -904,6 +904,7 @@ namespace facebook {
 - (void)toggleElementInspector;
 - (void)addMenuItem:(NSString *)title;
 - (void)setIsShakeToShowDevMenuEnabled:(BOOL)enabled;
+- (void)setIsSecondaryClickToShowDevMenuEnabled:(BOOL)enabled;
 
 @end
 namespace facebook {

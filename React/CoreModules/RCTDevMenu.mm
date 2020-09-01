@@ -494,32 +494,36 @@ RCT_EXPORT_METHOD(show)
 - (NSMenu *)menu
 {
   NSMenu *menu = nil;
-  if (_bridge) {
-    NSString *desc = _bridge.bridgeDescription;
-    if (desc.length == 0) {
-      desc = NSStringFromClass([_bridge class]);
+  if ([_bridge.devSettings isSecondaryClickToShowDevMenuEnabled]) {
+    NSMenu *menu = nil;
+    if (_bridge) {
+      NSString *desc = _bridge.bridgeDescription;
+      if (desc.length == 0) {
+        desc = NSStringFromClass([_bridge class]);
+      }
+      NSString *title = [NSString stringWithFormat:@"React Native: Development\n(%@)", desc];
+
+      menu = [[NSMenu alloc] init];
+
+      NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc]initWithString:title];
+      [attributedTitle setAttributes: @{ NSFontAttributeName : [NSFont menuFontOfSize:0] } range: NSMakeRange(0, [attributedTitle length])];
+      NSMenuItem *titleItem = [[NSMenuItem alloc] init];
+      [titleItem setAttributedTitle:attributedTitle];
+      [menu addItem:titleItem];
+
+      [menu addItem:[NSMenuItem separatorItem]];
+
+      NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];
+      for (RCTDevMenuItem *item in items) {
+        NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:[item title] action:@selector(menuItemSelected:) keyEquivalent:@""];
+        [menuItem setTarget:self];
+        [menuItem setRepresentedObject:item];
+        [menu addItem:menuItem];
+      }
     }
-    NSString *title = [NSString stringWithFormat:@"React Native: Development\n(%@)", desc];
-
-    menu = [[NSMenu alloc] init];
-
-    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc]initWithString:title];
-    [attributedTitle setAttributes: @{ NSFontAttributeName : [NSFont menuFontOfSize:0] } range: NSMakeRange(0, [attributedTitle length])];
-    NSMenuItem *titleItem = [[NSMenuItem alloc] init];
-    [titleItem setAttributedTitle:attributedTitle];
-    [menu addItem:titleItem];
-
-    [menu addItem:[NSMenuItem separatorItem]];
-
-    NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];
-    for (RCTDevMenuItem *item in items) {
-      NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:[item title] action:@selector(menuItemSelected:) keyEquivalent:@""];
-      [menuItem setTarget:self];
-      [menuItem setRepresentedObject:item];
-      [menu addItem:menuItem];
-    }
+    return menu;
   }
-  return menu;
+  return nil;
 }
 
 -(void)menuItemSelected:(id)sender
@@ -527,6 +531,11 @@ RCT_EXPORT_METHOD(show)
   NSMenuItem *menuItem = (NSMenuItem *)sender;
   RCTDevMenuItem *item = (RCTDevMenuItem *)[menuItem representedObject];
   [item callHandler];
+}
+
+- (void)setSecondaryClickToShow:(BOOL)secondaryClickToShow
+{
+  _bridge.devSettings.isSecondaryClickToShowDevMenuEnabled = secondaryClickToShow;
 }
 
 #else // ]TODO(macOS ISS#2323203)

@@ -30,6 +30,7 @@ static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely
 static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
 static NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
 static NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
+static NSString *const kRCTDevSettingSecondClickToShowDevMenu = @"secondClickToShow"; // TODO(macOS ISS#2323203)
 
 static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
@@ -144,6 +145,7 @@ RCT_EXPORT_MODULE()
 #endif // ]TODO(OSS Candidate ISS#2710739)
     kRCTDevSettingShakeToShowDevMenu : @YES,
     kRCTDevSettingHotLoadingEnabled : @YES,
+    kRCTDevSettingSecondClickToShowDevMenu: @YES, // TODO(macOS ISS#2323203)
   };
   RCTDevSettingsUserDefaultsDataSource *dataSource =
       [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
@@ -287,7 +289,19 @@ RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
   return [[self settingForKey:kRCTDevSettingShakeToShowDevMenu] boolValue];
 }
 
-RCT_EXPORT_METHOD(setIsDebuggingRemotely : (BOOL)enabled)
+// [TODO(macOS ISS#2323203)
+RCT_EXPORT_METHOD(setIsSecondaryClickToShowDevMenuEnabled:(BOOL)enabled)
+{
+  [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingSecondClickToShowDevMenu];
+}
+
+- (BOOL)isSecondaryClickToShowDevMenuEnabled
+{
+  return [[self settingForKey:kRCTDevSettingSecondClickToShowDevMenu] boolValue];
+}
+// ]TODO(macOS ISS#2323203)
+
+RCT_EXPORT_METHOD(setIsDebuggingRemotely:(BOOL)enabled)
 {
   [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingIsDebuggingRemotely];
   [self _remoteDebugSettingDidChange];
