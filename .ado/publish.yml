@@ -34,18 +34,23 @@ jobs:
           script: npm install
 
       - task: CmdLine@2
-        displayName: Bump package version
+        displayName: Bump stable package version
         inputs:
           script: node .ado/bumpFileVersions.js
+        condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+
+      - task: CmdLine@2
+        displayName: Bump nightly package version
+        inputs:
+          script: node scripts/bump-oss-version.js --nightly
+        condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
 
       - task: Npm@1
         displayName: "Publish latest react-native-macos to npmjs.org"
         inputs:
-          command: 'publish'
+          command: 'custom'
+          customCommand: publish --tag nightly
           publishEndpoint: 'npmjs'
-          script: |
-            node scripts/bump-oss-version.js --nightly
-            npm publish --tag nightly
         condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
       - task: Npm@1
