@@ -13,6 +13,16 @@ trigger:
 
 pr: none
 
+# It is expected that a `latestStableBranch` variable is set in the pipeline's settings:
+# https://dev.azure.com/ms/react-native/_apps/hub/ms.vss-build-web.ci-designer-hub?pipelineId=221
+variables:
+  ${{ if eq(variables['Build.SourceBranchName'], variables['latestStableBranch']) }}:
+    npmDistTag: latest
+  ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+    npmDistTag: canary
+  ${{ if and(ne(variables['Build.SourceBranchName'], 'master'), ne(variables['Build.SourceBranchName'], variables['latestStableBranch'])) }}:
+    npmDistTag: v${{variables['Build.SourceBranchName']}}
+
 jobs:
   - job: RNGithubNpmJSPublish
     displayName: React-Native GitHub Publish to npmjs.org
@@ -40,18 +50,13 @@ jobs:
         condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
 
       - task: CmdLine@2
-        displayName: Bump nightly package version
+        displayName: Bump canary package version
         inputs:
           script: node scripts/bump-oss-version.js --nightly
         condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
 
-      - script: npm publish --tag nightly --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
-        displayName: Publish nightly react-native-macos to npmjs.org
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
-      - script: npm publish --tag $(Build.SourceBranchName) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
-        displayName: Publish stable react-native-macos to npmjs.org
-        condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+      - script: npm publish --tag ${{npmDistTag}} --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+        displayName: Publish ${{npmDistTag}} react-native-macos to npmjs.org
 
       - task: CmdLine@2
         displayName: 'Tag published release'
