@@ -145,6 +145,14 @@ public class ReactEditText extends AppCompatEditText
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
+              int length = getText().length();
+              if (length > 0) {
+                // For some reason, when you swipe to focus on a text input that already has text in
+                // it, it clears the selection and resets the cursor to the beginning of the input.
+                // Since this is not typically (ever?) what you want, let's just explicitly set the
+                // selection on accessibility click to undo that.
+                setSelection(length);
+              }
               return requestFocusInternal();
             }
             return super.performAccessibilityAction(host, action, args);
