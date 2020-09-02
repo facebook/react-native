@@ -328,7 +328,7 @@ import java.util.Map;
   private static class BoxedColorPropSetter extends PropSetter {
 
     public BoxedColorPropSetter(ReactProp prop, Method setter) {
-      super(prop, "number", setter);
+      super(prop, "mixed", setter);
     }
 
     @Override
