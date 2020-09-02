@@ -62,6 +62,7 @@ jobs:
           BUILD_SOURCEBRANCH: $(Build.SourceBranch)
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
           githubApiToken: $(githubApiToken)
+        condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
 
 
   - job: RNMacOSInitNpmJSPublish
