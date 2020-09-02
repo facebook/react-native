@@ -99,8 +99,8 @@ export class URLSearchParams {
       return '';
     }
     const last = this._searchParams.length - 1;
-    return this._searchParams.reduce((acc, curr, index) => {
-      return acc + curr.join('=') + (index === last ? '' : '&');
+    return this._searchParams.reduce((acc, [key, value], index) => {
+      return `${acc}${key}=${encodeURIComponent(value)}${index === last ? '' : '&'}`;
     }, '');
   }
 }
