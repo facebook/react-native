@@ -133,13 +133,13 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v3-brew
+            - v4-brew
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - /usr/local/Homebrew
             - ~/Library/Caches/Homebrew
-          key: v3-brew
+          key: v4-brew
 
   with_rntester_pods_cache_span:
     parameters:
