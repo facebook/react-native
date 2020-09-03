@@ -141,21 +141,6 @@ exports.examples = [
       );
     },
   },
-  {
-    title: 'Button with no onPress',
-    description:
-      'Note: This button does not interact on touch. To fix, always remember to pass onPress handler to the button.',
-    render: function(): React.Node {
-      return (
-        <Button
-          onPress={}
-          testID="onPress_button"
-          title="Submit Application"
-          accessibilityLabel="See an informative alert"
-        />
-      );
-    },
-  },
 ];
 
 const styles = StyleSheet.create({
