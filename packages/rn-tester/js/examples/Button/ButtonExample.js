@@ -148,6 +148,7 @@ exports.examples = [
     render: function(): React.Node {
       return (
         <Button
+          onPress={}
           testID="onPress_button"
           title="Submit Application"
           accessibilityLabel="See an informative alert"
