@@ -55,8 +55,8 @@ jobs:
           script: node scripts/bump-oss-version.js --nightly
         condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
 
-      - script: npm publish --tag ${{npmDistTag}} --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
-        displayName: Publish ${{npmDistTag}} react-native-macos to npmjs.org
+      - script: npm publish --tag ${{variables.npmDistTag}} --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+        displayName: Publish ${{variables.npmDistTag}} react-native-macos to npmjs.org
 
       - task: CmdLine@2
         displayName: 'Tag published release'
