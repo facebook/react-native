@@ -13,10 +13,9 @@
 const React = require('react');
 
 const {Alert, Button, View, StyleSheet} = require('react-native');
-import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 
 function onButtonPress(buttonName) {
-  Alert.alert(`${buttonName} has been pressed!`);
+  Alert.alert(`Your application has been ${buttonName}!`);
 }
 
 exports.displayName = 'ButtonExample';
@@ -28,92 +27,129 @@ exports.description = 'Simple React Native button component.';
 
 exports.examples = [
   {
-    title: 'Simple Button',
-    description: ('The title and onPress handler are required. It is ' +
-      'recommended to set accessibilityLabel to help make your app usable by ' +
-      'everyone.': string),
-    render: function(): React.Node {
+    title: 'Button with default styling',
+    render: function (): React.Node {
       return (
-        <RNTesterThemeContext.Consumer>
-          {theme => {
-            return (
-              <Button
-                onPress={() => onButtonPress('Simple')}
-                testID="simple_button"
-                color={theme.LinkColor}
-                title="Press Me"
-                accessibilityLabel="See an informative alert"
-              />
-            );
-          }}
-        </RNTesterThemeContext.Consumer>
+        <Button
+          onPress={() => onButtonPress('submitted')}
+          testID="button_default_styling"
+          title="Submit Application"
+          accessibilityLabel="Press to submit your application!"
+        />
       );
     },
   },
   {
-    title: 'Adjusted color',
-    description: ('Adjusts the color in a way that looks standard on each ' +
-      'platform. On iOS, the color prop controls the color of the text. On ' +
+    title: 'Button with color="red"',
+    description: ('Note: On iOS, the color prop controls the color of the text. On ' +
       'Android, the color adjusts the background color of the button.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
-        <RNTesterThemeContext.Consumer>
-          {theme => {
-            return (
-              <Button
-                onPress={() => onButtonPress('Purple')}
-                testID="purple_button"
-                color={theme.SystemPurpleColor}
-                title="Press Purple"
-                accessibilityLabel="Learn more about purple"
-              />
-            );
-          }}
-        </RNTesterThemeContext.Consumer>
+        <Button
+          onPress={() => onButtonPress('cancelled')}
+          testID="cancel_button"
+          color="red"
+          title="Cancel Application"
+          accessibilityLabel="Press to cancel your application!"
+        />
       );
     },
   },
   {
-    title: 'Fit to text layout',
-    description: ('This layout strategy lets the title define the width of ' +
-      'the button': string),
-    render: function(): React.Node {
+    title: 'Two Buttons with Flexbox layout',
+    description: ('Two buttons wrapped inside view with justifyContent: spaceBetween,' +
+      'This layout strategy lets the title define the width of the button': string),
+    render: function (): React.Node {
       return (
-        <RNTesterThemeContext.Consumer>
-          {theme => {
-            return (
-              <View style={styles.container}>
-                <Button
-                  onPress={() => onButtonPress('Left')}
-                  testID="left_button"
-                  color={theme.LinkColor}
-                  title="This looks great!"
-                  accessibilityLabel="This sounds great!"
-                />
-                <Button
-                  onPress={() => onButtonPress('Right')}
-                  testID="right_button"
-                  color={theme.SystemPurpleColor}
-                  title="Ok!"
-                  accessibilityLabel="Ok, Great!"
-                />
-              </View>
-            );
-          }}
-        </RNTesterThemeContext.Consumer>
+        <View style={styles.container}>
+          <Button
+            onPress={() => onButtonPress('cancelled')}
+            testID="two_cancel_button"
+            color="red"
+            title="Cancel"
+            accessibilityLabel="Press to cancel your application!"
+          />
+          <Button
+            onPress={() => onButtonPress('submitted')}
+            testID="two_submit_button"
+            color="green"
+            title="Submit"
+            accessibilityLabel="Press to submit your application!"
+          />
+        </View>
       );
     },
   },
   {
-    title: 'Disabled Button',
-    description: 'All interactions for the component are disabled.',
-    render: function(): React.Node {
+    title: 'Three Buttons with Flexbox layout',
+    render: function (): React.Node {
+      return (
+        <View style={styles.container}>
+          <Button
+            onPress={() => onButtonPress('cancelled')}
+            testID="three_cancel_button"
+            color="red"
+            title="Cancel"
+            accessibilityLabel="Press to cancel your application!"
+          />
+          <Button
+            onPress={() => onButtonPress('saved')}
+            testID="three_save_button"
+            title="Save For Later"
+            accessibilityLabel="Press to save your application!"
+          />
+          <Button
+            onPress={() => onButtonPress('submitted')}
+            testID="three_submit_button"
+            color="green"
+            title="Submit"
+            accessibilityLabel="Press to submit your application!"
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Button with disabled={true}',
+    description:
+      'By passing disabled={true} all interactions for the button are disabled.',
+    render: function (): React.Node {
       return (
         <Button
           disabled
-          onPress={() => onButtonPress('Disabled')}
+          onPress={() => onButtonPress('submitted')}
           testID="disabled_button"
-          title="I Am Disabled"
+          title="Submit Application"
+          accessibilityLabel="Press to submit your application!"
+        />
+      );
+    },
+  },
+  {
+    title: 'Button with accessibilityLabel="label"',
+    description:
+      'Note: This prop changes the text that a screen ' +
+      'reader announces (there are no visual differences).',
+    render: function (): React.Node {
+      return (
+        <Button
+          onPress={() => onButtonPress('submitted')}
+          testID="accessibilityLabel_button"
+          title="Submit Application"
+          accessibilityLabel="Press to submit your application!"
+        />
+      );
+    },
+  },
+  {
+    title: 'Button with no onPress',
+    description:
+      'Note: This button does not interact on touch. To fix, always remember to pass onPress handler to the button.',
+    render: function (): React.Node {
+      return (
+        <Button
+          testID="onPress_button"
+          title="Submit Application"
           accessibilityLabel="See an informative alert"
         />
       );
