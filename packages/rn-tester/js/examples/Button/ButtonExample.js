@@ -28,7 +28,7 @@ exports.description = 'Simple React Native button component.';
 exports.examples = [
   {
     title: 'Button with default styling',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <Button
           onPress={() => onButtonPress('submitted')}
@@ -43,7 +43,7 @@ exports.examples = [
     title: 'Button with color="red"',
     description: ('Note: On iOS, the color prop controls the color of the text. On ' +
       'Android, the color adjusts the background color of the button.': string),
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <Button
           onPress={() => onButtonPress('cancelled')}
@@ -59,7 +59,7 @@ exports.examples = [
     title: 'Two Buttons with Flexbox layout',
     description: ('Two buttons wrapped inside view with justifyContent: spaceBetween,' +
       'This layout strategy lets the title define the width of the button': string),
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <View style={styles.container}>
           <Button
@@ -82,7 +82,7 @@ exports.examples = [
   },
   {
     title: 'Three Buttons with Flexbox layout',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <View style={styles.container}>
           <Button
@@ -113,7 +113,7 @@ exports.examples = [
     title: 'Button with disabled={true}',
     description:
       'By passing disabled={true} all interactions for the button are disabled.',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <Button
           disabled
@@ -130,7 +130,7 @@ exports.examples = [
     description:
       'Note: This prop changes the text that a screen ' +
       'reader announces (there are no visual differences).',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <Button
           onPress={() => onButtonPress('submitted')}
@@ -145,7 +145,7 @@ exports.examples = [
     title: 'Button with no onPress',
     description:
       'Note: This button does not interact on touch. To fix, always remember to pass onPress handler to the button.',
-    render: function (): React.Node {
+    render: function(): React.Node {
       return (
         <Button
           testID="onPress_button"
