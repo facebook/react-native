@@ -127,9 +127,8 @@ exports.examples = [
   },
   {
     title: 'Button with accessibilityLabel="label"',
-    description:
-      'Note: This prop changes the text that a screen ' +
-      'reader announces (there are no visual differences).',
+    description: ('Note: This prop changes the text that a screen ' +
+      'reader announces (there are no visual differences).': string),
     render: function(): React.Node {
       return (
         <Button

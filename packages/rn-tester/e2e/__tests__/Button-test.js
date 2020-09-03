@@ -85,7 +85,7 @@ describe('Button', () => {
       element(by.text('Your application has been submitted!')),
     ).toBeNotVisible();
   });
-  
+
   it('AccessibilityLabel button should be tappable', async () => {
     await openExampleWithTitle('AccessibilityLabel');
     await element(by.id('accessibilityLabel_button')).tap();
@@ -94,5 +94,4 @@ describe('Button', () => {
     ).toBeVisible();
     await element(by.text('OK')).tap();
   });
-  
 });
