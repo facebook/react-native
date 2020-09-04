@@ -26,6 +26,8 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
@@ -60,6 +62,8 @@ public class TextLayoutManager {
   private static final String TEXT_BREAK_STRATEGY_KEY = "textBreakStrategy";
   private static final String MAXIMUM_NUMBER_OF_LINES_KEY = "maximumNumberOfLines";
   private static final LruCache<String, Spannable> sSpannableCache =
+      new LruCache<>(spannableCacheSize);
+  private static final LruCache<ReadableNativeMap, Spannable> sSpannableCacheV2 =
       new LruCache<>(spannableCacheSize);
   private static final ConcurrentHashMap<Integer, Spannable> sTagToSpannableCache =
       new ConcurrentHashMap<>();
@@ -179,20 +183,40 @@ public class TextLayoutManager {
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
 
     Spannable preparedSpannableText;
-    String attributedStringPayload = attributedString.toString();
-    synchronized (sSpannableCacheLock) {
-      preparedSpannableText = sSpannableCache.get(attributedStringPayload);
-      // TODO: T31905686 implement proper equality of attributedStrings
-      if (preparedSpannableText != null) {
-        return preparedSpannableText;
+    String attributedStringPayload = "";
+
+    boolean cacheByReadableNativeMap =
+        ReactFeatureFlags.enableSpannableCacheByReadableNativeMapEquality;
+    // TODO: T74600554 Cleanup this experiment once positive impact is confirmed in production
+    if (cacheByReadableNativeMap) {
+      synchronized (sSpannableCacheLock) {
+        preparedSpannableText = sSpannableCacheV2.get((ReadableNativeMap) attributedString);
+        if (preparedSpannableText != null) {
+          return preparedSpannableText;
+        }
+      }
+    } else {
+      attributedStringPayload = attributedString.toString();
+      synchronized (sSpannableCacheLock) {
+        preparedSpannableText = sSpannableCache.get(attributedStringPayload);
+        if (preparedSpannableText != null) {
+          return preparedSpannableText;
+        }
       }
     }
 
     preparedSpannableText =
         createSpannableFromAttributedString(
             context, attributedString, reactTextViewManagerCallback);
-    synchronized (sSpannableCacheLock) {
-      sSpannableCache.put(attributedStringPayload, preparedSpannableText);
+
+    if (cacheByReadableNativeMap) {
+      synchronized (sSpannableCacheLock) {
+        sSpannableCacheV2.put((ReadableNativeMap) attributedString, preparedSpannableText);
+      }
+    } else {
+      synchronized (sSpannableCacheLock) {
+        sSpannableCache.put(attributedStringPayload, preparedSpannableText);
+      }
     }
     return preparedSpannableText;
   }

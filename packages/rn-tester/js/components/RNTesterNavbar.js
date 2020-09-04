@@ -5,31 +5,37 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  */
 
-import React from 'react';
+import * as React from 'react';
 import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
-const RNTesterActions = require('../utils/RNTesterActions');
 
-const RNTesterNavbar = ({onNavigate, screen}) => {
+type Props = $ReadOnly<{|
+  handleNavBarPress: (data: {screen: string}) => void,
+  screen: string,
+  isExamplePageOpen: boolean,
+|}>;
+
+const RNTesterNavbar = ({
+  handleNavBarPress,
+  screen,
+  isExamplePageOpen,
+}: Props): React.Node => {
   const theme = React.useContext(RNTesterThemeContext);
 
-  /** to be attached to navigation framework */
-  const isAPIActive = screen === 'api';
-  const isComponentActive = screen === 'component';
-  const isBookmarkActive = screen === 'bookmark';
+  const isAPIActive = screen === 'apis' && !isExamplePageOpen;
+  const isComponentActive = screen === 'components' && !isExamplePageOpen;
+  const isBookmarkActive = screen === 'bookmarks' && !isExamplePageOpen;
 
   return (
     <View>
-      {/** Bottom Navbar code */}
-      {/** component and APIs tab  */}
       <View style={styles.buttonContainer}>
-        {/** left tab with Components  */}
         <Pressable
           testID="components-tab"
-          onPress={() => onNavigate(RNTesterActions.OpenList('component'))}
+          onPress={() => handleNavBarPress({screen: 'components'})}
           style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
           <View
             style={[
@@ -54,20 +60,16 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
           </View>
         </Pressable>
 
-        {/** central tab with bookmark icon  */}
         <View style={styles.centerBox}>
           <Image
             style={styles.centralBoxCutout}
             source={require('./../assets/bottom-nav-center-box.png')}
           />
 
-          {/** floating button in center  */}
           <View style={styles.floatContainer}>
             <Pressable
               testID="bookmarks-tab"
-              onPress={() => {
-                onNavigate(RNTesterActions.OpenList('bookmark'));
-              }}>
+              onPress={() => handleNavBarPress({screen: 'bookmarks'})}>
               <View
                 style={[
                   styles.floatingButton,
@@ -86,12 +88,9 @@ const RNTesterNavbar = ({onNavigate, screen}) => {
           </View>
         </View>
 
-        {/** right tab with Components  */}
         <Pressable
           testID="apis-tab"
-          onPress={() => {
-            onNavigate(RNTesterActions.OpenList('api'));
-          }}
+          onPress={() => handleNavBarPress({screen: 'apis'})}
           style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
           <View
             style={[
@@ -163,6 +162,10 @@ const styles = StyleSheet.create({
   inactiveText: {
     color: '#B1B4BA',
   },
+  activeBar: {
+    borderTopWidth: 2,
+    borderColor: '#005DFF',
+  },
   centralBoxCutout: {
     height: '100%',
     width: '100%',
@@ -184,10 +187,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  activeBar: {
-    borderTopWidth: 2,
-    borderColor: '#005DFF',
   },
 });
 

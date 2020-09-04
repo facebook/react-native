@@ -12,9 +12,9 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/debug/SystraceSection.h>
-#include <react/renderer/mounting/MountingTelemetry.h>
 #include <react/renderer/mounting/ShadowTreeRevision.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/renderer/mounting/TransactionTelemetry.h>
 
 #include "ShadowTreeDelegate.h"
 #include "TreeStateReconciliation.h"
@@ -285,7 +285,7 @@ bool ShadowTree::tryCommit(
     bool enableStateReconciliation) const {
   SystraceSection s("ShadowTree::tryCommit");
 
-  auto telemetry = MountingTelemetry{};
+  auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();
 
   RootShadowNode::Shared oldRootShadowNode;

@@ -10,9 +10,9 @@
 #include <functional>
 #include <mutex>
 
-#include <react/renderer/mounting/MountingTelemetry.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/MountingTransactionMetadata.h>
+#include <react/renderer/mounting/TransactionTelemetry.h>
 
 namespace facebook {
 namespace react {

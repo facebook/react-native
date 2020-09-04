@@ -20,9 +20,7 @@ type Props = $ReadOnly<{|
   description?: ?string,
 |}>;
 
-/** functional component for generating example blocks */
-const RNTesterBlock = (props: Props): React.Node => {
-  const {description, title, children} = props;
+const RNTesterBlock = ({description, title, children}: Props): React.Node => {
   const theme = React.useContext(RNTesterThemeContext);
   return (
     <View style={[[styles.container], {borderColor: theme.SeparatorColor}]}>
@@ -60,7 +58,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   children: {
-    paddingVertical: 10,
+    paddingTop: 10,
     paddingHorizontal: 10,
     margin: 10,
   },

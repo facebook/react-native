@@ -22,18 +22,16 @@ const {
 import {RNTesterThemeContext} from './RNTesterTheme';
 import type {RNTesterExample} from '../types/RNTesterTypes';
 
+import type {SectionData} from '../types/RNTesterTypes';
+
 type Props = {
   filter: Function,
   render: Function,
   disableSearch?: boolean,
   testID?: string,
   hideFilterPills?: boolean,
-  page: string, // possible values -> examples_page, components_page, bookmarks_page
-  sections: Array<{
-    data: Array<RNTesterExample>,
-    title: string,
-    key: string,
-  }>,
+  page: 'examples_page' | 'components_page' | 'bookmarks_page',
+  sections: SectionData[],
   ...
 };
 
@@ -71,7 +69,7 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
 
     if (this.state.filter.trim() !== '' || this.state.category.trim() !== '') {
       filteredSections = filteredSections.filter(
-        section => section.title !== 'Recently viewed',
+        section => section.title !== 'Recently Viewed',
       );
     }
 

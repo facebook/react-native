@@ -20,7 +20,7 @@ public class MemoryPressureRouter implements ComponentCallbacks2 {
   private final Set<MemoryPressureListener> mListeners =
       Collections.synchronizedSet(new LinkedHashSet<MemoryPressureListener>());
 
-  MemoryPressureRouter(Context context) {
+  public MemoryPressureRouter(Context context) {
     context.getApplicationContext().registerComponentCallbacks(this);
   }
 

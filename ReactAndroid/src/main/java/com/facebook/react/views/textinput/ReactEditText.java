@@ -145,6 +145,14 @@ public class ReactEditText extends AppCompatEditText
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
+              int length = getText().length();
+              if (length > 0) {
+                // For some reason, when you swipe to focus on a text input that already has text in
+                // it, it clears the selection and resets the cursor to the beginning of the input.
+                // Since this is not typically (ever?) what you want, let's just explicitly set the
+                // selection on accessibility click to undo that.
+                setSelection(length);
+              }
               return requestFocusInternal();
             }
             return super.performAccessibilityAction(host, action, args);
@@ -389,10 +397,11 @@ public class ReactEditText extends AppCompatEditText
   @Override
   public void setInputType(int type) {
     Typeface tf = super.getTypeface();
-    super.setInputType(type);
-    mStagedInputType = type;
     // Input type password defaults to monospace font, so we need to re-apply the font
     super.setTypeface(tf);
+
+    super.setInputType(type);
+    mStagedInputType = type;
 
     /**
      * If set forces multiline on input, because of a restriction on Android source that enables
