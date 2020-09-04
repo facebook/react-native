@@ -16,27 +16,27 @@ const {StyleSheet, Text, ToastAndroid, Pressable} = require('react-native');
 
 const ToastWithShortDuration = () => {
   return (
-    <TouchableWithoutFeedback
+    <Pressable
       onPress={() =>
         ToastAndroid.show('Copied to clipboard!', ToastAndroid.SHORT)
       }>
       <Text style={styles.text}>Tap to view toast</Text>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 };
 
 const ToastWithLongDuration = () => {
   return (
-    <TouchableWithoutFeedback
+    <Pressable
       onPress={() => ToastAndroid.show('Sending message..', ToastAndroid.LONG)}>
       <Text style={styles.text}>Tap to view toast</Text>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 };
 
 const ToastWithTopGravity = () => {
   return (
-    <TouchableWithoutFeedback
+    <Pressable
       onPress={() =>
         ToastAndroid.showWithGravity(
           'Download Started..',
@@ -45,13 +45,13 @@ const ToastWithTopGravity = () => {
         )
       }>
       <Text style={styles.text}>Tap to view toast</Text>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 };
 
 const ToastWithCenterGravity = () => {
   return (
-    <TouchableWithoutFeedback
+    <Pressable
       onPress={() =>
         ToastAndroid.showWithGravity(
           'A problem has been occured while submitting your data.',
@@ -60,13 +60,13 @@ const ToastWithCenterGravity = () => {
         )
       }>
       <Text style={styles.text}>Tap to view toast</Text>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 };
 
 const ToastWithBottomGravity = () => {
   return (
-    <TouchableWithoutFeedback
+    <Pressable
       onPress={() =>
         ToastAndroid.showWithGravity(
           'Please read the contents carefully.',
@@ -75,13 +75,13 @@ const ToastWithBottomGravity = () => {
         )
       }>
       <Text style={styles.text}>Tap to view toast</Text>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 };
 
 const ToastWithXOffset = () => {
   return (
-    <TouchableWithoutFeedback
+    <Pressable
       onPress={() =>
         ToastAndroid.showWithGravityAndOffset(
           'Alex sent you a friend request',
@@ -92,13 +92,13 @@ const ToastWithXOffset = () => {
         )
       }>
       <Text style={styles.text}>Tap to view toast</Text>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 };
 
 const ToastWithYOffset = () => {
   return (
-    <TouchableWithoutFeedback
+    <Pressable
       onPress={() =>
         ToastAndroid.showWithGravityAndOffset(
           'There was a problem with your internet connection',
@@ -109,7 +109,7 @@ const ToastWithYOffset = () => {
         )
       }>
       <Text style={styles.text}>Tap to view toast</Text>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 };
 
