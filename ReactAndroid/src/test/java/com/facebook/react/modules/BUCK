@@ -9,6 +9,7 @@ rn_robolectric_test(
     ],
     deps = [
         YOGA_TARGET,
+        react_native_dep("third-party/android/androidx:appcompat-binary"),
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:core"),
         react_native_dep("third-party/android/androidx:fragment"),
