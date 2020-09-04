@@ -1,4 +1,4 @@
-node ./android-patches/bundle/bundle.js patch . BasicBuild RNHostBase V8Integration Focus --patch-store ./android-patches/patches-0.62.2 --log-folder ./android-patches/logs --confirm true
+node ./android-patches/bundle/bundle.js patch . BasicBuild RNHostBase V8Integration Focus --patch-store ./android-patches/patches --log-folder ./android-patches/logs --confirm true
 
 mkdir ./nuget-bin/ && curl -o ./nuget-bin/nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
 
