@@ -9,6 +9,11 @@ rn_android_library(
     visibility = [
         "PUBLIC",
     ],
+    provided_deps = [
+        react_native_dep("third-party/android/androidx:appcompat"),
+        react_native_dep("third-party/android/androidx:autofill"),
+        react_native_dep("third-party/android/androidx:core"),
+    ],
     deps = [
         YOGA_TARGET,
         react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
@@ -24,8 +29,5 @@ rn_android_library(
         react_native_target("java/com/facebook/react/views/scroll:scroll"),
         react_native_target("java/com/facebook/react/views/text:text"),
         react_native_target("java/com/facebook/react/views/view:view"),
-    ],
-    exported_deps = [
-        react_native_dep("third-party/android/androidx:appcompat"),
-    ],
+    ]
 )

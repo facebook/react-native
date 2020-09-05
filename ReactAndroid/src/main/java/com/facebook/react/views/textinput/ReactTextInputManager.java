@@ -31,6 +31,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
@@ -332,19 +334,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   private void setImportantForAutofill(ReactEditText view, int mode) {
-    // Autofill hints were added in Android API 26.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      return;
-    }
-    view.setImportantForAutofill(mode);
+    ViewCompat.setImportantForAutofill(view, mode);
   }
 
   private void setAutofillHints(ReactEditText view, String... hints) {
-    // Autofill hints were added in Android API 26.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      return;
-    }
-    view.setAutofillHints(hints);
+    ViewCompat.setAutofillHints(view, hints);
+    setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_YES);
   }
 
   @ReactProp(name = "onSelectionChange", defaultBoolean = false)
@@ -661,36 +656,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "autoCompleteType")
   public void setTextContentType(ReactEditText view, @Nullable String autoCompleteType) {
     if (autoCompleteType == null) {
-      setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
-    } else if ("username".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_USERNAME);
-    } else if ("password".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_PASSWORD);
-    } else if ("email".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_EMAIL_ADDRESS);
-    } else if ("name".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_NAME);
-    } else if ("tel".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_PHONE);
-    } else if ("street-address".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_ADDRESS);
-    } else if ("postal-code".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_CODE);
-    } else if ("cc-number".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
-    } else if ("cc-csc".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
-    } else if ("cc-exp".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
-    } else if ("cc-exp-month".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
-    } else if ("cc-exp-year".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
+      // if null reset to default value
+      setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_AUTO);
     } else if ("off".equals(autoCompleteType)) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
+    } else if (AutoCompleteType.has(autoCompleteType)) {
+      setAutofillHints(view, AutoCompleteType.get(autoCompleteType).toAutofillHint());
     } else {
       throw new JSApplicationIllegalArgumentException(
-          "Invalid autoCompleteType: " + autoCompleteType);
+        "Invalid autoCompleteType: " + autoCompleteType);
     }
   }
 
@@ -1208,4 +1182,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextAttributeProps.getJustificationMode(props),
         attributedString);
   }
+
 }
+

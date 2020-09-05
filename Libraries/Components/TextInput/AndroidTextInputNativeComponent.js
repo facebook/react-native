@@ -64,6 +64,59 @@ export type ReturnKeyType =
   | 'route'
   | 'yahoo';
 
+export type AutoCompleteType =
+  | 'off'
+  | 'name'
+  | 'honorific-prefix'
+  | 'given-name'
+  | 'additional-name'
+  | 'family-name'
+  | 'honorific-suffix'
+  | 'username'
+  | 'new-password'
+  | 'current-password'
+  | 'street-address'
+  | 'address-line1'
+  | 'address-level2'
+  | 'address-level1'
+  | 'country'
+  | 'country-name'
+  | 'postal-code'
+  | 'cc-name'
+  | 'cc-given-name'
+  | 'cc-additional-name'
+  | 'cc-family-name'
+  | 'cc-number'
+  | 'cc-exp'
+  | 'cc-exp-month'
+  | 'cc-exp-year'
+  | 'cc-exp-csc'
+  | 'bday'
+  | 'bday-day'
+  | 'bday-month'
+  | 'bday-year'
+  | 'sex'
+  | 'tel'
+  | 'tel-country-code'
+  | 'tel-national'
+  | 'email'
+  | 'otp'
+  | 'otp-char-1'
+  | 'otp-char-2'
+  | 'otp-char-3'
+  | 'otp-char-4'
+  | 'otp-char-5'
+  | 'otp-char-6'
+  | 'otp-char-7'
+  | 'otp-char-8'
+  | 'tel-device'
+  | 'cc-exp-day'
+  | 'extended-address'
+  | 'postal-code-extended'
+  | 'additional-name-inititial'
+  | 'new-username'
+  | 'password';
+
 export type NativeProps = $ReadOnly<{|
   // This allows us to inherit everything from ViewProps except for style (see below)
   // This must be commented for Fabric codegen to work.
@@ -72,46 +125,73 @@ export type NativeProps = $ReadOnly<{|
   /**
    * Android props after this
    */
+
   /**
-   * Determines which content to suggest on auto complete, e.g.`username`.
-   * To disable auto complete, use `off`.
-   *
-   * *Android Only*
-   *
-   * The following values work on Android only:
-   *
-   * - `username`
-   * - `password`
-   * - `email`
-   * - `name`
-   * - `tel`
-   * - `street-address`
-   * - `postal-code`
-   * - `cc-number`
-   * - `cc-csc`
-   * - `cc-exp`
-   * - `cc-exp-month`
-   * - `cc-exp-year`
-   * - `off`
-   *
-   * @platform android
-   */
-  autoCompleteType?: WithDefault<
-    | 'cc-csc'
-    | 'cc-exp'
-    | 'cc-exp-month'
-    | 'cc-exp-year'
-    | 'cc-number'
-    | 'email'
-    | 'name'
-    | 'password'
-    | 'postal-code'
-    | 'street-address'
-    | 'tel'
-    | 'username'
-    | 'off',
-    'off',
-  >,
+    Specifies autocomplete hints for the system, so it can provide autofill. On
+    Android, the system will always attempt to offer autofill by using
+    heuristics to identify the type of content. To disable autocomplete, set
+    `autoCompleteType` to `off`.
+
+    Possible values for `autoCompleteType`, defined by the W3C autocomplete standard are:
+
+    - `off`
+    - `name`
+    - `honorific-prefix`
+    - `given-name`
+    - `additional-name`
+    - `family-name`
+    - `honorific-suffix`
+    - `username`
+    - `new-password`
+    - `current-password`
+    - `street-address`
+    - `address-line1`
+    - `address-level2`
+    - `address-level1`
+    - `country`
+    - `country-name`
+    - `postal-code`
+    - `cc-name`
+    - `cc-given-name`
+    - `cc-additional-name`
+    - `cc-family-name`
+    - `cc-number`
+    - `cc-exp`
+    - `cc-exp-month`
+    - `cc-exp-year`
+    - `cc-exp-csc`
+    - `bday`
+    - `bday-day`
+    - `bday-month`
+    - `bday-year`
+    - `sex`
+    - `tel`
+    - `tel-country-code`
+    - `tel-national`
+    - `email`
+
+    Some extra included Android additions that the W3C autocomplete standard doesn't define are:
+
+    - `otp`
+    - `otp-char-1`
+    - `otp-char-2`
+    - `otp-char-3`
+    - `otp-char-4`
+    - `otp-char-5`
+    - `otp-char-6`
+    - `otp-char-7`
+    - `otp-char-8`
+    - `tel-device`
+    - `cc-exp-day`
+    - `extended-address`
+    - `postal-code-extended`
+    - `additional-name-inititial`
+    - `new-username`
+    - `password`
+
+    @platform android
+    */
+  autoCompleteType?: ?AutoCompleteType,
 
   /**
    * Sets the return key to the label. Use it instead of `returnKeyType`.

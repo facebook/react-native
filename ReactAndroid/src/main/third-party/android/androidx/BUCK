@@ -33,6 +33,15 @@ fb_native.android_library(
 )
 
 fb_native.android_library(
+    name = "autofill",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":annotation",
+        ":autofill-binary",
+    ],
+)
+
+fb_native.android_library(
     name = "collection",
     visibility = ["PUBLIC"],
     exported_deps = [
@@ -338,6 +347,11 @@ fb_native.android_prebuilt_aar(
 )
 
 fb_native.android_prebuilt_aar(
+    name = "autofill-binary",
+    aar = ":autofill-binary-aar",
+)
+
+fb_native.android_prebuilt_aar(
     name = "asynclayoutinflater-binary",
     aar = ":asynclayoutinflater-binary-aar",
 )
@@ -493,6 +507,12 @@ fb_native.remote_file(
     name = "appcompat-binary-aar",
     sha1 = "002533a36c928bb27a3cc6843a25f83754b3c3ae",
     url = "mvn:androidx.appcompat:appcompat:aar:1.0.2",
+)
+
+fb_native.remote_file(
+    name = "autofill-binary-aar",
+    sha1 = "d95a6e3b895ad8f037dd01d88c87138b6d5eb507",
+    url = "mvn:androidx.autofill:autofill:aar:1.0.0",
 )
 
 fb_native.remote_file(

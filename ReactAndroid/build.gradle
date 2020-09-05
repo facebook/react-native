@@ -431,6 +431,12 @@ android {
         exclude("META-INF/LICENSE")
     }
 
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
     configurations {
         extractHeaders
         extractJNI
@@ -441,8 +447,9 @@ dependencies {
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
     api("com.facebook.yoga:proguard-annotations:1.14.1")
     api("javax.inject:javax.inject:1")
-    api("androidx.appcompat:appcompat:1.0.2")
-    api("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
+    api("androidx.appcompat:appcompat:${ANDROIDX_APPCOMPAT_VERSION}")
+    api("androidx.autofill:autofill:${ANDROIDX_AUTOFILL_VERSION}")
+    api("androidx.swiperefreshlayout:swiperefreshlayout:${ANDROIDX_SWIPEREFRESHLAYOUT_VERSION}")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
     api("com.facebook.soloader:soloader:${SO_LOADER_VERSION}")
