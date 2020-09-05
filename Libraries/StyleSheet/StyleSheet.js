@@ -10,11 +10,15 @@
 
 'use strict';
 
+let StyleSheetValidation = null;
 const PixelRatio = require('../Utilities/PixelRatio');
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-const StyleSheetValidation = require('./StyleSheetValidation');
 
 const flatten = require('./flattenStyle');
+
+if (__DEV__) {
+  StyleSheetValidation = require('./StyleSheetValidation');
+}
 
 import type {
   ____ColorValue_Internal,
