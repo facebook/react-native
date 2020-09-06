@@ -195,7 +195,6 @@
 <li><p><em>Dev Menu support</em>: On the simulator, cmd-D will bring up the developer menu, similar to iOS. To bring it up on a real Apple TV device, make a long press on the play/pause button on the remote. (Please do not shake the Apple TV device, that will not work :) )</p></li>
 <li><p><em>TV remote animations</em>: <code>RCTTVView</code> native code implements Apple-recommended parallax animations to help guide the eye as the user navigates through views. The animations can be disabled or adjusted with new optional view properties.</p></li>
 <li><p><em>Back navigation with the TV remote menu button</em>: The <code>BackHandler</code> component, originally written to support the Android back button, now also supports back navigation on the Apple TV using the menu button on the TV remote.</p></li>
-<li><p><em>TabBarIOS behavior</em>: The <code>TabBarIOS</code> component wraps the native <code>UITabBar</code> API, which works differently on Apple TV. To avoid jittery re-rendering of the tab bar in tvOS (see <a href="https://github.com/facebook/react-native/issues/15081">this issue</a>), the selected tab bar item can only be set from Javascript on initial render, and is controlled after that by the user through native code.</p></li>
 </ul>
 <p><block class="android" /></p>
 <ul>
