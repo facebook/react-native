@@ -70,26 +70,44 @@
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/textinput.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">TextInput</h1></header><article><div><span><p>A foundational component for inputting text into the app via a keyboard. Props provide configurability for several features, such as auto-correction, auto-capitalization, placeholder text, and different keyboard types, such as a numeric keypad.</p>
 <p>The most basic use case is to plop down a <code>TextInput</code> and subscribe to the <code>onChangeText</code> events to read the user input. There are also other events, such as <code>onSubmitEditing</code> and <code>onFocus</code> that can be subscribed to. A minimal example:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
-<span class="hljs-keyword">import</span> { TextInput } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { SafeAreaView, StyleSheet, TextInput } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
 <span class="hljs-keyword">const</span> UselessTextInput = <span class="hljs-function">() =&gt;</span> {
-  <span class="hljs-keyword">const</span> [value, onChangeText] = React.useState(<span class="hljs-string">&#x27;Useless Placeholder&#x27;</span>);
+  <span class="hljs-keyword">const</span> [text, onChangeText] = React.useState(<span class="hljs-string">&quot;Useless Text&quot;</span>);
+  <span class="hljs-keyword">const</span> [number, onChangeNumber] = React.useState(<span class="hljs-literal">null</span>);
 
   <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span>
-      <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">height:</span> <span class="hljs-attr">40</span>, <span class="hljs-attr">borderColor:</span> &#x27;<span class="hljs-attr">gray</span>&#x27;, <span class="hljs-attr">borderWidth:</span> <span class="hljs-attr">1</span> }}
-      <span class="hljs-attr">onChangeText</span>=<span class="hljs-string">{text</span> =&gt;</span> onChangeText(text)}
-      value={value}
-    /&gt;</span>
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.input}</span>
+        <span class="hljs-attr">onChangeText</span>=<span class="hljs-string">{onChangeText}</span>
+        <span class="hljs-attr">value</span>=<span class="hljs-string">{text}</span>
+      /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.input}</span>
+        <span class="hljs-attr">onChangeText</span>=<span class="hljs-string">{onChangeNumber}</span>
+        <span class="hljs-attr">value</span>=<span class="hljs-string">{number}</span>
+        <span class="hljs-attr">placeholder</span>=<span class="hljs-string">&quot;useless placeholder&quot;</span>
+        <span class="hljs-attr">keyboardType</span>=<span class="hljs-string">&quot;numeric&quot;</span>
+      /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span></span>
   );
-}
+};
+
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">input</span>: {
+    <span class="hljs-attr">height</span>: <span class="hljs-number">40</span>,
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">12</span>,
+    <span class="hljs-attr">borderWidth</span>: <span class="hljs-number">1</span>,
+  },
+});
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> UselessTextInput;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="TextInput"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20TextInput%20%7D%20from%20'react-native'%3B%0A%0Aconst%20UselessTextInput%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20%5Bvalue%2C%20onChangeText%5D%20%3D%20React.useState('Useless%20Placeholder')%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20style%3D%7B%7B%20height%3A%2040%2C%20borderColor%3A%20'gray'%2C%20borderWidth%3A%201%20%7D%7D%0A%20%20%20%20%20%20onChangeText%3D%7Btext%20%3D%3E%20onChangeText(text)%7D%0A%20%20%20%20%20%20value%3D%7Bvalue%7D%0A%20%20%20%20%2F%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20UselessTextInput%3B%0A"
+        data-snack-code="import%20React%20from%20%22react%22%3B%0Aimport%20%7B%20SafeAreaView%2C%20StyleSheet%2C%20TextInput%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20UselessTextInput%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20%5Btext%2C%20onChangeText%5D%20%3D%20React.useState(%22Useless%20Text%22)%3B%0A%20%20const%20%5Bnumber%2C%20onChangeNumber%5D%20%3D%20React.useState(null)%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CSafeAreaView%3E%0A%20%20%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20%20%20style%3D%7Bstyles.input%7D%0A%20%20%20%20%20%20%20%20onChangeText%3D%7BonChangeText%7D%0A%20%20%20%20%20%20%20%20value%3D%7Btext%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20%20%20style%3D%7Bstyles.input%7D%0A%20%20%20%20%20%20%20%20onChangeText%3D%7BonChangeNumber%7D%0A%20%20%20%20%20%20%20%20value%3D%7Bnumber%7D%0A%20%20%20%20%20%20%20%20placeholder%3D%22useless%20placeholder%22%0A%20%20%20%20%20%20%20%20keyboardType%3D%22numeric%22%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20input%3A%20%7B%0A%20%20%20%20height%3A%2040%2C%0A%20%20%20%20margin%3A%2012%2C%0A%20%20%20%20borderWidth%3A%201%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aexport%20default%20UselessTextInput%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"

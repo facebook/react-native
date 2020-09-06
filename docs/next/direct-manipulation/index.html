@@ -75,63 +75,55 @@
 </blockquote>
 <h2><a class="anchor" aria-hidden="true" id="setnativeprops-with-touchableopacity"></a><a href="#setnativeprops-with-touchableopacity" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>setNativeProps with TouchableOpacity</h2>
 <p><a href="https://github.com/facebook/react-native/blob/master/Libraries/Components/Touchable/TouchableOpacity.js">TouchableOpacity</a> uses <code>setNativeProps</code> internally to update the opacity of its child component:</p>
-<pre><code class="hljs css language-jsx"><span class="token function">setOpacityTo</span><span class="token punctuation">(</span><span class="token parameter">value</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">const</span> viewRef <span class="token operator">=</span> <span class="token function">useRef</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> setOpacityTo <span class="token operator">=</span> <span class="token function">useCallback</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">value</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
   <span class="token comment">// Redacted: animation related code</span>
-  <span class="token keyword">this</span><span class="token punctuation">.</span>refs<span class="token punctuation">[</span><span class="token constant">CHILD_REF</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">setNativeProps</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  viewRef<span class="token punctuation">.</span>current<span class="token punctuation">.</span><span class="token function">setNativeProps</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
     opacity<span class="token operator">:</span> value
   <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>This allows us to write the following code and know that the child will have its opacity updated in response to taps, without the child having any knowledge of that fact or requiring any changes to its implementation:</p>
-<pre><code class="hljs css language-jsx"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TouchableOpacity</span></span> <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_handlePress<span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
-  </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+<pre><code class="hljs css language-jsx"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TouchableOpacity</span></span> <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>handlePress<span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+  </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span><span class="token plain-text">
     </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">Press me!</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
   </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span><span class="token plain-text">
 </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">TouchableOpacity</span></span><span class="token punctuation">></span></span>
 </code></pre>
 <p>Let's imagine that <code>setNativeProps</code> was not available. One way that we might implement it with that constraint is to store the opacity value in the state, then update that value whenever <code>onPress</code> is fired:</p>
-<pre><code class="hljs css language-jsx"><span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">props</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">super</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">this</span><span class="token punctuation">.</span>state <span class="token operator">=</span> <span class="token punctuation">{</span> myButtonOpacity<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-
-<span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token punctuation">(</span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TouchableOpacity</span></span> <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>myButtonOpacity<span class="token operator">:</span> <span class="token number">0.5</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span>
-                      <span class="token attr-name">onPressOut</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>myButtonOpacity<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
-      </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">,</span> <span class="token punctuation">{</span>opacity<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>myButtonOpacity<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
-        </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">Press me!</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
-      </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span><span class="token plain-text">
-    </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">TouchableOpacity</span></span><span class="token punctuation">></span></span>
-  <span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">const</span> <span class="token punctuation">[</span>buttonOpacity<span class="token punctuation">,</span> setButtonOpacity<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">useState</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">return</span> <span class="token punctuation">(</span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TouchableOpacity</span></span>
+    <span class="token attr-name">onPressIn</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token function">setButtonOpacity</span><span class="token punctuation">(</span><span class="token number">0.5</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span>
+    <span class="token attr-name">onPressOut</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token function">setButtonOpacity</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+    </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> opacity<span class="token operator">:</span> buttonOpacity <span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+      </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">Press me!</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+    </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+  </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">TouchableOpacity</span></span><span class="token punctuation">></span></span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>This is computationally intensive compared to the original example - React needs to re-render the component hierarchy each time the opacity changes, even though other properties of the view and its children haven't changed. Usually this overhead isn't a concern but when performing continuous animations and responding to gestures, judiciously optimizing your components can improve your animations' fidelity.</p>
 <p>If you look at the implementation of <code>setNativeProps</code> in <a href="https://github.com/facebook/react-native/blob/master/Libraries/Renderer/implementations/ReactNativeRenderer-prod.js">NativeMethodsMixin</a> you will notice that it is a wrapper around <code>RCTUIManager.updateView</code> - this is the exact same function call that results from re-rendering - see <a href="https://github.com/facebook/react-native/blob/fb2ec1ea47c53c2e7b873acb1cb46192ac74274e/Libraries/Renderer/oss/ReactNativeRenderer-prod.js#L5793-L5813">receiveComponent in ReactNativeBaseComponent</a>.</p>
 <h2><a class="anchor" aria-hidden="true" id="composite-components-and-setnativeprops"></a><a href="#composite-components-and-setnativeprops" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Composite components and setNativeProps</h2>
 <p>Composite components are not backed by a native view, so you cannot call <code>setNativeProps</code> on them. Consider this example:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
-<span class="hljs-keyword">import</span> { Text, TouchableOpacity, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Text, TouchableOpacity, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> MyButton = <span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> {
-    <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{marginTop:</span> <span class="hljs-attr">50</span>}}&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{props.label}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
-    )
-}
+<span class="hljs-keyword">const</span> MyButton = <span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">marginTop:</span> <span class="hljs-attr">50</span> }}&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{props.label}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+);
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> {
-    <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">MyButton</span> <span class="hljs-attr">label</span>=<span class="hljs-string">&quot;Press me!&quot;</span> /&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span></span>
-    )
-}
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">MyButton</span> <span class="hljs-attr">label</span>=<span class="hljs-string">&quot;Press me!&quot;</span> /&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span></span>
+);
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="setNativeProps with Composite Components"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20TouchableOpacity%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20MyButton%20%3D%20(props)%20%3D%3E%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7BmarginTop%3A%2050%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%3E%7Bprops.label%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%0A%7D%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CTouchableOpacity%3E%0A%20%20%20%20%20%20%20%20%3CMyButton%20label%3D%22Press%20me!%22%20%2F%3E%0A%20%20%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20%20%20)%0A%7D%0A"
+        data-snack-code="import%20React%20from%20%22react%22%3B%0Aimport%20%7B%20Text%2C%20TouchableOpacity%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20MyButton%20%3D%20(props)%20%3D%3E%20(%0A%20%20%3CView%20style%3D%7B%7B%20marginTop%3A%2050%20%7D%7D%3E%0A%20%20%20%20%3CText%3E%7Bprops.label%7D%3C%2FText%3E%0A%20%20%3C%2FView%3E%0A)%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20(%0A%20%20%3CTouchableOpacity%3E%0A%20%20%20%20%3CMyButton%20label%3D%22Press%20me!%22%20%2F%3E%0A%20%20%3C%2FTouchableOpacity%3E%0A)%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -145,33 +137,25 @@
         "
       ></div></div></div><p>If you run this you will immediately see this error: <code>Touchable child must either be native or forward setNativeProps to a native component</code>. This occurs because <code>MyButton</code> isn't directly backed by a native view whose opacity should be set. You can think about it like this: if you define a component with <code>createReactClass</code> you would not expect to be able to set a style prop on it and have that work - you would need to pass the style prop down to a child, unless you are wrapping a native component. Similarly, we are going to forward <code>setNativeProps</code> to a native-backed child component.</p>
 <h4><a class="anchor" aria-hidden="true" id="forward-setnativeprops-to-a-child"></a><a href="#forward-setnativeprops-to-a-child" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Forward setNativeProps to a child</h4>
-<p>All we need to do is provide a <code>setNativeProps</code> method on our component that calls <code>setNativeProps</code> on the appropriate child with the given arguments.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
-<span class="hljs-keyword">import</span> { Text, TouchableOpacity, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
+<p>Since the <code>setNativeProps</code> method exists on any ref to a <code>View</code> component, it is enough to forward a ref on your custom component to one of the <code>&lt;View /&gt;</code> components that it renders. This means that a call to <code>setNativeProps</code> on the custom component will have the same effect as if you called <code>setNativeProps</code> on the wrapped <code>View</code> component itself.</p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Text, TouchableOpacity, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">const</span> MyButton = <span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> {
-  setNativeProps = <span class="hljs-function">(<span class="hljs-params">nativeProps</span>) =&gt;</span> {
-    _root.setNativeProps(nativeProps);
-  }
+<span class="hljs-keyword">const</span> MyButton = React.forwardRef(<span class="hljs-function">(<span class="hljs-params">props, ref</span>) =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> {<span class="hljs-attr">...props</span>} <span class="hljs-attr">ref</span>=<span class="hljs-string">{ref}</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">marginTop:</span> <span class="hljs-attr">50</span> }}&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{props.label}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+));
 
-    <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{marginTop:</span> <span class="hljs-attr">50</span>}} <span class="hljs-attr">ref</span>=<span class="hljs-string">{component</span> =&gt;</span> _root = component} {...props}&gt;
-        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{props.label}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
-    )
-}
-
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> {
-    <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">MyButton</span> <span class="hljs-attr">label</span>=<span class="hljs-string">&quot;Press me!&quot;</span> /&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span></span>
-    )
-}
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">MyButton</span> <span class="hljs-attr">label</span>=<span class="hljs-string">&quot;Press me!&quot;</span> /&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span></span>
+);
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Forwarding setNativeProps"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Text%2C%20TouchableOpacity%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20MyButton%20%3D%20(props)%20%3D%3E%20%7B%0A%20%20setNativeProps%20%3D%20(nativeProps)%20%3D%3E%20%7B%0A%20%20%20%20_root.setNativeProps(nativeProps)%3B%0A%20%20%7D%0A%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7BmarginTop%3A%2050%7D%7D%20ref%3D%7Bcomponent%20%3D%3E%20_root%20%3D%20component%7D%20%7B...props%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%3E%7Bprops.label%7D%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%0A%7D%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CTouchableOpacity%3E%0A%20%20%20%20%20%20%20%20%3CMyButton%20label%3D%22Press%20me!%22%20%2F%3E%0A%20%20%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20%20%20)%0A%7D%0A"
+        data-snack-code="import%20React%20from%20%22react%22%3B%0Aimport%20%7B%20Text%2C%20TouchableOpacity%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20MyButton%20%3D%20React.forwardRef((props%2C%20ref)%20%3D%3E%20(%0A%20%20%3CView%20%7B...props%7D%20ref%3D%7Bref%7D%20style%3D%7B%7B%20marginTop%3A%2050%20%7D%7D%3E%0A%20%20%20%20%3CText%3E%7Bprops.label%7D%3C%2FText%3E%0A%20%20%3C%2FView%3E%0A))%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20(%0A%20%20%3CTouchableOpacity%3E%0A%20%20%20%20%3CMyButton%20label%3D%22Press%20me!%22%20%2F%3E%0A%20%20%3C%2FTouchableOpacity%3E%0A)%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
@@ -183,34 +167,50 @@
           height: 514px;
           width: 100%;
         "
-      ></div></div></div><p>You can now use <code>MyButton</code> inside of <code>TouchableOpacity</code>! A sidenote for clarity: we used the <a href="https://reactjs.org/docs/refs-and-the-dom.html#adding-a-ref-to-a-dom-element">ref callback</a> syntax here, rather than the traditional string-based ref.</p>
-<p>You may have noticed that we passed all of the props down to the child view using <code>{...this.props}</code>. The reason for this is that <code>TouchableOpacity</code> is actually a composite component, and so in addition to depending on <code>setNativeProps</code> on its child, it also requires that the child perform touch handling. To do this, it passes on <a href="/docs/next/view#onmoveshouldsetresponder">various props</a> that call back to the <code>TouchableOpacity</code> component. <code>TouchableHighlight</code>, in contrast, is backed by a native view and only requires that we implement <code>setNativeProps</code>.</p>
+      ></div></div></div><p>You can now use <code>MyButton</code> inside of <code>TouchableOpacity</code>!</p>
+<p>You may have noticed that we passed all of the props down to the child view using <code>{...props}</code>. The reason for this is that <code>TouchableOpacity</code> is actually a composite component, and so in addition to depending on <code>setNativeProps</code> on its child, it also requires that the child perform touch handling. To do this, it passes on <a href="/docs/next/view#onmoveshouldsetresponder">various props</a> that call back to the <code>TouchableOpacity</code> component. <code>TouchableHighlight</code>, in contrast, is backed by a native view and only requires that we implement <code>setNativeProps</code>.</p>
 <h2><a class="anchor" aria-hidden="true" id="setnativeprops-to-clear-textinput-value"></a><a href="#setnativeprops-to-clear-textinput-value" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>setNativeProps to clear TextInput value</h2>
 <p>Another very common use case of <code>setNativeProps</code> is to clear the value of a TextInput. The <code>controlled</code> prop of TextInput can sometimes drop characters when the <code>bufferDelay</code> is low and the user types very quickly. Some developers prefer to skip this prop entirely and instead use <code>setNativeProps</code> to directly manipulate the TextInput value when necessary. For example, the following code demonstrates clearing the input when you tap a button:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
-<span class="hljs-keyword">import</span> { TextInput, Text, TouchableOpacity, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { useCallback, useRef } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, TextInput, Text, TouchableOpacity, View } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-native&quot;</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App = <span class="hljs-function">() =&gt;</span> {
-  clearText = <span class="hljs-function">() =&gt;</span> {
-     _textInput.setNativeProps({<span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;&#x27;</span>});
-  }
+<span class="hljs-keyword">const</span> App = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> inputRef = useRef();
+  <span class="hljs-keyword">const</span> clearText = useCallback(<span class="hljs-function">() =&gt;</span> {
+    inputRef.current.setNativeProps({ <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;&quot;</span> });
+  }, []);
 
-    <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">alignItems:</span> &#x27;<span class="hljs-attr">center</span>&#x27;, <span class="hljs-attr">justifyContent:</span> &#x27;<span class="hljs-attr">center</span>&#x27;}}&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span>
-          <span class="hljs-attr">ref</span>=<span class="hljs-string">{component</span> =&gt;</span> _textInput = component}
-          style={{height: 50, width: 200, marginHorizontal: 20, borderWidth: 1, borderColor: &#x27;#ccc&#x27;}}
-        /&gt;
-        <span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{clearText}</span>&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Clear text<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-        <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
-    );
-}
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">TextInput</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{inputRef}</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.input}</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{clearText}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Clear text<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">&quot;center&quot;</span>,
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">&quot;center&quot;</span>,
+  },
+  <span class="hljs-attr">input</span>: {
+    <span class="hljs-attr">height</span>: <span class="hljs-number">50</span>,
+    <span class="hljs-attr">width</span>: <span class="hljs-number">200</span>,
+    <span class="hljs-attr">marginHorizontal</span>: <span class="hljs-number">20</span>,
+    <span class="hljs-attr">borderWidth</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">borderColor</span>: <span class="hljs-string">&quot;#ccc&quot;</span>,
+  },
+});
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Clear text"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20TextInput%2C%20Text%2C%20TouchableOpacity%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20clearText%20%3D%20()%20%3D%3E%20%7B%0A%20%20%20%20%20_textInput.setNativeProps(%7Btext%3A%20''%7D)%3B%0A%20%20%7D%0A%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20alignItems%3A%20'center'%2C%20justifyContent%3A%20'center'%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CTextInput%0A%20%20%20%20%20%20%20%20%20%20ref%3D%7Bcomponent%20%3D%3E%20_textInput%20%3D%20component%7D%0A%20%20%20%20%20%20%20%20%20%20style%3D%7B%7Bheight%3A%2050%2C%20width%3A%20200%2C%20marginHorizontal%3A%2020%2C%20borderWidth%3A%201%2C%20borderColor%3A%20'%23ccc'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CTouchableOpacity%20onPress%3D%7BclearText%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%3CText%3EClear%20text%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%7D%0A"
+        data-snack-code="import%20React%20from%20%22react%22%3B%0Aimport%20%7B%20useCallback%2C%20useRef%20%7D%20from%20%22react%22%3B%0Aimport%20%7B%20StyleSheet%2C%20TextInput%2C%20Text%2C%20TouchableOpacity%2C%20View%20%7D%20from%20%22react-native%22%3B%0A%0Aconst%20App%20%3D%20()%20%3D%3E%20%7B%0A%20%20const%20inputRef%20%3D%20useRef()%3B%0A%20%20const%20clearText%20%3D%20useCallback(()%20%3D%3E%20%7B%0A%20%20%20%20inputRef.current.setNativeProps(%7B%20text%3A%20%22%22%20%7D)%3B%0A%20%20%7D%2C%20%5B%5D)%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CTextInput%20ref%3D%7BinputRef%7D%20style%3D%7Bstyles.input%7D%20%2F%3E%0A%20%20%20%20%20%20%3CTouchableOpacity%20onPress%3D%7BclearText%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%3EClear%20text%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20alignItems%3A%20%22center%22%2C%0A%20%20%20%20justifyContent%3A%20%22center%22%2C%0A%20%20%7D%2C%0A%20%20input%3A%20%7B%0A%20%20%20%20height%3A%2050%2C%0A%20%20%20%20width%3A%20200%2C%0A%20%20%20%20marginHorizontal%3A%2020%2C%0A%20%20%20%20borderWidth%3A%201%2C%0A%20%20%20%20borderColor%3A%20%22%23ccc%22%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aexport%20default%20App%3B%0A"
         data-snack-platform="web"
         data-snack-supported-platforms=ios,android,web
         data-snack-preview="true"
