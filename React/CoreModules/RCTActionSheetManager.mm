@@ -59,11 +59,6 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
                   : (JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options callback
                   : (RCTResponseSenderBlock)callback)
 {
-  if (RCTRunningInAppExtension()) {
-    RCTLogError(@"Unable to show action sheet from app extension");
-    return;
-  }
-
   if (!_callbacks) {
     _callbacks = [NSMapTable strongToStrongObjectsMapTable];
   }
@@ -86,6 +81,10 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   }
 
   UIViewController *controller = RCTPresentedViewController();
+  if (RCTRunningInAppExtension() && controller == nil) {
+    RCTLogError(@"Unable to show action sheet from some app extension. Use RCTUtilsUIOverride setPresentedViewController if within the context of an app extension with a view controller");
+    return;
+  }
   NSNumber *anchor = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
   UIColor *tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
 
