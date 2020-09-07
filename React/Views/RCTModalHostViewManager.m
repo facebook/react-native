@@ -10,6 +10,7 @@
 #import "RCTBridge.h"
 #import "RCTModalHostView.h"
 #import "RCTModalHostViewController.h"
+#import "RCTModalManager.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 
@@ -48,8 +49,6 @@ RCT_ENUM_CONVERTER(
 
 @interface RCTModalHostViewManager () <RCTModalHostViewInteractor>
 
-@property (nonatomic, copy) dispatch_block_t dismissWaitingBlock;
-
 @end
 
 @implementation RCTModalHostViewManager {
@@ -81,16 +80,9 @@ RCT_EXPORT_MODULE()
   if (_presentationBlock) {
     _presentationBlock([modalHostView reactViewController], viewController, animated, completionBlock);
   } else {
-    __weak typeof(self) weakself = self;
     [[modalHostView reactViewController] presentViewController:viewController
                                                       animated:animated
-                                                    completion:^{
-                                                      !completionBlock ?: completionBlock();
-                                                      __strong typeof(weakself) strongself = weakself;
-                                                      !strongself.dismissWaitingBlock
-                                                          ?: strongself.dismissWaitingBlock();
-                                                      strongself.dismissWaitingBlock = nil;
-                                                    }];
+                                                    completion:completionBlock];
   }
 }
 
@@ -98,16 +90,15 @@ RCT_EXPORT_MODULE()
           withViewController:(RCTModalHostViewController *)viewController
                     animated:(BOOL)animated
 {
-  if (_dismissalBlock) {
-    _dismissalBlock([modalHostView reactViewController], viewController, animated, nil);
-  } else {
-    self.dismissWaitingBlock = ^{
-      [viewController.presentingViewController dismissViewControllerAnimated:animated completion:nil];
-    };
-    if (viewController.presentingViewController) {
-      self.dismissWaitingBlock();
-      self.dismissWaitingBlock = nil;
+  dispatch_block_t completionBlock = ^{
+    if (modalHostView.identifier) {
+      [[self.bridge moduleForClass:[RCTModalManager class]] modalDismissed:modalHostView.identifier];
     }
+  };
+  if (_dismissalBlock) {
+    _dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
+  } else {
+    [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
   }
 }
 
