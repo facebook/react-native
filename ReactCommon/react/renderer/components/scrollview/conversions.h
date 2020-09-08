@@ -70,6 +70,29 @@ inline void fromRawValue(
   abort();
 }
 
+inline void fromRawValue(
+    const RawValue &value,
+    ContentInsetAdjustmentBehavior &result) {
+  auto string = (std::string)value;
+  if (string == "never") {
+    result = ContentInsetAdjustmentBehavior::Never;
+    return;
+  }
+  if (string == "automatic") {
+    result = ContentInsetAdjustmentBehavior::Automatic;
+    return;
+  }
+  if (string == "scrollableAxes") {
+    result = ContentInsetAdjustmentBehavior::ScrollableAxes;
+    return;
+  }
+  if (string == "always") {
+    result = ContentInsetAdjustmentBehavior::Always;
+    return;
+  }
+  abort();
+}
+
 inline std::string toString(const ScrollViewSnapToAlignment &value) {
   switch (value) {
     case ScrollViewSnapToAlignment::Start:
@@ -100,6 +123,19 @@ inline std::string toString(const ScrollViewKeyboardDismissMode &value) {
       return "on-drag";
     case ScrollViewKeyboardDismissMode::Interactive:
       return "interactive";
+  }
+}
+
+inline std::string toString(const ContentInsetAdjustmentBehavior &value) {
+  switch (value) {
+    case ContentInsetAdjustmentBehavior::Never:
+      return "never";
+    case ContentInsetAdjustmentBehavior::Automatic:
+      return "automatic";
+    case ContentInsetAdjustmentBehavior::ScrollableAxes:
+      return "scrollableAxes";
+    case ContentInsetAdjustmentBehavior::Always:
+      return "always";
   }
 }
 

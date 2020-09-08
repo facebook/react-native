@@ -345,6 +345,12 @@ CGSize RCTScreenSize()
   return size;
 }
 
+CGSize RCTViewportSize()
+{
+  UIWindow *window = RCTKeyWindow();
+  return window ? window.bounds.size : RCTScreenSize();
+}
+
 CGFloat RCTRoundPixelValue(CGFloat value)
 {
   CGFloat scale = RCTScreenScale();

@@ -30,9 +30,6 @@ public abstract class NativeStatusBarManagerAndroidSpec extends ReactContextBase
   }
 
   @ReactMethod
-  public abstract void setTranslucent(boolean translucent);
-
-  @ReactMethod
   public abstract void setColor(double color, boolean animated);
 
   @ReactMethod
@@ -40,6 +37,9 @@ public abstract class NativeStatusBarManagerAndroidSpec extends ReactContextBase
 
   @ReactMethod
   public abstract void setStyle(@Nullable String statusBarStyle);
+
+  @ReactMethod
+  public abstract void setTranslucent(boolean translucent);
 
   protected abstract Map<String, Object> getTypedExportedConstants();
 

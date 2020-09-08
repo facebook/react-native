@@ -10,9 +10,9 @@
 #include <better/optional.h>
 
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
-#include <react/renderer/mounting/MountingTelemetry.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/renderer/mounting/TransactionTelemetry.h>
 
 namespace facebook {
 namespace react {
@@ -36,12 +36,12 @@ class ShadowTreeRevision final {
   ShadowTreeRevision(
       ShadowNode::Shared const &rootShadowNode,
       Number number,
-      MountingTelemetry telemetry);
+      TransactionTelemetry telemetry);
 
   /*
    * Returns telemetry associated with this revision.
    */
-  MountingTelemetry const &getTelemetry() const;
+  TransactionTelemetry const &getTelemetry() const;
 
   /*
    * Methods from this section are meant to be used by
@@ -63,7 +63,7 @@ class ShadowTreeRevision final {
  private:
   ShadowNode::Shared rootShadowNode_;
   Number number_;
-  MountingTelemetry telemetry_;
+  TransactionTelemetry telemetry_;
 };
 
 } // namespace react

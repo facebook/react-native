@@ -1,0 +1,24 @@
+{
+  "name": "@react-native/tester",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "React Native tester app.",
+  "homepage": "https://github.com/facebook/react-native/tree/master/packages/rn-tester",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4",
+    "nullthrows": "^1.1.1"
+  },
+  "peerDependencies": {
+    "react": "16.13.1",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "connect": "^3.6.5",
+    "detox": "15.4.4",
+    "ws": "^6.1.4"
+  }
+}

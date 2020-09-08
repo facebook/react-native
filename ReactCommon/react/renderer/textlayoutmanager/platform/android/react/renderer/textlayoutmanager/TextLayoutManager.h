@@ -37,6 +37,15 @@ class TextLayoutManager {
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
+  /**
+   * Measures an AttributedString on the platform, as identified by some
+   * opaque cache ID.
+   */
+  TextMeasurement measureCachedSpannableById(
+      int cacheId,
+      ParagraphAttributes paragraphAttributes,
+      LayoutConstraints layoutConstraints) const;
+
   /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.
    * Is used on a native views layer to delegate text rendering to the manager.

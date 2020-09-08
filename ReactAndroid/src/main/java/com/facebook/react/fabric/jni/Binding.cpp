@@ -11,7 +11,7 @@
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
-#import <better/set.h>
+#include <better/set.h>
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -262,8 +262,13 @@ void Binding::installFabricUIManager(
 
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
-  collapseDeleteCreateMountingInstructions_ = reactNativeConfig_->getBool(
-      "react_fabric:enabled_collapse_delete_create_mounting_instructions");
+  collapseDeleteCreateMountingInstructions_ =
+      reactNativeConfig_->getBool(
+          "react_fabric:enabled_collapse_delete_create_mounting_instructions") &&
+      !reactNativeConfig_->getBool(
+          "react_fabric:enable_reparenting_detection_android") &&
+      !reactNativeConfig_->getBool(
+          "react_fabric:enabled_layout_animations_android");
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
@@ -606,7 +611,8 @@ void Binding::schedulerDidFinishTransaction(
       }
     }
   }
-  int64_t commitNumber = telemetry.getCommitNumber();
+
+  auto revisionNumber = telemetry.getRevisionNumber();
 
   std::vector<local_ref<jobject>> queue;
   // Upper bound estimation of mount items to be delivered to Java side.
@@ -810,7 +816,7 @@ void Binding::schedulerDidFinishTransaction(
       surfaceId,
       position == 0 ? nullptr : mountItemsArray.get(),
       position,
-      commitNumber);
+      revisionNumber);
 
   static auto scheduleMountItem =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
@@ -830,7 +836,7 @@ void Binding::schedulerDidFinishTransaction(
   scheduleMountItem(
       localJavaUIManager,
       batch.get(),
-      telemetry.getCommitNumber(),
+      telemetry.getRevisionNumber(),
       telemetryTimePointToMilliseconds(telemetry.getCommitStartTime()),
       telemetryTimePointToMilliseconds(telemetry.getDiffStartTime()),
       telemetryTimePointToMilliseconds(telemetry.getDiffEndTime()),

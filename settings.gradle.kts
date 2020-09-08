@@ -5,9 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenLocal()
+        google()
+    }
+}
+
 include(
     ":ReactAndroid",
-    ":RNTester:android:app"
+    ":packages:rn-tester:android:app"
 )
 
 // Include this to enable codegen Gradle plugin.

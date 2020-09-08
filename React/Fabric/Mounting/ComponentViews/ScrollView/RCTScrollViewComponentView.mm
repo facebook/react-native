@@ -9,6 +9,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTConstants.h>
 #import <React/RCTScrollEvent.h>
 
 #import <react/renderer/components/scrollview/RCTComponentViewHelpers.h>
@@ -42,19 +43,12 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   [[RCTBridge currentBridge].eventDispatcher sendEvent:scrollEvent];
 }
 
-static BOOL isOnDemandViewMountingEnabledGlobally = NO;
-
-void RCTSetEnableOnDemandViewMounting(BOOL value)
-{
-  isOnDemandViewMountingEnabledGlobally = value;
-}
-
 @interface RCTScrollViewComponentView () <UIScrollViewDelegate, RCTScrollViewProtocol, RCTScrollableProtocol>
 
 @end
 
 @implementation RCTScrollViewComponentView {
-  ScrollViewShadowNode::ConcreteState::Shared _state;
+  ScrollViewShadowNode::ConcreteStateTeller _stateTeller;
   CGSize _contentSize;
   NSTimeInterval _lastScrollEventDispatchTime;
   NSTimeInterval _scrollEventThrottle;
@@ -83,7 +77,7 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
     static const auto defaultProps = std::make_shared<const ScrollViewProps>();
     _props = defaultProps;
 
-    _isOnDemandViewMountingEnabled = isOnDemandViewMountingEnabledGlobally;
+    _isOnDemandViewMountingEnabled = RCTExperimentGetOnDemandViewMounting();
     _childComponentViews = [[NSMutableArray alloc] init];
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
@@ -207,6 +201,21 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
     scrollView.snapToOffsets = snapToOffsets;
   }
 
+  if (@available(iOS 11.0, *)) {
+    if (oldScrollViewProps.contentInsetAdjustmentBehavior != newScrollViewProps.contentInsetAdjustmentBehavior) {
+      auto const contentInsetAdjustmentBehavior = newScrollViewProps.contentInsetAdjustmentBehavior;
+      if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Never) {
+        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+      } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Automatic) {
+        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+      } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::ScrollableAxes) {
+        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+      } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Always) {
+        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
+      }
+    }
+  }
+
   MAP_SCROLL_VIEW_PROP(disableIntervalMomentum);
   MAP_SCROLL_VIEW_PROP(snapToInterval);
 
@@ -218,8 +227,8 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
   assert(std::dynamic_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state));
-  _state = std::static_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state);
-  auto &data = _state->getData();
+  _stateTeller.setConcreteState(state);
+  auto data = _stateTeller.getData().value();
 
   auto contentOffset = RCTCGPointFromPoint(data.contentOffset);
   if (!oldState && !CGPointEqualToPoint(contentOffset, CGPointZero)) {
@@ -275,11 +284,8 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
 
 - (void)_updateStateWithContentOffset
 {
-  if (!_state) {
-    return;
-  }
   auto contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
-  _state->updateState([contentOffset](ScrollViewShadowNode::ConcreteState::Data const &data) {
+  _stateTeller.updateState([contentOffset](ScrollViewShadowNode::ConcreteState::Data const &data) {
     auto newData = data;
     newData.contentOffset = contentOffset;
     return newData;
@@ -290,7 +296,7 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
 {
   const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
   _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
-  _state.reset();
+  _stateTeller.invalidate();
   _isUserTriggeredScrolling = NO;
   [super prepareForRecycle];
 }

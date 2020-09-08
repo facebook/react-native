@@ -12,9 +12,9 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/debug/SystraceSection.h>
-#include <react/renderer/mounting/MountingTelemetry.h>
 #include <react/renderer/mounting/ShadowTreeRevision.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/renderer/mounting/TransactionTelemetry.h>
 
 #include "ShadowTreeDelegate.h"
 #include "TreeStateReconciliation.h"
@@ -222,8 +222,11 @@ ShadowTree::ShadowTree(
     LayoutContext const &layoutContext,
     RootComponentDescriptor const &rootComponentDescriptor,
     ShadowTreeDelegate const &delegate,
-    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate)
-    : surfaceId_(surfaceId), delegate_(delegate) {
+    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate,
+    bool enableReparentingDetection)
+    : surfaceId_(surfaceId),
+      delegate_(delegate),
+      enableReparentingDetection_(enableReparentingDetection) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
 
@@ -241,7 +244,9 @@ ShadowTree::ShadowTree(
           family));
 
   mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
-      ShadowTreeRevision{rootShadowNode_, 0, {}}, mountingOverrideDelegate);
+      ShadowTreeRevision{rootShadowNode_, 0, {}},
+      mountingOverrideDelegate,
+      enableReparentingDetection);
 }
 
 ShadowTree::~ShadowTree() {
@@ -280,7 +285,7 @@ bool ShadowTree::tryCommit(
     bool enableStateReconciliation) const {
   SystraceSection s("ShadowTree::tryCommit");
 
-  auto telemetry = MountingTelemetry{};
+  auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();
 
   RootShadowNode::Shared oldRootShadowNode;
@@ -322,7 +327,9 @@ bool ShadowTree::tryCommit(
   affectedLayoutableNodes.reserve(1024);
 
   telemetry.willLayout();
+  telemetry.setAsThreadLocal();
   newRootShadowNode->layoutIfNeeded(&affectedLayoutableNodes);
+  telemetry.unsetAsThreadLocal();
   telemetry.didLayout();
 
   // Seal the shadow node so it can no longer be mutated
@@ -354,6 +361,7 @@ bool ShadowTree::tryCommit(
   emitLayoutEvents(affectedLayoutableNodes);
 
   telemetry.didCommit();
+  telemetry.setRevisionNumber(revisionNumber);
 
   mountingCoordinator_->push(
       ShadowTreeRevision{newRootShadowNode, revisionNumber, telemetry});

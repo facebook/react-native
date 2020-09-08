@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -37,7 +38,6 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -46,6 +46,7 @@ import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 
@@ -100,7 +101,6 @@ public class ReactEditText extends AppCompatEditText
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
-  protected @Nullable JavaOnlyMap mAttributedString = null;
   private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
   protected boolean mDisableTextDiffing = false;
 
@@ -145,11 +145,24 @@ public class ReactEditText extends AppCompatEditText
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
+              int length = getText().length();
+              if (length > 0) {
+                // For some reason, when you swipe to focus on a text input that already has text in
+                // it, it clears the selection and resets the cursor to the beginning of the input.
+                // Since this is not typically (ever?) what you want, let's just explicitly set the
+                // selection on accessibility click to undo that.
+                setSelection(length);
+              }
               return requestFocusInternal();
             }
             return super.performAccessibilityAction(host, action, args);
           }
         });
+  }
+
+  @Override
+  protected void finalize() {
+    TextLayoutManager.deleteCachedSpannableForTag(getId());
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -384,10 +397,11 @@ public class ReactEditText extends AppCompatEditText
   @Override
   public void setInputType(int type) {
     Typeface tf = super.getTypeface();
-    super.setInputType(type);
-    mStagedInputType = type;
     // Input type password defaults to monospace font, so we need to re-apply the font
     super.setTypeface(tf);
+
+    super.setInputType(type);
+    mStagedInputType = type;
 
     /**
      * If set forces multiline on input, because of a restriction on Android source that enables
@@ -481,16 +495,13 @@ public class ReactEditText extends AppCompatEditText
       return;
     }
 
-    if (reactTextUpdate.mAttributedString != null) {
-      mAttributedString = JavaOnlyMap.deepClone(reactTextUpdate.mAttributedString);
-    }
-
     // The current text gets replaced with the text received from JS. However, the spans on the
     // current text need to be adapted to the new text. Since TextView#setText() will remove or
     // reset some of these spans even if they are set directly, SpannableStringBuilder#replace() is
     // used instead (this is also used by the keyboard implementation underneath the covers).
     SpannableStringBuilder spannableStringBuilder =
         new SpannableStringBuilder(reactTextUpdate.getText());
+
     manageSpans(spannableStringBuilder);
     mContainsImages = reactTextUpdate.containsImages();
 
@@ -515,6 +526,11 @@ public class ReactEditText extends AppCompatEditText
       if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
         setBreakStrategy(reactTextUpdate.getTextBreakStrategy());
       }
+    }
+
+    // Update cached spans (in Fabric only)
+    if (this.getFabricViewStateManager() != null) {
+      TextLayoutManager.setCachedSpannabledForTag(getId(), spannableStringBuilder);
     }
   }
 
@@ -846,6 +862,10 @@ public class ReactEditText extends AppCompatEditText
         for (TextWatcher listener : mListeners) {
           listener.onTextChanged(s, start, before, count);
         }
+      }
+
+      if (getFabricViewStateManager() != null) {
+        TextLayoutManager.setCachedSpannabledForTag(getId(), new SpannableString(getText()));
       }
 
       onContentSizeChange();

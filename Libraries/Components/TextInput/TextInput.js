@@ -31,7 +31,7 @@ import type {PressEvent} from '../../Types/CoreEventTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
-const {useEffect, useRef, useState} = React;
+const {useLayoutEffect, useRef, useState} = React;
 
 type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
 
@@ -486,6 +486,7 @@ export type Props = $ReadOnly<{|
    * The following values work on Android only:
    *
    * - `visible-password`
+   *
    */
   keyboardType?: ?KeyboardType,
 
@@ -682,7 +683,12 @@ export type Props = $ReadOnly<{|
 
   /**
    * If `true`, caret is hidden. The default value is `false`.
-   * This property is supported only for single-line TextInput component on iOS.
+   *
+   * On Android devices manufactured by Xiaomi with Android Q,
+   * when keyboardType equals 'email-address'this will be set
+   * in native to 'true' to prevent a system related crash. This
+   * will cause cursor to be diabled as a side-effect.
+   *
    */
   caretHidden?: ?boolean,
 
@@ -869,7 +875,7 @@ function InternalTextInput(props: Props): React.Node {
   // This is necessary in case native updates the text and JS decides
   // that the update should be ignored and we should stick with the value
   // that we have in JS.
-  useEffect(() => {
+  useLayoutEffect(() => {
     const nativeUpdate = {};
 
     if (lastNativeText !== props.value && typeof props.value === 'string') {
@@ -912,7 +918,7 @@ function InternalTextInput(props: Props): React.Node {
     viewCommands,
   ]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const inputRefValue = inputRef.current;
 
     if (inputRefValue != null) {
@@ -920,17 +926,12 @@ function InternalTextInput(props: Props): React.Node {
 
       return () => {
         TextInputState.unregisterInput(inputRefValue);
+
+        if (TextInputState.currentlyFocusedInput() === inputRefValue) {
+          nullthrows(inputRefValue).blur();
+        }
       };
     }
-  }, [inputRef]);
-
-  useEffect(() => {
-    // When unmounting we need to blur the input
-    return () => {
-      if (isFocused()) {
-        nullthrows(inputRef.current).blur();
-      }
-    };
   }, [inputRef]);
 
   function clear(): void {
