@@ -1,3 +1,6 @@
+# It is expected that a `latestStableBranch` variable is set in the pipeline's settings:
+# https://dev.azure.com/ms/react-native/_apps/hub/ms.vss-build-web.ci-designer-hub?pipelineId=221
+
 # This file defines the build steps to publish a release
 name: $(Date:yyyyMMdd).$(Rev:.r)
 
@@ -12,16 +15,6 @@ trigger:
       - package.json
 
 pr: none
-
-# It is expected that a `latestStableBranch` variable is set in the pipeline's settings:
-# https://dev.azure.com/ms/react-native/_apps/hub/ms.vss-build-web.ci-designer-hub?pipelineId=221
-variables:
-  ${{ if eq(variables['Build.SourceBranchName'], variables['latestStableBranch']) }}:
-    npmDistTag: latest
-  ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
-    npmDistTag: canary
-  ${{ if and(ne(variables['Build.SourceBranchName'], 'master'), ne(variables['Build.SourceBranchName'], variables['latestStableBranch'])) }}:
-    npmDistTag: v${{variables['Build.SourceBranchName']}}
 
 jobs:
   - job: RNGithubNpmJSPublish
@@ -38,6 +31,22 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
+      - script: exit 1
+        displayName: Validate variables
+        condition: eq(variables.latestStableBranch, '')
+
+      - script: echo '##vso[task.setvariable variable=npmDistTag]latest'
+        displayName: Set dist-tag to latest
+        condition: eq(variables['Build.SourceBranchName'], variables.latestStableBranch)
+
+      - script: echo '##vso[task.setvariable variable=npmDistTag]canary'
+        displayName: Set dist-tag to canary
+        condition: eq(variables['Build.SourceBranchName'], 'master')
+
+      - script: echo '##vso[task.setvariable variable=npmDistTag]v${{variables['Build.SourceBranchName']}}'
+        displayName: Set dist-tag to v0.x-stable
+        condition: and(ne(variables['Build.SourceBranchName'], 'master'), ne(variables['Build.SourceBranchName'], variables.latestStableBranch))
+
       - task: CmdLine@2
         displayName: npm install
         inputs:
@@ -47,16 +56,16 @@ jobs:
         displayName: Bump stable package version
         inputs:
           script: node .ado/bumpFileVersions.js
-        condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+        condition: ne(variables['Build.SourceBranchName'], 'master')
 
       - task: CmdLine@2
         displayName: Bump canary package version
         inputs:
           script: node scripts/bump-oss-version.js --nightly
-        condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+        condition: eq(variables['Build.SourceBranchName'], 'master')
 
-      - script: npm publish --tag ${{variables.npmDistTag}} --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
-        displayName: Publish ${{variables.npmDistTag}} react-native-macos to npmjs.org
+      - script: npm publish --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+        displayName: Publish react-native-macos to npmjs.org
 
       - task: CmdLine@2
         displayName: 'Tag published release'
@@ -67,7 +76,7 @@ jobs:
           BUILD_SOURCEBRANCH: $(Build.SourceBranch)
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
           githubApiToken: $(githubApiToken)
-        condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+        condition: ne(variables['Build.SourceBranchName'], 'master')
 
 
   - job: RNMacOSInitNpmJSPublish
