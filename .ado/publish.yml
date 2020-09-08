@@ -35,15 +35,15 @@ jobs:
         displayName: Validate variables
         condition: eq(variables.latestStableBranch, '')
 
-      - script: echo '##vso[task.setvariable variable=npmDistTag]latest'
+      - bash: echo "##vso[task.setvariable variable=npmDistTag]latest"
         displayName: Set dist-tag to latest
         condition: eq(variables['Build.SourceBranchName'], variables.latestStableBranch)
 
-      - script: echo '##vso[task.setvariable variable=npmDistTag]canary'
+      - bash: echo "##vso[task.setvariable variable=npmDistTag]canary"
         displayName: Set dist-tag to canary
         condition: eq(variables['Build.SourceBranchName'], 'master')
 
-      - script: echo '##vso[task.setvariable variable=npmDistTag]v${{variables['Build.SourceBranchName']}}'
+      - bash: echo "##vso[task.setvariable variable=npmDistTag]v${{variables['Build.SourceBranchName']}}"
         displayName: Set dist-tag to v0.x-stable
         condition: and(ne(variables['Build.SourceBranchName'], 'master'), ne(variables['Build.SourceBranchName'], variables.latestStableBranch))
 
