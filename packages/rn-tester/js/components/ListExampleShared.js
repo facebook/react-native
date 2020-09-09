@@ -39,7 +39,7 @@ function genItemData(count: number, start: number = 0): Array<Item> {
     const itemHash = Math.abs(hashCode('Item ' + ii));
     dataBlob.push({
       title: 'Item ' + ii,
-      text: LOREM_IPSUM.substr(0, (itemHash % 301) + 20),
+      text: LIST_CONTENT[itemHash % LIST_CONTENT.length],
       key: String(ii),
       pressed: false,
     });
@@ -195,12 +195,16 @@ const THUMB_URLS = [
   require('../assets/victory.png'),
 ];
 
-const LOREM_IPSUM =
-  'Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix \
-civibus corrumpit referrentur. Te nam case ludus inciderint, te mea facilisi adipiscing. Sea id \
-integre luptatum. In tota sale consequuntur nec. Erat ocurreret mei ei. Eu paulo sapientem \
-vulputate est, vel an accusam intellegam interesset. Nam eu stet pericula reprimique, ea vim illud \
-modus, putant invidunt reprehendunt ne qui.';
+const LIST_CONTENT = [
+  'Crunchy Croissants',
+  'Braised Leeks with Mozzarella & Fried Egg',
+  'Lamb Salad with Fregola',
+  'Smoked Pork Jowl with Pickles',
+  'Malted Custard French Toast',
+  'Meat Pie',
+  'Macarons',
+  'Squeaky Cheese'
+];
 
 /* eslint no-bitwise: 0 */
 function hashCode(str: string): number {

@@ -59,6 +59,10 @@ type State = {|
   empty: boolean,
   useFlatListItemComponent: boolean,
   fadingEdgeLength: number,
+	multiColor: number,
+  header: boolean,
+  footer: boolean,
+  numColumns: number,
 |};
 
 class FlatListExample extends React.PureComponent<Props, State> {
@@ -74,6 +78,10 @@ class FlatListExample extends React.PureComponent<Props, State> {
     empty: false,
     useFlatListItemComponent: false,
     fadingEdgeLength: 0,
+		header: true,
+    footer: true,
+    numColumns: 1,
+    multiColumn: false
   };
 
   _onChangeFilterText = filterText => {
@@ -131,6 +139,9 @@ class FlatListExample extends React.PureComponent<Props, State> {
               {renderSmallSwitchOption(this, 'empty')}
               {renderSmallSwitchOption(this, 'debug')}
               {renderSmallSwitchOption(this, 'useFlatListItemComponent')}
+	            {renderSmallSwitchOption(this, 'header')}
+              {renderSmallSwitchOption(this, 'footer')}
+              {renderSmallSwitchOption(this, 'multiColumn')}
               {Platform.OS === 'android' && (
                 <View>
                   <TextInput
@@ -145,6 +156,21 @@ class FlatListExample extends React.PureComponent<Props, State> {
                   />
                 </View>
               )}
+	            {
+               this.state.multiColumn === true && (
+                 <View>
+                   <TextInput
+                      placeholder="Number of columns"
+                      keyboardType={'numeric'}
+                      onChange={(event)=> 
+                        this.setState({
+                          numColumns: Number(event.nativeEvent.text)
+                        })
+                      }
+                    />
+                </View>
+               )
+              }
               <Spindicator value={this._scrollPos} />
             </View>
           </View>
@@ -152,8 +178,8 @@ class FlatListExample extends React.PureComponent<Props, State> {
           <Animated.FlatList
             fadingEdgeLength={this.state.fadingEdgeLength}
             ItemSeparatorComponent={ItemSeparatorComponent}
-            ListHeaderComponent={<HeaderComponent />}
-            ListFooterComponent={FooterComponent}
+            ListHeaderComponent={this.state.header ? <HeaderComponent />: null}
+            ListFooterComponent={this.state.footer ? <FooterComponent /> : null}
             ListEmptyComponent={ListEmptyComponent}
             data={this.state.empty ? [] : filteredData}
             debug={this.state.debug}
@@ -165,11 +191,12 @@ class FlatListExample extends React.PureComponent<Props, State> {
             inverted={this.state.inverted}
             key={
               (this.state.horizontal ? 'h' : 'v') +
-              (this.state.fixedHeight ? 'f' : 'd')
+              (this.state.fixedHeight ? 'f' : 'd') + 
+							(this.state.numColumns.toString())
             }
             keyboardShouldPersistTaps="always"
             keyboardDismissMode="on-drag"
-            numColumns={1}
+            numColumns={this.state.horizontal ? 1: this.state.numColumns}
             onEndReached={this._onEndReached}
             onRefresh={this._onRefresh}
             onScroll={
