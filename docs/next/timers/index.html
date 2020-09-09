@@ -76,7 +76,7 @@
 <li>setImmediate, clearImmediate</li>
 <li>requestAnimationFrame, cancelAnimationFrame</li>
 </ul>
-<p><code>requestAnimationFrame(fn)</code> is not the same as <code>setTimeout(fn, 0)</code> - the former will fire after all the frame has flushed, whereas the latter will fire as quickly as possible (over 1000x per second on a iPhone 5S).</p>
+<p><code>requestAnimationFrame(fn)</code> is not the same as <code>setTimeout(fn, 0)</code> - the former will fire after all the frames have flushed, whereas the latter will fire as quickly as possible (over 1000x per second on a iPhone 5S).</p>
 <p><code>setImmediate</code> is executed at the end of the current JavaScript execution block, right before sending the batched response back to native. Note that if you call <code>setImmediate</code> within a <code>setImmediate</code> callback, it will be executed right away, it won't yield back to native in between.</p>
 <p>The <code>Promise</code> implementation uses <code>setImmediate</code> as its asynchronicity implementation.</p>
 <blockquote>
