@@ -203,7 +203,7 @@ const LIST_CONTENT = [
   'Malted Custard French Toast',
   'Meat Pie',
   'Macarons',
-  'Squeaky Cheese'
+  'Squeaky Cheese',
 ];
 
 /* eslint no-bitwise: 0 */
