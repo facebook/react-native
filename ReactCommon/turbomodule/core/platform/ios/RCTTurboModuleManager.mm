@@ -11,6 +11,7 @@
 #import <cassert>
 #import <condition_variable>
 #import <mutex>
+#import <shared_mutex>
 
 #import <objc/runtime.h>
 
@@ -168,6 +169,7 @@ static Class getFallbackClassFromName(const char *name)
   std::mutex _turboModuleManagerDelegateMutex;
 
   // Enforce synchronous access to _invalidating and _turboModuleHolders
+  std::shared_timed_mutex _turboModuleHoldersSharedMutex;
   std::mutex _turboModuleHoldersMutex;
   std::atomic<bool> _invalidating;
 }
@@ -314,6 +316,33 @@ static Class getFallbackClassFromName(const char *name)
   return turboModule;
 }
 
+- (TurboModuleHolder *)_getOrCreateTurboModuleHolder:(const char *)moduleName
+{
+  if (RCTTurboModuleSharedMutexInitEnabled()) {
+    {
+      std::shared_lock<std::shared_timed_mutex> guard(_turboModuleHoldersSharedMutex);
+      if (_invalidating) {
+        return nullptr;
+      }
+
+      auto it = _turboModuleHolders.find(moduleName);
+      if (it != _turboModuleHolders.end()) {
+        return &it->second;
+      }
+    }
+
+    std::unique_lock<std::shared_timed_mutex> guard(_turboModuleHoldersSharedMutex);
+    return &_turboModuleHolders[moduleName];
+  }
+
+  std::lock_guard<std::mutex> guard(_turboModuleHoldersMutex);
+  if (_invalidating) {
+    return nullptr;
+  }
+
+  return &_turboModuleHolders[moduleName];
+}
+
 /**
  * Given a name for a TurboModule, return an ObjC object which is the instance
  * of that TurboModule ObjC class. If no TurboModule exist with the provided name,
@@ -324,15 +353,10 @@ static Class getFallbackClassFromName(const char *name)
  */
 - (id<RCTTurboModule>)provideRCTTurboModule:(const char *)moduleName
 {
-  TurboModuleHolder *moduleHolder;
+  TurboModuleHolder *moduleHolder = [self _getOrCreateTurboModuleHolder:moduleName];
 
-  {
-    std::lock_guard<std::mutex> guard(_turboModuleHoldersMutex);
-    if (_invalidating) {
-      return nil;
-    }
-
-    moduleHolder = &_turboModuleHolders[moduleName];
+  if (!moduleHolder) {
+    return nil;
   }
 
   TurboModulePerfLogger::moduleCreateStart(moduleName, moduleHolder->getModuleId());
@@ -719,6 +743,11 @@ static Class getFallbackClassFromName(const char *name)
 
 - (BOOL)moduleIsInitialized:(const char *)moduleName
 {
+  if (RCTTurboModuleSharedMutexInitEnabled()) {
+    std::shared_lock<std::shared_timed_mutex> guard(_turboModuleHoldersSharedMutex);
+    return _turboModuleHolders.find(moduleName) != _turboModuleHolders.end();
+  }
+
   std::unique_lock<std::mutex> guard(_turboModuleHoldersMutex);
   return _turboModuleHolders.find(moduleName) != _turboModuleHolders.end();
 }
@@ -750,10 +779,14 @@ static Class getFallbackClassFromName(const char *name)
     return;
   }
 
-  std::lock_guard<std::mutex> guard(_turboModuleHoldersMutex);
-
   // This should halt all insertions into _turboModuleHolders
-  _invalidating = true;
+  if (RCTTurboModuleSharedMutexInitEnabled()) {
+    std::unique_lock<std::shared_timed_mutex> guard(_turboModuleHoldersSharedMutex);
+    _invalidating = true;
+  } else {
+    std::lock_guard<std::mutex> guard(_turboModuleHoldersMutex);
+    _invalidating = true;
+  }
 }
 
 - (void)bridgeDidInvalidateModules:(NSNotification *)notification
@@ -807,7 +840,10 @@ static Class getFallbackClassFromName(const char *name)
 
 - (void)invalidate
 {
-  {
+  if (RCTTurboModuleSharedMutexInitEnabled()) {
+    std::unique_lock<std::shared_timed_mutex> guard(_turboModuleHoldersSharedMutex);
+    _invalidating = true;
+  } else {
     std::lock_guard<std::mutex> guard(_turboModuleHoldersMutex);
     _invalidating = true;
   }
