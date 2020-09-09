@@ -426,14 +426,14 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   @Override
-  public boolean executeKeyEvent(KeyEvent event) {
+  public boolean dispatchKeyEvent(KeyEvent event) {
     int eventKeyCode = event.getKeyCode();
     if (!mScrollEnabled
         && (eventKeyCode == KeyEvent.KEYCODE_DPAD_LEFT
             || eventKeyCode == KeyEvent.KEYCODE_DPAD_RIGHT)) {
       return false;
     }
-    return super.executeKeyEvent(event);
+    return super.dispatchKeyEvent(event);
   }
 
   @Override
