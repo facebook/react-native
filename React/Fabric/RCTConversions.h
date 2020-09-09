@@ -32,7 +32,7 @@ inline NSString *_Nullable RCTNSStringFromStringNilIfEmpty(
 
 inline std::string RCTStringFromNSString(NSString *string)
 {
-  return string ? std::string([string UTF8String]) : "";
+  return std::string{string.UTF8String ?: ""};
 }
 
 inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)
