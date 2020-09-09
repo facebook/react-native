@@ -3604,6 +3604,11 @@ has@^1.0.1, has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
+hermes-engine-darwin@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/hermes-engine-darwin/-/hermes-engine-darwin-0.6.0.tgz#e27bd650846cf633d4efae79b1c4db6968c0d5f0"
+  integrity sha512-znPoqvRPiVJb94SJF6PyNIopp/EGXX9fjkKMKvp7QH5sW83Ly7togoSbqON6wTtTCyhVIOT/dF2RQMYvkl20uw==
+
 hermes-engine@~0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.6.0.tgz#82c0738b89afb3253dcc4b322888a8bf0f52930b"

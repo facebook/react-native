@@ -399,6 +399,7 @@
 				68CD48B71D2BCB2C007E06A9 /* Build JS Bundle */,
 				5CF0FD27207FC6EC00C13D65 /* Start Metro */,
 				C1C7A9D58CE1D09515F20577 /* [CP] Copy Pods Resources */,
+				8CE34A8AABFD09C8B3A00B1D /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -418,6 +419,7 @@
 				E7DB209C22B2BA84005AC45F /* Frameworks */,
 				E7DB209D22B2BA84005AC45F /* Resources */,
 				D45F7C4830D42738CAAC9684 /* [CP] Copy Pods Resources */,
+				7A5E3C3F59BF3EA884A39149 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -437,6 +439,7 @@
 				E7DB215022B2F332005AC45F /* Frameworks */,
 				E7DB215122B2F332005AC45F /* Resources */,
 				CD1D70F24AD74F4E13B7435D /* [CP] Copy Pods Resources */,
+				A934FCF321A9F192FD849C8A /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -587,6 +590,57 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\nexport PROJECT_ROOT=$SRCROOT/..\nexport SOURCEMAP_FILE=../sourcemap.ios.map\n# export FORCE_BUNDLING=true\n\"$SRCROOT/../../scripts/react-native-xcode.sh\" $SRCROOT/../../packages/rn-tester/js/RNTesterApp.ios.js\n";
+		};
+		7A5E3C3F59BF3EA884A39149 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8CE34A8AABFD09C8B3A00B1D /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RNTester/Pods-RNTester-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RNTester/Pods-RNTester-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RNTester/Pods-RNTester-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A934FCF321A9F192FD849C8A /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		C1C7A9D58CE1D09515F20577 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

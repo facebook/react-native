@@ -97,20 +97,21 @@ Pod::Spec.new do |spec|
                            'folly/futures/detail/*.{h,cpp}',
                            'folly/executors/*.{h,cpp}',
                            'folly/executors/thread_factory/{NamedThreadFactory,ThreadFactory}.{h,cpp}',
-                           'folly/executors/task_queue/{BlockingQueue,LifoSemMPMCQueue,PriorityLifoSemMPMCQueue}.{h,cpp}',
+                           'folly/executors/task_queue/{BlockingQueue,UnboundedBlockingQueue,LifoSemMPMCQueue,PriorityUnboundedBlockingQueue,PriorityLifoSemMPMCQueue}.{h,cpp}',
                            'folly/concurrency/*.{h,cpp}',
-                           'folly/system/{ThreadId,ThreadName}.{h,cpp}',
+                           'folly/system/{ThreadId,ThreadName,HardwareConcurrency}.{h,cpp}',
                            'folly/synchronization/*.{h,cpp}',
                            'folly/synchronization/detail/*.{h,cpp}',
-                           'folly/experimental/{ExecutionObserver,ReadMostlySharedPtr,TLRefCount}.{h,cpp}',
-                           'folly/io/async/{AsyncTimeout,DelayedDestruction,DelayedDestructionBase,EventBase,EventBaseManager,EventHandler,EventUtil,HHWheelTimer,NotificationQueue,Request,TimeoutManager,VirtualEventBase}.{h,cpp}',
+                           'folly/experimental/{ExecutionObserver,ReadMostlySharedPtr,SingleWriterFixedHashMap,TLRefCount}.{h,cpp}',
+                           'folly/io/async/{AsyncTimeout,DelayedDestruction,DelayedDestructionBase,EventBase,EventBaseManager,EventBaseBackendBase,EventHandler,EventUtil,HHWheelTimer,HHWheelTimer-fwd,NotificationQueue,Request,TimeoutManager,VirtualEventBase}.{h,cpp}',
                            'folly/io/{Cursor,Cursor-inl,IOBuf,IOBufQueue}.{h,cpp}',
                            'folly/tracing/StaticTracepoint.{h,cpp}',
                            'folly/{Executor,ExceptionWrapper,ExceptionWrapper-inl,FileUtil,Singleton,SharedMutex}.{h,cpp}',
                            'folly/detail/{AtFork,Futex,Futex-inl,MemoryIdler,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
                            'folly/lang/SafeAssert.{h,cpp}',
                            'folly/memory/MallctlHelper.{h,cpp}',
-                           'folly/portability/SysUio.{h,cpp}'
+                           'folly/portability/{GFlags,SysUio}.{h,cpp}',
+                           'folly/chrono/Hardware.{h,cpp}'
                           # TODO: Perhaps some of the wildcards above can be further trimmed down with some of these:
                           #
                           #  'folly/executors/{DrivableExecutor,InlineExecutor,QueuedImmediateExecutor,TimedDrivableExecutor}.{h,cpp}',
