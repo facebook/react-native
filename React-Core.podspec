@@ -48,7 +48,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "React"
   s.framework              = "JavaScriptCore"
   s.library                = "stdc++"
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/RCT-Folly\"" }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
   s.default_subspec        = "Default"
 
@@ -67,6 +67,17 @@ Pod::Spec.new do |s|
                                 "React/Views/RCTSlider*",
                                 "React/Views/RCTSwitch*",
     ss.private_header_files   = "React/Cxx*/*.h"
+  end
+
+  s.subspec "Hermes" do |ss|
+    ss.platforms = { :osx => "10.14" }
+    ss.source_files = "ReactCommon/hermes/executor/*.{cpp,h}",
+                      "ReactCommon/hermes/inspector/*.{cpp,h}",
+                      "ReactCommon/hermes/inspector/chrome/*.{cpp,h}",
+                      "ReactCommon/hermes/inspector/detail/*.{cpp,h}"
+    ss.pod_target_xcconfig = { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" }
+    ss.dependency "RCT-Folly/Futures"
+    ss.dependency "hermes", "~> 0.6.0"
   end
 
   s.subspec "DevSupport" do |ss|
@@ -92,7 +103,7 @@ Pod::Spec.new do |s|
     end
   end
 
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "React-cxxreact", version
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version

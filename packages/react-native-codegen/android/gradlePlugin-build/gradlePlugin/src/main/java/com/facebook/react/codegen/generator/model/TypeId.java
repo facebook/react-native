@@ -38,11 +38,19 @@ public final class TypeId {
     return new TypeId(moduleName, typeName);
   }
 
+  public static TypeId of(final TypeId typeId) {
+    return of(typeId.moduleName, typeId.typeName);
+  }
+
+  public static TypeId expandOf(final TypeId typeId, String suffix) {
+    return of(typeId.moduleName, typeId.typeName + suffix);
+  }
+
   @Override
   public String toString() {
     return String.format(
         "<moduleName = %s, typeName = %s>",
-        moduleName, EMPTY_TYPE_NAME.equals(typeName) ? moduleName : typeName);
+        moduleName, EMPTY_TYPE_NAME.equals(typeName) ? "\"\"" : typeName);
   }
 
   @Override

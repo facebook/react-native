@@ -38,7 +38,7 @@ function generateSpec(platform, schemaPath, outputDirectory) {
   RNCodegen.generate(
     {libraryName, schema, outputDirectory: tempOutputDirectory, moduleSpecName},
     {
-      generators: ['modules'],
+      generators: platform === 'android' ? ['modulesAndroid'] : ['modules'],
     },
   );
 
@@ -71,6 +71,22 @@ function generateSpec(platform, schemaPath, outputDirectory) {
         fs.copyFileSync(
           `${tempOutputDirectory}/${f}`,
           `${outputDirectory}/${f}`,
+        );
+      });
+
+    // And all C++ files for JNI.
+    const jniOutputDirectory = `${outputDirectory}/jni`;
+    mkdirp.sync(jniOutputDirectory);
+    files
+      .filter(
+        f =>
+          f.startsWith(moduleSpecName) &&
+          (f.endsWith('.h') || f.endsWith('.cpp')),
+      )
+      .forEach(f => {
+        fs.copyFileSync(
+          `${tempOutputDirectory}/${f}`,
+          `${jniOutputDirectory}/${f}`,
         );
       });
   }

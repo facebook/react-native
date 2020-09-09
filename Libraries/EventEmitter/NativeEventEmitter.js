@@ -26,7 +26,7 @@ type NativeModule = {
  * Abstract base class for implementing event-emitting modules. This implements
  * a subset of the standard EventEmitter node module API.
  */
-class NativeEventEmitter extends EventEmitter {
+export default class NativeEventEmitter extends EventEmitter {
   _nativeModule: ?NativeModule;
 
   constructor(nativeModule: ?NativeModule) {
@@ -50,7 +50,7 @@ class NativeEventEmitter extends EventEmitter {
 
   removeAllListeners(eventType: string) {
     invariant(eventType, 'eventType argument is required.');
-    const count = this.listeners(eventType).length;
+    const count = this.listenerCount(eventType);
     if (this._nativeModule != null) {
       this._nativeModule.removeListeners(count);
     }
@@ -64,5 +64,3 @@ class NativeEventEmitter extends EventEmitter {
     super.removeSubscription(subscription);
   }
 }
-
-module.exports = NativeEventEmitter;

@@ -71,4 +71,7 @@ public class ReactFeatureFlags {
 
   /** Use experimental SetState retry mechanism in view? */
   public static boolean enableExperimentalStateUpdateRetry = false;
+
+  /** Enable caching of Spannable objects using equality of ReadableNativeMaps */
+  public static boolean enableSpannableCacheByReadableNativeMapEquality = true;
 }

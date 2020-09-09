@@ -12,11 +12,14 @@ import java.util.List;
 import java.util.Objects;
 
 public final class FunctionType extends Type {
+  public static final String TYPE_NAME = "FunctionTypeAnnotation";
 
   public static class ArgumentType {
     public final String name;
     public final Type type;
 
+    // Note: Function argument is not optional.
+    // TODO (T71926678): Revisit if optional should be supported.
     private ArgumentType(String name, Type type) {
       this.name = name;
       this.type = type;
@@ -39,19 +42,29 @@ public final class FunctionType extends Type {
     public int hashCode() {
       return Objects.hash(name, type);
     }
+
+    @Override
+    public String toString() {
+      return name + ": " + type;
+    }
+  }
+
+  public static ArgumentType createArgument(String name, Type type) {
+    return new ArgumentType(name, type);
   }
 
   public final List<ArgumentType> parameters;
   public final Type returnType;
 
-  public FunctionType(final TypeId typeId, List<ArgumentType> parameters, Type returnType) {
+  public FunctionType(
+      final TypeId typeId, final List<ArgumentType> parameters, final Type returnType) {
     super(typeId);
     this.parameters = Collections.unmodifiableList(parameters);
     this.returnType = returnType;
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(final Object o) {
     if (this == o) {
       return true;
     }
@@ -59,7 +72,7 @@ public final class FunctionType extends Type {
       return false;
     }
 
-    FunctionType that = (FunctionType) o;
+    final FunctionType that = (FunctionType) o;
     return Objects.equals(this.parameters, that.parameters)
         && Objects.equals(this.returnType, that.returnType);
   }
@@ -67,5 +80,10 @@ public final class FunctionType extends Type {
   @Override
   public int hashCode() {
     return Objects.hash(super.hashCode(), parameters, returnType);
+  }
+
+  @Override
+  public String toString() {
+    return "(" + returnType + ")" + this.getTypeId() + "(" + parameters + ")";
   }
 }

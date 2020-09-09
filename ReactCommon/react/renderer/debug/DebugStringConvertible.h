@@ -29,6 +29,9 @@ namespace react {
 // To Debug introspection of RN Shadow tree, uncomment the following line:
 // #define RN_SHADOW_TREE_INTROSPECTION 1
 
+// To enable asserts (crashing) when checking stub trees
+// #define RN_VALIDATE_SHADOW_TREE_STUB 1
+
 #if RN_DEBUG_STRING_CONVERTIBLE
 
 class DebugStringConvertible;
