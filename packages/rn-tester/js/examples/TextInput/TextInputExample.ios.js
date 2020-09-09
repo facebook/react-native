@@ -625,7 +625,6 @@ exports.examples = ([
               color: 'blue',
             }}>
             <Text style={{fontSize: 30, color: 'green'}}>huge</Text>
-            generic generic generic
             <Text style={{fontSize: 6, color: 'red'}}>
               small small small small small small
             </Text>
@@ -633,7 +632,6 @@ exports.examples = ([
             <Text style={{fontSize: 30, color: 'green'}}>
               huge huge huge huge huge
             </Text>
-            generic generic generic
           </AutogrowingTextInputExample>
         </View>
       );
