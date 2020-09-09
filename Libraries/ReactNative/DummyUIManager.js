@@ -46,7 +46,7 @@ module.exports = {
   ) => {},
   dispatchViewManagerCommand: (
     reactTag: ?number,
-    commandID: number,
+    commandID: number | string,
     commandArgs: ?Array<string | number | boolean>,
   ) => {},
   measure: (
