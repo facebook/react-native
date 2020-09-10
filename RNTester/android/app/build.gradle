@@ -65,12 +65,13 @@ plugins {
  */
 
 project.ext.react = [
+    cliPath: "$rootDir/cli.js",
     bundleAssetName: "RNTesterApp.android.bundle",
     entryFile: file("../../js/RNTesterApp.android.js"),
     root: "$rootDir",
     inputExcludes: ["android/**", "./**", ".gradle/**"],
     composeSourceMapsPath: "$rootDir/scripts/compose-source-maps.js",
-    hermesCommand: "../../../node_modules/hermes-engine/%OS-BIN%/hermes",
+    hermesCommand: "../../../node_modules/hermes-engine/%OS-BIN%/hermesc",
     enableHermesForVariant: { def v -> v.name.contains("hermes") }
 ]
 
@@ -103,13 +104,6 @@ def useIntlJsc = false
 android {
     compileSdkVersion 29
 
-    packagingOptions {
-        pickFirst '**/armeabi-v7a/libc++_shared.so'
-        pickFirst '**/x86/libc++_shared.so'
-        pickFirst '**/x86_64/libc++_shared.so'
-        pickFirst '**/arm64-v8a/libc++_shared.so'
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -127,10 +121,12 @@ android {
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
-        minSdkVersion 16
+        minSdkVersion 18
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     signingConfigs {
         release {
@@ -156,8 +152,15 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            // Detox-specific additions to pro-guard
+            proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
+}
+
+configurations {
+  hermesDebugImplementation {}
+  hermesReleaseImplementation {}
 }
 
 dependencies {
@@ -169,8 +172,8 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     def hermesPath = '$projectDir/../../../../node_modules/hermes-engine/android/'
-    debugImplementation files(hermesPath + "hermes-debug.aar")
-    releaseImplementation files(hermesPath + "hermes-release.aar")
+    hermesDebugImplementation files(hermesPath + "hermes-debug.aar")
+    hermesReleaseImplementation files(hermesPath + "hermes-release.aar")
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
@@ -185,8 +188,12 @@ dependencies {
     }
 
     if (useIntlJsc) {
-        implementation 'org.webkit:android-jsc-intl:+'
+        jscImplementation 'org.webkit:android-jsc-intl:+'
     } else {
-        implementation 'org.webkit:android-jsc:+'
+        jscImplementation 'org.webkit:android-jsc:+'
     }
+
+    // Use detox test library
+    androidTestImplementation('com.wix:detox:+') { transitive = true }
+    androidTestImplementation 'junit:junit:4.12'
 }

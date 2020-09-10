@@ -3,10 +3,12 @@ load("//tools/build_defs/oss:rn_defs.bzl", "fb_apple_library")
 fb_apple_library(
     name = "FBLazyVector",
     autoglob = True,
+    complete_nullability = True,
     contacts = ["oncall+react_native@xmail.facebook.com"],
     enable_exceptions = False,
+    extension_api_only = True,
     frameworks = [],
-    labels = ["supermodule:ios/isolation/infra.react_native"],
+    labels = ["supermodule:ios/default/public.react_native.infra"],
     link_whole = False,
     visibility = ["PUBLIC"],
 )

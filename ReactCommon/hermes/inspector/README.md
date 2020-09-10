@@ -17,7 +17,7 @@ can get debug logs to show even when tests are passing by running the test
 executable directly:
 
 ```
-$ buck build fbsource//xplat/js/react-native-github/ReactCommon/hermes/inspector:chrome-tests
+$ buck build //xplat/js/react-native-github/ReactCommon/hermes/inspector:chrome-tests
 $ buck-out/gen/js/react-native-github/ReactCommon/hermes/inspector/chrome-tests
 [...]
 ```
@@ -101,9 +101,9 @@ IDE:
 ```
 $ arc focus --force-build \
     -b //Apps/Internal/Eats:Eats \
-    cxxreact fbsource//xplat/hermes/API:HermesAPI fbsource//xplat/hermes/lib/VM:VM jsi \
+    cxxreact //xplat/hermes/API:HermesAPI //xplat/hermes/lib/VM:VM jsi \
     jsinspector hermes-inspector FBReactKit FBReactModule FBCatalystWrapper \
-    fbsource//xplat/js:React fbsource//xplat/js/react-native-github:ReactInternal
+    //xplat/js:React //xplat/js/react-native-github:ReactInternal
 ```
 
 For all the above commands, if you want to build the inspector `-O0` for better

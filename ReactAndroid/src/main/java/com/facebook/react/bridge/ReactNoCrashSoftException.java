@@ -13,7 +13,15 @@ package com.facebook.react.bridge;
  * and not crash, no matter what.
  */
 public class ReactNoCrashSoftException extends RuntimeException {
-  public ReactNoCrashSoftException(String detailMessage) {
-    super(detailMessage);
+  public ReactNoCrashSoftException(String m) {
+    super(m);
+  }
+
+  public ReactNoCrashSoftException(Throwable e) {
+    super(e);
+  }
+
+  public ReactNoCrashSoftException(String m, Throwable e) {
+    super(m, e);
   }
 }

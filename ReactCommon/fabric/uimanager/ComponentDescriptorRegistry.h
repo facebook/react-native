@@ -51,7 +51,7 @@ class ComponentDescriptorRegistry {
   ComponentDescriptor const &at(std::string const &componentName) const;
   ComponentDescriptor const &at(ComponentHandle componentHandle) const;
 
-  SharedShadowNode createNode(
+  ShadowNode::Shared createNode(
       Tag tag,
       std::string const &viewName,
       SurfaceId surfaceId,

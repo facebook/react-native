@@ -18,59 +18,76 @@
 namespace facebook {
 namespace react {
 
-ViewProps::ViewProps(YGStyle const &yogaStyle) : YogaStylableProps(yogaStyle) {}
-
 ViewProps::ViewProps(ViewProps const &sourceProps, RawProps const &rawProps)
-    : Props(sourceProps, rawProps),
-      YogaStylableProps(sourceProps, rawProps),
+    : YogaStylableProps(sourceProps, rawProps),
       AccessibilityProps(sourceProps, rawProps),
       opacity(
           convertRawProp(rawProps, "opacity", sourceProps.opacity, (Float)1.0)),
       foregroundColor(convertRawProp(
           rawProps,
           "foregroundColor",
-          sourceProps.foregroundColor)),
+          sourceProps.foregroundColor,
+          {})),
       backgroundColor(convertRawProp(
           rawProps,
           "backgroundColor",
-          sourceProps.backgroundColor)),
+          sourceProps.backgroundColor,
+          {})),
       borderRadii(convertRawProp(
           rawProps,
           "border",
           "Radius",
-          sourceProps.borderRadii)),
+          sourceProps.borderRadii,
+          {})),
       borderColors(convertRawProp(
           rawProps,
           "border",
           "Color",
-          sourceProps.borderColors)),
+          sourceProps.borderColors,
+          {})),
       borderStyles(convertRawProp(
           rawProps,
           "border",
           "Style",
-          sourceProps.borderStyles)),
+          sourceProps.borderStyles,
+          {})),
       shadowColor(
-          convertRawProp(rawProps, "shadowColor", sourceProps.shadowColor)),
-      shadowOffset(
-          convertRawProp(rawProps, "shadowOffset", sourceProps.shadowOffset)),
-      shadowOpacity(
-          convertRawProp(rawProps, "shadowOpacity", sourceProps.shadowOpacity)),
-      shadowRadius(
-          convertRawProp(rawProps, "shadowRadius", sourceProps.shadowRadius)),
-      transform(convertRawProp(rawProps, "transform", sourceProps.transform)),
+          convertRawProp(rawProps, "shadowColor", sourceProps.shadowColor, {})),
+      shadowOffset(convertRawProp(
+          rawProps,
+          "shadowOffset",
+          sourceProps.shadowOffset,
+          {})),
+      shadowOpacity(convertRawProp(
+          rawProps,
+          "shadowOpacity",
+          sourceProps.shadowOpacity,
+          {})),
+      shadowRadius(convertRawProp(
+          rawProps,
+          "shadowRadius",
+          sourceProps.shadowRadius,
+          {})),
+      transform(
+          convertRawProp(rawProps, "transform", sourceProps.transform, {})),
       backfaceVisibility(convertRawProp(
           rawProps,
           "backfaceVisibility",
-          sourceProps.backfaceVisibility)),
+          sourceProps.backfaceVisibility,
+          {})),
       shouldRasterize(convertRawProp(
           rawProps,
           "shouldRasterize",
-          sourceProps.shouldRasterize)),
-      zIndex(convertRawProp(rawProps, "zIndex", sourceProps.zIndex)),
-      pointerEvents(
-          convertRawProp(rawProps, "pointerEvents", sourceProps.pointerEvents)),
-      hitSlop(convertRawProp(rawProps, "hitSlop", sourceProps.hitSlop)),
-      onLayout(convertRawProp(rawProps, "onLayout", sourceProps.onLayout)),
+          sourceProps.shouldRasterize,
+          {})),
+      zIndex(convertRawProp(rawProps, "zIndex", sourceProps.zIndex, {})),
+      pointerEvents(convertRawProp(
+          rawProps,
+          "pointerEvents",
+          sourceProps.pointerEvents,
+          {})),
+      hitSlop(convertRawProp(rawProps, "hitSlop", sourceProps.hitSlop, {})),
+      onLayout(convertRawProp(rawProps, "onLayout", sourceProps.onLayout, {})),
       collapsable(convertRawProp(
           rawProps,
           "collapsable",

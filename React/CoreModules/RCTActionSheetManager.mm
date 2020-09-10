@@ -29,8 +29,7 @@ NSSharingServicePickerDelegate
 , NativeActionSheetManagerSpec>
 @end
 
-@implementation RCTActionSheetManager
-{
+@implementation RCTActionSheetManager {
   // Use NSMapTable, as UIAlertViews do not implement <NSCopying>
   // which is required for NSDictionary keys
   NSMapTable *_callbacks;
@@ -70,8 +69,9 @@ RCT_EXPORT_MODULE()
 }
 #endif // TODO(macOS ISS#2323203)
 
-RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options
-                  callback:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(showActionSheetWithOptions
+                  : (JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options callback
+                  : (RCTResponseSenderBlock)callback)
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (RCTRunningInAppExtension()) {
@@ -88,15 +88,20 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::Spec
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   NSString *message = options.message();
 #endif // TODO(macOS ISS#2323203)
-  NSArray<NSString *> *buttons = RCTConvertOptionalVecToArray(options.options(), ^id(NSString *element) { return element; });
-  NSInteger cancelButtonIndex = options.cancelButtonIndex() ? [RCTConvert NSInteger:@(*options.cancelButtonIndex())] : -1;
+  NSArray<NSString *> *buttons = RCTConvertOptionalVecToArray(options.options(), ^id(NSString *element) {
+    return element;
+  });
+  NSInteger cancelButtonIndex =
+      options.cancelButtonIndex() ? [RCTConvert NSInteger:@(*options.cancelButtonIndex())] : -1;
   NSArray<NSNumber *> *destructiveButtonIndices;
   if (options.destructiveButtonIndices()) {
-    destructiveButtonIndices = RCTConvertVecToArray(*options.destructiveButtonIndices(), ^id(double element) { return @(element); });
+    destructiveButtonIndices = RCTConvertVecToArray(*options.destructiveButtonIndices(), ^id(double element) {
+      return @(element);
+    });
   } else {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     NSNumber *destructiveButtonIndex = @-1;
-    destructiveButtonIndices = @[destructiveButtonIndex];
+    destructiveButtonIndices = @[ destructiveButtonIndex ];
 #endif // TODO(macOS ISS#2323203)
   }
 
@@ -108,13 +113,13 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::Spec
 
   if (controller == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", @{
-                                                                                      @"title": title,
-                                                                                    @"message": message,
-                                                                                    @"options": buttons,
-                                                                          @"cancelButtonIndex": @(cancelButtonIndex),
-                                                                   @"destructiveButtonIndices": destructiveButtonIndices,
-                                                                                     @"anchor": anchor,
-                                                                                  @"tintColor": tintColor,
+      @"title" : title,
+      @"message" : message,
+      @"options" : buttons,
+      @"cancelButtonIndex" : @(cancelButtonIndex),
+      @"destructiveButtonIndices" : destructiveButtonIndices,
+      @"anchor" : anchor,
+      @"tintColor" : tintColor,
     });
     return;
   }
@@ -127,10 +132,9 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::Spec
   NSNumber *anchorViewTag = anchor;
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  UIAlertController *alertController =
-  [UIAlertController alertControllerWithTitle:title
-                                      message:message
-                               preferredStyle:UIAlertControllerStyleActionSheet];
+  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
+                                                                           message:message
+                                                                    preferredStyle:UIAlertControllerStyleActionSheet];
 
   NSInteger index = 0;
   for (NSString *option in buttons) {
@@ -144,14 +148,29 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::Spec
     NSInteger localIndex = index;
     [alertController addAction:[UIAlertAction actionWithTitle:option
                                                         style:style
-                                                      handler:^(__unused UIAlertAction *action){
-      callback(@[@(localIndex)]);
-    }]];
+                                                      handler:^(__unused UIAlertAction *action) {
+                                                        callback(@[ @(localIndex) ]);
+                                                      }]];
 
     index++;
   }
 
   alertController.view.tintColor = tintColor;
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+  if (@available(iOS 13.0, *)) {
+    NSString *userInterfaceStyle = [RCTConvert NSString:options.userInterfaceStyle()];
+
+    if (userInterfaceStyle == nil || [userInterfaceStyle isEqualToString:@""]) {
+      alertController.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+    } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
+      alertController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+    } else if ([userInterfaceStyle isEqualToString:@"light"]) {
+      alertController.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    }
+  }
+#endif
+
   [self presentViewController:alertController onParentViewController:controller anchorViewTag:anchorViewTag];
 
 #else // [TODO(macOS ISS#2323203)
@@ -189,9 +208,10 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::Spec
 #endif // ]TODO(macOS ISS#2323203)
 }
 
-RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions &)options
-                  failureCallback:(RCTResponseSenderBlock)failureCallback
-                  successCallback:(RCTResponseSenderBlock)successCallback)
+RCT_EXPORT_METHOD(showShareActionSheetWithOptions
+                  : (JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions &)options failureCallback
+                  : (RCTResponseSenderBlock)failureCallback successCallback
+                  : (RCTResponseSenderBlock)successCallback)
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (RCTRunningInAppExtension()) {
@@ -209,11 +229,9 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(JS::NativeActionSheetManager:
   if (URL) {
     if ([URL.scheme.lowercaseString isEqualToString:@"data"]) {
       NSError *error;
-      NSData *data = [NSData dataWithContentsOfURL:URL
-                                           options:(NSDataReadingOptions)0
-                                             error:&error];
+      NSData *data = [NSData dataWithContentsOfURL:URL options:(NSDataReadingOptions)0 error:&error];
       if (!data) {
-        failureCallback(@[RCTJSErrorFromNSError(error)]);
+        failureCallback(@[ RCTJSErrorFromNSError(error) ]);
         return;
       }
       [items addObject:data];
@@ -227,29 +245,49 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(JS::NativeActionSheetManager:
   }
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  UIActivityViewController *shareController = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
+  UIActivityViewController *shareController = [[UIActivityViewController alloc] initWithActivityItems:items
+                                                                                applicationActivities:nil];
 
   NSString *subject = options.subject();
   if (subject) {
     [shareController setValue:subject forKey:@"subject"];
   }
 
-  NSArray *excludedActivityTypes = RCTConvertOptionalVecToArray(options.excludedActivityTypes(), ^id(NSString *element) { return element; });
+  NSArray *excludedActivityTypes =
+      RCTConvertOptionalVecToArray(options.excludedActivityTypes(), ^id(NSString *element) {
+        return element;
+      });
   if (excludedActivityTypes) {
     shareController.excludedActivityTypes = excludedActivityTypes;
   }
 
   UIViewController *controller = RCTPresentedViewController();
-  shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
-    if (activityError) {
-      failureCallback(@[RCTJSErrorFromNSError(activityError)]);
-    } else if (completed || activityType == nil) {
-      successCallback(@[@(completed), RCTNullIfNil(activityType)]);
-    }
-  };
+  shareController.completionWithItemsHandler =
+      ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
+        if (activityError) {
+          failureCallback(@[ RCTJSErrorFromNSError(activityError) ]);
+        } else if (completed || activityType == nil) {
+          successCallback(@[ @(completed), RCTNullIfNil(activityType) ]);
+        }
+      };
 
   NSNumber *anchorViewTag = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
   shareController.view.tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+  if (@available(iOS 13.0, *)) {
+    NSString *userInterfaceStyle = [RCTConvert NSString:options.userInterfaceStyle()];
+
+    if (userInterfaceStyle == nil || [userInterfaceStyle isEqualToString:@""]) {
+      shareController.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+    } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
+      shareController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+    } else if ([userInterfaceStyle isEqualToString:@"light"]) {
+      shareController.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    }
+  }
+#endif
 
   [self presentViewController:shareController onParentViewController:controller anchorViewTag:anchorViewTag];
 #else // [TODO(macOS ISS#2323203)
@@ -329,12 +367,15 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(JS::NativeActionSheetManager:
 #endif // ]TODO(macOS ISS#2323203)
   
 - (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                                              nativeInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
+                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<NativeActionSheetManagerSpecJSI>(self, jsInvoker);
+  return std::make_shared<NativeActionSheetManagerSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end
 
-Class RCTActionSheetManagerCls(void) {
+Class RCTActionSheetManagerCls(void)
+{
   return RCTActionSheetManager.class;
 }

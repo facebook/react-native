@@ -16,13 +16,13 @@ cxx_library(
         "-frtti",
     ],
     fbandroid_deps = [
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/glog:glog",
-        "fbsource//xplat/third-party/linker_lib:atomic",
+        "//xplat/folly:molly",
+        "//xplat/third-party/glog:glog",
+        "//xplat/third-party/linker_lib:atomic",
     ],
     fbobjc_force_static = True,
     fbobjc_header_path_prefix = "",
-    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
@@ -33,7 +33,7 @@ cxx_library(
     ],
     xcode_public_headers_symlinks = True,
     deps = [
-        "fbsource//xplat/fbsystrace:fbsystrace",
+        "//xplat/fbsystrace:fbsystrace",
         react_native_xplat_dep("jsi:jsi"),
         react_native_xplat_dep("jsi:JSIDynamic"),
         react_native_xplat_target("cxxreact:bridge"),

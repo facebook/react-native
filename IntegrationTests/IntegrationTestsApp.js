@@ -79,6 +79,9 @@ class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
           {TESTS.map(test => [
             <TouchableOpacity
               onPress={() => this.setState({test})}
+              /* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
+               * suppresses an error found when Flow v0.115 was deployed. To
+               * see the error, delete this comment and run Flow. */
               style={styles.row}>
               <Text style={styles.testName}>{test.displayName}</Text>
             </TouchableOpacity>,

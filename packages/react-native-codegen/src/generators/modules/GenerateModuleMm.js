@@ -34,8 +34,8 @@ const proprertyDefTemplate =
 const moduleTemplate = `
 ::_TURBOMODULE_METHOD_INVOKERS_::
 
-Native::_MODULE_NAME_::SpecJSI::Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
-  : ObjCTurboModule("::_MODULE_NAME_::", instance, jsInvoker) {
+Native::_MODULE_NAME_::SpecJSI::Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker, id<RCTTurboModulePerformanceLogger> perfLogger)
+  : ObjCTurboModule("::_MODULE_NAME_::", instance, jsInvoker, nativeInvoker, perfLogger) {
 ::_PROPERTIES_MAP_::::_CONVERSION_SELECTORS_::
 }`.trim();
 

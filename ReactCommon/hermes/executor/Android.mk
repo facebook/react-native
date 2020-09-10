@@ -35,4 +35,3 @@ LOCAL_STATIC_LIBRARIES := libjsi libjsireact libhermes-inspector
 LOCAL_SHARED_LIBRARIES := libhermes
 
 include $(BUILD_SHARED_LIBRARY)
-

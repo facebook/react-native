@@ -8,6 +8,7 @@
 #include "JReactMarker.h"
 #include <cxxreact/ReactMarker.h>
 #include <fbjni/fbjni.h>
+#include <glog/logging.h>
 #include <mutex>
 
 namespace facebook {
@@ -40,12 +41,16 @@ void JReactMarker::logPerfMarker(
     const char *tag) {
   switch (markerId) {
     case ReactMarker::RUN_JS_BUNDLE_START:
+      LOG(ERROR) << "logMarker RUN_JS_BUNDLE_START"; // TODO T62192299: delete
       JReactMarker::logMarker("RUN_JS_BUNDLE_START", tag);
       break;
     case ReactMarker::RUN_JS_BUNDLE_STOP:
+      LOG(ERROR) << "logMarker RUN_JS_BUNDLE_END"; // TODO T62192299: delete
       JReactMarker::logMarker("RUN_JS_BUNDLE_END", tag);
       break;
     case ReactMarker::CREATE_REACT_CONTEXT_STOP:
+      LOG(ERROR)
+          << "logMarker CREATE_REACT_CONTEXT_END"; // TODO T62192299: delete
       JReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
       break;
     case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:

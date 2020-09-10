@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include <chrono>
 #include <cstdint>
-#include <limits>
+
+#include <react/utils/Telemetry.h>
 
 namespace facebook {
 namespace react {
@@ -34,28 +36,28 @@ class MountingTelemetry final {
   /*
    * Reading
    */
-  int64_t getDiffStartTime() const;
-  int64_t getDiffEndTime() const;
-  int64_t getLayoutStartTime() const;
-  int64_t getLayoutEndTime() const;
-  int64_t getCommitStartTime() const;
-  int64_t getCommitEndTime() const;
-  int64_t getCommitNumber() const;
-  int64_t getMountStartTime() const;
-  int64_t getMountEndTime() const;
+  TelemetryTimePoint getDiffStartTime() const;
+  TelemetryTimePoint getDiffEndTime() const;
+  TelemetryTimePoint getLayoutStartTime() const;
+  TelemetryTimePoint getLayoutEndTime() const;
+  TelemetryTimePoint getCommitStartTime() const;
+  TelemetryTimePoint getCommitEndTime() const;
+  TelemetryTimePoint getMountStartTime() const;
+  TelemetryTimePoint getMountEndTime() const;
+
+  int getCommitNumber() const;
 
  private:
-  constexpr static int64_t kUndefinedTime = std::numeric_limits<int64_t>::max();
+  TelemetryTimePoint diffStartTime_{kTelemetryUndefinedTimePoint};
+  TelemetryTimePoint diffEndTime_{kTelemetryUndefinedTimePoint};
+  TelemetryTimePoint commitStartTime_{kTelemetryUndefinedTimePoint};
+  TelemetryTimePoint commitEndTime_{kTelemetryUndefinedTimePoint};
+  TelemetryTimePoint layoutStartTime_{kTelemetryUndefinedTimePoint};
+  TelemetryTimePoint layoutEndTime_{kTelemetryUndefinedTimePoint};
+  TelemetryTimePoint mountStartTime_{kTelemetryUndefinedTimePoint};
+  TelemetryTimePoint mountEndTime_{kTelemetryUndefinedTimePoint};
 
-  int64_t diffStartTime_{kUndefinedTime};
-  int64_t diffEndTime_{kUndefinedTime};
-  int64_t commitNumber_{0};
-  int64_t commitStartTime_{kUndefinedTime};
-  int64_t commitEndTime_{kUndefinedTime};
-  int64_t layoutStartTime_{kUndefinedTime};
-  int64_t layoutEndTime_{kUndefinedTime};
-  int64_t mountStartTime_{kUndefinedTime};
-  int64_t mountEndTime_{kUndefinedTime};
+  int commitNumber_{0};
 };
 
 } // namespace react

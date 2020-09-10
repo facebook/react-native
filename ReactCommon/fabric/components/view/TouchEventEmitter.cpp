@@ -64,19 +64,19 @@ void TouchEventEmitter::dispatchTouchEvent(
 }
 
 void TouchEventEmitter::onTouchStart(TouchEvent const &event) const {
-  dispatchTouchEvent("touchStart", event, EventPriority::SynchronousUnbatched);
+  dispatchTouchEvent("touchStart", event, EventPriority::AsynchronousBatched);
 }
 
 void TouchEventEmitter::onTouchMove(TouchEvent const &event) const {
-  dispatchTouchEvent("touchMove", event, EventPriority::SynchronousBatched);
+  dispatchTouchEvent("touchMove", event, EventPriority::AsynchronousBatched);
 }
 
 void TouchEventEmitter::onTouchEnd(TouchEvent const &event) const {
-  dispatchTouchEvent("touchEnd", event, EventPriority::SynchronousBatched);
+  dispatchTouchEvent("touchEnd", event, EventPriority::AsynchronousBatched);
 }
 
 void TouchEventEmitter::onTouchCancel(TouchEvent const &event) const {
-  dispatchTouchEvent("touchCancel", event, EventPriority::SynchronousBatched);
+  dispatchTouchEvent("touchCancel", event, EventPriority::AsynchronousBatched);
 }
 
 } // namespace react

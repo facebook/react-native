@@ -9,6 +9,7 @@ package com.facebook.react.devsupport;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -130,7 +131,7 @@ public class DisabledDevSupportManager implements DevSupportManager {
   public void reloadJSFromServer(String bundleURL) {}
 
   @Override
-  public void isPackagerRunning(PackagerStatusCallback callback) {}
+  public void isPackagerRunning(final PackagerStatusCallback callback) {}
 
   @Override
   public @Nullable File downloadBundleResourceFromUrlSync(
@@ -152,7 +153,14 @@ public class DisabledDevSupportManager implements DevSupportManager {
   public void registerErrorCustomizer(ErrorCustomizer errorCustomizer) {}
 
   @Override
+  public void setPackagerLocationCustomizer(
+      DevSupportManager.PackagerLocationCustomizer packagerLocationCustomizer) {}
+
+  @Override
   public void handleException(Exception e) {
+    // TODO T62192299: remove this after investigation
+    FLog.e("DisabledDevSupportManager", "Caught exception", e);
+
     mDefaultNativeModuleCallExceptionHandler.handleException(e);
   }
 }

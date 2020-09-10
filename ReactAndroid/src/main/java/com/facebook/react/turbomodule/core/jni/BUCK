@@ -31,8 +31,8 @@ rn_xplat_cxx_library(
         FBJNI_TARGET,
     ],
     exported_deps = [
-        "fbsource//xplat/jsi:jsi",
         ":callinvokerholder",
+        "//xplat/jsi:jsi",
         react_native_xplat_target("turbomodule/core:core"),
     ],
 )

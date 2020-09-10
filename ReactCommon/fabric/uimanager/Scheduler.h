@@ -75,6 +75,9 @@ class Scheduler final : public UIManagerDelegate {
   findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
       ComponentHandle handle) const;
 
+  MountingCoordinator::Shared findMountingCoordinator(
+      SurfaceId surfaceId) const;
+
 #pragma mark - Delegate
 
   /*
@@ -90,14 +93,14 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerDidFinishTransaction(
       MountingCoordinator::Shared const &mountingCoordinator) override;
   void uiManagerDidCreateShadowNode(
-      const SharedShadowNode &shadowNode) override;
+      const ShadowNode::Shared &shadowNode) override;
   void uiManagerDidDispatchCommand(
-      const SharedShadowNode &shadowNode,
+      const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) override;
   void uiManagerDidSetJSResponder(
       SurfaceId surfaceId,
-      const SharedShadowNode &shadowView,
+      const ShadowNode::Shared &shadowView,
       bool blockNativeResponder) override;
   void uiManagerDidClearJSResponder() override;
 

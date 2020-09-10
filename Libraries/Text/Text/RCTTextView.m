@@ -173,6 +173,7 @@
 
 - (void)drawRect:(CGRect)rect
 {
+  [super drawRect:rect];
   if (!_textStorage) {
     return;
   }

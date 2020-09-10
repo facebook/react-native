@@ -99,30 +99,8 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  if (@available(iOS 10.0, *)) {
-    [RCTSharedApplication() openURL:URL options:@{} completionHandler:^(BOOL success) {
-      if (success) {
-        resolve(@YES);
-      } else {
-        #if TARGET_OS_SIMULATOR
-          // Simulator-specific code
-          if([URL.absoluteString hasPrefix:@"tel:"]){
-            RCTLogWarn(@"Unable to open the Phone app in the simulator for telephone URLs. URL:  %@", URL);
-            resolve(@NO);
-          } else {
-            reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
-          }
-        #else
-          // Device-specific code
-          reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
-        #endif
-      }
-    }];
-  } else {
-#if !TARGET_OS_UIKITFORMAC
-    // Note: this branch will never be taken on UIKitForMac
-    BOOL opened = [RCTSharedApplication() openURL:URL];
-    if (opened) {
+  [RCTSharedApplication() openURL:URL options:@{} completionHandler:^(BOOL success) {
+    if (success) {
       resolve(@YES);
     } else {
       #if TARGET_OS_SIMULATOR
@@ -138,9 +116,7 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
         reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
       #endif
     }
-#endif
-  }
-
+  }];
 }
 
 RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
@@ -193,25 +169,13 @@ RCT_EXPORT_METHOD(openSettings:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-  if (@available(iOS 10.0, *)) {
-    [RCTSharedApplication() openURL:url options:@{} completionHandler:^(BOOL success) {
-      if (success) {
-        resolve(nil);
-      } else {
-        reject(RCTErrorUnspecified, @"Unable to open app settings", nil);
-      }
-    }];
-  } else {
-#if !TARGET_OS_UIKITFORMAC
-   // Note: This branch will never be taken on UIKitForMac
-   BOOL opened = [RCTSharedApplication() openURL:url];
-   if (opened) {
-     resolve(nil);
-   } else {
-     reject(RCTErrorUnspecified, @"Unable to open app settings", nil);
-   }
-#endif
-  }
+  [RCTSharedApplication() openURL:url options:@{} completionHandler:^(BOOL success) {
+    if (success) {
+      resolve(nil);
+    } else {
+      reject(RCTErrorUnspecified, @"Unable to open app settings", nil);
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(sendIntent:(NSString *)action
@@ -222,9 +186,12 @@ RCT_EXPORT_METHOD(sendIntent:(NSString *)action
   RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeLinkingSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeLinkingSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end

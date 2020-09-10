@@ -30,7 +30,7 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
-    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     force_static = True,
     macosx_tests_override = [],
     platforms = (ANDROID),
@@ -40,10 +40,10 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "fbsource//xplat/fbsystrace:fbsystrace",
-        "fbsource//xplat/folly:headers_only",
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/third-party/glog:glog",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:headers_only",
+        "//xplat/folly:memory",
+        "//xplat/third-party/glog:glog",
         react_native_xplat_target("utils:utils"),
     ],
 )
@@ -61,7 +61,7 @@ fb_xplat_cxx_test(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     platforms = (ANDROID),
     deps = [
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/gmock:gtest",
+        "//xplat/folly:molly",
+        "//xplat/third-party/gmock:gtest",
     ],
 )

@@ -12,6 +12,7 @@
 
 const AnimatedValue = require('../nodes/AnimatedValue');
 const AnimatedValueXY = require('../nodes/AnimatedValueXY');
+const AnimatedInterpolation = require('../nodes/AnimatedInterpolation');
 const Animation = require('./Animation');
 const SpringConfig = require('../SpringConfig');
 
@@ -21,7 +22,8 @@ const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
 
 import type {AnimationConfig, EndCallback} from './Animation';
 
-export type SpringAnimationConfig = AnimationConfig & {
+export type SpringAnimationConfig = {
+  ...AnimationConfig,
   toValue:
     | number
     | AnimatedValue
@@ -30,7 +32,8 @@ export type SpringAnimationConfig = AnimationConfig & {
         y: number,
         ...
       }
-    | AnimatedValueXY,
+    | AnimatedValueXY
+    | AnimatedInterpolation,
   overshootClamping?: boolean,
   restDisplacementThreshold?: number,
   restSpeedThreshold?: number,
@@ -49,11 +52,11 @@ export type SpringAnimationConfig = AnimationConfig & {
   damping?: number,
   mass?: number,
   delay?: number,
-  ...
 };
 
-export type SpringAnimationConfigSingle = AnimationConfig & {
-  toValue: number | AnimatedValue,
+export type SpringAnimationConfigSingle = {
+  ...AnimationConfig,
+  toValue: number | AnimatedValue | AnimatedInterpolation,
   overshootClamping?: boolean,
   restDisplacementThreshold?: number,
   restSpeedThreshold?: number,
@@ -66,7 +69,6 @@ export type SpringAnimationConfigSingle = AnimationConfig & {
   damping?: number,
   mass?: number,
   delay?: number,
-  ...
 };
 
 class SpringAnimation extends Animation {

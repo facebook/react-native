@@ -17,9 +17,9 @@
   RCTSurfaceStage _stage;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
+RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 
 - (instancetype)initWithSurface:(RCTSurface *)surface
 {
@@ -75,8 +75,7 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     if (_rootView.superview != self) {
       [self addSubview:_rootView];
     }
-  }
-  else {
+  } else {
     [_rootView removeFromSuperview];
   }
 }

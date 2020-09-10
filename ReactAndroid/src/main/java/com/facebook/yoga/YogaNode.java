@@ -214,4 +214,6 @@ public abstract class YogaNode {
   public abstract void print();
 
   public abstract YogaNode cloneWithoutChildren();
+
+  public abstract YogaNode cloneWithChildren();
 }

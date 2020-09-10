@@ -7,25 +7,22 @@
 
 package com.facebook.react.bridge;
 
+import static com.facebook.react.bridge.Arguments.fromBundle;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
-
 import com.facebook.soloader.SoLoader;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static com.facebook.react.bridge.Arguments.fromBundle;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(AndroidJUnit4.class)
 public class ArgumentsTest {
@@ -42,9 +39,9 @@ public class ArgumentsTest {
   }
 
   /**
-   * When passing a bundle via {@link Intent} extras, it gets parceled and unparceled.
-   * Any array of bundles will return as an array of {@link Parcelable} instead. This test
-   * verifies that {@link Arguments#fromArray} handles this situation correctly.
+   * When passing a bundle via {@link Intent} extras, it gets parceled and unparceled. Any array of
+   * bundles will return as an array of {@link Parcelable} instead. This test verifies that {@link
+   * Arguments#fromArray} handles this situation correctly.
    */
   @Test
   public void testFromMarshaledBundle() {

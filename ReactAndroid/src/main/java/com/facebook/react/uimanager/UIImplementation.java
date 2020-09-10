@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -333,7 +334,6 @@ public class UIImplementation {
       int[] indicesToRemove = new int[numToMove + numToRemove];
       int[] tagsToRemove = new int[indicesToRemove.length];
       int[] tagsToDelete = new int[numToRemove];
-      int[] indicesToDelete = new int[numToRemove];
 
       if (numToMove > 0) {
         Assertions.assertNotNull(moveFrom);
@@ -365,7 +365,6 @@ public class UIImplementation {
           indicesToRemove[numToMove + i] = indexToRemove;
           tagsToRemove[numToMove + i] = tagToRemove;
           tagsToDelete[i] = tagToRemove;
-          indicesToDelete[i] = indexToRemove;
         }
       }
 
@@ -405,12 +404,7 @@ public class UIImplementation {
       }
 
       mNativeViewHierarchyOptimizer.handleManageChildren(
-          cssNodeToManage,
-          indicesToRemove,
-          tagsToRemove,
-          viewsToAdd,
-          tagsToDelete,
-          indicesToDelete);
+          cssNodeToManage, indicesToRemove, tagsToRemove, viewsToAdd, tagsToDelete);
 
       for (int i = 0; i < tagsToDelete.length; i++) {
         removeShadowNode(mShadowNodeRegistry.getNode(tagsToDelete[i]));
@@ -927,6 +921,9 @@ public class UIImplementation {
       }
     }
     cssNode.markUpdateSeen();
+    if (ReactFeatureFlags.enableTransitionLayoutOnlyViewCleanup) {
+      mNativeViewHierarchyOptimizer.onViewUpdatesCompleted(cssNode);
+    }
   }
 
   public void addUIBlock(UIBlock block) {

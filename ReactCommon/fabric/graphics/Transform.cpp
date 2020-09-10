@@ -164,15 +164,54 @@ Point operator*(Point const &point, Transform const &transform) {
     return point;
   }
 
-  auto result = Point{};
-  result.x = transform.at(3, 0) + point.x * transform.at(0, 0) + point.y * transform.at(1, 0);
-  result.y = transform.at(3, 1) + point.x * transform.at(0, 1) + point.y * transform.at(1, 1);
-  auto w = transform.at(3, 3) + point.x * transform.at(0, 3) + point.y * transform.at(1, 3);
+  auto result = transform * Vector{point.x, point.y, 0, 1};
 
-  if (w != 1 && w != 0) {
-    result.x /= w;
-    result.y /= w;
+  return {result.x, result.y};
+}
+
+Rect operator*(Rect const &rect, Transform const &transform) {
+  auto centre = rect.getCenter();
+
+  auto a = Point{rect.origin.x, rect.origin.y} - centre;
+  auto b = Point{rect.getMaxX(), rect.origin.y} - centre;
+  auto c = Point{rect.getMaxX(), rect.getMaxY()} - centre;
+  auto d = Point{rect.origin.x, rect.getMaxY()} - centre;
+
+  auto vectorA = transform * Vector{a.x, a.y, 0, 1};
+  auto vectorB = transform * Vector{b.x, b.y, 0, 1};
+  auto vectorC = transform * Vector{c.x, c.y, 0, 1};
+  auto vectorD = transform * Vector{d.x, d.y, 0, 1};
+
+  Point transformedA{vectorA.x + centre.x, vectorA.y + centre.y};
+  Point transformedB{vectorB.x + centre.x, vectorB.y + centre.y};
+  Point transformedC{vectorC.x + centre.x, vectorC.y + centre.y};
+  Point transformedD{vectorD.x + centre.x, vectorD.y + centre.y};
+
+  return Rect::boundingRect(
+      transformedA, transformedB, transformedC, transformedD);
+}
+
+Vector operator*(Transform const &transform, Vector const &vector) {
+  return {
+      vector.x * transform.at(0, 0) + vector.y * transform.at(1, 0) +
+          vector.z * transform.at(2, 0) + vector.w * transform.at(3, 0),
+      vector.x * transform.at(0, 1) + vector.y * transform.at(1, 1) +
+          vector.z * transform.at(2, 1) + vector.w * transform.at(3, 1),
+      vector.x * transform.at(0, 2) + vector.y * transform.at(1, 2) +
+          vector.z * transform.at(2, 2) + vector.w * transform.at(3, 2),
+      vector.x * transform.at(0, 3) + vector.y * transform.at(1, 3) +
+          vector.z * transform.at(2, 3) + vector.w * transform.at(3, 3),
+  };
+}
+
+Size operator*(Size const &size, Transform const &transform) {
+  if (transform == Transform::Identity()) {
+    return size;
   }
+
+  auto result = Size{};
+  result.width = transform.at(0, 0) * size.width;
+  result.height = transform.at(1, 1) * size.height;
 
   return result;
 }

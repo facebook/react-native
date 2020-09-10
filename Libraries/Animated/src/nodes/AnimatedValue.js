@@ -66,7 +66,7 @@ function _flush(rootNode: AnimatedValue): void {
  * mechanism at a time.  Using a new mechanism (e.g. starting a new animation,
  * or calling `setValue`) will stop any previous ones.
  *
- * See http://facebook.github.io/react-native/docs/animatedvalue.html
+ * See https://reactnative.dev/docs/animatedvalue.html
  */
 class AnimatedValue extends AnimatedWithChildren {
   _value: number;
@@ -77,6 +77,9 @@ class AnimatedValue extends AnimatedWithChildren {
 
   constructor(value: number) {
     super();
+    if (typeof value !== 'number') {
+      throw new Error('AnimatedValue: Attempting to set value to undefined');
+    }
     this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
@@ -95,7 +98,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * Directly set the value.  This will stop any animations running on the value
    * and update all the bound properties.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvalue.html#setvalue
+   * See https://reactnative.dev/docs/animatedvalue.html#setvalue
    */
   setValue(value: number): void {
     if (this._animation) {
@@ -116,7 +119,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * `setValue`, an animation, or `Animated.event`.  Useful for compensating
    * things like the start of a pan gesture.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvalue.html#setoffset
+   * See https://reactnative.dev/docs/animatedvalue.html#setoffset
    */
   setOffset(offset: number): void {
     this._offset = offset;
@@ -129,7 +132,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * Merges the offset value into the base value and resets the offset to zero.
    * The final output of the value is unchanged.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvalue.html#flattenoffset
+   * See https://reactnative.dev/docs/animatedvalue.html#flattenoffset
    */
   flattenOffset(): void {
     this._value += this._offset;
@@ -143,7 +146,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * Sets the offset value to the base value, and resets the base value to zero.
    * The final output of the value is unchanged.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvalue.html#extractoffset
+   * See https://reactnative.dev/docs/animatedvalue.html#extractoffset
    */
   extractOffset(): void {
     this._offset += this._value;
@@ -158,7 +161,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * final value after stopping the animation, which is useful for updating
    * state to match the animation position with layout.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvalue.html#stopanimation
+   * See https://reactnative.dev/docs/animatedvalue.html#stopanimation
    */
   stopAnimation(callback?: ?(value: number) => void): void {
     this.stopTracking();
@@ -170,7 +173,7 @@ class AnimatedValue extends AnimatedWithChildren {
   /**
    * Stops any animation and resets the value to its original.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvalue.html#resetanimation
+   * See https://reactnative.dev/docs/animatedvalue.html#resetanimation
    */
   resetAnimation(callback?: ?(value: number) => void): void {
     this.stopAnimation(callback);
@@ -193,7 +196,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * Typically only used internally, but could be used by a custom Animation
    * class.
    *
-   * See http://facebook.github.io/react-native/docs/animatedvalue.html#animate
+   * See https://reactnative.dev/docs/animatedvalue.html#animate
    */
   animate(animation: Animation, callback: ?EndCallback): void {
     let handle = null;
@@ -239,6 +242,10 @@ class AnimatedValue extends AnimatedWithChildren {
   }
 
   _updateValue(value: number, flush: boolean): void {
+    if (value === undefined) {
+      throw new Error('AnimatedValue: Attempting to set value to undefined');
+    }
+
     this._value = value;
     if (flush) {
       _flush(this);

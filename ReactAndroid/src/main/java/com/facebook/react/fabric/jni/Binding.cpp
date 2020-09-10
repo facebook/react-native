@@ -26,7 +26,6 @@
 #include <react/uimanager/SchedulerToolbox.h>
 #include <react/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
-#include <react/utils/TimeUtils.h>
 
 #include <Glog/logging.h>
 
@@ -102,7 +101,9 @@ void Binding::startSurfaceWithConstraints(
     jfloat minWidth,
     jfloat maxWidth,
     jfloat minHeight,
-    jfloat maxHeight) {
+    jfloat maxHeight,
+    jboolean isRTL,
+    jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
 
   LOG(WARNING) << "Binding::startSurfaceWithConstraints() was called (address: "
@@ -121,9 +122,12 @@ void Binding::startSurfaceWithConstraints(
 
   LayoutContext context;
   context.pointScaleFactor = {pointScaleFactor_};
+  context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};
   constraints.minimumSize = minimumSize;
   constraints.maximumSize = maximumSize;
+  constraints.layoutDirection =
+      isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   scheduler->startSurface(
       surfaceId,
@@ -168,7 +172,9 @@ void Binding::setConstraints(
     jfloat minWidth,
     jfloat maxWidth,
     jfloat minHeight,
-    jfloat maxHeight) {
+    jfloat maxHeight,
+    jboolean isRTL,
+    jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::setConstraints");
 
   std::shared_ptr<Scheduler> scheduler = getScheduler();
@@ -184,9 +190,12 @@ void Binding::setConstraints(
 
   LayoutContext context;
   context.pointScaleFactor = {pointScaleFactor_};
+  context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};
   constraints.minimumSize = minimumSize;
   constraints.maximumSize = maximumSize;
+  constraints.layoutDirection =
+      isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   scheduler->constraintSurfaceLayout(surfaceId, constraints, context);
 }
@@ -255,10 +264,15 @@ void Binding::installFabricUIManager(
       "react_fabric:enable_removedelete_collation_android");
   collapseDeleteCreateMountingInstructions_ = reactNativeConfig_->getBool(
       "react_fabric:enabled_collapse_delete_create_mounting_instructions");
-  ;
+
+  disableVirtualNodePreallocation_ = reactNativeConfig_->getBool(
+      "react_fabric:disable_virtual_node_preallocation");
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
+
+  enableOptimizedMovesDiffer_ = reactNativeConfig_->getBool(
+      "react_fabric:enabled_optimized_moves_differ_android");
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
@@ -426,29 +440,6 @@ local_ref<JMountItem::javaobject> createInsertMountItem(
       mutation.index);
 }
 
-local_ref<JMountItem::javaobject> createUpdateLocalData(
-    const jni::global_ref<jobject> &javaUIManager,
-    const ShadowViewMutation &mutation) {
-  static auto updateLocalDataInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<alias_ref<JMountItem>(jint, ReadableMap::javaobject)>(
-              "updateLocalDataMountItem");
-
-  auto localData = mutation.newChildShadowView.localData;
-
-  folly::dynamic newLocalData = folly::dynamic::object();
-  if (localData) {
-    newLocalData = localData->getDynamic();
-  }
-
-  local_ref<ReadableNativeMap::jhybridobject> readableNativeMap =
-      ReadableNativeMap::newObjectCxxArgs(newLocalData);
-  return updateLocalDataInstruction(
-      javaUIManager,
-      mutation.newChildShadowView.tag,
-      castReadableMap(readableNativeMap).get());
-}
-
 local_ref<JMountItem::javaobject> createUpdateStateMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation) {
@@ -583,7 +574,7 @@ void Binding::schedulerDidFinishTransaction(
   std::lock_guard<std::recursive_mutex> lock(commitMutex_);
 
   SystraceSection s("FabricUIManagerBinding::schedulerDidFinishTransaction");
-  long finishTransactionStartTime = monotonicTimeInMilliseconds();
+  auto finishTransactionStartTime = telemetryTimePointNow();
 
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
@@ -592,7 +583,9 @@ void Binding::schedulerDidFinishTransaction(
     return;
   }
 
-  auto mountingTransaction = mountingCoordinator->pullTransaction();
+  auto mountingTransaction = mountingCoordinator->pullTransaction(
+      enableOptimizedMovesDiffer_ ? DifferentiatorMode::OptimizedMoves
+                                  : DifferentiatorMode::Classic);
 
   if (!mountingTransaction.has_value()) {
     return;
@@ -737,11 +730,6 @@ void Binding::schedulerDidFinishTransaction(
             mountItems[position++] =
                 createUpdatePropsMountItem(localJavaUIManager, mutation);
           }
-          if (mutation.oldChildShadowView.localData !=
-              mutation.newChildShadowView.localData) {
-            mountItems[position++] =
-                createUpdateLocalData(localJavaUIManager, mutation);
-          }
           if (mutation.oldChildShadowView.state !=
               mutation.newChildShadowView.state) {
             mountItems[position++] =
@@ -789,12 +777,6 @@ void Binding::schedulerDidFinishTransaction(
           if (mutation.newChildShadowView.state) {
             mountItems[position++] =
                 createUpdateStateMountItem(localJavaUIManager, mutation);
-          }
-
-          // LocalData
-          if (mutation.newChildShadowView.localData) {
-            mountItems[position++] =
-                createUpdateLocalData(localJavaUIManager, mutation);
           }
 
           // Layout
@@ -861,19 +843,19 @@ void Binding::schedulerDidFinishTransaction(
                                           jlong,
                                           jlong)>("scheduleMountItem");
 
-  long finishTransactionEndTime = monotonicTimeInMilliseconds();
+  auto finishTransactionEndTime = telemetryTimePointNow();
 
   scheduleMountItem(
       localJavaUIManager,
       batch.get(),
       telemetry.getCommitNumber(),
-      telemetry.getCommitStartTime(),
-      telemetry.getDiffStartTime(),
-      telemetry.getDiffEndTime(),
-      telemetry.getLayoutStartTime(),
-      telemetry.getLayoutEndTime(),
-      finishTransactionStartTime,
-      finishTransactionEndTime);
+      telemetryTimePointToMilliseconds(telemetry.getCommitStartTime()),
+      telemetryTimePointToMilliseconds(telemetry.getDiffStartTime()),
+      telemetryTimePointToMilliseconds(telemetry.getDiffEndTime()),
+      telemetryTimePointToMilliseconds(telemetry.getLayoutStartTime()),
+      telemetryTimePointToMilliseconds(telemetry.getLayoutEndTime()),
+      telemetryTimePointToMilliseconds(finishTransactionStartTime),
+      telemetryTimePointToMilliseconds(finishTransactionEndTime));
 }
 
 void Binding::setPixelDensity(float pointScaleFactor) {
@@ -895,6 +877,10 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
   }
 
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
+
+  if (disableVirtualNodePreallocation_ && !isLayoutableShadowNode) {
+    return;
+  }
 
   static auto preallocateView =
       jni::findClassStatic(UIManagerJavaDescriptor)

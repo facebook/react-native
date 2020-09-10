@@ -20,6 +20,7 @@
 @implementation RCTReconnectingWebSocket {
   NSURL *_url;
   RCTSRWebSocket *_socket;
+  BOOL _stopped;
 }
 
 - (instancetype)initWithURL:(NSURL *)url queue:(dispatch_queue_t)queue
@@ -44,6 +45,7 @@
 - (void)start
 {
   [self stop];
+  _stopped = NO;
   _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
   [_socket setDelegateDispatchQueue:_delegateDispatchQueue];
@@ -52,6 +54,7 @@
 
 - (void)stop
 {
+  _stopped = YES;
   _socket.delegate = nil;
   [_socket closeWithCode:1000 reason:@"Invalidated"];
   _socket = nil;
@@ -64,11 +67,17 @@
 
 - (void)reconnect
 {
+  if (_stopped) {
+   return;
+  }
+
   __weak RCTSRWebSocket *socket = _socket;
+  __weak __typeof(self) weakSelf = self;
+
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-    [self start];
+    [weakSelf start];
     if (!socket) {
-      [self reconnect];
+      [weakSelf reconnect];
     }
   });
 }

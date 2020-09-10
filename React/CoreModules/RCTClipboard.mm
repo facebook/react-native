@@ -26,12 +26,11 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-
-RCT_EXPORT_METHOD(setString:(NSString *)content)
+RCT_EXPORT_METHOD(setString : (NSString *)content)
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
-  clipboard.string = (content ? : @"");
+  clipboard.string = (content ?: @"");
 #else // [TODO(macOS ISS#2323203)
   NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
   [pasteboard clearContents];
@@ -39,12 +38,11 @@ RCT_EXPORT_METHOD(setString:(NSString *)content)
 #endif // ]TODO(macOS ISS#2323203)
 }
 
-RCT_EXPORT_METHOD(getString:(RCTPromiseResolveBlock)resolve
-                  reject:(__unused RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(getString : (RCTPromiseResolveBlock)resolve reject : (__unused RCTPromiseRejectBlock)reject)
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
-  resolve((clipboard.string ? : @""));
+  resolve((clipboard.string ?: @""));
 #else // [TODO(macOS ISS#2323203)
   NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
   resolve(([pasteboard stringForType:NSPasteboardTypeString] ? : @""));
@@ -52,12 +50,15 @@ RCT_EXPORT_METHOD(getString:(RCTPromiseResolveBlock)resolve
 }
 
 - (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                                              nativeInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
+                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<NativeClipboardSpecJSI>(self, jsInvoker);
+  return std::make_shared<NativeClipboardSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end
 
-Class RCTClipboardCls(void) {
+Class RCTClipboardCls(void)
+{
   return RCTClipboard.class;
 }

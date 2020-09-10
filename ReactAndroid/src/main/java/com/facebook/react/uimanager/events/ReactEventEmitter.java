@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -41,7 +43,10 @@ public class ReactEventEmitter implements RCTEventEmitter {
 
   @Override
   public void receiveEvent(int targetReactTag, String eventName, @Nullable WritableMap event) {
-    getEventEmitter(targetReactTag).receiveEvent(targetReactTag, eventName, event);
+    RCTEventEmitter eventEmitter = getEventEmitter(targetReactTag);
+    if (eventEmitter != null) {
+      eventEmitter.receiveEvent(targetReactTag, eventName, event);
+    }
   }
 
   @Override
@@ -51,18 +56,33 @@ public class ReactEventEmitter implements RCTEventEmitter {
     Assertions.assertCondition(touches.size() > 0);
 
     int reactTag = touches.getMap(0).getInt(TARGET_KEY);
-    getEventEmitter(reactTag).receiveTouches(eventName, touches, changedIndices);
+    RCTEventEmitter eventEmitter = getEventEmitter(reactTag);
+    if (eventEmitter != null) {
+      eventEmitter.receiveTouches(eventName, touches, changedIndices);
+    }
   }
 
+  @Nullable
   private RCTEventEmitter getEventEmitter(int reactTag) {
     int type = ViewUtil.getUIManagerType(reactTag);
     RCTEventEmitter eventEmitter = mEventEmitters.get(type);
     if (eventEmitter == null) {
       // TODO T54145494: Refactor RN Event Emitter system to make sure reactTags are always managed
       // by RN
-      FLog.i(
+      FLog.e(
           TAG, "Unable to find event emitter for reactTag: %d - uiManagerType: %d", reactTag, type);
-      eventEmitter = mReactContext.getJSModule(RCTEventEmitter.class);
+      if (mReactContext.hasActiveCatalystInstance()) {
+        eventEmitter = mReactContext.getJSModule(RCTEventEmitter.class);
+      } else {
+        ReactSoftException.logSoftException(
+            TAG,
+            new ReactNoCrashSoftException(
+                "Cannot get RCTEventEmitter from Context for reactTag: "
+                    + reactTag
+                    + " - uiManagerType: "
+                    + type
+                    + " - No active Catalyst instance!"));
+      }
     }
     return eventEmitter;
   }

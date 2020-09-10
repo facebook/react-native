@@ -109,9 +109,9 @@ struct CascadedRectangleCorners {
         /* .topRight = */
         topRight.value_or(topTrailing.value_or(all.value_or(defaults))),
         /* .bottomLeft = */
-        bottomLeft.value_or(topLeading.value_or(all.value_or(defaults))),
+        bottomLeft.value_or(bottomLeading.value_or(all.value_or(defaults))),
         /* .bottomRight = */
-        bottomRight.value_or(topTrailing.value_or(all.value_or(defaults))),
+        bottomRight.value_or(bottomTrailing.value_or(all.value_or(defaults))),
     };
   }
 

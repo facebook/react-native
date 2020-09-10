@@ -7,10 +7,10 @@
 
 #import "RCTPickerManager.h"
 
-#import "RCTBridge.h"
-#import "RCTPicker.h"
-#import "RCTFont.h"
 #import <React/RCTUIManager.h>
+#import "RCTBridge.h"
+#import "RCTFont.h"
+#import "RCTPicker.h"
 
 @implementation RCTPickerManager
 
@@ -23,6 +23,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(items, NSArray<NSDictionary *>)
 RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
+RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(textAlign, NSTextAlignment)
@@ -47,10 +48,13 @@ RCT_EXPORT_METHOD(setNativeSelectedIndex : (nonnull NSNumber *)viewTag toIndex :
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#2323203)
     RCTPlatformView *view = viewRegistry[viewTag]; // TODO(macOS ISS#2323203)
-    
+
     if ([view isKindOfClass:[RCTPicker class]]) {
       [(RCTPicker *)view setSelectedIndex:index.integerValue];
     } else {
+      // This component is used in Fabric through LegacyInteropLayer.
+      // `RCTPicker` view is subview of `RCTLegacyViewManagerInteropComponentView`.
+      // `viewTag` passed as parameter to this method is tag of the `RCTLegacyViewManagerInteropComponentView`.
       RCTPlatformView *subview = view.subviews.firstObject; // TODO(macOS ISS#2323203)
       if ([subview isKindOfClass:[RCTPicker class]]) {
         [(RCTPicker *)subview setSelectedIndex:index.integerValue];

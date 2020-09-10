@@ -32,7 +32,7 @@ type Props = $ReadOnly<{|
   /**
    * Whether or not this component should update.
    */
-  shouldUpdate: ?boolean,
+  shouldUpdate?: ?boolean,
   /**
    * Content short-circuited by React reconciliation process.
    */
@@ -43,11 +43,8 @@ class StaticContainer extends React.Component<Props> {
     return !!nextProps.shouldUpdate;
   }
 
-  render(): null | React$Node {
-    const child = this.props.children;
-    return child === null || child === false
-      ? null
-      : React.Children.only(child);
+  render(): React.Node {
+    return this.props.children;
   }
 }
 

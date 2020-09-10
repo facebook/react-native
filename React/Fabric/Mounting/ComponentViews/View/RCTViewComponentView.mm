@@ -54,14 +54,13 @@ using namespace facebook::react;
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-
-  if (_borderLayer) {
-    _borderLayer.frame = self.layer.bounds;
-  }
-
-  if (_contentView) {
-    _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
-  }
+  // Consider whether using `updateLayoutMetrics:oldLayoutMetrics`
+  // isn't more appropriate for your use case. `layoutSubviews` is called
+  // by UIKit while `updateLayoutMetrics:oldLayoutMetrics` is called
+  // by React Native Renderer within `CATransaction`.
+  // If you are calling `setFrame:` or other methods that cause
+  // `layoutSubviews` to be triggered, `_contentView`'s and `_borderLayout`'s
+  // frames might get out of sync with `self.bounds`.
 }
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
@@ -188,11 +187,6 @@ using namespace facebook::react;
     needsInvalidateLayer = YES;
   }
 
-  // `zIndex`
-  if (oldViewProps.zIndex != newViewProps.zIndex) {
-    self.layer.zPosition = (CGFloat)newViewProps.zIndex;
-  }
-
   // `border`
   if (oldViewProps.borderStyles != newViewProps.borderStyles || oldViewProps.borderRadii != newViewProps.borderRadii ||
       oldViewProps.borderColors != newViewProps.borderColors) {
@@ -263,10 +257,19 @@ using namespace facebook::react;
 
   _layoutMetrics = layoutMetrics;
   _needsInvalidateLayer = YES;
+
+  if (_borderLayer) {
+    _borderLayer.frame = self.layer.bounds;
+  }
+
+  if (_contentView) {
+    _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+  }
 }
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
+  [super finalizeUpdates:updateMask];
   if (!_needsInvalidateLayer) {
     return;
   }
@@ -284,9 +287,10 @@ using namespace facebook::react;
 - (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
   // This is a classic textbook implementation of `hitTest:` with a couple of improvements:
-  //   * It takes layers' `zIndex` property into an account;
   //   * It does not stop algorithm if some touch is outside the view
   //     which does not have `clipToBounds` enabled.
+  //   * Taking `layer.zIndex` field into an account is not required because
+  //     lists of `ShadowView`s are already sorted based on `zIndex` prop.
 
   if (!self.userInteractionEnabled || self.hidden || self.alpha < 0.01) {
     return nil;
@@ -298,14 +302,7 @@ using namespace facebook::react;
     return nil;
   }
 
-  NSArray<__kindof UIView *> *sortedSubviews =
-      [self.subviews sortedArrayUsingComparator:^NSComparisonResult(UIView *a, UIView *b) {
-        // Ensure sorting is stable by treating equal `zIndex` as ascending so
-        // that original order is preserved.
-        return a.layer.zPosition > b.layer.zPosition ? NSOrderedDescending : NSOrderedAscending;
-      }];
-
-  for (UIView *subview in [sortedSubviews reverseObjectEnumerator]) {
+  for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
     UIView *hitView = [subview hitTest:[subview convertPoint:point fromView:self] withEvent:event];
     if (hitView) {
       return hitView;
@@ -399,6 +396,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
           colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 || self.clipsToBounds);
 
   if (useCoreAnimationBorderRendering) {
+    layer.mask = nil;
     if (_borderLayer) {
       [_borderLayer removeFromSuperlayer];
       _borderLayer = nil;

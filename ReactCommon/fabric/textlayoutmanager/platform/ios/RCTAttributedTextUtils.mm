@@ -11,6 +11,7 @@
 #include <react/textlayoutmanager/RCTFontProperties.h>
 #include <react/textlayoutmanager/RCTFontUtils.h>
 #include <react/textlayoutmanager/RCTTextPrimitivesConversions.h>
+#include <react/utils/ManagedObjectWrapper.h>
 
 using namespace facebook::react;
 
@@ -105,8 +106,7 @@ inline static UIColor *RCTEffectiveBackgroundColorFromTextAttributes(const TextA
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
-static NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(
-    const TextAttributes &textAttributes)
+NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(TextAttributes const &textAttributes)
 {
   NSMutableDictionary<NSAttributedStringKey, id> *attributes = [NSMutableDictionary dictionaryWithCapacity:10];
 
@@ -217,12 +217,18 @@ static NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
 
 NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedString &attributedString)
 {
+  static UIImage *placeholderImage;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    placeholderImage = [[UIImage alloc] init];
+  });
+
   NSMutableAttributedString *nsAttributedString = [[NSMutableAttributedString alloc] init];
 
   [nsAttributedString beginEditing];
 
   for (auto fragment : attributedString.getFragments()) {
-    NSAttributedString *nsAttributedStringFragment;
+    NSMutableAttributedString *nsAttributedStringFragment;
 
     if (fragment.isAttachment()) {
       auto layoutMetrics = fragment.parentShadowView.layoutMetrics;
@@ -230,19 +236,17 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
                        .size = {.width = layoutMetrics.frame.size.width, .height = layoutMetrics.frame.size.height}};
 
       NSTextAttachment *attachment = [NSTextAttachment new];
+      attachment.image = placeholderImage;
       attachment.bounds = bounds;
 
-      nsAttributedStringFragment = [NSAttributedString attributedStringWithAttachment:attachment];
+      nsAttributedStringFragment = [[NSMutableAttributedString attributedStringWithAttachment:attachment] mutableCopy];
     } else {
       NSString *string = [NSString stringWithCString:fragment.string.c_str() encoding:NSUTF8StringEncoding];
 
-      nsAttributedStringFragment =
-          [[NSAttributedString alloc] initWithString:string
-                                          attributes:RCTNSTextAttributesFromTextAttributes(fragment.textAttributes)];
+      nsAttributedStringFragment = [[NSMutableAttributedString alloc]
+          initWithString:string
+              attributes:RCTNSTextAttributesFromTextAttributes(fragment.textAttributes)];
     }
-
-    NSMutableAttributedString *nsMutableAttributedStringFragment =
-        [[NSMutableAttributedString alloc] initWithAttributedString:nsAttributedStringFragment];
 
     if (fragment.parentShadowView.componentHandle) {
       RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
@@ -251,14 +255,29 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
       NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes =
           @{RCTAttributedStringEventEmitterKey : eventEmitterWrapper};
 
-      [nsMutableAttributedStringFragment addAttributes:additionalTextAttributes
-                                                 range:NSMakeRange(0, nsMutableAttributedStringFragment.length)];
+      [nsAttributedStringFragment addAttributes:additionalTextAttributes
+                                          range:NSMakeRange(0, nsAttributedStringFragment.length)];
     }
 
-    [nsAttributedString appendAttributedString:nsMutableAttributedStringFragment];
+    [nsAttributedString appendAttributedString:nsAttributedStringFragment];
   }
 
   [nsAttributedString endEditing];
 
   return nsAttributedString;
+}
+
+NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(AttributedStringBox const &attributedStringBox)
+{
+  switch (attributedStringBox.getMode()) {
+    case AttributedStringBox::Mode::Value:
+      return RCTNSAttributedStringFromAttributedString(attributedStringBox.getValue());
+    case AttributedStringBox::Mode::OpaquePointer:
+      return (NSAttributedString *)unwrapManagedObject(attributedStringBox.getOpaquePointer());
+  }
+}
+
+AttributedStringBox RCTAttributedStringBoxFromNSAttributedString(NSAttributedString *nsAttributedString)
+{
+  return nsAttributedString.length ? AttributedStringBox{wrapManagedObject(nsAttributedString)} : AttributedStringBox{};
 }

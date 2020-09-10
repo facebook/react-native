@@ -9,7 +9,6 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
-#import <React/RCTRootView.h>
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTErrorInfo.h>
@@ -17,7 +16,7 @@
 #import <React/RCTJSStackFrame.h>
 #import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTReloadCommand.h>
-#import <React/RCTRedBoxSetEnabled.h>
+#import <React/RCTRootView.h>
 #import <React/RCTSurface.h>
 #import <React/RCTUtils.h>
 
@@ -32,8 +31,7 @@
 @interface RCTLogBoxView : UIWindow
 @end
 
-@implementation RCTLogBoxView
-{
+@implementation RCTLogBoxView {
   RCTSurface *_surface;
 }
 
@@ -77,8 +75,7 @@
 @interface RCTLogBox () <NativeLogBoxSpec>
 @end
 
-@implementation RCTLogBox
-{
+@implementation RCTLogBox {
   RCTLogBoxView *_view;
 }
 
@@ -94,11 +91,16 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(show)
 {
   if (RCTRedBoxGetEnabled()) {
+    __weak RCTLogBox *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (!self->_view) {
-        self->_view = [[RCTLogBoxView alloc] initWithFrame:[UIScreen mainScreen].bounds bridge: self->_bridge];
+      __strong RCTLogBox *strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
       }
-      [self->_view show];
+      if (!strongSelf->_view) {
+        strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:[UIScreen mainScreen].bounds bridge:self->_bridge];
+      }
+      [strongSelf->_view show];
     });
   }
 }
@@ -106,26 +108,30 @@ RCT_EXPORT_METHOD(show)
 RCT_EXPORT_METHOD(hide)
 {
   if (RCTRedBoxGetEnabled()) {
+    __weak RCTLogBox *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-      self->_view = nil;
+      __strong RCTLogBox *strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+      strongSelf->_view = nil;
     });
   }
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  if (RCTRedBoxGetEnabled()) {
-    return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker);
-  }
-
-  return nullptr;
+  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end
 
 #else // Disabled
 
-@interface RCTLogBox() <NativeLogBoxSpec>
+@interface RCTLogBox () <NativeLogBoxSpec>
 @end
 
 @implementation RCTLogBox
@@ -135,22 +141,28 @@ RCT_EXPORT_METHOD(hide)
   return nil;
 }
 
-- (void)show {
-  // noop
-}
-
-- (void)hide {
-  // noop
-}
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (void)show
 {
-  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker);
+  // noop
+}
+
+- (void)hide
+{
+  // noop
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+{
+  return std::make_shared<facebook::react::NativeLogBoxSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 @end
 
 #endif
 
-Class RCTLogBoxCls(void) {
+Class RCTLogBoxCls(void)
+{
   return RCTLogBox.class;
 }

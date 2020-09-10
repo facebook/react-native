@@ -13,9 +13,9 @@ rn_xplat_cxx_library(
         "//fbandroid/instrumentation_tests/com/facebook/react/...",
     ],
     deps = [
-        "fbsource//xplat/folly:molly",
         "//fbandroid/native:base",
         "//fbandroid/native/fb:fb",
+        "//xplat/folly:molly",
         react_native_xplat_target("cxxreact:module"),
     ],
 )

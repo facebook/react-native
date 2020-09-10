@@ -26,6 +26,7 @@ rn_android_library(
         react_native_target("java/com/facebook/debug/tags:tags"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/util:util"),
         react_native_target("java/com/facebook/react/common/network:network"),
         react_native_target("java/com/facebook/react/devsupport:interfaces"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
@@ -36,7 +37,9 @@ rn_android_library(
         react_native_target("java/com/facebook/react/packagerconnection:packagerconnection"),
         react_native_target("res:devsupport"),
     ],
-    exported_deps = [react_native_target("java/com/facebook/fbreact/specs:FBReactNativeSpec")],
+    exported_deps = [
+        react_native_target("java/com/facebook/fbreact/specs:FBReactNativeSpec"),
+    ],
 )
 
 rn_android_library(

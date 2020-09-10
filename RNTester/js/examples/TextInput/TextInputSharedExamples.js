@@ -97,6 +97,8 @@ class RewriteExample extends React.Component<$FlowFixMeProps, any> {
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
+          testID="rewrite_sp_underscore_input"
+          autoCorrect={false}
           multiline={false}
           maxLength={limit}
           onChangeText={text => {
@@ -126,6 +128,8 @@ class RewriteExampleInvalidCharacters extends React.Component<
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
+          testID="rewrite_no_sp_input"
+          autoCorrect={false}
           multiline={false}
           onChangeText={text => {
             this.setState({text: text.replace(/\s/g, '')});
@@ -152,17 +156,20 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
+          testID="rewrite_clear_input"
+          autoCorrect={false}
           ref={ref => {
             this.inputRef = ref;
           }}
-          multiline={false}
+          multiline={true}
           onChangeText={text => {
-            this.setState({text: text.replace(/\s/g, '')});
+            this.setState({text: text.replace(/ /g, '')});
           }}
           style={styles.default}
           value={this.state.text}
         />
         <Button
+          testID="rewrite_clear_button"
           onPress={() => {
             if (this.inputRef != null) {
               this.inputRef.clear();
@@ -604,8 +611,6 @@ module.exports = ([
       return (
         <View>
           <SelectionExample
-            /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-             * found when making Flow check .android.js files. */
             style={styles.default}
             value="text selection can be changed"
           />

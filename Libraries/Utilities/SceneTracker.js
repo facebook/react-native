@@ -10,7 +10,7 @@
 
 'use strict';
 
-type Scene = {name: string, ...};
+export type Scene = {name: string, ...};
 
 let _listeners: Array<(scene: Scene) => void> = [];
 

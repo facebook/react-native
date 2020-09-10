@@ -8,6 +8,7 @@
 #import "AppDelegate.h"
 
 #import <React/JSCExecutorFactory.h>
+#import <React/RCTJSIExecutorRuntimeInstaller.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -151,17 +152,24 @@
 
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
-  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:self];
+  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                             delegate:self
+                                                            jsInvoker:bridge.jsCallInvoker];
   __weak __typeof(self) weakSelf = self;
-  return std::make_unique<facebook::react::JSCExecutorFactory>([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
-    if (!bridge) {
-      return;
-    }
-    __typeof(self) strongSelf = weakSelf;
-    if (strongSelf) {
-      [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
-    }
-  });
+  return std::make_unique<facebook::react::JSCExecutorFactory>(
+    facebook::react::RCTJSIExecutorRuntimeInstaller([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
+      if (!bridge) {
+        return;
+      }
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf) {
+        facebook::react::RuntimeExecutor syncRuntimeExecutor = [&](std::function<void(facebook::jsi::Runtime &runtime_)> &&callback) {
+          callback(runtime);
+        };
+        [strongSelf->_turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
+      }
+    })
+  );
 }
 
 #pragma mark RCTTurboModuleManagerDelegate
@@ -180,8 +188,10 @@
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                        instance:(id<RCTTurboModule>)instance
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                                                      nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
+                                                      perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return facebook::react::RNTesterTurboModuleProvider(name, instance, jsInvoker);
+  return facebook::react::RNTesterTurboModuleProvider(name, instance, jsInvoker, nativeInvoker, perfLogger);
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass

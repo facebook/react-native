@@ -11,13 +11,10 @@
 'use strict';
 
 import * as React from 'react';
-import type {
-  HostComponent,
-  _InternalReactNativeComponentClass,
-} from '../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 
 function takesHostComponentInstance(
-  instance: React$ElementRef<HostComponent<mixed>> | null,
+  instance: React.ElementRef<HostComponent<mixed>> | null,
 ): void {}
 
 const MyHostComponent = (('Host': any): HostComponent<mixed>);
@@ -31,22 +28,5 @@ const MyHostComponent = (('Host': any): HostComponent<mixed>);
     }
 
     hostComponentRef.measureLayout(hostComponentRef, () => {});
-  }}
-/>;
-
-declare var NativeComponent: _InternalReactNativeComponentClass<{...}>;
-class MyNativeComponent extends NativeComponent {}
-
-<MyNativeComponent
-  ref={nativeComponentRef => {
-    // $FlowExpectedError - NativeComponent cannot be passed as HostComponent.
-    takesHostComponentInstance(nativeComponentRef);
-
-    if (nativeComponentRef == null) {
-      return;
-    }
-
-    // $FlowExpectedError - NativeComponent cannot be passed as HostComponent.
-    nativeComponentRef.measureLayout(nativeComponentRef, () => {});
   }}
 />;

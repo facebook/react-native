@@ -161,6 +161,7 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -173,7 +174,7 @@ public class ColorPropNativeComponentManagerDelegate<T extends View, U extends B
   public void setProperty(T view, String propName, @Nullable Object value) {
     switch (propName) {
       case \\"tintColor\\":
-        mViewManager.setTintColor(view, value == null ? null : ((Double) value).intValue());
+        mViewManager.setTintColor(view, ColorPropConverter.getColor(value, view.getContext()));
         break;
       default:
         super.setProperty(view, propName, value);
@@ -704,6 +705,7 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
@@ -720,10 +722,10 @@ public class ImageColorPropNativeComponentManagerDelegate<T extends View, U exte
         mViewManager.setThumbImage(view, (ReadableMap) value);
         break;
       case \\"color\\":
-        mViewManager.setColor(view, value == null ? null : ((Double) value).intValue());
+        mViewManager.setColor(view, ColorPropConverter.getColor(value, view.getContext()));
         break;
       case \\"thumbTintColor\\":
-        mViewManager.setThumbTintColor(view, value == null ? null : ((Double) value).intValue());
+        mViewManager.setThumbTintColor(view, ColorPropConverter.getColor(value, view.getContext()));
         break;
       case \\"point\\":
         mViewManager.setPoint(view, (ReadableMap) value);

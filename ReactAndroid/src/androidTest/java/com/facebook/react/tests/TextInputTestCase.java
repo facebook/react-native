@@ -12,6 +12,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -105,6 +106,97 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     fireEditorActionAndCheckRecording(reactEditText, EditorInfo.IME_ACTION_SEND);
     fireEditorActionAndCheckRecording(reactEditText, EditorInfo.IME_ACTION_UNSPECIFIED);
     fireEditorActionAndCheckRecording(reactEditText, EditorInfo.IME_ACTION_NONE);
+  }
+
+  public void testRequestFocusDoesNothing() throws Throwable {
+    String testId = "textInput1";
+
+    final ReactEditText reactEditText = getViewByTestId(testId);
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.clearFocus();
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertFalse(reactEditText.isFocused());
+
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.requestFocus();
+          }
+        });
+    waitForBridgeAndUIIdle();
+
+    // Calling requestFocus() directly should no-op
+    assertFalse(reactEditText.isFocused());
+  }
+
+  public void testRequestFocusFromJS() throws Throwable {
+    String testId = "textInput1";
+
+    final ReactEditText reactEditText = getViewByTestId(testId);
+
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.clearFocus();
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertFalse(reactEditText.isFocused());
+
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.requestFocusFromJS();
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertTrue(reactEditText.isFocused());
+  }
+
+  public void testAccessibilityFocus() throws Throwable {
+    String testId = "textInput1";
+
+    final ReactEditText reactEditText = getViewByTestId(testId);
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.clearFocus();
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertFalse(reactEditText.isFocused());
+
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.performAccessibilityAction(
+                AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+            reactEditText.performAccessibilityAction(AccessibilityNodeInfo.ACTION_CLICK, null);
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertTrue(reactEditText.isFocused());
+
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.performAccessibilityAction(
+                AccessibilityNodeInfo.ACTION_CLEAR_FOCUS, null);
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertFalse(reactEditText.isFocused());
   }
 
   private void fireEditorActionAndCheckRecording(

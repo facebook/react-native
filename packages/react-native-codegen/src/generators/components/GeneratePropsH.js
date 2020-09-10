@@ -454,7 +454,7 @@ function generatePropsString(
       const nativeType = getNativeTypeFromAnnotation(componentName, prop, []);
       const defaultValue = convertDefaultTypeToString(componentName, prop);
 
-      return `const ${nativeType} ${prop.name}{${defaultValue}};`;
+      return `${nativeType} ${prop.name}{${defaultValue}};`;
     })
     .join('\n' + '  ');
 }

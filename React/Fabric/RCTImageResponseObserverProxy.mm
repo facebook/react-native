@@ -7,6 +7,7 @@
 
 #import "RCTImageResponseObserverProxy.h"
 
+#import <React/RCTUtils.h>
 #import <react/imagemanager/ImageResponse.h>
 #import <react/imagemanager/ImageResponseObserver.h>
 #import <react/utils/ManagedObjectWrapper.h>
@@ -24,7 +25,7 @@ void RCTImageResponseObserverProxy::didReceiveImage(ImageResponse const &imageRe
   UIImage *image = (UIImage *)unwrapManagedObject(imageResponse.getImage());
   id<RCTImageResponseDelegate> delegate = delegate_;
   auto this_ = this;
-  dispatch_async(dispatch_get_main_queue(), ^{
+  RCTExecuteOnMainQueue(^{
     [delegate didReceiveImage:image fromObserver:this_];
   });
 }
@@ -33,7 +34,7 @@ void RCTImageResponseObserverProxy::didReceiveProgress(float progress) const
 {
   auto this_ = this;
   id<RCTImageResponseDelegate> delegate = delegate_;
-  dispatch_async(dispatch_get_main_queue(), ^{
+  RCTExecuteOnMainQueue(^{
     [delegate didReceiveProgress:progress fromObserver:this_];
   });
 }
@@ -42,7 +43,7 @@ void RCTImageResponseObserverProxy::didReceiveFailure() const
 {
   auto this_ = this;
   id<RCTImageResponseDelegate> delegate = delegate_;
-  dispatch_async(dispatch_get_main_queue(), ^{
+  RCTExecuteOnMainQueue(^{
     [delegate didReceiveFailureFromObserver:this_];
   });
 }

@@ -474,7 +474,8 @@ TEST_P(JSITest, FunctionTest) {
   // This tests all the function argument converters, and all the
   // non-lvalue overloads of call().
   Function f = function(
-      "function(n, b, d, df, i, s1, s2, s3, o, a, f, v) { return "
+      "function(n, b, d, df, i, s1, s2, s3, s_sun, s_bad, o, a, f, v) { "
+      "return "
       "n === null && "
       "b === true && "
       "d === 3.14 && "
@@ -483,11 +484,12 @@ TEST_P(JSITest, FunctionTest) {
       "s1 == 's1' && "
       "s2 == 's2' && "
       "s3 == 's3' && "
+      "s_sun == 's\\u2600' && "
+      "typeof s_bad == 'string' && "
       "typeof o == 'object' && "
       "Array.isArray(a) && "
       "typeof f == 'function' && "
       "v == 42 }");
-  std::string s3 = "s3";
   EXPECT_TRUE(f.call(
                    rt,
                    nullptr,
@@ -497,7 +499,10 @@ TEST_P(JSITest, FunctionTest) {
                    17,
                    "s1",
                    String::createFromAscii(rt, "s2"),
-                   s3,
+                   std::string{"s3"},
+                   std::string{u8"s\u2600"},
+                   // invalid UTF8 sequence due to unexpected continuation byte
+                   std::string{"s\x80"},
                    Object(rt),
                    Array(rt, 1),
                    function("function(){}"),
@@ -559,11 +564,11 @@ TEST_P(JSITest, FunctionConstructorTest) {
       .getObject(rt)
       .setProperty(rt, "pika", "chu");
   auto empty = ctor.callAsConstructor(rt);
-  ASSERT_TRUE(empty.isObject());
+  EXPECT_TRUE(empty.isObject());
   auto emptyObj = std::move(empty).getObject(rt);
   EXPECT_EQ(emptyObj.getProperty(rt, "pika").getString(rt).utf8(rt), "chu");
   auto who = ctor.callAsConstructor(rt, "who");
-  ASSERT_TRUE(who.isObject());
+  EXPECT_TRUE(who.isObject());
   auto whoObj = std::move(who).getObject(rt);
   EXPECT_EQ(whoObj.getProperty(rt, "pika").getString(rt).utf8(rt), "who");
 
@@ -939,7 +944,7 @@ unsigned countOccurences(const std::string& of, const std::string& in) {
 } // namespace
 
 TEST_P(JSITest, JSErrorsArePropagatedNicely) {
-  unsigned callsBeoreError = 5;
+  unsigned callsBeforeError = 5;
 
   Function sometimesThrows = function(
       "function sometimesThrows(shouldThrow, callback) {"
@@ -953,9 +958,9 @@ TEST_P(JSITest, JSErrorsArePropagatedNicely) {
       rt,
       PropNameID::forAscii(rt, "callback"),
       0,
-      [&sometimesThrows, &callsBeoreError](
+      [&sometimesThrows, &callsBeforeError](
           Runtime& rt, const Value& thisVal, const Value* args, size_t count) {
-        return sometimesThrows.call(rt, --callsBeoreError == 0, args[0]);
+        return sometimesThrows.call(rt, --callsBeforeError == 0, args[0]);
       });
 
   try {
@@ -973,6 +978,79 @@ TEST_P(JSITest, JSErrorsCanBeConstructedWithStack) {
   auto err = JSError(rt, "message", "stack");
   EXPECT_EQ(err.getMessage(), "message");
   EXPECT_EQ(err.getStack(), "stack");
+}
+
+TEST_P(JSITest, JSErrorDoesNotInfinitelyRecurse) {
+  Value globalString = rt.global().getProperty(rt, "String");
+  rt.global().setProperty(rt, "String", Value::undefined());
+  try {
+    eval("throw Error('whoops')");
+    FAIL() << "expected exception";
+  } catch (const JSError& ex) {
+    EXPECT_EQ(
+        ex.getMessage(),
+        "[Exception while creating message string: callGlobalFunction: "
+        "JS global property 'String' is undefined, expected a Function]");
+  }
+  rt.global().setProperty(rt, "String", globalString);
+
+  Value globalError = rt.global().getProperty(rt, "Error");
+  rt.global().setProperty(rt, "Error", Value::undefined());
+  try {
+    rt.global().getPropertyAsFunction(rt, "NotAFunction");
+    FAIL() << "expected exception";
+  } catch (const JSError& ex) {
+    EXPECT_EQ(
+        ex.getMessage(),
+        "callGlobalFunction: JS global property 'Error' is undefined, "
+        "expected a Function (while raising getPropertyAsObject: "
+        "property 'NotAFunction' is undefined, expected an Object)");
+  }
+
+  // If Error is missing, this is fundamentally a problem with JS code
+  // messing up the global object, so it should present in JS code as
+  // a catchable string.  Not an Error (because that's broken), or as
+  // a C++ failure.
+
+  auto fails = [](Runtime& rt, const Value&, const Value*, size_t) -> Value {
+    return rt.global().getPropertyAsObject(rt, "NotAProperty");
+  };
+  EXPECT_EQ(
+      function("function (f) { try { f(); return 'undefined'; }"
+               "catch (e) { return typeof e; } }")
+          .call(
+              rt,
+              Function::createFromHostFunction(
+                  rt, PropNameID::forAscii(rt, "fails"), 0, fails))
+          .getString(rt)
+          .utf8(rt),
+      "string");
+
+  rt.global().setProperty(rt, "Error", globalError);
+}
+
+TEST_P(JSITest, JSErrorStackOverflowHandling) {
+  rt.global().setProperty(
+      rt,
+      "callSomething",
+      Function::createFromHostFunction(
+          rt,
+          PropNameID::forAscii(rt, "callSomething"),
+          0,
+          [this](
+              Runtime& rt2,
+              const Value& thisVal,
+              const Value* args,
+              size_t count) {
+            EXPECT_EQ(&rt, &rt2);
+            return function("function() { return 0; }").call(rt);
+          }));
+  try {
+    eval("(function f() { callSomething(); f.apply(); })()");
+    FAIL();
+  } catch (const JSError& ex) {
+    EXPECT_NE(std::string(ex.what()).find("exceeded"), std::string::npos);
+  }
 }
 
 TEST_P(JSITest, ScopeDoesNotCrashTest) {
@@ -1191,6 +1269,88 @@ TEST_P(JSITest, SymbolTest) {
   EXPECT_TRUE(Value::strictEquals(
       rt, eval("Symbol.for('a')"), eval("Symbol.for('a')")));
   EXPECT_FALSE(Value::strictEquals(rt, eval("Symbol('a')"), eval("'a'")));
+}
+
+//----------------------------------------------------------------------
+// Test that multiple levels of delegation in DecoratedHostObjects works.
+
+class RD1 : public RuntimeDecorator<Runtime, Runtime> {
+ public:
+  RD1(Runtime& plain) : RuntimeDecorator(plain) {}
+
+  Object createObject(std::shared_ptr<HostObject> ho) {
+    class DHO1 : public DecoratedHostObject {
+     public:
+      using DecoratedHostObject::DecoratedHostObject;
+
+      Value get(Runtime& rt, const PropNameID& name) override {
+        numGets++;
+        return DecoratedHostObject::get(rt, name);
+      }
+    };
+    return Object::createFromHostObject(
+        plain(), std::make_shared<DHO1>(*this, ho));
+  }
+
+  static unsigned numGets;
+};
+
+class RD2 : public RuntimeDecorator<Runtime, Runtime> {
+ public:
+  RD2(Runtime& plain) : RuntimeDecorator(plain) {}
+
+  Object createObject(std::shared_ptr<HostObject> ho) {
+    class DHO2 : public DecoratedHostObject {
+     public:
+      using DecoratedHostObject::DecoratedHostObject;
+
+      Value get(Runtime& rt, const PropNameID& name) override {
+        numGets++;
+        return DecoratedHostObject::get(rt, name);
+      }
+    };
+    return Object::createFromHostObject(
+        plain(), std::make_shared<DHO2>(*this, ho));
+  }
+
+  static unsigned numGets;
+};
+
+class HO : public HostObject {
+ public:
+  explicit HO(Runtime* expectedRT) : expectedRT_(expectedRT) {}
+
+  Value get(Runtime& rt, const PropNameID& name) override {
+    EXPECT_EQ(expectedRT_, &rt);
+    return Value(17.0);
+  }
+
+ private:
+  // The runtime we expect to be called with.
+  Runtime* expectedRT_;
+};
+
+unsigned RD1::numGets = 0;
+unsigned RD2::numGets = 0;
+
+TEST_P(JSITest, MultilevelDecoratedHostObject) {
+  // This test will be run for various test instantiations, so initialize these
+  // counters.
+  RD1::numGets = 0;
+  RD2::numGets = 0;
+
+  RD1 rd1(rt);
+  RD2 rd2(rd1);
+  // We expect the "get" operation of ho to be called with rd2.
+  auto ho = std::make_shared<HO>(&rd2);
+  auto obj = Object::createFromHostObject(rd2, ho);
+  Value v = obj.getProperty(rd2, "p");
+  EXPECT_TRUE(v.isNumber());
+  EXPECT_EQ(17.0, v.asNumber());
+  auto ho2 = obj.getHostObject(rd2);
+  EXPECT_EQ(ho, ho2);
+  EXPECT_EQ(1, RD1::numGets);
+  EXPECT_EQ(1, RD2::numGets);
 }
 
 INSTANTIATE_TEST_CASE_P(

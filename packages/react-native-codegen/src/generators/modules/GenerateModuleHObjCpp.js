@@ -27,7 +27,7 @@ type FilesOutput = Map<string, string>;
 const moduleTemplate = `
 class JSI_EXPORT Native::_MODULE_NAME_::SpecJSI : public ObjCTurboModule {
 public:
-  Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+  Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker, id<RCTTurboModulePerformanceLogger> perfLogger);
 };`;
 
 const protocolTemplate = `

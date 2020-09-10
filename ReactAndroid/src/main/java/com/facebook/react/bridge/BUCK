@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "IS_OSS_BUILD", "react_native_dep", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "IS_OSS_BUILD", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_android_library")
 
 INTERFACES = [
     "Dynamic.java",
@@ -11,6 +11,7 @@ INTERFACES = [
     "ReadableArray.java",
     "ReadableType.java",
     "NativeArrayInterface.java",
+    "LifecycleEventListener.java",
 ]
 
 rn_android_library(
@@ -29,6 +30,9 @@ rn_android_library(
         react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
     ],
     required_for_source_only_abi = True,
+    tests = [
+        react_native_tests_target("java/com/facebook/react/bridge:bridge"),
+    ],
     visibility = [
         "PUBLIC",
     ],

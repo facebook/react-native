@@ -16,13 +16,18 @@ RuntimeAdapter::~RuntimeAdapter() = default;
 void RuntimeAdapter::tickleJs() {}
 
 SharedRuntimeAdapter::SharedRuntimeAdapter(
-    std::shared_ptr<HermesRuntime> runtime)
-    : runtime_(std::move(runtime)) {}
+    std::shared_ptr<jsi::Runtime> runtime,
+    debugger::Debugger &debugger)
+    : runtime_(std::move(runtime)), debugger_(debugger) {}
 
 SharedRuntimeAdapter::~SharedRuntimeAdapter() = default;
 
-HermesRuntime &SharedRuntimeAdapter::getRuntime() {
+jsi::Runtime &SharedRuntimeAdapter::getRuntime() {
   return *runtime_;
+}
+
+debugger::Debugger &SharedRuntimeAdapter::getDebugger() {
+  return debugger_;
 }
 
 } // namespace inspector

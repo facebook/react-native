@@ -19,9 +19,7 @@ class LegacyViewManagerInteropComponentDescriptor final
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 
   LegacyViewManagerInteropComponentDescriptor(
-      EventDispatcher::Weak const &eventDispatcher,
-      ContextContainer::Shared const &contextContainer = {},
-      ComponentDescriptor::Flavor const &flavor = {});
+      ComponentDescriptorParameters const &parameters);
   /*
    * Returns `name` and `handle` based on a `flavor`, not on static data from
    * `LegacyViewManagerInteropShadowNode`.

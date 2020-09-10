@@ -10,9 +10,11 @@
 
 'use strict';
 
-import Pressability from '../../Pressability/Pressability.js';
-import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
-import TVTouchable from './TVTouchable.js';
+import Pressability, {
+  type PressabilityConfig,
+} from '../../Pressability/Pressability';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
+import TVTouchable from './TVTouchable';
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
@@ -111,55 +113,7 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
   _tvTouchable: ?TVTouchable;
 
   state: State = {
-    pressability: new Pressability({
-      getHitSlop: () => this.props.hitSlop,
-      getLongPressDelayMS: () => {
-        if (this.props.delayLongPress != null) {
-          const maybeNumber = this.props.delayLongPress;
-          if (typeof maybeNumber === 'number') {
-            return maybeNumber;
-          }
-        }
-        return 500;
-      },
-      getPressDelayMS: () => this.props.delayPressIn,
-      getPressOutDelayMS: () => this.props.delayPressOut,
-      getPressRectOffset: () => this.props.pressRetentionOffset,
-      getTouchSoundDisabled: () => this.props.touchSoundDisabled,
-      onBlur: event => {
-        if (this.props.onBlur != null) {
-          this.props.onBlur(event);
-        }
-      },
-      onFocus: event => {
-        if (this.props.onFocus != null) {
-          this.props.onFocus(event);
-        }
-      },
-      onLongPress: event => {
-        if (this.props.onLongPress != null) {
-          this.props.onLongPress(event);
-        }
-      },
-      onPress: event => {
-        if (this.props.onPress != null) {
-          this.props.onPress(event);
-        }
-      },
-      onPressIn: event => {
-        if (this.props.onPressIn != null) {
-          this.props.onPressIn(event);
-        }
-      },
-      onPressOut: event => {
-        if (this.props.onPressOut != null) {
-          this.props.onPressOut(event);
-        }
-      },
-      onResponderTerminationRequest: () =>
-        !this.props.rejectResponderTermination,
-      onStartShouldSetResponder: () => !this.props.disabled,
-    }),
+    pressability: new Pressability(createPressabilityConfig(this.props)),
   };
 
   render(): React.Node {
@@ -219,6 +173,10 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
     }
   }
 
+  componentDidUpdate(): void {
+    this.state.pressability.configure(createPressabilityConfig(this.props));
+  }
+
   componentWillUnmount(): void {
     if (Platform.isTV) {
       if (this._tvTouchable != null) {
@@ -227,6 +185,25 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
     }
     this.state.pressability.reset();
   }
+}
+
+function createPressabilityConfig(props: Props): PressabilityConfig {
+  return {
+    cancelable: !props.rejectResponderTermination,
+    disabled: props.disabled,
+    hitSlop: props.hitSlop,
+    delayLongPress: props.delayLongPress,
+    delayPressIn: props.delayPressIn,
+    delayPressOut: props.delayPressOut,
+    pressRectOffset: props.pressRetentionOffset,
+    android_disableSound: props.touchSoundDisabled,
+    onBlur: props.onBlur,
+    onFocus: props.onFocus,
+    onLongPress: props.onLongPress,
+    onPress: props.onPress,
+    onPressIn: props.onPressIn,
+    onPressOut: props.onPressOut,
+  };
 }
 
 module.exports = TouchableWithoutFeedback;

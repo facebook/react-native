@@ -148,12 +148,53 @@ exports.examples = [
     },
   },
   {
-    title: 'Circle with Border Radius',
+    title: 'Rounded Borders',
     render(): React.Node {
       return (
-        <View
-          style={{borderRadius: 10, borderWidth: 1, width: 20, height: 20}}
-        />
+        <View style={{flexDirection: 'row'}}>
+          <View
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 25,
+              borderWidth: 1,
+              marginRight: 10,
+            }}
+          />
+          <View
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 25,
+              borderWidth: 10,
+              marginRight: 10,
+            }}
+          />
+          <View
+            style={{
+              width: 50,
+              height: 50,
+              borderTopLeftRadius: 5,
+              borderTopRightRadius: 10,
+              borderBottomRightRadius: 25,
+              borderBottomLeftRadius: 50,
+              borderWidth: 1,
+              marginRight: 10,
+            }}
+          />
+          <View
+            style={{
+              width: 50,
+              height: 50,
+              borderTopLeftRadius: 5,
+              borderTopRightRadius: 10,
+              borderBottomRightRadius: 25,
+              borderBottomLeftRadius: 50,
+              borderWidth: 10,
+              marginRight: 10,
+            }}
+          />
+        </View>
       );
     },
   },

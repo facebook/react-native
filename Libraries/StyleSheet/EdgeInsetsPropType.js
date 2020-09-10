@@ -10,9 +10,6 @@
 
 'use strict';
 
-export type EdgeInsetsProp = $ReadOnly<{|
-  top?: ?number,
-  left?: ?number,
-  bottom?: ?number,
-  right?: ?number,
-|}>;
+import type {Rect} from './Rect';
+
+export type EdgeInsetsProp = Rect;

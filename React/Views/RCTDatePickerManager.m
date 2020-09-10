@@ -7,23 +7,27 @@
 
 #import "RCTDatePickerManager.h"
 
+#import <React/RCTUIManager.h>
 #import "RCTBridge.h"
 #import "RCTDatePicker.h"
 #import "RCTEventDispatcher.h"
 #import "UIView+React.h"
-#import <React/RCTUIManager.h>
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-@implementation RCTConvert(UIDatePicker)
+@implementation RCTConvert (UIDatePicker)
 
-RCT_ENUM_CONVERTER(UIDatePickerMode, (@{
-  @"time": @(UIDatePickerModeTime),
-  @"date": @(UIDatePickerModeDate),
-  @"datetime": @(UIDatePickerModeDateAndTime),
-  @"countdown": @(UIDatePickerModeCountDownTimer), // not supported yet
-}), UIDatePickerModeTime, integerValue)
+RCT_ENUM_CONVERTER(
+    UIDatePickerMode,
+    (@{
+      @"time" : @(UIDatePickerModeTime),
+      @"date" : @(UIDatePickerModeDate),
+      @"datetime" : @(UIDatePickerModeDateAndTime),
+      @"countdown" : @(UIDatePickerModeCountDownTimer), // not supported yet
+    }),
+    UIDatePickerModeTime,
+    integerValue)
 #else // [TODO(macOS ISS#2323203)
-@implementation RCTConvert(NSDatePicker)
+@implementation RCTConvert (NSDatePicker)
 RCT_ENUM_CONVERTER(NSDatePickerMode, (@{
   @"single": @(NSSingleDateMode),
   @"range": @(NSRangeDateMode)
@@ -77,6 +81,9 @@ RCT_EXPORT_METHOD(setNativeDate : (nonnull NSNumber *)viewTag toDate : (NSDate *
       [(RCTDatePicker *)view setDateValue:date];
 #endif // ]TODO(macOS ISS#2323203)
     } else {
+      // This component is used in Fabric through LegacyInteropLayer.
+      // `RCTPicker` view is subview of `RCTLegacyViewManagerInteropComponentView`.
+      // `viewTag` passed as parameter to this method is tag of the `RCTLegacyViewManagerInteropComponentView`.
       RCTPlatformView *subview = view.subviews.firstObject; // TODO(macOS ISS#2323203)
       if ([subview isKindOfClass:[RCTDatePicker class]]) {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)

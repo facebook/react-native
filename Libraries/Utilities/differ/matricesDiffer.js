@@ -30,6 +30,7 @@ const matricesDiffer = function(one, two) {
     one[14] !== two[14] ||
     one[5] !== two[5] ||
     one[10] !== two[10] ||
+    one[0] !== two[0] ||
     one[1] !== two[1] ||
     one[2] !== two[2] ||
     one[3] !== two[3] ||

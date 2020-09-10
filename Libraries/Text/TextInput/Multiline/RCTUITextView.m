@@ -165,6 +165,10 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 
 - (void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
 {
+  if ([_defaultTextAttributes isEqualToDictionary:defaultTextAttributes]) {
+    return;
+  }
+
   _defaultTextAttributes = defaultTextAttributes;
   self.typingAttributes = defaultTextAttributes;
   [self _updatePlaceholder];
@@ -331,6 +335,17 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 }
 
 #endif // ]TODO(macOS ISS#2323203)
+
+- (void)selectAll:(id)sender
+{
+  [super selectAll:sender];
+
+  // `selectAll:` does not work for UITextView when it's being called inside UITextView's delegate methods.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UITextRange *selectionRange = [self textRangeFromPosition:self.beginningOfDocument toPosition:self.endOfDocument];
+    [self setSelectedTextRange:selectionRange notifyDelegate:NO];
+  });
+}
 
 #pragma mark - Layout
 

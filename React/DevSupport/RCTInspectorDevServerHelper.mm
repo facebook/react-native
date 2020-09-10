@@ -7,7 +7,7 @@
 
 #import <React/RCTInspectorDevServerHelper.h>
 
-#if RCT_DEV && !TARGET_OS_UIKITFORMAC
+#if RCT_DEV
 
 #import <React/RCTLog.h>
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
@@ -53,28 +53,6 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
                                                          escapedAppName]];
 }
 
-static NSURL *getAttachDeviceUrl(NSURL *bundleURL, NSString *title)
-{
-  NSNumber *metroBundlerPort = @8081;
-  NSString *metroBundlerPortStr = [[[NSProcessInfo processInfo] environment] objectForKey:@"RCT_METRO_PORT"];
-  if (metroBundlerPortStr && [metroBundlerPortStr length] > 0) {
-    metroBundlerPort = [NSNumber numberWithInt:[metroBundlerPortStr intValue]];
-  }
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  NSString *escapedDeviceName = [[[UIDevice currentDevice] name]
-      stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
-#else // [TODO(macOS ISS#2323203)
-  NSString *escapedDeviceName = @"";
-#endif // ]TODO(macOS ISS#2323203)
-  NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier]
-      stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
-  return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/attach-debugger-nuclide?title=%@&device=%@&app=%@",
-                                                         getServerHost(bundleURL, metroBundlerPort),
-                                                         title,
-                                                         escapedDeviceName,
-                                                         escapedAppName]];
-}
-
 @implementation RCTInspectorDevServerHelper
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
@@ -86,51 +64,6 @@ static void sendEventToAllConnections(NSString *event)
   for (NSString *socketId in socketConnections) {
     [socketConnections[socketId] sendEventToAllConnections:event];
   }
-}
-
-static void displayErrorAlert(UIViewController *view, NSString *message)
-{
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                 message:message
-                                                          preferredStyle:UIAlertControllerStyleAlert];
-  [view presentViewController:alert animated:YES completion:nil];
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2.5), dispatch_get_main_queue(), ^{
-    [alert dismissViewControllerAnimated:YES completion:nil];
-  });
-#else // [TODO(macOS ISS#2323203)
-  NSAlert *alert = [[NSAlert alloc] init];
-  [alert setMessageText:message];
-  [alert addButtonWithTitle:@"OK"];
-  [alert setAlertStyle:NSWarningAlertStyle];
-  [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:nil];
-  
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2.5),
-      dispatch_get_main_queue(),
-      ^{
-        [[NSApp keyWindow] endSheet:[alert window]];
-      });
-#endif // ]TODO(macOS ISS#2323203)
-}
-
-+ (void)attachDebugger:(NSString *)owner withBundleURL:(NSURL *)bundleURL withView:(UIViewController *)view
-{
-  NSURL *url = getAttachDeviceUrl(bundleURL, owner);
-
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-  [request setHTTPMethod:@"GET"];
-
-  __weak UIViewController *viewCapture = view;
-  [[[NSURLSession sharedSession]
-      dataTaskWithRequest:request
-        completionHandler:^(
-            __unused NSData *_Nullable data, __unused NSURLResponse *_Nullable response, NSError *_Nullable error) {
-          UIViewController *viewCaptureStrong = viewCapture;
-          if (error != nullptr && viewCaptureStrong != nullptr) {
-            displayErrorAlert(viewCaptureStrong, @"The request to attach Nuclide couldn't reach Metro!");
-          }
-        }] resume];
 }
 
 + (void)disableDebugger

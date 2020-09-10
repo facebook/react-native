@@ -22,6 +22,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/fresco:fresco"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
+        react_native_target("java/com/facebook/react/views/image:image"),
         react_native_target("java/com/facebook/react/views/text:text"),
     ],
 )

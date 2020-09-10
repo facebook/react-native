@@ -122,4 +122,9 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
   return _scheduler->findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(handle);
 }
 
+- (MountingCoordinator::Shared)mountingCoordinatorWithSurfaceId:(SurfaceId)surfaceId
+{
+  return _scheduler->findMountingCoordinator(surfaceId);
+}
+
 @end

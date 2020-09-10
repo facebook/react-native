@@ -21,6 +21,17 @@ struct ImageURLLoaderAttribution {
 } // namespace facebook
 #endif
 
+@interface RCTImageURLLoaderRequest : NSObject
+
+@property (nonatomic, strong, readonly) NSString *requestId;
+@property (nonatomic, strong, readonly) NSURL *imageURL;
+@property (nonatomic, copy, readonly) RCTImageLoaderCancellationBlock cancellationBlock;
+
+- (instancetype)initWithRequestId:(NSString *)requestId imageURL:(NSURL *)imageURL cancellationBlock:(RCTImageLoaderCancellationBlock)cancellationBlock;
+- (void)cancel;
+
+@end
+
 /**
  * Same as the RCTImageURLLoader interface, but allows passing in optional `attribution` information.
  * This is useful for per-app logging and other instrumentation.
@@ -31,15 +42,32 @@ struct ImageURLLoaderAttribution {
 #ifdef __cplusplus
 /**
  * Same as the RCTImageURLLoader variant above, but allows optional `attribution` information.
+ * Caller may also specify a preferred requestId for tracking purpose.
  */
-- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
-                                              size:(CGSize)size
-                                             scale:(CGFloat)scale
-                                        resizeMode:(RCTResizeMode)resizeMode
-                                       attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
-                                   progressHandler:(RCTImageLoaderProgressBlock)progressHandler
-                                partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
-                                 completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+- (RCTImageURLLoaderRequest *)loadImageForURL:(NSURL *)imageURL
+                                         size:(CGSize)size
+                                        scale:(CGFloat)scale
+                                   resizeMode:(RCTResizeMode)resizeMode
+                                    requestId:(NSString *)requestId
+                                  attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
+                              progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                           partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
+                            completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
 #endif
+
+/**
+ * Image instrumentation - notify that the image content (UIImage) has been set on the native view.
+ */
+- (void)trackURLImageContentDidSetForRequest:(RCTImageURLLoaderRequest *)loaderRequest;
+
+/**
+ * Image instrumentation - start tracking the on-screen visibility of the native image view.
+ */
+- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(UIView *)imageView;
+
+/**
+ * Image instrumentation - notify that the native image view was destroyed.
+ */
+- (void)trackURLImageDidDestroy:(RCTImageURLLoaderRequest *)loaderRequest;
 
 @end

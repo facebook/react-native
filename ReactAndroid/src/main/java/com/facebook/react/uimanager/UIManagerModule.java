@@ -308,7 +308,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  public @Nullable WritableMap getConstantsForViewManager(final String viewManagerName) {
+  public @Nullable WritableMap getConstantsForViewManager(@Nullable String viewManagerName) {
     if (mViewManagerConstantsCache != null
         && mViewManagerConstantsCache.containsKey(viewManagerName)) {
       WritableMap constants = mViewManagerConstantsCache.get(viewManagerName);
@@ -322,7 +322,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
   }
 
-  private @Nullable WritableMap computeConstantsForViewManager(final String viewManagerName) {
+  private @Nullable WritableMap computeConstantsForViewManager(@Nullable String viewManagerName) {
     ViewManager targetView =
         viewManagerName != null ? mUIImplementation.resolveViewManager(viewManagerName) : null;
     if (targetView == null) {
@@ -680,22 +680,18 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       int reactTag, Dynamic commandId, @Nullable ReadableArray commandArgs) {
     // TODO: this is a temporary approach to support ViewManagerCommands in Fabric until
     // the dispatchViewManagerCommand() method is supported by Fabric JS API.
+    @Nullable
+    UIManager uiManager =
+        UIManagerHelper.getUIManager(
+            getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag));
+    if (uiManager == null) {
+      return;
+    }
+
     if (commandId.getType() == ReadableType.Number) {
-      final int commandIdNum = commandId.asInt();
-      UIManager uiManager =
-          UIManagerHelper.getUIManager(
-              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag));
-      if (uiManager != null) {
-        uiManager.dispatchCommand(reactTag, commandIdNum, commandArgs);
-      }
+      uiManager.dispatchCommand(reactTag, commandId.asInt(), commandArgs);
     } else if (commandId.getType() == ReadableType.String) {
-      final String commandIdStr = commandId.asString();
-      UIManager uiManager =
-          UIManagerHelper.getUIManager(
-              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag));
-      if (uiManager != null) {
-        uiManager.dispatchCommand(reactTag, commandIdStr, commandArgs);
-      }
+      uiManager.dispatchCommand(reactTag, commandId.asString(), commandArgs);
     }
   }
 
@@ -829,11 +825,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
   }
 
-  @Override
-  public void setAllowImmediateUIOperationExecution(boolean flag) {
-    // Noop outside of Fabric, call directly on FabricUIManager
-  }
-
   /**
    * Schedule a block to be executed on the UI thread. Useful if you need to execute view logic
    * after all currently queued view updates have completed.
@@ -871,9 +862,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Given a reactTag from a component, find its root node tag, if possible. Otherwise, this will
    * return 0. If the reactTag belongs to a root node, this will return the same reactTag.
    *
+   * @deprecated this method is not going to be supported in the near future, use {@link
+   *     ViewUtil#isRootTag(int)} to verify if a react Tag is a root or not
+   *     <p>TODO: T63569137 Delete the method UIManagerModule.resolveRootTagFromReactTag
    * @param reactTag the component tag
    * @return the rootTag
    */
+  @Deprecated
   public int resolveRootTagFromReactTag(int reactTag) {
     return ViewUtil.isRootTag(reactTag)
         ? reactTag

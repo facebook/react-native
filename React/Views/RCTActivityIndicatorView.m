@@ -115,9 +115,9 @@
 - (void)setHidden:(BOOL)hidden
 {
   if ([self hidesWhenStopped] && ![self isAnimating]) {
-    [super setHidden: YES];
+    [super setHidden:YES];
   } else {
-    [super setHidden: hidden];
+    [super setHidden:hidden];
   }
 }
 

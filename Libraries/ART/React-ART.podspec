@@ -20,10 +20,10 @@ Pod::Spec.new do |s|
   s.name                   = "React-ART"
   s.version                = version
   s.summary                = "A library for drawing vector graphics."
-  s.homepage               = "http://facebook.github.io/react-native/"
+  s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "9.0", :tvos => "9.2", :osx => "10.13" } # TODO(macOS GH#214)
+  s.platforms              = { :ios => "10.0", :tvos => "10.0", :osx => "10.13" } # TODO(macOS GH#214)
   s.source                 = source
   s.source_files           = "**/*.{m}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
