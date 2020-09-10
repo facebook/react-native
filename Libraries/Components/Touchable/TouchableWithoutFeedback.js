@@ -104,6 +104,8 @@ const PASSTHROUGH_PROPS = [
   'onBlur',
   'onFocus',
   'onLayout',
+  'onMouseEnter', // [TODO(macOS ISS#2323203)
+  'onMouseLeave', // ]TODO(macOS ISS#2323203)
   'testID',
 ];
 
@@ -178,6 +180,8 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
     const {
       onBlur,
       onFocus,
+      onMouseEnter, // [TODO(macOS/win ISS#2323203)
+      onMouseLeave, // ]TODO(macOS/win ISS#2323203)
       ...eventHandlersWithoutBlurAndFocus
     } = this.state.pressability.getEventHandlers();
 

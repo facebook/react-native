@@ -435,12 +435,13 @@ class TouchableHover extends React.Component<{}, $FlowFixMeState> {
   state = {
     hoverOver: false,
   };
+
   render() {
     return (
       <View>
         <TouchableOpacity
-          onMouseEnter={this._handlePress}
-          onMouseLeave={this._handlePress}
+          onMouseEnter={() => this._handleHover(true)}
+          onMouseLeave={() => this._handleHover(false)}
           style={[styles.row, styles.block]}>
           <Text style={this.state.hoverOver ? {color: 'red'} : {color: 'blue'}}>
             Touchable Opacity with mouse enter/exit events
@@ -462,8 +463,9 @@ class TouchableHover extends React.Component<{}, $FlowFixMeState> {
       </View>
     );
   }
-  _handlePress = () => {
-    this.setState({hoverOver: !this.state.hoverOver});
+
+  _handleHover = hoverOver => {
+    this.setState({hoverOver});
   };
 }
 

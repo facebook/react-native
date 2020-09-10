@@ -51,6 +51,10 @@ if (Platform.OS === 'web') {
     document.addEventListener('touchmove', disableHover, true);
     document.addEventListener('mousemove', enableHover, true);
   }
+  // [TODO(macOS ISS#2323203)
+} else if (Platform.OS === 'macos') {
+  isEnabled = true;
+  // ]TODO(macOS ISS#2323203)
 }
 
 export function isHoverEnabled(): boolean {
