@@ -21,7 +21,7 @@ describe('Alert', () => {
     await element(by.label('Back')).tap();
   });
 
-  it('should show alert dialog with message and default button', async () => {
+  it('AlertWithDefaultButton: should show alert dialog with message and default button', async () => {
     const alertMessage = 'An external USB drive has been detected!';
 
     await openExampleWithTitle('Alert with default Button');
@@ -30,7 +30,7 @@ describe('Alert', () => {
     await element(by.text('OK')).tap();
   });
 
-  it('should show alert dialog with three buttons', async () => {
+  it('AlertWithThreeButtons: should show alert dialog with three buttons', async () => {
     const alertMessage = 'Do you want to save your changes?';
 
     await openExampleWithTitle('Alert with three Buttons');
@@ -42,7 +42,7 @@ describe('Alert', () => {
     await element(by.text('Yes')).tap();
   });
 
-  it('should successfully call the callback on button press', async () => {
+  it('AlertWithThreeButtons: should successfully call the callback on button press', async () => {
     await openExampleWithTitle('Alert with three Buttons');
     await element(by.id('alert-with-three-buttons')).tap();
     await element(by.text('Cancel')).tap();
