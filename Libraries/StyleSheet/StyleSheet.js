@@ -10,14 +10,13 @@
 
 'use strict';
 
-let StyleSheetValidation = null;
 const PixelRatio = require('../Utilities/PixelRatio');
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 
 const flatten = require('./flattenStyle');
 
 if (__DEV__) {
-  StyleSheetValidation = require('./StyleSheetValidation');
+  var StyleSheetValidation = require('./StyleSheetValidation');
 }
 
 import type {
