@@ -28,21 +28,6 @@ bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
   return first.family_ == second.family_;
 }
 
-static int computeStateRevision(
-    State::Shared const &state,
-    SharedShadowNodeSharedList const &children) {
-  int fragmentStateRevision = state ? state->getRevision() : 0;
-  int childrenSum = 0;
-
-  if (children) {
-    for (auto const &child : *children) {
-      childrenSum += child->getStateRevision();
-    }
-  }
-
-  return fragmentStateRevision + childrenSum;
-}
-
 #pragma mark - Constructors
 
 ShadowNode::ShadowNode(
@@ -59,7 +44,6 @@ ShadowNode::ShadowNode(
                             : emptySharedShadowNodeSharedList()),
       state_(fragment.state),
       orderIndex_(0),
-      stateRevision_(computeStateRevision(state_, children_)),
       family_(family),
       traits_(traits) {
   assert(props_);
@@ -89,7 +73,6 @@ ShadowNode::ShadowNode(
           fragment.state ? fragment.state
                          : sourceShadowNode.getMostRecentState()),
       orderIndex_(sourceShadowNode.orderIndex_),
-      stateRevision_(computeStateRevision(state_, children_)),
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
 
@@ -184,8 +167,6 @@ void ShadowNode::appendChild(const ShadowNode::Shared &child) {
   nonConstChildren->push_back(child);
 
   child->family_->setParent(family_);
-
-  stateRevision_ += child->getStateRevision();
 }
 
 void ShadowNode::replaceChild(
@@ -193,8 +174,6 @@ void ShadowNode::replaceChild(
     ShadowNode::Shared const &newChild,
     int suggestedIndex) {
   ensureUnsealed();
-
-  stateRevision_ += newChild->getStateRevision() - oldChild.getStateRevision();
 
   cloneChildrenIfShared();
 
@@ -244,10 +223,6 @@ ShadowNodeFamily const &ShadowNode::getFamily() const {
   return *family_;
 }
 
-int ShadowNode::getStateRevision() const {
-  return stateRevision_;
-}
-
 ShadowNode::Unshared ShadowNode::cloneTree(
     ShadowNodeFamily const &shadowNodeFamily,
     std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
@@ -295,7 +270,6 @@ std::string ShadowNode::getDebugName() const {
 
 std::string ShadowNode::getDebugValue() const {
   return "r" + folly::to<std::string>(revision_) + "/sr" +
-      folly::to<std::string>(stateRevision_) + "/s" +
       folly::to<std::string>(state_ ? state_->getRevision() : 0) +
       (getSealed() ? "/sealed" : "");
 }

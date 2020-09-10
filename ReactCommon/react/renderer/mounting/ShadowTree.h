@@ -85,9 +85,6 @@ class ShadowTree final {
    * Temporary.
    * Do not use.
    */
-  void setEnableNewStateReconciliation(bool value) {
-    enableNewStateReconciliation_ = value;
-  }
   void setEnableReparentingDetection(bool value) {
     enableReparentingDetection_ = value;
   }
@@ -109,7 +106,6 @@ class ShadowTree final {
   mutable ShadowTreeRevision::Number revisionNumber_{
       0}; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
-  bool enableNewStateReconciliation_{false};
   bool enableReparentingDetection_{false};
 };
 

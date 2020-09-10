@@ -14,6 +14,8 @@
 #import <React/RCTImageURLLoader.h>
 #import <React/RCTImageCache.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * If available, RCTImageRedirectProtocol is invoked before loading an asset.
  * Implementation should return either a new URL or nil when redirection is
@@ -132,3 +134,5 @@ typedef NS_ENUM(NSUInteger, RCTImageLoaderPriority) {
 - (void)setImageCache:(id<RCTImageCache>)cache;
 
 @end
+
+NS_ASSUME_NONNULL_END
