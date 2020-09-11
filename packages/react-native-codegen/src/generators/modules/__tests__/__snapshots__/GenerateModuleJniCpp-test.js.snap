@@ -42,6 +42,12 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const JavaTurboMo
   methodMap_[\\"getArrays\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getArrays};
 }
 
+std::shared_ptr<TurboModule> COMPLEX_OBJECTS_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
+  if (moduleName == \\"SampleTurboModule\\") {
+    return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
+  }
+}
+
 } // namespace react
 } // namespace facebook
 ",
@@ -70,6 +76,12 @@ namespace react {
 NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const JavaTurboModule::InitParams &params)
   : JavaTurboModule(params) {
 
+}
+
+std::shared_ptr<TurboModule> EMPTY_NATIVE_MODULES_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
+  if (moduleName == \\"SampleTurboModule\\") {
+    return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
+  }
 }
 
 } // namespace react
@@ -105,6 +117,12 @@ NativeAliasTurboModuleSpecJSI::NativeAliasTurboModuleSpecJSI(const JavaTurboModu
   : JavaTurboModule(params) {
 
   methodMap_[\\"cropImage\\"] = MethodMetadata {1, __hostFunction_NativeAliasTurboModuleSpecJSI_cropImage};
+}
+
+std::shared_ptr<TurboModule> NATIVE_MODULES_WITH_TYPE_ALIASES_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
+  if (moduleName == \\"AliasTurboModule\\") {
+    return std::make_shared<NativeAliasTurboModuleSpecJSI>(params);
+  }
 }
 
 } // namespace react
@@ -190,6 +208,18 @@ NativeExceptionsManagerSpecJSI::NativeExceptionsManagerSpecJSI(const JavaTurboMo
   methodMap_[\\"dismissRedbox\\"] = MethodMetadata {0, __hostFunction_NativeExceptionsManagerSpecJSI_dismissRedbox};
 }
 
+std::shared_ptr<TurboModule> REAL_MODULE_EXAMPLE_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
+  if (moduleName == \\"CameraRollManager\\") {
+    return std::make_shared<NativeCameraRollManagerSpecJSI>(params);
+  }
+  if (moduleName == \\"ImagePickerIOS\\") {
+    return std::make_shared<NativeImagePickerIOSSpecJSI>(params);
+  }
+  if (moduleName == \\"ExceptionsManager\\") {
+    return std::make_shared<NativeExceptionsManagerSpecJSI>(params);
+  }
+}
+
 } // namespace react
 } // namespace facebook
 ",
@@ -273,6 +303,12 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const JavaTurboMo
   methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise};
 }
 
+std::shared_ptr<TurboModule> SIMPLE_NATIVE_MODULES_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
+  if (moduleName == \\"SampleTurboModule\\") {
+    return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
+  }
+}
+
 } // namespace react
 } // namespace facebook
 ",
@@ -317,6 +353,15 @@ NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(const JavaTurbo
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc};
 }
 
+std::shared_ptr<TurboModule> TWO_MODULES_DIFFERENT_FILES_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
+  if (moduleName == \\"SampleTurboModule\\") {
+    return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
+  }
+  if (moduleName == \\"Sample2TurboModule\\") {
+    return std::make_shared<NativeSample2TurboModuleSpecJSI>(params);
+  }
+}
+
 } // namespace react
 } // namespace facebook
 ",
@@ -357,6 +402,15 @@ static facebook::jsi::Value __hostFunction_NativeSample2TurboModuleSpecJSI_voidF
 NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(const JavaTurboModule::InitParams &params)
   : JavaTurboModule(params) {
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc};
+}
+
+std::shared_ptr<TurboModule> TWO_MODULES_SAME_FILE_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
+  if (moduleName == \\"SampleTurboModule\\") {
+    return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
+  }
+  if (moduleName == \\"Sample2TurboModule\\") {
+    return std::make_shared<NativeSample2TurboModuleSpecJSI>(params);
+  }
 }
 
 } // namespace react

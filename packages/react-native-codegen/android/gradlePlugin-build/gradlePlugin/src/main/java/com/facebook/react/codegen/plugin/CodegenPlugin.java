@@ -105,20 +105,19 @@ public class CodegenPlugin implements Plugin<Project> {
                           extension.codegenJavaPackageName,
                           new File(generatedSrcDir, "java"));
                     });
-                // TODO: generate JNI C++ files.
-                task.commandLine("echo");
-              } else {
-                ImmutableList<String> execCommands =
-                    new ImmutableList.Builder<String>()
-                        .add("yarn")
-                        .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
-                        .add(extension.codegenGenerateNativeModuleSpecsCLI().getAbsolutePath())
-                        .add("android")
-                        .add(generatedSchemaFile.getAbsolutePath())
-                        .add(outputDir.getAbsolutePath())
-                        .build();
-                task.commandLine(execCommands);
               }
+
+              ImmutableList<String> execCommands =
+                  new ImmutableList.Builder<String>()
+                      .add("yarn")
+                      .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
+                      .add(extension.codegenGenerateNativeModuleSpecsCLI().getAbsolutePath())
+                      .add("android")
+                      .add(generatedSchemaFile.getAbsolutePath())
+                      .add(outputDir.getAbsolutePath())
+                      .add(extension.libraryName)
+                      .build();
+              task.commandLine(execCommands);
             });
 
     // 4. Add dependencies & generated sources to the project.

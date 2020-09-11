@@ -15,9 +15,8 @@ const mkdirp = require('mkdirp');
 const os = require('os');
 const path = require('path');
 
-function generateSpec(platform, schemaPath, outputDirectory) {
-  const libraryName = 'FBReactNativeSpec';
-  const moduleSpecName = 'FBReactNativeSpec';
+function generateSpec(platform, schemaPath, outputDirectory, libraryName) {
+  const moduleSpecName = libraryName;
   const schemaText = fs.readFileSync(schemaPath, 'utf-8');
 
   if (schemaText == null) {
@@ -97,7 +96,8 @@ function main() {
   const platform = args[0];
   const schemaPath = args[1];
   const outputDir = args[2];
-  generateSpec(platform, schemaPath, outputDir);
+  const libraryName = args[3] || 'FBReactNativeSpec';
+  generateSpec(platform, schemaPath, outputDir, libraryName);
 }
 
 main();
