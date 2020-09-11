@@ -50,7 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, assign) BOOL enablesReturnKeyAutomatically;
+#if !TARGET_OS_OSX // [TODO(macOS v0.63)
 @property (nonatomic, assign) UITextFieldViewMode clearButtonMode;
+#endif // ]TODO(macOS v0.63)
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 
 // This protocol disallows direct access to `selectedTextRange` property because
