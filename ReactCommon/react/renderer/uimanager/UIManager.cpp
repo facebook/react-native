@@ -232,7 +232,51 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
       shadowNode.getFamily(), *layoutableAncestorShadowNode, policy);
 }
 
+void UIManager::updateStateWithAutorepeat(
+    StateUpdate const &stateUpdate) const {
+  auto &callback = stateUpdate.callback;
+  auto &family = stateUpdate.family;
+  auto &componentDescriptor = family->getComponentDescriptor();
+
+  shadowTreeRegistry_.visit(
+      family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
+        shadowTree.commit([&](RootShadowNode::Shared const &oldRootShadowNode) {
+          auto isValid = true;
+
+          auto rootNode = oldRootShadowNode->cloneTree(
+              *family, [&](ShadowNode const &oldShadowNode) {
+                auto newData =
+                    callback(oldShadowNode.getState()->getDataPointer());
+
+                if (!newData) {
+                  isValid = false;
+                  // Just return something, we will discard it anyway.
+                  return oldShadowNode.clone({});
+                }
+
+                auto newState =
+                    componentDescriptor.createState(*family, newData);
+
+                return oldShadowNode.clone({
+                    /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                    /* .children = */
+                    ShadowNodeFragment::childrenPlaceholder(),
+                    /* .state = */ newState,
+                });
+              });
+
+          return isValid ? std::static_pointer_cast<RootShadowNode>(rootNode)
+                         : nullptr;
+        });
+      });
+}
+
 void UIManager::updateState(StateUpdate const &stateUpdate) const {
+  if (stateUpdate.autorepeat) {
+    updateStateWithAutorepeat(stateUpdate);
+    return;
+  }
+
   auto &callback = stateUpdate.callback;
   auto &family = stateUpdate.family;
   auto &componentDescriptor = family->getComponentDescriptor();
