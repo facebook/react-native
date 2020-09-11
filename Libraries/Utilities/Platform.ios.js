@@ -39,6 +39,7 @@ const Platform = {
       prerelease: ?number,
     |},
     systemName: string,
+    isCatalyst: boolean,
   |} {
     if (this.__constants == null) {
       this.__constants = NativePlatformConstantsIOS.getConstants();
@@ -66,6 +67,10 @@ const Platform = {
       return this.constants.isTesting;
     }
     return false;
+  },
+  // $FlowFixMe[unsafe-getters-setters]
+  get isCatalyst(): boolean {
+    return this.constants.isCatalyst;
   },
   select: <D, N, I>(spec: PlatformSelectSpec<D, N, I>): D | N | I =>
     'ios' in spec ? spec.ios : 'native' in spec ? spec.native : spec.default,

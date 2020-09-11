@@ -61,6 +61,10 @@ const Platform = {
   get isTV(): boolean {
     return this.constants.uiMode === 'tv';
   },
+  // $FlowFixMe[unsafe-getters-setters]
+  get isCatalyst(): boolean {
+    return false;
+  },
   select: <A, N, D>(spec: PlatformSelectSpec<A, N, D>): A | N | D =>
     'android' in spec
       ? spec.android
