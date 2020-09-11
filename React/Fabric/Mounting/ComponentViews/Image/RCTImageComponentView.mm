@@ -9,7 +9,6 @@
 
 #import <React/RCTConversions.h>
 #import <React/RCTImageBlurUtils.h>
-#import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
 #import <react/renderer/components/image/ImageComponentDescriptor.h>
 #import <react/renderer/components/image/ImageEventEmitter.h>
@@ -21,7 +20,7 @@
 
 using namespace facebook::react;
 
-@interface RCTImageComponentView () <RCTImageResponseDelegate>
+@interface RCTImageComponentView ()
 @end
 
 @implementation RCTImageComponentView {
