@@ -6,6 +6,7 @@
  */
 
 #include <react/renderer/core/ReactPrimitives.h>
+#include <react/utils/Telemetry.h>
 
 namespace facebook {
 namespace react {
@@ -17,11 +18,23 @@ class ImageTelemetry final {
  public:
   ImageTelemetry(SurfaceId const surfaceId) : surfaceId_(surfaceId) {}
 
+  /*
+   * Signaling
+   */
+  void willRequestUrl();
+
+  /*
+   * Reading
+   */
+  TelemetryTimePoint getWillRequestUrlTime() const;
+
   SurfaceId getSurfaceId() const;
   std::string getLoaderModuleName() const;
   void setLoaderModuleName(std::string const &loaderModuleName);
 
  private:
+  TelemetryTimePoint willRequestUrlTime_{kTelemetryUndefinedTimePoint};
+
   const SurfaceId surfaceId_;
   std::string loaderModuleName_{""};
 };

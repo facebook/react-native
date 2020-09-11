@@ -43,6 +43,7 @@ using namespace facebook::react;
 
   auto imageInstrumentation = std::make_shared<RCTImageInstrumentationProxy>(_imageLoader);
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
+  telemetry->willRequestUrl();
   auto imageRequest = ImageRequest(imageSource, telemetry, imageInstrumentation);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
