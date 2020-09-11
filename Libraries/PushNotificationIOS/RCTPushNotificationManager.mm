@@ -240,12 +240,6 @@ RCT_EXPORT_MODULE()
 
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-  [[NSNotificationCenter defaultCenter] postNotificationName:kRegisterUserNotificationSettings
-                                                      object:self
-                                                    userInfo:@{@"notificationSettings": @(RCTSharedApplication().enabledRemoteNotificationTypes)}];
-#endif // ]TODO(macOS ISS#2323203)
-  
   NSMutableString *hexString = [NSMutableString string];
   NSUInteger deviceTokenLength = deviceToken.length;
   const unsigned char *bytes = reinterpret_cast<const unsigned char *>(deviceToken.bytes);
@@ -395,11 +389,6 @@ RCT_EXPORT_METHOD(requestPermissions:(JS::NativePushNotificationManagerIOS::Spec
   }
 #endif // TODO(macOS ISS#2323203)
 
-  if (_requestPermissionsResolveBlock != nil) {
-    RCTLogError(@"Cannot call requestPermissions twice before the first has returned.");
-    return;
-  }
-
   // Add a listener to make sure that startObserving has been called
   [self addListener:@"remoteNotificationsRegistered"];
 
@@ -428,6 +417,19 @@ RCT_EXPORT_METHOD(requestPermissions:(JS::NativePushNotificationManagerIOS::Spec
       }];
     }
   }];
+#else // [TODO(macOS ISS#2323203)
+  NSRemoteNotificationType types = NSRemoteNotificationTypeNone;
+  if (permissions.alert()) {
+    types |= NSRemoteNotificationTypeAlert;
+  }
+  if (permissions.badge()) {
+    types |= NSRemoteNotificationTypeBadge;
+  }
+  if (permissions.badge()) {
+    types |= NSRemoteNotificationTypeSound;
+  }
+  [RCTSharedApplication() registerForRemoteNotificationTypes:types];
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 RCT_EXPORT_METHOD(abandonPermissions)
@@ -444,9 +446,18 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
   }
 #endif // TODO(macOS ISS#2323203)
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   [UNUserNotificationCenter.currentNotificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
     callback(@[RCTPromiseResolveValueForUNNotificationSettings(settings)]);
   }];
+#else // [TODO(macOS ISS#2323203)
+  NSRemoteNotificationType types = RCTSharedApplication().enabledRemoteNotificationTypes;
+  callback(@[@{
+    @"alert": @((types & NSRemoteNotificationTypeAlert) > 0),
+    @"badge": @((types & NSRemoteNotificationTypeBadge) > 0),
+    @"sound": @((types & NSRemoteNotificationTypeSound) > 0),
+  }]);
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 static inline NSDictionary *RCTPromiseResolveValueForUNNotificationSettings(UNNotificationSettings* _Nonnull settings) {
