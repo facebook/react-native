@@ -239,10 +239,10 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
 
   shadowTreeRegistry_.visit(
       family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        bool updateSucceeded = shadowTree.tryCommit(
-            [&](RootShadowNode::Shared const &oldRootShadowNode) {
-              return std::static_pointer_cast<
-                  RootShadowNode>(oldRootShadowNode->cloneTree(
+        auto status = shadowTree.tryCommit([&](RootShadowNode::Shared const
+                                                   &oldRootShadowNode) {
+          return std::static_pointer_cast<RootShadowNode>(
+              oldRootShadowNode->cloneTree(
                   *family, [&](ShadowNode const &oldShadowNode) {
                     auto newData =
                         callback(oldShadowNode.getState()->getDataPointer());
@@ -256,8 +256,9 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
                         /* .state = */ newState,
                     });
                   }));
-            });
-        if (!updateSucceeded && stateUpdate.failureCallback) {
+        });
+        if (status != ShadowTree::CommitStatus::Succeeded &&
+            stateUpdate.failureCallback) {
           stateUpdate.failureCallback();
         }
       });

@@ -21,6 +21,8 @@
 namespace facebook {
 namespace react {
 
+using CommitStatus = ShadowTree::CommitStatus;
+
 /*
  * Generates (possibly) a new tree where all nodes with non-obsolete `State`
  * objects. If all `State` objects in the tree are not obsolete for the moment
@@ -260,7 +262,7 @@ MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
   return mountingCoordinator_;
 }
 
-void ShadowTree::commit(
+CommitStatus ShadowTree::commit(
     ShadowTreeCommitTransaction transaction,
     bool enableStateReconciliation) const {
   SystraceSection s("ShadowTree::commit");
@@ -269,8 +271,10 @@ void ShadowTree::commit(
 
   while (true) {
     attempts++;
-    if (tryCommit(transaction, enableStateReconciliation)) {
-      return;
+
+    auto status = tryCommit(transaction, enableStateReconciliation);
+    if (status != CommitStatus::Failed) {
+      return status;
     }
 
     // After multiple attempts, we failed to commit the transaction.
@@ -279,7 +283,7 @@ void ShadowTree::commit(
   }
 }
 
-bool ShadowTree::tryCommit(
+CommitStatus ShadowTree::tryCommit(
     ShadowTreeCommitTransaction transaction,
     bool enableStateReconciliation) const {
   SystraceSection s("ShadowTree::tryCommit");
@@ -298,7 +302,7 @@ bool ShadowTree::tryCommit(
   RootShadowNode::Unshared newRootShadowNode = transaction(oldRootShadowNode);
 
   if (!newRootShadowNode) {
-    return false;
+    return CommitStatus::Cancelled;
   }
 
   if (enableStateReconciliation) {
@@ -330,7 +334,7 @@ bool ShadowTree::tryCommit(
     std::unique_lock<better::shared_mutex> lock(commitMutex_);
 
     if (rootShadowNode_ != oldRootShadowNode) {
-      return false;
+      return CommitStatus::Failed;
     }
 
     rootShadowNode_ = newRootShadowNode;
@@ -356,7 +360,7 @@ bool ShadowTree::tryCommit(
 
   notifyDelegatesOfUpdates();
 
-  return true;
+  return CommitStatus::Succeeded;
 }
 
 void ShadowTree::commitEmptyTree() const {
