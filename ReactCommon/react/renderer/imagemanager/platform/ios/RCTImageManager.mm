@@ -63,6 +63,12 @@ using namespace facebook::react;
   dispatch_async(_backgroundSerialQueue, ^{
     NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
 
+    BOOL hasModuleName = [self->_imageLoader respondsToSelector:@selector(loaderModuleNameForRequestUrl:)];
+    NSString *moduleName = hasModuleName ? [self->_imageLoader loaderModuleNameForRequestUrl:request.URL] : nil;
+    std::string moduleCString =
+        std::string([moduleName UTF8String], [moduleName lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+    telemetry->setLoaderModuleName(moduleCString);
+
     auto completionBlock = ^(NSError *error, UIImage *image) {
       auto observerCoordinator = weakObserverCoordinator.lock();
       if (!observerCoordinator) {

@@ -52,6 +52,13 @@ class ImageRequest final {
   void setCancelationFunction(std::function<void(void)> cancelationFunction);
 
   /*
+   * Returns the Image Source associated with the request.
+   */
+  const ImageSource getImageSource() const {
+    return imageSource_;
+  }
+
+  /*
    * Returns stored observer coordinator as a shared pointer.
    * Retain this *or* `ImageRequest` to ensure a correct lifetime of the object.
    */

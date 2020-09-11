@@ -819,6 +819,14 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   return [[RCTImageURLLoaderRequest alloc] initWithRequestId:loaderRequest.requestId imageURL:imageURLRequest.URL cancellationBlock:cancellationBlock];
 }
 
+- (NSString *)loaderModuleNameForRequestUrl:(NSURL *)url {
+  id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:url];
+  if ([loadHandler respondsToSelector:@selector(loaderModuleNameForRequestUrl:)]) {
+    return [(id<RCTImageURLLoaderWithAttribution>)loadHandler loaderModuleNameForRequestUrl:url];
+  }
+  return nil;
+}
+
 - (void)trackURLImageContentDidSetForRequest:(RCTImageURLLoaderRequest *)loaderRequest
 {
   if (!loaderRequest) {

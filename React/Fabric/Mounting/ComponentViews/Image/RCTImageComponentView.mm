@@ -25,7 +25,6 @@ using namespace facebook::react;
 @end
 
 @implementation RCTImageComponentView {
-  UIImageView *_imageView;
   ImageShadowNode::ConcreteStateTeller _stateTeller;
   ImageResponseObserverCoordinator const *_coordinator;
   RCTImageResponseObserverProxy _imageResponseObserverProxy;

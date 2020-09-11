@@ -12,7 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * UIView class for root <Image> component.
  */
-@interface RCTImageComponentView : RCTViewComponentView
+@interface RCTImageComponentView : RCTViewComponentView {
+ @protected
+  UIImageView *_imageView;
+}
 
 @end
 
