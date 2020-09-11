@@ -159,6 +159,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   [self didSelectRowAtIndex:row];
 }
 
+#pragma mark - UIPickerViewAccessibilityDelegate protocol
+
+- (NSString *)pickerView:(UIPickerView *)pickerView accessibilityLabelForComponent:(NSInteger)component
+{
+  return super.accessibilityLabel;
+}
+
 #else
 
 #pragma mark - NSComboBoxDataSource protocol
@@ -199,13 +206,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 // ]TODO(macOS ISS#2323203)
     });
   }
-}
-
-#pragma mark - UIPickerViewAccessibilityDelegate protocol
-
-- (NSString *)pickerView:(UIPickerView *)pickerView accessibilityLabelForComponent:(NSInteger)component
-{
-  return super.accessibilityLabel;
 }
 
 @end
