@@ -973,6 +973,19 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
     return;
   }
 
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  CGFloat scaleFactor = self.window.backingScaleFactor;
+  if (scaleFactor == 0.0 && RCTRunningInTestEnvironment()) {
+    // When running in the test environment the view is not on screen.
+    // Use a scaleFactor of 1 so that the test results are machine independent.
+    scaleFactor = 1;
+  }
+  RCTAssert(scaleFactor != 0.0, @"displayLayer occurs before the view is in a window?");
+#else
+  // On iOS setting the scaleFactor to 0.0 will default to the device's native scale factor.
+  CGFloat scaleFactor = 0.0;
+#endif // ]TODO(macOS ISS#2323203)
+
   UIImage *image = RCTGetBorderImage(
       _borderStyle, layer.bounds.size, cornerRadii, borderInsets, borderColors, backgroundColor, self.clipsToBounds, scaleFactor); // TODO(OSS Candidate ISS#2710739)
 

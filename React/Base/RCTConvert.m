@@ -640,6 +640,86 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
   static NSDictionary<NSString *, NSDictionary *> *colorMap = nil;
   if (colorMap == nil) {
     NSMutableDictionary<NSString *, NSDictionary *> *map = [@{
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+      // https://developer.apple.com/documentation/appkit/nscolor/ui_element_colors
+      // Label Colors
+      @"labelColor": @{}, // 10_10
+      @"secondaryLabelColor": @{}, // 10_10
+      @"tertiaryLabelColor": @{}, // 10_10
+      @"quaternaryLabelColor": @{}, // 10_10
+      // Text Colors
+      @"textColor": @{},
+      @"placeholderTextColor": @{}, // 10_10
+      @"selectedTextColor": @{},
+      @"textBackgroundColor": @{},
+      @"selectedTextBackgroundColor": @{},
+      @"keyboardFocusIndicatorColor": @{},
+      @"unemphasizedSelectedTextColor": @{ // 10_14
+        RCTFallback: @"selectedTextColor"
+      },
+      @"unemphasizedSelectedTextBackgroundColor": @{ // 10_14
+        RCTFallback: @"textBackgroundColor"
+      },
+      // Content Colors
+      @"linkColor": @{}, // 10_10
+      @"separatorColor": @{ // 10_14: Replacement for +controlHighlightColor, +controlLightHighlightColor, +controlShadowColor, +controlDarkShadowColor
+        RCTFallback: @"gridColor"
+      },
+      @"selectedContentBackgroundColor": @{ // 10_14: Alias for +alternateSelectedControlColor
+        RCTFallback: @"alternateSelectedControlColor"
+      },
+      @"unemphasizedSelectedContentBackgroundColor": @{ // 10_14: Alias for +secondarySelectedControlColor
+        RCTFallback: @"secondarySelectedControlColor"
+      },
+      // Menu Colors
+      @"selectedMenuItemTextColor": @{},
+      // Table Colors
+      @"gridColor": @{},
+      @"headerTextColor": @{},
+      @"alternatingContentBackgroundColorEven": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
+        RCTSelector: @"alternatingContentBackgroundColors",
+        RCTIndex: @0,
+        RCTFallback: @"controlAlternatingRowBackgroundColors"
+      },
+      @"alternatingContentBackgroundColorOdd": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
+        RCTSelector: @"alternatingContentBackgroundColors",
+        RCTIndex: @1,
+        RCTFallback: @"controlAlternatingRowBackgroundColors"
+      },
+      // Control Colors
+      @"controlAccentColor": @{ // 10_14
+        RCTFallback: @"controlColor"
+      },
+      @"controlColor": @{},
+      @"controlBackgroundColor": @{},
+      @"controlTextColor": @{},
+      @"disabledControlTextColor": @{},
+      @"selectedControlColor": @{},
+      @"selectedControlTextColor": @{},
+      @"alternateSelectedControlTextColor": @{},
+      @"scrubberTexturedBackgroundColor": @{}, // 10_12_2
+      // Window Colors
+      @"windowBackgroundColor": @{},
+      @"windowFrameTextColor": @{},
+      @"underPageBackgroundColor": @{}, // 10_8
+      // Highlights and Shadows
+      @"findHighlightColor": @{ // 10_13
+        RCTFallback: @"highlightColor"
+      },
+      @"highlightColor": @{},
+      @"shadowColor": @{},
+      // https://developer.apple.com/documentation/appkit/nscolor/standard_colors
+      // Standard Colors
+      @"systemBlueColor": @{},   // 10_10
+      @"systemBrownColor": @{},  // 10_10
+      @"systemGrayColor": @{},   // 10_10
+      @"systemGreenColor": @{},  // 10_10
+      @"systemOrangeColor": @{}, // 10_10
+      @"systemPinkColor": @{},   // 10_10
+      @"systemPurpleColor": @{}, // 10_10
+      @"systemRedColor": @{},    // 10_10
+      @"systemYellowColor": @{}, // 10_10
+#else // ]TODO(macOS ISS#2323203)
       // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
       // Label Colors
       @"labelColor" : @{
@@ -764,6 +844,7 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
         // iOS 13.0
         RCTFallbackARGB : @(0xFFf2f2f7)
       },
+#endif // TODO(macOS ISS#2323203)
     } mutableCopy];
     // The color names are the Objective-C UIColor selector names,
     // but Swift selector names are valid as well, so make aliases.
@@ -801,290 +882,7 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
   return colorMap;
 }
 
-/** Returns a UIColor based on a semantic color name.
- *  Returns nil if the semantic color name is invalid.
- */
-static UIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
-{
-  NSDictionary<NSString *, NSDictionary *> *colorMap = RCTSemanticColorsMap();
-  UIColor *color = nil;
-  NSDictionary<NSString *, id> *colorInfo = colorMap[semanticColorName];
-  if (colorInfo) {
-    NSString *semanticColorSelector = colorInfo[RCTSelector];
-    if (semanticColorSelector == nil) {
-      semanticColorSelector = semanticColorName;
-    }
-    SEL selector = NSSelectorFromString(semanticColorSelector);
-    if (![UIColor respondsToSelector:selector]) {
-      NSNumber *fallbackRGB = colorInfo[RCTFallbackARGB];
-      if (fallbackRGB != nil) {
-        RCTAssert([fallbackRGB isKindOfClass:[NSNumber class]], @"fallback ARGB is not a number");
-        return [RCTConvert UIColor:fallbackRGB];
-      }
-      semanticColorSelector = colorInfo[RCTFallback];
-      selector = NSSelectorFromString(semanticColorSelector);
-    }
-    RCTAssert([UIColor respondsToSelector:selector], @"RCTUIColor does not respond to a semantic color selector.");
-    Class klass = [UIColor class];
-    IMP imp = [klass methodForSelector:selector];
-    id (*getSemanticColorObject)(id, SEL) = (void *)imp;
-    id colorObject = getSemanticColorObject(klass, selector);
-    if ([colorObject isKindOfClass:[UIColor class]]) {
-      color = colorObject;
-    } else if ([colorObject isKindOfClass:[NSArray class]]) {
-      NSArray *colors = colorObject;
-      NSNumber *index = colorInfo[RCTIndex];
-      RCTAssert(index, @"index should not be null");
-      color = colors[[index unsignedIntegerValue]];
-    } else {
-      RCTAssert(false, @"selector return an unknown object type");
-    }
-  }
-  return color;
-}
-
-/** Returns an alphabetically sorted comma seperated list of the valid semantic color names
- */
-static NSString *RCTSemanticColorNames()
-{
-  NSMutableString *names = [[NSMutableString alloc] init];
-  NSDictionary<NSString *, NSDictionary *> *colorMap = RCTSemanticColorsMap();
-  NSArray *allKeys =
-      [[[colorMap allKeys] mutableCopy] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-
-  for (id key in allKeys) {
-    if ([names length]) {
-      [names appendString:@", "];
-    }
-    [names appendString:key];
-  }
-  return names;
-}
-
 // [TODO(macOS ISS#2323203)
-static NSString *const RCTFallback = @"fallback";
-static NSString *const RCTFallbackARGB = @"fallback-argb";
-static NSString *const RCTSelector = @"selector";
-static NSString *const RCTIndex = @"index";
-
-/** The following dictionary defines the react-native semantic colors for macos and ios.
- *  If the value for a given name is empty then the name itself
- *  is used as the UIColor selector.
- *  If the RCTSelector key is present then that value is used for a selector instead
- *  of the key name.
- *  If the given selector is not available on the running OS version then
- *  the RCTFallback selector is used instead.
- *  If the RCTIndex key is present then object returned from UIColor is an
- *  NSArray and the object at index RCTIndex is to be used.
- */
-static NSDictionary<NSString *, NSDictionary *>* RCTSemanticColorsMap()
-{
-  static NSDictionary<NSString *, NSDictionary *> *colorMap = nil;
-  if (colorMap == nil) {
-    colorMap = @{
-#if TARGET_OS_OSX
-      // https://developer.apple.com/documentation/appkit/nscolor/ui_element_colors
-      // Label Colors
-      @"labelColor": @{}, // 10_10
-      @"secondaryLabelColor": @{}, // 10_10
-      @"tertiaryLabelColor": @{}, // 10_10
-      @"quaternaryLabelColor": @{}, // 10_10
-      // Text Colors
-      @"textColor": @{},
-      @"placeholderTextColor": @{}, // 10_10
-      @"selectedTextColor": @{},
-      @"textBackgroundColor": @{},
-      @"selectedTextBackgroundColor": @{},
-      @"keyboardFocusIndicatorColor": @{},
-      @"unemphasizedSelectedTextColor": @{ // 10_14
-        RCTFallback: @"selectedTextColor"
-      },
-      @"unemphasizedSelectedTextBackgroundColor": @{ // 10_14
-        RCTFallback: @"textBackgroundColor"
-      },
-      // Content Colors
-      @"linkColor": @{}, // 10_10
-      @"separatorColor": @{ // 10_14: Replacement for +controlHighlightColor, +controlLightHighlightColor, +controlShadowColor, +controlDarkShadowColor
-        RCTFallback: @"gridColor"
-      },
-      @"selectedContentBackgroundColor": @{ // 10_14: Alias for +alternateSelectedControlColor
-        RCTFallback: @"alternateSelectedControlColor"
-      },
-      @"unemphasizedSelectedContentBackgroundColor": @{ // 10_14: Alias for +secondarySelectedControlColor
-        RCTFallback: @"secondarySelectedControlColor"
-      },
-      // Menu Colors
-      @"selectedMenuItemTextColor": @{},
-      // Table Colors
-      @"gridColor": @{},
-      @"headerTextColor": @{},
-      @"alternatingContentBackgroundColorEven": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
-        RCTSelector: @"alternatingContentBackgroundColors",
-        RCTIndex: @0,
-        RCTFallback: @"controlAlternatingRowBackgroundColors"
-      },
-      @"alternatingContentBackgroundColorOdd": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
-        RCTSelector: @"alternatingContentBackgroundColors",
-        RCTIndex: @1,
-        RCTFallback: @"controlAlternatingRowBackgroundColors"
-      },
-      // Control Colors
-      @"controlAccentColor": @{ // 10_14
-        RCTFallback: @"controlColor"
-      },
-      @"controlColor": @{},
-      @"controlBackgroundColor": @{},
-      @"controlTextColor": @{},
-      @"disabledControlTextColor": @{},
-      @"selectedControlColor": @{},
-      @"selectedControlTextColor": @{},
-      @"alternateSelectedControlTextColor": @{},
-      @"scrubberTexturedBackgroundColor": @{}, // 10_12_2
-      // Window Colors
-      @"windowBackgroundColor": @{},
-      @"windowFrameTextColor": @{},
-      @"underPageBackgroundColor": @{}, // 10_8
-      // Highlights and Shadows
-      @"findHighlightColor": @{ // 10_13
-        RCTFallback: @"highlightColor"
-      },
-      @"highlightColor": @{},
-      @"shadowColor": @{},
-      // https://developer.apple.com/documentation/appkit/nscolor/standard_colors
-      // Standard Colors
-      @"systemBlueColor": @{},   // 10_10
-      @"systemBrownColor": @{},  // 10_10
-      @"systemGrayColor": @{},   // 10_10
-      @"systemGreenColor": @{},  // 10_10
-      @"systemOrangeColor": @{}, // 10_10
-      @"systemPinkColor": @{},   // 10_10
-      @"systemPurpleColor": @{}, // 10_10
-      @"systemRedColor": @{},    // 10_10
-      @"systemYellowColor": @{}, // 10_10
-#else // TARGET_OS_IOS
-      // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
-      // Label Colors
-      @"labelColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFF000000) // fallback for iOS<=12: RGBA returned by this semantic color in light mode on iOS 13
-      },
-      @"secondaryLabelColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x993c3c43)
-      },
-      @"tertiaryLabelColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x4c3c3c43)
-      },
-      @"quaternaryLabelColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x2d3c3c43)
-      },
-      // Fill Colors
-      @"systemFillColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x33787880)
-      },
-      @"secondarySystemFillColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x28787880)
-      },
-      @"tertiarySystemFillColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x1e767680)
-      },
-      @"quaternarySystemFillColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x14747480)
-      },
-      // Text Colors
-      @"placeholderTextColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x4c3c3c43)
-      },
-      // Standard Content Background Colors
-      @"systemBackgroundColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFffffff)
-      },
-      @"secondarySystemBackgroundColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFf2f2f7)
-      },
-      @"tertiarySystemBackgroundColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFffffff)
-      },
-      // Grouped Content Background Colors
-      @"systemGroupedBackgroundColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFf2f2f7)
-      },
-      @"secondarySystemGroupedBackgroundColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFffffff)
-      },
-      @"tertiarySystemGroupedBackgroundColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFf2f2f7)
-      },
-      // Separator Colors
-      @"separatorColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x493c3c43)
-      },
-      @"opaqueSeparatorColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFc6c6c8)
-      },
-      // Link Color
-      @"linkColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFF007aff)
-      },
-      // Nonadaptable Colors
-      @"darkTextColor": @{},
-      @"lightTextColor": @{},
-      // https://developer.apple.com/documentation/uikit/uicolor/standard_colors
-      // Adaptable Colors
-      @"systemBlueColor": @{},
-      @"systemBrownColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFa2845e)
-      },
-      @"systemGreenColor": @{},
-      @"systemIndigoColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFF5856d6)
-      },
-      @"systemOrangeColor": @{},
-      @"systemPinkColor": @{},
-      @"systemPurpleColor": @{},
-      @"systemRedColor": @{},
-      @"systemTealColor": @{},
-      @"systemYellowColor": @{},
-      // Adaptable Gray Colors
-      @"systemGrayColor": @{},
-      @"systemGray2Color": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFaeaeb2)
-      },
-      @"systemGray3Color": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFc7c7cc)
-      },
-      @"systemGray4Color": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFd1d1d6)
-      },
-      @"systemGray5Color": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFe5e5ea)
-      },
-      @"systemGray6Color": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFf2f2f7)
-      },
-#endif
-#if DEBUG
-      // The follow exist for Unit Tests
-      @"unitTestFallbackColor": @{
-        RCTFallback: @"gridColor"
-      },
-      @"unitTestFallbackColorIOS": @{
-        RCTFallback: @"blueColor"
-      },
-      @"unitTestFallbackColorEven": @{
-        RCTSelector: @"unitTestFallbackColorEven",
-        RCTIndex: @0,
-        RCTFallback: @"controlAlternatingRowBackgroundColors"
-      },
-      @"unitTestFallbackColorOdd": @{
-        RCTSelector: @"unitTestFallbackColorOdd",
-        RCTIndex: @1,
-        RCTFallback: @"controlAlternatingRowBackgroundColors"
-      },
-#endif
-    };
-  }
-  return colorMap;
-}
-
 /** Returns a UIColor based on a semantic color name.
  *  Returns nil if the semantic color name is invalid.
  */
@@ -1126,6 +924,7 @@ static RCTUIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
   }
   return color;
 }
+// ]TODO(macOS ISS#2323203)
 
 /** Returns a comma seperated list of the valid semantic color names
  */
@@ -1144,6 +943,7 @@ static NSString *RCTSemanticColorNames()
   return names;
 }
 
+// [TODO(macOS ISS#2323203)
 + (RCTUIColor *)NSColor:(id)json
 {
   return [RCTConvert UIColor:json];
@@ -1176,7 +976,7 @@ static NSString *RCTSemanticColorNames()
     if ((value = [dictionary objectForKey:@"semantic"])) {
       if ([value isKindOfClass:[NSString class]]) {
         NSString *semanticName = value;
-        UIColor *color = RCTColorFromSemanticColorName(semanticName);
+        RCTUIColor *color = RCTColorFromSemanticColorName(semanticName);
         if (color == nil) {
           RCTLogConvertError(
               json,
@@ -1185,7 +985,7 @@ static NSString *RCTSemanticColorNames()
         return color;
       } else if ([value isKindOfClass:[NSArray class]]) {
         for (id name in value) {
-          UIColor *color = RCTColorFromSemanticColorName(name);
+          RCTUIColor *color = RCTColorFromSemanticColorName(name);
           if (color != nil) {
             return color;
           }
@@ -1202,9 +1002,9 @@ static NSString *RCTSemanticColorNames()
     } else if ((value = [dictionary objectForKey:@"dynamic"])) {
       NSDictionary *appearances = value;
       id light = [appearances objectForKey:@"light"];
-      UIColor *lightColor = [RCTConvert UIColor:light];
+      RCTUIColor *lightColor = [RCTConvert UIColor:light];
       id dark = [appearances objectForKey:@"dark"];
-      UIColor *darkColor = [RCTConvert UIColor:dark];
+      RCTUIColor *darkColor = [RCTConvert UIColor:dark];
       if (lightColor != nil && darkColor != nil) {
 #if TARGET_OS_OSX
         RCTDynamicColor *color = [[RCTDynamicColor alloc] initWithAquaColor:lightColor darkAquaColor:darkColor];

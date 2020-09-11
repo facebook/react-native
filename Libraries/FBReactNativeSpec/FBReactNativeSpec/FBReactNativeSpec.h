@@ -1799,25 +1799,6 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-@protocol NativeLogBoxSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)show;
-- (void)hide;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'LogBox'
-     */
-
-    class JSI_EXPORT NativeLogBoxSpecJSI : public ObjCTurboModule {
-    public:
-      NativeLogBoxSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
-
-    };
-  } // namespace react
-} // namespace facebook
 @protocol NativeModalManagerSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)addListener:(NSString *)eventName;
