@@ -21,6 +21,7 @@
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import <React/RCTConvert+Text.h>
 #endif // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 @interface RCTBaseTextInputViewManager () <RCTUIManagerObserver>
 
@@ -75,7 +76,7 @@ RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(placeholder, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 
-RCT_CUSTOM_VIEW_PROPERTY(multiline, BOOL, UIView)
+RCT_CUSTOM_VIEW_PROPERTY(multiline, BOOL, RCTUIView) // TODO(macOS ISS#2323203)
 {
   // No op.
   // This View Manager doesn't use this prop but it must be exposed here via ViewConfig to enable Fabric component use it.
@@ -112,16 +113,16 @@ RCT_CUSTOM_VIEW_PROPERTY(multiline, BOOL, UIView)
 
 RCT_EXPORT_METHOD(focus : (nonnull NSNumber *)viewTag)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    UIView *view = viewRegistry[viewTag];
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#2323203)
+    RCTUIView *view = viewRegistry[viewTag]; // TODO(macOS ISS#2323203)
     [view reactFocus];
   }];
 }
 
 RCT_EXPORT_METHOD(blur : (nonnull NSNumber *)viewTag)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    UIView *view = viewRegistry[viewTag];
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#2323203)
+    RCTUIView *view = viewRegistry[viewTag]; // TODO(macOS ISS#2323203)
     [view reactBlur];
   }];
 }
@@ -132,7 +133,7 @@ RCT_EXPORT_METHOD(setTextAndSelection : (nonnull NSNumber *)viewTag
                                 start : (NSInteger)start
                                   end : (NSInteger)end)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#2323203)
     RCTBaseTextInputView *view = (RCTBaseTextInputView *)viewRegistry[viewTag];
     NSInteger eventLag = view.nativeEventCount - mostRecentEventCount;
     if (eventLag != 0) {
