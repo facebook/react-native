@@ -10,6 +10,7 @@
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "UIView+React.h"
+#import "RCTUIKit.h" // TODO(macOS ISS#2323203)
 
 @implementation RCTSegmentedControl
 
@@ -51,7 +52,7 @@
   self.selectedSegmentIndex = selectedIndex; // TODO(macOS ISS#2323203)
 }
 
-- (void)setBackgroundColor:(UIColor *)backgroundColor
+- (void)setBackgroundColor:(RCTUIColor *)backgroundColor // TODO(macOS ISS#2323203)
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
@@ -61,7 +62,7 @@
 #endif
 }
 
-- (void)setTextColor:(UIColor *)textColor
+- (void)setTextColor:(RCTUIColor *)textColor // TODO(macOS ISS#2323203)
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
