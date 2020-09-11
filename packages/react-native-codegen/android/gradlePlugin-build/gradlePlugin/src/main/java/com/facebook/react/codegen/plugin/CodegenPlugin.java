@@ -85,25 +85,16 @@ public class CodegenPlugin implements Plugin<Project> {
 
               task.dependsOn("generateCodegenSchemaFromJavaScript");
 
-              // TODO: The codegen tool should produce this outputDir structure based on
-              // the provided Java package name.
-              File outputDir =
-                  new File(
-                      generatedSrcDir,
-                      "java/" + extension.codegenJavaPackageName.replace(".", "/"));
-
               task.getInputs()
                   .files(project.fileTree(ImmutableMap.of("dir", extension.codegenDir())));
               task.getInputs().files(generatedSchemaFile);
-              task.getOutputs().dir(outputDir);
+              task.getOutputs().dir(generatedSrcDir);
 
               if (extension.useJavaGenerator) {
                 task.doLast(
                     s -> {
                       generateJavaFromSchemaWithJavaGenerator(
-                          generatedSchemaFile,
-                          extension.codegenJavaPackageName,
-                          new File(generatedSrcDir, "java"));
+                          generatedSchemaFile, extension.codegenJavaPackageName, generatedSrcDir);
                     });
               }
 
@@ -114,8 +105,9 @@ public class CodegenPlugin implements Plugin<Project> {
                       .add(extension.codegenGenerateNativeModuleSpecsCLI().getAbsolutePath())
                       .add("android")
                       .add(generatedSchemaFile.getAbsolutePath())
-                      .add(outputDir.getAbsolutePath())
+                      .add(generatedSrcDir.getAbsolutePath())
                       .add(extension.libraryName)
+                      .add(extension.codegenJavaPackageName)
                       .build();
               task.commandLine(execCommands);
             });

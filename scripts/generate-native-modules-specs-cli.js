@@ -15,7 +15,13 @@ const mkdirp = require('mkdirp');
 const os = require('os');
 const path = require('path');
 
-function generateSpec(platform, schemaPath, outputDirectory, libraryName) {
+function generateSpec(
+  platform,
+  schemaPath,
+  outputDirectory,
+  libraryName,
+  javaPackageName,
+) {
   const moduleSpecName = libraryName;
   const schemaText = fs.readFileSync(schemaPath, 'utf-8');
 
@@ -64,12 +70,17 @@ function generateSpec(platform, schemaPath, outputDirectory, libraryName) {
     // TODO: Build sufficient support for producing Java package directories based
     // on preferred package name.
     const files = fs.readdirSync(tempOutputDirectory);
+    const javaOutputDirectory = `${outputDirectory}/java/${javaPackageName.replace(
+      /\./g,
+      '/',
+    )}`;
+    mkdirp.sync(javaOutputDirectory);
     files
       .filter(f => f.endsWith('.java'))
       .forEach(f => {
         fs.copyFileSync(
           `${tempOutputDirectory}/${f}`,
-          `${outputDirectory}/${f}`,
+          `${javaOutputDirectory}/${f}`,
         );
       });
 
@@ -97,7 +108,8 @@ function main() {
   const schemaPath = args[1];
   const outputDir = args[2];
   const libraryName = args[3] || 'FBReactNativeSpec';
-  generateSpec(platform, schemaPath, outputDir, libraryName);
+  const javaPackageName = args[4] || 'com.facebook.fbreact.specs';
+  generateSpec(platform, schemaPath, outputDir, libraryName, javaPackageName);
 }
 
 main();
