@@ -26,6 +26,7 @@ class ImageProps final : public ViewProps {
   const Float blurRadius{};
   const EdgeInsets capInsets{};
   const SharedColor tintColor{};
+  const std::string internal_analyticTag{};
 };
 
 } // namespace react

@@ -12,18 +12,23 @@ namespace react {
 
 ImageRequest::ImageRequest(
     const ImageSource &imageSource,
+    std::shared_ptr<const ImageTelemetry> telemetry,
     std::shared_ptr<const ImageInstrumentation> instrumentation)
-    : imageSource_(imageSource), instrumentation_(instrumentation) {
+    : imageSource_(imageSource),
+      telemetry_(telemetry),
+      instrumentation_(instrumentation) {
   coordinator_ = std::make_shared<ImageResponseObserverCoordinator>();
 }
 
 ImageRequest::ImageRequest(ImageRequest &&other) noexcept
     : imageSource_(std::move(other.imageSource_)),
+      telemetry_(std::move(other.telemetry_)),
       coordinator_(std::move(other.coordinator_)),
       instrumentation_(std::move(other.instrumentation_)) {
   other.moved_ = true;
   other.coordinator_ = nullptr;
   other.cancelRequest_ = nullptr;
+  other.telemetry_ = nullptr;
   other.instrumentation_ = nullptr;
 }
 
@@ -36,6 +41,11 @@ ImageRequest::~ImageRequest() {
 void ImageRequest::setCancelationFunction(
     std::function<void(void)> cancelationFunction) {
   cancelRequest_ = cancelationFunction;
+}
+
+const std::shared_ptr<const ImageTelemetry> &ImageRequest::getSharedTelemetry()
+    const {
+  return telemetry_;
 }
 
 const ImageResponseObserverCoordinator &ImageRequest::getObserverCoordinator()

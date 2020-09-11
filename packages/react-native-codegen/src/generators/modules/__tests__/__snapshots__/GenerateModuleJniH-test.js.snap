@@ -29,6 +29,8 @@ public:
 };
 
 
+std::shared_ptr<TurboModule> COMPLEX_OBJECTS_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
+
 } // namespace react
 } // namespace facebook
 ",
@@ -64,6 +66,8 @@ public:
 };
 
 
+std::shared_ptr<TurboModule> EMPTY_NATIVE_MODULES_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
+
 } // namespace react
 } // namespace facebook
 ",
@@ -98,6 +102,8 @@ public:
   NativeAliasTurboModuleSpecJSI(const JavaTurboModule::InitParams &params);
 };
 
+
+std::shared_ptr<TurboModule> NATIVE_MODULES_WITH_TYPE_ALIASES_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
 
 } // namespace react
 } // namespace facebook
@@ -150,6 +156,8 @@ public:
 };
 
 
+std::shared_ptr<TurboModule> REAL_MODULE_EXAMPLE_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
+
 } // namespace react
 } // namespace facebook
 ",
@@ -184,6 +192,8 @@ public:
   NativeSampleTurboModuleSpecJSI(const JavaTurboModule::InitParams &params);
 };
 
+
+std::shared_ptr<TurboModule> SIMPLE_NATIVE_MODULES_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
 
 } // namespace react
 } // namespace facebook
@@ -228,6 +238,8 @@ public:
 };
 
 
+std::shared_ptr<TurboModule> TWO_MODULES_DIFFERENT_FILES_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
+
 } // namespace react
 } // namespace facebook
 ",
@@ -270,6 +282,8 @@ public:
   NativeSample2TurboModuleSpecJSI(const JavaTurboModule::InitParams &params);
 };
 
+
+std::shared_ptr<TurboModule> TWO_MODULES_SAME_FILE_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
 
 } // namespace react
 } // namespace facebook

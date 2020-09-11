@@ -679,22 +679,21 @@ static Class getFallbackClassFromName(const char *name)
     return;
   }
 
-  __weak __typeof(self) weakSelf = self;
+  /**
+   * We keep TurboModuleManager alive until the JS VM is deleted.
+   * It is perfectly valid to only use/create TurboModules from JS.
+   * In such a case, we shouldn't dealloc TurboModuleManager if there
+   * aren't any strong references to it in ObjC. Hence, we give
+   * __turboModuleProxy a strong reference to TurboModuleManager.
+   */
   auto turboModuleProvider =
-      [weakSelf](const std::string &name, const jsi::Value *schema) -> std::shared_ptr<react::TurboModule> {
-    if (!weakSelf) {
-      return nullptr;
-    }
-
+      [self](const std::string &name, const jsi::Value *schema) -> std::shared_ptr<react::TurboModule> {
     auto moduleName = name.c_str();
 
     TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
-
-    __strong __typeof(self) strongSelf = weakSelf;
-
-    auto moduleWasNotInitialized = ![strongSelf moduleIsInitialized:moduleName];
+    auto moduleWasNotInitialized = ![self moduleIsInitialized:moduleName];
     if (moduleWasNotInitialized) {
-      [strongSelf->_bridge.performanceLogger markStartForTag:RCTPLTurboModuleSetup];
+      [self->_bridge.performanceLogger markStartForTag:RCTPLTurboModuleSetup];
     }
 
     /**
@@ -702,11 +701,11 @@ static Class getFallbackClassFromName(const char *name)
      * Additionally, if a TurboModule with the name `name` isn't found, then we
      * trigger an assertion failure.
      */
-    auto turboModule = [strongSelf provideTurboModule:moduleName];
+    auto turboModule = [self provideTurboModule:moduleName];
 
-    if (moduleWasNotInitialized && [strongSelf moduleIsInitialized:moduleName]) {
-      [strongSelf->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];
-      [strongSelf notifyAboutTurboModuleSetup:moduleName];
+    if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
+      [self->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];
+      [self notifyAboutTurboModuleSetup:moduleName];
     }
 
     if (turboModule) {
