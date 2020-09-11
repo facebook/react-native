@@ -128,7 +128,7 @@ using namespace facebook::react;
 
 #pragma mark - RCTImageResponseDelegate
 
-- (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
+- (void)didReceiveImage:(UIImage *)image metadata:(id)metadata fromObserver:(void const *)observer
 {
   if (!_eventEmitter || !_stateTeller.isValid()) {
     // Notifications are delivered asynchronously and might arrive after the view is already recycled.

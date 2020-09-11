@@ -56,7 +56,7 @@ struct ImageURLLoaderAttribution {
                                   attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
                               progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                            partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
-                            completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+                            completionHandler:(RCTImageLoaderCompletionBlockWithMetadata)completionHandler;
 #endif
 
 /**

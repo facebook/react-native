@@ -33,7 +33,7 @@ RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
                                           attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
                                         progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                      partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
-                                      completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+                                      completionBlock:(RCTImageLoaderCompletionBlockWithMetadata)completionBlock;
 #endif
 
 /**

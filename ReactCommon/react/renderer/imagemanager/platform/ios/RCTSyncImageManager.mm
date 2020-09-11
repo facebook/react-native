@@ -50,14 +50,15 @@ using namespace facebook::react;
 
   NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
 
-  auto completionBlock = ^(NSError *error, UIImage *image) {
+  auto completionBlock = ^(NSError *error, UIImage *image, id metadata) {
     auto observerCoordinator = weakObserverCoordinator.lock();
     if (!observerCoordinator) {
       return;
     }
 
     if (image && !error) {
-      observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image)));
+      auto wrappedMetadata = metadata ? wrapManagedObject(metadata) : nullptr;
+      observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image), wrappedMetadata));
     } else {
       observerCoordinator->nativeImageResponseFailed();
     }
