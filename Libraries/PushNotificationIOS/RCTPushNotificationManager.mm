@@ -460,11 +460,13 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 #endif // ]TODO(macOS ISS#2323203)
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 static inline NSDictionary *RCTPromiseResolveValueForUNNotificationSettings(UNNotificationSettings* _Nonnull settings) {
   return RCTSettingsDictForUNNotificationSettings(settings.alertSetting == UNNotificationSettingEnabled,
                                                   settings.badgeSetting == UNNotificationSettingEnabled,
                                                   settings.soundSetting == UNNotificationSettingEnabled);
 }
+#endif
 
 static inline NSDictionary *RCTSettingsDictForUNNotificationSettings(BOOL alert, BOOL badge, BOOL sound) {
   return @{@"alert": @(alert), @"badge": @(badge), @"sound": @(sound)};
