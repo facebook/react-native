@@ -22,6 +22,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import "RCTImagePlugins.h"
 
@@ -818,7 +819,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   }
 }
 
-- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(UIView *)imageView
+- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView // TODO(macOS ISS#2323203)
 {
   if (!loaderRequest || !imageView) {
     return;

@@ -7,6 +7,8 @@
 
 #import <React/RCTImageURLLoader.h>
 
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
 namespace facebook {
@@ -63,7 +65,7 @@ struct ImageURLLoaderAttribution {
 /**
  * Image instrumentation - start tracking the on-screen visibility of the native image view.
  */
-- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(UIView *)imageView;
+- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView; // TODO(macOS ISS#2323203)
 
 /**
  * Image instrumentation - notify that the native image view was destroyed.
