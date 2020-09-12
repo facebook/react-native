@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const {AsyncStorage} = require('react-native');
+import {AsyncStorage} from 'react-native';
 
 export type PassProps<State> = {
   state: State,

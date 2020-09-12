@@ -32,7 +32,7 @@ class DummyShadowTreeDelegate : public ShadowTreeDelegate {
 inline ShadowNode const *findDescendantNode(
     ShadowNode const &shadowNode,
     ShadowNodeFamily const &family) {
-  auto result = (ShadowNode const *){nullptr};
+  ShadowNode const *result = nullptr;
   shadowNode.cloneTree(family, [&](ShadowNode const &oldShadowNode) {
     result = &oldShadowNode;
     return oldShadowNode.clone({});
@@ -43,7 +43,7 @@ inline ShadowNode const *findDescendantNode(
 inline ShadowNode const *findDescendantNode(
     ShadowTree const &shadowTree,
     ShadowNodeFamily const &family) {
-  auto result = (ShadowNode const *){nullptr};
+  ShadowNode const *result = nullptr;
 
   shadowTree.tryCommit(
       [&](RootShadowNode::Shared const &oldRootShadowNode) {

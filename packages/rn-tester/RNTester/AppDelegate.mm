@@ -8,6 +8,7 @@
 #import "AppDelegate.h"
 
 #import <React/JSCExecutorFactory.h>
+#import <React/RCTJSIExecutorRuntimeInstaller.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -164,18 +165,20 @@
 #endif
 
   __weak __typeof(self) weakSelf = self;
-  return std::make_unique<facebook::react::JSCExecutorFactory>([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
-    if (!bridge) {
-      return;
-    }
-    __typeof(self) strongSelf = weakSelf;
-    if (strongSelf) {
-      facebook::react::RuntimeExecutor syncRuntimeExecutor = [&](std::function<void(facebook::jsi::Runtime &runtime_)> &&callback) {
-        callback(runtime);
-      };
-      [strongSelf->_turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
-    }
-  });
+  return std::make_unique<facebook::react::JSCExecutorFactory>(
+    facebook::react::RCTJSIExecutorRuntimeInstaller([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
+      if (!bridge) {
+        return;
+      }
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf) {
+        facebook::react::RuntimeExecutor syncRuntimeExecutor = [&](std::function<void(facebook::jsi::Runtime &runtime_)> &&callback) {
+          callback(runtime);
+        };
+        [strongSelf->_turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
+      }
+    })
+  );
 }
 
 #pragma mark RCTTurboModuleManagerDelegate

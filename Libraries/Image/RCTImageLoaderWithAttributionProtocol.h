@@ -9,13 +9,14 @@
 
 #import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTImageURLLoaderWithAttribution.h>
+#import <React/RCTImageLoaderInstrumentableProtocol.h>
 
 RCT_EXTERN BOOL RCTImageLoadingInstrumentationEnabled(void);
 RCT_EXTERN BOOL RCTImageLoadingPerfInstrumentationEnabled(void);
 RCT_EXTERN void RCTEnableImageLoadingInstrumentation(BOOL enabled);
 RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
 
-@protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol>
+@protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol, RCTImageLoaderInstrumentableProtocol>
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
@@ -32,7 +33,7 @@ RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
                                           attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
                                         progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                      partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
-                                      completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+                                      completionBlock:(RCTImageLoaderCompletionBlockWithMetadata)completionBlock;
 #endif
 
 /**

@@ -63,7 +63,7 @@ static SEL selectorForType(NSString *type)
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
-- (UIView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag
+- (UIView *)createViewWithTag:(nullable NSNumber *)tag rootTag:(nullable NSNumber *)rootTag
 {
   RCTAssertMainQueue();
 

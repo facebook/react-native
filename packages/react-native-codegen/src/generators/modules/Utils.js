@@ -29,6 +29,7 @@ function getTypeAliasTypeAnnotation(
       `Unsupported type for "${name}". Please provide properties.`,
     );
   }
+  // $FlowFixMe[incompatible-type]
   if (typeAnnotation.type === 'TypeAliasTypeAnnotation') {
     return getTypeAliasTypeAnnotation(typeAnnotation.name, aliases);
   }

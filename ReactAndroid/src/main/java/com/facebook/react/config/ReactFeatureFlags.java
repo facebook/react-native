@@ -63,12 +63,12 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
-  /** Feature flag to configure initialization of Fabric surfaces. */
-  public static boolean enableFabricStartSurfaceWithLayoutMetrics = true;
-
   /** Feature flag to use stopSurface when ReactRootView is unmounted. */
   public static boolean enableStopSurfaceOnRootViewUnmount = false;
 
   /** Use experimental SetState retry mechanism in view? */
   public static boolean enableExperimentalStateUpdateRetry = false;
+
+  /** Enable caching of Spannable objects using equality of ReadableNativeMaps */
+  public static boolean enableSpannableCacheByReadableNativeMapEquality = true;
 }

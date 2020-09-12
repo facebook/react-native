@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'Box Shadow';
+exports.category = 'UI';
 exports.description =
   'Demonstrates some of the shadow styles available to Views.';
 exports.examples = [

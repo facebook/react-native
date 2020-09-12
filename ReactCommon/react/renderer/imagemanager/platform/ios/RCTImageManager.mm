@@ -42,7 +42,9 @@ using namespace facebook::react;
   SystraceSection s("RCTImageManager::requestImage");
 
   auto imageInstrumentation = std::make_shared<RCTImageInstrumentationProxy>(_imageLoader);
-  auto imageRequest = ImageRequest(imageSource, imageInstrumentation);
+  auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
+  telemetry->willRequestUrl();
+  auto imageRequest = ImageRequest(imageSource, telemetry, imageInstrumentation);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 
@@ -62,14 +64,21 @@ using namespace facebook::react;
   dispatch_async(_backgroundSerialQueue, ^{
     NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
 
-    auto completionBlock = ^(NSError *error, UIImage *image) {
+    BOOL hasModuleName = [self->_imageLoader respondsToSelector:@selector(loaderModuleNameForRequestUrl:)];
+    NSString *moduleName = hasModuleName ? [self->_imageLoader loaderModuleNameForRequestUrl:request.URL] : nil;
+    std::string moduleCString =
+        std::string([moduleName UTF8String], [moduleName lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+    telemetry->setLoaderModuleName(moduleCString);
+
+    auto completionBlock = ^(NSError *error, UIImage *image, id metadata) {
       auto observerCoordinator = weakObserverCoordinator.lock();
       if (!observerCoordinator) {
         return;
       }
 
       if (image && !error) {
-        observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image)));
+        auto wrappedMetadata = metadata ? wrapManagedObject(metadata) : nullptr;
+        observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image), wrappedMetadata));
       } else {
         observerCoordinator->nativeImageResponseFailed();
       }

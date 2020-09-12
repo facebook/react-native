@@ -21,10 +21,13 @@ import android.text.TextPaint;
 import android.util.LayoutDirection;
 import android.util.LruCache;
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
@@ -33,6 +36,7 @@ import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** Class responsible of creating {@link Spanned} object for the JS representation of Text */
 public class TextLayoutManager {
@@ -57,7 +61,12 @@ public class TextLayoutManager {
   private static final String INCLUDE_FONT_PADDING_KEY = "includeFontPadding";
   private static final String TEXT_BREAK_STRATEGY_KEY = "textBreakStrategy";
   private static final String MAXIMUM_NUMBER_OF_LINES_KEY = "maximumNumberOfLines";
-  private static LruCache<String, Spannable> sSpannableCache = new LruCache<>(spannableCacheSize);
+  private static final LruCache<String, Spannable> sSpannableCache =
+      new LruCache<>(spannableCacheSize);
+  private static final LruCache<ReadableNativeMap, Spannable> sSpannableCacheV2 =
+      new LruCache<>(spannableCacheSize);
+  private static final ConcurrentHashMap<Integer, Spannable> sTagToSpannableCache =
+      new ConcurrentHashMap<>();
 
   public static boolean isRTL(ReadableMap attributedString) {
     ReadableArray fragments = attributedString.getArray("fragments");
@@ -68,6 +77,14 @@ public class TextLayoutManager {
       return textAttributes.mLayoutDirection == LayoutDirection.RTL;
     }
     return false;
+  }
+
+  public static void setCachedSpannabledForTag(int reactTag, @NonNull Spannable sp) {
+    sTagToSpannableCache.put(reactTag, sp);
+  }
+
+  public static void deleteCachedSpannableForTag(int reactTag) {
+    sTagToSpannableCache.remove(reactTag);
   }
 
   private static void buildSpannableFromFragment(
@@ -166,20 +183,40 @@ public class TextLayoutManager {
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
 
     Spannable preparedSpannableText;
-    String attributedStringPayload = attributedString.toString();
-    synchronized (sSpannableCacheLock) {
-      preparedSpannableText = sSpannableCache.get(attributedStringPayload);
-      // TODO: T31905686 implement proper equality of attributedStrings
-      if (preparedSpannableText != null) {
-        return preparedSpannableText;
+    String attributedStringPayload = "";
+
+    boolean cacheByReadableNativeMap =
+        ReactFeatureFlags.enableSpannableCacheByReadableNativeMapEquality;
+    // TODO: T74600554 Cleanup this experiment once positive impact is confirmed in production
+    if (cacheByReadableNativeMap) {
+      synchronized (sSpannableCacheLock) {
+        preparedSpannableText = sSpannableCacheV2.get((ReadableNativeMap) attributedString);
+        if (preparedSpannableText != null) {
+          return preparedSpannableText;
+        }
+      }
+    } else {
+      attributedStringPayload = attributedString.toString();
+      synchronized (sSpannableCacheLock) {
+        preparedSpannableText = sSpannableCache.get(attributedStringPayload);
+        if (preparedSpannableText != null) {
+          return preparedSpannableText;
+        }
       }
     }
 
     preparedSpannableText =
         createSpannableFromAttributedString(
             context, attributedString, reactTextViewManagerCallback);
-    synchronized (sSpannableCacheLock) {
-      sSpannableCache.put(attributedStringPayload, preparedSpannableText);
+
+    if (cacheByReadableNativeMap) {
+      synchronized (sSpannableCacheLock) {
+        sSpannableCacheV2.put((ReadableNativeMap) attributedString, preparedSpannableText);
+      }
+    } else {
+      synchronized (sSpannableCacheLock) {
+        sSpannableCache.put(attributedStringPayload, preparedSpannableText);
+      }
     }
     return preparedSpannableText;
   }
@@ -227,8 +264,17 @@ public class TextLayoutManager {
 
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     TextPaint textPaint = sTextPaintInstance;
-    Spannable text =
-        getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+    Spannable text;
+    if (attributedString.hasKey("cacheId")) {
+      int cacheId = attributedString.getInt("cacheId");
+      if (sTagToSpannableCache.containsKey(cacheId)) {
+        text = sTagToSpannableCache.get(attributedString.getInt("cacheId"));
+      } else {
+        return 0;
+      }
+    } else {
+      text = getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+    }
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(

@@ -78,6 +78,7 @@
     "test-ios": "./scripts/objc-test.sh test"
   },
   "workspaces": [
+    "packages/!(eslint-config-react-native-community)",
     "repo-config"
   ],
   "peerDependencies": {
@@ -94,15 +95,14 @@
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
     "event-target-shim": "^5.0.1",
-    "fbjs": "^1.0.0",
     "fbjs-scripts": "^1.1.0",
     "hermes-engine": "~0.6.0",
     "invariant": "^2.2.4",
     "jsc-android": "^245459.0.0",
-    "metro-babel-register": "0.62.0",
-    "metro-react-native-babel-transformer": "0.62.0",
-    "metro-runtime": "0.62.0",
-    "metro-source-map": "0.62.0",
+    "metro-babel-register": "0.63.0",
+    "metro-react-native-babel-transformer": "0.63.0",
+    "metro-runtime": "0.63.0",
+    "metro-source-map": "0.63.0",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.0.1",
     "promise": "^8.0.3",
@@ -117,6 +117,10 @@
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.1.4"
   },
+  "devDependencies": {
+    "flow-bin": "^0.133.0",
+    "react": "16.13.1"
+  },
   "detox": {
     "test-runner": "jest",
     "runner-config": "packages/rn-tester/e2e/config.json",
@@ -125,7 +129,7 @@
       "android.emu.release": {
         "binaryPath": "packages/rn-tester/android/app/build/outputs/apk/hermes/release/app-hermes-x86-release.apk",
         "testBinaryPath": "packages/rn-tester/android/app/build/outputs/apk/androidTest/hermes/release/app-hermes-release-androidTest.apk",
-        "build": "./gradlew :packages:rn-tester:android:app:assembleRelease RNTester:android:app:assembleAndroidTest -DtestBuildType=release",
+        "build": "./gradlew :packages:rn-tester:android:app:assembleRelease :packages:rn-tester:android:app:assembleAndroidTest -DtestBuildType=release",
         "type": "android.emulator",
         "device": {
           "avdName": "Nexus_6_API_29"
@@ -134,7 +138,7 @@
       "android.emu.debug": {
         "binaryPath": "packages/rn-tester/android/app/build/outputs/apk/hermes/debug/app-hermes-x86-debug.apk",
         "testBinaryPath": "packages/rn-tester/android/app/build/outputs/apk/androidTest/hermes/debug/app-hermes-debug-androidTest.apk",
-        "build": "./gradlew :packages:rn-tester:android:app:assembleDebug RNTester:android:app:assembleAndroidTest -DtestBuildType=debug",
+        "build": "./gradlew :packages:rn-tester:android:app:assembleDebug :packages:rn-tester:android:app:assembleAndroidTest -DtestBuildType=debug",
         "type": "android.emulator",
         "device": {
           "avdName": "Nexus_6_API_29"

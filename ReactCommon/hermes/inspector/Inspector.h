@@ -5,7 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#pragma once
+// using include guards instead of #pragma once due to compile issues
+// with MSVC and BUCK
+#ifndef HERMES_INSPECTOR_INSPECTOR_H
+#define HERMES_INSPECTOR_INSPECTOR_H
 
 #include <memory>
 #include <queue>
@@ -362,3 +365,5 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 } // namespace inspector
 } // namespace hermes
 } // namespace facebook
+
+#endif // HERMES_INSPECTOR_INSPECTOR_H

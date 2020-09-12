@@ -11,7 +11,7 @@
   "dependencies": {
     "@babel/core": "^7.0.0",
     "@babel/generator": "^7.5.0",
-    "@react-native-community/eslint-plugin": "file:../packages/eslint-plugin-react-native-community",
+    "@react-native-community/eslint-plugin": "*",
     "@reactions/component": "^2.0.2",
     "async": "^2.4.0",
     "babel-eslint": "^10.1.0",
@@ -33,7 +33,7 @@
     "eslint-plugin-react-hooks": "^4.0.7",
     "eslint-plugin-react-native": "3.8.1",
     "eslint-plugin-relay": "1.7.1",
-    "flow-bin": "^0.131.0",
+    "flow-bin": "^0.133.0",
     "jest": "^26.0.1",
     "jest-junit": "^10.0.0",
     "jscodeshift": "^0.9.0",

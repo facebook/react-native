@@ -10,8 +10,6 @@
 
 'use strict';
 
-const warning = require('fbjs/lib/warning');
-
 const warnedKeys: {[string]: boolean, ...} = {};
 
 /**
@@ -26,7 +24,7 @@ function warnOnce(key: string, message: string) {
     return;
   }
 
-  warning(false, message);
+  console.warn(message);
 
   warnedKeys[key] = true;
 }

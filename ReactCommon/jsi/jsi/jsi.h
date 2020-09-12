@@ -17,11 +17,11 @@
 
 #ifndef JSI_EXPORT
 #ifdef _MSC_VER
-#ifdef JSI_CREATE_SHARED_LIBRARY
+#ifdef CREATE_SHARED_LIBRARY
 #define JSI_EXPORT __declspec(dllexport)
 #else
 #define JSI_EXPORT
-#endif // JSI_CREATE_SHARED_LIBRARY
+#endif // CREATE_SHARED_LIBRARY
 #else // _MSC_VER
 #define JSI_EXPORT __attribute__((visibility("default")))
 #endif // _MSC_VER
@@ -31,14 +31,14 @@ class FBJSRuntime;
 namespace facebook {
 namespace jsi {
 
-class Buffer {
+class JSI_EXPORT Buffer {
  public:
   virtual ~Buffer();
   virtual size_t size() const = 0;
   virtual const uint8_t* data() const = 0;
 };
 
-class StringBuffer : public Buffer {
+class JSI_EXPORT StringBuffer : public Buffer {
  public:
   StringBuffer(std::string s) : s_(std::move(s)) {}
   size_t size() const override {
@@ -56,7 +56,7 @@ class StringBuffer : public Buffer {
 /// form optimized for execution, in a runtime-specific way. Construct one via
 /// jsi::Runtime::prepareJavaScript().
 /// ** This is an experimental API that is subject to change. **
-class PreparedJavaScript {
+class JSI_EXPORT PreparedJavaScript {
  protected:
   PreparedJavaScript() = default;
 
@@ -145,7 +145,7 @@ class JSI_EXPORT HostObject {
 /// in a non-Runtime-managed object, and not clean it up before the Runtime
 /// is shut down.  If your lifecycle is such that avoiding this is hard,
 /// you will probably need to do use your own locks.
-class Runtime {
+class JSI_EXPORT Runtime {
  public:
   virtual ~Runtime();
 
@@ -326,7 +326,7 @@ class Runtime {
 };
 
 // Base class for pointer-storing types.
-class Pointer {
+class JSI_EXPORT Pointer {
  protected:
   explicit Pointer(Pointer&& other) : ptr_(other.ptr_) {
     other.ptr_ = nullptr;
@@ -349,7 +349,7 @@ class Pointer {
 };
 
 /// Represents something that can be a JS property key.  Movable, not copyable.
-class PropNameID : public Pointer {
+class JSI_EXPORT PropNameID : public Pointer {
  public:
   using Pointer::Pointer;
 
@@ -423,7 +423,7 @@ class PropNameID : public Pointer {
 /// the debugger not to crash when a Symbol is a property in an Object
 /// or element in an array.  Complete support for creating will come
 /// later.
-class Symbol : public Pointer {
+class JSI_EXPORT Symbol : public Pointer {
  public:
   using Pointer::Pointer;
 
@@ -446,7 +446,7 @@ class Symbol : public Pointer {
 };
 
 /// Represents a JS String.  Movable, not copyable.
-class String : public Pointer {
+class JSI_EXPORT String : public Pointer {
  public:
   using Pointer::Pointer;
 
@@ -504,7 +504,7 @@ class Array;
 class Function;
 
 /// Represents a JS Object.  Movable, not copyable.
-class Object : public Pointer {
+class JSI_EXPORT Object : public Pointer {
  public:
   using Pointer::Pointer;
 
@@ -692,7 +692,7 @@ class Object : public Pointer {
 /// Represents a weak reference to a JS Object.  If the only reference
 /// to an Object are these, the object is eligible for GC.  Method
 /// names are inspired by C++ weak_ptr.  Movable, not copyable.
-class WeakObject : public Pointer {
+class JSI_EXPORT WeakObject : public Pointer {
  public:
   using Pointer::Pointer;
 
@@ -714,7 +714,7 @@ class WeakObject : public Pointer {
 
 /// Represents a JS Object which can be efficiently used as an array
 /// with integral indices.
-class Array : public Object {
+class JSI_EXPORT Array : public Object {
  public:
   Array(Array&&) = default;
   /// Creates a new Array instance, with \c length undefined elements.
@@ -769,7 +769,7 @@ class Array : public Object {
 };
 
 /// Represents a JSArrayBuffer
-class ArrayBuffer : public Object {
+class JSI_EXPORT ArrayBuffer : public Object {
  public:
   ArrayBuffer(ArrayBuffer&&) = default;
   ArrayBuffer& operator=(ArrayBuffer&&) = default;
@@ -796,7 +796,7 @@ class ArrayBuffer : public Object {
 };
 
 /// Represents a JS Object which is guaranteed to be Callable.
-class Function : public Object {
+class JSI_EXPORT Function : public Object {
  public:
   Function(Function&&) = default;
   Function& operator=(Function&&) = default;
@@ -906,7 +906,7 @@ class Function : public Object {
 /// Represents any JS Value (undefined, null, boolean, number, symbol,
 /// string, or object).  Movable, or explicitly copyable (has no copy
 /// ctor).
-class Value {
+class JSI_EXPORT Value {
  public:
   /// Default ctor creates an \c undefined JS value.
   Value() : Value(UndefinedKind) {}
@@ -1178,7 +1178,7 @@ class Value {
 /// Instances of this class are intended to be created as automatic stack
 /// variables in which case destructor calls don't require any additional
 /// locking, provided that the lock (if any) is managed with RAII helpers.
-class Scope {
+class JSI_EXPORT Scope {
  public:
   explicit Scope(Runtime& rt) : rt_(rt), prv_(rt.pushScope()) {}
   ~Scope() {

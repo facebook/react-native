@@ -108,15 +108,11 @@ Scheduler::Scheduler(
 #ifdef ANDROID
   enableReparentingDetection_ = reactNativeConfig_->getBool(
       "react_fabric:enable_reparenting_detection_android");
-  enableNewStateReconciliation_ = reactNativeConfig_->getBool(
-      "react_fabric:enable_new_state_reconciliation_android");
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
 #else
   enableReparentingDetection_ = reactNativeConfig_->getBool(
       "react_fabric:enable_reparenting_detection_ios");
-  enableNewStateReconciliation_ = reactNativeConfig_->getBool(
-      "react_fabric:enable_new_state_reconciliation_ios");
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
 #endif
@@ -192,8 +188,6 @@ void Scheduler::startSurface(
       mountingOverrideDelegate,
       enableReparentingDetection_);
 
-  shadowTree->setEnableNewStateReconciliation(enableNewStateReconciliation_);
-
   auto uiManager = uiManager_;
 
   uiManager->getShadowTreeRegistry().add(std::move(shadowTree));
@@ -245,6 +239,9 @@ void Scheduler::renderTemplateToSurface(
 
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("Scheduler::stopSurface");
+
+  // Stop any ongoing animations.
+  uiManager_->stopSurfaceForAnimationDelegate(surfaceId);
 
   // Note, we have to do in inside `visit` function while the Shadow Tree
   // is still being registered.
