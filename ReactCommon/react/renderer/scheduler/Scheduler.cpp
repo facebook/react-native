@@ -243,19 +243,16 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
   // Stop any ongoing animations.
   uiManager_->stopSurfaceForAnimationDelegate(surfaceId);
 
-  // Note, we have to do in inside `visit` function while the Shadow Tree
-  // is still being registered.
-  uiManager_->getShadowTreeRegistry().visit(
-      surfaceId, [](ShadowTree const &shadowTree) {
-        // As part of stopping a Surface, we need to properly destroy all
-        // mounted views, so we need to commit an empty tree to trigger all
-        // side-effects that will perform that.
-        shadowTree.commitEmptyTree();
-      });
-
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.
-  uiManager_->getShadowTreeRegistry().remove(surfaceId);
+  auto shadowTree = uiManager_->getShadowTreeRegistry().remove(surfaceId);
+
+  // As part of stopping a Surface, we need to properly destroy all
+  // mounted views, so we need to commit an empty tree to trigger all
+  // side-effects (including destroying and removing mounted views).
+  if (shadowTree) {
+    shadowTree->commitEmptyTree();
+  }
 
   // We execute JavaScript/React part of the process at the very end to minimize
   // any visible side-effects of stopping the Surface. Any possible commits from
