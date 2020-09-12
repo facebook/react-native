@@ -14,6 +14,7 @@ import type {SchemaType, NativeModuleShape} from '../../CodegenSchema';
 
 const {capitalizeFirstLetter} = require('./ObjCppUtils/GenerateStructs');
 const {flatObjects} = require('./ObjCppUtils/Utils');
+const {getTypeAliasTypeAnnotation} = require('./Utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -40,16 +41,16 @@ const moduleTemplate = `
     }`.trim();
 
 const getterTemplate = `
-@implementation RCTCxxConvert (Native::_MODULE_NAME_::_Spec::_GETTER_NAME_::)
-+ (RCTManagedPointer *)JS_Native::_MODULE_NAME_::_Spec::_GETTER_NAME_:::(id)json
+@implementation RCTCxxConvert (Native::_MODULE_NAME_::_::_GETTER_NAME_::)
++ (RCTManagedPointer *)JS_Native::_MODULE_NAME_::_::_GETTER_NAME_:::(id)json
 {
-  return facebook::react::managedPointer<JS::Native::_MODULE_NAME_::::Spec::_GETTER_NAME_::>(json);
+  return facebook::react::managedPointer<JS::Native::_MODULE_NAME_::::::_GETTER_NAME_::>(json);
 }
 @end
 `;
 
 const argConvertionTemplate =
-  '\n      setMethodArgConversionSelector(@"::_ARG_NAME_::", ::_ARG_NUMBER_::, @"JS_Native::_MODULE_NAME_::_Spec::_SELECTOR_NAME_:::");';
+  '\n      setMethodArgConversionSelector(@"::_ARG_NAME_::", ::_ARG_NUMBER_::, @"JS_Native::_MODULE_NAME_::_::_SELECTOR_NAME_:::");';
 
 const template = `
 /**
@@ -171,46 +172,65 @@ module.exports = {
         const module: NativeModuleShape = nativeModules[moduleName];
         return acc.concat(
           flatObjects(
-            module.properties.reduce((moduleAcc, property) => {
-              const {returnTypeAnnotation} = property.typeAnnotation;
-              if (returnTypeAnnotation.type === 'ObjectTypeAnnotation') {
-                const {properties} = returnTypeAnnotation;
-                if (properties) {
-                  moduleAcc.push({
-                    name: capitalizeFirstLetter(property.name) + 'ReturnType',
-                    object: {
-                      type: 'ObjectTypeAnnotation',
-                      properties: properties,
-                    },
-                  });
+            module.properties
+              .reduce((moduleAcc, property) => {
+                const {returnTypeAnnotation} = property.typeAnnotation;
+                if (returnTypeAnnotation.type === 'ObjectTypeAnnotation') {
+                  const {properties} = returnTypeAnnotation;
+                  if (properties) {
+                    moduleAcc.push({
+                      name:
+                        'Spec' +
+                        capitalizeFirstLetter(property.name) +
+                        'ReturnType',
+                      object: {
+                        type: 'ObjectTypeAnnotation',
+                        properties: properties,
+                      },
+                    });
+                  }
                 }
-              }
-              if (property.typeAnnotation.params) {
-                return moduleAcc.concat(
-                  property.typeAnnotation.params
-                    .map(param => {
-                      if (
-                        param.typeAnnotation.type === 'ObjectTypeAnnotation'
-                      ) {
-                        const {properties} = param.typeAnnotation;
-                        if (properties) {
-                          return {
-                            name:
-                              capitalizeFirstLetter(property.name) +
-                              capitalizeFirstLetter(param.name),
-                            object: {
-                              type: 'ObjectTypeAnnotation',
-                              properties: properties,
-                            },
-                          };
+                if (property.typeAnnotation.params) {
+                  return moduleAcc.concat(
+                    property.typeAnnotation.params
+                      .map(param => {
+                        if (
+                          param.typeAnnotation.type === 'ObjectTypeAnnotation'
+                        ) {
+                          const {properties} = param.typeAnnotation;
+                          if (properties) {
+                            return {
+                              name:
+                                'Spec' +
+                                capitalizeFirstLetter(property.name) +
+                                capitalizeFirstLetter(param.name),
+                              object: {
+                                type: 'ObjectTypeAnnotation',
+                                properties: properties,
+                              },
+                            };
+                          }
                         }
-                      }
-                    })
-                    .filter(Boolean),
-                );
-              }
-              return moduleAcc;
-            }, []),
+                      })
+                      .filter(Boolean),
+                  );
+                }
+                return moduleAcc;
+              }, [])
+              .concat(
+                Object.keys(module.aliases).map(aliasName => {
+                  const alias = getTypeAliasTypeAnnotation(
+                    aliasName,
+                    module.aliases,
+                  );
+                  return {
+                    name: aliasName,
+                    object: {type: alias.type, properties: alias.properties},
+                  };
+                }),
+              ),
+            false,
+            module.aliases,
           )
             .map(object =>
               getterTemplate
@@ -224,7 +244,7 @@ module.exports = {
 
     const modules = Object.keys(nativeModules)
       .map(name => {
-        const {properties} = nativeModules[name];
+        const {aliases, properties} = nativeModules[name];
         const translatedMethods = properties
           .map(property => translateMethodForImplementation(property))
           .join('\n');
@@ -254,19 +274,33 @@ module.exports = {
             properties
               .map(({name: propertyName, typeAnnotation: {params}}) =>
                 params
-                  .map((param, index) =>
-                    param.typeAnnotation.type === 'ObjectTypeAnnotation' &&
-                    param.typeAnnotation.properties
-                      ? argConvertionTemplate
-                          .replace(
-                            '::_SELECTOR_NAME_::',
-                            capitalizeFirstLetter(propertyName) +
-                              capitalizeFirstLetter(param.name),
+                  .map((param, index) => {
+                    const typeAnnotation =
+                      param.typeAnnotation.type === 'TypeAliasTypeAnnotation'
+                        ? getTypeAliasTypeAnnotation(
+                            param.typeAnnotation.name,
+                            aliases,
                           )
-                          .replace('::_ARG_NUMBER_::', index.toString())
-                          .replace('::_ARG_NAME_::', propertyName)
-                      : '',
-                  )
+                        : param.typeAnnotation;
+                    const selectorName =
+                      param.typeAnnotation.type === 'TypeAliasTypeAnnotation'
+                        ? param.typeAnnotation.name
+                        : 'Spec' +
+                          capitalizeFirstLetter(propertyName) +
+                          capitalizeFirstLetter(param.name);
+
+                    if (
+                      typeAnnotation.type === 'ObjectTypeAnnotation' &&
+                      typeAnnotation.properties
+                    ) {
+                      return argConvertionTemplate
+                        .replace('::_SELECTOR_NAME_::', selectorName)
+                        .replace('::_ARG_NUMBER_::', index.toString())
+                        .replace('::_ARG_NAME_::', propertyName);
+                    }
+
+                    return '';
+                  })
                   .join(''),
               )
               .join(''),

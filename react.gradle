@@ -30,7 +30,7 @@ def detectCliPath(config) {
     }
 
     def cliPath = ["node", "-e", "console.log(require('react-native/cli').bin);"].execute([], projectDir).text.trim()
-    
+
     if (cliPath) {
         return cliPath
     } else if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
@@ -126,7 +126,7 @@ afterEvaluate {
         } else {
             execCommand.addAll([*nodeExecutableAndArgs, cliPath])
         }
-        
+
         def enableHermes = enableHermesForVariant(variant)
 
         def currentBundleTask = tasks.create(

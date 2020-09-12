@@ -87,7 +87,7 @@ type IOSProps = $ReadOnly<{|
    *
    * @platform ios
    */
-  showHideTransition?: ?('fade' | 'slide'),
+  showHideTransition?: ?('fade' | 'slide' | 'none'),
 |}>;
 
 type Props = $ReadOnly<{|

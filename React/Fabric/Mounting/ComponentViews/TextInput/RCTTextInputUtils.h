@@ -9,7 +9,7 @@
 
 #import <React/RCTBackedTextInputViewProtocol.h>
 #import <better/optional.h>
-#import <react/components/iostextinput/primitives.h>
+#import <react/renderer/components/iostextinput/primitives.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

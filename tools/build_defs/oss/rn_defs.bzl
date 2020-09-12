@@ -188,7 +188,7 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
 
     kwargs["deps"] = kwargs.pop("deps", []) + [
         react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
-        react_native_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock2"),
+        react_native_xplat_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock2"),
         react_native_dep("third-party/java/robolectric/4.3.1:robolectric"),
     ]
 
