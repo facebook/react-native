@@ -74,13 +74,21 @@ AndroidTextInputState::AndroidTextInputState(
 
 #ifdef ANDROID
 folly::dynamic AndroidTextInputState::getDynamic() const {
-  // Java doesn't need all fields, so we don't pass them along.
+  // Java doesn't need all fields, so we don't pass them all along.
   folly::dynamic newState = folly::dynamic::object();
-  newState["mostRecentEventCount"] = mostRecentEventCount;
-  newState["attributedString"] = toDynamic(attributedString);
-  newState["hash"] = newState["attributedString"]["hash"];
-  newState["paragraphAttributes"] =
-      toDynamic(paragraphAttributes); // TODO: can we memoize this in Java?
+
+  // If we have a `cachedAttributedStringId` we know that we're (1) not trying
+  // to set a new string, so we don't need to pass it along; (2) setState was
+  // called from Java to trigger a relayout with a `cachedAttributedStringId`,
+  // so Java has all up-to-date information and we should pass an empty map
+  // through.
+  if (cachedAttributedStringId == 0) {
+    newState["mostRecentEventCount"] = mostRecentEventCount;
+    newState["attributedString"] = toDynamic(attributedString);
+    newState["hash"] = newState["attributedString"]["hash"];
+    newState["paragraphAttributes"] =
+        toDynamic(paragraphAttributes); // TODO: can we memoize this in Java?
+  }
   return newState;
 }
 #endif
