@@ -29,7 +29,7 @@ class AndroidTextInputState final {
    * Stores an opaque cache ID used on the Java side to refer to a specific
    * AttributedString for measurement purposes only.
    */
-  int cachedAttributedStringId{0};
+  int64_t cachedAttributedStringId{0};
 
   /*
    * All content of <TextInput> component represented as an `AttributedString`.

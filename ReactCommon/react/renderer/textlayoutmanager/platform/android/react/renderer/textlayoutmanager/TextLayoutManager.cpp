@@ -37,7 +37,7 @@ TextMeasurement TextLayoutManager::measure(
 }
 
 TextMeasurement TextLayoutManager::measureCachedSpannableById(
-    int cacheId,
+    int64_t cacheId,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   const jni::global_ref<jobject> &fabricUIManager =
@@ -64,7 +64,7 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   auto maximumSize = layoutConstraints.maximumSize;
 
   local_ref<JString> componentName = make_jstring("RCTText");
-  folly::dynamic cacheIdMap;
+  folly::dynamic cacheIdMap = folly::dynamic::object;
   cacheIdMap["cacheId"] = cacheId;
   local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
       ReadableNativeMap::newObjectCxxArgs(cacheIdMap);

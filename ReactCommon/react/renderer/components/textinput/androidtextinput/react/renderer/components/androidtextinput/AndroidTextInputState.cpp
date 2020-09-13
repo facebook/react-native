@@ -45,9 +45,10 @@ AndroidTextInputState::AndroidTextInputState(
                                    "mostRecentEventCount",
                                    previousState.mostRecentEventCount)
                                .getInt()),
-      cachedAttributedStringId(
-          data.getDefault("cacheId", previousState.cachedAttributedStringId)
-              .getInt()),
+      cachedAttributedStringId(data.getDefault(
+                                       "opaqueCacheId",
+                                       previousState.cachedAttributedStringId)
+                                   .getInt()),
       attributedString(previousState.attributedString),
       reactTreeAttributedString(previousState.reactTreeAttributedString),
       paragraphAttributes(previousState.paragraphAttributes),
