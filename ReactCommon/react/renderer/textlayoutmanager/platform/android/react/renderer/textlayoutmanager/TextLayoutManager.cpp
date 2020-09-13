@@ -88,6 +88,10 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
       maximumSize.height,
       attachmentPositions));
 
+  // Clean up allocated ref - it still takes up space in the JNI ref table even
+  // though it's 0 length
+  env->DeleteLocalRef(attachmentPositions);
+
   // TODO: currently we do not support attachments for cached IDs - should we?
   auto attachments = TextMeasurement::Attachments{};
 
@@ -172,8 +176,10 @@ TextMeasurement TextLayoutManager::doMeasure(
       }
     }
   }
-  // DELETE REF
+
+  // Clean up allocated ref
   env->DeleteLocalRef(attachmentPositions);
+
   return TextMeasurement{size, attachments};
 }
 
