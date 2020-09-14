@@ -10,6 +10,7 @@
 #import <React/RCTUtils.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/TurboModuleUtils.h>
+#import <NativeModules.h>
 
 static NSImage* TakeScreenshot()
 {
@@ -111,6 +112,32 @@ public:
     {
       return facebook::jsi::Value::undefined();
     }
+  }
+};
+
+REACT_STRUCT(ScreenshotArguments)
+struct ScreenshotArguments
+{
+};
+
+REACT_MODULE(ScreenshotManagerCxx, L"ScreenshotManager")
+struct ScreenshotManagerCxx
+{
+  REACT_INIT(Initialize)
+  void Initialize(const winrt::Microsoft::ReactNative::ReactContext&) noexcept
+  {
+    // to be implemented
+  }
+  
+  REACT_METHOD(TakeScreenshot, L"takeScreenshot")
+  void TakeScreenshot(
+                      std::string,
+                      ScreenshotArguments&&,
+                      winrt::Microsoft::ReactNative::ReactPromise<std::string> result
+                      ) noexcept
+  {
+    // to be implemented
+    result.Reject(L"Not implemented!");
   }
 };
 
