@@ -49,7 +49,6 @@ class ShadowTreeRevision final {
    */
  public:
   ShadowNode const &getRootShadowNode();
-  ShadowNode::Shared getSharedRootShadowNode();
 
   /*
    * Methods from this section are meant to be used by `MountingCoordinator`
