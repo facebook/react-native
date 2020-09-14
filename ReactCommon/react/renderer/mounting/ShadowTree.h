@@ -95,11 +95,6 @@ class ShadowTree final {
   }
 
  private:
-  RootShadowNode::Unshared cloneRootShadowNode(
-      RootShadowNode::Shared const &oldRootShadowNode,
-      LayoutConstraints const &layoutConstraints,
-      LayoutContext const &layoutContext) const;
-
   void emitLayoutEvents(
       std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
 
