@@ -116,13 +116,14 @@ REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck source=/dev/null
 source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
+# check and assign HERMES_CLI env
+source "$REACT_NATIVE_DIR/scripts/hermes-binary.sh"
+
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""
 
 [ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/cli.js"
 
 [ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
-
-[ -z "$HERMES_PATH" ] && HERMES_PATH="$PROJECT_ROOT/node_modules/hermes-engine-darwin/destroot/bin/hermesc"
 
 [ -z "$COMPOSE_SOURCEMAP_PATH" ] && COMPOSE_SOURCEMAP_PATH="$REACT_NATIVE_DIR/scripts/compose-source-maps.js"
 
@@ -144,11 +145,6 @@ case "$PLATFORM_NAME" in
     BUNDLE_PLATFORM="ios"
     ;;
 esac
-
-USE_HERMES=
-if [[ "$BUNDLE_PLATFORM" == "macos" && -f "$HERMES_PATH" ]]; then
-  USE_HERMES=true
-fi
 
 EMIT_SOURCEMAP=
 if [[ ! -z "$SOURCEMAP_FILE" ]]; then
@@ -190,7 +186,7 @@ else
     EXTRA_COMPILER_ARGS="$EXTRA_COMPILER_ARGS -output-source-map"
   fi
   HBC_FILE="$CONFIGURATION_BUILD_DIR/$(basename $BUNDLE_FILE)"
-  "$HERMES_PATH" -emit-binary $EXTRA_COMPILER_ARGS -out "$HBC_FILE" "$BUNDLE_FILE"
+  "$HERMES_CLI" -emit-binary $EXTRA_COMPILER_ARGS -out "$HBC_FILE" "$BUNDLE_FILE"
   mv "$HBC_FILE" "$DEST/"
   BUNDLE_FILE="$DEST/main.jsbundle"
   if [[ $EMIT_SOURCEMAP == true ]]; then
