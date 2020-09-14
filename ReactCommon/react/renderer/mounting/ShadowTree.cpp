@@ -17,10 +17,11 @@
 #include <react/renderer/mounting/TransactionTelemetry.h>
 
 #include "ShadowTreeDelegate.h"
-#include "TreeStateReconciliation.h"
 
 namespace facebook {
 namespace react {
+
+using CommitStatus = ShadowTree::CommitStatus;
 
 /*
  * Generates (possibly) a new tree where all nodes with non-obsolete `State`
@@ -261,7 +262,7 @@ MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
   return mountingCoordinator_;
 }
 
-void ShadowTree::commit(
+CommitStatus ShadowTree::commit(
     ShadowTreeCommitTransaction transaction,
     bool enableStateReconciliation) const {
   SystraceSection s("ShadowTree::commit");
@@ -270,8 +271,10 @@ void ShadowTree::commit(
 
   while (true) {
     attempts++;
-    if (tryCommit(transaction, enableStateReconciliation)) {
-      return;
+
+    auto status = tryCommit(transaction, enableStateReconciliation);
+    if (status != CommitStatus::Failed) {
+      return status;
     }
 
     // After multiple attempts, we failed to commit the transaction.
@@ -280,7 +283,7 @@ void ShadowTree::commit(
   }
 }
 
-bool ShadowTree::tryCommit(
+CommitStatus ShadowTree::tryCommit(
     ShadowTreeCommitTransaction transaction,
     bool enableStateReconciliation) const {
   SystraceSection s("ShadowTree::tryCommit");
@@ -299,26 +302,15 @@ bool ShadowTree::tryCommit(
   RootShadowNode::Unshared newRootShadowNode = transaction(oldRootShadowNode);
 
   if (!newRootShadowNode) {
-    return false;
+    return CommitStatus::Cancelled;
   }
 
   if (enableStateReconciliation) {
-    if (enableNewStateReconciliation_) {
-      auto updatedNewRootShadowNode =
-          progressState(*newRootShadowNode, *oldRootShadowNode);
-      if (updatedNewRootShadowNode) {
-        newRootShadowNode =
-            std::static_pointer_cast<RootShadowNode>(updatedNewRootShadowNode);
-      }
-    } else {
-      // Compare state revisions of old and new root
-      // Children of the root node may be mutated in-place
-      UnsharedShadowNode reconciledNode =
-          reconcileStateWithTree(newRootShadowNode.get(), oldRootShadowNode);
-      if (reconciledNode != nullptr) {
-        newRootShadowNode = std::make_shared<RootShadowNode>(
-            *reconciledNode, ShadowNodeFragment{});
-      }
+    auto updatedNewRootShadowNode =
+        progressState(*newRootShadowNode, *oldRootShadowNode);
+    if (updatedNewRootShadowNode) {
+      newRootShadowNode =
+          std::static_pointer_cast<RootShadowNode>(updatedNewRootShadowNode);
     }
   }
 
@@ -342,7 +334,7 @@ bool ShadowTree::tryCommit(
     std::unique_lock<better::shared_mutex> lock(commitMutex_);
 
     if (rootShadowNode_ != oldRootShadowNode) {
-      return false;
+      return CommitStatus::Failed;
     }
 
     rootShadowNode_ = newRootShadowNode;
@@ -368,7 +360,7 @@ bool ShadowTree::tryCommit(
 
   notifyDelegatesOfUpdates();
 
-  return true;
+  return CommitStatus::Succeeded;
 }
 
 void ShadowTree::commitEmptyTree() const {

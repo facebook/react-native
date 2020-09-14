@@ -84,7 +84,7 @@ public final class JavaGenerator {
     // Instead of using JavaFile.writeTo() API, manage the output files ourselves because
     // JavaFile.addFileComment() does not support "block comment" style.
     // See https://github.com/square/javapoet/issues/682#issuecomment-512238075.
-    Path outputDirPath = mOutputDir.toPath();
+    Path outputDirPath = new File(mOutputDir, "java").toPath();
 
     if (Files.exists(outputDirPath) && !Files.isDirectory(outputDirPath)) {
       throw new CodegenException(

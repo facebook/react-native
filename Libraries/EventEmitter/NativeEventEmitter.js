@@ -50,7 +50,7 @@ export default class NativeEventEmitter extends EventEmitter {
 
   removeAllListeners(eventType: string) {
     invariant(eventType, 'eventType argument is required.');
-    const count = this.listeners(eventType).length;
+    const count = this.listenerCount(eventType);
     if (this._nativeModule != null) {
       this._nativeModule.removeListeners(count);
     }

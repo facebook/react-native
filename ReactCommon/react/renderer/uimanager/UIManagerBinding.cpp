@@ -425,17 +425,28 @@ jsi::Value UIManagerBinding::get(
               jsi::Value const &thisValue,
               jsi::Value const *arguments,
               size_t count) -> jsi::Value {
-            auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
-            auto shadowNodeList =
-                shadowNodeListFromValue(runtime, arguments[1]);
+            try {
+              auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
+              auto shadowNodeList =
+                  shadowNodeListFromValue(runtime, arguments[1]);
 
-            if (sharedUIManager->backgroundExecutor_) {
-              sharedUIManager->backgroundExecutor_(
-                  [sharedUIManager, surfaceId, shadowNodeList] {
-                    sharedUIManager->completeSurface(surfaceId, shadowNodeList);
-                  });
-            } else {
-              uiManager->completeSurface(surfaceId, shadowNodeList);
+              if (sharedUIManager->backgroundExecutor_) {
+                sharedUIManager->backgroundExecutor_(
+                    [sharedUIManager, surfaceId, shadowNodeList] {
+                      sharedUIManager->completeSurface(
+                          surfaceId, shadowNodeList);
+                    });
+              } else {
+                uiManager->completeSurface(surfaceId, shadowNodeList);
+              }
+            } catch (std::exception const &e) {
+              LOG(ERROR) << "Exception in UIManagerBinding::completeRoot(): "
+                         << e.what();
+              abort();
+            } catch (...) {
+              LOG(ERROR)
+                  << "Exception in UIManagerBinding::completeRoot(): Unknown.";
+              abort();
             }
 
             return jsi::Value::undefined();
@@ -452,9 +463,19 @@ jsi::Value UIManagerBinding::get(
               jsi::Value const &thisValue,
               jsi::Value const *arguments,
               size_t count) -> jsi::Value {
-            uiManager->completeSurface(
-                surfaceIdFromValue(runtime, arguments[0]),
-                shadowNodeListFromValue(runtime, arguments[1]));
+            try {
+              uiManager->completeSurface(
+                  surfaceIdFromValue(runtime, arguments[0]),
+                  shadowNodeListFromValue(runtime, arguments[1]));
+            } catch (std::exception const &e) {
+              LOG(ERROR) << "Exception in UIManagerBinding::completeRoot(): "
+                         << e.what();
+              abort();
+            } catch (...) {
+              LOG(ERROR)
+                  << "Exception in UIManagerBinding::completeRoot(): Unknown.";
+              abort();
+            }
 
             return jsi::Value::undefined();
           });

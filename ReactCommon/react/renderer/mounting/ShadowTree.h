@@ -31,6 +31,12 @@ using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
  */
 class ShadowTree final {
  public:
+  enum class CommitStatus {
+    Succeeded,
+    Failed,
+    Cancelled,
+  };
+
   /*
    * Creates a new shadow tree instance.
    */
@@ -53,17 +59,16 @@ class ShadowTree final {
   /*
    * Performs commit calling `transaction` function with a `oldRootShadowNode`
    * and expecting a `newRootShadowNode` as a return value.
-   * The `transaction` function can abort commit returning `nullptr`.
-   * Returns `true` if the operation finished successfully.
+   * The `transaction` function can cancel commit returning `nullptr`.
    */
-  bool tryCommit(
+  CommitStatus tryCommit(
       ShadowTreeCommitTransaction transaction,
       bool enableStateReconciliation = false) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
-  void commit(
+  CommitStatus commit(
       ShadowTreeCommitTransaction transaction,
       bool enableStateReconciliation = false) const;
 
@@ -85,19 +90,11 @@ class ShadowTree final {
    * Temporary.
    * Do not use.
    */
-  void setEnableNewStateReconciliation(bool value) {
-    enableNewStateReconciliation_ = value;
-  }
   void setEnableReparentingDetection(bool value) {
     enableReparentingDetection_ = value;
   }
 
  private:
-  RootShadowNode::Unshared cloneRootShadowNode(
-      RootShadowNode::Shared const &oldRootShadowNode,
-      LayoutConstraints const &layoutConstraints,
-      LayoutContext const &layoutContext) const;
-
   void emitLayoutEvents(
       std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
 
@@ -109,7 +106,6 @@ class ShadowTree final {
   mutable ShadowTreeRevision::Number revisionNumber_{
       0}; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
-  bool enableNewStateReconciliation_{false};
   bool enableReparentingDetection_{false};
 };
 
