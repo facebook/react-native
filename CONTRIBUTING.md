@@ -85,6 +85,13 @@ git push
 ```
 ## Contributing
 
+### Building the Repository
+This repo uses `yarn` to manage its dependencies so to pull in all the dependencies we need, you must run `yarn` from root (note this maps to `yarn install`).
+ 
+After doing so, you now have all the repo-level dependencies, but you still need to pull in the specific macOS/iOS xcode project dependencies. We use Cocoapods for this and to install them you must cd into the directory (e.g. `cd RNTester`)and run `pod install`.
+ 
+`pod install` generates an `xcworkspace` from the existing `xcodeproj` and newly installed depedencies. To begin your work, launch the `RNTester.xcworkspace` project, choose your target of macOS or iOS and hit `Run`.
+
 ### Make the fix
 Now that your branch is set up and ready for commits, go ahead and fix the bug you are working on or make some small change that you want to check in. 
  
