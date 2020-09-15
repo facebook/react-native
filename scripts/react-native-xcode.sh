@@ -118,10 +118,10 @@ source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
 [ -z "$HERMES_PATH" ] && export HERMES_PATH="$REACT_NATIVE_DIR/../hermes-engine-darwin"
 
-export HERMES_CLI = "$HERMES_PATH/destroot/bin/hermesc"
+export HERMES_CLI="$HERMES_PATH/destroot/bin/hermesc"
 
 if [[ $USE_HERMES == true && ! -d "$HERMES_PATH" ]]; then
-  echo "error: Can't find Hermes executable - directory `$HERMES_PATH` doesn't exist. " \
+  echo "error: Can't find Hermes executable - directory $HERMES_PATH doesn't exist. " \
        "If you have a non-standard project structure, select your project in Xcode, find " \
        "'Build Phases' - 'Bundle React Native code and images' and set `HERMES_PATH` to " \
        "a `hermes-engine-darwin` package inside your `node_modules`" >&2
@@ -194,14 +194,12 @@ else
   if [[ $EMIT_SOURCEMAP == true ]]; then
     EXTRA_COMPILER_ARGS="$EXTRA_COMPILER_ARGS -output-source-map"
   fi
-  HBC_FILE="$CONFIGURATION_BUILD_DIR/$(basename $BUNDLE_FILE)"
-  "$HERMES_CLI" -emit-binary $EXTRA_COMPILER_ARGS -out "$HBC_FILE" "$BUNDLE_FILE"
-  mv "$HBC_FILE" "$DEST/"
-  BUNDLE_FILE="$DEST/main.jsbundle"
+  "$HERMES_CLI" -emit-binary $EXTRA_COMPILER_ARGS -out "$DEST/main.jsbundle" "$BUNDLE_FILE" 
   if [[ $EMIT_SOURCEMAP == true ]]; then
-    HBC_SOURCEMAP_FILE="$HBC_FILE.map"
+    HBC_SOURCEMAP_FILE="$BUNDLE_FILE.map"
     "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$SOURCEMAP_FILE"
   fi
+  BUNDLE_FILE="$DEST/main.jsbundle"
 fi
 
 if [[ $DEV != true && ! -f "$BUNDLE_FILE" ]]; then
