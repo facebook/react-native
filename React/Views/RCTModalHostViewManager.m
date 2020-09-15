@@ -81,16 +81,26 @@ RCT_EXPORT_MODULE()
   if (_presentationBlock) {
     _presentationBlock([modalHostView reactViewController], viewController, animated, completionBlock);
   } else {
-    __weak typeof(self) weakself = self;
-    [[modalHostView reactViewController] presentViewController:viewController
-                                                      animated:animated
-                                                    completion:^{
-                                                      !completionBlock ?: completionBlock();
-                                                      __strong typeof(weakself) strongself = weakself;
-                                                      !strongself.dismissWaitingBlock
-                                                          ?: strongself.dismissWaitingBlock();
-                                                      strongself.dismissWaitingBlock = nil;
-                                                    }];
+     dispatch_block_t presentBlock = ^{
+          __weak typeof(self) weakself = self;
+          [[modalHostView reactViewController] presentViewController:viewController
+                                                            animated:animated
+                                                          completion:^{
+              dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                  !completionBlock ?: completionBlock();
+                  __strong typeof(weakself) strongself = weakself;
+                  !strongself.dismissWaitingBlock ?: strongself.dismissWaitingBlock();
+                  strongself.dismissWaitingBlock = nil;
+              });
+          }];
+      };
+      if ([modalHostView reactViewController].presentedViewController) {
+          [[modalHostView reactViewController] dismissViewControllerAnimated:NO completion:^{
+              !presentBlock?:presentBlock();
+          }];
+      } else {
+          !presentBlock?:presentBlock();
+      }
   }
 }
 
