@@ -122,9 +122,9 @@ export HERMES_CLI="$HERMES_PATH/destroot/bin/hermesc"
 
 if [[ $USE_HERMES == true && ! -d "$HERMES_PATH" ]]; then
   echo "error: Can't find Hermes executable - directory $HERMES_PATH doesn't exist. " \
-       "If you have a non-standard project structure, select your project in Xcode, find " \
-       "'Build Phases' - 'Bundle React Native code and images' and set `HERMES_PATH` to " \
-       "a `hermes-engine-darwin` package inside your `node_modules`" >&2
+       "If you have a non-standard project structure, locate the 'Bundle React Native code and images' " \
+       "build phase in your Xcode project and set the `$HERMES_PATH` variable to the location of the " \
+       "hermes-engine-darwin package. For example: `$SRCROOT/../../node_modules/hermes-engine-darwin` " >&2
   exit 2
 fi
 
