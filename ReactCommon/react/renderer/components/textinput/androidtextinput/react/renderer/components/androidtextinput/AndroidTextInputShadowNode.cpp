@@ -131,6 +131,11 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
     return;
   }
 
+  // If props event counter is less than what we already have in state, skip it
+  if (getConcreteProps().mostRecentEventCount < state.mostRecentEventCount) {
+    return;
+  }
+
   // Store default TextAttributes in state.
   // In the case where the TextInput is completely empty (no value, no
   // defaultValue, no placeholder, no children) there are therefore no fragments
@@ -168,6 +173,15 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 Size AndroidTextInputShadowNode::measureContent(
     LayoutContext const &layoutContext,
     LayoutConstraints const &layoutConstraints) const {
+  if (getStateData().cachedAttributedStringId != 0) {
+    return textLayoutManager_
+        ->measureCachedSpannableById(
+            getStateData().cachedAttributedStringId,
+            getConcreteProps().paragraphAttributes,
+            layoutConstraints)
+        .size;
+  }
+
   // Layout is called right after measure.
   // Measure is marked as `const`, and `layout` is not; so State can be updated
   // during layout, but not during `measure`. If State is out-of-date in layout,
@@ -179,7 +193,7 @@ Size AndroidTextInputShadowNode::measureContent(
     attributedString = getPlaceholderAttributedString();
   }
 
-  if (attributedString.isEmpty()) {
+  if (attributedString.isEmpty() && getStateData().mostRecentEventCount != 0) {
     return {0, 0};
   }
 

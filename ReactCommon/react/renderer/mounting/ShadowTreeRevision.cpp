@@ -13,20 +13,16 @@ namespace react {
 using Number = ShadowTreeRevision::Number;
 
 ShadowTreeRevision::ShadowTreeRevision(
-    ShadowNode::Shared const &rootShadowNode,
+    RootShadowNode::Shared const &rootShadowNode,
     Number number,
-    MountingTelemetry telemetry)
+    TransactionTelemetry telemetry)
     : rootShadowNode_(rootShadowNode), number_(number), telemetry_(telemetry) {}
 
-MountingTelemetry const &ShadowTreeRevision::getTelemetry() const {
+TransactionTelemetry const &ShadowTreeRevision::getTelemetry() const {
   return telemetry_;
 }
 
-ShadowNode::Shared ShadowTreeRevision::getSharedRootShadowNode() {
-  return rootShadowNode_;
-}
-
-ShadowNode const &ShadowTreeRevision::getRootShadowNode() {
+RootShadowNode const &ShadowTreeRevision::getRootShadowNode() {
   return *rootShadowNode_;
 }
 

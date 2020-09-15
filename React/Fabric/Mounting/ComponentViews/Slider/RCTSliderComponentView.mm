@@ -320,7 +320,7 @@ using namespace facebook::react;
 
 #pragma mark - RCTImageResponseDelegate
 
-- (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
+- (void)didReceiveImage:(UIImage *)image metadata:(id)metadata fromObserver:(void const *)observer
 {
   if (observer == &_trackImageResponseObserverProxy) {
     self.trackImage = image;

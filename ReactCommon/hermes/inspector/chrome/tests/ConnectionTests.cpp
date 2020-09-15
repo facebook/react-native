@@ -44,8 +44,8 @@ namespace {
 // the already-deallocated connection.
 class TestContext {
  public:
-  TestContext(bool waitForDebugger = false)
-      : conn_(runtime_.runtime(), waitForDebugger) {}
+  TestContext(bool waitForDebugger = false, bool veryLazy = false)
+      : runtime_(veryLazy), conn_(runtime_.runtime(), waitForDebugger) {}
   ~TestContext() {
     runtime_.wait();
   }
@@ -860,9 +860,6 @@ TEST(ConnectionTests, testSetLazyBreakpoint) {
   SyncConnection &conn = context.conn();
   int msgId = 1;
 
-  facebook::hermes::HermesRuntime::DebugFlags flags{};
-  flags.lazy = true;
-
   asyncRuntime.executeScriptAsync(
       R"(
     var a = 1 + 2;
@@ -879,8 +876,7 @@ TEST(ConnectionTests, testSetLazyBreakpoint) {
 
     foo();
   )",
-      "url",
-      flags);
+      "url");
 
   send<m::debugger::EnableRequest>(conn, msgId++);
   expectExecutionContextCreated(conn);

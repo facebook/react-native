@@ -32,10 +32,10 @@ public abstract class NativeSettingsManagerSpec extends ReactContextBaseJavaModu
   }
 
   @ReactMethod
-  public abstract void setValues(ReadableMap values);
+  public abstract void deleteValues(ReadableArray values);
 
   @ReactMethod
-  public abstract void deleteValues(ReadableArray values);
+  public abstract void setValues(ReadableMap values);
 
   protected abstract Map<String, Object> getTypedExportedConstants();
 

@@ -80,98 +80,98 @@ void MountingCoordinator::resetLatestRevision() const {
   lastRevision_.reset();
 }
 
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-void MountingCoordinator::validateTransactionAgainstStubViewTree(
-    ShadowViewMutationList const &mutations,
-    bool assertEquality) const {
-  std::string line;
-
-  std::stringstream ssMutations(getDebugDescription(mutations, {}));
-  while (std::getline(ssMutations, line, '\n')) {
-    LOG(ERROR) << "Mutations:" << line;
-  }
-
-  stubViewTree_.mutate(mutations);
-  auto stubViewTree =
-      stubViewTreeFromShadowNode(lastRevision_->getRootShadowNode());
-
-  std::stringstream ssOldTree(
-      baseRevision_.getRootShadowNode().getDebugDescription());
-  while (std::getline(ssOldTree, line, '\n')) {
-    LOG(ERROR) << "Old tree:" << line;
-  }
-
-  std::stringstream ssNewTree(
-      lastRevision_->getRootShadowNode().getDebugDescription());
-  while (std::getline(ssNewTree, line, '\n')) {
-    LOG(ERROR) << "New tree:" << line;
-  }
-
-  if (assertEquality) {
-    assert(stubViewTree_ == stubViewTree);
-  }
-}
-#endif
-
 better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     const {
   std::lock_guard<std::mutex> lock(mutex_);
 
-  auto mountingOverrideDelegate = mountingOverrideDelegate_.lock();
+  auto transaction = better::optional<MountingTransaction>{};
 
-  bool shouldOverridePullTransaction = mountingOverrideDelegate &&
-      mountingOverrideDelegate->shouldOverridePullTransaction();
+  // Base case
+  if (lastRevision_.has_value()) {
+    number_++;
 
-  if (!shouldOverridePullTransaction && !lastRevision_.has_value()) {
-    return {};
-  }
+    auto telemetry = lastRevision_->getTelemetry();
 
-  number_++;
+    telemetry.willDiff();
 
-  ShadowViewMutation::List diffMutations{};
-  auto telemetry =
-      (lastRevision_.hasValue() ? lastRevision_->getTelemetry()
-                                : MountingTelemetry{});
-  if (!lastRevision_.hasValue()) {
-    telemetry.willLayout();
-    telemetry.didLayout();
-    telemetry.willCommit();
-    telemetry.didCommit();
-  }
-  telemetry.willDiff();
-  if (lastRevision_.hasValue()) {
-    diffMutations = calculateShadowViewMutations(
-        baseRevision_.getRootShadowNode(),
-        lastRevision_->getRootShadowNode(),
-        enableReparentingDetection_);
-  }
-  telemetry.didDiff();
+    auto mutations = calculateShadowViewMutations(
+        baseRevision_.getRootShadowNode(), lastRevision_->getRootShadowNode());
 
-  better::optional<MountingTransaction> transaction{};
-
-  // The override delegate can provide custom mounting instructions,
-  // even if there's no `lastRevision_`. Consider cases of animation frames
-  // in between React tree updates.
-  if (shouldOverridePullTransaction) {
-    transaction = mountingOverrideDelegate->pullTransaction(
-        surfaceId_, number_, telemetry, std::move(diffMutations));
-  } else if (lastRevision_.hasValue()) {
-    transaction = MountingTransaction{
-        surfaceId_, number_, std::move(diffMutations), telemetry};
-  }
-
-  if (lastRevision_.hasValue()) {
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-    // Only validate non-animated transactions - it's garbage to validate
-    // animated transactions, since the stub view tree likely won't match
-    // the committed tree during an animation.
-    this->validateTransactionAgainstStubViewTree(
-        transaction->getMutations(), !shouldOverridePullTransaction);
-#endif
+    telemetry.didDiff();
 
     baseRevision_ = std::move(*lastRevision_);
     lastRevision_.reset();
+
+    transaction = MountingTransaction{
+        surfaceId_, number_, std::move(mutations), telemetry};
   }
+
+  // Override case
+  auto mountingOverrideDelegate = mountingOverrideDelegate_.lock();
+  auto shouldOverridePullTransaction = mountingOverrideDelegate &&
+      mountingOverrideDelegate->shouldOverridePullTransaction();
+
+  if (shouldOverridePullTransaction) {
+    auto mutations = ShadowViewMutation::List{};
+    auto telemetry = TransactionTelemetry{};
+
+    if (transaction.has_value()) {
+      mutations = transaction->getMutations();
+      telemetry = transaction->getTelemetry();
+    } else {
+      telemetry.willLayout();
+      telemetry.didLayout();
+      telemetry.willCommit();
+      telemetry.didCommit();
+    }
+
+    transaction = mountingOverrideDelegate->pullTransaction(
+        surfaceId_, number_, telemetry, std::move(mutations));
+  }
+
+#ifdef RN_SHADOW_TREE_INTROSPECTION
+  if (transaction.has_value()) {
+    // We have something to validate.
+    auto mutations = transaction->getMutations();
+
+    // No matter what the source of the transaction is, it must be able to
+    // mutate the existing stub view tree.
+    stubViewTree_.mutate(mutations);
+
+    // If the transaction was overridden, we don't have a model of the shadow
+    // tree therefore we cannot validate the validity of the mutation
+    // instructions.
+    if (!shouldOverridePullTransaction) {
+      auto line = std::string{};
+
+      auto stubViewTree =
+          stubViewTreeFromShadowNode(baseRevision_.getRootShadowNode());
+
+      if (stubViewTree_ != stubViewTree) {
+        std::stringstream ssOldTree(
+            baseRevision_.getRootShadowNode().getDebugDescription());
+        while (std::getline(ssOldTree, line, '\n')) {
+          LOG(ERROR) << "Old tree:" << line;
+        }
+
+        std::stringstream ssMutations(getDebugDescription(mutations, {}));
+        while (std::getline(ssMutations, line, '\n')) {
+          LOG(ERROR) << "Mutations:" << line;
+        }
+
+        std::stringstream ssNewTree(
+            lastRevision_->getRootShadowNode().getDebugDescription());
+        while (std::getline(ssNewTree, line, '\n')) {
+          LOG(ERROR) << "New tree:" << line;
+        }
+      }
+
+      assert(
+          (stubViewTree_ == stubViewTree) &&
+          "Incorrect set of mutations detected.");
+    }
+  }
+#endif
 
   return transaction;
 }

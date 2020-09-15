@@ -23,7 +23,8 @@ static void testShadowNodeTreeLifeCycle(
     uint_fast32_t seed,
     int treeSize,
     int repeats,
-    int stages) {
+    int stages,
+    bool useFlattener) {
   auto entropy = seed == 0 ? Entropy() : Entropy(seed);
 
   auto eventDispatcher = EventDispatcher::Shared{};
@@ -98,8 +99,8 @@ static void testShadowNodeTreeLifeCycle(
       allNodes.push_back(nextRootNode);
 
       // Calculating mutations.
-      auto mutations =
-          calculateShadowViewMutations(*currentRootNode, *nextRootNode);
+      auto mutations = calculateShadowViewMutations(
+          *currentRootNode, *nextRootNode, useFlattener);
 
       // Mutating the view tree.
       viewTree.mutate(mutations);
@@ -152,7 +153,8 @@ TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMoves) {
       /* seed */ 0,
       /* size */ 512,
       /* repeats */ 32,
-      /* stages */ 32);
+      /* stages */ 32,
+      false);
 }
 
 TEST(MountingTest, stableSmallerTreeMoreIterationsOptimizedMoves) {
@@ -160,5 +162,33 @@ TEST(MountingTest, stableSmallerTreeMoreIterationsOptimizedMoves) {
       /* seed */ 0,
       /* size */ 16,
       /* repeats */ 512,
-      /* stages */ 32);
+      /* stages */ 32,
+      false);
+}
+
+TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMovesFlattener) {
+  testShadowNodeTreeLifeCycle(
+      /* seed */ 0,
+      /* size */ 512,
+      /* repeats */ 32,
+      /* stages */ 32,
+      true);
+}
+
+TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMovesFlattener2) {
+  testShadowNodeTreeLifeCycle(
+      /* seed */ 1,
+      /* size */ 512,
+      /* repeats */ 32,
+      /* stages */ 32,
+      true);
+}
+
+TEST(MountingTest, stableSmallerTreeMoreIterationsOptimizedMovesFlattener) {
+  testShadowNodeTreeLifeCycle(
+      /* seed */ 0,
+      /* size */ 16,
+      /* repeats */ 512,
+      /* stages */ 32,
+      true);
 }

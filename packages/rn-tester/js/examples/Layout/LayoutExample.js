@@ -194,6 +194,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'Layout - Flexbox';
+exports.category = 'UI';
 exports.description = 'Examples of using the flexbox API to layout views.';
 exports.displayName = 'LayoutExample';
 exports.examples = [

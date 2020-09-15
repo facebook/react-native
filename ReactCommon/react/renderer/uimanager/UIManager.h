@@ -50,6 +50,11 @@ class UIManager final : public ShadowTreeDelegate {
    */
   void setAnimationDelegate(UIManagerAnimationDelegate *delegate);
 
+  /**
+   * Execute stopSurface on any UIMAnagerAnimationDelegate.
+   */
+  void stopSurfaceForAnimationDelegate(SurfaceId surfaceId);
+
   void animationTick();
 
   /*
@@ -123,6 +128,7 @@ class UIManager final : public ShadowTreeDelegate {
    * and performs a commit.
    */
   void updateState(StateUpdate const &stateUpdate) const;
+  void updateStateWithAutorepeat(StateUpdate const &stateUpdate) const;
 
   void dispatchCommand(
       const ShadowNode::Shared &shadowNode,

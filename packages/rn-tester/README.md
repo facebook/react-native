@@ -25,7 +25,7 @@ You'll need to have all the [prerequisites](https://github.com/facebook/react-na
 Start an Android emulator.
 
     cd react-native
-    ./gradlew :RNTester:android:app:installJscDebug
+    ./gradlew :packages:rn-tester:android:app:installJscDebug
     ./scripts/packager.sh
 
 _Note: Building for the first time can take a while._

@@ -39,7 +39,7 @@ class MountingOverrideDelegate {
   virtual better::optional<MountingTransaction> pullTransaction(
       SurfaceId surfaceId,
       MountingTransaction::Number number,
-      MountingTelemetry const &telemetry,
+      TransactionTelemetry const &telemetry,
       ShadowViewMutationList mutations) const = 0;
 };
 
