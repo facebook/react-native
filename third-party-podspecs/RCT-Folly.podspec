@@ -107,7 +107,7 @@ Pod::Spec.new do |spec|
                            'folly/io/{Cursor,Cursor-inl,IOBuf,IOBufQueue}.{h,cpp}',
                            'folly/tracing/StaticTracepoint.{h,cpp}',
                            'folly/{Executor,ExceptionWrapper,ExceptionWrapper-inl,FileUtil,Singleton,SharedMutex}.{h,cpp}',
-                           'folly/detail/{AtFork,Futex,Futex-inl,MemoryIdler,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
+                           'folly/detail/{AsyncTrace,AtFork,Futex,Futex-inl,MemoryIdler,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
                            'folly/lang/SafeAssert.{h,cpp}',
                            'folly/memory/MallctlHelper.{h,cpp}',
                            'folly/portability/{GFlags,SysUio}.{h,cpp}',
