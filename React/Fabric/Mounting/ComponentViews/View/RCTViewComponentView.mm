@@ -301,7 +301,13 @@ using namespace facebook::react;
 
   BOOL isPointInside = [self pointInside:point withEvent:event];
 
-  if (self.clipsToBounds && !isPointInside) {
+  BOOL clipsToBounds = self.clipsToBounds;
+
+  if (RCTExperimentGetOptimizedHitTesting()) {
+    clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
+  }
+
+  if (clipsToBounds && !isPointInside) {
     return nil;
   }
 
