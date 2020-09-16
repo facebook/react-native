@@ -11,7 +11,6 @@
   </metadata>
   <files>
     <!-- iOS device debug -->
-    <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libArt.a" target="Debug-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libcxxreact.a" target="Debug-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libdouble-conversion.a" target="Debug-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libfishhook.a" target="Debug-iphoneos"/>
@@ -34,7 +33,6 @@
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libthird-party.a" target="Debug-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphoneos\libyoga.a" target="Debug-iphoneos"/>
     <!-- iOS device ship -->
-    <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphoneos\libArt.a" target="Ship-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphoneos\libcxxreact.a" target="Ship-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphoneos\libdouble-conversion.a" target="Ship-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphoneos\libfishhook.a" target="Ship-iphoneos"/>
@@ -57,7 +55,6 @@
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphoneos\libthird-party.a" target="Ship-iphoneos"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphoneos\libyoga.a" target="Ship-iphoneos"/>
     <!-- iOS simulator debug -->
-    <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphonesimulator\libArt.a" target="Debug-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphonesimulator\libcxxreact.a" target="Debug-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphonesimulator\libdouble-conversion.a" target="Debug-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphonesimulator\libfishhook.a" target="Debug-iphonesimulator"/>
@@ -80,7 +77,6 @@
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphonesimulator\libthird-party.a" target="Debug-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug-iphonesimulator\libyoga.a" target="Debug-iphonesimulator"/>
     <!-- iOS simulator ship -->
-    <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphonesimulator\libArt.a" target="Ship-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphonesimulator\libcxxreact.a" target="Ship-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphonesimulator\libdouble-conversion.a" target="Ship-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphonesimulator\libfishhook.a" target="Ship-iphonesimulator"/>
@@ -103,7 +99,6 @@
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphonesimulator\libthird-party.a" target="Ship-iphonesimulator"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release-iphonesimulator\libyoga.a" target="Ship-iphonesimulator"/>
     <!-- macOS debug -->
-    <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug\libArt-macOS.a" target="Debug-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug\libcxxreact.a" target="Debug-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug\libdouble-conversion.a" target="Debug-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug\libfishhook-macOS.a" target="Debug-macosx"/>
@@ -124,7 +119,6 @@
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug\libthird-party.a" target="Debug-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Debug\libyoga.a" target="Debug-macosx"/>
     <!-- macOS ship -->
-    <file src="..\..\..\DerivedData\RNTester\Build\Products\Release\libArt-macOS.a" target="Ship-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release\libcxxreact.a" target="Ship-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release\libdouble-conversion.a" target="Ship-macosx"/>
     <file src="..\..\..\DerivedData\RNTester\Build\Products\Release\libfishhook-macOS.a" target="Ship-macosx"/>
