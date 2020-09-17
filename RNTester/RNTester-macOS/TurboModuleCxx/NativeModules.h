@@ -1,15 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-
-///////////////////////////////////////////////////////////////////////////////
-//                              IMPORTANT
-//
-// This file is used in both react-native-windows and react-native-macos
-//     windows: vntext/Microsoft.ReactNative.Cxx
-//     macOS:   RNTester/RNTester-macOS/TurboModuleCxx
-// You are required to commit exactly the same content to both repo
-// A decision will be made in the near future to prevent from duplicating files
-///////////////////////////////////////////////////////////////////////////////
+// IMPORTANT: Before updating this file
+// please read react-native-windows repo:
+// vnext/Microsoft.ReactNative.Cxx/README.md
 
 #pragma once
 #include <winrt/Windows.Foundation.h>
@@ -221,7 +214,7 @@ struct CallbackCreator<TCallback<void(TArgs...)>> {
   static TCallback<void(TArgs...)> Create(
       IJSValueWriter const &argWriter,
       MethodResultCallback const &callback) noexcept {
-    return TCallback([ callback, argWriter ](TArgs... args) noexcept {
+    return TCallback<void(TArgs...)>([ callback, argWriter ](TArgs... args) noexcept {
       WriteArgs(argWriter, std::move(args)...);
       callback(argWriter);
     });
@@ -234,7 +227,7 @@ struct CallbackCreator<TCallback<void(TArgs...) noexcept>> {
   static TCallback<void(TArgs...)> Create(
       IJSValueWriter const &argWriter,
       MethodResultCallback const &callback) noexcept {
-    return TCallback([ callback, argWriter ](TArgs... args) noexcept {
+    return TCallback<void(TArgs...)>([ callback, argWriter ](TArgs... args) noexcept {
       WriteArgs(argWriter, std::move(args)...);
       callback(argWriter);
     });
@@ -290,7 +283,7 @@ constexpr void ValidateCoroutineArg() noexcept {
 #ifndef __APPLE__
         ": " __FUNCSIG__
 #endif
-        );
+    );
   }
 }
 

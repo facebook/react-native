@@ -4,12 +4,14 @@
 #include <locale>
 #include <codecvt>
 #include <cwchar>
+#include <utility>
 #include <memory>
 #include <map>
 #include <vector>
 #include <type_traits>
 #include <cmath>
 #include <functional>
+#include <optional>
 #include "../Crash.h"
 
 inline int64_t _wcstoi64(const wchar_t* str, wchar_t** str_end, int base)
@@ -24,6 +26,18 @@ inline std::wstring operator+(const wchar_t* a, const std::wstring_view& b)
 {
   return a + std::wstring(b.cbegin(), b.cend());
 }
+
+template <class T, class U>
+struct hash<pair<T, U>>
+{
+    typedef pair<T, U>           argument_type;
+    typedef size_t               result_type;
+
+    result_type operator()(const pair<T, U>& p) const
+    {
+      return hash<T>()(p.first) | hash<U>()(p.second);
+    }
+};
 
 }
 
@@ -141,10 +155,30 @@ struct IInspectable
     VerifyElseCrash(false);
   }
   
-  template<typename TInterface>
+  template<
+    typename TInterface,
+    typename = std::enable_if_t<std::is_base_of_v<IInspectable, TInterface>>
+  >
   TInterface try_as() const noexcept
   {
     return std::dynamic_pointer_cast<typename TInterface::Itf>(m_itf);
+  }
+  
+  template<
+    typename TInterface_Itf,
+    typename = std::enable_if_t<std::is_base_of_v<IInspectable::Itf, TInterface_Itf>>
+  >
+  TInterface_Itf* try_as() const noexcept
+  {
+    return std::dynamic_pointer_cast<TInterface_Itf>(m_itf).get();
+  }
+  
+  template<typename TInterface>
+  auto as()const noexcept
+  {
+    auto result = try_as<TInterface>();
+    VerifyElseCrash(result);
+    return result;
   }
   
 protected:
