@@ -37,13 +37,18 @@ inline std::string RCTStringFromNSString(NSString *string)
 
 inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)
 {
-  return sharedColor ? [UIColor colorWithCGColor:sharedColor.get()] : nil;
+  if (!sharedColor) {
+    return nil;
+  }
+
+  auto components = facebook::react::colorComponentsFromColor(sharedColor);
+  return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
 }
 
 inline CF_RETURNS_RETAINED CGColorRef
 RCTCreateCGColorRefFromSharedColor(const facebook::react::SharedColor &sharedColor)
 {
-  return sharedColor ? CGColorCreateCopy(sharedColor.get()) : nil;
+  return CGColorRetain(RCTUIColorFromSharedColor(sharedColor).CGColor);
 }
 
 inline CGPoint RCTCGPointFromPoint(const facebook::react::Point &point)

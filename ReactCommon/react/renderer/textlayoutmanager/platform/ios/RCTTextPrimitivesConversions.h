@@ -96,7 +96,12 @@ inline static NSUnderlineStyle RCTNSUnderlineStyleFromStyleAndPattern(
   return style;
 }
 
-inline static UIColor *RCTUIColorFromSharedColor(const SharedColor &color)
+inline static UIColor *RCTUIColorFromSharedColor(const SharedColor &sharedColor)
 {
-  return color ? [UIColor colorWithCGColor:color.get()] : nil;
+  if (!sharedColor) {
+    return nil;
+  }
+
+  auto components = colorComponentsFromColor(sharedColor);
+  return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
 }
