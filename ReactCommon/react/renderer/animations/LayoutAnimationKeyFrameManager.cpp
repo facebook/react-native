@@ -1253,7 +1253,10 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           << "Adjust delayed mutations based on finalConflictingMutations";
 #endif
       for (auto &mutation : finalConflictingMutations) {
-        adjustDelayedMutationIndicesForMutation(surfaceId, mutation);
+        if (mutation.type == ShadowViewMutation::Remove ||
+            mutation.type == ShadowViewMutation::Insert) {
+          adjustDelayedMutationIndicesForMutation(surfaceId, mutation);
+        }
       }
 
       // Adjust keyframes based on already-delayed, existing animations, before
