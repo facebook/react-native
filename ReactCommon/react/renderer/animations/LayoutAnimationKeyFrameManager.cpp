@@ -30,7 +30,8 @@ namespace facebook {
 namespace react {
 
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
-std::string GetMutationInstructionString(ShadowViewMutation const &mutation) {
+static std::string GetMutationInstructionString(
+    ShadowViewMutation const &mutation) {
   bool mutationIsRemove = mutation.type == ShadowViewMutation::Type::Remove;
   bool mutationIsInsert = mutation.type == ShadowViewMutation::Type::Insert;
   bool mutationIsDelete = mutation.type == ShadowViewMutation::Type::Delete;
