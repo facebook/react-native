@@ -43,16 +43,8 @@ inline ShadowNode const *findDescendantNode(
 inline ShadowNode const *findDescendantNode(
     ShadowTree const &shadowTree,
     ShadowNodeFamily const &family) {
-  ShadowNode const *result = nullptr;
-
-  shadowTree.tryCommit(
-      [&](RootShadowNode::Shared const &oldRootShadowNode) {
-        result = findDescendantNode(*oldRootShadowNode, family);
-        return nullptr;
-      },
-      false);
-
-  return result;
+  return findDescendantNode(
+      *shadowTree.getCurrentRevision().rootShadowNode, family);
 }
 
 TEST(StateReconciliationTest, testStateReconciliation) {

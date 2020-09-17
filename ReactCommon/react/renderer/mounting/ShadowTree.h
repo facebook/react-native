@@ -73,6 +73,12 @@ class ShadowTree final {
       bool enableStateReconciliation = false) const;
 
   /*
+   * Returns a `ShadowTreeRevision` representing the momentary state of
+   * the `ShadowTree`.
+   */
+  ShadowTreeRevision getCurrentRevision() const;
+
+  /*
    * Commit an empty tree (a new `RootShadowNode` with no children).
    */
   void commitEmptyTree() const;

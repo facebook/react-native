@@ -139,12 +139,7 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
   auto ancestorShadowNode = ShadowNode::Shared{};
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        shadowTree.tryCommit(
-            [&](RootShadowNode::Shared const &oldRootShadowNode) {
-              ancestorShadowNode = oldRootShadowNode;
-              return nullptr;
-            },
-            true);
+        ancestorShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
       });
 
   if (!ancestorShadowNode) {
@@ -205,13 +200,9 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   if (!ancestorShadowNode) {
     shadowTreeRegistry_.visit(
         shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
-          shadowTree.tryCommit(
-              [&](RootShadowNode::Shared const &oldRootShadowNode) {
-                owningAncestorShadowNode = oldRootShadowNode;
-                ancestorShadowNode = oldRootShadowNode.get();
-                return nullptr;
-              },
-              true);
+          owningAncestorShadowNode =
+              shadowTree.getCurrentRevision().rootShadowNode;
+          ancestorShadowNode = owningAncestorShadowNode.get();
         });
   } else {
     // It is possible for JavaScript (or other callers) to have a reference

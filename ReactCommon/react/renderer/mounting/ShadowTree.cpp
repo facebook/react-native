@@ -366,6 +366,11 @@ CommitStatus ShadowTree::tryCommit(
   return CommitStatus::Succeeded;
 }
 
+ShadowTreeRevision ShadowTree::getCurrentRevision() const {
+  std::shared_lock<better::shared_mutex> lock(commitMutex_);
+  return currentRevision_;
+}
+
 void ShadowTree::commitEmptyTree() const {
   commit(
       [](RootShadowNode::Shared const &oldRootShadowNode)

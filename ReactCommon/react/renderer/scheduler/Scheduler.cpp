@@ -272,19 +272,16 @@ Size Scheduler::measureSurface(
     const LayoutContext &layoutContext) const {
   SystraceSection s("Scheduler::measureSurface");
 
-  Size size;
+  auto currentRootShadowNode = RootShadowNode::Shared{};
   uiManager_->getShadowTreeRegistry().visit(
       surfaceId, [&](const ShadowTree &shadowTree) {
-        shadowTree.tryCommit(
-            [&](RootShadowNode::Shared const &oldRootShadowNode) {
-              auto rootShadowNode =
-                  oldRootShadowNode->clone(layoutConstraints, layoutContext);
-              rootShadowNode->layoutIfNeeded();
-              size = rootShadowNode->getLayoutMetrics().frame.size;
-              return nullptr;
-            });
+        currentRootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
       });
-  return size;
+
+  auto rootShadowNode =
+      currentRootShadowNode->clone(layoutConstraints, layoutContext);
+  rootShadowNode->layoutIfNeeded();
+  return rootShadowNode->getLayoutMetrics().frame.size;
 }
 
 MountingCoordinator::Shared Scheduler::findMountingCoordinator(
