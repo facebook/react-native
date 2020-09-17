@@ -101,10 +101,7 @@ class ShadowTree final {
   SurfaceId const surfaceId_;
   ShadowTreeDelegate const &delegate_;
   mutable better::shared_mutex commitMutex_;
-  mutable RootShadowNode::Shared
-      rootShadowNode_; // Protected by `commitMutex_`.
-  mutable ShadowTreeRevision::Number revisionNumber_{
-      0}; // Protected by `commitMutex_`.
+  mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
   bool enableReparentingDetection_{false};
 };
