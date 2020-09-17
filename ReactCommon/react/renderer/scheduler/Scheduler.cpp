@@ -110,11 +110,17 @@ Scheduler::Scheduler(
       "react_fabric:enable_reparenting_detection_android");
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
+  uiManager_->experimentEnableStateUpdateWithAutorepeat =
+      reactNativeConfig_->getBool(
+          "react_fabric:enable_state_update_with_autorepeat_android");
 #else
   enableReparentingDetection_ = reactNativeConfig_->getBool(
       "react_fabric:enable_reparenting_detection_ios");
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
+  uiManager_->experimentEnableStateUpdateWithAutorepeat =
+      reactNativeConfig_->getBool(
+          "react_fabric:enable_state_update_with_autorepeat_ios");
 #endif
 }
 

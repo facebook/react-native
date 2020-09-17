@@ -73,6 +73,11 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override;
 
+  /*
+   * Temporary flags.
+   */
+  bool experimentEnableStateUpdateWithAutorepeat{false};
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;

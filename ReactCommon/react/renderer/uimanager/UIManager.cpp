@@ -263,7 +263,7 @@ void UIManager::updateStateWithAutorepeat(
 }
 
 void UIManager::updateState(StateUpdate const &stateUpdate) const {
-  if (stateUpdate.autorepeat) {
+  if (stateUpdate.autorepeat || experimentEnableStateUpdateWithAutorepeat) {
     updateStateWithAutorepeat(stateUpdate);
     return;
   }
