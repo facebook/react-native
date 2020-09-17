@@ -7,9 +7,9 @@
 
 plugins {
     id("com.android.library")
+    id("com.facebook.react.codegen")
     id("maven")
     id("de.undercouch.download")
-    id("com.facebook.react.codegen")
 }
 
 import java.nio.file.Paths
@@ -32,6 +32,11 @@ def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 //   - folly-deprecate-dynamic-initializer
 //   - glog-0.3.5
 def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
+
+// The 'USE_FABRIC' environment variable will build Fabric C++ code into the bundle
+// USE_FABRIC=0 will build RN excluding fabric
+// USE_FABRIC=1 will build RN including fabric
+def enableFabric = (System.getenv('USE_FABRIC') ?: '0').toBoolean()
 
 // The Boost library is a very large download (>100MB).
 // If Boost is already present on your system, define the REACT_NATIVE_BOOST_PATH env variable
@@ -96,7 +101,7 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     into("$thirdPartyNdkDir/folly")
 }
 
-task prepareHermes() {
+task prepareHermes(dependsOn: createNativeDepsDirectories, type: Copy) {
     def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
     if (!hermesPackagePath) {
         throw new GradleScriptException("Could not find the hermes-engine npm package", null)
@@ -109,11 +114,9 @@ task prepareHermes() {
 
     def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
 
-    copy {
-        from soFiles
-        from "src/main/jni/first-party/hermes/Android.mk"
-        into "$thirdPartyNdkDir/hermes"
-    }
+    from soFiles
+    from "src/main/jni/first-party/hermes/Android.mk"
+    into "$thirdPartyNdkDir/hermes"
 }
 
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
@@ -309,9 +312,10 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
             "NDK_OUT=" + temporaryDir,
             "NDK_LIBS_OUT=$buildDir/react-ndk/all",
-            "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
+            "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
+            "BUILD_FABRIC=$enableFabric",
             "-C", file("src/main/jni/react/jni").absolutePath,
             "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
     )
@@ -322,7 +326,7 @@ def cleanReactNdkLib = tasks.register("cleanReactNdkLib", Exec) {
     errorOutput(new ByteArrayOutputStream())
     commandLine(getNdkBuildFullPath(),
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
-            "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
+            "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             "-C", file("src/main/jni/react/jni").absolutePath,
             "clean")
@@ -389,10 +393,6 @@ android {
         versionName("1.0")
 
         consumerProguardFiles("proguard-rules.pro")
-
-        ndk {
-            moduleName("reactnativejni")
-        }
 
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
@@ -469,8 +469,10 @@ dependencies {
 }
 
 apply(from: "release.gradle")
-apply(from: "../architecture.gradle");
-generateNativeArtifactsFromJavaScript([
-    enableCodegen: System.getenv("USE_CODEGEN"),
-    jsRootDir: "${file('../Libraries')}",
-])
+
+react {
+    enableCodegen = System.getenv("USE_CODEGEN") ?: false
+    jsRootDir = file("../Libraries")
+    reactNativeRootDir = file("$rootDir")
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
+}

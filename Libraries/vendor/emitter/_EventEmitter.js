@@ -93,23 +93,21 @@ class EventEmitter {
   }
 
   /**
-   * Returns an array of listeners that are currently registered for the given
+   * Returns the number of listeners that are currently registered for the given
    * event.
    *
    * @param {string} eventType - Name of the event to query
-   * @returns {array}
+   * @returns {number}
    */
-  listeners(eventType: string): [EmitterSubscription] {
+  listenerCount(eventType: string): number {
     const subscriptions = this._subscriber.getSubscriptionsForType(eventType);
     return subscriptions
-      ? subscriptions
-          // We filter out missing entries because the array is sparse.
-          // "callbackfn is called only for elements of the array which actually
-          // exist; it is not called for missing elements of the array."
-          // https://www.ecma-international.org/ecma-262/9.0/index.html#sec-array.prototype.filter
-          .filter(sparseFilterPredicate)
-          .map(subscription => subscription.listener)
-      : [];
+      ? // We filter out missing entries because the array is sparse.
+        // "callbackfn is called only for elements of the array which actually
+        // exist; it is not called for missing elements of the array."
+        // https://www.ecma-international.org/ecma-262/9.0/index.html#sec-array.prototype.filter
+        subscriptions.filter(sparseFilterPredicate).length
+      : 0;
   }
 
   /**

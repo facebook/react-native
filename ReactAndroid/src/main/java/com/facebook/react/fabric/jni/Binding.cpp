@@ -11,7 +11,7 @@
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
-#import <better/set.h>
+#include <better/set.h>
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -28,7 +28,7 @@
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 
-#include <Glog/logging.h>
+#include <glog/logging.h>
 
 using namespace facebook::jni;
 using namespace facebook::jsi;
@@ -101,6 +101,8 @@ void Binding::startSurfaceWithConstraints(
     jfloat maxWidth,
     jfloat minHeight,
     jfloat maxHeight,
+    jfloat offsetX,
+    jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
@@ -123,6 +125,8 @@ void Binding::startSurfaceWithConstraints(
       Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
 
   LayoutContext context;
+  context.viewportOffset =
+      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};
@@ -178,6 +182,8 @@ void Binding::setConstraints(
     jfloat maxWidth,
     jfloat minHeight,
     jfloat maxHeight,
+    jfloat offsetX,
+    jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::setConstraints");
@@ -194,6 +200,8 @@ void Binding::setConstraints(
       Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
 
   LayoutContext context;
+  context.viewportOffset =
+      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};
@@ -210,7 +218,7 @@ void Binding::installFabricUIManager(
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
-    ComponentFactoryDelegate *componentsRegistry,
+    ComponentFactory *componentsRegistry,
     jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
@@ -262,8 +270,13 @@ void Binding::installFabricUIManager(
 
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
-  collapseDeleteCreateMountingInstructions_ = reactNativeConfig_->getBool(
-      "react_fabric:enabled_collapse_delete_create_mounting_instructions");
+  collapseDeleteCreateMountingInstructions_ =
+      reactNativeConfig_->getBool(
+          "react_fabric:enabled_collapse_delete_create_mounting_instructions") &&
+      !reactNativeConfig_->getBool(
+          "react_fabric:enable_reparenting_detection_android") &&
+      !reactNativeConfig_->getBool(
+          "react_fabric:enabled_layout_animations_android");
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
@@ -415,11 +428,12 @@ local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
   auto newChildShadowView = mutation.newChildShadowView;
 
   if (oldChildShadowView.layoutMetrics.contentInsets ==
-      newChildShadowView.layoutMetrics.contentInsets) {
+          newChildShadowView.layoutMetrics.contentInsets &&
+      mutation.type != ShadowViewMutation::Type::Insert) {
     return nullptr;
   }
 
-  static auto updateLayoutInstruction =
+  static auto updatePaddingInstruction =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint)>(
               "updatePaddingMountItem");
@@ -433,7 +447,7 @@ local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
   int right = round(contentInsets.right * pointScaleFactor);
   int bottom = round(contentInsets.bottom * pointScaleFactor);
 
-  return updateLayoutInstruction(
+  return updatePaddingInstruction(
       javaUIManager, newChildShadowView.tag, left, top, right, bottom);
 }
 
@@ -606,7 +620,8 @@ void Binding::schedulerDidFinishTransaction(
       }
     }
   }
-  int64_t commitNumber = telemetry.getCommitNumber();
+
+  auto revisionNumber = telemetry.getRevisionNumber();
 
   std::vector<local_ref<jobject>> queue;
   // Upper bound estimation of mount items to be delivered to Java side.
@@ -810,7 +825,7 @@ void Binding::schedulerDidFinishTransaction(
       surfaceId,
       position == 0 ? nullptr : mountItemsArray.get(),
       position,
-      commitNumber);
+      revisionNumber);
 
   static auto scheduleMountItem =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
@@ -830,7 +845,7 @@ void Binding::schedulerDidFinishTransaction(
   scheduleMountItem(
       localJavaUIManager,
       batch.get(),
-      telemetry.getCommitNumber(),
+      telemetry.getRevisionNumber(),
       telemetryTimePointToMilliseconds(telemetry.getCommitStartTime()),
       telemetryTimePointToMilliseconds(telemetry.getDiffStartTime()),
       telemetryTimePointToMilliseconds(telemetry.getDiffEndTime()),

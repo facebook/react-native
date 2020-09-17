@@ -34,11 +34,11 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/Libraries/TypeSafety\" \"$(PODS_ROOT)/Folly\""
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/Libraries/TypeSafety\" \"$(PODS_ROOT)/RCT-Folly\""
                              }
 
   s.dependency "FBLazyVector", version
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "RCTRequired", version
   s.dependency "React-Core", version
 end

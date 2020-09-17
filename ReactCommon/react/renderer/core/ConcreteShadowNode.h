@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/core/ConcreteState.h>
+#include <react/renderer/core/ConcreteStateTeller.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/StateData.h>
@@ -48,6 +49,7 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   using SharedConcreteEventEmitter = std::shared_ptr<EventEmitterT const>;
   using SharedConcreteShadowNode = std::shared_ptr<ConcreteShadowNode const>;
   using ConcreteState = ConcreteState<StateDataT>;
+  using ConcreteStateTeller = ConcreteStateTeller<ConcreteState>;
   using ConcreteStateData = StateDataT;
 
   static ComponentName Name() {
@@ -97,6 +99,19 @@ class ConcreteShadowNode : public BaseShadowNodeT {
         std::dynamic_pointer_cast<ConcreteProps const>(props_) &&
         "Props must be an instance of ConcreteProps class.");
     return static_cast<ConcreteProps const &>(*props_);
+  }
+
+  /*
+   * Returns a concrete event emitter object associated with the node.
+   * Thread-safe after the node is sealed.
+   */
+  ConcreteEventEmitter const &getConcreteEventEmitter() const {
+    assert(
+        std::dynamic_pointer_cast<ConcreteEventEmitter const>(
+            BaseShadowNodeT::getEventEmitter()) &&
+        "EventEmitter must be an instance of ConcreteEventEmitter class.");
+    return static_cast<ConcreteEventEmitter const &>(
+        *BaseShadowNodeT::getEventEmitter());
   }
 
   /*

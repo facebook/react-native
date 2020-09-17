@@ -193,11 +193,7 @@ class TouchableHighlight extends React.Component<Props, State> {
           this.props.onFocus(event);
         }
       },
-      onLongPress: event => {
-        if (this.props.onLongPress != null) {
-          this.props.onLongPress(event);
-        }
-      },
+      onLongPress: this.props.onLongPress,
       onPress: event => {
         if (this._hideTimeout != null) {
           clearTimeout(this._hideTimeout);

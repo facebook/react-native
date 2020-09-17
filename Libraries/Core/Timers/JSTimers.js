@@ -81,11 +81,12 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
  * recurring (setInterval).
  */
 function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
-  require('fbjs/lib/warning')(
-    timerID <= GUID,
-    'Tried to call timer with ID %s but no such timer exists.',
-    timerID,
-  );
+  if (timerID > GUID) {
+    console.warn(
+      'Tried to call timer with ID %s but no such timer exists.',
+      timerID,
+    );
+  }
 
   // timerIndex of -1 means that no timer with that ID exists. There are
   // two situations when this happens, when a garbage timer ID was given

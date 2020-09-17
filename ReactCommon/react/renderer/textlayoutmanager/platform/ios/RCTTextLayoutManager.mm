@@ -108,9 +108,63 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
+#if TARGET_OS_MACCATALYST
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextSaveGState(context);
+  CGContextSetShouldSmoothFonts(context, NO);
+#endif
+
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:frame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:frame.origin];
+
+#if TARGET_OS_MACCATALYST
+  CGContextRestoreGState(context);
+#endif
+}
+
+- (LinesMeasurements)getLinesForAttributedString:(facebook::react::AttributedString)attributedString
+                             paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
+                                            size:(CGSize)size
+{
+  NSTextStorage *textStorage = [self
+      _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
+                                   paragraphAttributes:paragraphAttributes
+                                                  size:size];
+  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
+  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
+
+  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+
+  std::vector<LineMeasurement> paragraphLines{};
+  auto blockParagraphLines = &paragraphLines;
+
+  [layoutManager enumerateLineFragmentsForGlyphRange:glyphRange
+                                          usingBlock:^(
+                                              CGRect overallRect,
+                                              CGRect usedRect,
+                                              NSTextContainer *_Nonnull usedTextContainer,
+                                              NSRange lineGlyphRange,
+                                              BOOL *_Nonnull stop) {
+                                            NSRange range = [layoutManager characterRangeForGlyphRange:lineGlyphRange
+                                                                                      actualGlyphRange:nil];
+                                            NSString *renderedString = [textStorage.string substringWithRange:range];
+                                            UIFont *font = [[textStorage attributedSubstringFromRange:range]
+                                                     attribute:NSFontAttributeName
+                                                       atIndex:0
+                                                effectiveRange:nil];
+                                            auto rect = facebook::react::Rect{
+                                                facebook::react::Point{usedRect.origin.x, usedRect.origin.y},
+                                                facebook::react::Size{usedRect.size.width, usedRect.size.height}};
+                                            auto line = LineMeasurement{std::string([renderedString UTF8String]),
+                                                                        rect,
+                                                                        -font.descender,
+                                                                        font.capHeight,
+                                                                        font.ascender,
+                                                                        font.xHeight};
+                                            blockParagraphLines->push_back(line);
+                                          }];
+  return paragraphLines;
 }
 
 - (NSTextStorage *)_textStorageAndLayoutManagerWithAttributesString:(NSAttributedString *)attributedString

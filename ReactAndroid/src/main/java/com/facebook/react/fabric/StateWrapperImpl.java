@@ -48,12 +48,6 @@ public class StateWrapperImpl implements StateWrapper {
       @NonNull NativeMap map, Object self, int updateStateId);
 
   @Override
-  public void updateState(@NonNull WritableMap map) {
-    mUpdateStateId++;
-    updateStateImpl((NativeMap) map);
-  }
-
-  @Override
   public void updateState(@NonNull WritableMap map, Runnable failureCallback) {
     mUpdateStateId++;
     mFailureCallback = failureCallback;

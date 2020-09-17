@@ -96,7 +96,24 @@ inline static NSUnderlineStyle RCTNSUnderlineStyleFromStyleAndPattern(
   return style;
 }
 
-inline static UIColor *RCTUIColorFromSharedColor(const SharedColor &color)
+inline static UIColor *RCTUIColorFromSharedColor(const SharedColor &sharedColor)
 {
-  return color ? [UIColor colorWithCGColor:color.get()] : nil;
+  if (!sharedColor) {
+    return nil;
+  }
+
+  if (*facebook::react::clearColor() == *sharedColor) {
+    return [UIColor clearColor];
+  }
+
+  if (*facebook::react::blackColor() == *sharedColor) {
+    return [UIColor blackColor];
+  }
+
+  if (*facebook::react::whiteColor() == *sharedColor) {
+    return [UIColor whiteColor];
+  }
+
+  auto components = facebook::react::colorComponentsFromColor(sharedColor);
+  return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
 }
