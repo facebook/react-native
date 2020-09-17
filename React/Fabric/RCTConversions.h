@@ -35,10 +35,22 @@ inline std::string RCTStringFromNSString(NSString *string)
   return std::string{string.UTF8String ?: ""};
 }
 
-inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)
+inline UIColor *_Nullable RCTUIColorFromSharedColor(facebook::react::SharedColor const &sharedColor)
 {
   if (!sharedColor) {
     return nil;
+  }
+
+  if (*facebook::react::clearColor() == *sharedColor) {
+    return [UIColor clearColor];
+  }
+
+  if (*facebook::react::blackColor() == *sharedColor) {
+    return [UIColor blackColor];
+  }
+
+  if (*facebook::react::whiteColor() == *sharedColor) {
+    return [UIColor whiteColor];
   }
 
   auto components = facebook::react::colorComponentsFromColor(sharedColor);

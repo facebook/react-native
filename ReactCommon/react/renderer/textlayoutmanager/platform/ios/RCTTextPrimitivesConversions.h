@@ -102,6 +102,18 @@ inline static UIColor *RCTUIColorFromSharedColor(const SharedColor &sharedColor)
     return nil;
   }
 
-  auto components = colorComponentsFromColor(sharedColor);
+  if (*facebook::react::clearColor() == *sharedColor) {
+    return [UIColor clearColor];
+  }
+
+  if (*facebook::react::blackColor() == *sharedColor) {
+    return [UIColor blackColor];
+  }
+
+  if (*facebook::react::whiteColor() == *sharedColor) {
+    return [UIColor whiteColor];
+  }
+
+  auto components = facebook::react::colorComponentsFromColor(sharedColor);
   return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
 }
