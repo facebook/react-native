@@ -135,6 +135,11 @@ void UIManagerBinding::dispatchEvent(
 
   auto payload = payloadFactory(runtime);
 
+  // If a payload is null, the factory has decided to cancel the event
+  if (payload.isNull()) {
+    return;
+  }
+
   auto instanceHandle = eventTarget
     ? [&]() {
       auto instanceHandle = eventTarget->getInstanceHandle(runtime);
