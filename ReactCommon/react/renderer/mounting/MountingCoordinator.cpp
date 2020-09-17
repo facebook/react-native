@@ -117,10 +117,13 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
       mutations = transaction->getMutations();
       telemetry = transaction->getTelemetry();
     } else {
+      number_++;
       telemetry.willLayout();
       telemetry.didLayout();
       telemetry.willCommit();
       telemetry.didCommit();
+      telemetry.willDiff();
+      telemetry.didDiff();
     }
 
     transaction = mountingOverrideDelegate->pullTransaction(
