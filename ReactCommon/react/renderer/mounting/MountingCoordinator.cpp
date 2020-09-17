@@ -97,9 +97,6 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
 
     telemetry.didDiff();
 
-    baseRevision_ = std::move(*lastRevision_);
-    lastRevision_.reset();
-
     transaction = MountingTransaction{
         surfaceId_, number_, std::move(mutations), telemetry};
   }
@@ -142,13 +139,15 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     // If the transaction was overridden, we don't have a model of the shadow
     // tree therefore we cannot validate the validity of the mutation
     // instructions.
-    if (!shouldOverridePullTransaction) {
-      auto line = std::string{};
-
+    if (!shouldOverridePullTransaction && lastRevision_.has_value()) {
       auto stubViewTree =
-          stubViewTreeFromShadowNode(*baseRevision_.rootShadowNode);
+          stubViewTreeFromShadowNode(*lastRevision_->rootShadowNode);
 
-      if (stubViewTree_ != stubViewTree) {
+      bool treesEqual = stubViewTree_ == stubViewTree;
+
+      if (!treesEqual) {
+        // Display debug info
+        auto line = std::string{};
         std::stringstream ssOldTree(
             baseRevision_.rootShadowNode->getDebugDescription());
         while (std::getline(ssOldTree, line, '\n')) {
@@ -167,13 +166,15 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
         }
       }
 
-      assert(
-          (stubViewTree_ == stubViewTree) &&
-          "Incorrect set of mutations detected.");
+      assert((treesEqual) && "Incorrect set of mutations detected.");
     }
   }
 #endif
 
+  if (lastRevision_.has_value()) {
+    baseRevision_ = std::move(*lastRevision_);
+    lastRevision_.reset();
+  }
   return transaction;
 }
 
