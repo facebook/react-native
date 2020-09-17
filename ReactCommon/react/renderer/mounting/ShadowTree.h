@@ -24,7 +24,7 @@ namespace facebook {
 namespace react {
 
 using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
-    RootShadowNode::Shared const &oldRootShadowNode)>;
+    RootShadowNode const &oldRootShadowNode)>;
 
 /*
  * Represents the shadow tree and its lifecycle.

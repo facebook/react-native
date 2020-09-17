@@ -97,9 +97,9 @@ void UIManager::completeSurface(
 
   shadowTreeRegistry_.visit(surfaceId, [&](ShadowTree const &shadowTree) {
     shadowTree.commit(
-        [&](RootShadowNode::Shared const &oldRootShadowNode) {
+        [&](RootShadowNode const &oldRootShadowNode) {
           return std::make_shared<RootShadowNode>(
-              *oldRootShadowNode,
+              oldRootShadowNode,
               ShadowNodeFragment{
                   /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                   /* .children = */ rootChildren,
@@ -173,9 +173,9 @@ void UIManager::setNativeProps(
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
         shadowTree.tryCommit(
-            [&](RootShadowNode::Shared const &oldRootShadowNode) {
+            [&](RootShadowNode const &oldRootShadowNode) {
               return std::static_pointer_cast<RootShadowNode>(
-                  oldRootShadowNode->cloneTree(
+                  oldRootShadowNode.cloneTree(
                       shadowNode.getFamily(),
                       [&](ShadowNode const &oldShadowNode) {
                         return oldShadowNode.clone({
@@ -231,10 +231,10 @@ void UIManager::updateStateWithAutorepeat(
 
   shadowTreeRegistry_.visit(
       family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        shadowTree.commit([&](RootShadowNode::Shared const &oldRootShadowNode) {
+        shadowTree.commit([&](RootShadowNode const &oldRootShadowNode) {
           auto isValid = true;
 
-          auto rootNode = oldRootShadowNode->cloneTree(
+          auto rootNode = oldRootShadowNode.cloneTree(
               *family, [&](ShadowNode const &oldShadowNode) {
                 auto newData =
                     callback(oldShadowNode.getState()->getDataPointer());
@@ -274,10 +274,10 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
 
   shadowTreeRegistry_.visit(
       family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        auto status = shadowTree.tryCommit([&](RootShadowNode::Shared const
+        auto status = shadowTree.tryCommit([&](RootShadowNode const
                                                    &oldRootShadowNode) {
           return std::static_pointer_cast<RootShadowNode>(
-              oldRootShadowNode->cloneTree(
+              oldRootShadowNode.cloneTree(
                   *family, [&](ShadowNode const &oldShadowNode) {
                     auto newData =
                         callback(oldShadowNode.getState()->getDataPointer());

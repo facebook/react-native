@@ -220,9 +220,9 @@ void Scheduler::renderTemplateToSurface(
     uiManager_->getShadowTreeRegistry().visit(
         surfaceId, [=](const ShadowTree &shadowTree) {
           return shadowTree.tryCommit(
-              [&](RootShadowNode::Shared const &oldRootShadowNode) {
+              [&](RootShadowNode const &oldRootShadowNode) {
                 return std::make_shared<RootShadowNode>(
-                    *oldRootShadowNode,
+                    oldRootShadowNode,
                     ShadowNodeFragment{
                         /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                         /* .children = */
@@ -302,8 +302,8 @@ void Scheduler::constraintSurfaceLayout(
 
   uiManager_->getShadowTreeRegistry().visit(
       surfaceId, [&](ShadowTree const &shadowTree) {
-        shadowTree.commit([&](RootShadowNode::Shared const &oldRootShadowNode) {
-          return oldRootShadowNode->clone(layoutConstraints, layoutContext);
+        shadowTree.commit([&](RootShadowNode const &oldRootShadowNode) {
+          return oldRootShadowNode.clone(layoutConstraints, layoutContext);
         });
       });
 }

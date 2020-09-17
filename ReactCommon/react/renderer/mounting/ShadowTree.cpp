@@ -302,7 +302,7 @@ CommitStatus ShadowTree::tryCommit(
     oldRevision = currentRevision_;
   }
 
-  auto newRootShadowNode = transaction(oldRevision.rootShadowNode);
+  auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
 
   if (!newRootShadowNode) {
     return CommitStatus::Cancelled;
@@ -373,10 +373,9 @@ ShadowTreeRevision ShadowTree::getCurrentRevision() const {
 
 void ShadowTree::commitEmptyTree() const {
   commit(
-      [](RootShadowNode::Shared const &oldRootShadowNode)
-          -> RootShadowNode::Unshared {
+      [](RootShadowNode const &oldRootShadowNode) -> RootShadowNode::Unshared {
         return std::make_shared<RootShadowNode>(
-            *oldRootShadowNode,
+            oldRootShadowNode,
             ShadowNodeFragment{
                 /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                 /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),

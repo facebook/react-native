@@ -99,7 +99,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
                         {}};
 
   shadowTree.commit(
-      [&](RootShadowNode::Shared const &oldRootShadowNode) {
+      [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState1);
       },
       true);
@@ -123,7 +123,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       findDescendantNode(*rootShadowNodeState2, family)->getState(), state2);
 
   shadowTree.commit(
-      [&](RootShadowNode::Shared const &oldRootShadowNode) {
+      [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
       true);
@@ -145,7 +145,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       findDescendantNode(*rootShadowNodeState3, family)->getState(), state3);
 
   shadowTree.commit(
-      [&](RootShadowNode::Shared const &oldRootShadowNode) {
+      [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState3);
       },
       true);
@@ -160,7 +160,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
   // Here we commit the old tree but we expect that the state associated with
   // the node will stay the same (newer that the old tree has).
   shadowTree.commit(
-      [&](RootShadowNode::Shared const &oldRootShadowNode) {
+      [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
       true);
