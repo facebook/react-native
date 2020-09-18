@@ -93,7 +93,9 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     telemetry.willDiff();
 
     auto mutations = calculateShadowViewMutations(
-        *baseRevision_.rootShadowNode, *lastRevision_->rootShadowNode);
+        *baseRevision_.rootShadowNode,
+        *lastRevision_->rootShadowNode,
+        enableReparentingDetection_);
 
     telemetry.didDiff();
 
