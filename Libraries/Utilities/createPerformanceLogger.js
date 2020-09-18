@@ -28,7 +28,7 @@ type ExtraValue = number | string | boolean;
 export interface IPerformanceLogger {
   addTimespan(key: string, startTime: number, endTime: number): void;
   startTimespan(key: string): void;
-  stopTimespan(key: string, options?: {update?: boolean}): void;
+  stopTimespan(key: string): void;
   clear(): void;
   clearCompleted(): void;
   currentTimestamp(): number;
@@ -89,7 +89,7 @@ class PerformanceLogger implements IPerformanceLogger {
     }
   }
 
-  stopTimespan(key: string, options?: {update?: boolean}) {
+  stopTimespan(key: string) {
     const timespan = this._timespans[key];
     if (!timespan || timespan.startTime == null) {
       if (PRINT_TO_CONSOLE && __DEV__) {
@@ -100,7 +100,7 @@ class PerformanceLogger implements IPerformanceLogger {
       }
       return;
     }
-    if (timespan.endTime != null && !options?.update) {
+    if (timespan.endTime != null) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
           'PerformanceLogger: Attempting to end a timespan that has already ended ',
