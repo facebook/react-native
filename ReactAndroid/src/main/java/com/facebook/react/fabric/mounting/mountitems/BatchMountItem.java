@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.mounting.mountitems;
 
 import androidx.annotation.NonNull;
+import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -70,8 +71,20 @@ public class BatchMountItem implements MountItem {
   public void execute(@NonNull MountingManager mountingManager) {
     beginMarkers("mountViews");
 
-    for (int mountItemIndex = 0; mountItemIndex < mSize; mountItemIndex++) {
-      mMountItems[mountItemIndex].execute(mountingManager);
+    int mountItemIndex = 0;
+    try {
+      for (; mountItemIndex < mSize; mountItemIndex++) {
+        mMountItems[mountItemIndex].execute(mountingManager);
+      }
+    } catch (RuntimeException e) {
+      FLog.e(
+          TAG,
+          "Caught exception executing mountItem @"
+              + mountItemIndex
+              + ": "
+              + mMountItems[mountItemIndex].toString(),
+          e);
+      throw e;
     }
 
     endMarkers();
