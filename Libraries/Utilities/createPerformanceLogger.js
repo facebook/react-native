@@ -17,16 +17,15 @@ const performanceNow: () => number =
   global.nativeQPLTimestamp ?? global.performance.now.bind(global.performance);
 
 type Timespan = {
-  totalTime?: number,
-  startTime?: number,
+  startTime: number,
   endTime?: number,
+  totalTime?: number,
 };
 
 // Extra values should be serializable primitives
 type ExtraValue = number | string | boolean;
 
 export interface IPerformanceLogger {
-  addTimeAnnotation(key: string, durationInMs: number): void;
   addTimespan(key: string, startTime: number, endTime: number): void;
   startTimespan(key: string): void;
   stopTimespan(key: string, options?: {update?: boolean}): void;
@@ -51,22 +50,6 @@ class PerformanceLogger implements IPerformanceLogger {
   _timespans: {[key: string]: Timespan} = {};
   _extras: {[key: string]: ExtraValue} = {};
   _points: {[key: string]: number} = {};
-
-  addTimeAnnotation(key: string, durationInMs: number) {
-    if (this._timespans[key]) {
-      if (PRINT_TO_CONSOLE && __DEV__) {
-        infoLog(
-          'PerformanceLogger: Attempting to add a timespan that already exists ',
-          key,
-        );
-      }
-      return;
-    }
-
-    this._timespans[key] = {
-      totalTime: durationInMs,
-    };
-  }
 
   addTimespan(key: string, startTime: number, endTime: number) {
     if (this._timespans[key]) {
