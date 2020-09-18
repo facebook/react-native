@@ -17,7 +17,6 @@ const performanceNow: () => number =
   global.nativeQPLTimestamp ?? global.performance.now.bind(global.performance);
 
 type Timespan = {
-  description?: string,
   totalTime?: number,
   startTime?: number,
   endTime?: number,
@@ -27,18 +26,9 @@ type Timespan = {
 type ExtraValue = number | string | boolean;
 
 export interface IPerformanceLogger {
-  addTimeAnnotation(
-    key: string,
-    durationInMs: number,
-    description?: string,
-  ): void;
-  addTimespan(
-    key: string,
-    startTime: number,
-    endTime: number,
-    description?: string,
-  ): void;
-  startTimespan(key: string, description?: string): void;
+  addTimeAnnotation(key: string, durationInMs: number): void;
+  addTimespan(key: string, startTime: number, endTime: number): void;
+  startTimespan(key: string): void;
   stopTimespan(key: string, options?: {update?: boolean}): void;
   clear(): void;
   clearCompleted(): void;
@@ -62,7 +52,7 @@ class PerformanceLogger implements IPerformanceLogger {
   _extras: {[key: string]: ExtraValue} = {};
   _points: {[key: string]: number} = {};
 
-  addTimeAnnotation(key: string, durationInMs: number, description?: string) {
+  addTimeAnnotation(key: string, durationInMs: number) {
     if (this._timespans[key]) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
@@ -74,17 +64,11 @@ class PerformanceLogger implements IPerformanceLogger {
     }
 
     this._timespans[key] = {
-      description: description,
       totalTime: durationInMs,
     };
   }
 
-  addTimespan(
-    key: string,
-    startTime: number,
-    endTime: number,
-    description?: string,
-  ) {
+  addTimespan(key: string, startTime: number, endTime: number) {
     if (this._timespans[key]) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
@@ -96,14 +80,13 @@ class PerformanceLogger implements IPerformanceLogger {
     }
 
     this._timespans[key] = {
-      description,
       startTime,
       endTime,
       totalTime: endTime - (startTime || 0),
     };
   }
 
-  startTimespan(key: string, description?: string) {
+  startTimespan(key: string) {
     if (this._timespans[key]) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
@@ -115,7 +98,6 @@ class PerformanceLogger implements IPerformanceLogger {
     }
 
     this._timespans[key] = {
-      description: description,
       startTime: performanceNow(),
     };
     _cookies[key] = Systrace.beginAsyncEvent(key);

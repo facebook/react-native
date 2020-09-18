@@ -55,10 +55,8 @@ describe('PerformanceLogger', () => {
     let perfLogger = createPerformanceLogger();
     const startTime = 0;
     const endTime = 100;
-    const description = 'description';
-    perfLogger.addTimespan(TIMESPAN_1, startTime, endTime, description);
+    perfLogger.addTimespan(TIMESPAN_1, startTime, endTime);
     expect(perfLogger.getTimespans()[TIMESPAN_1]).toEqual({
-      description,
       startTime,
       endTime,
       totalTime: endTime - startTime,
@@ -70,7 +68,7 @@ describe('PerformanceLogger', () => {
     perfLogger.startTimespan(TIMESPAN_1);
     perfLogger.stopTimespan(TIMESPAN_1);
     const existing = perfLogger.getTimespans()[TIMESPAN_1];
-    perfLogger.addTimespan(TIMESPAN_1, 0, 100, 'overriding');
+    perfLogger.addTimespan(TIMESPAN_1, 0, 100);
     expect(perfLogger.getTimespans()[TIMESPAN_1]).toEqual(existing);
   });
 
