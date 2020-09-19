@@ -380,7 +380,7 @@ task extractJNIFiles {
 
 android {
     compileSdkVersion 29
-
+    ndkVersion ndkVersion
     compileOptions {
         sourceCompatibility(JavaVersion.VERSION_1_8)
         targetCompatibility(JavaVersion.VERSION_1_8)
@@ -391,7 +391,7 @@ android {
         targetSdkVersion(28)
         versionCode(1)
         versionName("1.0")
-
+        ndkVersion "20.1.5948944"
         consumerProguardFiles("proguard-rules.pro")
 
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
