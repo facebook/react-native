@@ -36,6 +36,8 @@ Pod::Spec.new do |s|
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
 
+  # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
+  # Note: Update this only when ready to minimize breaking changes.
   s.subspec "turbomodule" do |ss|
     ss.dependency "React-callinvoker", version
     ss.dependency "React-perflogger", version
@@ -47,13 +49,13 @@ Pod::Spec.new do |s|
     ss.dependency "glog"
 
     ss.subspec "core" do |sss|
-      sss.source_files = "turbomodule/core/*.{cpp,h}",
-                         "turbomodule/core/platform/ios/*.{mm,cpp,h}"
+      sss.source_files = "react/nativemodule/core/*.{cpp,h}",
+                         "react/nativemodule/core/platform/ios/*.{mm,cpp,h}"
     end
 
     ss.subspec "samples" do |sss|
-      sss.source_files = "turbomodule/samples/*.{cpp,h}",
-                         "turbomodule/samples/platform/ios/*.{mm,cpp,h}"
+      sss.source_files = "react/nativemodule/samples/*.{cpp,h}",
+                         "react/nativemodule/samples/platform/ios/*.{mm,cpp,h}"
       sss.dependency "ReactCommon/turbomodule/core", version
     end
   end
