@@ -311,8 +311,8 @@ void UIManager::dispatchCommand(
 void UIManager::configureNextLayoutAnimation(
     jsi::Runtime &runtime,
     RawValue const &config,
-    const jsi::Value &successCallback,
-    const jsi::Value &failureCallback) const {
+    jsi::Value const &successCallback,
+    jsi::Value const &failureCallback) const {
   if (animationDelegate_) {
     animationDelegate_->uiManagerDidConfigureNextLayoutAnimation(
         runtime,

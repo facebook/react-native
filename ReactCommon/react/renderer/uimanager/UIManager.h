@@ -147,8 +147,8 @@ class UIManager final : public ShadowTreeDelegate {
   void configureNextLayoutAnimation(
       jsi::Runtime &runtime,
       RawValue const &config,
-      const jsi::Value &successCallback,
-      const jsi::Value &failureCallback) const;
+      jsi::Value const &successCallback,
+      jsi::Value const &failureCallback) const;
 
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 
