@@ -399,7 +399,7 @@ public class MountingManager {
       }
 
       throw new IllegalStateException(
-          "Tried to delete view ["
+          "Tried to remove view ["
               + tag
               + "] of parent ["
               + parentTag
@@ -586,6 +586,12 @@ public class MountingManager {
     // Additionally, as documented in `dropView`, we cannot always trust a
     // view's children to be up-to-date.
     mTagToViewState.remove(reactTag);
+
+    // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
+    ViewManager viewManager = viewState.mViewManager;
+    if (!viewState.mIsRoot && viewManager != null) {
+      viewManager.onDropViewInstance(viewState.mView);
+    }
   }
 
   @UiThread
