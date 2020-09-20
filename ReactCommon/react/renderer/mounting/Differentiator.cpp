@@ -1076,11 +1076,7 @@ static void calculateShadowViewMutationsV2(
               for (auto &oldFlattenedNode : oldFlattenedNodes) {
                 auto unvisitedOldChildPairIt = unvisitedOldChildPairs.find(
                     oldFlattenedNode.shadowView.tag);
-                if (unvisitedOldChildPairIt != unvisitedOldChildPairs.end()) {
-                  // Node unvisited - delete it entirely
-                  deleteMutations.push_back(ShadowViewMutation::DeleteMutation(
-                      oldFlattenedNode.shadowView));
-                } else {
+                if (unvisitedOldChildPairIt == unvisitedOldChildPairs.end()) {
                   // Node was visited - make sure to remove it from
                   // "newRemainingPairs" map
                   auto newRemainingIt =
@@ -1202,11 +1198,7 @@ static void calculateShadowViewMutationsV2(
               for (auto &oldFlattenedNode : oldFlattenedNodes) {
                 auto unvisitedOldChildPairIt = unvisitedOldChildPairs.find(
                     oldFlattenedNode.shadowView.tag);
-                if (unvisitedOldChildPairIt != unvisitedOldChildPairs.end()) {
-                  // Node unvisited - delete it entirely
-                  deleteMutations.push_back(ShadowViewMutation::DeleteMutation(
-                      oldFlattenedNode.shadowView));
-                } else {
+                if (unvisitedOldChildPairIt == unvisitedOldChildPairs.end()) {
                   // Node was visited - make sure to remove it from
                   // "newRemainingPairs" map
                   auto newRemainingIt =
