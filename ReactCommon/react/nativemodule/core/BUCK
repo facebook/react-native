@@ -4,12 +4,12 @@ load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "FBJNI_TARGET", "
 rn_xplat_cxx_library(
     name = "core",
     srcs = glob(
-        ["*.cpp"],
+        ["ReactCommon/**/*.cpp"],
     ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
-            ("", "*.h"),
+            ("ReactCommon", "*.h"),
         ],
         prefix = "ReactCommon",
     ),
@@ -26,13 +26,13 @@ rn_xplat_cxx_library(
     ],
     fbandroid_exported_headers = subdir_glob(
         [
-            ("platform/android", "*.h"),
+            ("platform/android/ReactCommon", "*.h"),
         ],
         prefix = "ReactCommon",
     ),
     fbandroid_srcs = glob(
         [
-            "platform/android/**/*.cpp",
+            "platform/android/ReactCommon/*.cpp",
         ],
     ),
     fbobjc_compiler_flags = [

@@ -524,7 +524,7 @@ SPEC CHECKSUMS:
   React-RCTText: 6c01963d3e562109f5548262b09b1b2bc260dd60
   React-RCTVibration: 0997fcaf753c7ac0a341177db120eebc438484cf
   React-runtimeexecutor: 60dd6204a13f68a1aa1118870edcc604a791df2b
-  ReactCommon: 982fb4cf650ef68a435f3c0bfff76fbdda1ba663
+  ReactCommon: e74025a9d02a02150f065719e14a8cbe03a93513
   Yoga: f7fa200d8c49f97b54c9421079e781fb900b5cae
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
