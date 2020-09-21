@@ -144,3 +144,86 @@ TEST(FindNodeAtPointTest, viewIsScaled) {
       LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {119, 119})->getTag(),
       2);
 }
+
+TEST(FindNodeAtPointTest, overlappingViews) {
+  auto builder = simpleComponentBuilder();
+
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .tag(1)
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {100, 100};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .tag(2)
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {25, 25};
+          layoutMetrics.frame.size = {50, 50};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        }),
+        Element<ViewShadowNode>()
+        .tag(3)
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {50, 50};
+          layoutMetrics.frame.size = {50, 50};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+    });
+  
+  auto parentShadowNode = builder.build(element);
+  
+  EXPECT_EQ(
+            LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {50, 50})->getTag(), 3);
+}
+
+TEST(FindNodeAtPointTest, overlappingViewsWithZIndex) {
+  auto builder = simpleComponentBuilder();
+
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .tag(1)
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {100, 100};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .tag(2)
+        .props([] {
+          auto sharedProps = std::make_shared<ViewProps>();
+          sharedProps->zIndex = 1;
+          auto &yogaStyle = sharedProps->yogaStyle;
+          yogaStyle.positionType() = YGPositionTypeAbsolute;
+          return sharedProps;
+        })
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {25, 25};
+          layoutMetrics.frame.size = {50, 50};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        }),
+        Element<ViewShadowNode>()
+        .tag(3)
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {50, 50};
+          layoutMetrics.frame.size = {50, 50};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+    });
+  
+  auto parentShadowNode = builder.build(element);
+  
+  EXPECT_EQ(
+            LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {50, 50})->getTag(), 2);
+}
+
+
