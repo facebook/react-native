@@ -48,7 +48,7 @@ static RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
   auto bridgeWeakWrapper = wrapManagedObjectWeakly([bridge batchedBridge] ?: bridge);
 
   RuntimeExecutor runtimeExecutor = [bridgeWeakWrapper](
-                                        std::function<void(facebook::jsi::Runtime &runtime)> &&callback) {
+                                        std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
     RCTBridge *bridge = unwrapManagedObjectWeakly(bridgeWeakWrapper);
 
     RCTAssert(bridge, @"RCTRuntimeExecutorFromBridge: Bridge must not be nil at the moment of scheduling a call.");
