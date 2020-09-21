@@ -46,6 +46,7 @@ std::shared_ptr<TurboModule> COMPLEX_OBJECTS_ModuleProvider(const std::string mo
   if (moduleName == \\"SampleTurboModule\\") {
     return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
   }
+  return nullptr;
 }
 
 } // namespace react
@@ -82,6 +83,7 @@ std::shared_ptr<TurboModule> EMPTY_NATIVE_MODULES_ModuleProvider(const std::stri
   if (moduleName == \\"SampleTurboModule\\") {
     return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
   }
+  return nullptr;
 }
 
 } // namespace react
@@ -123,6 +125,7 @@ std::shared_ptr<TurboModule> NATIVE_MODULES_WITH_TYPE_ALIASES_ModuleProvider(con
   if (moduleName == \\"AliasTurboModule\\") {
     return std::make_shared<NativeAliasTurboModuleSpecJSI>(params);
   }
+  return nullptr;
 }
 
 } // namespace react
@@ -218,6 +221,7 @@ std::shared_ptr<TurboModule> REAL_MODULE_EXAMPLE_ModuleProvider(const std::strin
   if (moduleName == \\"ExceptionsManager\\") {
     return std::make_shared<NativeExceptionsManagerSpecJSI>(params);
   }
+  return nullptr;
 }
 
 } // namespace react
@@ -307,6 +311,7 @@ std::shared_ptr<TurboModule> SIMPLE_NATIVE_MODULES_ModuleProvider(const std::str
   if (moduleName == \\"SampleTurboModule\\") {
     return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
   }
+  return nullptr;
 }
 
 } // namespace react
@@ -360,6 +365,7 @@ std::shared_ptr<TurboModule> TWO_MODULES_DIFFERENT_FILES_ModuleProvider(const st
   if (moduleName == \\"Sample2TurboModule\\") {
     return std::make_shared<NativeSample2TurboModuleSpecJSI>(params);
   }
+  return nullptr;
 }
 
 } // namespace react
@@ -411,6 +417,7 @@ std::shared_ptr<TurboModule> TWO_MODULES_SAME_FILE_ModuleProvider(const std::str
   if (moduleName == \\"Sample2TurboModule\\") {
     return std::make_shared<NativeSample2TurboModuleSpecJSI>(params);
   }
+  return nullptr;
 }
 
 } // namespace react
