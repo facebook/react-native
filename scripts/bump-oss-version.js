@@ -24,33 +24,30 @@ let argv = yargs.option('r', {
   alias: 'remote',
   default: 'origin',
 })
-.option('n', {
-  alias: 'nightly',
+.option('ci', {
   type: 'boolean',
   default: false,
-}).option('t', {
-  alias: 'testing',
+})
+.option('n', {
+  alias: 'nightly',
   type: 'boolean',
   default: false,
 }).argv;
 
 const nightlyBuild = argv.nightly;
-const testingBuild = argv.testing;
+const ci = argv.ci;
 
 let version, branch;
 if (nightlyBuild) {
   const currentCommit = exec('git rev-parse HEAD', {silent: true}).stdout.trim();
   version = `0.0.0-${currentCommit.slice(0, 9)}`;
-} else if (testingBuild) {
-  const currentCommit = exec('git rev-parse HEAD', {silent: true}).stdout.trim();
-  version = `1000.0.0-${currentCommit.slice(0, 9)}`;
 } else {
   // Check we are in release branch, e.g. 0.33-stable
   branch = exec('git symbolic-ref --short HEAD', {
     silent: true,
   }).stdout.trim();
 
-  if (branch.indexOf('-stable') === -1) {
+  if (!ci && branch.indexOf('-stable') === -1) {
     echo('You must be in 0.XX-stable branch to bump a version');
     exit(1);
   }
@@ -159,7 +156,7 @@ let numberOfChangedLinesWithNewVersion = exec(
 
 // Release builds should commit the version bumps, and create tags.
 // Nightly builds do not need to do that.
-if (!nightlyBuild && !testingBuild) {
+if (!nightlyBuild) {
   if (+numberOfChangedLinesWithNewVersion !== 3) {
     echo(
       'Failed to update all the files. package.json and gradle.properties must have versions in them',
