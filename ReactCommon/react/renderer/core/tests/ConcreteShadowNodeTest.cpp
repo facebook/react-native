@@ -28,6 +28,11 @@ TEST(ConcreteShadowNodeTest, testSetStateData) {
 
   shadowNode->setStateData({{10, 11}, {{21, 22}, {301, 302}}});
 
+  EXPECT_NE(
+      shadowNode->getState(), shadowNode->getFamily().getMostRecentState());
+
+  shadowNode->setMounted(true);
+
   EXPECT_EQ(
       shadowNode->getState(), shadowNode->getFamily().getMostRecentState());
 

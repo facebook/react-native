@@ -18,6 +18,7 @@ const {CrashyCrash} = NativeModules;
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = 'Crash';
+exports.category = 'Basic';
 exports.description = 'Crash examples.';
 
 exports.examples = [

@@ -14,6 +14,8 @@ import * as React from 'react';
 import {Alert, Button, DevSettings} from 'react-native';
 
 exports.title = 'DevSettings';
+exports.category = 'Basic';
+exports.documentationURL = 'https://reactnative.dev/docs/devsettings';
 exports.description = 'Customize the development settings';
 exports.examples = [
   {

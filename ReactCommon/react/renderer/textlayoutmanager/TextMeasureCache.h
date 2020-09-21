@@ -23,6 +23,8 @@ struct LineMeasurement {
   Float capHeight;
   Float ascender;
   Float xHeight;
+
+  bool operator==(LineMeasurement const &rhs) const;
 };
 
 using LinesMeasurements = std::vector<LineMeasurement>;

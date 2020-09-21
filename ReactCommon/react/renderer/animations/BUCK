@@ -86,7 +86,6 @@ fb_xplat_cxx_test(
         "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
         react_native_xplat_target("react/config:config"),
-        react_native_xplat_target("react/renderer/components/activityindicator:activityindicator"),
         react_native_xplat_target("react/renderer/components/image:image"),
         react_native_xplat_target("react/renderer/components/root:root"),
         react_native_xplat_target("react/renderer/components/scrollview:scrollview"),

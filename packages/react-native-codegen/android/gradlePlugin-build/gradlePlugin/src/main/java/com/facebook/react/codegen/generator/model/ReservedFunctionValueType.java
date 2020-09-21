@@ -20,4 +20,9 @@ public final class ReservedFunctionValueType extends Type {
     super(typeId);
     this.reservedName = reservedName;
   }
+
+  @Override
+  public String toString() {
+    return mTypeId + "(" + reservedName.toString() + ")";
+  }
 }

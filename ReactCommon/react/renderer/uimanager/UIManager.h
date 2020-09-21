@@ -50,6 +50,11 @@ class UIManager final : public ShadowTreeDelegate {
    */
   void setAnimationDelegate(UIManagerAnimationDelegate *delegate);
 
+  /**
+   * Execute stopSurface on any UIMAnagerAnimationDelegate.
+   */
+  void stopSurfaceForAnimationDelegate(SurfaceId surfaceId);
+
   void animationTick();
 
   /*
@@ -67,6 +72,11 @@ class UIManager final : public ShadowTreeDelegate {
   void shadowTreeDidFinishTransaction(
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override;
+
+  /*
+   * Temporary flags.
+   */
+  bool experimentEnableStateUpdateWithAutorepeat{false};
 
  private:
   friend class UIManagerBinding;
@@ -123,6 +133,7 @@ class UIManager final : public ShadowTreeDelegate {
    * and performs a commit.
    */
   void updateState(StateUpdate const &stateUpdate) const;
+  void updateStateWithAutorepeat(StateUpdate const &stateUpdate) const;
 
   void dispatchCommand(
       const ShadowNode::Shared &shadowNode,
@@ -136,8 +147,8 @@ class UIManager final : public ShadowTreeDelegate {
   void configureNextLayoutAnimation(
       jsi::Runtime &runtime,
       RawValue const &config,
-      const jsi::Value &successCallback,
-      const jsi::Value &failureCallback) const;
+      jsi::Value const &successCallback,
+      jsi::Value const &failureCallback) const;
 
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 

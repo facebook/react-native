@@ -127,10 +127,16 @@ void LayoutAnimationDriver::animationMutationsForFrame(
     if (animation.surfaceId != surfaceId) {
       continue;
     }
+    if (animation.completed) {
+      continue;
+    }
 
     int incompleteAnimations = 0;
     for (const auto &keyframe : animation.keyFrames) {
       if (keyframe.type == AnimationConfigurationType::Noop) {
+        continue;
+      }
+      if (keyframe.invalidated) {
         continue;
       }
 
@@ -160,8 +166,10 @@ void LayoutAnimationDriver::animationMutationsForFrame(
           finalShadowView);
 
       // Create the mutation instruction
-      mutationsList.push_back(ShadowViewMutation::UpdateMutation(
-          keyframe.parentView, baselineShadowView, mutatedShadowView, -1));
+      auto updateMutation = ShadowViewMutation::UpdateMutation(
+          keyframe.parentView, baselineShadowView, mutatedShadowView, -1);
+      mutationsList.push_back(updateMutation);
+      PrintMutationInstruction("Animation Progress:", updateMutation);
 
       if (animationTimeProgressLinear < 1) {
         incompleteAnimations++;
@@ -183,8 +191,35 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
       // Queue up "final" mutations for all keyframes in the completed animation
       for (auto const &keyframe : animation.keyFrames) {
+        if (keyframe.invalidated) {
+          continue;
+        }
         if (keyframe.finalMutationForKeyFrame.hasValue()) {
-          mutationsList.push_back(*keyframe.finalMutationForKeyFrame);
+          auto const &finalMutationForKeyFrame =
+              *keyframe.finalMutationForKeyFrame;
+          PrintMutationInstruction(
+              "Animation Complete: Queuing up Final Mutation:",
+              finalMutationForKeyFrame);
+
+          // Copy so that if something else mutates the inflight animations, it
+          // won't change this mutation after this point.
+          mutationsList.push_back(
+              ShadowViewMutation{finalMutationForKeyFrame.type,
+                                 finalMutationForKeyFrame.parentShadowView,
+                                 finalMutationForKeyFrame.oldChildShadowView,
+                                 finalMutationForKeyFrame.newChildShadowView,
+                                 finalMutationForKeyFrame.index});
+        } else {
+          // Issue a final UPDATE so that the final props object sent to the
+          // mounting layer is the same as the one on the ShadowTree. This is
+          // mostly to make the MountingCoordinator StubViewTree assertions
+          // pass.
+          mutationsList.push_back(
+              ShadowViewMutation{ShadowViewMutation::Type::Update,
+                                 keyframe.parentView,
+                                 keyframe.viewStart,
+                                 keyframe.viewEnd,
+                                 -1});
         }
       }
 
@@ -193,6 +228,13 @@ void LayoutAnimationDriver::animationMutationsForFrame(
       it++;
     }
   }
+
+  // Final step: make sure that all operations execute in the proper order.
+  // REMOVE operations with highest indices must operate first.
+  std::stable_sort(
+      mutationsList.begin(),
+      mutationsList.end(),
+      &shouldFirstComeBeforeSecondMutation);
 }
 
 } // namespace react

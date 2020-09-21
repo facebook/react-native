@@ -17,6 +17,10 @@
 #include <react/renderer/mounting/TelemetryController.h>
 #include "ShadowTreeRevision.h"
 
+#ifndef NDEBUG
+#define RN_SHADOW_TREE_INTROSPECTION 1
+#endif
+
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <react/renderer/mounting/stubs.h>
 #endif
@@ -87,7 +91,7 @@ class MountingCoordinator final {
  private:
   friend class ShadowTree;
 
-  void push(ShadowTreeRevision &&revision) const;
+  void push(ShadowTreeRevision const &revision) const;
 
   /*
    * Revokes the last pushed `ShadowTreeRevision`.
@@ -113,9 +117,6 @@ class MountingCoordinator final {
   bool enableReparentingDetection_{false}; // temporary
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
-  void validateTransactionAgainstStubViewTree(
-      ShadowViewMutationList const &mutations,
-      bool assertEquality) const;
   mutable StubViewTree stubViewTree_; // Protected by `mutex_`.
 #endif
 };

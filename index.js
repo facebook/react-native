@@ -47,7 +47,7 @@ import typeof VirtualizedList from './Libraries/Lists/VirtualizedList';
 import typeof VirtualizedSectionList from './Libraries/Lists/VirtualizedSectionList';
 import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
 import typeof Alert from './Libraries/Alert/Alert';
-import typeof Animated from './Libraries/Animated/src/Animated';
+import typeof Animated from './Libraries/Animated/Animated';
 import typeof Appearance from './Libraries/Utilities/Appearance';
 import typeof AppRegistry from './Libraries/ReactNative/AppRegistry';
 import typeof AppState from './Libraries/AppState/AppState';
@@ -58,7 +58,7 @@ import typeof DatePickerAndroid from './Libraries/Components/DatePickerAndroid/D
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
 import typeof DevSettings from './Libraries/Utilities/DevSettings';
 import typeof Dimensions from './Libraries/Utilities/Dimensions';
-import typeof Easing from './Libraries/Animated/src/Easing';
+import typeof Easing from './Libraries/Animated/Easing';
 import typeof ReactNative from './Libraries/Renderer/shims/ReactNative';
 import typeof I18nManager from './Libraries/ReactNative/I18nManager';
 import typeof ImagePickerIOS from './Libraries/Image/ImagePickerIOS';
@@ -119,6 +119,7 @@ module.exports = {
   get Button(): Button {
     return require('./Libraries/Components/Button');
   },
+  // $FlowFixMe[value-as-type]
   get DatePickerIOS(): DatePickerIOS {
     warnOnce(
       'DatePickerIOS-merged',
@@ -128,6 +129,7 @@ module.exports = {
     );
     return require('./Libraries/Components/DatePicker/DatePickerIOS');
   },
+  // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
     return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid');
   },
@@ -167,6 +169,7 @@ module.exports = {
     );
     return require('./Libraries/Components/Picker/Picker');
   },
+  // $FlowFixMe[value-as-type]
   get PickerIOS(): PickerIOS {
     warnOnce(
       'pickerios-moved',
@@ -179,6 +182,7 @@ module.exports = {
   get Pressable(): Pressable {
     return require('./Libraries/Components/Pressable/Pressable').default;
   },
+  // $FlowFixMe[value-as-type]
   get ProgressBarAndroid(): ProgressBarAndroid {
     warnOnce(
       'progress-bar-android-moved',
@@ -188,6 +192,7 @@ module.exports = {
     );
     return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid');
   },
+  // $FlowFixMe[value-as-type]
   get ProgressViewIOS(): ProgressViewIOS {
     warnOnce(
       'progress-view-ios-moved',
@@ -206,6 +211,7 @@ module.exports = {
   get SectionList(): SectionList {
     return require('./Libraries/Lists/SectionList');
   },
+  // $FlowFixMe[value-as-type]
   get SegmentedControlIOS(): SegmentedControlIOS {
     warnOnce(
       'segmented-control-ios-moved',
@@ -272,7 +278,7 @@ module.exports = {
     return require('./Libraries/Alert/Alert');
   },
   get Animated(): Animated {
-    return require('./Libraries/Animated/src/Animated');
+    return require('./Libraries/Animated/Animated');
   },
   get Appearance(): Appearance {
     return require('./Libraries/Utilities/Appearance');
@@ -283,6 +289,7 @@ module.exports = {
   get AppState(): AppState {
     return require('./Libraries/AppState/AppState');
   },
+  // $FlowFixMe[value-as-type]
   get AsyncStorage(): AsyncStorage {
     warnOnce(
       'async-storage-moved',
@@ -323,7 +330,7 @@ module.exports = {
     return require('./Libraries/Utilities/Dimensions');
   },
   get Easing(): Easing {
-    return require('./Libraries/Animated/src/Easing');
+    return require('./Libraries/Animated/Easing');
   },
   get findNodeHandle(): $PropertyType<ReactNative, 'findNodeHandle'> {
     return require('./Libraries/Renderer/shims/ReactNative').findNodeHandle;
@@ -361,7 +368,7 @@ module.exports = {
       .default;
   },
   get NativeEventEmitter(): NativeEventEmitter {
-    return require('./Libraries/EventEmitter/NativeEventEmitter');
+    return require('./Libraries/EventEmitter/NativeEventEmitter').default;
   },
   get Networking(): Networking {
     return require('./Libraries/Network/RCTNetworking');
@@ -403,6 +410,7 @@ module.exports = {
   get Systrace(): Systrace {
     return require('./Libraries/Performance/Systrace');
   },
+  // $FlowFixMe[value-as-type]
   get ToastAndroid(): ToastAndroid {
     return require('./Libraries/Components/ToastAndroid/ToastAndroid');
   },
@@ -440,7 +448,7 @@ module.exports = {
 
   // Plugins
   get DeviceEventEmitter(): RCTDeviceEventEmitter {
-    return require('./Libraries/EventEmitter/RCTDeviceEventEmitter');
+    return require('./Libraries/EventEmitter/RCTDeviceEventEmitter').default;
   },
   get NativeAppEventEmitter(): RCTNativeAppEventEmitter {
     return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter');
@@ -477,6 +485,7 @@ module.exports = {
       );
   },
   // Prop Types
+  // $FlowFixMe[value-as-type]
   get ColorPropType(): DeprecatedColorPropType {
     return require('./Libraries/DeprecatedPropTypes/DeprecatedColorPropType');
   },

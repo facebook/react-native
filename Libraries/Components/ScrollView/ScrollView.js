@@ -10,7 +10,7 @@
 
 'use strict';
 
-import AnimatedImplementation from '../../Animated/src/AnimatedImplementation';
+import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 import ReactNative from '../../Renderer/shims/ReactNative';
