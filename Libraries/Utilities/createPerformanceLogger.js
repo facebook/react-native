@@ -20,15 +20,25 @@ type Timespan = {
   startTime: number,
   endTime?: number,
   totalTime?: number,
+  startExtras?: Extras,
+  endExtras?: Extras,
 };
 
 // Extra values should be serializable primitives
 type ExtraValue = number | string | boolean;
 
+type Extras = {[key: string]: ExtraValue};
+
 export interface IPerformanceLogger {
-  addTimespan(key: string, startTime: number, endTime: number): void;
-  startTimespan(key: string): void;
-  stopTimespan(key: string): void;
+  addTimespan(
+    key: string,
+    startTime: number,
+    endTime: number,
+    startExtras?: Extras,
+    endExtras?: Extras,
+  ): void;
+  startTimespan(key: string, extras?: Extras): void;
+  stopTimespan(key: string, extras?: Extras): void;
   clear(): void;
   clearCompleted(): void;
   currentTimestamp(): number;
@@ -37,8 +47,9 @@ export interface IPerformanceLogger {
   setExtra(key: string, value: ExtraValue): void;
   getExtras(): {[key: string]: ExtraValue, ...};
   removeExtra(key: string): ExtraValue | void;
-  markPoint(key: string, timestamp?: number): void;
+  markPoint(key: string, timestamp?: number, extras?: Extras): void;
   getPoints(): {[key: string]: number, ...};
+  getPointExtras(): {[key: string]: Extras, ...};
   logEverything(): void;
 }
 
@@ -50,8 +61,15 @@ class PerformanceLogger implements IPerformanceLogger {
   _timespans: {[key: string]: Timespan} = {};
   _extras: {[key: string]: ExtraValue} = {};
   _points: {[key: string]: number} = {};
+  _pointExtras: {[key: string]: Extras, ...} = {};
 
-  addTimespan(key: string, startTime: number, endTime: number) {
+  addTimespan(
+    key: string,
+    startTime: number,
+    endTime: number,
+    startExtras?: Extras,
+    endExtras?: Extras,
+  ) {
     if (this._timespans[key]) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
@@ -66,10 +84,12 @@ class PerformanceLogger implements IPerformanceLogger {
       startTime,
       endTime,
       totalTime: endTime - (startTime || 0),
+      startExtras,
+      endExtras,
     };
   }
 
-  startTimespan(key: string) {
+  startTimespan(key: string, extras?: Extras) {
     if (this._timespans[key]) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
@@ -82,6 +102,7 @@ class PerformanceLogger implements IPerformanceLogger {
 
     this._timespans[key] = {
       startTime: performanceNow(),
+      startExtras: extras,
     };
     _cookies[key] = Systrace.beginAsyncEvent(key);
     if (PRINT_TO_CONSOLE) {
@@ -89,7 +110,7 @@ class PerformanceLogger implements IPerformanceLogger {
     }
   }
 
-  stopTimespan(key: string) {
+  stopTimespan(key: string, extras?: Extras) {
     const timespan = this._timespans[key];
     if (!timespan || timespan.startTime == null) {
       if (PRINT_TO_CONSOLE && __DEV__) {
@@ -110,6 +131,7 @@ class PerformanceLogger implements IPerformanceLogger {
       return;
     }
 
+    timespan.endExtras = extras;
     timespan.endTime = performanceNow();
     timespan.totalTime = timespan.endTime - (timespan.startTime || 0);
     if (PRINT_TO_CONSOLE) {
@@ -179,7 +201,7 @@ class PerformanceLogger implements IPerformanceLogger {
     return value;
   }
 
-  markPoint(key: string, timestamp?: number) {
+  markPoint(key: string, timestamp?: number, extras?: Extras) {
     if (this._points[key]) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
@@ -190,10 +212,17 @@ class PerformanceLogger implements IPerformanceLogger {
       return;
     }
     this._points[key] = timestamp ?? performanceNow();
+    if (extras) {
+      this._pointExtras[key] = extras;
+    }
   }
 
   getPoints() {
     return this._points;
+  }
+
+  getPointExtras() {
+    return this._pointExtras;
   }
 
   logEverything() {
