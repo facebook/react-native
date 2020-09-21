@@ -48,7 +48,8 @@ RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
   @"allowsDirectInteraction": @(UIAccessibilityTraitAllowsDirectInteraction),
   @"pageTurn": @(UIAccessibilityTraitCausesPageTurn),
   // [TODO(macOS ISS#2323203):
-  // a set of RN accessibilityTraits are macOS specific accessiblity roles and map to nothing on iOS:
+  // a set of RN accessibilityTraits are macOS specific accessibility roles and map to nothing on iOS:
+  @"disclosure": @(UIAccessibilityTraitNone),
   @"group": @(UIAccessibilityTraitNone),
   @"list": @(UIAccessibilityTraitNone),
   // ]TODO(macOS ISS#2323203)
@@ -138,18 +139,20 @@ RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessib
 RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(accessibilityHint, reactAccessibilityElement.accessibilityHint, NSString)
+#else // [TODO(macOS ISS#2323203)
+RCT_REMAP_VIEW_PROPERTY(accessibilityHint, reactAccessibilityElement.accessibilityHelp, NSString)
+#endif // TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(accessibilityValue, reactAccessibilityElement.accessibilityValueInternal, NSDictionary)
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(accessibilityViewIsModal, reactAccessibilityElement.accessibilityViewIsModal, BOOL)
 RCT_REMAP_VIEW_PROPERTY(accessibilityElementsHidden, reactAccessibilityElement.accessibilityElementsHidden, BOOL)
 RCT_REMAP_VIEW_PROPERTY(accessibilityIgnoresInvertColors, reactAccessibilityElement.shouldAccessibilityIgnoresInvertColors, BOOL)
-RCT_REMAP_VIEW_PROPERTY(onAccessibilityAction, reactAccessibilityElement.onAccessibilityAction, RCTDirectEventBlock)
-#else // [TODO(macOS ISS#2323203)
-RCT_REMAP_VIEW_PROPERTY(accessibilityHint, reactAccessibilityElement.accessibilityHelp, NSString)
 #endif // ]TODO(macOS ISS#2323203)
+RCT_REMAP_VIEW_PROPERTY(onAccessibilityAction, reactAccessibilityElement.onAccessibilityAction, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(onAccessibilityTap, reactAccessibilityElement.onAccessibilityTap, RCTDirectEventBlock)
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(onMagicTap, reactAccessibilityElement.onMagicTap, RCTDirectEventBlock)
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS ISS#2323203): accessibilityTraits is gone in react-native and deprecated in react-native-macos, use accessibilityRole instead
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityTraits, NSString, RCTView)
 {
   if (json) {
@@ -214,7 +217,7 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
     view.reactAccessibilityElement.accessibilityTraits |= maskedTraits;
   } else {
     NSString *role = json ? [RCTConvert NSString:json] : @"";
-    view.reactAccessibilityElement.accessibilityRole = role;
+    view.reactAccessibilityElement.accessibilityRoleInternal = role; // TODO(OSS Candidate ISS#2710739): renamed prop so it doesn't conflict with -[NSAccessibility accessibilityRole].
   }
 #else // [TODO(macOS ISS#2323203)
   if (json) {
@@ -227,7 +230,6 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   NSDictionary<NSString *, id> *state = json ? [RCTConvert NSDictionary:json] : nil;
   NSMutableDictionary<NSString *, id> *newState = [[NSMutableDictionary<NSString *, id> alloc] init];
 
@@ -235,6 +237,7 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
     return;
   }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   const UIAccessibilityTraits AccessibilityStatesMask = UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected;
   view.reactAccessibilityElement.accessibilityTraits = view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityStatesMask;
 
@@ -251,12 +254,20 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
       newState[s] = val;
     }
   }
+#else // [TODO(macOS ISS#2323203)
+  for (NSString *s in state) {
+    id val = [state objectForKey:s];
+    if (val == nil) {
+      continue;
+    }
+    newState[s] = val;
+  }
+#endif // ]TODO(macOS ISS#2323203)
   if (newState.count > 0) {
     view.reactAccessibilityElement.accessibilityState = newState;
   } else {
     view.reactAccessibilityElement.accessibilityState = nil;
   }
-#endif // TODO(macOS ISS#2323203)
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSString *, RCTView)

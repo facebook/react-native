@@ -16,6 +16,9 @@
 #import "RCTUtils.h"
 #import "UIView+React.h"
 #import "RCTI18nUtil.h"
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#import "RCTTextView.h"
+#endif // ]TODO(macOS ISS#2323203)
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
@@ -92,7 +95,18 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS I
 {
   NSMutableString *str = [NSMutableString stringWithString:@""];
   for (RCTUIView *subview in view.subviews) { // TODO(macOS ISS#3536887)
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     NSString *label = subview.accessibilityLabel;
+#else // [TODO(macOS ISS#2323203)
+    NSString *label;
+    if ([subview isKindOfClass:[RCTTextView class]]) {
+      // on macOS VoiceOver a text element will always have its accessibilityValue read, but will only read it's accessibilityLabel if it's value is set.
+      // the macOS RCTTextView accessibilityValue will return its accessibilityLabel if set otherwise return its text.
+      label = subview.accessibilityValue;
+    } else {
+      label = subview.accessibilityLabel;
+    }
+#endif // ]TODO(macOS ISS#2323203)
     if (!label) {
       label = RCTRecursiveAccessibilityLabel(subview);
     }
@@ -188,10 +202,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   if (label) {
     return label;
   }
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  // calling super.accessibilityLabel above on macOS causes the return value of this accessor to be ignored by VoiceOver.
+  // Calling the super's setAccessibilityLabel with nil ensures that the return value of this accessor is used by VoiceOver.
+  [super setAccessibilityLabel:nil];
+#endif // ]TODO(macOS ISS#2323203)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
   if (!self.accessibilityActions.count) {
@@ -233,11 +251,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
   return YES;
 }
-#endif // TODO(macOS ISS#2323203)
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (NSString *)accessibilityValue
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
     for (NSString *state in self.accessibilityState) {
       id val = self.accessibilityState[state];
@@ -248,17 +265,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
         return [val boolValue] ? @"1" : @"0";
       }
     }
-    for (NSString *state in self.accessibilityState) {
-      id val = self.accessibilityState[state];
-      if (!val) {
-        continue;
-      }
-      if ([state isEqualToString:@"checked"] && [val isKindOfClass:[NSNumber class]]) {
-        return [val boolValue] ? @"1" : @"0";
-      }
-    }
   }
-#endif // TODO(macOS ISS#2323203)
   NSMutableArray *valueComponents = [NSMutableArray new];
   static NSDictionary<NSString *, NSString *> *roleDescriptions = nil;
   static dispatch_once_t onceToken1;
@@ -294,7 +301,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
                           @"mixed": @"mixed",
                           };
   });
-  NSString *roleDescription = self.accessibilityRole ? roleDescriptions[self.accessibilityRole]: nil;
+  NSString *roleDescription = self.accessibilityRoleInternal ? roleDescriptions[self.accessibilityRoleInternal]: nil; // TODO(OSS Candidate ISS#2710739): renamed prop so it doesn't conflict with -[NSAccessibility accessibilityRole].
   if (roleDescription) {
     [valueComponents addObject:roleDescription];
   }
@@ -341,6 +348,147 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
   return nil;
 }
+#else // [TODO(macOS ISS#2323203)
+- (id)accessibilityValue {
+  id accessibilityValue = nil;
+  NSAccessibilityRole role = [self accessibilityRole];
+  if (role == NSAccessibilityCheckBoxRole ||
+      role == NSAccessibilityRadioButtonRole ||
+      role == NSAccessibilityDisclosureTriangleRole) {
+    for (NSString *state in [self accessibilityState]) {
+      id val = [self accessibilityState][state];
+      if (val != nil) {
+        if ([state isEqualToString:@"checked"]) {
+          if ([val isKindOfClass:[NSNumber class]]) {
+            accessibilityValue = @([val boolValue]);
+          } else if ([val isKindOfClass:[NSString class]] && [val isEqualToString:@"mixed"]) {
+            accessibilityValue = @(2); // undocumented by Apple: @(2) is the accessibilityValue an NSButton has when its state is NSMixedState (-1) and causes VoiceOver to announced "mixed".
+          }
+        }
+      }
+    }
+  } else if ([self accessibilityRole] == NSAccessibilityStaticTextRole) {
+    // On macOS if the role is static text, VoiceOver will only read the text returned by accessibilityValue.
+    // So return accessibilityLabel which has the logic to return either either the ivar or a computed value of all the children's text.
+    // If the accessibilityValueInternal "text" is present, it will override this value below.
+    accessibilityValue = [self accessibilityLabel];
+  }
+
+  // handle accessibilityValue
+
+  id accessibilityValueInternal = [self accessibilityValueInternal];
+  if (accessibilityValueInternal != nil) {
+    id now = accessibilityValueInternal[@"now"];
+    id text = accessibilityValueInternal[@"text"];
+    if (text != nil && [text isKindOfClass:[NSString class]]) {
+      accessibilityValue = text;
+    } else if (now != nil && [now isKindOfClass:[NSNumber class]]) {
+      accessibilityValue = now;
+    }
+  }
+
+  return accessibilityValue;
+}
+
+- (BOOL)isAccessibilitySelectorAllowed:(SEL)selector {
+  BOOL isAllowed = NO;
+  if (selector == @selector(isAccessibilityEnabled)) {
+    if (self.accessibilityState != nil) {
+      id disabled = self.accessibilityState[@"disabled"];
+      if ([disabled isKindOfClass:[NSNumber class]]) {
+        isAllowed = YES;
+      }
+    }
+  } else if (selector == @selector(isAccessibilitySelected)) {
+    if (self.accessibilityState != nil) {
+      id selected = self.accessibilityState[@"selected"];
+      if ([selected isKindOfClass:[NSNumber class]]) {
+        isAllowed = YES;
+      }
+    }
+  } else if (selector == @selector(isAccessibilityExpanded)) {
+    if (self.accessibilityState != nil) {
+      id expanded = self.accessibilityState[@"expanded"];
+      if ([expanded isKindOfClass:[NSNumber class]]) {
+        isAllowed = YES;
+      }
+    }
+  } else if (selector == @selector(accessibilityPerformPress)) {
+    if (_onAccessibilityTap != nil ||
+        (_onAccessibilityAction != nil && accessibilityActionsNameMap[@"activate"]) ||
+        _onClick != nil) {
+      isAllowed = YES;
+    }
+  } else if (selector == @selector(accessibilityPerformIncrement)) {
+    if (_onAccessibilityAction != nil && accessibilityActionsNameMap[@"increment"]) {
+      isAllowed = YES;
+    }
+  } else if (selector == @selector(accessibilityPerformDecrement)) {
+    if (_onAccessibilityAction != nil && accessibilityActionsNameMap[@"decrement"]) {
+      isAllowed = YES;
+    }
+  } else {
+    isAllowed = YES;
+  }
+  return isAllowed;
+}
+
+- (BOOL)isAccessibilityEnabled {
+  BOOL isAccessibilityEnabled = YES;
+  if (self.accessibilityState != nil) {
+    id disabled = self.accessibilityState[@"disabled"];
+    if ([disabled isKindOfClass:[NSNumber class]]) {
+      isAccessibilityEnabled = [disabled boolValue] ? NO : YES;
+    }
+  }
+  return isAccessibilityEnabled;
+}
+
+- (BOOL)isAccessibilitySelected {
+  BOOL isAccessibilitySelected = NO;
+  if (self.accessibilityState != nil) {
+    id selected = self.accessibilityState[@"selected"];
+    if ([selected isKindOfClass:[NSNumber class]]) {
+      isAccessibilitySelected = [selected boolValue];
+    }
+  }
+  return isAccessibilitySelected;
+}
+
+- (BOOL)isAccessibilityExpanded {
+  BOOL isAccessibilityExpanded = NO;
+  if (self.accessibilityState != nil) {
+    id expanded = self.accessibilityState[@"expanded"];
+    if ([expanded isKindOfClass:[NSNumber class]]) {
+      isAccessibilityExpanded = [expanded boolValue];
+    }
+  }
+  return isAccessibilityExpanded;
+}
+
+- (id)accessibilityMinValue {
+  id accessibilityMinValue = nil;
+  if (self.accessibilityValueInternal != nil) {
+    id min = self.accessibilityValueInternal[@"min"];
+    if ([min isKindOfClass:[NSNumber class]]) {
+      accessibilityMinValue = min;
+    }
+  }
+  return accessibilityMinValue;
+}
+
+- (id)accessibilityMaxValue {
+  id accessibilityMaxValue = nil;
+  if (self.accessibilityValueInternal != nil) {
+    id max = self.accessibilityValueInternal[@"max"];
+    if ([max isKindOfClass:[NSNumber class]]) {
+      accessibilityMaxValue = max;
+    }
+  }
+  return accessibilityMaxValue;
+}
+
+#endif // ]TODO(macOS ISS#2323203)
 
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
 {
@@ -445,17 +593,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return NO;
 }
 
-#if !TARGET_OS_OSX // ]TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (BOOL)accessibilityActivate
 #else // [TODO(macOS ISS#2323203)
 - (BOOL)accessibilityPerformPress
 #endif // ]TODO(macOS ISS#2323203)
 {
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  if ([self isAccessibilityEnabled] == NO) {
+    return NO;
+  }
+#endif // ]TODO(macOS ISS#2323203)
   if ([self performAccessibilityAction:@"activate"]) {
     return YES;
   } else if (_onAccessibilityTap) {
     _onAccessibilityTap(nil);
     return YES;
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  } else if (_onClick != nil) {
+    // macOS is not simulating a click if there is no onAccessibilityAction like it does on iOS, so we simulate it here.
+    _onClick(nil);
+    return YES;
+#endif // ]TODO(macOS ISS#2323203)
   } else {
     return NO;
   }
@@ -487,15 +646,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (void)accessibilityIncrement
 {
   [self performAccessibilityAction:@"increment"];
 }
+#else // [TODO(macOS ISS#2323203)
+- (BOOL)accessibilityPerformIncrement
+{
+  return [self performAccessibilityAction:@"increment"];
+}
+#endif // ]TODO(macOS ISS#2323203)
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (void)accessibilityDecrement
 {
   [self performAccessibilityAction:@"decrement"];
 }
+#else // [TODO(macOS ISS#2323203)
+- (BOOL)accessibilityPerformDecrement
+{
+  return [self performAccessibilityAction:@"decrement"];
+}
+#endif // ]TODO(macOS ISS#2323203)
 
 - (NSString *)description
 {
