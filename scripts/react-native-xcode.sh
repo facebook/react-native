@@ -134,11 +134,6 @@ if [[ "$BUNDLE_PLATFORM" == "macos" && -f "$HERMES_PATH" ]]; then
   USE_HERMES=true
 fi
 
-EXTRA_ARGS=
-if [ -d "$PROJECT_ROOT/node_modules/react-native-macos" ]; then
-  EXTRA_ARGS=--use-react-native-macos
-fi
-
 EMIT_SOURCEMAP=
 if [[ ! -z "$SOURCEMAP_FILE" ]]; then
   EMIT_SOURCEMAP=true

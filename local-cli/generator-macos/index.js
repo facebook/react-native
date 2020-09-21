@@ -59,14 +59,6 @@ function copyProjectTemplateAndReplace(
     { from: path.join(srcRootPath, schemePath(oldProjectName, 'iOS')), to: schemePath(newProjectName, 'iOS') },
     { from: path.join(srcRootPath, schemePath(oldProjectName, 'macOS')), to: schemePath(newProjectName, 'macOS') },
   ].forEach((mapping) => copyAndReplaceAll(mapping.from, destPath, mapping.to, templateVars, options.overwrite));
-
-  [
-    { from: path.join(srcRootPath, 'react-native.config.js'), to: 'react-native.config.js' },
-  ].forEach((mapping) => appendToExistingFile(mapping.from, mapping.to, templateVars));
-
-  [
-    { from: path.join(srcRootPath, 'metro.config.macos.js'), to: 'metro.config.macos.js' },
-  ].forEach((mapping) => copyAndReplaceWithChangedCallback(mapping.from, destPath, mapping.to, templateVars, options.overwrite));
 }
 
 /**
@@ -126,15 +118,6 @@ function schemePath(basename, platform) {
  */
 function installDependencies(options) {
   const cwd = process.cwd();
-
-  // Patch package.json to have start:macos
-  const projectPackageJsonPath = path.join(cwd, 'package.json');
-  /** @type {{ scripts?: {} }} */
-  const projectPackageJson = JSON.parse(fs.readFileSync(projectPackageJsonPath, { encoding: 'UTF8' }));
-  const scripts = projectPackageJson.scripts || {};
-  scripts['start:macos'] = 'node node_modules/react-native-macos/local-cli/cli.js start --use-react-native-macos';
-  projectPackageJson.scripts = scripts;
-  fs.writeFileSync(projectPackageJsonPath, JSON.stringify(projectPackageJson, null, 2));
 
   // Install dependencies using correct package manager
   const isYarn = fs.existsSync(path.join(cwd, 'yarn.lock'));
