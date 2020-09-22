@@ -132,7 +132,7 @@ class AppContainer extends React.Component<Props, State> {
         <View style={styles.appContainer} pointerEvents="box-none">
           {!this.state.hasError && innerView}
           {this.state.inspector}
-          {yellowBox}
+          {logBox}
         </View>
       </RootTagContext.Provider>
     );
