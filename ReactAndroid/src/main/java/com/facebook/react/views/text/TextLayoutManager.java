@@ -27,6 +27,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
@@ -517,6 +518,29 @@ public class TextLayoutManager {
     }
 
     return YogaMeasureOutput.make(widthInSP, heightInSP);
+  }
+
+  public static WritableArray measureLines(
+      @NonNull Context context,
+      ReadableMap attributedString,
+      ReadableMap paragraphAttributes,
+      float width) {
+    TextPaint textPaint = sTextPaintInstance;
+    Spannable text = getOrCreateSpannableForText(context, attributedString, null);
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
+
+    int textBreakStrategy =
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(TEXT_BREAK_STRATEGY_KEY));
+    boolean includeFontPadding =
+        paragraphAttributes.hasKey(INCLUDE_FONT_PADDING_KEY)
+            ? paragraphAttributes.getBoolean(INCLUDE_FONT_PADDING_KEY)
+            : DEFAULT_INCLUDE_FONT_PADDING;
+
+    Layout layout =
+        createLayout(
+            text, boring, width, YogaMeasureMode.EXACTLY, includeFontPadding, textBreakStrategy);
+    return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
   }
 
   // TODO T31905686: This class should be private
