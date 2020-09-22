@@ -20,6 +20,6 @@ fb_apple_library(
     deps = [
         "//xplat/js/react-native-github:RCTTypeSafety",
         "//xplat/js/react-native-github/Libraries/RCTRequired:RCTRequired",
-        react_native_xplat_target_apple("turbomodule/core:core"),
+        react_native_xplat_target_apple("react/nativemodule/core:core"),
     ],
 )

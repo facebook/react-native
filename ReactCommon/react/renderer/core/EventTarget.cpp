@@ -14,7 +14,7 @@ using Tag = EventTarget::Tag;
 
 EventTarget::EventTarget(
     jsi::Runtime &runtime,
-    const jsi::Value &instanceHandle,
+    jsi::Value const &instanceHandle,
     Tag tag)
     : weakInstanceHandle_(
           jsi::WeakObject(runtime, instanceHandle.asObject(runtime))),

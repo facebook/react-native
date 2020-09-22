@@ -35,7 +35,7 @@ class EventTarget {
   /*
    * Constructs an EventTarget from a weak instance handler and a tag.
    */
-  EventTarget(jsi::Runtime &runtime, const jsi::Value &instanceHandle, Tag tag);
+  EventTarget(jsi::Runtime &runtime, jsi::Value const &instanceHandle, Tag tag);
 
   /*
    * Sets the `enabled` flag that allows creating a strong instance handle from

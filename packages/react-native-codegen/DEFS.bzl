@@ -383,7 +383,7 @@ def rn_codegen_cxx_modules(
             ],
             visibility = ["PUBLIC"],
             exported_deps = [
-                react_native_xplat_target("turbomodule/core:core"),
+                react_native_xplat_target("react/nativemodule/core:core"),
             ],
         )
 

@@ -31,6 +31,26 @@ JavaTurboModule::JavaTurboModule(const InitParams &params)
       instance_(jni::make_global(params.instance)),
       nativeInvoker_(params.nativeInvoker) {}
 
+JavaTurboModule::~JavaTurboModule() {
+  /**
+   * TODO(T75896241): In E2E tests, instance_ is null. Investigate why. Can we
+   * get rid of this null check?
+   */
+  if (!instance_) {
+    return;
+  }
+
+  nativeInvoker_->invokeAsync([instance = std::move(instance_)]() mutable {
+    /**
+     * Reset the global NativeModule ref on the NativeModules thread. Why:
+     *   - ~JavaTurboModule() can be called on a non-JVM thread. If we reset the
+     *     global ref in ~JavaTurboModule(), we might access the JVM from a
+     *     non-JVM thread, which will crash the app.
+     */
+    instance.reset();
+  });
+}
+
 bool JavaTurboModule::isPromiseAsyncDispatchEnabled_ = false;
 void JavaTurboModule::enablePromiseAsyncDispatch(bool enable) {
   isPromiseAsyncDispatchEnabled_ = enable;

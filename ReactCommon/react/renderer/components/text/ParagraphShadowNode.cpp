@@ -164,18 +164,6 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
   updateStateIfNeeded(content);
 
-  if (content.attachments.empty()) {
-#ifndef ANDROID
-    if (getConcreteProps().onTextLayout) {
-      // `onTextLayout` needs to be called even if text is empty
-      // to be compatible with Paper.
-      getConcreteEventEmitter().onTextLayout({});
-    }
-#endif
-    // No attachments, nothing to layout.
-    return;
-  }
-
   auto measurement = textLayoutManager_->measure(
       AttributedStringBox{content.attributedString},
       content.paragraphAttributes,
@@ -190,6 +178,11 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
     getConcreteEventEmitter().onTextLayout(linesMeasurements);
   }
 #endif
+
+  if (content.attachments.empty()) {
+    // No attachments to layout.
+    return;
+  }
 
   //  Iterating on attachments, we clone shadow nodes and moving
   //  `paragraphShadowNode` that represents clones of `this` object.

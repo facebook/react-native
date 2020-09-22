@@ -83,13 +83,15 @@ void StubViewTree::mutate(
         STUB_VIEW_ASSERT(registry.find(parentTag) != registry.end());
         auto parentStubView = registry[parentTag];
         auto childTag = mutation.newChildShadowView.tag;
-        STUB_VIEW_LOG({
-          LOG(ERROR) << "StubView: Insert: " << childTag << " into "
-                     << parentTag << " at " << mutation.index;
-        });
         STUB_VIEW_ASSERT(registry.find(childTag) != registry.end());
         auto childStubView = registry[childTag];
         childStubView->update(mutation.newChildShadowView);
+        STUB_VIEW_LOG({
+          LOG(ERROR) << "StubView: Insert: " << childTag << " into "
+                     << parentTag << " at " << mutation.index << "("
+                     << parentStubView->children.size() << " children)";
+        });
+        STUB_VIEW_ASSERT(parentStubView->children.size() >= mutation.index);
         parentStubView->children.insert(
             parentStubView->children.begin() + mutation.index, childStubView);
         break;
@@ -106,6 +108,7 @@ void StubViewTree::mutate(
                      << parentTag << " at index " << mutation.index << " with "
                      << parentStubView->children.size() << " children";
         });
+        STUB_VIEW_ASSERT(parentStubView->children.size() > mutation.index);
         STUB_VIEW_ASSERT(registry.find(childTag) != registry.end());
         auto childStubView = registry[childTag];
         bool childIsCorrect =
@@ -130,8 +133,15 @@ void StubViewTree::mutate(
         STUB_VIEW_LOG({
           LOG(ERROR) << "StubView: Update: " << mutation.newChildShadowView.tag;
         });
+
+        // We don't have a strict requirement that oldChildShadowView has any
+        // data. In particular, LayoutAnimations can produce UPDATEs with only a
+        // new node.
         STUB_VIEW_ASSERT(
-            mutation.newChildShadowView.tag == mutation.oldChildShadowView.tag);
+            mutation.newChildShadowView.tag ==
+                mutation.oldChildShadowView.tag ||
+            mutation.oldChildShadowView.tag == 0);
+
         STUB_VIEW_ASSERT(
             registry.find(mutation.newChildShadowView.tag) != registry.end());
         auto stubView = registry[mutation.newChildShadowView.tag];

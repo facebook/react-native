@@ -7,17 +7,17 @@
 
 #pragma once
 
-#include <memory>
+#include <better/optional.h>
 
-#include <CoreGraphics/CoreGraphics.h>
 #include <react/renderer/graphics/ColorComponents.h>
 #include <react/renderer/graphics/Float.h>
 
 namespace facebook {
 namespace react {
 
-using Color = CGColor;
-using SharedColor = std::shared_ptr<Color>;
+using Color = int32_t;
+
+using SharedColor = better::optional<Color>;
 
 SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);

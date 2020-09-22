@@ -8,5 +8,24 @@
 #include "TextMeasureCache.h"
 
 namespace facebook {
-namespace react {} // namespace react
+namespace react {
+
+bool LineMeasurement::operator==(LineMeasurement const &rhs) const {
+  return std::tie(
+             this->text,
+             this->frame,
+             this->descender,
+             this->capHeight,
+             this->ascender,
+             this->xHeight) ==
+      std::tie(
+             rhs.text,
+             rhs.frame,
+             rhs.descender,
+             rhs.capHeight,
+             rhs.ascender,
+             rhs.xHeight);
+}
+
+} // namespace react
 } // namespace facebook

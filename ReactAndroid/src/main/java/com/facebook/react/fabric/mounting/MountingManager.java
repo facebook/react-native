@@ -399,7 +399,7 @@ public class MountingManager {
       }
 
       throw new IllegalStateException(
-          "Tried to delete view ["
+          "Tried to remove view ["
               + tag
               + "] of parent ["
               + parentTag
@@ -577,12 +577,20 @@ public class MountingManager {
       return;
     }
 
-    View view = viewState.mView;
+    // To delete we simply remove the tag from the registry.
+    // In the past we called dropView here, but we want to rely on either
+    // (1) the correct set of MountInstructions being sent to the platform
+    // and/or (2) dropView being called by stopSurface.
+    // If Views are orphaned at this stage and leaked, it's a problem in
+    // the differ or LayoutAnimations, not MountingManager.
+    // Additionally, as documented in `dropView`, we cannot always trust a
+    // view's children to be up-to-date.
+    mTagToViewState.remove(reactTag);
 
-    if (view != null) {
-      dropView(view, false);
-    } else {
-      mTagToViewState.remove(reactTag);
+    // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
+    ViewManager viewManager = viewState.mViewManager;
+    if (!viewState.mIsRoot && viewManager != null) {
+      viewManager.onDropViewInstance(viewState.mView);
     }
   }
 

@@ -12,18 +12,18 @@
 namespace facebook {
 namespace react {
 
-using ThreadLocalTransactionTelemetry = ThreadStorage<TransactionTelemetry *>;
+thread_local TransactionTelemetry *threadLocalTransactionTelemetry = nullptr;
 
 TransactionTelemetry *TransactionTelemetry::threadLocalTelemetry() {
-  return ThreadLocalTransactionTelemetry::getInstance().get().value_or(nullptr);
+  return threadLocalTransactionTelemetry;
 }
 
 void TransactionTelemetry::setAsThreadLocal() {
-  ThreadLocalTransactionTelemetry::getInstance().set(this);
+  threadLocalTransactionTelemetry = this;
 }
 
 void TransactionTelemetry::unsetAsThreadLocal() {
-  ThreadLocalTransactionTelemetry::getInstance().set(nullptr);
+  threadLocalTransactionTelemetry = nullptr;
 }
 
 void TransactionTelemetry::willCommit() {

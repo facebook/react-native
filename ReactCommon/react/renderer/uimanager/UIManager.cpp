@@ -97,9 +97,9 @@ void UIManager::completeSurface(
 
   shadowTreeRegistry_.visit(surfaceId, [&](ShadowTree const &shadowTree) {
     shadowTree.commit(
-        [&](RootShadowNode::Shared const &oldRootShadowNode) {
+        [&](RootShadowNode const &oldRootShadowNode) {
           return std::make_shared<RootShadowNode>(
-              *oldRootShadowNode,
+              oldRootShadowNode,
               ShadowNodeFragment{
                   /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                   /* .children = */ rootChildren,
@@ -139,12 +139,7 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
   auto ancestorShadowNode = ShadowNode::Shared{};
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        shadowTree.tryCommit(
-            [&](RootShadowNode::Shared const &oldRootShadowNode) {
-              ancestorShadowNode = oldRootShadowNode;
-              return nullptr;
-            },
-            true);
+        ancestorShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
       });
 
   if (!ancestorShadowNode) {
@@ -178,9 +173,9 @@ void UIManager::setNativeProps(
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
         shadowTree.tryCommit(
-            [&](RootShadowNode::Shared const &oldRootShadowNode) {
+            [&](RootShadowNode const &oldRootShadowNode) {
               return std::static_pointer_cast<RootShadowNode>(
-                  oldRootShadowNode->cloneTree(
+                  oldRootShadowNode.cloneTree(
                       shadowNode.getFamily(),
                       [&](ShadowNode const &oldShadowNode) {
                         return oldShadowNode.clone({
@@ -205,13 +200,9 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   if (!ancestorShadowNode) {
     shadowTreeRegistry_.visit(
         shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
-          shadowTree.tryCommit(
-              [&](RootShadowNode::Shared const &oldRootShadowNode) {
-                owningAncestorShadowNode = oldRootShadowNode;
-                ancestorShadowNode = oldRootShadowNode.get();
-                return nullptr;
-              },
-              true);
+          owningAncestorShadowNode =
+              shadowTree.getCurrentRevision().rootShadowNode;
+          ancestorShadowNode = owningAncestorShadowNode.get();
         });
   } else {
     // It is possible for JavaScript (or other callers) to have a reference
@@ -240,10 +231,10 @@ void UIManager::updateStateWithAutorepeat(
 
   shadowTreeRegistry_.visit(
       family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        shadowTree.commit([&](RootShadowNode::Shared const &oldRootShadowNode) {
+        shadowTree.commit([&](RootShadowNode const &oldRootShadowNode) {
           auto isValid = true;
 
-          auto rootNode = oldRootShadowNode->cloneTree(
+          auto rootNode = oldRootShadowNode.cloneTree(
               *family, [&](ShadowNode const &oldShadowNode) {
                 auto newData =
                     callback(oldShadowNode.getState()->getDataPointer());
@@ -272,7 +263,7 @@ void UIManager::updateStateWithAutorepeat(
 }
 
 void UIManager::updateState(StateUpdate const &stateUpdate) const {
-  if (stateUpdate.autorepeat) {
+  if (stateUpdate.autorepeat || experimentEnableStateUpdateWithAutorepeat) {
     updateStateWithAutorepeat(stateUpdate);
     return;
   }
@@ -283,10 +274,10 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
 
   shadowTreeRegistry_.visit(
       family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        auto status = shadowTree.tryCommit([&](RootShadowNode::Shared const
+        auto status = shadowTree.tryCommit([&](RootShadowNode const
                                                    &oldRootShadowNode) {
           return std::static_pointer_cast<RootShadowNode>(
-              oldRootShadowNode->cloneTree(
+              oldRootShadowNode.cloneTree(
                   *family, [&](ShadowNode const &oldShadowNode) {
                     auto newData =
                         callback(oldShadowNode.getState()->getDataPointer());
@@ -320,8 +311,8 @@ void UIManager::dispatchCommand(
 void UIManager::configureNextLayoutAnimation(
     jsi::Runtime &runtime,
     RawValue const &config,
-    const jsi::Value &successCallback,
-    const jsi::Value &failureCallback) const {
+    jsi::Value const &successCallback,
+    jsi::Value const &failureCallback) const {
   if (animationDelegate_) {
     animationDelegate_->uiManagerDidConfigureNextLayoutAnimation(
         runtime,

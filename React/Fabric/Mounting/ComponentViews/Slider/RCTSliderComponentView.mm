@@ -7,8 +7,10 @@
 
 #import "RCTSliderComponentView.h"
 
+#import <React/RCTConversions.h>
 #import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
+
 #import <react/renderer/components/rncore/EventEmitters.h>
 #import <react/renderer/components/rncore/Props.h>
 #import <react/renderer/components/slider/SliderComponentDescriptor.h>
@@ -131,17 +133,17 @@ using namespace facebook::react;
 
   // `thumbTintColor`
   if (oldSliderProps.thumbTintColor != newSliderProps.thumbTintColor) {
-    _sliderView.thumbTintColor = [UIColor colorWithCGColor:newSliderProps.thumbTintColor.get()];
+    _sliderView.thumbTintColor = RCTUIColorFromSharedColor(newSliderProps.thumbTintColor);
   }
 
   // `minimumTrackTintColor`
   if (oldSliderProps.minimumTrackTintColor != newSliderProps.minimumTrackTintColor) {
-    _sliderView.minimumTrackTintColor = [UIColor colorWithCGColor:newSliderProps.minimumTrackTintColor.get()];
+    _sliderView.minimumTrackTintColor = RCTUIColorFromSharedColor(newSliderProps.minimumTrackTintColor);
   }
 
   // `maximumTrackTintColor`
   if (oldSliderProps.maximumTrackTintColor != newSliderProps.maximumTrackTintColor) {
-    _sliderView.maximumTrackTintColor = [UIColor colorWithCGColor:newSliderProps.maximumTrackTintColor.get()];
+    _sliderView.maximumTrackTintColor = RCTUIColorFromSharedColor(newSliderProps.maximumTrackTintColor);
   }
 
   [super updateProps:props oldProps:oldProps];
