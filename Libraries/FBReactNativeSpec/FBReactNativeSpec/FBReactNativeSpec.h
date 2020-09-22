@@ -908,6 +908,7 @@ namespace facebook {
 - (void)addListener:(NSString *)eventName;
 - (void)removeListeners:(double)count;
 - (void)setIsShakeToShowDevMenuEnabled:(BOOL)enabled;
+- (void)setIsSecondaryClickToShowDevMenuEnabled:(BOOL)enabled;
 
 @end
 namespace facebook {

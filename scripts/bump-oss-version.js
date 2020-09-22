@@ -24,6 +24,10 @@ let argv = yargs.option('r', {
   alias: 'remote',
   default: 'origin',
 })
+.option('ci', {
+  type: 'boolean',
+  default: false,
+})
 .option('n', {
   alias: 'nightly',
   type: 'boolean',
@@ -31,6 +35,7 @@ let argv = yargs.option('r', {
 }).argv;
 
 const nightlyBuild = argv.nightly;
+const ci = argv.ci;
 
 let version, branch;
 if (nightlyBuild) {
@@ -42,7 +47,7 @@ if (nightlyBuild) {
     silent: true,
   }).stdout.trim();
 
-  if (branch.indexOf('-stable') === -1) {
+  if (!ci && branch.indexOf('-stable') === -1) {
     echo('You must be in 0.XX-stable branch to bump a version');
     exit(1);
   }

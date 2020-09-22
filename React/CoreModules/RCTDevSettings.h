@@ -59,6 +59,14 @@
  */
 @property (nonatomic, assign) BOOL isShakeToShowDevMenuEnabled;
 
+// [TODO(macOS ISS#2323203)
+/*
+ * Whether secondary click will show RCTDevMenu. The menu is enabled by default if RCT_DEV=1, but
+ * you may wish to disable it so that you can provide your own contextual menu.
+ */
+@property (nonatomic, assign) BOOL isSecondaryClickToShowDevMenuEnabled;
+// ]TODO(macOS ISS#2323203)
+
 /**
  * Whether performance profiling is enabled.
  */

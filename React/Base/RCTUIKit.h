@@ -270,6 +270,9 @@ void UIGraphicsEndImageContext(void);
 // semantically equivalent types
 //
 
+// UIAccessibility.h/NSAccessibility.h
+@compatibility_alias UIAccessibilityCustomAction NSAccessibilityCustomAction;
+
 // UIColor.h/NSColor.h
 #define RCTUIColor NSColor
 

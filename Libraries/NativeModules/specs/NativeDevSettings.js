@@ -29,6 +29,9 @@ export interface Spec extends TurboModule {
 
   // iOS only.
   +setIsShakeToShowDevMenuEnabled: (enabled: boolean) => void;
+
+  // macOS only.
+  +setIsSecondaryClickToShowDevMenuEnabled: (enabled: boolean) => void; // TODO(macOS ISS#2323203)
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>('DevSettings'): Spec);

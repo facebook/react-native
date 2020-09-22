@@ -1,3 +1,6 @@
+# It is expected that a `latestStableBranch` variable is set in the pipeline's settings:
+# https://dev.azure.com/ms/react-native/_apps/hub/ms.vss-build-web.ci-designer-hub?pipelineId=221
+
 # This file defines the build steps to publish a release
 name: $(Date:yyyyMMdd).$(Rev:.r)
 
@@ -6,7 +9,7 @@ trigger:
   branches:
     include:
       - master
-      - fabric
+      - '*-stable'
   paths:
     exclude:
       - package.json
@@ -28,30 +31,41 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
+      - script: exit 1
+        displayName: Validate variables
+        condition: eq(variables.latestStableBranch, '')
+
+      - bash: echo "##vso[task.setvariable variable=npmDistTag]latest"
+        displayName: Set dist-tag to latest
+        condition: eq(variables['Build.SourceBranchName'], variables.latestStableBranch)
+
+      - bash: echo "##vso[task.setvariable variable=npmDistTag]canary"
+        displayName: Set dist-tag to canary
+        condition: eq(variables['Build.SourceBranchName'], 'master')
+
+      - bash: echo "##vso[task.setvariable variable=npmDistTag]v${{variables['Build.SourceBranchName']}}"
+        displayName: Set dist-tag to v0.x-stable
+        condition: and(ne(variables['Build.SourceBranchName'], 'master'), ne(variables['Build.SourceBranchName'], variables.latestStableBranch))
+
       - task: CmdLine@2
         displayName: npm install
         inputs:
           script: npm install
 
       - task: CmdLine@2
-        displayName: Bump package version
+        displayName: Bump stable package version
         inputs:
           script: node .ado/bumpFileVersions.js
+        condition: ne(variables['Build.SourceBranchName'], 'master')
 
-      - task: Npm@1
-        displayName: "Publish latest react-native-macos to npmjs.org"
+      - task: CmdLine@2
+        displayName: Bump canary package version
         inputs:
-          command: 'publish'
-          publishEndpoint: 'npmjs'
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+          script: node scripts/bump-oss-version.js --nightly
+        condition: eq(variables['Build.SourceBranchName'], 'master')
 
-      - task: Npm@1
-        displayName: "Publish stable react-native-macos to npmjs.org"
-        inputs:
-          command: 'custom'
-          customCommand: publish --tag $(Build.SourceBranchName)
-          publishEndpoint: 'npmjs'
-        condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+      - script: npm publish --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+        displayName: Publish react-native-macos to npmjs.org
 
       - task: CmdLine@2
         displayName: 'Tag published release'
@@ -62,6 +76,7 @@ jobs:
           BUILD_SOURCEBRANCH: $(Build.SourceBranch)
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
           githubApiToken: $(githubApiToken)
+        condition: ne(variables['Build.SourceBranchName'], 'master')
 
 
   - job: RNMacOSInitNpmJSPublish
@@ -70,6 +85,7 @@ jobs:
       vmImage: vs2017-win2016
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+    condition: eq(variables['Build.SourceBranchName'], 'master')
     steps:
       - checkout: self # self represents the repo where the initial Pipelines YAML file was found
         clean: true # whether to fetch clean each time
@@ -132,7 +148,7 @@ jobs:
       - task: CmdLine@2
         displayName: 'NuGet pack'
         inputs:
-          script: NDK=ndk`cat ${ANDROID_SDK_ROOT}/ndk-bundle/source.properties 2>&1 | grep Pkg.Revision | awk '{ print $3}' | awk -F. '{ print $1 }'`; mono $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe pack $(System.DefaultWorkingDirectory)/ReactAndroid/ReactAndroid.nuspec -OutputDirectory $(System.DefaultWorkingDirectory) -Properties buildNumber=$(buildNumber)-$NDK;commitId=$(Build.SourceVersion)
+          script: NDK=ndk`cat ${ANDROID_SDK_ROOT}/ndk-bundle/source.properties 2>&1 | grep Pkg.Revision | awk '{ print $3}' | awk -F. '{ print $1 }'`; mono $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe pack $(System.DefaultWorkingDirectory)/ReactAndroid/ReactAndroid.nuspec -OutputDirectory $(Build.StagingDirectory)/final -Properties buildNumber=$(buildNumber)-$NDK;commitId=$(Build.SourceVersion)
 
       - task: CmdLine@2
         displayName: 'Npm pack'

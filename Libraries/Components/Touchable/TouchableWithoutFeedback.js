@@ -106,6 +106,13 @@ const PASSTHROUGH_PROPS = [
   'onBlur',
   'onFocus',
   'onLayout',
+  'onMouseEnter', // [TODO(macOS ISS#2323203)
+  'onMouseLeave',
+  'onDragEnter',
+  'onDragLeave',
+  'onDrop',
+  'draggedTypes',
+  'tooltip', // ]TODO(macOS ISS#2323203)
   'testID',
 ];
 
@@ -132,6 +139,8 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
     const {
       onBlur,
       onFocus,
+      onMouseEnter, // [TODO(macOS/win ISS#2323203)
+      onMouseLeave, // ]TODO(macOS/win ISS#2323203)
       ...eventHandlersWithoutBlurAndFocus
     } = this.state.pressability.getEventHandlers();
 
@@ -140,6 +149,10 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
       accessible: this.props.accessible !== false,
       focusable:
         this.props.focusable !== false && this.props.onPress !== undefined,
+      acceptsKeyboardFocus:
+        this.props.acceptsKeyboardFocus !== false && !this.props.disabled, // [TODO(macOS ISS#2323203)
+      enableFocusRing:
+        this.props.enableFocusRing !== false && !this.props.disabled, // ]TODO(macOS ISS#2323203)
     };
     for (const prop of PASSTHROUGH_PROPS) {
       if (this.props[prop] !== undefined) {

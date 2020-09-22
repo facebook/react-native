@@ -10,6 +10,8 @@
 #import <React/RCTUtils.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/TurboModuleUtils.h>
+#import <NativeModules.h>
+#import <TurboModulesProvider.h>
 
 static NSImage* TakeScreenshot()
 {
@@ -114,16 +116,97 @@ public:
   }
 };
 
-@implementation ScreenshotManagerTurboModuleManagerDelegate
+REACT_STRUCT(ScreenshotArguments)
+struct ScreenshotArguments
+{
+};
+
+REACT_MODULE(ScreenshotManagerCxx, L"ScreenshotManager")
+struct ScreenshotManagerCxx
+{
+  REACT_INIT(Initialize)
+  void Initialize(const winrt::Microsoft::ReactNative::ReactContext&) noexcept
+  {
+    // to be implemented
+  }
+  
+  REACT_METHOD(TakeScreenshot, L"takeScreenshot")
+  void TakeScreenshot(
+                      std::string,
+                      ScreenshotArguments&&,
+                      winrt::Microsoft::ReactNative::ReactPromise<std::string> result
+                      ) noexcept
+  {
+    // to be implemented
+    result.Reject(L"Not implemented!");
+  }
+};
+
+// winrt code will be move to another files once it is properly implemented
+
+namespace winrt::Microsoft::ReactNative
+{
+
+struct MacOSReactContext : implements<MacOSReactContext, IReactContext>
+{
+  IReactPropertyBag Properties() const noexcept
+  {
+    VerifyElseCrash(false);
+  }
+  
+  IReactNotificationService Notifications() const noexcept
+  {
+    VerifyElseCrash(false);
+  }
+  
+  IReactDispatcher UIDispatcher() const noexcept
+  {
+    VerifyElseCrash(false);
+  }
+  
+  IReactDispatcher JSDispatcher() const noexcept
+  {
+    VerifyElseCrash(false);
+  }
+  
+  void CallJSFunction(const hstring& moduleName, const hstring& methodName, const JSValueArgWriter& paramsArgWriter) noexcept
+  {
+    VerifyElseCrash(false);
+  }
+  
+  void EmitJSEvent(const hstring& eventEmitterName, const hstring& eventName, const JSValueArgWriter& paramsArgWriter) noexcept
+  {
+    VerifyElseCrash(false);
+  }
+};
+
+}
+
+@implementation ScreenshotManagerTurboModuleManagerDelegate {
+  std::shared_ptr<winrt::Microsoft::ReactNative::TurboModulesProvider> provider;
+  winrt::Microsoft::ReactNative::IReactContext reactContext;
+}
 
 - (std::shared_ptr<facebook::react::TurboModule>)
   getTurboModule:(const std::string &)name
   jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  if (name == "ScreenshotManager")
+  if (!provider)
   {
-    return std::make_shared<ScreenshotManagerTurboModule>(jsInvoker);
+    provider = std::make_shared<winrt::Microsoft::ReactNative::TurboModulesProvider>();
+    reactContext = winrt::make<winrt::Microsoft::ReactNative::MacOSReactContext>();
+    provider->SetReactContext(reactContext);
+    
+    provider->AddModuleProvider(
+      L"ScreenshotManager",
+      winrt::Microsoft::ReactNative::MakeModuleProvider<ScreenshotManagerCxx>()
+      );
   }
+  return provider->getModule(name, jsInvoker);
+  // if (name == "ScreenshotManager")
+  // {
+  //   return std::make_shared<ScreenshotManagerTurboModule>(jsInvoker);
+  // }
   return nullptr;
 }
 
@@ -133,11 +216,7 @@ public:
   instance:(id<RCTTurboModule>)instance
   jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  if (name == "ScreenshotManager")
-  {
-    return std::make_shared<ScreenshotManagerTurboModule>(jsInvoker);
-  }
-  return nullptr;
+  return [self getTurboModule:name jsInvoker:jsInvoker];
 }
 
 @end
