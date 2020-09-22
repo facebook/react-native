@@ -594,14 +594,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       _visible = YES;
       [_window center];
       if (!RCTRunningInTestEnvironment()) {
-        [NSApp runModalForWindow:_window];
+        // Run the modal loop outside of the dispatch queue because it is not reentrant.
+        [self performSelectorOnMainThread:@selector(showModal) withObject:nil waitUntilDone:NO];
       }
       else {
         [NSApp activateIgnoringOtherApps:YES];
-        [[NSApp mainWindow] makeKeyAndOrderFront:_window];
+        [_window makeKeyAndOrderFront:nil];
       }
     }
   }
+}
+
+- (void)showModal
+{
+  NSModalSession session = [NSApp beginModalSessionForWindow:_window];
+
+  while ([NSApp runModalSession:session] == NSModalResponseContinue) {
+    // Spin the runloop so that the main dispatch queue is processed.
+    [[NSRunLoop currentRunLoop] limitDateForMode:NSDefaultRunLoopMode];
+  }
+
+  [NSApp endModalSession:session];
 }
 
 - (void)dismiss
