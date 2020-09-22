@@ -247,25 +247,11 @@ def getNdkBuildName() {
 }
 
 def findNdkBuildFullPath() {
-    // we allow to provide full path to ndk-build tool
-    if (hasProperty("ndk.command")) {
-        return property("ndk.command")
-    }
-    // or just a path to the containing directory
-    if (hasProperty("ndk.path")) {
-        def ndkDir = property("ndk.path")
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
-
-    if (System.getenv("ANDROID_NDK") != null) {
-        def ndkDir = System.getenv("ANDROID_NDK")
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
-
-    def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
-
-    if (ndkDir) {
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+    if (System.getenv("ANDROID_HOME") != null) {
+        def sdkDir = System.getenv("ANDROID_HOME")
+        def ndkDir = new File(sdkDir, "ndk").getAbsolutePath()
+        def ndkVersionedDir = new File(ndkDir, project.android.ndkVersion).getAbsolutePath()
+        return new File(ndkVersionedDir, getNdkBuildName()).getAbsolutePath()
     }
     return null
 }
@@ -285,15 +271,14 @@ def getNdkBuildFullPath() {
     if (ndkBuildFullPath == null) {
         throw new GradleScriptException(
                 "ndk-build binary cannot be found, check if you've set " +
-                        "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
-                        "setup in local.properties",
+                        "\$ANDROID_HOME environment variable correctly and you have installed the correct NDK version (" +
+                       project.android.ndkVersion + ")",
                 null)
     }
     if (!new File(ndkBuildFullPath).canExecute()) {
         throw new GradleScriptException(
                 "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
-                        "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.properties, is set correctly.\n" +
-                        "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
+                        "Check that you have installed the correct NDK version (" + project.android.ndkVersion + ")",
                 null)
     }
     return ndkBuildFullPath
@@ -392,6 +377,7 @@ android {
         versionCode(1)
         versionName("1.0")
         ndkVersion "20.1.5948944"
+
         consumerProguardFiles("proguard-rules.pro")
 
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
