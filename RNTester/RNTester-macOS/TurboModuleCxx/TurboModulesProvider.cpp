@@ -166,12 +166,36 @@ class TurboModuleImpl : public facebook::react::TurboModule {
                             argWriter,
                             [promise, &runtime](const IJSValueWriter &writer) {
                               auto result = writer.as<JsiWriter>()->MoveResult();
-                              promise->resolve(result);
+                              if (result.isObject()) {
+                                auto resultArrayObject = result.getObject(runtime);
+                                VerifyElseCrash(resultArrayObject.isArray(runtime));
+                                auto resultArray = resultArrayObject.getArray(runtime);
+                                VerifyElseCrash(resultArray.length(runtime) == 1);
+                                auto resultItem = resultArray.getValueAtIndex(runtime, 0);
+                                promise->resolve(resultItem);
+                              } else {
+                                VerifyElseCrash(false);
+                              }
                             },
                             [promise, &runtime](const IJSValueWriter &writer) {
                               auto result = writer.as<JsiWriter>()->MoveResult();
-                              VerifyElseCrash(result.isString());
-                              promise->reject(result.getString(runtime).utf8(runtime));
+                              if (result.isString()) {
+                                promise->reject(result.getString(runtime).utf8(runtime));
+                              } else if (result.isObject()) {
+                                auto errorArrayObject = result.getObject(runtime);
+                                VerifyElseCrash(errorArrayObject.isArray(runtime));
+                                auto errorArray = errorArrayObject.getArray(runtime);
+                                VerifyElseCrash(errorArray.length(runtime) == 1);
+                                auto errorObjectValue = errorArray.getValueAtIndex(runtime, 0);
+                                VerifyElseCrash(errorObjectValue.isObject());
+                                auto errorObject = errorObjectValue.getObject(runtime);
+                                VerifyElseCrash(errorObject.hasProperty(runtime, "message"));
+                                auto errorMessage = errorObject.getProperty(runtime, "message");
+                                VerifyElseCrash(errorMessage.isString());
+                                promise->reject(errorMessage.getString(runtime).utf8(runtime));
+                              } else {
+                                VerifyElseCrash(false);
+                              }
                             });
                       });
                 }
