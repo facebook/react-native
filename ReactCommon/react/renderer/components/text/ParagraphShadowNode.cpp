@@ -169,7 +169,6 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       content.paragraphAttributes,
       layoutConstraints);
 
-#ifndef ANDROID
   if (getConcreteProps().onTextLayout) {
     auto linesMeasurements = textLayoutManager_->measureLines(
         content.attributedString,
@@ -177,7 +176,6 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
         measurement.size);
     getConcreteEventEmitter().onTextLayout(linesMeasurements);
   }
-#endif
 
   if (content.attachments.empty()) {
     // No attachments to layout.

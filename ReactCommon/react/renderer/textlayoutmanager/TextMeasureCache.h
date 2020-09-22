@@ -24,6 +24,16 @@ struct LineMeasurement {
   Float ascender;
   Float xHeight;
 
+  LineMeasurement(
+      std::string text,
+      Rect frame,
+      Float descender,
+      Float capHeight,
+      Float ascender,
+      Float xHeight);
+
+  LineMeasurement(folly::dynamic const &data);
+
   bool operator==(LineMeasurement const &rhs) const;
 };
 
