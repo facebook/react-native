@@ -98,6 +98,50 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   return TextMeasurement{size, attachments};
 }
 
+LinesMeasurements TextLayoutManager::measureLines(
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    Size size) const {
+  const jni::global_ref<jobject> &fabricUIManager =
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+  static auto measureLines =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<NativeArray::javaobject(
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              jfloat,
+              jfloat)>("measureLines");
+
+  auto serializedAttributedString = toDynamic(attributedString);
+
+  local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
+      ReadableNativeMap::newObjectCxxArgs(serializedAttributedString);
+  local_ref<ReadableNativeMap::javaobject> paragraphAttributesRNM =
+      ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes));
+
+  local_ref<ReadableMap::javaobject> attributedStringRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(attributedStringRNM.get()));
+  local_ref<ReadableMap::javaobject> paragraphAttributesRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
+
+  auto array = measureLines(
+      fabricUIManager,
+      attributedStringRM.get(),
+      paragraphAttributesRM.get(),
+      size.width,
+      size.height);
+
+  auto dynamicArray = cthis(array)->consume();
+  LinesMeasurements lineMeasurements;
+  lineMeasurements.reserve(dynamicArray.size());
+
+  for (auto const &data : dynamicArray) {
+    lineMeasurements.push_back(LineMeasurement(data));
+  }
+
+  return lineMeasurements;
+}
+
 TextMeasurement TextLayoutManager::doMeasure(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,

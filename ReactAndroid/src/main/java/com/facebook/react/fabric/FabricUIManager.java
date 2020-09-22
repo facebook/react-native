@@ -36,7 +36,9 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.ReactRootView;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -441,6 +443,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private MountItem createBatchMountItem(
       int rootTag, MountItem[] items, int size, int commitNumber) {
     return new BatchMountItem(rootTag, items, size, commitNumber);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private NativeArray measureLines(
+      ReadableMap attributedString, ReadableMap paragraphAttributes, float width, float height) {
+    return (NativeArray) Arguments.createArray();
   }
 
   @DoNotStrip
