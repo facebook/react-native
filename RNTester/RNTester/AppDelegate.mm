@@ -163,10 +163,7 @@
       }
       __typeof(self) strongSelf = weakSelf;
       if (strongSelf) {
-        facebook::react::RuntimeExecutor syncRuntimeExecutor = [&](std::function<void(facebook::jsi::Runtime &runtime_)> &&callback) {
-          callback(runtime);
-        };
-        [strongSelf->_turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
+        [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
       }
     })
   );

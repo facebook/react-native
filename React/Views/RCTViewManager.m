@@ -154,7 +154,6 @@ RCT_REMAP_VIEW_PROPERTY(
     accessibilityIgnoresInvertColors,
     reactAccessibilityElement.shouldAccessibilityIgnoresInvertColors,
     BOOL)
-RCT_REMAP_VIEW_PROPERTY(onAccessibilityAction, reactAccessibilityElement.onAccessibilityAction, RCTDirectEventBlock)
 #endif // ]TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(onAccessibilityAction, reactAccessibilityElement.onAccessibilityAction, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(onAccessibilityTap, reactAccessibilityElement.onAccessibilityTap, RCTDirectEventBlock)

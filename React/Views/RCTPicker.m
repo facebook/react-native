@@ -12,7 +12,7 @@
 
 @interface RCTPicker ()
 #if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-  <UIPickerViewDataSource, UIPickerViewDelegate, UIPickerViewAccessibilityDelegat>
+  <UIPickerViewDataSource, UIPickerViewDelegate, UIPickerViewAccessibilityDelegate>
 #else
   <NSComboBoxDataSource, NSComboBoxDelegate>
 #endif // ]TODO(macOS ISS#2323203)
