@@ -1,5 +1,5 @@
---- /home/mganandraj/code/rn-macos-fb62merge-fresh/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewFocusEvent.java	1969-12-31 16:00:00.000000000 -0800
-+++ /home/mganandraj/code/rn-macos-fb62merge/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewFocusEvent.java	2020-08-17 16:32:31.491113001 -0700
+--- /home/hermes/code/react-native-macos-fresh/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewFocusEvent.java	1969-12-31 16:00:00.000000000 -0800
++++ /home/hermes/code/react-native-macos/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewFocusEvent.java	2020-09-19 11:06:41.574441701 -0700
 @@ -0,0 +1,49 @@
 +/**
 + * Copyright (c) 2015-present, Facebook, Inc.
