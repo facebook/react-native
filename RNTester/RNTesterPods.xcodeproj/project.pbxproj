@@ -81,6 +81,8 @@
 		B234FCC72512574800B788C9 /* JsiReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B234FCC32512574700B788C9 /* JsiReader.cpp */; };
 		B234FCC82512574800B788C9 /* JsiWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B234FCC62512574800B788C9 /* JsiWriter.cpp */; };
 		B234FCCB25125D6800B788C9 /* TurboModulesProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B234FCC925125D6800B788C9 /* TurboModulesProvider.cpp */; };
+		B28A6FB0251929EB00825165 /* Microsoft.ReactNative.Static.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B28A6FAF251929EB00825165 /* Microsoft.ReactNative.Static.cpp */; };
+		B28A6FB425192DEA00825165 /* Microsoft.ReactNative.MacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = B28A6FB325192DEA00825165 /* Microsoft.ReactNative.MacOS.mm */; };
 		B2CEBEB8250D898600D92658 /* ReactPromise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2CEBEB7250D898600D92658 /* ReactPromise.cpp */; };
 		B2F2040A24E76D7600863BE1 /* ScreenshotMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2F2040924E76D7600863BE1 /* ScreenshotMacOS.mm */; };
 		CDFF3988A89A5269C488653F /* libPods-iosDeviceBuild.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 287A4762E82517B7FACCE7D3 /* libPods-iosDeviceBuild.a */; };
@@ -272,6 +274,8 @@
 		B234FCC925125D6800B788C9 /* TurboModulesProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TurboModulesProvider.cpp; path = TurboModuleCxx/TurboModulesProvider.cpp; sourceTree = "<group>"; };
 		B234FCCA25125D6800B788C9 /* TurboModulesProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TurboModulesProvider.h; path = TurboModuleCxx/TurboModulesProvider.h; sourceTree = "<group>"; };
 		B234FCCC25125F4000B788C9 /* TurboModuleRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TurboModuleRegistry.h; path = TurboModuleCxx/TurboModuleRegistry.h; sourceTree = "<group>"; };
+		B28A6FAF251929EB00825165 /* Microsoft.ReactNative.Static.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Microsoft.ReactNative.Static.cpp; path = TurboModuleCxx/winrt/Microsoft.ReactNative.Static.cpp; sourceTree = "<group>"; };
+		B28A6FB325192DEA00825165 /* Microsoft.ReactNative.MacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Microsoft.ReactNative.MacOS.mm; path = TurboModuleCxx/winrt/Microsoft.ReactNative.MacOS.mm; sourceTree = "<group>"; };
 		B2CEBEB5250D898600D92658 /* ReactPromise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReactPromise.h; path = TurboModuleCxx/ReactPromise.h; sourceTree = "<group>"; };
 		B2CEBEB6250D898600D92658 /* ReactError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReactError.h; path = TurboModuleCxx/ReactError.h; sourceTree = "<group>"; };
 		B2CEBEB7250D898600D92658 /* ReactPromise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReactPromise.cpp; path = TurboModuleCxx/ReactPromise.cpp; sourceTree = "<group>"; };
@@ -662,6 +666,8 @@
 		B20EF9FE250D225A0039DCD8 /* winrt */ = {
 			isa = PBXGroup;
 			children = (
+				B28A6FB325192DEA00825165 /* Microsoft.ReactNative.MacOS.mm */,
+				B28A6FAF251929EB00825165 /* Microsoft.ReactNative.Static.cpp */,
 				B2CEBEBA250D8D3200D92658 /* Windows.Foundation.h */,
 				B20EF9FF250D226F0039DCD8 /* Microsoft.ReactNative.h */,
 			);
@@ -1476,6 +1482,7 @@
 			files = (
 				B2F2040A24E76D7600863BE1 /* ScreenshotMacOS.mm in Sources */,
 				5101985A23AD9F5B00118BF1 /* ViewController.m in Sources */,
+				B28A6FB0251929EB00825165 /* Microsoft.ReactNative.Static.cpp in Sources */,
 				9F153467233AB2C7006DFE44 /* main.m in Sources */,
 				B2CEBEB8250D898600D92658 /* ReactPromise.cpp in Sources */,
 				B234FCC72512574800B788C9 /* JsiReader.cpp in Sources */,
@@ -1486,6 +1493,7 @@
 				9F15345F233AB2C4006DFE44 /* AppDelegate.mm in Sources */,
 				B234FCCB25125D6800B788C9 /* TurboModulesProvider.cpp in Sources */,
 				38B2630C2444F628006AB4D5 /* FlexibleSizeExampleView.m in Sources */,
+				B28A6FB425192DEA00825165 /* Microsoft.ReactNative.MacOS.mm in Sources */,
 				B234FCC82512574800B788C9 /* JsiWriter.cpp in Sources */,
 				B20EF9FC250D22480039DCD8 /* JSValue.cpp in Sources */,
 				38B2630B2444F5EB006AB4D5 /* UpdatePropertiesExampleView.m in Sources */,

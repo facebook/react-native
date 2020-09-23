@@ -433,6 +433,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return;
     }
 
+    if (this._scrollRef.scrollTo == null) {
+      console.warn(
+        'No scrollTo method provided. This may be because you have two nested ' +
+          'VirtualizedLists with the same orientation, or because you are ' +
+          'using a custom component that does not implement scrollTo.',
+      );
+      return;
+    }
+
     this._scrollRef.scrollTo(
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
@@ -486,6 +495,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return;
     }
 
+    if (this._scrollRef.scrollTo == null) {
+      console.warn(
+        'No scrollTo method provided. This may be because you have two nested ' +
+          'VirtualizedLists with the same orientation, or because you are ' +
+          'using a custom component that does not implement scrollTo.',
+      );
+      return;
+    }
+
     this._scrollRef.scrollTo(
       horizontal ? {x: offset, animated} : {y: offset, animated},
     );
@@ -524,6 +542,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const {animated, offset} = params;
 
     if (this._scrollRef == null) {
+      return;
+    }
+
+    if (this._scrollRef.scrollTo == null) {
+      console.warn(
+        'No scrollTo method provided. This may be because you have two nested ' +
+          'VirtualizedLists with the same orientation, or because you are ' +
+          'using a custom component that does not implement scrollTo.',
+      );
       return;
     }
 
