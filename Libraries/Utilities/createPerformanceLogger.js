@@ -39,12 +39,14 @@ export interface IPerformanceLogger {
   ): void;
   clear(): void;
   clearCompleted(): void;
+  close(): void;
   currentTimestamp(): number;
   getExtras(): {[key: string]: ExtraValue, ...};
   getPoints(): {[key: string]: number, ...};
   getPointExtras(): {[key: string]: Extras, ...};
   getTimespans(): {[key: string]: Timespan, ...};
   hasTimespan(key: string): boolean;
+  isClosed(): boolean;
   logEverything(): void;
   markPoint(key: string, timestamp?: number, extras?: Extras): void;
   removeExtra(key: string): ExtraValue | void;
@@ -62,6 +64,7 @@ class PerformanceLogger implements IPerformanceLogger {
   _extras: {[key: string]: ExtraValue} = {};
   _points: {[key: string]: number} = {};
   _pointExtras: {[key: string]: Extras, ...} = {};
+  _closed: boolean = false;
 
   addTimespan(
     key: string,
@@ -70,6 +73,12 @@ class PerformanceLogger implements IPerformanceLogger {
     startExtras?: Extras,
     endExtras?: Extras,
   ) {
+    if (this._closed) {
+      if (PRINT_TO_CONSOLE && __DEV__) {
+        infoLog('PerformanceLogger: addTimespan - has closed ignoring: ', key);
+      }
+      return;
+    }
     if (this._timespans[key]) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
@@ -111,6 +120,10 @@ class PerformanceLogger implements IPerformanceLogger {
     }
   }
 
+  close() {
+    this._closed = true;
+  }
+
   currentTimestamp() {
     return performanceNow();
   }
@@ -135,6 +148,10 @@ class PerformanceLogger implements IPerformanceLogger {
     return !!this._timespans[key];
   }
 
+  isClosed() {
+    return this._closed;
+  }
+
   logEverything() {
     if (PRINT_TO_CONSOLE) {
       // log timespans
@@ -155,6 +172,12 @@ class PerformanceLogger implements IPerformanceLogger {
   }
 
   markPoint(key: string, timestamp?: number, extras?: Extras) {
+    if (this._closed) {
+      if (PRINT_TO_CONSOLE && __DEV__) {
+        infoLog('PerformanceLogger: markPoint - has closed ignoring: ', key);
+      }
+      return;
+    }
     if (this._points[key]) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
@@ -177,6 +200,13 @@ class PerformanceLogger implements IPerformanceLogger {
   }
 
   setExtra(key: string, value: ExtraValue) {
+    if (this._closed) {
+      if (PRINT_TO_CONSOLE && __DEV__) {
+        infoLog('PerformanceLogger: setExtra - has closed ignoring: ', key);
+      }
+      return;
+    }
+
     if (this._extras.hasOwnProperty(key)) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
@@ -190,6 +220,16 @@ class PerformanceLogger implements IPerformanceLogger {
   }
 
   startTimespan(key: string, extras?: Extras) {
+    if (this._closed) {
+      if (PRINT_TO_CONSOLE && __DEV__) {
+        infoLog(
+          'PerformanceLogger: startTimespan - has closed ignoring: ',
+          key,
+        );
+      }
+      return;
+    }
+
     if (this._timespans[key]) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
@@ -211,6 +251,13 @@ class PerformanceLogger implements IPerformanceLogger {
   }
 
   stopTimespan(key: string, extras?: Extras) {
+    if (this._closed) {
+      if (PRINT_TO_CONSOLE && __DEV__) {
+        infoLog('PerformanceLogger: stopTimespan - has closed ignoring: ', key);
+      }
+      return;
+    }
+
     const timespan = this._timespans[key];
     if (!timespan || timespan.startTime == null) {
       if (PRINT_TO_CONSOLE && __DEV__) {
