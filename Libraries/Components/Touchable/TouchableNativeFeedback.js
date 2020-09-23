@@ -143,7 +143,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
     rippleRadius: ?number,
   ) => $ReadOnly<{|
     borderless: boolean,
-    color: ?ProcessedColorValue /* TODO(macOS ISS#2323203) */,
+    color: ?number,
     rippleRadius: ?number,
     type: 'RippleAndroid',
   |}> = (color: string, borderless: boolean, rippleRadius: ?number) => {

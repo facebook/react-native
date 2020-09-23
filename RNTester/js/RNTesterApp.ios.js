@@ -27,6 +27,8 @@ const {
   Linking,
   NativeModules, // TODO(OSS Candidate ISS#2710739)
   Platform, // TODO(OSS Candidate ISS#2710739)
+  PlatformColor, // TODO(OSS Candidate ISS#2710739)
+  DynamicColorIOS, // TODO(OSS Candidate ISS#2710739)
   SafeAreaView,
   StyleSheet,
   Text,
@@ -219,14 +221,14 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
 const styles = StyleSheet.create({
   headerContainer: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: {semantic: 'separatorColor'}, // TODO(OSS Candidate ISS#2710739)
+    borderBottomColor: PlatformColor('separatorColor'), // TODO(OSS Candidate ISS#2710739)
     ...Platform.select({
       // [TODO(macOS ISS#2323203)
       ios: {
-        backgroundColor: {semantic: 'tertiarySystemBackgroundColor'},
+        backgroundColor: PlatformColor('tertiarySystemBackgroundColor'),
       },
       macos: {
-        backgroundColor: {semantic: 'windowBackgroundColor'},
+        backgroundColor: PlatformColor('windowBackgroundColor'),
       },
     }),
     // ]TODO(macOS ISS#2323203)
@@ -247,7 +249,7 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: '600',
     textAlign: 'center',
-    color: {dynamic: {light: 'black', dark: 'white'}}, // TODO(OSS Candidate ISS#2710739)
+    color: DynamicColorIOS({light: 'black', dark: 'white'}), // TODO(OSS Candidate ISS#2710739)
   },
   exampleContainer: {
     flex: 1,
