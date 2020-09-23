@@ -247,12 +247,28 @@ def getNdkBuildName() {
 }
 
 def findNdkBuildFullPath() {
-    if (System.getenv("ANDROID_HOME") != null) {
-        def sdkDir = System.getenv("ANDROID_HOME")
-        def ndkDir = new File(sdkDir, "ndk").getAbsolutePath()
-        def ndkVersionedDir = new File(ndkDir, project.android.ndkVersion).getAbsolutePath()
-        return new File(ndkVersionedDir, getNdkBuildName()).getAbsolutePath()
+    // android.ndkDirectory should return project.android.ndkVersion ndkDirectory
+    def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
+    if (ndkDir) {
+        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
+
+     // we allow to provide full path to ndk-build tool
+    if (hasProperty("ndk.command")) {
+        return property("ndk.command")
+    }
+    // or just a path to the containing directory
+    if (hasProperty("ndk.path")) {
+        ndkDir = property("ndk.path")
+        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+    }
+
+    // @TODO ANDROID_NDK && ndk.dir is deprecated and will be removed in the future. 
+    if (System.getenv("ANDROID_NDK") != null) {
+        ndkDir = System.getenv("ANDROID_NDK")
+        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+    }
+
     return null
 }
 
@@ -271,14 +287,15 @@ def getNdkBuildFullPath() {
     if (ndkBuildFullPath == null) {
         throw new GradleScriptException(
                 "ndk-build binary cannot be found, check if you've set " +
-                        "\$ANDROID_HOME environment variable correctly and you have installed the correct NDK version (" +
-                       project.android.ndkVersion + ")",
+                        "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
+                        "setup in local.properties",
                 null)
     }
     if (!new File(ndkBuildFullPath).canExecute()) {
         throw new GradleScriptException(
                 "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
-                        "Check that you have installed the correct NDK version (" + project.android.ndkVersion + ")",
+                        "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.properties, is set correctly.\n" +
+                        "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
                 null)
     }
     return ndkBuildFullPath
