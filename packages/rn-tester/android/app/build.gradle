@@ -85,6 +85,7 @@ project.ext.react = [
     hermesCommand: "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc",
     enableHermesForVariant: { def v -> v.name.contains("hermes") },
     jsRootDir: "$rootDir/RNTester",
+    enableCodegen: (System.getenv('USE_CODEGEN') ?: '0').toBoolean(),
     enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean(),
 ]
 
@@ -105,6 +106,11 @@ def enableSeparateBuildPerCPUArchitecture = true
  * Run Proguard to shrink the Java bytecode in release builds.
  */
 def enableProguardInReleaseBuilds = true
+
+/**
+ * Build and enable codegen-related output in RN Tester app.
+ */
+def enableCodegen = project.ext.react.enableCodegen
 
 /**
  * Build and enable Fabric in RN Tester app.
@@ -175,6 +181,29 @@ android {
             signingConfig signingConfigs.release
             // Detox-specific additions to pro-guard
             proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
+        }
+    }
+}
+
+if (enableCodegen) {
+    android {
+        defaultConfig {
+            externalNativeBuild {
+                ndkBuild {
+                    abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
+                    arguments "APP_PLATFORM=android-16",
+                            "APP_STL=c++_shared",
+                            "NDK_TOOLCHAIN_VERSION=clang"
+                    cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
+                    cppFlags "-std=c++1y"
+                    targets "rntester_appmodules"
+                }
+            }
+        }
+        externalNativeBuild {
+            ndkBuild {
+                path "$projectDir/src/main/jni/Android.mk"
+            }
         }
     }
 }
