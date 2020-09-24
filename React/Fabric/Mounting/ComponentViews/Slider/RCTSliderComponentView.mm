@@ -300,7 +300,7 @@ using namespace facebook::react;
 
   const auto &props = *std::static_pointer_cast<const SliderProps>(_props);
 
-  if (props.step > 0 && value <= (props.maximumValue - props.minimumValue)) {
+  if (props.step > 0 && props.step <= (props.maximumValue - props.minimumValue)) {
     value = MAX(
         props.minimumValue,
         MIN(props.maximumValue, props.minimumValue + round((value - props.minimumValue) / props.step) * props.step));
