@@ -198,6 +198,7 @@ if (enableCodegen) {
                             "NDK_TOOLCHAIN_VERSION=clang",
                             // The following paths assume building React Native from source.
                             // TODO: Find a better way without pointing to ReactAndroid/build dir.
+                            "GENERATED_SRC_DIR=$buildDir/generated/source",
                             "REACT_ANDROID_SRC_DIR=$reactAndroidProjectDir/src/main",
                             "REACT_COMMON_DIR=$rootDir/ReactCommon",
                             "REACT_GENERATED_SRC_DIR=$reactAndroidBuildDir/generated/source",

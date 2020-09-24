@@ -60,9 +60,10 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := rntester_appmodules
-LOCAL_C_INCLUDES := $(LOCAL_PATH)
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
+# Note: Build the react-native-codegen output along with other app-specific C++ files.
+LOCAL_C_INCLUDES := $(LOCAL_PATH) $(GENERATED_SRC_DIR)/codegen/jni
+LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(GENERATED_SRC_DIR)/codegen/jni/*.cpp)
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(GENERATED_SRC_DIR)/codegen/jni
 LOCAL_SHARED_LIBRARIES := libreact_nativemodule_core libreact_nativemodule_manager libreact_codegen_reactandroidspec
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
