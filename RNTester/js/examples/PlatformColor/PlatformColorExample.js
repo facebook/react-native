@@ -195,7 +195,10 @@ function PlatformColorsExample() {
 
 function FallbackColorsExample() {
   let color = {};
-  if (Platform.OS === 'ios') {
+  if (
+    Platform.OS === 'ios' ||
+    Platform.OS === 'macos' // TODO(macOS ISS#2323203)
+  ) {
     color = {
       label: "PlatformColor('bogus', 'systemGreenColor')",
       color: PlatformColor('bogus', 'systemGreenColor'),
@@ -286,7 +289,7 @@ function VariantColorsExample() {
     <View style={styles.column}>
       <View style={styles.row}>
         <Text style={styles.labelCell}>
-          {Platform.OS === 'ios'
+          {Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS ISS#2323203)
             ? "DynamicColorIOS({light: 'red', dark: 'blue'})"
             : "ColorAndroid('?attr/colorAccent')"}
         </Text>
@@ -294,7 +297,7 @@ function VariantColorsExample() {
           style={{
             ...styles.colorCell,
             backgroundColor:
-              Platform.OS === 'ios'
+              Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS ISS#2323203)
                 ? DynamicColorIOS({light: 'red', dark: 'blue'})
                 : ColorAndroid('?attr/colorAccent'),
           }}
