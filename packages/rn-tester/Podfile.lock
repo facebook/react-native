@@ -397,7 +397,6 @@ DEPENDENCIES:
   - React-RCTImage (from `../../Libraries/Image`)
   - React-RCTLinking (from `../../Libraries/LinkingIOS`)
   - React-RCTNetwork (from `../../Libraries/Network`)
-  - React-RCTPushNotification (from `../../Libraries/PushNotificationIOS`)
   - React-RCTSettings (from `../../Libraries/Settings`)
   - React-RCTTest (from `./RCTTest`)
   - React-RCTText (from `../../Libraries/Text`)
@@ -467,8 +466,6 @@ EXTERNAL SOURCES:
     :path: "../../Libraries/LinkingIOS"
   React-RCTNetwork:
     :path: "../../Libraries/Network"
-  React-RCTPushNotification:
-    :path: "../../Libraries/PushNotificationIOS"
   React-RCTSettings:
     :path: "../../Libraries/Settings"
   React-RCTTest:
