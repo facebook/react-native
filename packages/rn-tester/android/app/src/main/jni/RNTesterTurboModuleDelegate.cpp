@@ -5,16 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "RNTesterAppModuleProvider.h"
+#include <fbjni/fbjni.h>
 
-#include <ReactAndroidSpec.h>
+#include <ReactCommon/TurboModuleManagerDelegate.h>
 
 namespace facebook {
 namespace react {
 
-std::shared_ptr<TurboModule> RNTesterAppModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
-  return ReactAndroidSpec_ModuleProvider(moduleName, params);
-}
+// TODO: Implement the app specific TurboModuleDelegate subclass.
 
 } // namespace react
 } // namespace facebook
