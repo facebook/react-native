@@ -91,7 +91,7 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
 {
   RCTAssert(_controller != nil, @"No snapshot controller configured.");
 
-  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#3536887)
     NSString *testName = NSStringFromSelector(self->_testSelector);
     if (!self->_snapshotCounter) {
       self->_snapshotCounter = [NSMutableDictionary new];
@@ -141,7 +141,7 @@ RCT_EXPORT_METHOD(markTestCompleted)
 
 RCT_EXPORT_METHOD(markTestPassed:(BOOL)success)
 {
-  [_bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+  [_bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#3536887)
     self->_status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
   }];
 }
