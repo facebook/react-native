@@ -704,13 +704,13 @@ public class UIImplementation {
   @Deprecated
   public void dispatchViewManagerCommand(
       int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    assertViewExists(reactTag, "dispatchViewManagerCommand");
+    assertViewExists(reactTag, "dispatchViewManagerCommand: " + commandId);
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 
   public void dispatchViewManagerCommand(
       int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
-    assertViewExists(reactTag, "dispatchViewManagerCommand");
+    assertViewExists(reactTag, "dispatchViewManagerCommand: " + commandId);
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 
@@ -805,7 +805,7 @@ public class UIImplementation {
       ReactShadowNode node, ReactShadowNode ancestor, int[] outputBuffer) {
     int offsetX = 0;
     int offsetY = 0;
-    if (node != ancestor) {
+    if (node != ancestor && !node.isVirtual()) {
       offsetX = Math.round(node.getLayoutX());
       offsetY = Math.round(node.getLayoutY());
       ReactShadowNode current = node.getParent();

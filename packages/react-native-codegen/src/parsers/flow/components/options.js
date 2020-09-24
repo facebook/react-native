@@ -54,7 +54,13 @@ function getOptions(optionsExpression: OptionsAST): ?OptionsShape {
   let foundOptions;
   try {
     foundOptions = optionsExpression.properties.reduce((options, prop) => {
-      options[prop.key.name] = prop.value.value;
+      if (prop.value.type === 'ArrayExpression') {
+        options[prop.key.name] = prop.value.elements.map(
+          element => element.value,
+        );
+      } else {
+        options[prop.key.name] = prop.value.value;
+      }
       return options;
     }, {});
   } catch (e) {

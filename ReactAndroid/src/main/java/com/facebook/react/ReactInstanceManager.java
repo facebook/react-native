@@ -152,7 +152,7 @@ public class ReactInstanceManager {
   private final JavaScriptExecutorFactory mJavaScriptExecutorFactory;
 
   private final @Nullable JSBundleLoader mBundleLoader;
-  private final @Nullable String mJSMainModulePath; /* path to JS bundle root on packager server */
+  private final @Nullable String mJSMainModulePath; /* path to JS bundle root on Metro */
   private final List<ReactPackage> mPackages;
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
@@ -470,7 +470,9 @@ public class ReactInstanceManager {
     } else {
       DeviceEventManagerModule deviceEventManagerModule =
           reactContext.getNativeModule(DeviceEventManagerModule.class);
-      deviceEventManagerModule.emitHardwareBackPressed();
+      if (deviceEventManagerModule != null) {
+        deviceEventManagerModule.emitHardwareBackPressed();
+      }
     }
   }
 
@@ -497,7 +499,9 @@ public class ReactInstanceManager {
               || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
         DeviceEventManagerModule deviceEventManagerModule =
             currentContext.getNativeModule(DeviceEventManagerModule.class);
-        deviceEventManagerModule.emitNewIntentReceived(uri);
+        if (deviceEventManagerModule != null) {
+          deviceEventManagerModule.emitNewIntentReceived(uri);
+        }
       }
       currentContext.onNewIntent(mCurrentActivity, intent);
     }
@@ -651,9 +655,9 @@ public class ReactInstanceManager {
     }
   }
 
-  /** Temporary: due to T62192299, log sources of destroy calls. TODO T62192299: delete */
+  /** Temporary: due to T67035147, log sources of destroy calls. TODO T67035147: delete */
   private void logOnDestroy() {
-    FLog.e(
+    FLog.d(
         TAG,
         "ReactInstanceManager.destroy called",
         new RuntimeException("ReactInstanceManager.destroy called"));
@@ -665,7 +669,6 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
     PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Destroy");
 
-    // TODO T62192299: remove when investigation is complete
     logOnDestroy();
 
     if (mHasStartedDestroying) {
@@ -703,6 +706,7 @@ public class ReactInstanceManager {
     synchronized (mHasStartedDestroying) {
       mHasStartedDestroying.notifyAll();
     }
+    FLog.d(ReactConstants.TAG, "ReactInstanceManager has been destroyed");
   }
 
   private synchronized void moveToResumedLifecycleState(boolean force) {
@@ -775,9 +779,12 @@ public class ReactInstanceManager {
 
     ReactContext currentReactContext = getCurrentReactContext();
     if (currentReactContext != null) {
-      currentReactContext
-          .getNativeModule(AppearanceModule.class)
-          .onConfigurationChanged(updatedContext);
+      AppearanceModule appearanceModule =
+          currentReactContext.getNativeModule(AppearanceModule.class);
+
+      if (appearanceModule != null) {
+        appearanceModule.onConfigurationChanged(updatedContext);
+      }
     }
   }
 
@@ -1127,8 +1134,7 @@ public class ReactInstanceManager {
   }
 
   private void attachRootViewToInstance(final ReactRoot reactRoot) {
-    // TODO: downgrade back to FLog.d once T62192299 is resolved.
-    FLog.e(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
+    FLog.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
 
     @Nullable
@@ -1143,23 +1149,32 @@ public class ReactInstanceManager {
 
     @Nullable Bundle initialProperties = reactRoot.getAppProperties();
 
-    final int rootTag =
-        uiManager.addRootView(
-            reactRoot.getRootViewGroup(),
-            initialProperties == null
-                ? new WritableNativeMap()
-                : Arguments.fromBundle(initialProperties),
-            reactRoot.getInitialUITemplate());
-    reactRoot.setRootViewTag(rootTag);
+    final int rootTag;
+
     if (reactRoot.getUIManagerType() == FABRIC) {
-      // Fabric requires to call updateRootLayoutSpecs before starting JS Application,
-      // this ensures the root will hace the correct pointScaleFactor.
-      uiManager.updateRootLayoutSpecs(
-          rootTag, reactRoot.getWidthMeasureSpec(), reactRoot.getHeightMeasureSpec());
+      rootTag =
+          uiManager.startSurface(
+              reactRoot.getRootViewGroup(),
+              reactRoot.getJSModuleName(),
+              initialProperties == null
+                  ? new WritableNativeMap()
+                  : Arguments.fromBundle(initialProperties),
+              reactRoot.getWidthMeasureSpec(),
+              reactRoot.getHeightMeasureSpec());
+      reactRoot.setRootViewTag(rootTag);
       reactRoot.setShouldLogContentAppeared(true);
     } else {
+      rootTag =
+          uiManager.addRootView(
+              reactRoot.getRootViewGroup(),
+              initialProperties == null
+                  ? new WritableNativeMap()
+                  : Arguments.fromBundle(initialProperties),
+              reactRoot.getInitialUITemplate());
+      reactRoot.setRootViewTag(rootTag);
       reactRoot.runApplication();
     }
+
     Systrace.beginAsyncSection(
         TRACE_TAG_REACT_JAVA_BRIDGE, "pre_rootView.onAttachedToReactInstance", rootTag);
     UiThreadUtil.runOnUiThread(
@@ -1245,32 +1260,14 @@ public class ReactInstanceManager {
 
     reactContext.initializeWithInstance(catalystInstance);
 
-    // TODO(T46487253): Remove after task is closed
-    FLog.e(
-        ReactConstants.TAG,
-        "ReactInstanceManager.createReactContext: mJSIModulePackage "
-            + (mJSIModulePackage != null ? "not null" : "null"));
-
     if (mJSIModulePackage != null) {
       catalystInstance.addJSIModules(
           mJSIModulePackage.getJSIModules(
               reactContext, catalystInstance.getJavaScriptContextHolder()));
 
-      // TODO(T46487253): Remove after task is closed
-      FLog.e(
-          ReactConstants.TAG,
-          "ReactInstanceManager.createReactContext: ReactFeatureFlags.useTurboModules == "
-              + (ReactFeatureFlags.useTurboModules == false ? "false" : "true"));
-
       if (ReactFeatureFlags.useTurboModules) {
         JSIModule turboModuleManager =
             catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager);
-
-        // TODO(T46487253): Remove after task is closed
-        FLog.e(
-            ReactConstants.TAG,
-            "ReactInstanceManager.createReactContext: TurboModuleManager "
-                + (turboModuleManager == null ? "not created" : "created"));
 
         catalystInstance.setTurboModuleManager(turboModuleManager);
 
@@ -1281,6 +1278,9 @@ public class ReactInstanceManager {
           registry.getModule(moduleName);
         }
       }
+    }
+    if (ReactFeatureFlags.eagerInitializeFabric) {
+      catalystInstance.getJSIModule(JSIModuleType.UIManager);
     }
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);

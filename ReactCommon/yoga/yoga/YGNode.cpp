@@ -29,7 +29,7 @@ YGNode::YGNode(YGNode&& node) {
   config_ = node.config_;
   resolvedDimensions_ = node.resolvedDimensions_;
   for (auto c : children_) {
-    c->setOwner(c);
+    c->setOwner(this);
   }
 }
 
@@ -307,6 +307,9 @@ void YGNode::setPosition(
   const YGFlexDirection crossAxis =
       YGFlexDirectionCross(mainAxis, directionRespectingRoot);
 
+  // Here we should check for `YGPositionTypeStatic` and in this case zero inset
+  // properties (left, right, top, bottom, begin, end).
+  // https://www.w3.org/TR/css-position-3/#valdef-position-static
   const YGFloatOptional relativePositionMain =
       relativePosition(mainAxis, mainSize);
   const YGFloatOptional relativePositionCross =
@@ -440,7 +443,7 @@ float YGNode::resolveFlexShrink() const {
 
 bool YGNode::isNodeFlexible() {
   return (
-      (style_.positionType() == YGPositionTypeRelative) &&
+      (style_.positionType() != YGPositionTypeAbsolute) &&
       (resolveFlexGrow() != 0 || resolveFlexShrink() != 0));
 }
 

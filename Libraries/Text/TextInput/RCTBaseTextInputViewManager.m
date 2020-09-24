@@ -52,6 +52,7 @@ RCT_EXPORT_VIEW_PROPERTY(autoFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(keyboardType, UIKeyboardType)
+RCT_EXPORT_VIEW_PROPERTY(showSoftInputOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(selection, RCTTextSelection)
@@ -125,8 +126,18 @@ RCT_EXPORT_METHOD(setTextAndSelection : (nonnull NSNumber *)viewTag
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     RCTBaseTextInputView *view = (RCTBaseTextInputView *)viewRegistry[viewTag];
-    view.mostRecentEventCount = mostRecentEventCount;
-    [view setText:value selectionStart:start selectionEnd:end];
+    NSInteger eventLag = view.nativeEventCount - mostRecentEventCount;
+    if (eventLag != 0) {
+      return;
+    }
+    RCTExecuteOnUIManagerQueue(^{
+      RCTBaseTextInputShadowView *shadowView = (RCTBaseTextInputShadowView *)[self.bridge.uiManager shadowViewForReactTag:viewTag];
+      [shadowView setText:value];
+      [self.bridge.uiManager setNeedsLayout];
+      RCTExecuteOnMainQueue(^{
+        [view setSelectionStart:start selectionEnd:end];
+      });
+    });
   }];
 }
 

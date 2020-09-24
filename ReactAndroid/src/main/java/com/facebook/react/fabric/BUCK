@@ -9,6 +9,7 @@ rn_android_library(
         "mounting/**/*.java",
     ]),
     is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:core"),
@@ -38,6 +39,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/views/view:view"),
+        react_native_target("java/com/facebook/react/views/text:text"),
         react_native_target("java/com/facebook/react/touch:touch"),
     ],
     exported_deps = [

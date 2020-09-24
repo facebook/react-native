@@ -135,17 +135,15 @@ function handleUpdate(): void {
 }
 
 function appendNewLog(newLog) {
-  // We don't want to store these logs because they trigger a
-  // state update whenever we add them to the store, which is
-  // expensive to noisy logs. If we later want to display these
-  // we will store them in a different state object.
+  // Don't want store these logs because they trigger a
+  // state update when we add them to the store.
   if (isMessageIgnored(newLog.message.content)) {
     return;
   }
 
   // If the next log has the same category as the previous one
-  // then we want to roll it up into the last log in the list
-  // by incrementing the count (simar to how Chrome does it).
+  // then roll it up into the last log in the list by incrementing
+  // the count (similar to how Chrome does it).
   const lastLog = Array.from(logs).pop();
   if (lastLog && lastLog.category === newLog.category) {
     lastLog.incrementCount();
@@ -161,7 +159,7 @@ function appendNewLog(newLog) {
 
     let addPendingLog = () => {
       logs.add(newLog);
-      if (_selectedIndex <= 0) {
+      if (_selectedIndex < 0) {
         setSelectedLog(logs.size - 1);
       } else {
         handleUpdate();
@@ -200,8 +198,7 @@ export function addLog(log: LogData): void {
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {
     try {
-      // TODO: Use Error.captureStackTrace on Hermes
-      const stack = parseErrorStack(errorForStackTrace);
+      const stack = parseErrorStack(errorForStackTrace?.stack);
 
       appendNewLog(
         new LogBoxLog({

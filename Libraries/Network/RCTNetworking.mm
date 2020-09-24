@@ -168,6 +168,8 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+  [super invalidate];
+
   for (NSNumber *requestID in _tasksByRequestID) {
     [_tasksByRequestID[requestID] cancel];
   }
@@ -680,7 +682,7 @@ RCT_EXPORT_METHOD(sendRequest:(JS::NativeNetworkingIOS::SpecSendRequestQuery &)q
     @"timeout": @(query.timeout()),
     @"withCredentials": @(query.withCredentials()),
   };
-  
+
   // TODO: buildRequest returns a cancellation block, but there's currently
   // no way to invoke it, if, for example the request is cancelled while
   // loading a large file to build the request body
@@ -714,12 +716,9 @@ RCT_EXPORT_METHOD(clearCookies:(RCTResponseSenderBlock)responseSender)
   responseSender(@[@YES]);
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeNetworkingIOSSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeNetworkingIOSSpecJSI>(params);
 }
 
 @end

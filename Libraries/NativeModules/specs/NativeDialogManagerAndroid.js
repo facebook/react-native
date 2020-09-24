@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -40,6 +40,7 @@ export interface Spec extends TurboModule {
     +buttonNeutral: DialogButtonKey,
   |};
   +showAlert: (
+    // eslint-disable-next-line @react-native/codegen/react-native-modules
     config: DialogOptions,
     onError: (error: string) => void,
     onAction: (action: DialogAction, buttonKey?: DialogButtonKey) => void,

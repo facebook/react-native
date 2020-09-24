@@ -92,12 +92,6 @@ CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
 CatalystInstanceImpl::CatalystInstanceImpl()
     : instance_(std::make_unique<Instance>()) {}
 
-CatalystInstanceImpl::~CatalystInstanceImpl() {
-  if (moduleMessageQueue_ != NULL) {
-    moduleMessageQueue_->quitSynchronous();
-  }
-}
-
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
@@ -131,6 +125,8 @@ void CatalystInstanceImpl::registerNatives() {
       makeNativeMethod(
           "jniHandleMemoryPressure",
           CatalystInstanceImpl::handleMemoryPressure),
+      makeNativeMethod(
+          "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
   });
 
   JNativeRunnable::registerNatives();
@@ -324,6 +320,15 @@ CatalystInstanceImpl::getNativeCallInvokerHolder() {
   }
 
   return nativeCallInvokerHolder_;
+}
+
+jni::alias_ref<JRuntimeExecutor::javaobject>
+CatalystInstanceImpl::getRuntimeExecutor() {
+  if (!runtimeExecutor_) {
+    runtimeExecutor_ = jni::make_global(
+        JRuntimeExecutor::newObjectCxxArgs(instance_->getRuntimeExecutor()));
+  }
+  return runtimeExecutor_;
 }
 
 } // namespace react

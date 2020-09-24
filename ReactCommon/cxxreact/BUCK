@@ -19,8 +19,8 @@ rn_xplat_cxx_library(
     ),
     compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
     fbobjc_compiler_flags = get_apple_compiler_flags(),
-    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     force_static = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
         "PUBLIC",
     ],
@@ -44,8 +44,8 @@ rn_xplat_cxx_library(
         "-frtti",
     ],
     fbobjc_compiler_flags = get_apple_compiler_flags(),
-    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     force_static = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     preprocessor_flags = [
         "-DWITH_FBREMAP=1",
     ],
@@ -69,23 +69,24 @@ rn_xplat_cxx_library(
         "-fexceptions",
     ],
     fbobjc_compiler_flags = get_apple_compiler_flags(),
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     soname = "libxplat_react_module_samplemodule.$(ext)",
     visibility = [
         "PUBLIC",
     ],
     deps = [
         ":module",
+        "//third-party/glog:glog",
         "//xplat/folly:memory",
         "//xplat/folly:molly",
-        "//xplat/third-party/glog:glog",
     ],
 )
 
 CXXREACT_PUBLIC_HEADERS = [
     "CxxNativeModule.h",
+    "ErrorUtils.h",
     "Instance.h",
     "JSBundleType.h",
-    "JSDeltaBundleClient.h",
     "JSExecutor.h",
     "JSIndexedRAMBundle.h",
     "JSModulesUnbundle.h",
@@ -129,8 +130,8 @@ rn_xplat_cxx_library(
     fbandroid_preprocessor_flags = get_android_inspector_flags(),
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     fbobjc_force_static = True,
-    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
@@ -148,10 +149,13 @@ rn_xplat_cxx_library(
         "//xplat/folly:headers_only",
         "//xplat/folly:memory",
         "//xplat/folly:molly",
+        "//xplat/jsi:jsi",
         react_native_xplat_target("callinvoker:callinvoker"),
         react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("microprofiler:microprofiler"),
+        react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
+        react_native_xplat_target("reactperflogger:reactperflogger"),
+        "//third-party/glog:glog",
         "//xplat/folly:optional",
-        "//xplat/third-party/glog:glog",
     ],
 )

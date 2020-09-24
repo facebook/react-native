@@ -122,14 +122,19 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 - (NSDictionary<NSString *, id> *)getConstants
 {
-  return @{
-    @"Dimensions" : RCTExportedDimensions(_bridge),
-    // Note:
-    // This prop is deprecated and will be removed in a future release.
-    // Please use this only for a quick and temporary solution.
-    // Use <SafeAreaView> instead.
-    @"isIPhoneX_deprecated" : @(RCTIsIPhoneX()),
-  };
+  __block NSDictionary<NSString *, id> *constants;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    constants = @{
+      @"Dimensions" : RCTExportedDimensions(self->_bridge),
+      // Note:
+      // This prop is deprecated and will be removed in a future release.
+      // Please use this only for a quick and temporary solution.
+      // Use <SafeAreaView> instead.
+      @"isIPhoneX_deprecated" : @(RCTIsIPhoneX()),
+    };
+  });
+
+  return constants;
 }
 
 - (void)didReceiveNewContentSizeMultiplier
@@ -196,11 +201,9 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 #endif // TARGET_OS_TV
 
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-                                              nativeInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
-                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<NativeDeviceInfoSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<NativeDeviceInfoSpecJSI>(params);
 }
 
 @end

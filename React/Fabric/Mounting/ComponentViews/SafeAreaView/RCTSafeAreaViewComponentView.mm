@@ -8,8 +8,8 @@
 #import "RCTSafeAreaViewComponentView.h"
 
 #import <React/RCTUtils.h>
-#import <react/components/safeareaview/SafeAreaViewComponentDescriptor.h>
-#import <react/components/safeareaview/SafeAreaViewState.h>
+#import <react/renderer/components/safeareaview/SafeAreaViewComponentDescriptor.h>
+#import <react/renderer/components/safeareaview/SafeAreaViewState.h>
 #import "FBRCTFabricComponentsPlugins.h"
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
@@ -17,7 +17,8 @@
 using namespace facebook::react;
 
 @implementation RCTSafeAreaViewComponentView {
-  SafeAreaViewShadowNode::ConcreteState::Shared _state;
+  SafeAreaViewShadowNode::ConcreteStateTeller _stateTeller;
+  EdgeInsets _lastPaddingStateWasUpdatedWith;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -40,11 +41,6 @@ using namespace facebook::react;
   return UIEdgeInsetsZero;
 }
 
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-}
-
 - (void)safeAreaInsetsDidChange
 {
   [super safeAreaInsetsDidChange];
@@ -54,36 +50,38 @@ using namespace facebook::react;
 
 - (void)_updateStateIfNecessary
 {
-  if (!_state) {
-    return;
-  }
-
   UIEdgeInsets insets = [self _safeAreaInsets];
   insets.left = RCTRoundPixelValue(insets.left);
   insets.top = RCTRoundPixelValue(insets.top);
   insets.right = RCTRoundPixelValue(insets.right);
   insets.bottom = RCTRoundPixelValue(insets.bottom);
 
-  auto oldPadding = _state->getData().padding;
   auto newPadding = RCTEdgeInsetsFromUIEdgeInsets(insets);
   auto threshold = 1.0 / RCTScreenScale() + 0.01; // Size of a pixel plus some small threshold.
-  auto deltaPadding = newPadding - oldPadding;
+  auto deltaPadding = newPadding - _lastPaddingStateWasUpdatedWith;
 
   if (std::abs(deltaPadding.left) < threshold && std::abs(deltaPadding.top) < threshold &&
       std::abs(deltaPadding.right) < threshold && std::abs(deltaPadding.bottom) < threshold) {
     return;
   }
 
-  _state->updateState(SafeAreaViewState{newPadding});
+  _lastPaddingStateWasUpdatedWith = newPadding;
+  _stateTeller.updateState(SafeAreaViewState{newPadding});
 }
 
 #pragma mark - RCTComponentViewProtocol
 
-- (void)updateState:(facebook::react::State::Shared const &)state
-           oldState:(facebook::react::State::Shared const &)oldState
+- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _state = std::static_pointer_cast<SafeAreaViewShadowNode::ConcreteState const>(state);
+  _stateTeller.setConcreteState(state);
   [self _updateStateIfNecessary];
+}
+
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  _stateTeller.invalidate();
+  _lastPaddingStateWasUpdatedWith = {};
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider

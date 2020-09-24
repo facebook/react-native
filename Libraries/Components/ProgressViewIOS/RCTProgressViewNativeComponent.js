@@ -12,7 +12,7 @@
 
 import type {Float, WithDefault} from '../../Types/CodegenTypes';
 import type {ImageSource} from '../../Image/ImageSource';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';

@@ -78,16 +78,14 @@ function getImports(
         return;
       default:
         (name: empty);
-        throw new Error(
-          `Invalid NativePrimitiveTypeAnnotation name, got ${name}`,
-        );
+        throw new Error(`Invalid ReservedPropTypeAnnotation name, got ${name}`);
     }
   }
 
   component.props.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
-    if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
+    if (typeAnnotation.type === 'ReservedPropTypeAnnotation') {
       addImportsForNativeName(typeAnnotation.name);
     }
 

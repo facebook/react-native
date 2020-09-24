@@ -25,7 +25,6 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
@@ -113,11 +112,14 @@ public class UIViewOperationQueue {
 
     @Override
     public void execute() {
-      mReactApplicationContext
-          .getNativeModule(UIManagerModule.class)
-          .getEventDispatcher()
-          .dispatchEvent(
-              OnLayoutEvent.obtain(mTag, mScreenX, mScreenY, mScreenWidth, mScreenHeight));
+      UIManagerModule uiManager = mReactApplicationContext.getNativeModule(UIManagerModule.class);
+
+      if (uiManager != null) {
+        uiManager
+            .getEventDispatcher()
+            .dispatchEvent(
+                OnLayoutEvent.obtain(mTag, mScreenX, mScreenY, mScreenWidth, mScreenHeight));
+      }
     }
   }
 
@@ -593,7 +595,6 @@ public class UIViewOperationQueue {
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
   private final ReactApplicationContext mReactApplicationContext;
 
-  private final boolean mAllowViewCommandsQueue;
   private ArrayList<DispatchCommandViewOperation> mViewCommandOperations = new ArrayList<>();
 
   // Only called from the UIManager queue?
@@ -634,7 +635,6 @@ public class UIViewOperationQueue {
                 ? DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS
                 : minTimeLeftInFrameForNonBatchedOperationMs);
     mReactApplicationContext = reactContext;
-    mAllowViewCommandsQueue = ReactFeatureFlags.allowEarlyViewCommandExecution;
   }
 
   /*package*/ NativeViewHierarchyManager getNativeViewHierarchyManager() {
@@ -706,22 +706,14 @@ public class UIViewOperationQueue {
       int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     final DispatchCommandOperation command =
         new DispatchCommandOperation(reactTag, commandId, commandArgs);
-    if (mAllowViewCommandsQueue) {
-      mViewCommandOperations.add(command);
-    } else {
-      mOperations.add(command);
-    }
+    mViewCommandOperations.add(command);
   }
 
   public void enqueueDispatchCommand(
       int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
     final DispatchStringCommandOperation command =
         new DispatchStringCommandOperation(reactTag, commandId, commandArgs);
-    if (mAllowViewCommandsQueue) {
-      mViewCommandOperations.add(command);
-    } else {
-      mOperations.add(command);
-    }
+    mViewCommandOperations.add(command);
   }
 
   public void enqueueUpdateExtraData(int reactTag, Object extraData) {
@@ -874,8 +866,7 @@ public class UIViewOperationQueue {
                 long runStartTime = SystemClock.uptimeMillis();
 
                 // All ViewCommands should be executed first as a perf optimization.
-                // This entire block is only executed if there's a separate viewCommand queue,
-                // which is currently gated by a ReactFeatureFlag.
+                // This entire block is only executed if there's at least one ViewCommand queued.
                 if (viewCommandOperations != null) {
                   for (DispatchCommandViewOperation op : viewCommandOperations) {
                     try {

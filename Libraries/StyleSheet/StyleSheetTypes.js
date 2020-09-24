@@ -10,13 +10,13 @@
 
 'use strict';
 
-const AnimatedNode = require('../Animated/src/nodes/AnimatedNode');
+const AnimatedNode = require('../Animated/nodes/AnimatedNode');
 
 import type {NativeColorValue} from './PlatformColorValueTypes';
 
-export type ColorValue = null | string | NativeColorValue;
+export type ____ColorValue_Internal = null | string | NativeColorValue;
 
-export type ColorArrayValue = null | $ReadOnlyArray<ColorValue>;
+export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
 export type PointValue = {|
   x: number,
   y: number,
@@ -522,15 +522,16 @@ type ____TransformStyle_Internal = $ReadOnly<{|
  * Because they are dynamically generated, they may cause performance regressions. Static
  * shadow image asset may be a better way to go for optimal performance.
  *
- * These properties are iOS only - for similar functionality on Android, use the [`elevation`
- * property](docs/viewstyleproptypes.html#elevation).
+ * Shadow-related properties are not fully supported on Android.
+ * To add a drop shadow to a view use the [`elevation` property](docs/viewstyleproptypes.html#elevation) (Android 5.0+).
+ * To customize the color use the [`shadowColor` property](docs/shadow-props.html#shadowColor) (Android 9.0+).
  */
 export type ____ShadowStyle_Internal = $ReadOnly<{|
   /**
    * Sets the drop shadow color
    * @platform ios
    */
-  shadowColor?: ColorValue,
+  shadowColor?: ____ColorValue_Internal,
   /**
    * Sets the drop shadow offset
    * @platform ios
@@ -556,14 +557,14 @@ export type ____ViewStyle_Internal = $ReadOnly<{|
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
   backfaceVisibility?: 'visible' | 'hidden',
-  backgroundColor?: ColorValue,
-  borderColor?: ColorValue,
-  borderBottomColor?: ColorValue,
-  borderEndColor?: ColorValue,
-  borderLeftColor?: ColorValue,
-  borderRightColor?: ColorValue,
-  borderStartColor?: ColorValue,
-  borderTopColor?: ColorValue,
+  backgroundColor?: ____ColorValue_Internal,
+  borderColor?: ____ColorValue_Internal,
+  borderBottomColor?: ____ColorValue_Internal,
+  borderEndColor?: ____ColorValue_Internal,
+  borderLeftColor?: ____ColorValue_Internal,
+  borderRightColor?: ____ColorValue_Internal,
+  borderStartColor?: ____ColorValue_Internal,
+  borderTopColor?: ____ColorValue_Internal,
   borderRadius?: number | AnimatedNode,
   borderBottomEndRadius?: number | AnimatedNode,
   borderBottomLeftRadius?: number | AnimatedNode,
@@ -600,7 +601,7 @@ export type ____FontWeight_Internal =
 
 export type ____TextStyle_Internal = $ReadOnly<{|
   ...$Exact<____ViewStyle_Internal>,
-  color?: ColorValue,
+  color?: ____ColorValue_Internal,
   fontFamily?: string,
   fontSize?: number,
   fontStyle?: 'normal' | 'italic',
@@ -617,7 +618,7 @@ export type ____TextStyle_Internal = $ReadOnly<{|
     height: number,
   |}>,
   textShadowRadius?: number,
-  textShadowColor?: ColorValue,
+  textShadowColor?: ____ColorValue_Internal,
   letterSpacing?: number,
   lineHeight?: number,
   textAlign?: 'auto' | 'left' | 'right' | 'center' | 'justify',
@@ -629,7 +630,7 @@ export type ____TextStyle_Internal = $ReadOnly<{|
     | 'line-through'
     | 'underline line-through',
   textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed',
-  textDecorationColor?: ColorValue,
+  textDecorationColor?: ____ColorValue_Internal,
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase',
   writingDirection?: 'auto' | 'ltr' | 'rtl',
 |}>;
@@ -637,14 +638,14 @@ export type ____TextStyle_Internal = $ReadOnly<{|
 export type ____ImageStyle_Internal = $ReadOnly<{|
   ...$Exact<____ViewStyle_Internal>,
   resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
-  tintColor?: ColorValue,
+  tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 |}>;
 
 export type ____DangerouslyImpreciseStyle_Internal = {
   ...$Exact<____TextStyle_Internal>,
   +resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
-  +tintColor?: ColorValue,
+  +tintColor?: ____ColorValue_Internal,
   +overlayColor?: string,
   ...
 };

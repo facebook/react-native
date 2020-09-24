@@ -8,13 +8,12 @@
 #import <UIKit/UIKit.h>
 #import <memory>
 
-#import <React/RCTPrimitives.h>
-#import <react/core/ComponentDescriptor.h>
-#import <react/core/LayoutConstraints.h>
-#import <react/core/LayoutContext.h>
-#import <react/mounting/MountingCoordinator.h>
-#import <react/uimanager/ComponentDescriptorFactory.h>
-#import <react/uimanager/SchedulerToolbox.h>
+#import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#import <react/renderer/core/ComponentDescriptor.h>
+#import <react/renderer/core/LayoutConstraints.h>
+#import <react/renderer/core/LayoutContext.h>
+#import <react/renderer/mounting/MountingCoordinator.h>
+#import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -63,6 +62,12 @@ NS_ASSUME_NONNULL_BEGIN
     (facebook::react::ComponentHandle)handle;
 
 - (facebook::react::MountingCoordinator::Shared)mountingCoordinatorWithSurfaceId:(facebook::react::SurfaceId)surfaceId;
+
+- (void)onAnimationStarted;
+
+- (void)onAllAnimationsComplete;
+
+- (void)animationTick;
 
 @end
 

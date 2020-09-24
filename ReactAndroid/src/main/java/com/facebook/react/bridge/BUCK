@@ -21,6 +21,7 @@ rn_android_library(
         exclude = INTERFACES,
     ),
     is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     proguard_config = "reactnative.pro",
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
@@ -65,6 +66,7 @@ rn_android_library(
     name = "interfaces",
     srcs = glob(INTERFACES),
     is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     proguard_config = "reactnative.pro",
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),

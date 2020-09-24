@@ -51,6 +51,7 @@ fb_xplat_cxx_library(
     exported_headers = CHROME_EXPORTED_HEADERS,
     compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
     fbobjc_header_path_prefix = "hermes/inspector/chrome",
+    labels = ["supermodule:xplat/default/public.hermes"],
     macosx_tests_override = [],
     tests = [":chrome-tests"],
     visibility = [
@@ -61,12 +62,12 @@ fb_xplat_cxx_library(
         react_native_xplat_target("jsinspector:jsinspector"),
         ":detail",
         ":inspectorlib",
+        "//third-party/glog:glog",
         "//xplat/folly:futures",
         "//xplat/folly:molly",
         "//xplat/hermes/API:HermesAPI",
         "//xplat/jsi:JSIDynamic",
         "//xplat/jsi:jsi",
-        "//xplat/third-party/glog:glog",
     ],
 )
 
@@ -117,6 +118,7 @@ fb_xplat_cxx_library(
         "//fbandroid/native/fb:fb",
     ],
     fbobjc_header_path_prefix = "hermes/inspector/detail",
+    labels = ["supermodule:xplat/default/public.hermes"],
     macosx_tests_override = [],
     tests = [":detail-tests"],
     visibility = [
@@ -189,6 +191,7 @@ fb_xplat_cxx_library(
     compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
     cxx_tests = [":inspector-tests"],
     fbobjc_header_path_prefix = "hermes/inspector",
+    labels = ["supermodule:xplat/default/public.hermes"],
     macosx_tests_override = [],
     visibility = [
         "PUBLIC",
@@ -196,11 +199,11 @@ fb_xplat_cxx_library(
     xcode_public_headers_symlinks = True,
     deps = [
         ":detail",
+        "//third-party/glog:glog",
         "//xplat/folly:futures",
         "//xplat/folly:molly",
         "//xplat/hermes/API:HermesAPI",
         "//xplat/jsi:jsi",
-        "//xplat/third-party/glog:glog",
     ],
 )
 

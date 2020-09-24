@@ -8,6 +8,7 @@ rn_android_library(
         ],
         exclude = ["CallInvokerHolderImpl.java"],
     ),
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
@@ -21,6 +22,7 @@ rn_android_library(
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/reactperflogger:reactperflogger"),
         react_native_target("java/com/facebook/react/turbomodule/core/jni:jni"),
         react_native_target("java/com/facebook/debug/holder:holder"),
         react_native_target("java/com/facebook/react/bridge:interfaces"),
@@ -38,6 +40,7 @@ rn_android_library(
 rn_android_library(
     name = "callinvokerholder",
     srcs = ["CallInvokerHolderImpl.java"],
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",

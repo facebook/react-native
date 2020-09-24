@@ -72,7 +72,11 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
         float height,
         YogaMeasureMode heightMode) {
       if (!mMeasured) {
-        SeekBar reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
+        ReactSlider reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
+        // reactSlider is used for measurements purposes, it is not necessary to set a
+        // StateListAnimator.
+        // It is not safe to access StateListAnimator from a background thread.
+        reactSlider.disableStateListAnimatorIfNeeded();
         final int spec =
             View.MeasureSpec.makeMeasureSpec(
                 ViewGroup.LayoutParams.WRAP_CONTENT, View.MeasureSpec.UNSPECIFIED);
@@ -91,12 +95,17 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
         @Override
         public void onProgressChanged(SeekBar seekbar, int progress, boolean fromUser) {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
-          reactContext
-              .getNativeModule(UIManagerModule.class)
-              .getEventDispatcher()
-              .dispatchEvent(
-                  new ReactSliderEvent(
-                      seekbar.getId(), ((ReactSlider) seekbar).toRealProgress(progress), fromUser));
+          UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+
+          if (uiManager != null) {
+            uiManager
+                .getEventDispatcher()
+                .dispatchEvent(
+                    new ReactSliderEvent(
+                        seekbar.getId(),
+                        ((ReactSlider) seekbar).toRealProgress(progress),
+                        fromUser));
+          }
         }
 
         @Override
@@ -105,13 +114,16 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
         @Override
         public void onStopTrackingTouch(SeekBar seekbar) {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
-          reactContext
-              .getNativeModule(UIManagerModule.class)
-              .getEventDispatcher()
-              .dispatchEvent(
-                  new ReactSlidingCompleteEvent(
-                      seekbar.getId(),
-                      ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));
+          UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+
+          if (uiManager != null) {
+            uiManager
+                .getEventDispatcher()
+                .dispatchEvent(
+                    new ReactSlidingCompleteEvent(
+                        seekbar.getId(),
+                        ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));
+          }
         }
       };
 
@@ -251,7 +263,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
       YogaMeasureMode widthMode,
       float height,
       YogaMeasureMode heightMode,
-      @Nullable int[] attachmentsPositions) {
+      @Nullable float[] attachmentsPositions) {
     SeekBar reactSlider = new ReactSlider(context, null, STYLE);
     final int spec =
         View.MeasureSpec.makeMeasureSpec(

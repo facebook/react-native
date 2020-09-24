@@ -14,6 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)attachToView:(UIView *)view;
 - (void)detachFromView:(UIView *)view;
 
+/*
+ * Offset of the attached view relative to the root component in points.
+ */
+@property (nonatomic, assign) CGPoint viewOriginOffset;
+
 @end
 
 NS_ASSUME_NONNULL_END

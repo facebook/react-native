@@ -8,8 +8,8 @@
 package com.facebook.react.fabric;
 
 import androidx.annotation.NonNull;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSIModuleProvider;
-import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.queue.MessageQueueThread;
@@ -19,18 +19,20 @@ import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.mounting.LayoutMetricsConversions;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
-import com.facebook.react.fabric.mounting.mountitems.DeleteMountItem;
+import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
+import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchIntCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
-import com.facebook.react.fabric.mounting.mountitems.RemoveMountItem;
+import com.facebook.react.fabric.mounting.mountitems.RemoveDeleteMultiMountItem;
+import com.facebook.react.fabric.mounting.mountitems.SendAccessibilityEvent;
 import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLayoutMountItem;
-import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePaddingMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
+import com.facebook.react.fabric.mounting.mountitems.UpdateStateMountItem;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
@@ -39,19 +41,16 @@ import com.facebook.systrace.Systrace;
 
 public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
 
-  @NonNull private final JavaScriptContextHolder mJSContext;
   @NonNull private final ReactApplicationContext mReactApplicationContext;
-  @NonNull private final ComponentFactoryDelegate mComponentFactoryDelegate;
+  @NonNull private final ComponentFactory mComponentFactory;
   @NonNull private final ReactNativeConfig mConfig;
 
   public FabricJSIModuleProvider(
       @NonNull ReactApplicationContext reactApplicationContext,
-      @NonNull JavaScriptContextHolder jsContext,
-      @NonNull ComponentFactoryDelegate componentFactoryDelegate,
+      @NonNull ComponentFactory componentFactory,
       @NonNull ReactNativeConfig config) {
     mReactApplicationContext = reactApplicationContext;
-    mJSContext = jsContext;
-    mComponentFactoryDelegate = componentFactoryDelegate;
+    mComponentFactory = componentFactory;
     mConfig = config;
   }
 
@@ -69,12 +68,13 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
             .getCatalystInstance()
             .getReactQueueConfiguration()
             .getJSQueueThread();
+
     binding.register(
-        mJSContext,
+        mReactApplicationContext.getCatalystInstance().getRuntimeExecutor(),
         uiManager,
         eventBeatManager,
         jsMessageQueueThread,
-        mComponentFactoryDelegate,
+        mComponentFactory,
         mConfig);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return uiManager;
@@ -83,7 +83,8 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   private FabricUIManager createUIManager(@NonNull EventBeatManager eventBeatManager) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.createUIManager");
-    UIManagerModule nativeModule = mReactApplicationContext.getNativeModule(UIManagerModule.class);
+    UIManagerModule nativeModule =
+        Assertions.assertNotNull(mReactApplicationContext.getNativeModule(UIManagerModule.class));
     EventDispatcher eventDispatcher = nativeModule.getEventDispatcher();
     FabricUIManager fabricUIManager =
         new FabricUIManager(
@@ -99,33 +100,35 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   // TODO T31905686: eager load Fabric classes, this is temporary and it will be removed
   // in the near future
   private static void loadClasses() {
-    BatchEventDispatchedListener.class.getClass();
-    ReactNativeConfig.class.getClass();
-    FabricComponents.class.getClass();
-    StateWrapper.class.getClass();
+    EventBeatManager.class.getClass();
+    EventEmitterWrapper.class.getClass();
     FabricEventEmitter.class.getClass();
-    FabricUIManager.class.getClass();
-    GuardedFrameCallback.class.getClass();
     BatchMountItem.class.getClass();
-    DeleteMountItem.class.getClass();
+    CreateMountItem.class.getClass();
+    DispatchCommandMountItem.class.getClass();
     DispatchIntCommandMountItem.class.getClass();
     DispatchStringCommandMountItem.class.getClass();
     InsertMountItem.class.getClass();
     MountItem.class.getClass();
-    RemoveMountItem.class.getClass();
+    PreAllocateViewMountItem.class.getClass();
+    RemoveDeleteMultiMountItem.class.getClass();
+    SendAccessibilityEvent.class.getClass();
     UpdateEventEmitterMountItem.class.getClass();
     UpdateLayoutMountItem.class.getClass();
-    UpdateLocalDataMountItem.class.getClass();
     UpdatePaddingMountItem.class.getClass();
     UpdatePropsMountItem.class.getClass();
+    UpdateStateMountItem.class.getClass();
     LayoutMetricsConversions.class.getClass();
     MountingManager.class.getClass();
     Binding.class.getClass();
-    ComponentFactoryDelegate.class.getClass();
-    EventBeatManager.class.getClass();
-    EventEmitterWrapper.class.getClass();
-    StateWrapperImpl.class.getClass();
+    ComponentFactory.class.getClass();
+    FabricComponents.class.getClass();
     FabricSoLoader.class.getClass();
-    PreAllocateViewMountItem.class.getClass();
+    FabricUIManager.class.getClass();
+    GuardedFrameCallback.class.getClass();
+    StateWrapper.class.getClass();
+    StateWrapperImpl.class.getClass();
+    BatchEventDispatchedListener.class.getClass();
+    ReactNativeConfig.class.getClass();
   }
 }

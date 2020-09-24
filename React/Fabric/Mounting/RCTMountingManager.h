@@ -9,10 +9,10 @@
 
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTPrimitives.h>
-#import <react/core/ComponentDescriptor.h>
-#import <react/core/ReactPrimitives.h>
-#import <react/mounting/MountingCoordinator.h>
-#import <react/mounting/ShadowView.h>
+#import <react/renderer/core/ComponentDescriptor.h>
+#import <react/renderer/core/ReactPrimitives.h>
+#import <react/renderer/mounting/MountingCoordinator.h>
+#import <react/renderer/mounting/ShadowView.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,8 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<RCTMountingManagerDelegate> delegate;
 @property (nonatomic, strong) RCTComponentViewRegistry *componentViewRegistry;
-
-@property (atomic, assign) BOOL useModernDifferentiatorMode;
 
 /**
  * Schedule a mounting transaction to be performed on the main thread.

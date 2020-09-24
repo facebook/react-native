@@ -21,7 +21,7 @@ namespace jsi {
 /// controls the instrumentation of.
 /// None of these functions should return newly created jsi values, nor should
 /// it modify the values of any jsi values in the heap (although GCs are fine).
-class Instrumentation {
+class JSI_EXPORT Instrumentation {
  public:
   virtual ~Instrumentation() = default;
 
@@ -49,8 +49,10 @@ class Instrumentation {
   virtual std::unordered_map<std::string, int64_t> getHeapInfo(
       bool includeExpensive) = 0;
 
-  /// perform a full garbage collection
-  virtual void collectGarbage() = 0;
+  /// Perform a full garbage collection.
+  /// \param cause The cause of this collection, as it should be reported in
+  ///   logs.
+  virtual void collectGarbage(std::string cause) = 0;
 
   /// Start capturing JS stack-traces for all JS heap allocated objects. These
   /// can be accessed via \c ::createSnapshotToFile().

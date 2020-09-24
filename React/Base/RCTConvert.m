@@ -430,7 +430,6 @@ RCT_MULTI_ENUM_CONVERTER(
     UIDataDetectorTypePhoneNumber,
     unsignedLongLongValue)
 
-#if WEBKIT_IOS_10_APIS_AVAILABLE
 RCT_MULTI_ENUM_CONVERTER(
     WKDataDetectorTypes,
     (@{
@@ -446,7 +445,6 @@ RCT_MULTI_ENUM_CONVERTER(
     }),
     WKDataDetectorTypePhoneNumber,
     unsignedLongLongValue)
-#endif // WEBKIT_IOS_10_APIS_AVAILABLE
 
 #endif // !TARGET_OS_TV
 
@@ -604,7 +602,7 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
 {
   static NSDictionary<NSString *, NSDictionary *> *colorMap = nil;
   if (colorMap == nil) {
-    colorMap = @{
+    NSMutableDictionary<NSString *, NSDictionary *> *map = [@{
       // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
       // Label Colors
       @"labelColor" : @{
@@ -729,7 +727,23 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
         // iOS 13.0
         RCTFallbackARGB : @(0xFFf2f2f7)
       },
+    } mutableCopy];
+    // The color names are the Objective-C UIColor selector names,
+    // but Swift selector names are valid as well, so make aliases.
+    static NSString *const RCTColorSuffix = @"Color";
+    NSMutableDictionary<NSString *, NSDictionary *> *aliases = [NSMutableDictionary new];
+    for (NSString *objcSelector in map) {
+      RCTAssert(
+          [objcSelector hasSuffix:RCTColorSuffix], @"A selector in the color map did not end with the suffix Color.");
+      NSMutableDictionary *entry = [map[objcSelector] mutableCopy];
+      RCTAssert([entry objectForKey:RCTSelector] == nil, @"Entry should not already have an RCTSelector");
+      NSString *swiftSelector = [objcSelector substringToIndex:[objcSelector length] - [RCTColorSuffix length]];
+      entry[RCTSelector] = objcSelector;
+      aliases[swiftSelector] = entry;
+    }
+    [map addEntriesFromDictionary:aliases];
 #if DEBUG
+    [map addEntriesFromDictionary:@{
       // The follow exist for Unit Tests
       @"unitTestFallbackColor" : @{RCTFallback : @"gridColor"},
       @"unitTestFallbackColorIOS" : @{RCTFallback : @"blueColor"},
@@ -743,9 +757,11 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
         RCTIndex : @1,
         RCTFallback : @"controlAlternatingRowBackgroundColors"
       },
+    }];
 #endif
-    };
+    colorMap = [map copy];
   }
+
   return colorMap;
 }
 
@@ -1101,7 +1117,11 @@ RCT_ENUM_CONVERTER(
 
 RCT_ENUM_CONVERTER(
     YGPositionType,
-    (@{@"absolute" : @(YGPositionTypeAbsolute), @"relative" : @(YGPositionTypeRelative)}),
+    (@{
+      @"static" : @(YGPositionTypeStatic),
+      @"absolute" : @(YGPositionTypeAbsolute),
+      @"relative" : @(YGPositionTypeRelative)
+    }),
     YGPositionTypeRelative,
     intValue)
 

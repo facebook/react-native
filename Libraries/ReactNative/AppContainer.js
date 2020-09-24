@@ -10,13 +10,13 @@
 
 'use strict';
 
-const EmitterSubscription = require('../vendor/emitter/EmitterSubscription');
-const PropTypes = require('prop-types');
-const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
-const React = require('react');
-const RootTagContext = require('./RootTagContext');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const View = require('../Components/View/View');
+import View from '../Components/View/View';
+import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import {RootTagContext, createRootTag} from './RootTag';
+import PropTypes from 'prop-types';
+import * as React from 'react';
 
 type Context = {rootTag: number, ...};
 
@@ -24,6 +24,7 @@ type Props = $ReadOnly<{|
   children?: React.Node,
   fabric?: boolean,
   rootTag: number,
+  initialProps?: {...},
   showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
   internal_excludeLogBox?: ?boolean,
@@ -42,7 +43,7 @@ class AppContainer extends React.Component<Props, State> {
     hasError: false,
   };
   _mainRef: ?React.ElementRef<typeof View>;
-  _subscription: ?EmitterSubscription = null;
+  _subscription: ?EventSubscription = null;
 
   static getDerivedStateFromError: any = undefined;
 
@@ -119,6 +120,7 @@ class AppContainer extends React.Component<Props, State> {
     if (Wrapper != null) {
       innerView = (
         <Wrapper
+          initialProps={this.props.initialProps}
           fabric={this.props.fabric === true}
           showArchitectureIndicator={
             this.props.showArchitectureIndicator === true
@@ -128,7 +130,7 @@ class AppContainer extends React.Component<Props, State> {
       );
     }
     return (
-      <RootTagContext.Provider value={this.props.rootTag}>
+      <RootTagContext.Provider value={createRootTag(this.props.rootTag)}>
         <View style={styles.appContainer} pointerEvents="box-none">
           {!this.state.hasError && innerView}
           {this.state.inspector}

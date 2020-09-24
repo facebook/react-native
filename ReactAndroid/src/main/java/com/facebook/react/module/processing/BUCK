@@ -15,6 +15,7 @@ rn_java_annotation_processor(
 rn_java_library(
     name = "processing-lib",
     srcs = glob(["*.java"]),
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     source = "8",
     target = "8",
     deps = [
