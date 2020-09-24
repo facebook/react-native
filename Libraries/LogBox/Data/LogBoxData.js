@@ -23,6 +23,9 @@ import type {
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 import type {ExtendedError} from '../../Core/Devtools/parseErrorStack';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
+
+const ExceptionsManager = require('../../Core/ExceptionsManager');
+
 export type LogBoxLogs = Set<LogBoxLog>;
 export type LogData = $ReadOnly<{|
   level: LogLevel,
@@ -98,8 +101,6 @@ export function reportLogBoxError(
   error: ExtendedError,
   componentStack?: string,
 ): void {
-  const ExceptionsManager = require('../../Core/ExceptionsManager');
-
   error.forceRedbox = true;
   error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
   if (componentStack != null) {
