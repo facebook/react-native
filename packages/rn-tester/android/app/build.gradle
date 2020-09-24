@@ -121,7 +121,7 @@ def useIntlJsc = false
 
 android {
     compileSdkVersion 29
-    ndkVersion ndkVersion
+    ndkVersion "20.1.5948944"
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -142,7 +142,6 @@ android {
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 19
-        ndkVersion "20.1.5948944"
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
