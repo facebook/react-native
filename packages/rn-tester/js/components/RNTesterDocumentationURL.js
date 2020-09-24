@@ -5,15 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  */
 
 'use strict';
 
-import React from 'react';
+import * as React from 'react';
 import {Image, StyleSheet, TouchableOpacity} from 'react-native';
 import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
 
-const RNTesterDocumentationURL = ({documentationURL}) => (
+type Props = $ReadOnly<{|
+  documentationURL: string,
+|}>;
+
+const RNTesterDocumentationURL = ({documentationURL}: Props): React.Node => (
   <TouchableOpacity
     style={styles.container}
     onPress={() => openURLInBrowser(documentationURL)}>
@@ -28,7 +33,6 @@ export default RNTesterDocumentationURL;
 
 const styles = StyleSheet.create({
   container: {
-    textDecorationLine: 'underline',
     position: 'absolute',
     bottom: 0,
     right: -15,

@@ -13,6 +13,86 @@ import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 
+const BookmarkTab = ({handleNavBarPress, isBookmarkActive, theme}) => (
+  <View style={styles.centerBox}>
+    <Image
+      style={styles.centralBoxCutout}
+      source={require('./../assets/bottom-nav-center-box.png')}
+    />
+    <View style={styles.floatContainer}>
+      <Pressable
+        testID="bookmarks-tab"
+        onPress={() => handleNavBarPress({screen: 'bookmarks'})}>
+        <View
+          style={[styles.floatingButton, {backgroundColor: theme.BorderColor}]}>
+          <Image
+            style={styles.bookmarkIcon}
+            source={
+              isBookmarkActive
+                ? require('../assets/bottom-nav-bookmark-fill.png')
+                : require('../assets/bottom-nav-bookmark-outline.png')
+            }
+          />
+        </View>
+      </Pressable>
+    </View>
+  </View>
+);
+
+const NavbarButton = ({
+  testID,
+  theme,
+  isActive,
+  activeImage,
+  inactiveImage,
+  label,
+  handlePress,
+  iconStyle,
+}) => (
+  <Pressable
+    testID={testID}
+    onPress={handlePress}
+    style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
+    <View
+      style={[styles.pressableContent, isActive ? styles.activeBar : null]}
+      collapsable={false}>
+      <Image
+        style={iconStyle}
+        source={isActive ? activeImage : inactiveImage}
+      />
+      <Text style={isActive ? styles.activeText : styles.inactiveText}>
+        {label}
+      </Text>
+    </View>
+  </Pressable>
+);
+
+const ComponentTab = ({isComponentActive, handleNavBarPress, theme}) => (
+  <NavbarButton
+    testID="components-tab"
+    label="Components"
+    handlePress={() => handleNavBarPress({screen: 'components'})}
+    activeImage={require('./../assets/bottom-nav-components-icon-active.png')}
+    inactiveImage={require('./../assets/bottom-nav-components-icon-inactive.png')}
+    isActive={isComponentActive}
+    theme={theme}
+    iconStyle={styles.componentIcon}
+  />
+);
+
+const APITab = ({isAPIActive, handleNavBarPress, theme}) => (
+  <NavbarButton
+    testID="apis-tab"
+    label="APIs"
+    handlePress={() => handleNavBarPress({screen: 'apis'})}
+    activeImage={require('./../assets/bottom-nav-apis-icon-active.png')}
+    inactiveImage={require('./../assets/bottom-nav-apis-icon-inactive.png')}
+    isActive={isAPIActive}
+    theme={theme}
+    iconStyle={styles.apiIcon}
+  />
+);
+
 type Props = $ReadOnly<{|
   handleNavBarPress: (data: {screen: string}) => void,
   screen: string,
@@ -33,84 +113,21 @@ const RNTesterNavbar = ({
   return (
     <View>
       <View style={styles.buttonContainer}>
-        <Pressable
-          testID="components-tab"
-          onPress={() => handleNavBarPress({screen: 'components'})}
-          style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
-          <View
-            style={[
-              styles.pressableContent,
-              isComponentActive ? styles.activeBar : null,
-            ]}
-            collapsable={false}>
-            <Image
-              style={styles.componentIcon}
-              source={
-                isComponentActive
-                  ? require('./../assets/bottom-nav-components-icon-active.png')
-                  : require('./../assets/bottom-nav-components-icon-inactive.png')
-              }
-            />
-            <Text
-              style={
-                isComponentActive ? styles.activeText : styles.inactiveText
-              }>
-              Components
-            </Text>
-          </View>
-        </Pressable>
-
-        <View style={styles.centerBox}>
-          <Image
-            style={styles.centralBoxCutout}
-            source={require('./../assets/bottom-nav-center-box.png')}
-          />
-
-          <View style={styles.floatContainer}>
-            <Pressable
-              testID="bookmarks-tab"
-              onPress={() => handleNavBarPress({screen: 'bookmarks'})}>
-              <View
-                style={[
-                  styles.floatingButton,
-                  {backgroundColor: theme.BorderColor},
-                ]}>
-                <Image
-                  style={styles.bookmarkIcon}
-                  source={
-                    isBookmarkActive
-                      ? require('../assets/bottom-nav-bookmark-fill.png')
-                      : require('../assets/bottom-nav-bookmark-outline.png')
-                  }
-                />
-              </View>
-            </Pressable>
-          </View>
-        </View>
-
-        <Pressable
-          testID="apis-tab"
-          onPress={() => handleNavBarPress({screen: 'apis'})}
-          style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
-          <View
-            style={[
-              styles.pressableContent,
-              isAPIActive ? styles.activeBar : null,
-            ]}
-            collapsable={false}>
-            <Image
-              style={styles.apiIcon}
-              source={
-                isAPIActive
-                  ? require('./../assets/bottom-nav-apis-icon-active.png')
-                  : require('./../assets/bottom-nav-apis-icon-inactive.png')
-              }
-            />
-            <Text style={isAPIActive ? styles.activeText : styles.inactiveText}>
-              APIs
-            </Text>
-          </View>
-        </Pressable>
+        <ComponentTab
+          isComponentActive={isComponentActive}
+          handleNavBarPress={handleNavBarPress}
+          theme={theme}
+        />
+        <BookmarkTab
+          isBookmarkActive={isBookmarkActive}
+          handleNavBarPress={handleNavBarPress}
+          theme={theme}
+        />
+        <APITab
+          isAPIActive={isAPIActive}
+          handleNavBarPress={handleNavBarPress}
+          theme={theme}
+        />
       </View>
     </View>
   );
