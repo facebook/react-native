@@ -45,8 +45,8 @@ class SemanticColorsExample extends React.Component<{}> {
         // Table Colors
         'gridColor',
         'headerTextColor',
-        'alternatingContentBackgroundColorEven',
-        'alternatingContentBackgroundColorOdd',
+        'alternatingEvenContentBackgroundColor',
+        'alternatingOddContentBackgroundColor',
         // Control Colors
         'controlAccentColor',
         'controlColor',

@@ -676,12 +676,12 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
       // Table Colors
       @"gridColor": @{},
       @"headerTextColor": @{},
-      @"alternatingContentBackgroundColorEven": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
+      @"alternatingEvenContentBackgroundColor": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
         RCTSelector: @"alternatingContentBackgroundColors",
         RCTIndex: @0,
         RCTFallback: @"controlAlternatingRowBackgroundColors"
       },
-      @"alternatingContentBackgroundColorOdd": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
+      @"alternatingOddContentBackgroundColor": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
         RCTSelector: @"alternatingContentBackgroundColors",
         RCTIndex: @1,
         RCTFallback: @"controlAlternatingRowBackgroundColors"
@@ -853,9 +853,10 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
     for (NSString *objcSelector in map) {
       RCTAssert([objcSelector hasSuffix:RCTColorSuffix], @"A selector in the color map did not end with the suffix Color.");
       NSMutableDictionary *entry = [map[objcSelector] mutableCopy];
-      RCTAssert([entry objectForKey:RCTSelector] == nil, @"Entry should not already have an RCTSelector");
+      if ([entry objectForKey:RCTSelector] == nil) {
+        entry[RCTSelector] = objcSelector;
+      }
       NSString *swiftSelector = [objcSelector substringToIndex:[objcSelector length] - [RCTColorSuffix length]];
-      entry[RCTSelector] = objcSelector;
       aliases[swiftSelector] = entry;
     }
     [map addEntriesFromDictionary:aliases];
