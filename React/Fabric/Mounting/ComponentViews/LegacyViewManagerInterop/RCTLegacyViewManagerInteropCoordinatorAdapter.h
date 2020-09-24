@@ -6,7 +6,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <react/components/legacyviewmanagerinterop/RCTLegacyViewManagerInteropCoordinator.h>
+#import <react/renderer/components/legacyviewmanagerinterop/RCTLegacyViewManagerInteropCoordinator.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

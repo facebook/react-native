@@ -47,7 +47,6 @@ fb_native.sh_binary(
         "buck_tests/generate-tests.js",
         "package.json",
         "//xplat/js:setup_env",
-        "yarn.lock",
     ],
     visibility = ["PUBLIC"],
 )
@@ -97,7 +96,10 @@ fb_xplat_cxx_binary(
 
 rn_android_library(
     name = "rn_codegen_library_java",
-    srcs = glob(["**/*.java"]),
+    srcs = glob(
+        ["**/*.java"],
+        exclude = ["android/gradlePlugin-build/**/*"],
+    ),
     visibility = [
         "PUBLIC",
     ],

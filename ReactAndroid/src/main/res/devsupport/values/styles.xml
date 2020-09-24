@@ -11,6 +11,7 @@
   </style>
   <style name="Theme.Catalyst.LogBox">
     <item name="android:windowTranslucentStatus">true</item>
+    <item name="android:windowTranslucentNavigation">false</item>
     <item name="android:windowBackground">@android:color/transparent</item>
     <item name="android:windowAnimationStyle">@style/Animation.Catalyst.LogBox</item>
     <item name="android:inAnimation">@android:anim/fade_in</item>

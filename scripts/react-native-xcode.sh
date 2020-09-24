@@ -56,17 +56,11 @@ case "$CONFIGURATION" in
     ;;
 esac
 
-# Setting up a project root was a workaround to enable support for non-standard
-# structures, including monorepos. Today, CLI supports that out of the box
-# and setting custom `PROJECT_ROOT` only makes it confusing. 
-#
-# As a backwards-compatible change, I am leaving "PROJECT_ROOT" support for those
-# who already use it - it is likely a non-breaking removal.
-#
-# For new users, we default to $PWD - not changing things all.
-#
-# For context: https://github.com/facebook/react-native/commit/9ccde378b6e6379df61f9d968be6346ca6be7ead#commitcomment-37914902
-PROJECT_ROOT=${PROJECT_ROOT:-$PWD}
+# Path to react-native folder inside node_modules
+REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# The project should be located next to where react-native is installed
+# in node_modules.
+PROJECT_ROOT=${PROJECT_ROOT:-"$REACT_NATIVE_DIR/../.."}
 
 cd "$PROJECT_ROOT" || exit
 
@@ -78,9 +72,14 @@ if [[ "$ENTRY_FILE" ]]; then
   # Use ENTRY_FILE defined by user
   :
 elif [[ -s "index.ios.js" ]]; then
-   ENTRY_FILE=${1:-index.ios.js}
- else
-   ENTRY_FILE=${1:-index.js}
+  ENTRY_FILE=${1:-index.ios.js}
+else
+  ENTRY_FILE=${1:-index.js}
+fi
+
+if [[ $DEV != true && ! -f "$ENTRY_FILE" ]]; then
+  echo "error: Entry file $ENTRY_FILE does not exist. If you use another file as your entry point, pass ENTRY_FILE=myindex.js" >&2
+  exit 2
 fi
 
 if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
@@ -104,9 +103,6 @@ if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
   fi
 fi
 
-# Path to react-native folder inside node_modules
-REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null
 source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
@@ -117,23 +113,82 @@ source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
 [ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
 
+[ -z "$HERMES_PATH" ] && HERMES_PATH="$PROJECT_ROOT/node_modules/hermes-engine-darwin/destroot/bin/hermesc"
+
+[ -z "$COMPOSE_SOURCEMAP_PATH" ] && COMPOSE_SOURCEMAP_PATH="$REACT_NATIVE_DIR/scripts/compose-source-maps.js"
+
 if [[ -z "$BUNDLE_CONFIG" ]]; then
   CONFIG_ARG=""
 else
   CONFIG_ARG="--config $BUNDLE_CONFIG"
 fi
 
-BUNDLE_FILE="$DEST/main.jsbundle"
+BUNDLE_FILE="$CONFIGURATION_BUILD_DIR/main.jsbundle"
+
+EXTRA_ARGS=
+
+case "$PLATFORM_NAME" in
+  "macosx")
+    BUNDLE_PLATFORM="macos"
+    ;;
+  *)
+    BUNDLE_PLATFORM="ios"
+    ;;
+esac
+
+USE_HERMES=
+if [[ "$BUNDLE_PLATFORM" == "macos" && -f "$HERMES_PATH" ]]; then
+  USE_HERMES=true
+fi
+
+EMIT_SOURCEMAP=
+if [[ ! -z "$SOURCEMAP_FILE" ]]; then
+  EMIT_SOURCEMAP=true
+fi
+
+PACKAGER_SOURCEMAP_FILE=
+if [[ $EMIT_SOURCEMAP == true ]]; then
+  if [[ $USE_HERMES == true ]]; then
+    PACKAGER_SOURCEMAP_FILE="$CONFIGURATION_BUILD_DIR/$(basename $SOURCEMAP_FILE)"
+  else
+    PACKAGER_SOURCEMAP_FILE="$SOURCEMAP_FILE"
+  fi
+  EXTRA_ARGS="$EXTRA_ARGS --sourcemap-output $PACKAGER_SOURCEMAP_FILE"
+fi
 
 "$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
   $CONFIG_ARG \
   --entry-file "$ENTRY_FILE" \
-  --platform ios \
+  --platform "$BUNDLE_PLATFORM" \
   --dev $DEV \
   --reset-cache \
   --bundle-output "$BUNDLE_FILE" \
   --assets-dest "$DEST" \
+  $EXTRA_ARGS \
   $EXTRA_PACKAGER_ARGS
+
+if [[ $USE_HERMES != true ]]; then
+  mv "$BUNDLE_FILE" "$DEST/"
+  BUNDLE_FILE="$DEST/main.jsbundle"
+else
+  EXTRA_COMPILER_ARGS=
+  if [[ $DEV == true ]]; then
+    EXTRA_COMPILER_ARGS=-Og
+  else
+    EXTRA_COMPILER_ARGS=-O
+  fi
+  if [[ $EMIT_SOURCEMAP == true ]]; then
+    EXTRA_COMPILER_ARGS="$EXTRA_COMPILER_ARGS -output-source-map"
+  fi
+  HBC_FILE="$CONFIGURATION_BUILD_DIR/$(basename $BUNDLE_FILE)"
+  "$HERMES_PATH" -emit-binary $EXTRA_COMPILER_ARGS -out "$HBC_FILE" "$BUNDLE_FILE"
+  mv "$HBC_FILE" "$DEST/"
+  BUNDLE_FILE="$DEST/main.jsbundle"
+  if [[ $EMIT_SOURCEMAP == true ]]; then
+    HBC_SOURCEMAP_FILE="$HBC_FILE.map"
+    "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$SOURCEMAP_FILE"
+  fi
+fi
 
 if [[ $DEV != true && ! -f "$BUNDLE_FILE" ]]; then
   echo "error: File $BUNDLE_FILE does not exist. This must be a bug with" >&2

@@ -11,8 +11,10 @@
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
 #include <glog/logging.h>
+#include <jsi/jsi.h>
 #include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
+#include "ErrorUtils.h"
 #include "Instance.h"
 #include "JSBigString.h"
 #include "MessageQueueThread.h"
@@ -25,6 +27,8 @@
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
+#include <jsi/jsi/jsi.h>
+
 using fbsystrace::FbSystraceAsyncFlow;
 #endif
 
@@ -347,7 +351,11 @@ RuntimeExecutor NativeToJsBridge::getRuntimeExecutor() {
             [callback = std::move(callback)](JSExecutor *executor) {
               jsi::Runtime *runtime =
                   (jsi::Runtime *)executor->getJavaScriptContext();
-              callback(*runtime);
+              try {
+                callback(*runtime);
+              } catch (jsi::JSError &originalError) {
+                handleJSError(*runtime, originalError, true);
+              }
             });
       };
   return runtimeExecutor;

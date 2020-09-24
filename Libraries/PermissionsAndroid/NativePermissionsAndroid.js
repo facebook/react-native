@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
+ * @flow strict
  */
 
 'use strict';
@@ -47,6 +47,7 @@ export type PermissionType =
 */
 
 export interface Spec extends TurboModule {
+  // eslint-disable-next-line @react-native/codegen/react-native-modules
   +checkPermission: (permission: PermissionType) => Promise<boolean>;
   +requestPermission: (permission: PermissionType) => Promise<PermissionStatus>;
   +shouldShowRequestPermissionRationale: (

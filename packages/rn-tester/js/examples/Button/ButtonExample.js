@@ -1,0 +1,184 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow strict-local
+ */
+
+'use strict';
+
+const React = require('react');
+
+const {Alert, Button, View, StyleSheet} = require('react-native');
+const {RNTesterThemeContext} = require('../../components/RNTesterTheme');
+
+function onButtonPress(buttonName) {
+  Alert.alert(`Your application has been ${buttonName}!`);
+}
+
+exports.displayName = 'ButtonExample';
+exports.framework = 'React';
+exports.category = 'UI';
+exports.title = 'Button';
+exports.documentationURL = 'https://reactnative.dev/docs/button';
+exports.description = 'Simple React Native button component.';
+
+exports.examples = [
+  {
+    title: 'Button with default styling',
+    render: function(): React.Node {
+      return (
+        <Button
+          onPress={() => onButtonPress('submitted')}
+          testID="button_default_styling"
+          title="Submit Application"
+          accessibilityLabel="Press to submit your application!"
+        />
+      );
+    },
+  },
+  {
+    title: 'Button with color="red"',
+    description: ('Note: On iOS, the color prop controls the color of the text. On ' +
+      'Android, the color adjusts the background color of the button.': string),
+    render: function(): React.Node {
+      return (
+        <RNTesterThemeContext.Consumer>
+          {theme => {
+            return (
+              <Button
+                onPress={() => onButtonPress('cancelled')}
+                testID="cancel_button"
+                color={theme.SystemRedColor}
+                title="Cancel Application"
+                accessibilityLabel="Press to cancel your application!"
+              />
+            );
+          }}
+        </RNTesterThemeContext.Consumer>
+      );
+    },
+  },
+  {
+    title: 'Two Buttons with Flexbox layout',
+    description: ('Two buttons wrapped inside view with justifyContent: spaceBetween,' +
+      'This layout strategy lets the title define the width of the button': string),
+    render: function(): React.Node {
+      return (
+        <RNTesterThemeContext.Consumer>
+          {theme => {
+            return (
+              <View style={styles.container}>
+                <Button
+                  onPress={() => onButtonPress('cancelled')}
+                  testID="two_cancel_button"
+                  color={theme.SystemRedColor}
+                  title="Cancel"
+                  accessibilityLabel="Press to cancel your application!"
+                />
+                <Button
+                  onPress={() => onButtonPress('submitted')}
+                  testID="two_submit_button"
+                  color={theme.SystemGreenColor}
+                  title="Submit"
+                  accessibilityLabel="Press to submit your application!"
+                />
+              </View>
+            );
+          }}
+        </RNTesterThemeContext.Consumer>
+      );
+    },
+  },
+  {
+    title: 'Three Buttons with Flexbox layout',
+    render: function(): React.Node {
+      return (
+        <RNTesterThemeContext.Consumer>
+          {theme => {
+            return (
+              <View style={styles.container}>
+                <Button
+                  onPress={() => onButtonPress('cancelled')}
+                  testID="three_cancel_button"
+                  color={theme.SystemRedColor}
+                  title="Cancel"
+                  accessibilityLabel="Press to cancel your application!"
+                />
+                <Button
+                  onPress={() => onButtonPress('saved')}
+                  testID="three_save_button"
+                  color={theme.LinkColor}
+                  title="Save For Later"
+                  accessibilityLabel="Press to save your application!"
+                />
+                <Button
+                  onPress={() => onButtonPress('submitted')}
+                  testID="three_submit_button"
+                  color={theme.SystemGreenColor}
+                  title="Submit"
+                  accessibilityLabel="Press to submit your application!"
+                />
+              </View>
+            );
+          }}
+        </RNTesterThemeContext.Consumer>
+      );
+    },
+  },
+  {
+    title: 'Button with disabled={true}',
+    description:
+      'By passing disabled={true} all interactions for the button are disabled.',
+    render: function(): React.Node {
+      return (
+        <RNTesterThemeContext.Consumer>
+          {theme => {
+            return (
+              <Button
+                disabled
+                onPress={() => onButtonPress('submitted')}
+                color={theme.LinkColor}
+                testID="disabled_button"
+                title="Submit Application"
+                accessibilityLabel="Press to submit your application!"
+              />
+            );
+          }}
+        </RNTesterThemeContext.Consumer>
+      );
+    },
+  },
+  {
+    title: 'Button with accessibilityLabel="label"',
+    description: ('Note: This prop changes the text that a screen ' +
+      'reader announces (there are no visual differences).': string),
+    render: function(): React.Node {
+      return (
+        <RNTesterThemeContext.Consumer>
+          {theme => {
+            return (
+              <Button
+                onPress={() => onButtonPress('submitted')}
+                testID="accessibilityLabel_button"
+                color={theme.LinkColor}
+                title="Submit Application"
+                accessibilityLabel="Press to submit your application!"
+              />
+            );
+          }}
+        </RNTesterThemeContext.Consumer>
+      );
+    },
+  },
+];
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+});

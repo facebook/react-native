@@ -44,8 +44,8 @@ namespace {
 // the already-deallocated connection.
 class TestContext {
  public:
-  TestContext(bool waitForDebugger = false)
-      : conn_(runtime_.runtime(), waitForDebugger) {}
+  TestContext(bool waitForDebugger = false, bool veryLazy = false)
+      : runtime_(veryLazy), conn_(runtime_.runtime(), waitForDebugger) {}
   ~TestContext() {
     runtime_.wait();
   }
@@ -750,6 +750,70 @@ TEST(ConnectionTests, testSetBreakpointById) {
   expectNotification<m::debugger::ResumedNotification>(conn);
 }
 
+TEST(ConnectionTests, testActivateBreakpoints) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  asyncRuntime.executeScriptAsync(R"(
+    debugger;      // line 1
+    x=100          //      2
+    debugger;      //      3
+    x=101;         //      4
+  )");
+
+  send<m::debugger::EnableRequest>(conn, ++msgId);
+  expectExecutionContextCreated(conn);
+  auto script = expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  expectPaused(conn, "other", {{"global", 1, 1}});
+
+  // Set breakpoint #1
+  m::debugger::SetBreakpointRequest req;
+  req.id = ++msgId;
+  req.location.scriptId = script.scriptId;
+  req.location.lineNumber = 2;
+  conn.send(req.toJson());
+  expectResponse<m::debugger::SetBreakpointResponse>(conn, req.id);
+
+  // Set breakpoint #2
+  req.id = ++msgId;
+  req.location.scriptId = script.scriptId;
+  req.location.lineNumber = 4;
+  conn.send(req.toJson());
+  expectResponse<m::debugger::SetBreakpointResponse>(conn, req.id);
+
+  // Disable breakpoints
+  m::debugger::SetBreakpointsActiveRequest activeReq;
+  activeReq.id = ++msgId;
+  activeReq.active = false;
+  conn.send(activeReq.toJson());
+  expectResponse<m::OkResponse>(conn, activeReq.id);
+
+  // Resume
+  send<m::debugger::ResumeRequest>(conn, ++msgId);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+
+  // Expect first breakpoint to be skipped, now hitting line #3
+  expectPaused(conn, "other", {{"global", 3, 1}});
+
+  // Re-enable breakpoints
+  activeReq.id = ++msgId;
+  activeReq.active = true;
+  conn.send(activeReq.toJson());
+  expectResponse<m::OkResponse>(conn, activeReq.id);
+
+  // Resume and expect breakpoints to trigger again
+  send<m::debugger::ResumeRequest>(conn, ++msgId);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+  expectPaused(conn, "other", {{"global", 4, 1}});
+
+  // Continue and exit
+  send<m::debugger::ResumeRequest>(conn, ++msgId);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
 TEST(ConnectionTests, testSetBreakpointByIdWithColumnInIndenting) {
   TestContext context;
   AsyncHermesRuntime &asyncRuntime = context.runtime();
@@ -796,9 +860,6 @@ TEST(ConnectionTests, testSetLazyBreakpoint) {
   SyncConnection &conn = context.conn();
   int msgId = 1;
 
-  facebook::hermes::HermesRuntime::DebugFlags flags{};
-  flags.lazy = true;
-
   asyncRuntime.executeScriptAsync(
       R"(
     var a = 1 + 2;
@@ -815,8 +876,7 @@ TEST(ConnectionTests, testSetLazyBreakpoint) {
 
     foo();
   )",
-      "url",
-      flags);
+      "url");
 
   send<m::debugger::EnableRequest>(conn, msgId++);
   expectExecutionContextCreated(conn);

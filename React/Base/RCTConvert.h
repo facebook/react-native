@@ -15,7 +15,7 @@
 #import <React/RCTPointerEvents.h>
 #import <React/RCTTextDecorationLineType.h>
 #import <yoga/Yoga.h>
-#if TARGET_OS_IPHONE && WEBKIT_IOS_10_APIS_AVAILABLE
+#if TARGET_OS_IPHONE
 #import <WebKit/WebKit.h>
 #endif
 
@@ -73,8 +73,8 @@ typedef NSURL RCTFileURL;
 + (UIDataDetectorTypes)UIDataDetectorTypes:(id)json;
 #endif
 
-#if TARGET_OS_IPHONE && WEBKIT_IOS_10_APIS_AVAILABLE
-+ (WKDataDetectorTypes)WKDataDetectorTypes:(id)json;
+#if TARGET_OS_IPHONE
++ (WKDataDetectorTypes)WKDataDetectorTypes:(id)json API_AVAILABLE(ios(10.0));
 #endif
 
 + (UIViewContentMode)UIViewContentMode:(id)json;

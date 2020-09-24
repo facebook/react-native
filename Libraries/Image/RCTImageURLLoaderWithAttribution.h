@@ -6,6 +6,8 @@
  */
 
 #import <React/RCTImageURLLoader.h>
+#import <React/RCTImageLoaderProtocol.h>
+#import <React/RCTImageLoaderInstrumentableProtocol.h>
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
@@ -37,7 +39,7 @@ struct ImageURLLoaderAttribution {
  * Same as the RCTImageURLLoader interface, but allows passing in optional `attribution` information.
  * This is useful for per-app logging and other instrumentation.
  */
-@protocol RCTImageURLLoaderWithAttribution <RCTImageURLLoader>
+@protocol RCTImageURLLoaderWithAttribution <RCTImageURLLoader, RCTImageLoaderInstrumentableProtocol>
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
@@ -50,10 +52,11 @@ struct ImageURLLoaderAttribution {
                                         scale:(CGFloat)scale
                                    resizeMode:(RCTResizeMode)resizeMode
                                     requestId:(NSString *)requestId
+                                    priority: (RCTImageLoaderPriority)priority
                                   attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
                               progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                            partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
-                            completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+                            completionHandler:(RCTImageLoaderCompletionBlockWithMetadata)completionHandler;
 #endif
 
 /**

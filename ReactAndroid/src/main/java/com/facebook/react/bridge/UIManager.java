@@ -33,12 +33,20 @@ public interface UIManager extends JSIModule, PerformanceCounter {
       int heightMeasureSpec);
 
   /**
+   * Stop a surface from running in JS and clears up native memory usage. Assumes that the native
+   * View hierarchy has already been cleaned up. Fabric-only.
+   */
+  @AnyThread
+  void stopSurface(final int surfaceId);
+
+  /**
    * Updates the layout specs of the RootShadowNode based on the Measure specs received by
-   * parameters.
+   * parameters. offsetX and offsetY are the position of the RootView within the screen.
    */
   @UiThread
   @ThreadConfined(UI)
-  void updateRootLayoutSpecs(int rootTag, int widthMeasureSpec, int heightMeasureSpec);
+  void updateRootLayoutSpecs(
+      int rootTag, int widthMeasureSpec, int heightMeasureSpec, int offsetX, int offsetY);
 
   /**
    * Dispatches the commandId received by parameter to the view associated with the reactTag. The
@@ -106,4 +114,19 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * @param listener
    */
   void removeUIManagerEventListener(UIManagerListener listener);
+
+  /**
+   * This method dispatches events from RN Android code to JS. The delivery of this event will not
+   * be queued in EventDispatcher class.
+   *
+   * @param reactTag tag
+   * @param eventName name of the event
+   * @param event parameters
+   */
+  void receiveEvent(int reactTag, String eventName, @Nullable WritableMap event);
+
+  /** Resolves Direct Event name exposed to JS from the one known to the Native side. */
+  @Deprecated
+  @Nullable
+  String resolveCustomDirectEventName(@Nullable String eventName);
 }

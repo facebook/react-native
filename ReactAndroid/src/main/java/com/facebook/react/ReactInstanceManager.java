@@ -152,7 +152,7 @@ public class ReactInstanceManager {
   private final JavaScriptExecutorFactory mJavaScriptExecutorFactory;
 
   private final @Nullable JSBundleLoader mBundleLoader;
-  private final @Nullable String mJSMainModulePath; /* path to JS bundle root on packager server */
+  private final @Nullable String mJSMainModulePath; /* path to JS bundle root on Metro */
   private final List<ReactPackage> mPackages;
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
@@ -706,6 +706,7 @@ public class ReactInstanceManager {
     synchronized (mHasStartedDestroying) {
       mHasStartedDestroying.notifyAll();
     }
+    FLog.d(ReactConstants.TAG, "ReactInstanceManager has been destroyed");
   }
 
   private synchronized void moveToResumedLifecycleState(boolean force) {
@@ -1150,30 +1151,18 @@ public class ReactInstanceManager {
 
     final int rootTag;
 
-    if (ReactFeatureFlags.enableFabricStartSurfaceWithLayoutMetrics) {
-      if (reactRoot.getUIManagerType() == FABRIC) {
-        rootTag =
-            uiManager.startSurface(
-                reactRoot.getRootViewGroup(),
-                reactRoot.getJSModuleName(),
-                initialProperties == null
-                    ? new WritableNativeMap()
-                    : Arguments.fromBundle(initialProperties),
-                reactRoot.getWidthMeasureSpec(),
-                reactRoot.getHeightMeasureSpec());
-        reactRoot.setRootViewTag(rootTag);
-        reactRoot.setShouldLogContentAppeared(true);
-      } else {
-        rootTag =
-            uiManager.addRootView(
-                reactRoot.getRootViewGroup(),
-                initialProperties == null
-                    ? new WritableNativeMap()
-                    : Arguments.fromBundle(initialProperties),
-                reactRoot.getInitialUITemplate());
-        reactRoot.setRootViewTag(rootTag);
-        reactRoot.runApplication();
-      }
+    if (reactRoot.getUIManagerType() == FABRIC) {
+      rootTag =
+          uiManager.startSurface(
+              reactRoot.getRootViewGroup(),
+              reactRoot.getJSModuleName(),
+              initialProperties == null
+                  ? new WritableNativeMap()
+                  : Arguments.fromBundle(initialProperties),
+              reactRoot.getWidthMeasureSpec(),
+              reactRoot.getHeightMeasureSpec());
+      reactRoot.setRootViewTag(rootTag);
+      reactRoot.setShouldLogContentAppeared(true);
     } else {
       rootTag =
           uiManager.addRootView(
@@ -1183,15 +1172,7 @@ public class ReactInstanceManager {
                   : Arguments.fromBundle(initialProperties),
               reactRoot.getInitialUITemplate());
       reactRoot.setRootViewTag(rootTag);
-      if (reactRoot.getUIManagerType() == FABRIC) {
-        // Fabric requires to call updateRootLayoutSpecs before starting JS Application,
-        // this ensures the root will hace the correct pointScaleFactor.
-        uiManager.updateRootLayoutSpecs(
-            rootTag, reactRoot.getWidthMeasureSpec(), reactRoot.getHeightMeasureSpec());
-        reactRoot.setShouldLogContentAppeared(true);
-      } else {
-        reactRoot.runApplication();
-      }
+      reactRoot.runApplication();
     }
 
     Systrace.beginAsyncSection(

@@ -30,14 +30,14 @@ public abstract class NativeToastAndroidSpec extends ReactContextBaseJavaModule 
   }
 
   @ReactMethod
-  public abstract void showWithGravityAndOffset(String message, double duration, double gravity,
-      double xOffset, double yOffset);
-
-  @ReactMethod
   public abstract void show(String message, double duration);
 
   @ReactMethod
   public abstract void showWithGravity(String message, double duration, double gravity);
+
+  @ReactMethod
+  public abstract void showWithGravityAndOffset(String message, double duration, double gravity,
+      double xOffset, double yOffset);
 
   protected abstract Map<String, Object> getTypedExportedConstants();
 

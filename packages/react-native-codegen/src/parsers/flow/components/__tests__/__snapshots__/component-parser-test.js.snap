@@ -1550,6 +1550,54 @@ Object {
                       ],
                       "type": "ObjectTypeAnnotation",
                     },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
                   ],
                   "type": "ObjectTypeAnnotation",
                 },
@@ -1799,6 +1847,54 @@ Object {
                             },
                           ],
                           "type": "ObjectTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
                         },
                       ],
                       "type": "ObjectTypeAnnotation",
@@ -2055,6 +2151,54 @@ Object {
                       ],
                       "type": "ObjectTypeAnnotation",
                     },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
                   ],
                   "type": "ObjectTypeAnnotation",
                 },
@@ -2304,6 +2448,54 @@ Object {
                             },
                           ],
                           "type": "ObjectTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
                         },
                       ],
                       "type": "ObjectTypeAnnotation",
@@ -2865,6 +3057,54 @@ Object {
                       ],
                       "type": "ObjectTypeAnnotation",
                     },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
                   ],
                   "type": "ObjectTypeAnnotation",
                 },
@@ -3113,6 +3353,54 @@ Object {
                             },
                           ],
                           "type": "ObjectTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
                         },
                       ],
                       "type": "ObjectTypeAnnotation",
@@ -3369,6 +3657,54 @@ Object {
                       ],
                       "type": "ObjectTypeAnnotation",
                     },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
                   ],
                   "type": "ObjectTypeAnnotation",
                 },
@@ -3617,6 +3953,54 @@ Object {
                             },
                           ],
                           "type": "ObjectTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
                         },
                       ],
                       "type": "ObjectTypeAnnotation",
@@ -3874,6 +4258,54 @@ Object {
                       ],
                       "type": "ObjectTypeAnnotation",
                     },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
                   ],
                   "type": "ObjectTypeAnnotation",
                 },
@@ -4122,6 +4554,54 @@ Object {
                             },
                           ],
                           "type": "ObjectTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
                         },
                       ],
                       "type": "ObjectTypeAnnotation",
@@ -4378,6 +4858,54 @@ Object {
                       ],
                       "type": "ObjectTypeAnnotation",
                     },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
                   ],
                   "type": "ObjectTypeAnnotation",
                 },
@@ -4626,6 +5154,54 @@ Object {
                             },
                           ],
                           "type": "ObjectTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
                         },
                       ],
                       "type": "ObjectTypeAnnotation",
@@ -4882,6 +5458,54 @@ Object {
                       ],
                       "type": "ObjectTypeAnnotation",
                     },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
                   ],
                   "type": "ObjectTypeAnnotation",
                 },
@@ -5131,6 +5755,54 @@ Object {
                             },
                           ],
                           "type": "ObjectTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
                         },
                       ],
                       "type": "ObjectTypeAnnotation",
@@ -6333,6 +7005,54 @@ Object {
                       ],
                       "type": "ObjectTypeAnnotation",
                     },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
                   ],
                   "type": "ObjectTypeAnnotation",
                 },
@@ -6582,6 +7302,54 @@ Object {
                             },
                           ],
                           "type": "ObjectTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
                         },
                       ],
                       "type": "ObjectTypeAnnotation",
@@ -6838,6 +7606,54 @@ Object {
                       ],
                       "type": "ObjectTypeAnnotation",
                     },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
                   ],
                   "type": "ObjectTypeAnnotation",
                 },
@@ -7087,6 +7903,54 @@ Object {
                             },
                           ],
                           "type": "ObjectTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_required",
+                      "optional": false,
+                      "properties": Array [
+                        Object {
+                          "name": "boolean_required",
+                          "optional": false,
+                          "type": "BooleanTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_key",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "string_optional_key",
+                          "optional": true,
+                          "type": "StringTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_value",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "float_optional_value",
+                          "optional": true,
+                          "type": "FloatTypeAnnotation",
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                    Object {
+                      "name": "object_readonly_optional_both",
+                      "optional": true,
+                      "properties": Array [
+                        Object {
+                          "name": "int32_optional_both",
+                          "optional": true,
+                          "type": "Int32TypeAnnotation",
                         },
                       ],
                       "type": "ObjectTypeAnnotation",

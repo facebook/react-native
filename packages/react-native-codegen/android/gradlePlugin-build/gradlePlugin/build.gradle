@@ -1,0 +1,27 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+plugins {
+    id 'java-gradle-plugin'
+}
+
+gradlePlugin {
+    plugins {
+        greeting {
+            id = 'com.facebook.react.codegen'
+            implementationClass = 'com.facebook.react.codegen.plugin.CodegenPlugin'
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.android.tools.build:gradle:3.6.4'
+    // Use the same Gson version that `com.android.tools.build:gradle` depends on.
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.guava:guava:29.0-jre'
+    implementation 'com.squareup:javapoet:1.13.0'
+}

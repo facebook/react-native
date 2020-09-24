@@ -116,6 +116,9 @@ rn_apple_library(
         ) + react_module_plugin_providers(
             name = "DevLoadingView",
             native_class_func = "RCTDevLoadingViewCls",
+        ) + react_module_plugin_providers(
+            name = "DevSplitBundleLoader",
+            native_class_func = "RCTDevSplitBundleLoaderCls",
         ),
     plugins_header = "FBCoreModulesPlugins.h",
     preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [

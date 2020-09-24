@@ -269,8 +269,12 @@ namespace JS {
 @end
 @protocol NativeAnimatedModuleSpec <RCTBridgeModule, RCTTurboModule>
 
+- (void)startOperationBatch;
+- (void)finishOperationBatch;
 - (void)createAnimatedNode:(double)tag
                     config:(NSDictionary *)config;
+- (void)getValue:(double)tag
+saveValueCallback:(RCTResponseSenderBlock)saveValueCallback;
 - (void)startListeningToAnimatedNodeValue:(double)tag;
 - (void)stopListeningToAnimatedNodeValue:(double)tag;
 - (void)connectAnimatedNodes:(double)parentTag
@@ -313,6 +317,93 @@ namespace facebook {
     class JSI_EXPORT NativeAnimatedModuleSpecJSI : public ObjCTurboModule {
     public:
       NativeAnimatedModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace JS {
+  namespace NativeAnimatedTurboModule {
+    struct EndResult {
+      bool finished() const;
+
+      EndResult(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAnimatedTurboModule_EndResult)
++ (RCTManagedPointer *)JS_NativeAnimatedTurboModule_EndResult:(id)json;
+@end
+
+namespace JS {
+  namespace NativeAnimatedTurboModule {
+    struct EventMapping {
+      facebook::react::LazyVector<NSString *> nativeEventPath() const;
+      folly::Optional<double> animatedValueTag() const;
+
+      EventMapping(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAnimatedTurboModule_EventMapping)
++ (RCTManagedPointer *)JS_NativeAnimatedTurboModule_EventMapping:(id)json;
+@end
+@protocol NativeAnimatedTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)startOperationBatch;
+- (void)finishOperationBatch;
+- (void)createAnimatedNode:(double)tag
+                    config:(NSDictionary *)config;
+- (void)getValue:(double)tag
+saveValueCallback:(RCTResponseSenderBlock)saveValueCallback;
+- (void)startListeningToAnimatedNodeValue:(double)tag;
+- (void)stopListeningToAnimatedNodeValue:(double)tag;
+- (void)connectAnimatedNodes:(double)parentTag
+                    childTag:(double)childTag;
+- (void)disconnectAnimatedNodes:(double)parentTag
+                       childTag:(double)childTag;
+- (void)startAnimatingNode:(double)animationId
+                   nodeTag:(double)nodeTag
+                    config:(NSDictionary *)config
+               endCallback:(RCTResponseSenderBlock)endCallback;
+- (void)stopAnimation:(double)animationId;
+- (void)setAnimatedNodeValue:(double)nodeTag
+                       value:(double)value;
+- (void)setAnimatedNodeOffset:(double)nodeTag
+                       offset:(double)offset;
+- (void)flattenAnimatedNodeOffset:(double)nodeTag;
+- (void)extractAnimatedNodeOffset:(double)nodeTag;
+- (void)connectAnimatedNodeToView:(double)nodeTag
+                          viewTag:(double)viewTag;
+- (void)disconnectAnimatedNodeFromView:(double)nodeTag
+                               viewTag:(double)viewTag;
+- (void)restoreDefaultValues:(double)nodeTag;
+- (void)dropAnimatedNode:(double)tag;
+- (void)addAnimatedEventToView:(double)viewTag
+                     eventName:(NSString *)eventName
+                  eventMapping:(JS::NativeAnimatedTurboModule::EventMapping &)eventMapping;
+- (void)removeAnimatedEventFromView:(double)viewTag
+                          eventName:(NSString *)eventName
+                    animatedNodeTag:(double)animatedNodeTag;
+- (void)addListener:(NSString *)eventName;
+- (void)removeListeners:(double)count;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'AnimatedTurboModule'
+     */
+
+    class JSI_EXPORT NativeAnimatedTurboModuleSpecJSI : public ObjCTurboModule {
+    public:
+      NativeAnimatedTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -646,167 +737,6 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-
-namespace JS {
-  namespace NativeCameraRollManager {
-    struct GetPhotosParams {
-      double first() const;
-      NSString *after() const;
-      NSString *groupName() const;
-      NSString *groupTypes() const;
-      NSString *assetType() const;
-      folly::Optional<double> maxSize() const;
-      folly::Optional<facebook::react::LazyVector<NSString *>> mimeTypes() const;
-
-      GetPhotosParams(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeCameraRollManager_GetPhotosParams)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_GetPhotosParams:(id)json;
-@end
-@protocol NativeCameraRollManagerSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)getPhotos:(JS::NativeCameraRollManager::GetPhotosParams &)params
-          resolve:(RCTPromiseResolveBlock)resolve
-           reject:(RCTPromiseRejectBlock)reject;
-- (void)saveToCameraRoll:(NSString *)uri
-                    type:(NSString *)type
-                 resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject;
-- (void)deletePhotos:(NSArray *)assets
-             resolve:(RCTPromiseResolveBlock)resolve
-              reject:(RCTPromiseRejectBlock)reject;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'CameraRollManager'
-     */
-
-    class JSI_EXPORT NativeCameraRollManagerSpecJSI : public ObjCTurboModule {
-    public:
-      NativeCameraRollManagerSpecJSI(const ObjCTurboModule::InitParams &params);
-
-    };
-  } // namespace react
-} // namespace facebook
-
-namespace JS {
-  namespace NativeCameraRollManager {
-    struct PhotoIdentifierImage {
-      NSString *uri() const;
-      double playableDuration() const;
-      double width() const;
-      double height() const;
-      folly::Optional<bool> isStored() const;
-      NSString *filename() const;
-
-      PhotoIdentifierImage(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierImage)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierImage:(id)json;
-@end
-
-namespace JS {
-  namespace NativeCameraRollManager {
-    struct PhotoIdentifierNodeLocation {
-      double longitude() const;
-      double latitude() const;
-      folly::Optional<double> altitude() const;
-      folly::Optional<double> heading() const;
-      folly::Optional<double> speed() const;
-
-      PhotoIdentifierNodeLocation(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierNodeLocation)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierNodeLocation:(id)json;
-@end
-
-namespace JS {
-  namespace NativeCameraRollManager {
-    struct PhotoIdentifierNode {
-      JS::NativeCameraRollManager::PhotoIdentifierImage image() const;
-      NSString *type() const;
-      NSString *group_name() const;
-      double timestamp() const;
-      JS::NativeCameraRollManager::PhotoIdentifierNodeLocation location() const;
-
-      PhotoIdentifierNode(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeCameraRollManager_PhotoIdentifierNode)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifierNode:(id)json;
-@end
-
-namespace JS {
-  namespace NativeCameraRollManager {
-    struct PhotoIdentifier {
-      JS::NativeCameraRollManager::PhotoIdentifierNode node() const;
-
-      PhotoIdentifier(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeCameraRollManager_PhotoIdentifier)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifier:(id)json;
-@end
-
-namespace JS {
-  namespace NativeCameraRollManager {
-    struct PhotoIdentifiersPagePage_info {
-      bool has_next_page() const;
-      NSString *start_cursor() const;
-      NSString *end_cursor() const;
-
-      PhotoIdentifiersPagePage_info(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeCameraRollManager_PhotoIdentifiersPagePage_info)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifiersPagePage_info:(id)json;
-@end
-
-namespace JS {
-  namespace NativeCameraRollManager {
-    struct PhotoIdentifiersPage {
-      facebook::react::LazyVector<JS::NativeCameraRollManager::PhotoIdentifier> edges() const;
-      JS::NativeCameraRollManager::PhotoIdentifiersPagePage_info page_info() const;
-
-      PhotoIdentifiersPage(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeCameraRollManager_PhotoIdentifiersPage)
-+ (RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifiersPage:(id)json;
-@end
 @protocol NativeClipboardSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getString:(RCTPromiseResolveBlock)resolve
@@ -914,6 +844,26 @@ namespace facebook {
     class JSI_EXPORT NativeDevSettingsSpecJSI : public ObjCTurboModule {
     public:
       NativeDevSettingsSpecJSI(const ObjCTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+@protocol NativeDevSplitBundleLoaderSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)loadBundle:(NSString *)bundlePath
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'DevSplitBundleLoader'
+     */
+
+    class JSI_EXPORT NativeDevSplitBundleLoaderSpecJSI : public ObjCTurboModule {
+    public:
+      NativeDevSplitBundleLoaderSpecJSI(const ObjCTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -1965,6 +1915,8 @@ namespace JS {
           RCTRequired<NSString *> Model;
           NSString *ServerHost;
           RCTRequired<NSString *> uiMode;
+          RCTRequired<NSString *> Brand;
+          RCTRequired<NSString *> Manufacturer;
         };
 
         /** Initialize with a set of values */
@@ -2994,6 +2946,21 @@ inline folly::Optional<double> JS::NativeAnimatedModule::EventMapping::animatedV
   id const p = _v[@"animatedValueTag"];
   return RCTBridgingToOptionalDouble(p);
 }
+inline bool JS::NativeAnimatedTurboModule::EndResult::finished() const
+{
+  id const p = _v[@"finished"];
+  return RCTBridgingToBool(p);
+}
+inline facebook::react::LazyVector<NSString *> JS::NativeAnimatedTurboModule::EventMapping::nativeEventPath() const
+{
+  id const p = _v[@"nativeEventPath"];
+  return RCTBridgingToVec(p, ^NSString *(id itemValue_0) { return RCTBridgingToString(itemValue_0); });
+}
+inline folly::Optional<double> JS::NativeAnimatedTurboModule::EventMapping::animatedValueTag() const
+{
+  id const p = _v[@"animatedValueTag"];
+  return RCTBridgingToOptionalDouble(p);
+}
 inline NSString *JS::NativeAppState::SpecGetCurrentAppStateSuccessAppState::app_state() const
 {
   id const p = _v[@"app_state"];
@@ -3054,151 +3021,6 @@ inline JS::NativeBlobModule::Constants::Builder::Builder(const Input i) : _facto
 inline JS::NativeBlobModule::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline double JS::NativeCameraRollManager::GetPhotosParams::first() const
-{
-  id const p = _v[@"first"];
-  return RCTBridgingToDouble(p);
-}
-inline NSString *JS::NativeCameraRollManager::GetPhotosParams::after() const
-{
-  id const p = _v[@"after"];
-  return RCTBridgingToString(p);
-}
-inline NSString *JS::NativeCameraRollManager::GetPhotosParams::groupName() const
-{
-  id const p = _v[@"groupName"];
-  return RCTBridgingToString(p);
-}
-inline NSString *JS::NativeCameraRollManager::GetPhotosParams::groupTypes() const
-{
-  id const p = _v[@"groupTypes"];
-  return RCTBridgingToString(p);
-}
-inline NSString *JS::NativeCameraRollManager::GetPhotosParams::assetType() const
-{
-  id const p = _v[@"assetType"];
-  return RCTBridgingToString(p);
-}
-inline folly::Optional<double> JS::NativeCameraRollManager::GetPhotosParams::maxSize() const
-{
-  id const p = _v[@"maxSize"];
-  return RCTBridgingToOptionalDouble(p);
-}
-inline folly::Optional<facebook::react::LazyVector<NSString *>> JS::NativeCameraRollManager::GetPhotosParams::mimeTypes() const
-{
-  id const p = _v[@"mimeTypes"];
-  return RCTBridgingToOptionalVec(p, ^NSString *(id itemValue_0) { return RCTBridgingToString(itemValue_0); });
-}
-inline NSString *JS::NativeCameraRollManager::PhotoIdentifierImage::uri() const
-{
-  id const p = _v[@"uri"];
-  return RCTBridgingToString(p);
-}
-inline double JS::NativeCameraRollManager::PhotoIdentifierImage::playableDuration() const
-{
-  id const p = _v[@"playableDuration"];
-  return RCTBridgingToDouble(p);
-}
-inline double JS::NativeCameraRollManager::PhotoIdentifierImage::width() const
-{
-  id const p = _v[@"width"];
-  return RCTBridgingToDouble(p);
-}
-inline double JS::NativeCameraRollManager::PhotoIdentifierImage::height() const
-{
-  id const p = _v[@"height"];
-  return RCTBridgingToDouble(p);
-}
-inline folly::Optional<bool> JS::NativeCameraRollManager::PhotoIdentifierImage::isStored() const
-{
-  id const p = _v[@"isStored"];
-  return RCTBridgingToOptionalBool(p);
-}
-inline NSString *JS::NativeCameraRollManager::PhotoIdentifierImage::filename() const
-{
-  id const p = _v[@"filename"];
-  return RCTBridgingToString(p);
-}
-inline double JS::NativeCameraRollManager::PhotoIdentifierNodeLocation::longitude() const
-{
-  id const p = _v[@"longitude"];
-  return RCTBridgingToDouble(p);
-}
-inline double JS::NativeCameraRollManager::PhotoIdentifierNodeLocation::latitude() const
-{
-  id const p = _v[@"latitude"];
-  return RCTBridgingToDouble(p);
-}
-inline folly::Optional<double> JS::NativeCameraRollManager::PhotoIdentifierNodeLocation::altitude() const
-{
-  id const p = _v[@"altitude"];
-  return RCTBridgingToOptionalDouble(p);
-}
-inline folly::Optional<double> JS::NativeCameraRollManager::PhotoIdentifierNodeLocation::heading() const
-{
-  id const p = _v[@"heading"];
-  return RCTBridgingToOptionalDouble(p);
-}
-inline folly::Optional<double> JS::NativeCameraRollManager::PhotoIdentifierNodeLocation::speed() const
-{
-  id const p = _v[@"speed"];
-  return RCTBridgingToOptionalDouble(p);
-}
-inline JS::NativeCameraRollManager::PhotoIdentifierImage JS::NativeCameraRollManager::PhotoIdentifierNode::image() const
-{
-  id const p = _v[@"image"];
-  return JS::NativeCameraRollManager::PhotoIdentifierImage(p);
-}
-inline NSString *JS::NativeCameraRollManager::PhotoIdentifierNode::type() const
-{
-  id const p = _v[@"type"];
-  return RCTBridgingToString(p);
-}
-inline NSString *JS::NativeCameraRollManager::PhotoIdentifierNode::group_name() const
-{
-  id const p = _v[@"group_name"];
-  return RCTBridgingToString(p);
-}
-inline double JS::NativeCameraRollManager::PhotoIdentifierNode::timestamp() const
-{
-  id const p = _v[@"timestamp"];
-  return RCTBridgingToDouble(p);
-}
-inline JS::NativeCameraRollManager::PhotoIdentifierNodeLocation JS::NativeCameraRollManager::PhotoIdentifierNode::location() const
-{
-  id const p = _v[@"location"];
-  return JS::NativeCameraRollManager::PhotoIdentifierNodeLocation(p);
-}
-inline JS::NativeCameraRollManager::PhotoIdentifierNode JS::NativeCameraRollManager::PhotoIdentifier::node() const
-{
-  id const p = _v[@"node"];
-  return JS::NativeCameraRollManager::PhotoIdentifierNode(p);
-}
-inline bool JS::NativeCameraRollManager::PhotoIdentifiersPagePage_info::has_next_page() const
-{
-  id const p = _v[@"has_next_page"];
-  return RCTBridgingToBool(p);
-}
-inline NSString *JS::NativeCameraRollManager::PhotoIdentifiersPagePage_info::start_cursor() const
-{
-  id const p = _v[@"start_cursor"];
-  return RCTBridgingToString(p);
-}
-inline NSString *JS::NativeCameraRollManager::PhotoIdentifiersPagePage_info::end_cursor() const
-{
-  id const p = _v[@"end_cursor"];
-  return RCTBridgingToString(p);
-}
-inline facebook::react::LazyVector<JS::NativeCameraRollManager::PhotoIdentifier> JS::NativeCameraRollManager::PhotoIdentifiersPage::edges() const
-{
-  id const p = _v[@"edges"];
-  return RCTBridgingToVec(p, ^JS::NativeCameraRollManager::PhotoIdentifier(id itemValue_0) { return JS::NativeCameraRollManager::PhotoIdentifier(itemValue_0); });
-}
-inline JS::NativeCameraRollManager::PhotoIdentifiersPagePage_info JS::NativeCameraRollManager::PhotoIdentifiersPage::page_info() const
-{
-  id const p = _v[@"page_info"];
-  return JS::NativeCameraRollManager::PhotoIdentifiersPagePage_info(p);
-}
 inline JS::NativeDeviceInfo::DisplayMetrics::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto width = i.width.get();
@@ -3571,6 +3393,10 @@ inline JS::NativePlatformConstantsAndroid::Constants::Builder::Builder(const Inp
   d[@"ServerHost"] = ServerHost;
   auto uiMode = i.uiMode.get();
   d[@"uiMode"] = uiMode;
+  auto Brand = i.Brand.get();
+  d[@"Brand"] = Brand;
+  auto Manufacturer = i.Manufacturer.get();
+  d[@"Manufacturer"] = Manufacturer;
   return d;
 }) {}
 inline JS::NativePlatformConstantsAndroid::Constants::Builder::Builder(Constants i) : _factory(^{

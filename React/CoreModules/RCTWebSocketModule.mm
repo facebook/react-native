@@ -53,6 +53,8 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+  [super invalidate];
+
   _contentHandlers = nil;
   for (RCTSRWebSocket *socket in _sockets.allValues) {
     socket.delegate = nil;

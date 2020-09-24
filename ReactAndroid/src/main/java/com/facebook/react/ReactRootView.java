@@ -14,6 +14,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -39,6 +40,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -290,7 +292,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    // No-op since UIManagerModule handles actually laying out children.
+    // No-op in non-Fabric since UIManagerModule handles actually laying out children.
+
+    // In Fabric, update LayoutSpecs just so we update the offsetX and offsetY.
+    if (mWasMeasured && getUIManagerType() == FABRIC) {
+      updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
+    }
   }
 
   @Override
@@ -404,6 +411,20 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return appProperties != null ? appProperties.getString("surfaceID") : null;
   }
 
+  public static Point getViewportOffset(View v) {
+    int[] locationInWindow = new int[2];
+    v.getLocationInWindow(locationInWindow);
+
+    // we need to subtract visibleWindowCoords - to subtract possible window insets, split
+    // screen or multi window
+    Rect visibleWindowFrame = new Rect();
+    v.getWindowVisibleDisplayFrame(visibleWindowFrame);
+    locationInWindow[0] -= visibleWindowFrame.left;
+    locationInWindow[1] -= visibleWindowFrame.top;
+
+    return new Point(locationInWindow[0], locationInWindow[1]);
+  }
+
   private void updateRootLayoutSpecs(final int widthMeasureSpec, final int heightMeasureSpec) {
     if (mReactInstanceManager == null) {
       FLog.w(TAG, "Unable to update root layout specs for uninitialized ReactInstanceManager");
@@ -417,7 +438,17 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
       // Ignore calling updateRootLayoutSpecs if UIManager is not properly initialized.
       if (uiManager != null) {
-        uiManager.updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
+        // In Fabric only, get position of view within screen
+        int offsetX = 0;
+        int offsetY = 0;
+        if (getUIManagerType() == FABRIC) {
+          Point viewportOffset = getViewportOffset(this);
+          offsetX = viewportOffset.x;
+          offsetY = viewportOffset.y;
+        }
+
+        uiManager.updateRootLayoutSpecs(
+            getRootViewTag(), widthMeasureSpec, heightMeasureSpec, offsetX, offsetY);
       }
     }
   }
@@ -431,6 +462,24 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @ThreadConfined(UI)
   public void unmountReactApplication() {
     UiThreadUtil.assertOnUiThread();
+    // Stop surface in Fabric.
+    // Calling FabricUIManager.stopSurface causes the C++ Binding.stopSurface
+    // to be called synchronously over the JNI, which causes an empty tree
+    // to be committed via the Scheduler, which will cause mounting instructions
+    // to be queued up and synchronously executed to delete and remove
+    // all the views in the hierarchy.
+    if (mReactInstanceManager != null && ReactFeatureFlags.enableStopSurfaceOnRootViewUnmount) {
+      final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
+      if (reactApplicationContext != null && getUIManagerType() == FABRIC) {
+        @Nullable
+        UIManager uiManager =
+            UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
+        if (uiManager != null) {
+          FLog.e(TAG, "stopSurface for surfaceId: " + this.getId());
+          uiManager.stopSurface(this.getId());
+        }
+      }
+    }
 
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);
@@ -665,7 +714,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         sendEvent(
             "keyboardDidHide",
             createKeyboardEventPayload(
-                PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
+                PixelUtil.toDIPFromPixel(mLastHeight),
                 0,
                 PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
                 0));
