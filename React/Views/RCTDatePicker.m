@@ -24,6 +24,10 @@
   if ((self = [super initWithFrame:frame])) {
     [self addTarget:self action:@selector(didChange) forControlEvents:UIControlEventValueChanged];
     _reactMinuteInterval = 1;
+
+    if (@available(iOS 14, *)) {
+      self.preferredDatePickerStyle = UIDatePickerStyleWheels;
+    }
   }
   return self;
 }
