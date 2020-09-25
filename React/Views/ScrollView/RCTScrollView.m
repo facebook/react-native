@@ -639,7 +639,13 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
                                          : MAX(0, _scrollView.contentSize.height - viewportSize.height);
 
     // Calculate the snap offsets adjacent to the initial offset target
-    CGFloat targetOffset = isHorizontal ? targetContentOffset->x : targetContentOffset->y;
+    CGFloat targetOffset = targetContentOffset->y;
+    if (isHorizontal) {
+      // Use current scroll offset to determine the next index to snap to when momentum disabled
+      targetOffset = self.disableIntervalMomentum ? scrollView.contentOffset.x : targetContentOffset->x;
+    } else {
+      targetOffset = self.disableIntervalMomentum ? scrollView.contentOffset.y : targetContentOffset->y;
+    }
     CGFloat smallerOffset = 0.0;
     CGFloat largerOffset = maximumOffset;
 
