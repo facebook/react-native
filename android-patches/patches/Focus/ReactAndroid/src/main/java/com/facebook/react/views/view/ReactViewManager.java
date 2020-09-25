@@ -1,5 +1,5 @@
---- /home/mganandraj/code/rn-macos-fb62merge-fresh/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewManager.java	2020-08-17 18:05:31.686674971 -0700
-+++ /home/mganandraj/code/rn-macos-fb62merge/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewManager.java	2020-08-17 16:24:38.654706790 -0700
+--- /home/hermes/code/react-native-macos-fresh/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewManager.java	2020-09-21 21:41:24.454784434 -0700
++++ /home/hermes/code/react-native-macos/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewManager.java	2020-09-22 12:07:14.797980137 -0700
 @@ -48,8 +48,13 @@
      Spacing.START,
      Spacing.END,
@@ -28,7 +28,7 @@
 +        "topOnFocusChange",
 +        MapBuilder.of(
 +          "phasedRegistrationNames",
-+          MapBuilder.of("bubbled", "onFocusChange")))
++          MapBuilder.of("bubbled", "onFocusChange","captured", "onFocusChangeCapture")))
 +      .build();
 +  }
 +

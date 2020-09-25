@@ -387,11 +387,13 @@ struct RCTInstanceCallback : public InstanceCallback {
       }
       onProgress:^(RCTLoadingProgress *progressData) {
 #if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
-        if ([[self devSettings] isDevModeEnabled]) { // TODO(OSS Candidate ISS#2710739)
+        // [TODO(OSS Candidate ISS#2710739)
+        // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
+        if ([weakSelf isValid] && [[weakSelf devSettings] isDevModeEnabled]) {
           id<RCTDevLoadingViewProtocol> loadingView = [weakSelf moduleForName:@"DevLoadingView"
                                                         lazilyLoadIfNecessary:YES];
           [loadingView updateProgress:progressData];
-        } // TODO(OSS Candidate ISS#2710739)
+        } // ]TODO(OSS Candidate ISS#2710739)
 #endif
       }];
 
