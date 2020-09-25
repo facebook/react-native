@@ -805,7 +805,6 @@ workflows:
             branches:
               # TODO(macOS ISS#2323203): disable this test which is redundant to Azure Devops test and in the fork it fails because of Microsoft's V8 upgrade to Android
               ignore: /.*/
-              ignore: gh-pages
       - test_windows:
           filters:
             branches:
