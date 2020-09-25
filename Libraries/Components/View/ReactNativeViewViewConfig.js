@@ -326,7 +326,7 @@ const ReactNativeViewConfig = {
       textTransform: true,
       tintColor: {process: require('../../StyleSheet/processColor')},
       top: true,
-      transform: ((Platform.OS === 'ios'
+      transform: ((Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS ISS#2323203)
         ? {diff: require('../../Utilities/differ/matricesDiffer')}
         : {process: require('../../StyleSheet/processTransform')}): any),
       transformMatrix: true,
@@ -338,7 +338,7 @@ const ReactNativeViewConfig = {
     },
     testID: true,
     top: true,
-    transform: ((Platform.OS === 'ios'
+    transform: ((Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS ISS#2323203)
       ? {diff: require('../../Utilities/differ/matricesDiffer')}
       : {process: require('../../StyleSheet/processTransform')}): any),
     translateX: true,
