@@ -21,6 +21,12 @@ SharedColor colorFromComponents(ColorComponents components) {
 }
 
 ColorComponents colorComponentsFromColor(SharedColor sharedColor) {
+  if (!sharedColor) {
+    // Empty color object can be considered as `clear` (black, fully
+    // transparent) color.
+    return ColorComponents{0, 0, 0, 0};
+  }
+
   float ratio = 256;
   Color color = *sharedColor;
   return ColorComponents{(float)((color >> 16) & 0xff) / ratio,
