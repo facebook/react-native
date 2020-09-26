@@ -187,7 +187,6 @@ android {
 
 if (enableCodegen) {
     def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
-    def reactAndroidBuildDir = project(':ReactAndroid').buildDir;
     android {
         defaultConfig {
             externalNativeBuild {
@@ -197,14 +196,8 @@ if (enableCodegen) {
                             "APP_STL=c++_shared",
                             "NDK_TOOLCHAIN_VERSION=clang",
                             // The following paths assume building React Native from source.
-                            // TODO: Find a better way without pointing to ReactAndroid/build dir.
                             "GENERATED_SRC_DIR=$buildDir/generated/source",
-                            "REACT_ANDROID_SRC_DIR=$reactAndroidProjectDir/src/main",
-                            "REACT_COMMON_DIR=$rootDir/ReactCommon",
-                            "REACT_GENERATED_SRC_DIR=$reactAndroidBuildDir/generated/source",
-                            "REACT_NDK_EXPORT_DIR=$reactAndroidBuildDir/tmp/buildReactNdkLib/local",
-                            "FIRST_PARTY_NDK_DIR=$reactAndroidProjectDir/src/main/jni/first-party",
-                            "THIRD_PARTY_NDK_DIR=$reactAndroidBuildDir/third-party-ndk"
+                            "REACT_ANDROID_DIR=$reactAndroidProjectDir"
                     cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
                     cppFlags "-std=c++1y"
                     targets "rntester_appmodules"
