@@ -74,10 +74,10 @@ LOCAL_EXPORT_C_INCLUDES := \
 LOCAL_SHARED_LIBRARIES := libfolly_json
 include $(PREBUILT_SHARED_LIBRARY)
 
-# react_nativemodule_manager
+# turbomodulejsijni
 include $(CLEAR_VARS)
-LOCAL_MODULE := react_nativemodule_manager
-LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_nativemodule_manager.so
+LOCAL_MODULE := turbomodulejsijni
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libturbomodulejsijni.so
 LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_ANDROID_SRC_DIR)/java/com/facebook/react/turbomodule/core/jni
 include $(PREBUILT_SHARED_LIBRARY)
