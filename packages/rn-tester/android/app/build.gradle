@@ -154,6 +154,7 @@ android {
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField("boolean", "ENABLE_FABRIC", "$enableFabric")
+        buildConfigField("boolean", "ENABLE_TURBOMODULE", "$enableCodegen") // If using codegen, assume using TurboModule
     }
     signingConfigs {
         release {
