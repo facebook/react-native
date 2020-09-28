@@ -14,7 +14,7 @@
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
-const { PlatformColor } = require('../../StyleSheet/PlatformColorValueTypes');
+const {PlatformColor} = require('../../StyleSheet/PlatformColorValueTypes');
 const View = require('../View/View');
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
@@ -184,7 +184,8 @@ ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
  * and run Flow. */
 ActivityIndicatorWithRef.defaultProps = {
   animating: true,
-  color: Platform.OS === 'ios' ? GRAY : PlatformColor('?attr/colorControlActivated'),
+  color:
+    Platform.OS === 'ios' ? GRAY : PlatformColor('?attr/colorControlActivated'),
   hidesWhenStopped: true,
   size: 'small',
 };
