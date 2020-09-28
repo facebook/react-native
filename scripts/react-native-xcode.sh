@@ -20,6 +20,11 @@ if [[ "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator ]]; then
       break
     fi
   done
+  # if en0 and en1 both point to local addresses, try something else
+  if [[ "$IP" == *"169.254"* ||  "$IP" == *"127.0"* ]]; then
+    IP=""
+  fi
+
   if [ -z "$IP" ]; then
     IP=$(ifconfig | grep 'inet ' | grep -v ' 127.' | grep -v ' 169.254.' |cut -d\   -f2  | awk 'NR==1{print $1}')
   fi
