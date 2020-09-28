@@ -39,7 +39,8 @@ include $(BUILD_STATIC_LIBRARY)
 include $(CLEAR_VARS)
 
 # Name of this module.
-LOCAL_MODULE := react_nativemodule_manager
+# TODO: rename to react_nativemodule_manager
+LOCAL_MODULE := turbomodulejsijni
 
 # Header search path for all source files in this module.
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/ReactCommon

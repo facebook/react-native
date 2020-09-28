@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/utils/Telemetry.h>
 
