@@ -16,7 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * Just regular UITextField... but much better!
  */
+#if RCT_SUBCLASS_SECURETEXTFIELD
+@interface RCTUISecureTextField : NSSecureTextField <RCTBackedTextInputViewProtocol>
+#else
 @interface RCTUITextField : UITextField <RCTBackedTextInputViewProtocol>
+#endif
 
 - (instancetype)initWithCoder:(NSCoder *)decoder NS_UNAVAILABLE;
 
