@@ -41,15 +41,15 @@ export interface IPerformanceLogger {
   clearCompleted(): void;
   close(): void;
   currentTimestamp(): number;
-  getExtras(): {[key: string]: ExtraValue, ...};
-  getPoints(): {[key: string]: number, ...};
-  getPointExtras(): {[key: string]: Extras, ...};
-  getTimespans(): {[key: string]: Timespan, ...};
+  getExtras(): {[key: string]: ?ExtraValue, ...};
+  getPoints(): {[key: string]: ?number, ...};
+  getPointExtras(): {[key: string]: ?Extras, ...};
+  getTimespans(): {[key: string]: ?Timespan, ...};
   hasTimespan(key: string): boolean;
   isClosed(): boolean;
   logEverything(): void;
   markPoint(key: string, timestamp?: number, extras?: Extras): void;
-  removeExtra(key: string): ExtraValue | void;
+  removeExtra(key: string): ?ExtraValue;
   setExtra(key: string, value: ExtraValue): void;
   startTimespan(key: string, extras?: Extras): void;
   stopTimespan(key: string, extras?: Extras): void;
@@ -60,10 +60,10 @@ const _cookies: {[key: string]: number, ...} = {};
 const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally committing `true`;
 
 class PerformanceLogger implements IPerformanceLogger {
-  _timespans: {[key: string]: Timespan} = {};
-  _extras: {[key: string]: ExtraValue} = {};
-  _points: {[key: string]: number} = {};
-  _pointExtras: {[key: string]: Extras, ...} = {};
+  _timespans: {[key: string]: ?Timespan} = {};
+  _extras: {[key: string]: ?ExtraValue} = {};
+  _points: {[key: string]: ?number} = {};
+  _pointExtras: {[key: string]: ?Extras, ...} = {};
   _closed: boolean = false;
 
   addTimespan(
@@ -109,7 +109,7 @@ class PerformanceLogger implements IPerformanceLogger {
 
   clearCompleted() {
     for (const key in this._timespans) {
-      if (this._timespans[key].totalTime != null) {
+      if (this._timespans[key]?.totalTime != null) {
         delete this._timespans[key];
       }
     }
@@ -156,7 +156,7 @@ class PerformanceLogger implements IPerformanceLogger {
     if (PRINT_TO_CONSOLE) {
       // log timespans
       for (const key in this._timespans) {
-        if (this._timespans[key].totalTime != null) {
+        if (this._timespans[key]?.totalTime != null) {
           infoLog(key + ': ' + this._timespans[key].totalTime + 'ms');
         }
       }
@@ -166,7 +166,9 @@ class PerformanceLogger implements IPerformanceLogger {
 
       // log points
       for (const key in this._points) {
-        infoLog(key + ': ' + this._points[key] + 'ms');
+        if (this._points[key] != null) {
+          infoLog(key + ': ' + this._points[key] + 'ms');
+        }
       }
     }
   }
@@ -178,7 +180,7 @@ class PerformanceLogger implements IPerformanceLogger {
       }
       return;
     }
-    if (this._points[key]) {
+    if (this._points[key] != null) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
           'PerformanceLogger: Attempting to mark a point that has been already logged ',
@@ -193,7 +195,7 @@ class PerformanceLogger implements IPerformanceLogger {
     }
   }
 
-  removeExtra(key: string): ExtraValue | void {
+  removeExtra(key: string): ?ExtraValue {
     const value = this._extras[key];
     delete this._extras[key];
     return value;
