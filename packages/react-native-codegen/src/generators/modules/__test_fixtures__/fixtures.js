@@ -278,7 +278,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
                   nullable: false,
-                  type: 'GenericPromiseTypeAnnotation',
+                  type: 'PromiseTypeAnnotation',
                 },
                 params: [
                   {
@@ -1132,7 +1132,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  type: 'GenericPromiseTypeAnnotation',
+                  type: 'PromiseTypeAnnotation',
                   nullable: false,
                 },
                 params: [
@@ -1154,7 +1154,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  type: 'GenericPromiseTypeAnnotation',
+                  type: 'PromiseTypeAnnotation',
                   nullable: false,
                 },
                 params: [
@@ -1182,7 +1182,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  type: 'GenericPromiseTypeAnnotation',
+                  type: 'PromiseTypeAnnotation',
                   nullable: false,
                 },
                 params: [

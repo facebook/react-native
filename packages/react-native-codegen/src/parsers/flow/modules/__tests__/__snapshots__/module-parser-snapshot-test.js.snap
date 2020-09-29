@@ -1248,7 +1248,7 @@ Object {
                 "params": Array [],
                 "returnTypeAnnotation": Object {
                   "nullable": false,
-                  "type": "GenericPromiseTypeAnnotation",
+                  "type": "PromiseTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
               },
@@ -1261,7 +1261,7 @@ Object {
                 "params": Array [],
                 "returnTypeAnnotation": Object {
                   "nullable": false,
-                  "type": "GenericPromiseTypeAnnotation",
+                  "type": "PromiseTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
               },
@@ -1274,7 +1274,7 @@ Object {
                 "params": Array [],
                 "returnTypeAnnotation": Object {
                   "nullable": false,
-                  "type": "GenericPromiseTypeAnnotation",
+                  "type": "PromiseTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
               },

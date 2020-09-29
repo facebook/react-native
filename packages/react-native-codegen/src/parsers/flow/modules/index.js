@@ -62,7 +62,7 @@ function translateTypeAnnotation(
           );
           return {
             nullable,
-            type: 'GenericPromiseTypeAnnotation',
+            type: 'PromiseTypeAnnotation',
           };
         }
         case 'Array':
@@ -90,7 +90,7 @@ function translateTypeAnnotation(
               `${typeAnnotation.id.name} element type cannot be 'void'.`,
             );
             invariant(
-              elementType.type !== 'GenericPromiseTypeAnnotation',
+              elementType.type !== 'PromiseTypeAnnotation',
               `${typeAnnotation.id.name} element type cannot be 'Promise'.`,
             );
 
@@ -328,7 +328,7 @@ function translateFunctionTypeAnnotation(
     );
 
     invariant(
-      paramTypeAnnotation.type !== 'GenericPromiseTypeAnnotation',
+      paramTypeAnnotation.type !== 'PromiseTypeAnnotation',
       `Parameter ${paramName} cannot have type 'Promise'.`,
     );
 

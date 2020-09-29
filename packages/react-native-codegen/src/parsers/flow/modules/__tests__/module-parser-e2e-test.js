@@ -708,9 +708,7 @@ describe('Flow Module Parser', () => {
             promiseFlowType => {
               it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type '${promiseFlowType}'`, () => {
                 const [returnTypeAnnotation] = parseReturnType(promiseFlowType);
-                expect(returnTypeAnnotation.type).toBe(
-                  'GenericPromiseTypeAnnotation',
-                );
+                expect(returnTypeAnnotation.type).toBe('PromiseTypeAnnotation');
               });
             },
           );

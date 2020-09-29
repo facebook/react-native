@@ -364,7 +364,7 @@ export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{|
 |}>;
 
 export type NativeModulePromiseTypeAnnotation = $ReadOnly<{|
-  type: 'GenericPromiseTypeAnnotation',
+  type: 'PromiseTypeAnnotation',
   nullable: boolean,
 |}>;
 

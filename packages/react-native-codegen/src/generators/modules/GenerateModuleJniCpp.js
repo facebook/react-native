@@ -99,7 +99,7 @@ function translateReturnTypeToKind(
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
       return 'NumberKind';
-    case 'GenericPromiseTypeAnnotation':
+    case 'PromiseTypeAnnotation':
       return 'PromiseKind';
     case 'GenericObjectTypeAnnotation':
     case 'ObjectTypeAnnotation':
@@ -148,7 +148,7 @@ function translateParamTypeToJniType(
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
-    case 'GenericPromiseTypeAnnotation':
+    case 'PromiseTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Promise;';
     case 'GenericObjectTypeAnnotation':
     case 'ObjectTypeAnnotation':
@@ -191,7 +191,7 @@ function translateReturnTypeToJniType(
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
-    case 'GenericPromiseTypeAnnotation':
+    case 'PromiseTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Promise;';
     case 'GenericObjectTypeAnnotation':
     case 'ObjectTypeAnnotation':
@@ -214,8 +214,7 @@ function translateMethodTypeToJniSignature(
 
   const params = [...typeAnnotation.params];
   let processedReturnTypeAnnotation = returnTypeAnnotation;
-  const isPromiseReturn =
-    returnTypeAnnotation.type === 'GenericPromiseTypeAnnotation';
+  const isPromiseReturn = returnTypeAnnotation.type === 'PromiseTypeAnnotation';
   if (isPromiseReturn) {
     processedReturnTypeAnnotation = {
       nullable: false,
@@ -247,13 +246,11 @@ function translateMethodForImplementation(
 
   const numberOfParams =
     property.typeAnnotation.params.length +
-    (returnTypeAnnotation.type === 'GenericPromiseTypeAnnotation' ? 1 : 0);
+    (returnTypeAnnotation.type === 'PromiseTypeAnnotation' ? 1 : 0);
   const translatedArguments = property.typeAnnotation.params
     .map(param => param.name)
     .concat(
-      returnTypeAnnotation.type === 'GenericPromiseTypeAnnotation'
-        ? ['promise']
-        : [],
+      returnTypeAnnotation.type === 'PromiseTypeAnnotation' ? ['promise'] : [],
     )
     .slice(1)
     .join(':')

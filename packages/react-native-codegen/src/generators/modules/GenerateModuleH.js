@@ -92,7 +92,7 @@ function translatePrimitiveJSTypeToCpp(
       return 'jsi::Array';
     case 'FunctionTypeAnnotation':
       return 'jsi::Function';
-    case 'GenericPromiseTypeAnnotation':
+    case 'PromiseTypeAnnotation':
       return 'jsi::Value';
     default:
       // TODO (T65847278): Figure out why this does not work.

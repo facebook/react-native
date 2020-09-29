@@ -96,7 +96,7 @@ function translateReturnTypeToKind(typeAnnotation): string {
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
       return 'NumberKind';
-    case 'GenericPromiseTypeAnnotation':
+    case 'PromiseTypeAnnotation':
       return 'PromiseKind';
     case 'GenericObjectTypeAnnotation':
     case 'ObjectTypeAnnotation':
@@ -117,11 +117,11 @@ function translateMethodForImplementation(property): string {
 
   const numberOfParams =
     property.typeAnnotation.params.length +
-    (returnTypeAnnotation.type === 'GenericPromiseTypeAnnotation' ? 2 : 0);
+    (returnTypeAnnotation.type === 'PromiseTypeAnnotation' ? 2 : 0);
   const translatedArguments = property.typeAnnotation.params
     .map(param => param.name)
     .concat(
-      returnTypeAnnotation.type === 'GenericPromiseTypeAnnotation'
+      returnTypeAnnotation.type === 'PromiseTypeAnnotation'
         ? ['resolve', 'reject']
         : [],
     )

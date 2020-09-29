@@ -130,7 +130,7 @@ function translateFunctionReturnTypeToJavaType(
           throw new Error(createErrorMessage(returnTypeAnnotation.name));
       }
     case 'VoidTypeAnnotation':
-    case 'GenericPromiseTypeAnnotation':
+    case 'PromiseTypeAnnotation':
       return 'void';
     case 'StringTypeAnnotation':
       return wrapIntoNullableIfNeeded('String');
@@ -279,7 +279,7 @@ module.exports = {
         );
         const returningPromise =
           method.typeAnnotation.returnTypeAnnotation.type ===
-          'GenericPromiseTypeAnnotation';
+          'PromiseTypeAnnotation';
         const isSyncMethod =
           method.typeAnnotation.returnTypeAnnotation.type !==
             'VoidTypeAnnotation' && !returningPromise;

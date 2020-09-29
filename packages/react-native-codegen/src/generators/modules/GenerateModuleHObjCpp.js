@@ -44,8 +44,7 @@ const protocolTemplate = `::_STRUCTS_::
 `;
 
 const callbackArgs = prop =>
-  prop.typeAnnotation.returnTypeAnnotation.type ===
-  'GenericPromiseTypeAnnotation'
+  prop.typeAnnotation.returnTypeAnnotation.type === 'PromiseTypeAnnotation'
     ? `${
         prop.typeAnnotation.params.length === 0 ? '' : '\n   resolve'
       }:(RCTPromiseResolveBlock)resolve
@@ -171,7 +170,7 @@ function translatePrimitiveJSTypeToObjCTypeForReturn(
           throw new Error(createErrorMessage(typeAnnotation.name));
       }
     case 'VoidTypeAnnotation':
-    case 'GenericPromiseTypeAnnotation':
+    case 'PromiseTypeAnnotation':
       return 'void';
     case 'StringTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSString *');
