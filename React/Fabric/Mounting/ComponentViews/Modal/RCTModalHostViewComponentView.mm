@@ -19,7 +19,6 @@
 
 using namespace facebook::react;
 
-#if !TARGET_OS_TV
 static UIInterfaceOrientationMask supportedOrientationsMask(ModalHostViewSupportedOrientationsMask mask)
 {
   UIInterfaceOrientationMask supportedOrientations = 0;
@@ -54,7 +53,6 @@ static UIInterfaceOrientationMask supportedOrientationsMask(ModalHostViewSupport
 
   return supportedOrientations;
 }
-#endif
 
 static std::tuple<BOOL, UIModalTransitionStyle> animationConfiguration(ModalHostViewAnimationType const animation)
 {

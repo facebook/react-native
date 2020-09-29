@@ -170,6 +170,14 @@ function Pressable(props: Props, forwardedRef): React.Node {
 
   const hitSlop = normalizeRect(props.hitSlop);
 
+  const restPropsWithDefaults: React.ElementConfig<typeof View> = {
+    ...restProps,
+    ...android_rippleConfig?.viewProps,
+    accessible: accessible !== false,
+    focusable: focusable !== false,
+    hitSlop,
+  };
+
   const config = useMemo(
     () => ({
       disabled,
@@ -219,12 +227,8 @@ function Pressable(props: Props, forwardedRef): React.Node {
 
   return (
     <View
-      {...restProps}
+      {...restPropsWithDefaults}
       {...eventHandlers}
-      {...android_rippleConfig?.viewProps}
-      accessible={accessible !== false}
-      focusable={focusable !== false}
-      hitSlop={hitSlop}
       ref={viewRef}
       style={typeof style === 'function' ? style({pressed}) : style}
       collapsable={false}>
