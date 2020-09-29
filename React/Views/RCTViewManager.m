@@ -20,10 +20,6 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
-#if TARGET_OS_TV
-#import "RCTTVView.h"
-#endif
-
 @implementation RCTConvert (UIAccessibilityTraits)
 
 RCT_MULTI_ENUM_CONVERTER(
@@ -83,11 +79,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-#if TARGET_OS_TV
-  return [RCTTVView new];
-#else
   return [RCTView new];
-#endif
 }
 
 - (RCTShadowView *)shadowView
@@ -117,13 +109,6 @@ RCT_EXPORT_MODULE()
 }
 
 #pragma mark - View properties
-
-#if TARGET_OS_TV
-// TODO: Delete props for Apple TV.
-RCT_EXPORT_VIEW_PROPERTY(isTVSelectable, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
-#endif
 
 // Accessibility related properties
 RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityElement, BOOL)
