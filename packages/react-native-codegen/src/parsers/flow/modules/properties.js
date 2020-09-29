@@ -16,14 +16,14 @@ import type {
   TypeAliasTypeAnnotation,
 } from '../../../CodegenSchema.js';
 
-import type {ASTNode, TypeMap} from '../utils.js';
+import type {ASTNode, TypeDeclarationMap} from '../utils.js';
 const {getValueFromTypes} = require('../utils.js');
 
 function getObjectProperties(
   name: string,
   objectParam: ASTNode,
   paramName: string,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ): $ReadOnlyArray<ObjectParamTypeAnnotation> {
   return objectParam.properties.map(objectTypeProperty => {
     let optional = objectTypeProperty.optional;
@@ -53,7 +53,7 @@ function getElementTypeForArrayOrObject(
   name: string,
   arrayParam: ASTNode,
   paramName: string,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ):
   | FunctionTypeAnnotationParamTypeAnnotation
   | TypeAliasTypeAnnotation

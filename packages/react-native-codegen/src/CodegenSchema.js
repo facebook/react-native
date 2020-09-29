@@ -261,9 +261,15 @@ export type SchemaType = $ReadOnly<{|
  */
 export type NativeModuleShape = $ReadOnly<{|
   // We only support aliases to Objects
-  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
+  aliases: NativeModuleAliasMap,
   properties: $ReadOnlyArray<NativeModuleMethodTypeShape>,
 |}>;
+
+export type NativeModuleAliasMap = $ReadOnly<{
+  [aliasName: string]: NativeModuleAlias,
+}>;
+
+export type NativeModuleAlias = ObjectTypeAliasTypeShape;
 
 export type ObjectTypeAliasTypeShape = $ReadOnly<{|
   type: 'ObjectTypeAnnotation',

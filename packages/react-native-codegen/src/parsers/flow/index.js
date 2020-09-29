@@ -20,17 +20,9 @@ const {buildComponentSchema} = require('./components/schema');
 const {processComponent} = require('./components');
 const {processModule} = require('./modules');
 
-/**
- * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
- * declaration type. Unfortunately, we don't have those types, because flow-parser
- * generates them, and flow-parser is not type-safe. In the future, we should find
- * a way to get these types from our flow parser library.
- *
- * TODO(T71778680): Flow type AST Nodes
- */
-export type TypeDeclarations = {|[declarationName: string]: $FlowFixMe|};
+import type {TypeDeclarationMap} from './utils';
 
-function getTypes(ast): TypeDeclarations {
+function getTypes(ast): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
     if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
       if (
@@ -75,7 +67,7 @@ function isComponent(ast) {
   );
 }
 
-function isModule(types: TypeDeclarations) {
+function isModule(types: TypeDeclarationMap) {
   const declaredModuleNames: Array<string> = Object.keys(types).filter(
     (typeName: string) => {
       const declaration = types[typeName];
@@ -103,7 +95,7 @@ function isModule(types: TypeDeclarations) {
   return true;
 }
 
-function getConfigType(ast, types: TypeDeclarations): 'module' | 'component' {
+function getConfigType(ast, types: TypeDeclarationMap): 'module' | 'component' {
   const isConfigAComponent = isComponent(ast);
   const isConfigAModule = isModule(types);
 

@@ -16,12 +16,13 @@ import type {
   FunctionTypeAnnotationReturn,
 } from '../../../CodegenSchema.js';
 
-import type {ASTNode, TypeMap} from '../utils.js';
+import type {ASTNode, TypeDeclarationMap} from '../utils.js';
 const {getValueFromTypes} = require('../utils.js');
 const {
   getElementTypeForArrayOrObject,
   getObjectProperties,
 } = require('./properties');
+const invariant = require('invariant');
 
 // $FlowFixMe there's no flowtype for ASTs
 type MethodAST = Object;
@@ -29,7 +30,7 @@ type MethodAST = Object;
 function getTypeAnnotationForParam(
   name: string,
   paramAnnotation: ASTNode,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ): FunctionTypeAnnotationParam {
   let param = paramAnnotation;
   if (param.name === null) {
@@ -188,7 +189,7 @@ function getTypeAnnotationForParam(
 function getReturnTypeAnnotation(
   methodName: string,
   returnType,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ): FunctionTypeAnnotationReturn {
   let typeAnnotation = getValueFromTypes(returnType, types);
   let nullable = false;
@@ -315,7 +316,7 @@ function getReturnTypeAnnotation(
 
 function buildMethodSchema(
   property: MethodAST,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ): NativeModuleMethodTypeShape {
   const name: string = property.key.name;
   const value = getValueFromTypes(property.value, types);
@@ -345,10 +346,27 @@ function buildMethodSchema(
 }
 
 function getMethods(
-  typeDefinition: $ReadOnlyArray<MethodAST>,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ): $ReadOnlyArray<NativeModuleMethodTypeShape> {
-  return typeDefinition
+  const moduleInterfaceNames = Object.keys(types).filter((typeName: string) => {
+    const declaration = types[typeName];
+    return (
+      declaration.type === 'InterfaceDeclaration' &&
+      declaration.extends.length === 1 &&
+      declaration.extends[0].type === 'InterfaceExtends' &&
+      declaration.extends[0].id.name === 'TurboModule'
+    );
+  });
+
+  invariant(
+    moduleInterfaceNames.length === 1,
+    'There must be exactly one module declaration per file',
+  );
+
+  const [moduleInterfaceName] = moduleInterfaceNames;
+
+  const declaration = types[moduleInterfaceName];
+  return declaration.body.properties
     .filter(property => property.type === 'ObjectTypeProperty')
     .map(property => buildMethodSchema(property, types))
     .filter(Boolean);

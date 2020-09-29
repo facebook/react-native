@@ -10,59 +10,36 @@
 
 'use strict';
 
-import type {ObjectTypeAliasTypeShape} from '../../../CodegenSchema.js';
-
-import type {TypeMap} from '../utils.js';
+import type {NativeModuleAliasMap} from '../../../CodegenSchema.js';
+import type {TypeDeclarationMap} from '../utils';
 
 const {getObjectProperties} = require('./properties');
 
-// $FlowFixMe there's no flowtype for ASTs
-type MethodAST = Object;
-
-function getAliases(
-  typeDefinition: $ReadOnlyArray<MethodAST>,
-  types: TypeMap,
-): $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}> {
-  const aliases = {};
-  typeDefinition.map(moduleAlias => {
-    const aliasName = Object.keys(moduleAlias)[0];
-    const typeAnnotation = moduleAlias[Object.keys(moduleAlias)[0]];
-
-    switch (typeAnnotation.type) {
-      case 'ObjectTypeAnnotation':
-        aliases[aliasName] = {
+function getAliases(types: TypeDeclarationMap): NativeModuleAliasMap {
+  const typeNames: Array<string> = Object.keys(types);
+  return typeNames
+    .filter((typeName: string) => {
+      const declaration = types[typeName];
+      return (
+        declaration.type === 'TypeAlias' &&
+        declaration.right.type === 'ObjectTypeAnnotation'
+      );
+    })
+    .reduce((aliases: NativeModuleAliasMap, aliasName: string) => {
+      const alias = types[aliasName];
+      return {
+        ...aliases,
+        [aliasName]: {
           type: 'ObjectTypeAnnotation',
-          ...(typeAnnotation.properties && {
-            properties: getObjectProperties(
-              aliasName,
-              {properties: typeAnnotation.properties},
-              aliasName,
-              types,
-            ),
-          }),
-        };
-        return;
-      case 'GenericTypeAnnotation':
-        if (typeAnnotation.id.name && typeAnnotation.id.name !== '') {
-          aliases[aliasName] = {
-            type: 'TypeAliasTypeAnnotation',
-            name: typeAnnotation.id.name,
-          };
-          return;
-        } else {
-          throw new Error(
-            `Cannot use "${typeAnnotation.type}" type annotation for "${aliasName}": must specify a type alias name`,
-          );
-        }
-      default:
-        // TODO (T65847278): Figure out why this does not work.
-        // (typeAnnotation.type: empty);
-        throw new Error(
-          `Unknown prop type, found "${typeAnnotation.type}" in "${aliasName}"`,
-        );
-    }
-  });
-  return aliases;
+          properties: getObjectProperties(
+            aliasName,
+            {properties: alias.right.properties},
+            aliasName,
+            types,
+          ),
+        },
+      };
+    }, ({}: NativeModuleAliasMap));
 }
 
 module.exports = {
