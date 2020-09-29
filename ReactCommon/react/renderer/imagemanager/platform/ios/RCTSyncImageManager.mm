@@ -37,7 +37,7 @@ using namespace facebook::react;
 - (ImageRequest)requestImage:(ImageSource)imageSource surfaceId:(SurfaceId)surfaceId
 {
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
-  auto imageRequest = ImageRequest(imageSource, telemetry, nullptr);
+  auto imageRequest = ImageRequest(imageSource, telemetry);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 

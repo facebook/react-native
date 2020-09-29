@@ -13,9 +13,7 @@
 #import <react/renderer/components/image/ImageComponentDescriptor.h>
 #import <react/renderer/components/image/ImageEventEmitter.h>
 #import <react/renderer/components/image/ImageProps.h>
-#import <react/renderer/imagemanager/ImageInstrumentation.h>
 #import <react/renderer/imagemanager/ImageRequest.h>
-#import <react/renderer/imagemanager/RCTImageInstrumentationProxy.h>
 #import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
 
 using namespace facebook::react;
@@ -159,11 +157,6 @@ using namespace facebook::react;
     auto data = self->_stateTeller.getData();
     if (!data.hasValue()) {
       return;
-    }
-    auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
-        data.value().getImageRequest().getSharedImageInstrumentation());
-    if (instrumentation) {
-      instrumentation->didSetImage();
     }
   };
 
