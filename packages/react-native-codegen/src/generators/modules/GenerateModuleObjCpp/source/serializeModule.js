@@ -46,11 +46,12 @@ namespace facebook {
     Native${moduleName}SpecJSI::Native${moduleName}SpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         ${methodSerializationOutputs
-          .map(({methodName, structParamRecords}) =>
+          .map(({methodName, structParamRecords, argCount}) =>
             MethodMapEntryTemplate({
               moduleName,
               methodName,
               structParamRecords,
+              argCount,
             }),
           )
           .join('\n' + ' '.repeat(8))}
@@ -94,12 +95,14 @@ const MethodMapEntryTemplate = ({
   moduleName,
   methodName,
   structParamRecords,
+  argCount,
 }: $ReadOnly<{|
   moduleName: string,
   methodName: string,
   structParamRecords: $ReadOnlyArray<StructParameterRecord>,
+  argCount: number,
 |}>) => `
-        methodMap_["${methodName}"] = MethodMetadata {1, __hostFunction_Native${moduleName}SpecJSI_${methodName}};
+        methodMap_["${methodName}"] = MethodMetadata {${argCount}, __hostFunction_Native${moduleName}SpecJSI_${methodName}};
         ${structParamRecords
           .map(({paramIndex, structName}) => {
             return `setMethodArgConversionSelector(@"${methodName}", ${paramIndex}, @"JS_Native${moduleName}_${structName}:");`;
@@ -114,7 +117,7 @@ function serializeModuleSource(
 ): string {
   return ModuleTemplate({
     moduleName,
-    structs,
+    structs: structs.filter(({context}) => context !== 'CONSTANTS'),
     methodSerializationOutputs,
   });
 }

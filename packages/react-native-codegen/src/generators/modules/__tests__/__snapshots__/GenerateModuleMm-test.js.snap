@@ -101,7 +101,7 @@ namespace facebook {
         setMethodArgConversionSelector(@\\"optionals\\", 0, @\\"JS_NativeSampleTurboModule_SpecOptionalsA:\\");
 
         
-        methodMap_[\\"optionalMethod\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_optionalMethod};
+        methodMap_[\\"optionalMethod\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleSpecJSI_optionalMethod};
         
 
         
@@ -214,7 +214,7 @@ namespace facebook {
       : ObjCTurboModule(params) {
         
         methodMap_[\\"cropImage\\"] = MethodMetadata {1, __hostFunction_NativeAliasTurboModuleSpecJSI_cropImage};
-        setMethodArgConversionSelector(@\\"cropImage\\", 0, @\\"JS_NativeAliasTurboModule_SpecCropImageCropData:\\");
+        setMethodArgConversionSelector(@\\"cropImage\\", 0, @\\"JS_NativeAliasTurboModule_Options:\\");
 
     }
   } // namespace react
@@ -273,10 +273,10 @@ namespace facebook {
       : ObjCTurboModule(params) {
         
         methodMap_[\\"getPhotos\\"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerSpecJSI_getPhotos};
-        setMethodArgConversionSelector(@\\"getPhotos\\", 0, @\\"JS_NativeCameraRollManager_SpecGetPhotosParams:\\");
+        setMethodArgConversionSelector(@\\"getPhotos\\", 0, @\\"JS_NativeCameraRollManager_GetPhotosParams:\\");
 
         
-        methodMap_[\\"saveToCameraRoll\\"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerSpecJSI_saveToCameraRoll};
+        methodMap_[\\"saveToCameraRoll\\"] = MethodMetadata {2, __hostFunction_NativeCameraRollManagerSpecJSI_saveToCameraRoll};
         
 
         
@@ -335,23 +335,23 @@ namespace facebook {
     NativeExceptionsManagerSpecJSI::NativeExceptionsManagerSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"reportFatalException\\"] = MethodMetadata {1, __hostFunction_NativeExceptionsManagerSpecJSI_reportFatalException};
+        methodMap_[\\"reportFatalException\\"] = MethodMetadata {3, __hostFunction_NativeExceptionsManagerSpecJSI_reportFatalException};
         
 
         
-        methodMap_[\\"reportSoftException\\"] = MethodMetadata {1, __hostFunction_NativeExceptionsManagerSpecJSI_reportSoftException};
+        methodMap_[\\"reportSoftException\\"] = MethodMetadata {3, __hostFunction_NativeExceptionsManagerSpecJSI_reportSoftException};
         
 
         
         methodMap_[\\"reportException\\"] = MethodMetadata {1, __hostFunction_NativeExceptionsManagerSpecJSI_reportException};
-        setMethodArgConversionSelector(@\\"reportException\\", 0, @\\"JS_NativeExceptionsManager_SpecReportExceptionData:\\");
+        setMethodArgConversionSelector(@\\"reportException\\", 0, @\\"JS_NativeExceptionsManager_ExceptionData:\\");
 
         
-        methodMap_[\\"updateExceptionMessage\\"] = MethodMetadata {1, __hostFunction_NativeExceptionsManagerSpecJSI_updateExceptionMessage};
+        methodMap_[\\"updateExceptionMessage\\"] = MethodMetadata {3, __hostFunction_NativeExceptionsManagerSpecJSI_updateExceptionMessage};
         
 
         
-        methodMap_[\\"dismissRedbox\\"] = MethodMetadata {1, __hostFunction_NativeExceptionsManagerSpecJSI_dismissRedbox};
+        methodMap_[\\"dismissRedbox\\"] = MethodMetadata {0, __hostFunction_NativeExceptionsManagerSpecJSI_dismissRedbox};
         
 
     }
@@ -378,7 +378,7 @@ namespace facebook {
     NativeImagePickerIOSSpecJSI::NativeImagePickerIOSSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"openCameraDialog\\"] = MethodMetadata {1, __hostFunction_NativeImagePickerIOSSpecJSI_openCameraDialog};
+        methodMap_[\\"openCameraDialog\\"] = MethodMetadata {3, __hostFunction_NativeImagePickerIOSSpecJSI_openCameraDialog};
         setMethodArgConversionSelector(@\\"openCameraDialog\\", 0, @\\"JS_NativeImagePickerIOS_SpecOpenCameraDialogConfig:\\");
 
     }
@@ -408,13 +408,6 @@ Map {
 #import \\"SampleSpec.h\\"
 
 
-
-@implementation RCTCxxConvert (NativeSampleTurboModule_Constants)
-+ (RCTManagedPointer *)JS_NativeSampleTurboModule_Constants:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeSampleTurboModule::Constants>(json);
-}
-@end
 
 namespace facebook {
   namespace react {
@@ -477,7 +470,7 @@ namespace facebook {
     NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"voidFunc\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
+        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
         
 
         
@@ -505,7 +498,7 @@ namespace facebook {
         
 
         
-        methodMap_[\\"getValue\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValue};
+        methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleSpecJSI_getValue};
         
 
         
@@ -517,7 +510,7 @@ namespace facebook {
         
 
         
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
+        methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
         
 
     }
@@ -559,7 +552,7 @@ namespace facebook {
     NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"voidFunc\\"] = MethodMetadata {1, __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc};
+        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc};
         
 
     }
@@ -579,7 +572,7 @@ namespace facebook {
     NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"voidFunc\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
+        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
         
 
     }
@@ -621,7 +614,7 @@ namespace facebook {
     NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"voidFunc\\"] = MethodMetadata {1, __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc};
+        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc};
         
 
     }
@@ -641,7 +634,7 @@ namespace facebook {
     NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"voidFunc\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
+        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
         
 
     }

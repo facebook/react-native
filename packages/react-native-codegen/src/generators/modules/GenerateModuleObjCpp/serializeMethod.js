@@ -51,6 +51,7 @@ export type MethodSerializationOutput = $ReadOnly<{|
   selector: string,
   structParamRecords: $ReadOnlyArray<StructParameterRecord>,
   returnJSType: ReturnJSType,
+  argCount: number,
 |}>;
 
 function serializeMethod(
@@ -77,7 +78,7 @@ function serializeMethod(
   const structParamRecords: Array<StructParameterRecord> = [];
 
   params.forEach((param, index) => {
-    const structName = `Spec${capitalize(methodName)}${capitalize(param.name)}`;
+    const structName = getParamStructName(methodName, param);
     const {objCType, isStruct} = getParamObjCType(
       moduleName,
       methodName,
@@ -145,8 +146,20 @@ function serializeMethod(
       selector: `@selector(${selector})`,
       structParamRecords,
       returnJSType,
+      argCount: params.length,
     },
   ];
+}
+
+function getParamStructName(
+  methodName: string,
+  param: NativeModuleMethodParamSchema,
+): string {
+  if (param.typeAnnotation.type === 'TypeAliasTypeAnnotation') {
+    return param.typeAnnotation.name;
+  }
+
+  return `Spec${capitalize(methodName)}${capitalize(param.name)}`;
 }
 
 function getParamObjCType(
@@ -403,6 +416,7 @@ function serializeConstantsProtocolMethods(
         returnJSType: 'ObjectKind',
         selector: `@selector(${methodName})`,
         structParamRecords: [],
+        argCount: 0,
       };
     },
   );

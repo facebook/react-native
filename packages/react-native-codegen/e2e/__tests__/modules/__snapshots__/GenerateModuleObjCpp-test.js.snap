@@ -1346,7 +1346,7 @@ namespace facebook {
         
 
         
-        methodMap_[\\"getArrayWithAlias\\"] = MethodMetadata {1, __hostFunction_NativeArrayTurboModuleSpecJSI_getArrayWithAlias};
+        methodMap_[\\"getArrayWithAlias\\"] = MethodMetadata {2, __hostFunction_NativeArrayTurboModuleSpecJSI_getArrayWithAlias};
         
 
     }
@@ -1469,7 +1469,7 @@ namespace facebook {
         
 
         
-        methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativeNullableTurboModuleSpecJSI_getValueWithPromise};
+        methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {0, __hostFunction_NativeNullableTurboModuleSpecJSI_getValueWithPromise};
         
 
     }
@@ -1522,38 +1522,6 @@ namespace facebook {
 }
 @end
 
-
-@implementation RCTCxxConvert (NativeObjectTurboModule_ConstantsEEE)
-+ (RCTManagedPointer *)JS_NativeObjectTurboModule_ConstantsEEE:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeObjectTurboModule::ConstantsEEE>(json);
-}
-@end
-
-
-@implementation RCTCxxConvert (NativeObjectTurboModule_ConstantsEE)
-+ (RCTManagedPointer *)JS_NativeObjectTurboModule_ConstantsEE:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeObjectTurboModule::ConstantsEE>(json);
-}
-@end
-
-
-@implementation RCTCxxConvert (NativeObjectTurboModule_ConstantsE)
-+ (RCTManagedPointer *)JS_NativeObjectTurboModule_ConstantsE:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeObjectTurboModule::ConstantsE>(json);
-}
-@end
-
-
-@implementation RCTCxxConvert (NativeObjectTurboModule_Constants)
-+ (RCTManagedPointer *)JS_NativeObjectTurboModule_Constants:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeObjectTurboModule::Constants>(json);
-}
-@end
-
 namespace facebook {
   namespace react {
     
@@ -1601,7 +1569,7 @@ namespace facebook {
         setMethodArgConversionSelector(@\\"difficultObject\\", 0, @\\"JS_NativeObjectTurboModule_SpecDifficultObjectA:\\");
 
         
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeObjectTurboModuleSpecJSI_getConstants};
+        methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeObjectTurboModuleSpecJSI_getConstants};
         
 
     }
@@ -1609,37 +1577,6 @@ namespace facebook {
 } // namespace facebook
 
 
-
-@implementation RCTCxxConvert (NativeOptionalObjectTurboModule_ConstantsEEE)
-+ (RCTManagedPointer *)JS_NativeOptionalObjectTurboModule_ConstantsEEE:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeOptionalObjectTurboModule::ConstantsEEE>(json);
-}
-@end
-
-
-@implementation RCTCxxConvert (NativeOptionalObjectTurboModule_ConstantsEE)
-+ (RCTManagedPointer *)JS_NativeOptionalObjectTurboModule_ConstantsEE:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeOptionalObjectTurboModule::ConstantsEE>(json);
-}
-@end
-
-
-@implementation RCTCxxConvert (NativeOptionalObjectTurboModule_ConstantsE)
-+ (RCTManagedPointer *)JS_NativeOptionalObjectTurboModule_ConstantsE:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeOptionalObjectTurboModule::ConstantsE>(json);
-}
-@end
-
-
-@implementation RCTCxxConvert (NativeOptionalObjectTurboModule_Constants)
-+ (RCTManagedPointer *)JS_NativeOptionalObjectTurboModule_Constants:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeOptionalObjectTurboModule::Constants>(json);
-}
-@end
 
 namespace facebook {
   namespace react {
@@ -1652,7 +1589,7 @@ namespace facebook {
     NativeOptionalObjectTurboModuleSpecJSI::NativeOptionalObjectTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeOptionalObjectTurboModuleSpecJSI_getConstants};
+        methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeOptionalObjectTurboModuleSpecJSI_getConstants};
         
 
     }
@@ -1702,14 +1639,6 @@ namespace facebook {
 + (RCTManagedPointer *)JS_NativeSampleTurboModule_Animal:(id)json
 {
   return facebook::react::managedPointer<JS::NativeSampleTurboModule::Animal>(json);
-}
-@end
-
-
-@implementation RCTCxxConvert (NativeSampleTurboModule_Constants)
-+ (RCTManagedPointer *)JS_NativeSampleTurboModule_Constants:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeSampleTurboModule::Constants>(json);
 }
 @end
 
@@ -1784,7 +1713,7 @@ namespace facebook {
     NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"voidFunc\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
+        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
         
 
         
@@ -1813,14 +1742,14 @@ namespace facebook {
 
         
         methodMap_[\\"getAlias\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getAlias};
-        setMethodArgConversionSelector(@\\"getAlias\\", 0, @\\"JS_NativeSampleTurboModule_SpecGetAliasArg:\\");
+        setMethodArgConversionSelector(@\\"getAlias\\", 0, @\\"JS_NativeSampleTurboModule_Animal:\\");
 
         
         methodMap_[\\"getRootTag\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getRootTag};
         
 
         
-        methodMap_[\\"getValue\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValue};
+        methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleSpecJSI_getValue};
         
 
         
@@ -1832,7 +1761,7 @@ namespace facebook {
         
 
         
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
+        methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
         
 
     }
@@ -1840,21 +1769,6 @@ namespace facebook {
 } // namespace facebook
 
 
-
-@implementation RCTCxxConvert (NativeSampleTurboModuleArrays_ConstantsIdElement)
-+ (RCTManagedPointer *)JS_NativeSampleTurboModuleArrays_ConstantsIdElement:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeSampleTurboModuleArrays::ConstantsIdElement>(json);
-}
-@end
-
-
-@implementation RCTCxxConvert (NativeSampleTurboModuleArrays_Constants)
-+ (RCTManagedPointer *)JS_NativeSampleTurboModuleArrays_Constants:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeSampleTurboModuleArrays::Constants>(json);
-}
-@end
 
 namespace facebook {
   namespace react {
@@ -1927,7 +1841,7 @@ namespace facebook {
     NativeSampleTurboModuleArraysSpecJSI::NativeSampleTurboModuleArraysSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"voidFunc\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleArraysSpecJSI_voidFunc};
+        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleArraysSpecJSI_voidFunc};
         
 
         
@@ -1963,7 +1877,7 @@ namespace facebook {
         
 
         
-        methodMap_[\\"getValue\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getValue};
+        methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getValue};
         
 
         
@@ -1975,7 +1889,7 @@ namespace facebook {
         
 
         
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getConstants};
+        methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getConstants};
         
 
     }
@@ -1996,14 +1910,6 @@ namespace facebook {
 + (RCTManagedPointer *)JS_NativeSampleTurboModuleNullable_Animal:(id)json
 {
   return facebook::react::managedPointer<JS::NativeSampleTurboModuleNullable::Animal>(json);
-}
-@end
-
-
-@implementation RCTCxxConvert (NativeSampleTurboModuleNullable_Constants)
-+ (RCTManagedPointer *)JS_NativeSampleTurboModuleNullable_Constants:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeSampleTurboModuleNullable::Constants>(json);
 }
 @end
 
@@ -2078,7 +1984,7 @@ namespace facebook {
     NativeSampleTurboModuleNullableSpecJSI::NativeSampleTurboModuleNullableSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"voidFunc\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableSpecJSI_voidFunc};
+        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleNullableSpecJSI_voidFunc};
         
 
         
@@ -2107,14 +2013,14 @@ namespace facebook {
 
         
         methodMap_[\\"getAlias\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getAlias};
-        setMethodArgConversionSelector(@\\"getAlias\\", 0, @\\"JS_NativeSampleTurboModuleNullable_SpecGetAliasArg:\\");
+        setMethodArgConversionSelector(@\\"getAlias\\", 0, @\\"JS_NativeSampleTurboModuleNullable_Animal:\\");
 
         
         methodMap_[\\"getRootTag\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getRootTag};
         
 
         
-        methodMap_[\\"getValue\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getValue};
+        methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getValue};
         
 
         
@@ -2126,7 +2032,7 @@ namespace facebook {
         
 
         
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getConstants};
+        methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getConstants};
         
 
     }
@@ -2147,14 +2053,6 @@ namespace facebook {
 + (RCTManagedPointer *)JS_NativeSampleTurboModuleNullableAndOptional_Animal:(id)json
 {
   return facebook::react::managedPointer<JS::NativeSampleTurboModuleNullableAndOptional::Animal>(json);
-}
-@end
-
-
-@implementation RCTCxxConvert (NativeSampleTurboModuleNullableAndOptional_Constants)
-+ (RCTManagedPointer *)JS_NativeSampleTurboModuleNullableAndOptional_Constants:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeSampleTurboModuleNullableAndOptional::Constants>(json);
 }
 @end
 
@@ -2229,7 +2127,7 @@ namespace facebook {
     NativeSampleTurboModuleNullableAndOptionalSpecJSI::NativeSampleTurboModuleNullableAndOptionalSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"voidFunc\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_voidFunc};
+        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_voidFunc};
         
 
         
@@ -2258,14 +2156,14 @@ namespace facebook {
 
         
         methodMap_[\\"getAlias\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getAlias};
-        setMethodArgConversionSelector(@\\"getAlias\\", 0, @\\"JS_NativeSampleTurboModuleNullableAndOptional_SpecGetAliasArg:\\");
+        setMethodArgConversionSelector(@\\"getAlias\\", 0, @\\"JS_NativeSampleTurboModuleNullableAndOptional_Animal:\\");
 
         
         methodMap_[\\"getRootTag\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getRootTag};
         
 
         
-        methodMap_[\\"getValue\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getValue};
+        methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getValue};
         
 
         
@@ -2277,7 +2175,7 @@ namespace facebook {
         
 
         
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getConstants};
+        methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getConstants};
         
 
     }
@@ -2298,14 +2196,6 @@ namespace facebook {
 + (RCTManagedPointer *)JS_NativeSampleTurboModuleOptional_Animal:(id)json
 {
   return facebook::react::managedPointer<JS::NativeSampleTurboModuleOptional::Animal>(json);
-}
-@end
-
-
-@implementation RCTCxxConvert (NativeSampleTurboModuleOptional_Constants)
-+ (RCTManagedPointer *)JS_NativeSampleTurboModuleOptional_Constants:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeSampleTurboModuleOptional::Constants>(json);
 }
 @end
 
@@ -2380,7 +2270,7 @@ namespace facebook {
     NativeSampleTurboModuleOptionalSpecJSI::NativeSampleTurboModuleOptionalSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"voidFunc\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_voidFunc};
+        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_voidFunc};
         
 
         
@@ -2409,14 +2299,14 @@ namespace facebook {
 
         
         methodMap_[\\"getAlias\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getAlias};
-        setMethodArgConversionSelector(@\\"getAlias\\", 0, @\\"JS_NativeSampleTurboModuleOptional_SpecGetAliasArg:\\");
+        setMethodArgConversionSelector(@\\"getAlias\\", 0, @\\"JS_NativeSampleTurboModuleOptional_Animal:\\");
 
         
         methodMap_[\\"getRootTag\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getRootTag};
         
 
         
-        methodMap_[\\"getValue\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getValue};
+        methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getValue};
         
 
         
@@ -2428,7 +2318,7 @@ namespace facebook {
         
 
         
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getConstants};
+        methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getConstants};
         
 
     }
