@@ -17,10 +17,6 @@ steps:
 
   - template: apple-xcode-select.yml
 
-  - template: apple-droid-node-patching.yml
-    parameters:
-      apply_office_patches: $(apply_office_patches)
-
   - script: 'yarn install'
     displayName: 'yarn install'
 

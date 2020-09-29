@@ -31,10 +31,6 @@ steps:
   # Task Group: Xcode select proper version
   - template: apple-xcode-select.yml
 
-  - template: apple-droid-node-patching.yml
-    parameters:
-      apply_office_patches: $(apply_office_patches)
-
   - task: CmdLine@2
     displayName: yarn install
     inputs:
