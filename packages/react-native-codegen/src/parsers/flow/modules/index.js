@@ -38,7 +38,7 @@ function translateTypeAnnotation(
    */
   flowTypeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
-  aliasMap: NativeModuleAliasMap,
+  aliasMap: {...NativeModuleAliasMap},
 ): NativeModuleTypeAnnotation {
   const {
     nullable,
@@ -306,7 +306,7 @@ function translateFunctionTypeAnnotation(
   flowFunctionTypeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   nullable: boolean,
-  aliasMap: NativeModuleAliasMap,
+  aliasMap: {...NativeModuleAliasMap},
 ): NativeModuleFunctionTypeAnnotation {
   const params: Array<NativeModuleMethodParamSchema> = [];
   for (const flowParam of (flowFunctionTypeAnnotation.params: $ReadOnlyArray<$FlowFixMe>)) {
@@ -367,7 +367,7 @@ function buildPropertySchema(
   // Flow type this node
   property: $FlowFixMe,
   types: TypeDeclarationMap,
-  aliasMap: NativeModuleAliasMap,
+  aliasMap: {...NativeModuleAliasMap},
 ): NativeModulePropertySchema {
   let nullable = false;
   let {key, value} = property;
@@ -422,7 +422,7 @@ function buildModuleSchema(
   return (declaration.body.properties: $ReadOnlyArray<$FlowFixMe>)
     .filter(property => property.type === 'ObjectTypeProperty')
     .map(property => {
-      const aliasMap: NativeModuleAliasMap = {};
+      const aliasMap: {...NativeModuleAliasMap} = {};
       return {
         aliasMap: aliasMap,
         propertySchema: buildPropertySchema(

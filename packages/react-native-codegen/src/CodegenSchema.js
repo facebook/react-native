@@ -267,13 +267,13 @@ export type Required<T> = $ReadOnly<{...T, nullable: false}>;
 
 export type NativeModuleSchema = $ReadOnly<{|
   // We only support aliases to Objects
-  aliases: $ReadOnly<NativeModuleAliasMap>,
+  aliases: NativeModuleAliasMap,
   properties: $ReadOnlyArray<NativeModulePropertySchema>,
 |}>;
 
-export type NativeModuleAliasMap = {
+export type NativeModuleAliasMap = $ReadOnly<{|
   [aliasName: string]: Required<NativeModuleObjectTypeAnnotation>,
-};
+|}>;
 
 export type NativeModulePropertySchema = $ReadOnly<{|
   name: string,
