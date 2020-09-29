@@ -244,6 +244,13 @@ function getReturnTypeAnnotation(
         );
       }
     case 'ObjectTypeAnnotation':
+      if (returnType.type === 'GenericTypeAnnotation') {
+        return {
+          nullable,
+          type: 'TypeAliasTypeAnnotation',
+          name: returnType.id.name,
+        };
+      }
       return {
         nullable,
         type: 'ObjectTypeAnnotation',
@@ -323,7 +330,7 @@ function buildMethodSchema(
 
   const returnTypeAnnotation = getReturnTypeAnnotation(
     name,
-    getValueFromTypes(value.returnType, types),
+    value.returnType,
     types,
   );
   return {

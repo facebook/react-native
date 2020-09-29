@@ -304,6 +304,11 @@ export type FunctionTypeAnnotationReturn =
       nullable: boolean,
       type: 'ObjectTypeAnnotation',
       properties: ?$ReadOnlyArray<ObjectParamTypeAnnotation>,
+    |}>
+  | $ReadOnly<{|
+      nullable: boolean,
+      type: 'TypeAliasTypeAnnotation',
+      name: string,
     |}>;
 
 export type FunctionTypeAnnotationReturnArrayElementType =

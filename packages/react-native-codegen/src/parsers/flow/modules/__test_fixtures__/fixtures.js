@@ -200,7 +200,7 @@ type Foo = {|
 
 export interface Spec extends TurboModule {
   // Exported methods.
-  foo1: (x: Foo) => void;
+  foo1: (x: Foo) => Foo;
   foo2: (x: Foo) => void;
 }
 

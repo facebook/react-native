@@ -940,8 +940,9 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "name": "Foo",
                   "nullable": false,
-                  "type": "VoidTypeAnnotation",
+                  "type": "TypeAliasTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
               },
