@@ -13,7 +13,7 @@
 import type {
   FunctionTypeAnnotationParam,
   FunctionTypeAnnotationReturn,
-  NativeModuleMethodTypeShape,
+  NativeModulePropertyShape,
   ObjectTypeAliasTypeShape,
   SchemaType,
 } from '../../CodegenSchema';
@@ -156,7 +156,7 @@ function translateFunctionReturnTypeToJavaType(
 
 // Build special-cased runtime check for getConstants().
 function buildGetConstantsMethod(
-  method: NativeModuleMethodTypeShape,
+  method: NativeModulePropertyShape,
   imports: Set<string>,
 ): string {
   if (

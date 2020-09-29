@@ -11,7 +11,7 @@
 'use strict';
 
 import type {
-  NativeModuleMethodTypeShape,
+  NativeModulePropertyShape,
   FunctionTypeAnnotationParam,
   FunctionTypeAnnotationReturn,
 } from '../../../CodegenSchema.js';
@@ -23,9 +23,6 @@ const {
   getObjectProperties,
 } = require('./properties');
 const invariant = require('invariant');
-
-// $FlowFixMe there's no flowtype for ASTs
-type MethodAST = Object;
 
 function getTypeAnnotationForParam(
   name: string,
@@ -315,16 +312,35 @@ function getReturnTypeAnnotation(
 }
 
 function buildMethodSchema(
-  property: MethodAST,
+  // TODO(T71778680): This is an ObjectTypeProperty containing either:
+  // - a FunctionTypeAnnotation or GenericTypeAnnotation
+  // - a NullableTypeAnnoation containing a FunctionTypeAnnotation or GenericTypeAnnotation
+  // Flow type this node
+  property: $FlowFixMe,
   types: TypeDeclarationMap,
-): NativeModuleMethodTypeShape {
-  const name: string = property.key.name;
-  const value = getValueFromTypes(property.value, types);
+): NativeModulePropertyShape {
+  let nullable = false;
+  let {key, value} = property;
+
+  // Unwrap Nullable types
+  if (value.type === 'NullableTypeAnnotation') {
+    nullable = true;
+    value = value.typeAnnotation;
+  }
+
+  const name: string = key.name;
+
+  // Resolve type aliases
+  if (value.type === 'GenericTypeAnnotation') {
+    value = getValueFromTypes(value, types);
+  }
+
   if (value.type !== 'FunctionTypeAnnotation') {
     throw new Error(
       `Only methods are supported as module properties. Found ${value.type} in ${property.key.name}`,
     );
   }
+
   const params = value.params.map(param =>
     getTypeAnnotationForParam(name, param, types),
   );
@@ -334,20 +350,22 @@ function buildMethodSchema(
     value.returnType,
     types,
   );
+
   return {
     name,
+    optional: property.optional,
     typeAnnotation: {
       type: 'FunctionTypeAnnotation',
       returnTypeAnnotation,
       params,
-      optional: property.optional,
+      nullable,
     },
   };
 }
 
 function getMethods(
   types: TypeDeclarationMap,
-): $ReadOnlyArray<NativeModuleMethodTypeShape> {
+): $ReadOnlyArray<NativeModulePropertyShape> {
   const moduleInterfaceNames = Object.keys(types).filter((typeName: string) => {
     const declaration = types[typeName];
     return (
@@ -368,8 +386,7 @@ function getMethods(
   const declaration = types[moduleInterfaceName];
   return declaration.body.properties
     .filter(property => property.type === 'ObjectTypeProperty')
-    .map(property => buildMethodSchema(property, types))
-    .filter(Boolean);
+    .map(property => buildMethodSchema(property, types));
 }
 
 module.exports = {

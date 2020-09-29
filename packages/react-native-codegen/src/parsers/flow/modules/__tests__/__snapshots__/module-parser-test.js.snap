@@ -75,8 +75,9 @@ Object {
           "properties": Array [
             Object {
               "name": "getNumber",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -95,8 +96,9 @@ Object {
             },
             Object {
               "name": "getVoid",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
                   "nullable": false,
@@ -107,8 +109,9 @@ Object {
             },
             Object {
               "name": "getArray",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "a",
@@ -139,8 +142,9 @@ Object {
             },
             Object {
               "name": "getStringFromAlias",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "a",
@@ -176,8 +180,9 @@ Object {
           "properties": Array [
             Object {
               "name": "getArray",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -218,8 +223,9 @@ Object {
           "properties": Array [
             Object {
               "name": "getArray",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -256,8 +262,9 @@ Object {
           "properties": Array [
             Object {
               "name": "getArray",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -282,8 +289,9 @@ Object {
             },
             Object {
               "name": "getArray",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -324,8 +332,9 @@ Object {
           "properties": Array [
             Object {
               "name": "passBool",
+              "optional": true,
               "typeAnnotation": Object {
-                "optional": true,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -344,8 +353,9 @@ Object {
             },
             Object {
               "name": "passNumber",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -364,8 +374,9 @@ Object {
             },
             Object {
               "name": "passString",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -384,8 +395,9 @@ Object {
             },
             Object {
               "name": "passStringish",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -420,8 +432,9 @@ Object {
           "properties": Array [
             Object {
               "name": "getValueWithCallback",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "callback",
@@ -456,8 +469,9 @@ Object {
           "properties": Array [
             Object {
               "name": "getArray",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -516,8 +530,9 @@ Object {
           "properties": Array [
             Object {
               "name": "getObject",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -572,8 +587,9 @@ Object {
             },
             Object {
               "name": "getReadOnlyObject",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -628,8 +644,9 @@ Object {
             },
             Object {
               "name": "getObject2",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -657,8 +674,9 @@ Object {
             },
             Object {
               "name": "getObjectInArray",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -732,8 +750,9 @@ Object {
           "properties": Array [
             Object {
               "name": "getConstants",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
                   "nullable": false,
@@ -834,8 +853,9 @@ Object {
           "properties": Array [
             Object {
               "name": "getInt",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -854,8 +874,9 @@ Object {
             },
             Object {
               "name": "getFloat",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -924,8 +945,9 @@ Object {
           "properties": Array [
             Object {
               "name": "foo1",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "x",
@@ -946,8 +968,9 @@ Object {
             },
             Object {
               "name": "foo2",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "x",
@@ -983,8 +1006,9 @@ Object {
           "properties": Array [
             Object {
               "name": "voidFunc",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -1032,8 +1056,9 @@ Object {
           "properties": Array [
             Object {
               "name": "getConstants",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
                   "nullable": false,
@@ -1063,8 +1088,9 @@ Object {
             },
             Object {
               "name": "getConstants2",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
                   "nullable": false,
@@ -1123,8 +1149,9 @@ Object {
           "properties": Array [
             Object {
               "name": "getValueWithPromise",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
                   "nullable": false,
@@ -1135,8 +1162,9 @@ Object {
             },
             Object {
               "name": "getValueWithPromiseDefinedSomewhereElse",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
                   "nullable": false,
@@ -1147,8 +1175,9 @@ Object {
             },
             Object {
               "name": "getValueWithPromiseObjDefinedSomewhereElse",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
                   "nullable": false,
@@ -1175,8 +1204,9 @@ Object {
           "properties": Array [
             Object {
               "name": "getRootTag",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "rootTag",
@@ -1213,8 +1243,9 @@ Object {
           "properties": Array [
             Object {
               "name": "getObject",
+              "optional": false,
               "typeAnnotation": Object {
-                "optional": false,
+                "nullable": false,
                 "params": Array [
                   Object {
                     "name": "o",

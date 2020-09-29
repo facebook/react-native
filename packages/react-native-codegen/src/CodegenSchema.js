@@ -262,7 +262,7 @@ export type SchemaType = $ReadOnly<{|
 export type NativeModuleShape = $ReadOnly<{|
   // We only support aliases to Objects
   aliases: NativeModuleAliasMap,
-  properties: $ReadOnlyArray<NativeModuleMethodTypeShape>,
+  properties: $ReadOnlyArray<NativeModulePropertyShape>,
 |}>;
 
 export type NativeModuleAliasMap = $ReadOnly<{
@@ -276,16 +276,15 @@ export type ObjectTypeAliasTypeShape = $ReadOnly<{|
   properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
 |}>;
 
-export type NativeModuleMethodTypeShape = $ReadOnly<{|
+export type NativeModulePropertyShape = $ReadOnly<{|
   name: string,
-  typeAnnotation: FunctionTypeAnnotation,
-|}>;
-
-export type FunctionTypeAnnotation = $ReadOnly<{|
-  type: 'FunctionTypeAnnotation',
-  params: $ReadOnlyArray<FunctionTypeAnnotationParam>,
-  returnTypeAnnotation: FunctionTypeAnnotationReturn,
   optional: boolean,
+  typeAnnotation: $ReadOnly<{|
+    type: 'FunctionTypeAnnotation',
+    params: $ReadOnlyArray<FunctionTypeAnnotationParam>,
+    returnTypeAnnotation: FunctionTypeAnnotationReturn,
+    nullable: boolean,
+  |}>,
 |}>;
 
 export type FunctionTypeAnnotationReturn =
