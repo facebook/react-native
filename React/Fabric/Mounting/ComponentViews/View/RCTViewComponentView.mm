@@ -569,6 +569,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 #pragma mark - Accessibility Events
 
+- (BOOL)shouldGroupAccessibilityChildren
+{
+  return YES;
+}
+
 - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
   auto const &accessibilityActions = _props->accessibilityActions;

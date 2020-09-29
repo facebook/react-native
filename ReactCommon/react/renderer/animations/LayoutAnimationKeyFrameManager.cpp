@@ -1212,7 +1212,16 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         auto &keyFrame = std::get<0>(conflictingKeyframeTuple);
         if (keyFrame.finalMutationForKeyFrame.hasValue()) {
           auto &mutation = *keyFrame.finalMutationForKeyFrame;
-          finalConflictingMutations.push_back(mutation);
+          if (mutation.type == ShadowViewMutation::Type::Update) {
+            finalConflictingMutations.push_back(
+                ShadowViewMutation::UpdateMutation(
+                    mutation.parentShadowView,
+                    {},
+                    mutation.newChildShadowView,
+                    mutation.index));
+          } else {
+            finalConflictingMutations.push_back(mutation);
+          }
         }
       }
 

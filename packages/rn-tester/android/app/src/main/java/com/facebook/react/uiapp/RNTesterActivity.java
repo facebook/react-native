@@ -29,7 +29,7 @@ public class RNTesterActivity extends ReactActivity {
     @Override
     protected ReactRootView createRootView() {
       ReactRootView reactRootView = new ReactRootView(getContext());
-      reactRootView.setIsFabric(IS_FABRIC_ENABLED);
+      reactRootView.setIsFabric(BuildConfig.ENABLE_FABRIC);
       return reactRootView;
     }
 

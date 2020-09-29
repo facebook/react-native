@@ -326,14 +326,19 @@ public class TextLayoutManager {
                 0.f,
                 includeFontPadding);
       } else {
-        layout =
+        StaticLayout.Builder builder =
             StaticLayout.Builder.obtain(text, 0, spanLength, textPaint, (int) width)
                 .setAlignment(Layout.Alignment.ALIGN_NORMAL)
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(includeFontPadding)
                 .setBreakStrategy(textBreakStrategy)
-                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
-                .build();
+                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+          builder.setUseLineSpacingFromFallbacks(true);
+        }
+
+        layout = builder.build();
       }
     }
     return layout;
