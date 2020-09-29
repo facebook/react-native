@@ -228,6 +228,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
       transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
 }
 
+- (BOOL)isModalInPresentation
+{
+  return _modalViewController.modalInPresentation;
+}
+
+- (void)setIsModalInPresentation:(BOOL)isInPresentation
+{
+  if (@available(iOS 13.0, *)) {
+    _modalViewController.modalInPresentation = isInPresentation;
+  }
+}
+
 #if !TARGET_OS_TV
 - (UIInterfaceOrientationMask)supportedOrientationsMask
 {

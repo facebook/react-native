@@ -51,6 +51,12 @@ type NativeProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/modal.html#transparent
    */
   transparent?: WithDefault<boolean, false>,
+                              
+  /**
+   * The `isModalInPresentation` callback is used to indicate whether the view controller enforces a modal behavior.
+   *
+   */
+  isModalInPresentation?: WithDefault<boolean, false>,
 
   /**
    * The `statusBarTranslucent` prop determines whether your modal should go under
