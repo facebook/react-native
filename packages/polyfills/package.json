@@ -4,7 +4,8 @@
   "description": "Polyfills for React Native.",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git"
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/polyfills"
   },
   "license": "MIT"
 }
