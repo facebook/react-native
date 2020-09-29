@@ -23,6 +23,47 @@ export type TypeDeclarationMap = {|[declarationName: string]: $FlowFixMe|};
 // $FlowFixMe there's no flowtype for ASTs
 export type ASTNode = Object;
 
+const invariant = require('invariant');
+
+function resolveTypeAnnotation(
+  // TODO(T71778680): This is an Flow TypeAnnotation. Flow-type this
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+): {nullable: boolean, typeAnnotation: $FlowFixMe} {
+  invariant(
+    typeAnnotation != null,
+    'resolveTypeAnnotation(): typeAnnotation cannot be null',
+  );
+
+  let node = typeAnnotation;
+  let nullable = false;
+
+  for (;;) {
+    if (node.type === 'NullableTypeAnnotation') {
+      nullable = true;
+      node = node.typeAnnotation;
+    } else if (node.type === 'GenericTypeAnnotation') {
+      const resolvedTypeAnnotation = types[node.id.name];
+      if (resolvedTypeAnnotation == null) {
+        break;
+      }
+
+      invariant(
+        resolvedTypeAnnotation.type === 'TypeAlias',
+        `GenericTypeAnnotation '${node.id.name}' must resolve to a TypeAlias. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`,
+      );
+      node = resolvedTypeAnnotation.right;
+    } else {
+      break;
+    }
+  }
+
+  return {
+    nullable: nullable,
+    typeAnnotation: node,
+  };
+}
+
 function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
   if (value.type === 'GenericTypeAnnotation' && types[value.id.name]) {
     return getValueFromTypes(types[value.id.name].right, types);
@@ -32,4 +73,5 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
 
 module.exports = {
   getValueFromTypes,
+  resolveTypeAnnotation,
 };

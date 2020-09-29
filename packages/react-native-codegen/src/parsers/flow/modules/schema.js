@@ -10,10 +10,10 @@
 
 'use strict';
 
-import type {SchemaType, NativeModuleShape} from '../../../CodegenSchema.js';
+import type {SchemaType, NativeModuleSchema} from '../../../CodegenSchema.js';
 
-function buildModuleSchema(
-  {aliases, properties}: NativeModuleShape,
+function wrapModuleSchema(
+  {aliases, properties}: NativeModuleSchema,
   moduleName: string,
 ): SchemaType {
   return {
@@ -31,5 +31,5 @@ function buildModuleSchema(
 }
 
 module.exports = {
-  buildModuleSchema,
+  wrapModuleSchema,
 };

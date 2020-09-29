@@ -15,10 +15,10 @@ import type {SchemaType} from '../../CodegenSchema.js';
 const flowParser = require('flow-parser');
 const fs = require('fs');
 const path = require('path');
-const {buildModuleSchema} = require('./modules/schema');
-const {buildComponentSchema} = require('./components/schema');
-const {processComponent} = require('./components');
-const {processModule} = require('./modules');
+const {buildComponentSchema} = require('./components');
+const {wrapComponentSchema} = require('./components/schema');
+const {buildModuleSchema} = require('./modules');
+const {wrapModuleSchema} = require('./modules/schema');
 
 import type {TypeDeclarationMap} from './utils';
 
@@ -126,13 +126,13 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
   const configType = getConfigType(ast, types);
 
   if (configType === 'component') {
-    return buildComponentSchema(processComponent(ast, types));
+    return wrapComponentSchema(buildComponentSchema(ast, types));
   } else {
     if (filename === undefined || filename === null) {
       throw new Error('Filepath expected while parasing a module');
     }
     const moduleName = path.basename(filename).slice(6, -3);
-    return buildModuleSchema(processModule(types), moduleName);
+    return wrapModuleSchema(buildModuleSchema(moduleName, types), moduleName);
   }
 }
 

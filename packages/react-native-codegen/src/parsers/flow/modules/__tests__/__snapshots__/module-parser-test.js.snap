@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT 1`] = `"Unsupported return type for getString: expected to find annotation for type of array contents"`;
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT 1`] = `"Module SampleTurboModule: Detected a type of Array, without type parameters."`;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM 1`] = `"Unsupported type for getString, param: \\"arg\\": expected to find annotation for type of array contents"`;
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM 1`] = `"Module SampleTurboModule: Detected a type of Array, without type parameters."`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_ONLY_METHODS 1`] = `"Only methods are supported as module properties. Found BooleanTypeAnnotation in sampleBool"`;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE 1`] = `"Unsupported return promise type for getBool: expected to find annotation for type of promise content"`;
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE 1`] = `"Module SampleTurboModule: Detected a type of Promise, without type parameters."`;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_READ_ONLY_OBJECT_NO_TYPE_FOR_CONTENT 1`] = `"Unsupported param for method \\"getString\\", param \\"arg\\". No type specified for $ReadOnly"`;
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_READ_ONLY_OBJECT_NO_TYPE_FOR_CONTENT 1`] = `"Module SampleTurboModule: Detected a type of $ReadOnly, with 0 type parameters specified. Expected exactly 1."`;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_UNNAMED_PARAMS 1`] = `"Unsupported type for getBool. Please provide a name for every parameter."`;
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_UNNAMED_PARAMS 1`] = `"Module SampleTurboModule: Detected a FunctionTypeAnnotation with an unnamed param. Please name all params."`;
 
 exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"File contains declarations of more than one module: Spec, Spec2. Please declare exactly one module in this file."`;
 
@@ -39,11 +39,13 @@ Object {
         "SampleTurboModule": Object {
           "aliases": Object {
             "ObjectAlias": Object {
+              "nullable": false,
               "properties": Array [
                 Object {
                   "name": "x",
                   "optional": false,
                   "typeAnnotation": Object {
+                    "nullable": false,
                     "type": "NumberTypeAnnotation",
                   },
                 },
@@ -51,6 +53,7 @@ Object {
                   "name": "y",
                   "optional": false,
                   "typeAnnotation": Object {
+                    "nullable": false,
                     "type": "NumberTypeAnnotation",
                   },
                 },
@@ -58,6 +61,7 @@ Object {
                   "name": "label",
                   "optional": false,
                   "typeAnnotation": Object {
+                    "nullable": false,
                     "type": "StringTypeAnnotation",
                   },
                 },
@@ -65,6 +69,7 @@ Object {
                   "name": "truthy",
                   "optional": false,
                   "typeAnnotation": Object {
+                    "nullable": false,
                     "type": "BooleanTypeAnnotation",
                   },
                 },
@@ -81,8 +86,9 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": false,
                       "type": "NumberTypeAnnotation",
                     },
                   },
@@ -115,11 +121,13 @@ Object {
                 "params": Array [
                   Object {
                     "name": "a",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
                       "elementType": Object {
+                        "nullable": false,
                         "type": "NumberTypeAnnotation",
                       },
+                      "nullable": false,
                       "type": "ArrayTypeAnnotation",
                     },
                   },
@@ -131,6 +139,7 @@ Object {
                       "name": "a",
                       "optional": false,
                       "typeAnnotation": Object {
+                        "nullable": false,
                         "type": "NumberTypeAnnotation",
                       },
                     },
@@ -148,9 +157,10 @@ Object {
                 "params": Array [
                   Object {
                     "name": "a",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
                       "name": "ObjectAlias",
+                      "nullable": false,
                       "type": "TypeAliasTypeAnnotation",
                     },
                   },
@@ -186,17 +196,20 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
                       "elementType": Object {
+                        "nullable": false,
                         "type": "StringTypeAnnotation",
                       },
+                      "nullable": false,
                       "type": "ArrayTypeAnnotation",
                     },
                   },
                 ],
                 "returnTypeAnnotation": Object {
                   "elementType": Object {
+                    "nullable": false,
                     "type": "StringTypeAnnotation",
                   },
                   "nullable": false,
@@ -229,15 +242,14 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
-                      "elementType": undefined,
+                      "nullable": false,
                       "type": "ArrayTypeAnnotation",
                     },
                   },
                 ],
                 "returnTypeAnnotation": Object {
-                  "elementType": undefined,
                   "nullable": false,
                   "type": "ArrayTypeAnnotation",
                 },
@@ -268,17 +280,20 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
                       "elementType": Object {
+                        "nullable": false,
                         "type": "StringTypeAnnotation",
                       },
+                      "nullable": false,
                       "type": "ArrayTypeAnnotation",
                     },
                   },
                 ],
                 "returnTypeAnnotation": Object {
                   "elementType": Object {
+                    "nullable": false,
                     "type": "StringTypeAnnotation",
                   },
                   "nullable": false,
@@ -295,17 +310,20 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
                       "elementType": Object {
+                        "nullable": false,
                         "type": "StringTypeAnnotation",
                       },
+                      "nullable": false,
                       "type": "ArrayTypeAnnotation",
                     },
                   },
                 ],
                 "returnTypeAnnotation": Object {
                   "elementType": Object {
+                    "nullable": false,
                     "type": "StringTypeAnnotation",
                   },
                   "nullable": false,
@@ -338,8 +356,9 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": false,
                       "type": "BooleanTypeAnnotation",
                     },
                   },
@@ -359,8 +378,9 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": false,
                       "type": "NumberTypeAnnotation",
                     },
                   },
@@ -380,8 +400,9 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": false,
                       "type": "StringTypeAnnotation",
                     },
                   },
@@ -401,8 +422,9 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": false,
                       "type": "StringTypeAnnotation",
                     },
                   },
@@ -438,8 +460,39 @@ Object {
                 "params": Array [
                   Object {
                     "name": "callback",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": false,
+                      "params": Array [
+                        Object {
+                          "name": "value",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "nullable": false,
+                            "type": "StringTypeAnnotation",
+                          },
+                        },
+                        Object {
+                          "name": "arr",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "elementType": Object {
+                              "elementType": Object {
+                                "nullable": false,
+                                "type": "StringTypeAnnotation",
+                              },
+                              "nullable": false,
+                              "type": "ArrayTypeAnnotation",
+                            },
+                            "nullable": false,
+                            "type": "ArrayTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "returnTypeAnnotation": Object {
+                        "nullable": false,
+                        "type": "VoidTypeAnnotation",
+                      },
                       "type": "FunctionTypeAnnotation",
                     },
                   },
@@ -475,23 +528,29 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
                       "elementType": Object {
                         "elementType": Object {
                           "elementType": Object {
                             "elementType": Object {
                               "elementType": Object {
-                                "type": "AnyTypeAnnotation",
+                                "nullable": false,
+                                "type": "StringTypeAnnotation",
                               },
+                              "nullable": false,
                               "type": "ArrayTypeAnnotation",
                             },
+                            "nullable": false,
                             "type": "ArrayTypeAnnotation",
                           },
+                          "nullable": false,
                           "type": "ArrayTypeAnnotation",
                         },
+                        "nullable": false,
                         "type": "ArrayTypeAnnotation",
                       },
+                      "nullable": false,
                       "type": "ArrayTypeAnnotation",
                     },
                   },
@@ -500,10 +559,13 @@ Object {
                   "elementType": Object {
                     "elementType": Object {
                       "elementType": Object {
+                        "nullable": false,
                         "type": "StringTypeAnnotation",
                       },
+                      "nullable": false,
                       "type": "ArrayTypeAnnotation",
                     },
+                    "nullable": false,
                     "type": "ArrayTypeAnnotation",
                   },
                   "nullable": false,
@@ -536,18 +598,21 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": false,
                       "properties": Array [
                         Object {
                           "name": "const1",
                           "optional": false,
                           "typeAnnotation": Object {
+                            "nullable": false,
                             "properties": Array [
                               Object {
                                 "name": "const1",
                                 "optional": false,
                                 "typeAnnotation": Object {
+                                  "nullable": false,
                                   "type": "BooleanTypeAnnotation",
                                 },
                               },
@@ -567,11 +632,13 @@ Object {
                       "name": "const1",
                       "optional": false,
                       "typeAnnotation": Object {
+                        "nullable": false,
                         "properties": Array [
                           Object {
                             "name": "const1",
                             "optional": false,
                             "typeAnnotation": Object {
+                              "nullable": false,
                               "type": "BooleanTypeAnnotation",
                             },
                           },
@@ -593,18 +660,21 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": false,
                       "properties": Array [
                         Object {
                           "name": "const1",
                           "optional": false,
                           "typeAnnotation": Object {
+                            "nullable": false,
                             "properties": Array [
                               Object {
                                 "name": "const1",
                                 "optional": false,
                                 "typeAnnotation": Object {
+                                  "nullable": false,
                                   "type": "BooleanTypeAnnotation",
                                 },
                               },
@@ -624,11 +694,13 @@ Object {
                       "name": "const1",
                       "optional": false,
                       "typeAnnotation": Object {
+                        "nullable": false,
                         "properties": Array [
                           Object {
                             "name": "const1",
                             "optional": false,
                             "typeAnnotation": Object {
+                              "nullable": false,
                               "type": "BooleanTypeAnnotation",
                             },
                           },
@@ -650,13 +722,15 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": false,
                       "properties": Array [
                         Object {
                           "name": "a",
                           "optional": false,
                           "typeAnnotation": Object {
+                            "nullable": false,
                             "type": "StringTypeAnnotation",
                           },
                         },
@@ -680,18 +754,21 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": false,
                       "properties": Array [
                         Object {
                           "name": "const1",
                           "optional": false,
                           "typeAnnotation": Object {
+                            "nullable": false,
                             "properties": Array [
                               Object {
                                 "name": "const1",
                                 "optional": false,
                                 "typeAnnotation": Object {
+                                  "nullable": false,
                                   "type": "BooleanTypeAnnotation",
                                 },
                               },
@@ -706,16 +783,19 @@ Object {
                 ],
                 "returnTypeAnnotation": Object {
                   "elementType": Object {
+                    "nullable": false,
                     "properties": Array [
                       Object {
                         "name": "const1",
                         "optional": false,
                         "typeAnnotation": Object {
+                          "nullable": false,
                           "properties": Array [
                             Object {
                               "name": "const1",
                               "optional": false,
                               "typeAnnotation": Object {
+                                "nullable": false,
                                 "type": "BooleanTypeAnnotation",
                               },
                             },
@@ -761,6 +841,7 @@ Object {
                       "name": "isTesting",
                       "optional": false,
                       "typeAnnotation": Object {
+                        "nullable": false,
                         "type": "BooleanTypeAnnotation",
                       },
                     },
@@ -768,11 +849,13 @@ Object {
                       "name": "reactNativeVersion",
                       "optional": false,
                       "typeAnnotation": Object {
+                        "nullable": false,
                         "properties": Array [
                           Object {
                             "name": "major",
                             "optional": false,
                             "typeAnnotation": Object {
+                              "nullable": false,
                               "type": "NumberTypeAnnotation",
                             },
                           },
@@ -780,6 +863,7 @@ Object {
                             "name": "minor",
                             "optional": false,
                             "typeAnnotation": Object {
+                              "nullable": false,
                               "type": "NumberTypeAnnotation",
                             },
                           },
@@ -787,13 +871,15 @@ Object {
                             "name": "patch",
                             "optional": true,
                             "typeAnnotation": Object {
+                              "nullable": false,
                               "type": "NumberTypeAnnotation",
                             },
                           },
                           Object {
                             "name": "prerelease",
-                            "optional": true,
+                            "optional": false,
                             "typeAnnotation": Object {
+                              "nullable": true,
                               "type": "NumberTypeAnnotation",
                             },
                           },
@@ -805,6 +891,7 @@ Object {
                       "name": "forceTouchAvailable",
                       "optional": false,
                       "typeAnnotation": Object {
+                        "nullable": false,
                         "type": "BooleanTypeAnnotation",
                       },
                     },
@@ -812,6 +899,7 @@ Object {
                       "name": "osVersion",
                       "optional": false,
                       "typeAnnotation": Object {
+                        "nullable": false,
                         "type": "StringTypeAnnotation",
                       },
                     },
@@ -819,6 +907,7 @@ Object {
                       "name": "systemName",
                       "optional": false,
                       "typeAnnotation": Object {
+                        "nullable": false,
                         "type": "StringTypeAnnotation",
                       },
                     },
@@ -826,6 +915,7 @@ Object {
                       "name": "interfaceIdiom",
                       "optional": false,
                       "typeAnnotation": Object {
+                        "nullable": false,
                         "type": "StringTypeAnnotation",
                       },
                     },
@@ -859,8 +949,9 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": false,
                       "type": "Int32TypeAnnotation",
                     },
                   },
@@ -880,8 +971,9 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": false,
                       "type": "FloatTypeAnnotation",
                     },
                   },
@@ -909,11 +1001,13 @@ Object {
         "SampleTurboModule": Object {
           "aliases": Object {
             "Bar": Object {
+              "nullable": false,
               "properties": Array [
                 Object {
                   "name": "z",
                   "optional": false,
                   "typeAnnotation": Object {
+                    "nullable": false,
                     "type": "NumberTypeAnnotation",
                   },
                 },
@@ -921,12 +1015,14 @@ Object {
               "type": "ObjectTypeAnnotation",
             },
             "Foo": Object {
+              "nullable": false,
               "properties": Array [
                 Object {
                   "name": "bar1",
                   "optional": false,
                   "typeAnnotation": Object {
                     "name": "Bar",
+                    "nullable": false,
                     "type": "TypeAliasTypeAnnotation",
                   },
                 },
@@ -935,6 +1031,7 @@ Object {
                   "optional": false,
                   "typeAnnotation": Object {
                     "name": "Bar",
+                    "nullable": false,
                     "type": "TypeAliasTypeAnnotation",
                   },
                 },
@@ -951,9 +1048,10 @@ Object {
                 "params": Array [
                   Object {
                     "name": "x",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
                       "name": "Foo",
+                      "nullable": false,
                       "type": "TypeAliasTypeAnnotation",
                     },
                   },
@@ -974,9 +1072,10 @@ Object {
                 "params": Array [
                   Object {
                     "name": "x",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
                       "name": "Foo",
+                      "nullable": false,
                       "type": "TypeAliasTypeAnnotation",
                     },
                   },
@@ -1012,8 +1111,9 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
-                    "nullable": true,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": true,
                       "type": "StringTypeAnnotation",
                     },
                   },
@@ -1041,11 +1141,13 @@ Object {
         "SampleTurboModule": Object {
           "aliases": Object {
             "DisplayMetricsAndroid": Object {
+              "nullable": false,
               "properties": Array [
                 Object {
                   "name": "width",
                   "optional": false,
                   "typeAnnotation": Object {
+                    "nullable": false,
                     "type": "NumberTypeAnnotation",
                   },
                 },
@@ -1067,12 +1169,14 @@ Object {
                       "name": "Dimensions",
                       "optional": false,
                       "typeAnnotation": Object {
+                        "nullable": false,
                         "properties": Array [
                           Object {
                             "name": "windowPhysicalPixels",
                             "optional": false,
                             "typeAnnotation": Object {
                               "name": "DisplayMetricsAndroid",
+                              "nullable": false,
                               "type": "TypeAliasTypeAnnotation",
                             },
                           },
@@ -1099,12 +1203,14 @@ Object {
                       "name": "Dimensions",
                       "optional": false,
                       "typeAnnotation": Object {
+                        "nullable": false,
                         "properties": Array [
                           Object {
                             "name": "windowPhysicalPixels",
                             "optional": false,
                             "typeAnnotation": Object {
                               "name": "DisplayMetricsAndroid",
+                              "nullable": false,
                               "type": "TypeAliasTypeAnnotation",
                             },
                           },
@@ -1132,20 +1238,7 @@ Object {
     "NativeSampleTurboModule": Object {
       "nativeModules": Object {
         "SampleTurboModule": Object {
-          "aliases": Object {
-            "SomeObj": Object {
-              "properties": Array [
-                Object {
-                  "name": "a",
-                  "optional": false,
-                  "typeAnnotation": Object {
-                    "type": "StringTypeAnnotation",
-                  },
-                },
-              ],
-              "type": "ObjectTypeAnnotation",
-            },
-          },
+          "aliases": Object {},
           "properties": Array [
             Object {
               "name": "getValueWithPromise",
@@ -1210,9 +1303,10 @@ Object {
                 "params": Array [
                   Object {
                     "name": "rootTag",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
                       "name": "RootTag",
+                      "nullable": false,
                       "type": "ReservedFunctionValueTypeAnnotation",
                     },
                   },
@@ -1249,8 +1343,9 @@ Object {
                 "params": Array [
                   Object {
                     "name": "o",
-                    "nullable": false,
+                    "optional": false,
                     "typeAnnotation": Object {
+                      "nullable": false,
                       "type": "GenericObjectTypeAnnotation",
                     },
                   },
