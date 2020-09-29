@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.UUID;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.ByteString;
 
@@ -130,8 +131,21 @@ public class BlobModule extends NativeBlobModuleSpec {
         }
 
         @Override
-        public WritableMap toResponseData(ResponseBody body) throws IOException {
-          byte[] data = body.bytes();
+        public WritableMap toResponseData(Response response) throws IOException {
+          byte[] data = {};
+          try {
+            data = response.body().bytes();
+          } catch (IOException e) {
+            if (response.request().method().equalsIgnoreCase("HEAD")) {
+              // The request is an `HEAD` and the body is empty,
+              // the OkHttp will produce an exception.
+              // Ignore the exception to not invalidate the request in the
+              // Javascript layer.
+              // Introduced to fix issue #30055.
+            } else {
+              throw e;
+            }
+          }
           WritableMap blob = Arguments.createMap();
           blob.putString("blobId", store(data));
           blob.putInt("offset", 0);
