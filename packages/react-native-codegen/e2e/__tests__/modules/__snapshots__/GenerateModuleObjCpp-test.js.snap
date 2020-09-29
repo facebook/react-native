@@ -1320,17 +1320,17 @@ exports[`GenerateModuleObjCpp can generate an implementation file NativeModule s
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeArrayTurboModuleSpecJSI::getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeArrayTurboModuleSpecJSI_getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getArray\\", @selector(getArray:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeArrayTurboModuleSpecJSI::getReadOnlyArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeArrayTurboModuleSpecJSI_getReadOnlyArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getReadOnlyArray\\", @selector(getReadOnlyArray:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeArrayTurboModuleSpecJSI::getArrayWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeArrayTurboModuleSpecJSI_getArrayWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getArrayWithAlias\\", @selector(getArrayWithAlias:b:), args, count);
     }
 
@@ -1349,7 +1349,6 @@ namespace facebook {
         methodMap_[\\"getArrayWithAlias\\"] = MethodMetadata {1, __hostFunction_NativeArrayTurboModuleSpecJSI_getArrayWithAlias};
         
 
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -1359,12 +1358,12 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeBooleanTurboModuleSpecJSI::getBoolean(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeBooleanTurboModuleSpecJSI_getBoolean(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getBoolean\\", @selector(getBoolean:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeBooleanTurboModuleSpecJSI::getBooleanWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeBooleanTurboModuleSpecJSI_getBooleanWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getBooleanWithAlias\\", @selector(getBooleanWithAlias:), args, count);
     }
 
@@ -1379,7 +1378,6 @@ namespace facebook {
         methodMap_[\\"getBooleanWithAlias\\"] = MethodMetadata {1, __hostFunction_NativeBooleanTurboModuleSpecJSI_getBooleanWithAlias};
         
 
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -1389,12 +1387,12 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeCallbackTurboModuleSpecJSI::getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeCallbackTurboModuleSpecJSI_getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"getValueWithCallback\\", @selector(getValueWithCallback:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeCallbackTurboModuleSpecJSI::getValueWithCallbackWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeCallbackTurboModuleSpecJSI_getValueWithCallbackWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"getValueWithCallbackWithAlias\\", @selector(getValueWithCallbackWithAlias:), args, count);
     }
 
@@ -1409,7 +1407,6 @@ namespace facebook {
         methodMap_[\\"getValueWithCallbackWithAlias\\"] = MethodMetadata {1, __hostFunction_NativeCallbackTurboModuleSpecJSI_getValueWithCallbackWithAlias};
         
 
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -1419,32 +1416,32 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI::getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI_getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getBool\\", @selector(getBool:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI::getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI_getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getNumber\\", @selector(getNumber:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI::getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI_getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getString\\", @selector(getString:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI::getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI_getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getArray\\", @selector(getArray:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI::getObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI_getObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getObject\\", @selector(getObject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI::getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeNullableTurboModuleSpecJSI_getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromise\\", @selector(getValueWithPromise:reject:), args, count);
     }
 
@@ -1475,7 +1472,6 @@ namespace facebook {
         methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativeNullableTurboModuleSpecJSI_getValueWithPromise};
         
 
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -1485,12 +1481,12 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeNumberTurboModuleSpecJSI::getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeNumberTurboModuleSpecJSI_getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getNumber\\", @selector(getNumber:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeNumberTurboModuleSpecJSI::getNumberWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeNumberTurboModuleSpecJSI_getNumberWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getNumberWithAlias\\", @selector(getNumberWithAlias:), args, count);
     }
 
@@ -1505,7 +1501,6 @@ namespace facebook {
         methodMap_[\\"getNumberWithAlias\\"] = MethodMetadata {1, __hostFunction_NativeNumberTurboModuleSpecJSI_getNumberWithAlias};
         
 
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -1562,33 +1557,28 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeObjectTurboModuleSpecJSI::getGenericObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeObjectTurboModuleSpecJSI_getGenericObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getGenericObject\\", @selector(getGenericObject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeObjectTurboModuleSpecJSI::getGenericObjectReadOnly(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeObjectTurboModuleSpecJSI_getGenericObjectReadOnly(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getGenericObjectReadOnly\\", @selector(getGenericObjectReadOnly:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeObjectTurboModuleSpecJSI::getGenericObjectWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeObjectTurboModuleSpecJSI_getGenericObjectWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getGenericObjectWithAlias\\", @selector(getGenericObjectWithAlias:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeObjectTurboModuleSpecJSI::difficultObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeObjectTurboModuleSpecJSI_difficultObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"difficultObject\\", @selector(difficultObject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeObjectTurboModuleSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
-    }
-
-
-    static facebook::jsi::Value __hostFunction_NativeObjectTurboModuleSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
+    static facebook::jsi::Value __hostFunction_NativeObjectTurboModuleSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
 
@@ -1614,11 +1604,6 @@ namespace facebook {
         methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeObjectTurboModuleSpecJSI_getConstants};
         
 
-        
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeObjectTurboModuleSpecJSI_getConstants};
-        
-
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -1659,13 +1644,8 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeOptionalObjectTurboModuleSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
-    }
-
-
-    static facebook::jsi::Value __hostFunction_NativeOptionalObjectTurboModuleSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
+    static facebook::jsi::Value __hostFunction_NativeOptionalObjectTurboModuleSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
 
@@ -1675,11 +1655,6 @@ namespace facebook {
         methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeOptionalObjectTurboModuleSpecJSI_getConstants};
         
 
-        
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeOptionalObjectTurboModuleSpecJSI_getConstants};
-        
-
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -1689,12 +1664,12 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativePromiseTurboModuleSpecJSI::getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativePromiseTurboModuleSpecJSI_getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromise\\", @selector(getValueWithPromise:resolve:reject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativePromiseTurboModuleSpecJSI::getValueWithPromiseWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativePromiseTurboModuleSpecJSI_getValueWithPromiseWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromiseWithAlias\\", @selector(getValueWithPromiseWithAlias:resolve:reject:), args, count);
     }
 
@@ -1709,7 +1684,6 @@ namespace facebook {
         methodMap_[\\"getValueWithPromiseWithAlias\\"] = MethodMetadata {1, __hostFunction_NativePromiseTurboModuleSpecJSI_getValueWithPromiseWithAlias};
         
 
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -1742,73 +1716,68 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getBool\\", @selector(getBool:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getNumber\\", @selector(getNumber:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getString\\", @selector(getString:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getArray\\", @selector(getArray:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::getObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getObject\\", @selector(getObject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::getObjectShape(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectShape(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getObjectShape\\", @selector(getObjectShape:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::getAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getAlias\\", @selector(getAlias:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::getRootTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getRootTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getRootTag\\", @selector(getRootTag:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getValue\\", @selector(getValue:getValuegetValuegetValuegetValuegetValuey:z:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"getValueWithCallback\\", @selector(getValueWithCallback:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromise\\", @selector(getValueWithPromise:resolve:reject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
-    }
-
-
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
 
@@ -1866,11 +1835,6 @@ namespace facebook {
         methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
         
 
-        
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
-        
-
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -1895,73 +1859,68 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getBool\\", @selector(getBool:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getNumber\\", @selector(getNumber:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getString\\", @selector(getString:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getArray\\", @selector(getArray:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::getObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getObject\\", @selector(getObject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::getObjectShape(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getObjectShape(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getObjectShape\\", @selector(getObjectShape:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::getAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getAlias\\", @selector(getAlias:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::getRootTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getRootTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getRootTag\\", @selector(getRootTag:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getValue\\", @selector(getValue:y:z:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"getValueWithCallback\\", @selector(getValueWithCallback:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromise\\", @selector(getValueWithPromise:resolve:reject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
-    }
-
-
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
 
@@ -2019,11 +1978,6 @@ namespace facebook {
         methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getConstants};
         
 
-        
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleArraysSpecJSI_getConstants};
-        
-
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -2056,73 +2010,68 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getBool\\", @selector(getBool:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getNumber\\", @selector(getNumber:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getString\\", @selector(getString:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getArray\\", @selector(getArray:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::getObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getObject\\", @selector(getObject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::getObjectShape(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getObjectShape(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getObjectShape\\", @selector(getObjectShape:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::getAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getAlias\\", @selector(getAlias:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::getRootTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getRootTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getRootTag\\", @selector(getRootTag:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getValue\\", @selector(getValue:y:z:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"getValueWithCallback\\", @selector(getValueWithCallback:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromise\\", @selector(getValueWithPromise:resolve:reject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
-    }
-
-
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
 
@@ -2180,11 +2129,6 @@ namespace facebook {
         methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getConstants};
         
 
-        
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableSpecJSI_getConstants};
-        
-
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -2217,73 +2161,68 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getBool\\", @selector(getBool:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getNumber\\", @selector(getNumber:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getString\\", @selector(getString:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getArray\\", @selector(getArray:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::getObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getObject\\", @selector(getObject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::getObjectShape(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getObjectShape(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getObjectShape\\", @selector(getObjectShape:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::getAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getAlias\\", @selector(getAlias:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::getRootTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getRootTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getRootTag\\", @selector(getRootTag:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getValue\\", @selector(getValue:y:z:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"getValueWithCallback\\", @selector(getValueWithCallback:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromise\\", @selector(getValueWithPromise:resolve:reject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
-    }
-
-
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
 
@@ -2341,11 +2280,6 @@ namespace facebook {
         methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getConstants};
         
 
-        
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleNullableAndOptionalSpecJSI_getConstants};
-        
-
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -2378,73 +2312,68 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getBool\\", @selector(getBool:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getNumber\\", @selector(getNumber:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getString\\", @selector(getString:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getArray(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ArrayKind, \\"getArray\\", @selector(getArray:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::getObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getObject(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getObject\\", @selector(getObject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::getObjectShape(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getObjectShape(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getObjectShape\\", @selector(getObjectShape:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::getAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getAlias\\", @selector(getAlias:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::getRootTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getRootTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getRootTag\\", @selector(getRootTag:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getValue\\", @selector(getValue:y:z:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"getValueWithCallback\\", @selector(getValueWithCallback:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, \\"getValueWithPromise\\", @selector(getValueWithPromise:resolve:reject:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
-    }
-
-
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI::getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", getConstants, args, count);
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getConstants\\", @selector(getConstants), args, count);
     }
 
 
@@ -2502,11 +2431,6 @@ namespace facebook {
         methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getConstants};
         
 
-        
-        methodMap_[\\"getConstants\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleOptionalSpecJSI_getConstants};
-        
-
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -2516,12 +2440,12 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeStringTurboModuleSpecJSI::getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeStringTurboModuleSpecJSI_getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getString\\", @selector(getString:), args, count);
     }
 
 
-    static facebook::jsi::Value __hostFunction_NativeStringTurboModuleSpecJSI::getStringWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeStringTurboModuleSpecJSI_getStringWithAlias(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getStringWithAlias\\", @selector(getStringWithAlias:), args, count);
     }
 
@@ -2536,7 +2460,6 @@ namespace facebook {
         methodMap_[\\"getStringWithAlias\\"] = MethodMetadata {1, __hostFunction_NativeStringTurboModuleSpecJSI_getStringWithAlias};
         
 
-        }
     }
   } // namespace react
 } // namespace facebook

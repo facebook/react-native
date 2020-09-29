@@ -398,10 +398,10 @@ function serializeConstantsProtocolMethods(
       });
 
       return {
-        methodName: 'getConstants',
+        methodName,
         protocolMethod,
         returnJSType: 'ObjectKind',
-        selector: 'getConstants',
+        selector: `@selector(${methodName})`,
         structParamRecords: [],
       };
     },

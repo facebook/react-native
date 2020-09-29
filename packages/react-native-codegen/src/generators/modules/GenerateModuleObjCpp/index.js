@@ -184,7 +184,7 @@ module.exports = {
           moduleName,
           generatedStructs,
           methodSerializations.filter(
-            ({selector}) => selector !== 'constantsToExport',
+            ({selector}) => selector !== '@selector(constantsToExport)',
           ),
         ),
       );

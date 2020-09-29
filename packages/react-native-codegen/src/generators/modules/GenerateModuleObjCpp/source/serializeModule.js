@@ -54,7 +54,6 @@ namespace facebook {
             }),
           )
           .join('\n' + ' '.repeat(8))}
-        }
     }
   } // namespace react
 } // namespace facebook
@@ -86,7 +85,7 @@ const InlineHostFunctionTemplate = ({
   returnJSType: string,
   selector: string,
 |}>) => `
-    static facebook::jsi::Value __hostFunction_Native${moduleName}SpecJSI::${methodName}(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_Native${moduleName}SpecJSI_${methodName}(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ${returnJSType}, "${methodName}", ${selector}, args, count);
     }
 `;
