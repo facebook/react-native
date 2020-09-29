@@ -168,7 +168,11 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
   NSNumber *socketID = [webSocket reactTag];
   _contentHandlers[socketID] = nil;
   _sockets[socketID] = nil;
-  [self sendEventWithName:@"websocketFailed" body:@{@"message" : error.localizedDescription, @"id" : socketID}];
+  NSDictionary *body = @{
+        @"message" : error.localizedDescription ?: @"",
+        @"id" : socketID ?: @(-1)
+  };
+  [self sendEventWithName:@"websocketFailed" body:body];
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket
