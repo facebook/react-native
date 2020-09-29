@@ -38,6 +38,7 @@ rn_android_library(
         ":memory-type-native",
         ":native-filters",
         ":native-transcoder",
+        ":ui-common",
     ],
 )
 
@@ -172,4 +173,16 @@ remote_file(
     name = "memory-type-native-aar",
     sha1 = "72bb5626d508587cb9d96beb0e2b61ac36a2c63d",
     url = "mvn:com.facebook.fresco:memory-type-native:aar:2.3.0",
+)
+
+rn_android_prebuilt_aar(
+    name = "ui-common",
+    aar = ":ui-common-aar",
+    visibility = ["//ReactAndroid/..."],
+)
+
+remote_file(
+    name = "ui-common-aar",
+    sha1 = "0ce37a495f0f37165e3ede1c4cb927b0b55856be",
+    url = "mvn:com.facebook.fresco:ui-common:aar:2.3.0",
 )
