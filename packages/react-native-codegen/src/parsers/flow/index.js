@@ -124,7 +124,7 @@ function getConfigType(ast, types: TypeDeclarations): 'module' | 'component' {
   }
 }
 
-function buildSchema(contents: string, filename: ?string): ?SchemaType {
+function buildSchema(contents: string, filename: ?string): SchemaType {
   const ast = flowParser.parse(contents);
 
   const types = getTypes(ast);
@@ -142,20 +142,20 @@ function buildSchema(contents: string, filename: ?string): ?SchemaType {
   }
 }
 
-function parseFile(filename: string): ?SchemaType {
+function parseFile(filename: string): SchemaType {
   const contents = fs.readFileSync(filename, 'utf8');
 
   return buildSchema(contents, filename);
 }
 
-function parseModuleFixture(filename: string): ?SchemaType {
+function parseModuleFixture(filename: string): SchemaType {
   const contents = fs.readFileSync(filename, 'utf8');
 
   return buildSchema(contents, 'path/NativeSampleTurboModule.js');
 }
 
-function parseString(contents: string): ?SchemaType {
-  return buildSchema(contents);
+function parseString(contents: string, filename: ?string): SchemaType {
+  return buildSchema(contents, filename);
 }
 
 module.exports = {
