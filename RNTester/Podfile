@@ -1,5 +1,5 @@
 require_relative '../scripts/react_native_pods'
-source 'https://cdn2.cocoapods.org/'
+source 'https://cdn.cocoapods.org/'
 platform :ios, '10.0'
 
 # TODO(macOS GH#214)
