@@ -9,7 +9,7 @@ rn_android_prebuilt_aar(
 
 fb_native.remote_file(
     name = "fresco-binary-aar",
-    sha1 = "d473020b37b7cdd3171154942b55021a55a9d990",
+    sha1 = "fbc98413bb32eefe882a07cc556c7a1224dc9f24",
     url = "mvn:com.facebook.fresco:fresco:aar:2.3.0",
 )
 
