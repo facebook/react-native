@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {NativeModuleSchemaBuilderConfig} from './schema.js';
+import type {NativeModuleShape} from '../../../CodegenSchema';
 const {getAliases} = require('./aliases');
 const {getMethods} = require('./methods');
 
@@ -58,8 +58,7 @@ function getModuleAliases(types, aliasNames) {
   });
 }
 
-// $FlowFixMe there's no flowtype for AST
-function processModule(types): NativeModuleSchemaBuilderConfig {
+function processModule(types: $FlowFixMe): NativeModuleShape {
   const interfaceName = findInterfaceName(types);
   const moduleProperties = getModuleProperties(types, interfaceName);
   const properties = getMethods(moduleProperties, types);
