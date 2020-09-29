@@ -10,8 +10,15 @@
 
 'use strict';
 
-import type {SchemaType} from '../../CodegenSchema';
-const {getTypeAliasTypeAnnotation} = require('./Utils');
+import type {
+  SchemaType,
+  NativeModulePropertySchema,
+  NativeModuleMethodParamSchema,
+} from '../../CodegenSchema';
+
+import type {AliasResolver} from './Utils';
+const {createAliasResolver, getModules} = require('./Utils');
+
 type FilesOutput = Map<string, string>;
 
 const propertyHeaderTemplate =
@@ -44,7 +51,7 @@ Native::_MODULE_NAME_::CxxSpecJSI::Native::_MODULE_NAME_::CxxSpecJSI(std::shared
 
 const template = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -64,16 +71,21 @@ namespace react {
 } // namespace facebook
 `;
 
-function traverseArg(arg, index, aliases): string {
+function traverseArg(
+  arg: NativeModuleMethodParamSchema,
+  index: number,
+  resolveAlias: AliasResolver,
+): string {
   function wrap(suffix) {
     return `args[${index}]${suffix}`;
   }
   const {typeAnnotation} = arg;
 
-  const realTypeAnnotation =
-    typeAnnotation.type === 'TypeAliasTypeAnnotation'
-      ? getTypeAliasTypeAnnotation(typeAnnotation.name, aliases)
-      : typeAnnotation;
+  let realTypeAnnotation = typeAnnotation;
+  if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
+    realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
+  }
+
   switch (realTypeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
       switch (realTypeAnnotation.name) {
@@ -90,7 +102,11 @@ function traverseArg(arg, index, aliases): string {
     case 'BooleanTypeAnnotation':
       return wrap('.getBool()');
     case 'NumberTypeAnnotation':
+      return wrap('.getNumber()');
     case 'FloatTypeAnnotation':
+      return wrap('.getNumber()');
+    case 'DoubleTypeAnnotation':
+      return wrap('.getNumber()');
     case 'Int32TypeAnnotation':
       return wrap('.getNumber()');
     case 'ArrayTypeAnnotation':
@@ -98,26 +114,27 @@ function traverseArg(arg, index, aliases): string {
     case 'FunctionTypeAnnotation':
       return `std::move(${wrap('.getObject(rt).getFunction(rt)')})`;
     case 'GenericObjectTypeAnnotation':
+      return wrap('.getObject(rt)');
     case 'ObjectTypeAnnotation':
       return wrap('.getObject(rt)');
-    case 'AnyTypeAnnotation':
-      throw new Error(`Any type is not allowed in params for "${arg.name}"`);
     default:
-      // TODO (T65847278): Figure out why this does not work.
-      // (type: empty);
+      (realTypeAnnotation.type: empty);
       throw new Error(
         `Unknown prop type for "${arg.name}, found: ${realTypeAnnotation.type}"`,
       );
   }
 }
 
-function traverseProperty(property, aliases): string {
+function traverseProperty(
+  property: NativeModulePropertySchema,
+  resolveAlias: AliasResolver,
+): string {
   const propertyTemplate =
     property.typeAnnotation.returnTypeAnnotation.type === 'VoidTypeAnnotation'
       ? voidPropertyTemplate
       : nonvoidPropertyTemplate;
   const traversedArgs = property.typeAnnotation.params
-    .map((p, i) => traverseArg(p, i, aliases))
+    .map((p, i) => traverseArg(p, i, resolveAlias))
     .join(', ');
   return propertyTemplate
     .replace(/::_PROPERTY_NAME_::/g, property.name)
@@ -130,23 +147,14 @@ module.exports = {
     schema: SchemaType,
     moduleSpecName: string,
   ): FilesOutput {
-    const nativeModules = Object.keys(schema.modules)
-      .map(moduleName => {
-        const modules = schema.modules[moduleName].nativeModules;
-        if (modules == null) {
-          return null;
-        }
-
-        return modules;
-      })
-      .filter(Boolean)
-      .reduce((acc, modules) => Object.assign(acc, modules), {});
+    const nativeModules = getModules(schema);
 
     const modules = Object.keys(nativeModules)
       .map(name => {
         const {aliases, properties} = nativeModules[name];
+        const resolveAlias = createAliasResolver(aliases);
         const traversedProperties = properties
-          .map(property => traverseProperty(property, aliases))
+          .map(property => traverseProperty(property, resolveAlias))
           .join('\n');
         return moduleTemplate
           .replace(/::_MODULE_PROPERTIES_::/g, traversedProperties)
