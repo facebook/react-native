@@ -306,13 +306,15 @@ export type NativeModuleObjectTypeAnnotation = $ReadOnly<{|
   nullable: boolean,
 |}>;
 
-export type NativeModuleArrayTypeAnnotation = $ReadOnly<{|
+export type NativeModuleArrayTypeAnnotation<
+  T = NativeModuleBaseTypeAnnotation,
+> = $ReadOnly<{|
   type: 'ArrayTypeAnnotation',
   /**
    * TODO(T72031674): Migrate all our NativeModule specs to not use
    * invalid Array ElementTypes. Then, make the elementType required.
    */
-  elementType?: NativeModuleBaseTypeAnnotation,
+  elementType?: T,
   nullable: boolean,
 |}>;
 
@@ -383,7 +385,7 @@ export type NativeModuleBaseTypeAnnotation =
   | NativeModuleGenericObjectTypeAnnotation
   | NativeModuleReservedFunctionValueTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
-  | NativeModuleArrayTypeAnnotation
+  | NativeModuleArrayTypeAnnotation<>
   | NativeModuleObjectTypeAnnotation;
 
 export type NativeModuleParamTypeAnnotation =
