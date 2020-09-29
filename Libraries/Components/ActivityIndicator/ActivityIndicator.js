@@ -184,8 +184,11 @@ ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
  * and run Flow. */
 ActivityIndicatorWithRef.defaultProps = {
   animating: true,
-  color:
-    Platform.OS === 'ios' ? GRAY : PlatformColor('?attr/colorControlActivated'),
+  color: Platform.select({
+    ios: GRAY,
+    android: PlatformColor('?attr/colorControlActivated'),
+    default: GRAY,
+  }),
   hidesWhenStopped: true,
   size: 'small',
 };
