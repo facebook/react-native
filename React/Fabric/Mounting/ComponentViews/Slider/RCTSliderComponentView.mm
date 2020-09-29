@@ -110,12 +110,6 @@ using namespace facebook::react;
   const auto &oldSliderProps = *std::static_pointer_cast<const SliderProps>(_props);
   const auto &newSliderProps = *std::static_pointer_cast<const SliderProps>(props);
 
-  // `value`
-  if (oldSliderProps.value != newSliderProps.value) {
-    _sliderView.value = newSliderProps.value;
-    _previousValue = newSliderProps.value;
-  }
-
   // `minimumValue`
   if (oldSliderProps.minimumValue != newSliderProps.minimumValue) {
     _sliderView.minimumValue = newSliderProps.minimumValue;
@@ -124,6 +118,12 @@ using namespace facebook::react;
   // `maximumValue`
   if (oldSliderProps.maximumValue != newSliderProps.maximumValue) {
     _sliderView.maximumValue = newSliderProps.maximumValue;
+  }
+
+  // `value`
+  if (oldSliderProps.value != newSliderProps.value) {
+    _sliderView.value = newSliderProps.value;
+    _previousValue = newSliderProps.value;
   }
 
   // `disabled`

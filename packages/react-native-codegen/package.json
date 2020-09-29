@@ -5,7 +5,8 @@
   "homepage": "https://github.com/facebook/react-native/tree/master/packages/react-native-codegen",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git"
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/react-native-codegen"
   },
   "scripts": {
     "build": "yarn clean && node scripts/build.js --verbose",
