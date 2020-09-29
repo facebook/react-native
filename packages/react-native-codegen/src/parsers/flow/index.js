@@ -20,10 +20,19 @@ const {buildComponentSchema} = require('./components/schema');
 const {processComponent} = require('./components');
 const {processModule} = require('./modules');
 
-function getTypes(ast) {
+/**
+ * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
+ * declaration type. Unfortunately, we don't have those types, because flow-parser
+ * generates them, and flow-parser is not type-safe. In the future, we should find
+ * a way to get these types from our flow parser library.
+ */
+function getTypes(ast): {[declarationName: string]: $FlowFixMe} {
   return ast.body.reduce((types, node) => {
-    if (node.type === 'ExportNamedDeclaration') {
-      if (node.declaration && node.declaration.type !== 'VariableDeclaration') {
+    if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
+      if (
+        node.declaration.type === 'TypeAlias' ||
+        node.declaration.type === 'InterfaceDeclaration'
+      ) {
         types[node.declaration.id.name] = node.declaration;
       }
     } else if (
