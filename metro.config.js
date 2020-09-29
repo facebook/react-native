@@ -46,14 +46,20 @@ if (
   });
 } else {
   module.exports = {
+    serializer: {
+      getModulesRunBeforeMainModule: () => [
+        require.resolve('./Libraries/Core/InitializeCore'),
+      ],
+      getPolyfills,
+    },
     resolver: {
       platforms: ['ios', 'macos', 'android'],
       extraNodeModules: {
         'react-native': __dirname,
       },
     },
-    serializer: {
-      getPolyfills,
+    transformer: {
+      assetRegistryPath: require.resolve('./Libraries/Image/AssetRegistry'),
     },
   };
 }
