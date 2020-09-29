@@ -25,11 +25,24 @@ export type ASTNode = Object;
 
 const invariant = require('invariant');
 
+type TypeAliasResolutionStatus =
+  | $ReadOnly<{|
+      successful: true,
+      aliasName: string,
+    |}>
+  | $ReadOnly<{|
+      successful: false,
+    |}>;
+
 function resolveTypeAnnotation(
   // TODO(T71778680): This is an Flow TypeAnnotation. Flow-type this
   typeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
-): {nullable: boolean, typeAnnotation: $FlowFixMe} {
+): {
+  nullable: boolean,
+  typeAnnotation: $FlowFixMe,
+  typeAliasResolutionStatus: TypeAliasResolutionStatus,
+} {
   invariant(
     typeAnnotation != null,
     'resolveTypeAnnotation(): typeAnnotation cannot be null',
@@ -37,12 +50,19 @@ function resolveTypeAnnotation(
 
   let node = typeAnnotation;
   let nullable = false;
+  let typeAliasResolutionStatus: TypeAliasResolutionStatus = {
+    successful: false,
+  };
 
   for (;;) {
     if (node.type === 'NullableTypeAnnotation') {
       nullable = true;
       node = node.typeAnnotation;
     } else if (node.type === 'GenericTypeAnnotation') {
+      typeAliasResolutionStatus = {
+        successful: true,
+        aliasName: node.id.name,
+      };
       const resolvedTypeAnnotation = types[node.id.name];
       if (resolvedTypeAnnotation == null) {
         break;
@@ -61,6 +81,7 @@ function resolveTypeAnnotation(
   return {
     nullable: nullable,
     typeAnnotation: node,
+    typeAliasResolutionStatus,
   };
 }
 

@@ -266,7 +266,11 @@ export type NativeModuleSchema = $ReadOnly<{|
 |}>;
 
 export type NativeModuleAliasMap = {
-  [aliasName: string]: NativeModuleObjectTypeAnnotation,
+  [aliasName: string]: $ReadOnly<{|
+    type: 'ObjectTypeAnnotation',
+    properties: $ReadOnlyArray<NativeModuleObjectTypeAnnotationPropertySchema>,
+    nullable: false,
+  |}>,
 };
 
 export type NativeModulePropertySchema = $ReadOnly<{|
@@ -290,14 +294,14 @@ export type NativeModuleFunctionTypeAnnotation = $ReadOnly<{|
 
 export type NativeModuleObjectTypeAnnotation = $ReadOnly<{|
   type: 'ObjectTypeAnnotation',
-  properties: $ReadOnlyArray<
-    $ReadOnly<{|
-      optional: boolean,
-      name: string,
-      typeAnnotation: NativeModuleParamTypeAnnotation,
-    |}>,
-  >,
+  properties: $ReadOnlyArray<NativeModuleObjectTypeAnnotationPropertySchema>,
   nullable: boolean,
+|}>;
+
+export type NativeModuleObjectTypeAnnotationPropertySchema = $ReadOnly<{|
+  optional: boolean,
+  name: string,
+  typeAnnotation: NativeModuleBaseTypeAnnotation,
 |}>;
 
 export type NativeModuleBaseTypeAnnotation =

@@ -8,7 +8,10 @@
  * @format
  */
 
-import type {ReservedFunctionValueTypeName} from '../../../../CodegenSchema';
+import type {
+  ReservedFunctionValueTypeName,
+  NativeModuleSchema,
+} from '../../../../CodegenSchema';
 const {parseString} = require('../../index.js');
 const {
   FlowGenericNotTypeParameterizedParserError,
@@ -40,6 +43,30 @@ const RESERVED_FUNCTION_VALUE_TYPE_NAME: $ReadOnlyArray<ReservedFunctionValueTyp
 ];
 
 const MODULE_NAME = 'Foo';
+
+const TYPE_ALIAS_DECLARATIONS = `
+type Animal = {|
+  name: string,
+|};
+
+type AnimalPointer = Animal;
+`;
+
+function expectAnimalTypeAliasToExist(module: NativeModuleSchema) {
+  const animalAlias = module.aliases.Animal;
+
+  expect(animalAlias).not.toBe(null);
+  invariant(animalAlias != null, '');
+  expect(animalAlias.type).toBe('ObjectTypeAnnotation');
+  expect(animalAlias.nullable).toBe(false);
+  expect(animalAlias.properties.length).toBe(1);
+  expect(animalAlias.properties[0].name).toBe('name');
+  expect(animalAlias.properties[0].optional).toBe(false);
+  expect(animalAlias.properties[0].typeAnnotation.type).toBe(
+    'StringTypeAnnotation',
+  );
+  expect(animalAlias.properties[0].typeAnnotation.nullable).toBe(false);
+}
 
 describe('Flow Module Parser', () => {
   describe('Parameter Parsing', () => {
@@ -111,9 +138,7 @@ describe('Flow Module Parser', () => {
           import type {TurboModule} from 'RCTExport';
           import * as TurboModuleRegistry from 'TurboModuleRegistry';
 
-          type Animal = {|
-            name: string,
-          |};
+          ${TYPE_ALIAS_DECLARATIONS}
 
           export interface Spec extends TurboModule {
             +useArg(${annotateArg(paramName, paramType)}): void;
@@ -128,7 +153,7 @@ describe('Flow Module Parser', () => {
         expect(param.optional).toBe(optional);
         expect(param.typeAnnotation.nullable).toBe(nullable);
 
-        return param;
+        return [param, module];
       }
 
       describe(
@@ -149,14 +174,14 @@ describe('Flow Module Parser', () => {
           describe('Primitive types', () => {
             PRIMITIVES.forEach(([FLOW_TYPE, PARSED_TYPE_NAME]) => {
               it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} primitive parameter of type '${FLOW_TYPE}'`, () => {
-                const param = parseParamType('arg', FLOW_TYPE);
+                const [param] = parseParamType('arg', FLOW_TYPE);
                 expect(param.typeAnnotation.type).toBe(PARSED_TYPE_NAME);
               });
             });
           });
 
           it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter of type 'Object'`, () => {
-            const param = parseParamType('arg', 'Object');
+            const [param] = parseParamType('arg', 'Object');
             expect(param.typeAnnotation.type).toBe(
               'GenericObjectTypeAnnotation',
             );
@@ -165,7 +190,7 @@ describe('Flow Module Parser', () => {
           describe('Reserved Types', () => {
             RESERVED_FUNCTION_VALUE_TYPE_NAME.forEach(FLOW_TYPE => {
               it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter of reserved type '${FLOW_TYPE}'`, () => {
-                const param = parseParamType('arg', FLOW_TYPE);
+                const [param] = parseParamType('arg', FLOW_TYPE);
 
                 expect(param.typeAnnotation.type).toBe(
                   'ReservedFunctionValueTypeAnnotation',
@@ -195,7 +220,10 @@ describe('Flow Module Parser', () => {
               paramName: string,
               paramType: string,
             ) {
-              const param = parseParamType(paramName, `Array<${paramType}>`);
+              const [param, module] = parseParamType(
+                paramName,
+                `Array<${paramType}>`,
+              );
 
               expect(param.typeAnnotation.type).toBe('ArrayTypeAnnotation');
               invariant(
@@ -205,7 +233,7 @@ describe('Flow Module Parser', () => {
 
               expect(param.typeAnnotation.elementType).not.toBe(null);
               invariant(param.typeAnnotation.elementType != null, '');
-              return param.typeAnnotation.elementType;
+              return [param.typeAnnotation.elementType, module];
             }
 
             // TODO: Do we support nullable element types?
@@ -213,7 +241,7 @@ describe('Flow Module Parser', () => {
             describe('Primitive Element Types', () => {
               PRIMITIVES.forEach(([FLOW_TYPE, PARSED_TYPE_NAME]) => {
                 it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter of type 'Array<${FLOW_TYPE}>'`, () => {
-                  const elementType = parseParamArrayElementType(
+                  const [elementType] = parseParamArrayElementType(
                     'arg',
                     FLOW_TYPE,
                   );
@@ -225,7 +253,7 @@ describe('Flow Module Parser', () => {
             describe('Reserved Element Types', () => {
               RESERVED_FUNCTION_VALUE_TYPE_NAME.forEach(FLOW_TYPE => {
                 it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter of type 'Array<${FLOW_TYPE}>'`, () => {
-                  const elementType = parseParamArrayElementType(
+                  const [elementType] = parseParamArrayElementType(
                     'arg',
                     FLOW_TYPE,
                   );
@@ -243,20 +271,24 @@ describe('Flow Module Parser', () => {
             });
 
             it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter of type 'Array<Object>'`, () => {
-              const elementType = parseParamArrayElementType('arg', 'Object');
+              const [elementType] = parseParamArrayElementType('arg', 'Object');
               expect(elementType.type).toBe('GenericObjectTypeAnnotation');
             });
 
             it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of some array of an alias`, () => {
-              const elementType = parseParamArrayElementType('arg', 'Animal');
+              const [elementType, module] = parseParamArrayElementType(
+                'arg',
+                'Animal',
+              );
               expect(elementType.type).toBe('TypeAliasTypeAnnotation');
               invariant(elementType.type === 'TypeAliasTypeAnnotation', '');
 
               expect(elementType.name).toBe('Animal');
+              expectAnimalTypeAliasToExist(module);
             });
 
             it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter of type 'Array<{|foo: ?string|}>'`, () => {
-              const elementType = parseParamArrayElementType(
+              const [elementType] = parseParamArrayElementType(
                 'arg',
                 '{|foo: ?string|}',
               );
@@ -281,7 +313,7 @@ describe('Flow Module Parser', () => {
           });
 
           it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of some type alias`, () => {
-            const param = parseParamType('arg', 'Animal');
+            const [param, module] = parseParamType('arg', 'Animal');
             expect(param.typeAnnotation.type).toBe('TypeAliasTypeAnnotation');
             invariant(
               param.typeAnnotation.type === 'TypeAliasTypeAnnotation',
@@ -289,6 +321,54 @@ describe('Flow Module Parser', () => {
             );
 
             expect(param.typeAnnotation.name).toBe('Animal');
+            expectAnimalTypeAliasToExist(module);
+          });
+
+          it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of some type alias that points to another type alias`, () => {
+            const [param, module] = parseParamType('arg', 'AnimalPointer');
+            expect(param.typeAnnotation.type).toBe('TypeAliasTypeAnnotation');
+            invariant(
+              param.typeAnnotation.type === 'TypeAliasTypeAnnotation',
+              '',
+            );
+
+            expect(param.typeAnnotation.name).toBe('Animal');
+            expectAnimalTypeAliasToExist(module);
+          });
+
+          it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of some type alias that points to another nullable type alias`, () => {
+            const module = parseModule(`
+              import type {TurboModule} from 'RCTExport';
+              import * as TurboModuleRegistry from 'TurboModuleRegistry';
+
+              type Animal = ?{|
+                name: string,
+              |};
+
+              type AnimalPointer = Animal;
+
+              export interface Spec extends TurboModule {
+                +useArg(${annotateArg('arg', 'AnimalPointer')}): void;
+              }
+              export default TurboModuleRegistry.get<Spec>('Foo');
+            `);
+
+            expect(module.properties[0]).not.toBe(null);
+            const param = module.properties[0].typeAnnotation.params[0];
+            expect(param.name).toBe('arg');
+            expect(param.optional).toBe(optional);
+
+            // The TypeAliasAnnotation is called Animal, and is nullable
+            expect(param.typeAnnotation.type).toBe('TypeAliasTypeAnnotation');
+            invariant(
+              param.typeAnnotation.type === 'TypeAliasTypeAnnotation',
+              '',
+            );
+            expect(param.typeAnnotation.name).toBe('Animal');
+            expect(param.typeAnnotation.nullable).toBe(true);
+
+            // The Animal type alias RHS is valid, and non-null
+            expectAnimalTypeAliasToExist(module);
           });
 
           [
@@ -323,7 +403,7 @@ describe('Flow Module Parser', () => {
               propName: string,
               propType: string,
             ) {
-              const param = parseParamType(
+              const [param, module] = parseParamType(
                 'arg',
                 `{|${annotateProp(propName, propType)}|}`,
               );
@@ -348,10 +428,13 @@ describe('Flow Module Parser', () => {
               );
               invariant(properties[0].typeAnnotation != null, '');
 
-              return {
-                ...properties[0],
-                typeAnnotation: properties[0].typeAnnotation,
-              };
+              return [
+                {
+                  ...properties[0],
+                  typeAnnotation: properties[0].typeAnnotation,
+                },
+                module,
+              ];
             }
 
             describe(
@@ -366,7 +449,7 @@ describe('Flow Module Parser', () => {
                 describe('Props with Primitive Types', () => {
                   PRIMITIVES.forEach(([FLOW_TYPE, PARSED_TYPE_NAME]) => {
                     it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of primitive type '${FLOW_TYPE}'`, () => {
-                      const prop = parseParamTypeObjectLiteralProp(
+                      const [prop] = parseParamTypeObjectLiteralProp(
                         'prop',
                         FLOW_TYPE,
                       );
@@ -376,7 +459,7 @@ describe('Flow Module Parser', () => {
                 });
 
                 it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type 'Object'`, () => {
-                  const prop = parseParamTypeObjectLiteralProp(
+                  const [prop] = parseParamTypeObjectLiteralProp(
                     'prop',
                     'Object',
                   );
@@ -388,7 +471,7 @@ describe('Flow Module Parser', () => {
                 describe('Props with Reserved Types', () => {
                   RESERVED_FUNCTION_VALUE_TYPE_NAME.forEach(FLOW_TYPE => {
                     it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of reserved type '${FLOW_TYPE}'`, () => {
-                      const prop = parseParamTypeObjectLiteralProp(
+                      const [prop] = parseParamTypeObjectLiteralProp(
                         'prop',
                         FLOW_TYPE,
                       );
@@ -422,7 +505,7 @@ describe('Flow Module Parser', () => {
                     propName: string,
                     arrayElementType: string,
                   ) {
-                    const property = parseParamTypeObjectLiteralProp(
+                    const [property, module] = parseParamTypeObjectLiteralProp(
                       'propName',
                       `Array<${arrayElementType}>`,
                     );
@@ -437,12 +520,12 @@ describe('Flow Module Parser', () => {
                     const {elementType} = property.typeAnnotation;
                     expect(elementType).not.toBe(null);
                     invariant(elementType != null, '');
-                    return elementType;
+                    return [elementType, module];
                   }
 
                   PRIMITIVES.forEach(([FLOW_TYPE, PARSED_TYPE_NAME]) => {
                     it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type 'Array<${FLOW_TYPE}>'`, () => {
-                      const elementType = parseArrayElementType(
+                      const [elementType] = parseArrayElementType(
                         'prop',
                         FLOW_TYPE,
                       );
@@ -453,7 +536,7 @@ describe('Flow Module Parser', () => {
 
                   RESERVED_FUNCTION_VALUE_TYPE_NAME.forEach(FLOW_TYPE => {
                     it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type 'Array<${FLOW_TYPE}>'`, () => {
-                      const elementType = parseArrayElementType(
+                      const [elementType] = parseArrayElementType(
                         'prop',
                         FLOW_TYPE,
                       );
@@ -471,14 +554,20 @@ describe('Flow Module Parser', () => {
                   });
 
                   it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type  'Array<Object>'`, () => {
-                    const elementType = parseArrayElementType('prop', 'Object');
+                    const [elementType] = parseArrayElementType(
+                      'prop',
+                      'Object',
+                    );
                     expect(elementType.type).toBe(
                       'GenericObjectTypeAnnotation',
                     );
                   });
 
-                  it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type of some array of an aliase`, () => {
-                    const elementType = parseArrayElementType('prop', 'Animal');
+                  it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type of some array of an alias`, () => {
+                    const [elementType, module] = parseArrayElementType(
+                      'prop',
+                      'Animal',
+                    );
 
                     expect(elementType.type).toBe('TypeAliasTypeAnnotation');
                     invariant(
@@ -487,10 +576,11 @@ describe('Flow Module Parser', () => {
                     );
 
                     expect(elementType.name).toBe('Animal');
+                    expectAnimalTypeAliasToExist(module);
                   });
 
                   it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of 'Array<{|foo: ?string|}>'`, () => {
-                    const elementType = parseArrayElementType(
+                    const [elementType] = parseArrayElementType(
                       'prop',
                       '{|foo: ?string|}',
                     );
@@ -514,7 +604,7 @@ describe('Flow Module Parser', () => {
                 });
 
                 it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type '{|foo: ?string|}'`, () => {
-                  const property = parseParamTypeObjectLiteralProp(
+                  const [property] = parseParamTypeObjectLiteralProp(
                     'prop',
                     '{|foo: ?string|}',
                   );
@@ -542,7 +632,7 @@ describe('Flow Module Parser', () => {
                 });
 
                 it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of some type alias`, () => {
-                  const property = parseParamTypeObjectLiteralProp(
+                  const [property, module] = parseParamTypeObjectLiteralProp(
                     'prop',
                     'Animal',
                   );
@@ -556,6 +646,7 @@ describe('Flow Module Parser', () => {
                   );
 
                   expect(property.typeAnnotation.name).toBe('Animal');
+                  expectAnimalTypeAliasToExist(module);
                 });
               },
             );
@@ -594,9 +685,9 @@ describe('Flow Module Parser', () => {
         const module = parseModule(`
           import type {TurboModule} from 'RCTExport';
           import * as TurboModuleRegistry from 'TurboModuleRegistry';
-          type Animal = {|
-            name: string,
-          |};
+
+          ${TYPE_ALIAS_DECLARATIONS}
+
           export interface Spec extends TurboModule {
             +useArg(): ${annotateRet(flowType)};
           }
@@ -607,7 +698,7 @@ describe('Flow Module Parser', () => {
         const {returnTypeAnnotation} = module.properties[0].typeAnnotation;
         expect(returnTypeAnnotation).not.toBe(null);
         expect(returnTypeAnnotation.nullable).toBe(IS_RETURN_TYPE_NULLABLE);
-        return returnTypeAnnotation;
+        return [returnTypeAnnotation, module];
       }
 
       describe(
@@ -616,7 +707,7 @@ describe('Flow Module Parser', () => {
           ['Promise<void>', 'Promise<{||}>', 'Promise<*>'].forEach(
             promiseFlowType => {
               it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type '${promiseFlowType}'`, () => {
-                const returnTypeAnnotation = parseReturnType(promiseFlowType);
+                const [returnTypeAnnotation] = parseReturnType(promiseFlowType);
                 expect(returnTypeAnnotation.type).toBe(
                   'GenericPromiseTypeAnnotation',
                 );
@@ -627,7 +718,7 @@ describe('Flow Module Parser', () => {
           describe('Primitive Types', () => {
             PRIMITIVES.forEach(([FLOW_TYPE, PARSED_TYPE_NAME]) => {
               it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} primitive return of type '${FLOW_TYPE}'`, () => {
-                const returnTypeAnnotation = parseReturnType(FLOW_TYPE);
+                const [returnTypeAnnotation] = parseReturnType(FLOW_TYPE);
                 expect(returnTypeAnnotation.type).toBe(PARSED_TYPE_NAME);
               });
             });
@@ -636,7 +727,7 @@ describe('Flow Module Parser', () => {
           describe('Reserved Types', () => {
             RESERVED_FUNCTION_VALUE_TYPE_NAME.forEach(FLOW_TYPE => {
               it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} reserved return of type '${FLOW_TYPE}'`, () => {
-                const returnTypeAnnotation = parseReturnType(FLOW_TYPE);
+                const [returnTypeAnnotation] = parseReturnType(FLOW_TYPE);
                 expect(returnTypeAnnotation.type).toBe(
                   'ReservedFunctionValueTypeAnnotation',
                 );
@@ -661,7 +752,7 @@ describe('Flow Module Parser', () => {
             });
 
             function parseArrayElementReturnType(flowType: string) {
-              const returnTypeAnnotation = parseReturnType(
+              const [returnTypeAnnotation, module] = parseReturnType(
                 'Array' + (flowType != null ? `<${flowType}>` : ''),
               );
               expect(returnTypeAnnotation.type).toBe('ArrayTypeAnnotation');
@@ -673,7 +764,7 @@ describe('Flow Module Parser', () => {
               const {elementType} = returnTypeAnnotation;
               expect(elementType).not.toBe(null);
               invariant(elementType != null, '');
-              return elementType;
+              return [elementType, module];
             }
 
             // TODO: Do we support nullable element types?
@@ -681,7 +772,9 @@ describe('Flow Module Parser', () => {
             describe('Primitive Element Types', () => {
               PRIMITIVES.forEach(([FLOW_TYPE, PARSED_TYPE_NAME]) => {
                 it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type 'Array<${FLOW_TYPE}>'`, () => {
-                  const elementType = parseArrayElementReturnType(FLOW_TYPE);
+                  const [elementType, module] = parseArrayElementReturnType(
+                    FLOW_TYPE,
+                  );
                   expect(elementType.type).toBe(PARSED_TYPE_NAME);
                 });
               });
@@ -690,7 +783,7 @@ describe('Flow Module Parser', () => {
             describe('Reserved Element Types', () => {
               RESERVED_FUNCTION_VALUE_TYPE_NAME.forEach(FLOW_TYPE => {
                 it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type 'Array<${FLOW_TYPE}>'`, () => {
-                  const elementType = parseArrayElementReturnType(FLOW_TYPE);
+                  const [elementType] = parseArrayElementReturnType(FLOW_TYPE);
                   expect(elementType.type).toBe(
                     'ReservedFunctionValueTypeAnnotation',
                   );
@@ -705,19 +798,22 @@ describe('Flow Module Parser', () => {
             });
 
             it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type 'Array<Object>'`, () => {
-              const elementType = parseArrayElementReturnType('Object');
+              const [elementType] = parseArrayElementReturnType('Object');
               expect(elementType.type).toBe('GenericObjectTypeAnnotation');
             });
 
-            it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of some array of an aliase`, () => {
-              const elementType = parseArrayElementReturnType('Animal');
+            it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of some array of an alias`, () => {
+              const [elementType, module] = parseArrayElementReturnType(
+                'Animal',
+              );
               expect(elementType.type).toBe('TypeAliasTypeAnnotation');
               invariant(elementType.type === 'TypeAliasTypeAnnotation', '');
               expect(elementType.name).toBe('Animal');
+              expectAnimalTypeAliasToExist(module);
             });
 
             it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type 'Array<{|foo: ?string|}>'`, () => {
-              const elementType = parseArrayElementReturnType(
+              const [elementType] = parseArrayElementReturnType(
                 '{|foo: ?string|}',
               );
               expect(elementType.type).toBe('ObjectTypeAnnotation');
@@ -739,13 +835,14 @@ describe('Flow Module Parser', () => {
           });
 
           it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of some type alias`, () => {
-            const returnTypeAnnotation = parseReturnType('Animal');
+            const [returnTypeAnnotation, module] = parseReturnType('Animal');
             expect(returnTypeAnnotation.type).toBe('TypeAliasTypeAnnotation');
             invariant(
               returnTypeAnnotation.type === 'TypeAliasTypeAnnotation',
               '',
             );
             expect(returnTypeAnnotation.name).toBe('Animal');
+            expectAnimalTypeAliasToExist(module);
           });
 
           it(`should not parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type 'Function'`, () => {
@@ -755,7 +852,7 @@ describe('Flow Module Parser', () => {
           });
 
           it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type 'Object'`, () => {
-            const returnTypeAnnotation = parseReturnType('Object');
+            const [returnTypeAnnotation] = parseReturnType('Object');
             expect(returnTypeAnnotation.type).toBe(
               'GenericObjectTypeAnnotation',
             );
@@ -765,7 +862,7 @@ describe('Flow Module Parser', () => {
             // TODO: Inexact vs exact object literals?
 
             it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an empty object literal`, () => {
-              const returnTypeAnnotation = parseReturnType('{||}');
+              const [returnTypeAnnotation] = parseReturnType('{||}');
               expect(returnTypeAnnotation.type).toBe('ObjectTypeAnnotation');
               invariant(
                 returnTypeAnnotation.type === 'ObjectTypeAnnotation',
@@ -809,7 +906,7 @@ describe('Flow Module Parser', () => {
                 propName: string,
                 propType: string,
               ) {
-                const returnTypeAnnotation = parseReturnType(
+                const [returnTypeAnnotation, module] = parseReturnType(
                   `{|${annotateProp(propName, propType)}|}`,
                 );
                 expect(returnTypeAnnotation.type).toBe('ObjectTypeAnnotation');
@@ -831,10 +928,13 @@ describe('Flow Module Parser', () => {
                 expect(property.typeAnnotation).not.toBe(null);
                 expect(property.typeAnnotation?.nullable).toBe(nullable);
                 invariant(property.typeAnnotation != null, '');
-                return {
-                  ...property,
-                  typeAnnotation: property.typeAnnotation,
-                };
+                return [
+                  {
+                    ...property,
+                    typeAnnotation: property.typeAnnotation,
+                  },
+                  module,
+                ];
               }
 
               describe(
@@ -853,7 +953,7 @@ describe('Flow Module Parser', () => {
                   describe('Props with Primitive Types', () => {
                     PRIMITIVES.forEach(([FLOW_TYPE, PARSED_TYPE_NAME]) => {
                       it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of primitive type '${FLOW_TYPE}'`, () => {
-                        const property = parseObjectLiteralReturnTypeProp(
+                        const [property] = parseObjectLiteralReturnTypeProp(
                           'prop',
                           FLOW_TYPE,
                         );
@@ -865,7 +965,7 @@ describe('Flow Module Parser', () => {
                   });
 
                   it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type 'Object'`, () => {
-                    const property = parseObjectLiteralReturnTypeProp(
+                    const [property] = parseObjectLiteralReturnTypeProp(
                       'prop',
                       'Object',
                     );
@@ -878,7 +978,7 @@ describe('Flow Module Parser', () => {
                   describe('Props with Reserved Types', () => {
                     RESERVED_FUNCTION_VALUE_TYPE_NAME.forEach(FLOW_TYPE => {
                       it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of reserved type '${FLOW_TYPE}'`, () => {
-                        const property = parseObjectLiteralReturnTypeProp(
+                        const [property] = parseObjectLiteralReturnTypeProp(
                           'prop',
                           FLOW_TYPE,
                         );
@@ -913,7 +1013,10 @@ describe('Flow Module Parser', () => {
                       propName: string,
                       arrayElementType: string,
                     ) {
-                      const property = parseObjectLiteralReturnTypeProp(
+                      const [
+                        property,
+                        module,
+                      ] = parseObjectLiteralReturnTypeProp(
                         propName,
                         `Array<${arrayElementType}>`,
                       );
@@ -929,12 +1032,12 @@ describe('Flow Module Parser', () => {
                       const {elementType} = property.typeAnnotation;
                       expect(elementType).not.toBe(null);
                       invariant(elementType != null, '');
-                      return elementType;
+                      return [elementType, module];
                     }
 
                     PRIMITIVES.forEach(([FLOW_TYPE, PARSED_TYPE_NAME]) => {
                       it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type 'Array<${FLOW_TYPE}>'`, () => {
-                        const elementType = parseArrayElementType(
+                        const [elementType] = parseArrayElementType(
                           'prop',
                           FLOW_TYPE,
                         );
@@ -944,7 +1047,7 @@ describe('Flow Module Parser', () => {
 
                     RESERVED_FUNCTION_VALUE_TYPE_NAME.forEach(FLOW_TYPE => {
                       it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type 'Array<${FLOW_TYPE}>'`, () => {
-                        const elementType = parseArrayElementType(
+                        const [elementType] = parseArrayElementType(
                           'prop',
                           FLOW_TYPE,
                         );
@@ -962,7 +1065,7 @@ describe('Flow Module Parser', () => {
                     });
 
                     it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type  'Array<Object>'`, () => {
-                      const elementType = parseArrayElementType(
+                      const [elementType] = parseArrayElementType(
                         'prop',
                         'Object',
                       );
@@ -973,7 +1076,7 @@ describe('Flow Module Parser', () => {
                     });
 
                     it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type of some array of an aliase`, () => {
-                      const elementType = parseArrayElementType(
+                      const [elementType, module] = parseArrayElementType(
                         'prop',
                         'Animal',
                       );
@@ -983,10 +1086,11 @@ describe('Flow Module Parser', () => {
                         '',
                       );
                       expect(elementType.name).toBe('Animal');
+                      expectAnimalTypeAliasToExist(module);
                     });
 
                     it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type  'Array<{|foo: ?string|}>'`, () => {
-                      const elementType = parseArrayElementType(
+                      const [elementType] = parseArrayElementType(
                         'prop',
                         '{|foo: ?string|}',
                       );
@@ -1014,7 +1118,7 @@ describe('Flow Module Parser', () => {
                   });
 
                   it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of '{|foo: ?string|}'`, () => {
-                    const property = parseObjectLiteralReturnTypeProp(
+                    const [property] = parseObjectLiteralReturnTypeProp(
                       'prop',
                       '{|foo: ?string|}',
                     );
@@ -1046,7 +1150,7 @@ describe('Flow Module Parser', () => {
                   });
 
                   it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of some type alias`, () => {
-                    const property = parseObjectLiteralReturnTypeProp(
+                    const [property, module] = parseObjectLiteralReturnTypeProp(
                       'prop',
                       'Animal',
                     );
@@ -1061,6 +1165,7 @@ describe('Flow Module Parser', () => {
                     );
 
                     expect(property.typeAnnotation.name).toBe('Animal');
+                    expectAnimalTypeAliasToExist(module);
                   });
                 },
               );

@@ -40,10 +40,11 @@ function translateTypeAnnotation(
   types: TypeDeclarationMap,
   aliasMap: NativeModuleAliasMap,
 ): NativeModuleTypeAnnotation {
-  const {nullable, typeAnnotation} = resolveTypeAnnotation(
-    flowTypeAnnotation,
-    types,
-  );
+  const {
+    nullable,
+    typeAnnotation,
+    typeAliasResolutionStatus,
+  } = resolveTypeAnnotation(flowTypeAnnotation, types);
 
   switch (typeAnnotation.type) {
     case 'GenericTypeAnnotation': {
@@ -161,8 +162,7 @@ function translateTypeAnnotation(
       }
     }
     case 'ObjectTypeAnnotation': {
-      const objectTypeAnnotation = {
-        nullable,
+      const objectTypeAnnotationPartial = {
         type: 'ObjectTypeAnnotation',
         properties: typeAnnotation.properties.map(property => {
           const {optional} = property;
@@ -179,30 +179,55 @@ function translateTypeAnnotation(
         }),
       };
 
-      if (flowTypeAnnotation.type === 'GenericTypeAnnotation') {
-        aliasMap[flowTypeAnnotation.id.name] = objectTypeAnnotation;
+      if (!typeAliasResolutionStatus.successful) {
         return {
-          nullable: false,
-          type: 'TypeAliasTypeAnnotation',
-          name: flowTypeAnnotation.id.name,
+          nullable,
+          ...objectTypeAnnotationPartial,
         };
       }
 
-      if (
-        flowTypeAnnotation.type === 'NullableTypeAnnotation' &&
-        flowTypeAnnotation.typeAnnotation.type === 'GenericTypeAnnotation'
-      ) {
-        aliasMap[
-          flowTypeAnnotation.typeAnnotation.id.name
-        ] = objectTypeAnnotation;
-        return {
-          nullable: true,
-          type: 'TypeAliasTypeAnnotation',
-          name: flowTypeAnnotation.typeAnnotation.id.name,
-        };
-      }
+      /**
+       * All aliases RHS are required.
+       */
+      aliasMap[typeAliasResolutionStatus.aliasName] = {
+        nullable: false,
+        ...objectTypeAnnotationPartial,
+      };
 
-      return objectTypeAnnotation;
+      /**
+       * Nullability of type aliases is transitive.
+       *
+       * Consider this case:
+       *
+       * type Animal = ?{|
+       *   name: string,
+       * |};
+       *
+       * type B = Animal
+       *
+       * export interface Spec extends TurboModule {
+       *   +greet: (animal: B) => void;
+       * }
+       *
+       * In this case, we follow B to Animal, and then Animal to ?{|name: string|}.
+       *
+       * We:
+       *   1. Replace `+greet: (animal: B) => void;` with `+greet: (animal: ?Animal) => void;`,
+       *   2. Pretend that Animal = {|name: string|}.
+       *
+       * Why do we do this?
+       *  1. In ObjC, we need to generate a struct called Animal, not B.
+       *  2. This design is simpler than managing nullability within both the type alias usage, and the type alias RHS.
+       *  3. What does it mean for a C++ struct, which is what this type alias RHS will generate, to be nullable? ¯\_(ツ)_/¯
+       *     Nullability is a concept that only makes sense when talking about instances (i.e: usages) of the C++ structs.
+       *     Hence, it's better to manage nullability within the actual TypeAliasTypeAnnotation nodes, and not the
+       *     associated ObjectTypeAnnotations.
+       */
+      return {
+        nullable: nullable,
+        type: 'TypeAliasTypeAnnotation',
+        name: typeAliasResolutionStatus.aliasName,
+      };
     }
     case 'BooleanTypeAnnotation': {
       return {
