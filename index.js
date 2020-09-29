@@ -72,7 +72,6 @@ import typeof Networking from './Libraries/Network/RCTNetworking';
 import typeof PanResponder from './Libraries/Interaction/PanResponder';
 import typeof PermissionsAndroid from './Libraries/PermissionsAndroid/PermissionsAndroid';
 import typeof PixelRatio from './Libraries/Utilities/PixelRatio';
-import typeof PushNotificationIOS from './Libraries/PushNotificationIOS/PushNotificationIOS';
 import typeof Settings from './Libraries/Settings/Settings';
 import typeof Share from './Libraries/Share/Share';
 import typeof StatusBarIOS from './Libraries/Components/StatusBar/StatusBarIOS';
@@ -381,15 +380,6 @@ module.exports = {
   },
   get PixelRatio(): PixelRatio {
     return require('./Libraries/Utilities/PixelRatio');
-  },
-  get PushNotificationIOS(): PushNotificationIOS {
-    warnOnce(
-      'pushNotificationIOS-moved',
-      'PushNotificationIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/push-notification-ios' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/push-notification-ios',
-    );
-    return require('./Libraries/PushNotificationIOS/PushNotificationIOS');
   },
   get Settings(): Settings {
     return require('./Libraries/Settings/Settings');
