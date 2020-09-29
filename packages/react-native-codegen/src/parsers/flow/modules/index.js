@@ -14,57 +14,48 @@ import type {NativeModuleShape} from '../../../CodegenSchema';
 const {getAliases} = require('./aliases');
 const {getMethods} = require('./methods');
 
-function getModuleProperties(types, interfaceName) {
-  if (types[interfaceName] && types[interfaceName].body) {
-    return types[interfaceName].body.properties;
-  }
-  throw new Error(
-    `Interface properties for "${interfaceName}" has been specified incorrectly.`,
+import type {TypeDeclarations} from '../index';
+
+// TODO(T71778680): Flow type AST Nodes
+function getModuleProperties(
+  types: TypeDeclarations,
+): $ReadOnlyArray<$FlowFixMe> {
+  const declaredModuleNames: Array<string> = Object.keys(types).filter(
+    (typeName: string) => {
+      const declaration = types[typeName];
+      return (
+        declaration.type === 'InterfaceDeclaration' &&
+        declaration.extends.length === 1 &&
+        declaration.extends[0].type === 'InterfaceExtends' &&
+        declaration.extends[0].id.name === 'TurboModule'
+      );
+    },
   );
+
+  return types[declaredModuleNames[0]].body.properties;
 }
 
-function findInterfaceName(types) {
+// TODO(T71778680): Flow type AST Nodes
+function getModuleAliases(
+  types: TypeDeclarations,
+  aliasNames,
+): $ReadOnlyArray<{[aliasName: string]: $FlowFixMe}> {
   return Object.keys(types)
-    .map(typeName => types[typeName])
-    .filter(
-      type =>
-        type.extends &&
-        type.extends[0] &&
-        type.extends[0].id.name === 'TurboModule',
-    )[0].id.name;
+    .filter((typeName: string) => {
+      const declaration = types[typeName];
+      return (
+        declaration.type === 'TypeAlias' &&
+        declaration.right.type === 'ObjectTypeAnnotation'
+      );
+    })
+    .map(aliasName => ({[aliasName]: types[aliasName].right}));
 }
 
-function findAliasNames(types) {
-  return Object.keys(types)
-    .map(typeName => types[typeName])
-    .filter(
-      type =>
-        type.type &&
-        type.type === 'TypeAlias' &&
-        type.right &&
-        type.right.type === 'ObjectTypeAnnotation',
-    )
-    .map(type => type.id.name);
-}
-
-function getModuleAliases(types, aliasNames) {
-  return aliasNames.map(aliasName => {
-    if (types[aliasName] && types[aliasName].right) {
-      return {[aliasName]: types[aliasName].right};
-    }
-    throw new Error(
-      `Interface properties for "${aliasName}" has been specified incorrectly.`,
-    );
-  });
-}
-
-function processModule(types: $FlowFixMe): NativeModuleShape {
-  const interfaceName = findInterfaceName(types);
-  const moduleProperties = getModuleProperties(types, interfaceName);
+function processModule(types: TypeDeclarations): NativeModuleShape {
+  const moduleProperties = getModuleProperties(types);
   const properties = getMethods(moduleProperties, types);
 
-  const aliasNames = findAliasNames(types);
-  const moduleAliases = getModuleAliases(types, aliasNames);
+  const moduleAliases = getModuleAliases(types);
   const aliases = getAliases(moduleAliases, types);
 
   return {aliases, properties};

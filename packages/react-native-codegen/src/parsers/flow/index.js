@@ -25,8 +25,10 @@ const {processModule} = require('./modules');
  * declaration type. Unfortunately, we don't have those types, because flow-parser
  * generates them, and flow-parser is not type-safe. In the future, we should find
  * a way to get these types from our flow parser library.
+ *
+ * TODO(T71778680): Flow type AST Nodes
  */
-type TypeDeclarations = {|[declarationName: string]: $FlowFixMe|};
+export type TypeDeclarations = {|[declarationName: string]: $FlowFixMe|};
 
 function getTypes(ast): TypeDeclarations {
   return ast.body.reduce((types, node) => {
