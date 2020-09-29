@@ -263,6 +263,8 @@ export type SchemaType = $ReadOnly<{|
  * This is necessary for us to start unifying the notion of a "type
  * annotation" across the codegen schema as a whole.
  */
+export type Required<T> = $ReadOnly<{...T, nullable: false}>;
+
 export type NativeModuleSchema = $ReadOnly<{|
   // We only support aliases to Objects
   aliases: $ReadOnly<NativeModuleAliasMap>,
@@ -270,11 +272,7 @@ export type NativeModuleSchema = $ReadOnly<{|
 |}>;
 
 export type NativeModuleAliasMap = {
-  [aliasName: string]: $ReadOnly<{|
-    type: 'ObjectTypeAnnotation',
-    properties: $ReadOnlyArray<NativeModuleObjectTypeAnnotationPropertySchema>,
-    nullable: false,
-  |}>,
+  [aliasName: string]: Required<NativeModuleObjectTypeAnnotation>,
 };
 
 export type NativeModulePropertySchema = $ReadOnly<{|
@@ -298,14 +296,14 @@ export type NativeModuleMethodParamSchema = $ReadOnly<{|
 
 export type NativeModuleObjectTypeAnnotation = $ReadOnly<{|
   type: 'ObjectTypeAnnotation',
-  properties: $ReadOnlyArray<NativeModuleObjectTypeAnnotationPropertySchema>,
+  properties: $ReadOnlyArray<
+    $ReadOnly<{|
+      name: string,
+      optional: boolean,
+      typeAnnotation: NativeModuleBaseTypeAnnotation,
+    |}>,
+  >,
   nullable: boolean,
-|}>;
-
-export type NativeModuleObjectTypeAnnotationPropertySchema = $ReadOnly<{|
-  optional: boolean,
-  name: string,
-  typeAnnotation: NativeModuleBaseTypeAnnotation,
 |}>;
 
 export type NativeModuleArrayTypeAnnotation = $ReadOnly<{|
