@@ -26,7 +26,9 @@ const {processModule} = require('./modules');
  * generates them, and flow-parser is not type-safe. In the future, we should find
  * a way to get these types from our flow parser library.
  */
-function getTypes(ast): {[declarationName: string]: $FlowFixMe} {
+type TypeDeclarations = {|[declarationName: string]: $FlowFixMe|};
+
+function getTypes(ast): TypeDeclarations {
   return ast.body.reduce((types, node) => {
     if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
       if (
@@ -45,58 +47,79 @@ function getTypes(ast): {[declarationName: string]: $FlowFixMe} {
   }, {});
 }
 
-function getConfigType(ast, types): 'module' | 'component' {
+function isComponent(ast) {
   const defaultExports = ast.body.filter(
     node => node.type === 'ExportDefaultDeclaration',
   );
 
-  let isComponent = false;
-
-  if (defaultExports.length > 0) {
-    let declaration = defaultExports[0].declaration;
-    // codegenNativeComponent can be nested inside a cast
-    // expression so we need to go one level deeper
-    if (declaration.type === 'TypeCastExpression') {
-      declaration = declaration.expression;
-    }
-
-    isComponent =
-      declaration &&
-      declaration.callee &&
-      declaration.callee.name === 'codegenNativeComponent';
+  if (defaultExports.length === 0) {
+    return false;
   }
 
-  const typesExtendingTurboModule = Object.keys(types)
-    .map(typeName => types[typeName])
-    .filter(
-      type =>
-        type.extends &&
-        type.extends[0] &&
-        type.extends[0].id.name === 'TurboModule',
-    );
+  let declaration = defaultExports[0].declaration;
+  // codegenNativeComponent can be nested inside a cast
+  // expression so we need to go one level deeper
+  if (declaration.type === 'TypeCastExpression') {
+    declaration = declaration.expression;
+  }
 
-  if (typesExtendingTurboModule.length > 1) {
+  if (declaration.type !== 'CallExpression') {
+    return false;
+  }
+
+  return (
+    declaration.callee.type === 'Identifier' &&
+    declaration.callee.name === 'codegenNativeComponent'
+  );
+}
+
+function isModule(types: TypeDeclarations) {
+  const declaredModuleNames: Array<string> = Object.keys(types).filter(
+    (typeName: string) => {
+      const declaration = types[typeName];
+      return (
+        declaration.type === 'InterfaceDeclaration' &&
+        declaration.extends.length === 1 &&
+        declaration.extends[0].type === 'InterfaceExtends' &&
+        declaration.extends[0].id.name === 'TurboModule'
+      );
+    },
+  );
+
+  if (declaredModuleNames.length === 0) {
+    return false;
+  }
+
+  if (declaredModuleNames.length > 1) {
     throw new Error(
-      'Found two types extending "TurboModule" is one file. Split them into separated files.',
+      'File contains declarations of more than one module: ' +
+        declaredModuleNames.join(', ') +
+        '. Please declare exactly one module in this file.',
     );
   }
 
-  const isModule = typesExtendingTurboModule.length === 1;
+  return true;
+}
 
-  if (isModule && isComponent) {
+function getConfigType(ast, types: TypeDeclarations): 'module' | 'component' {
+  const isConfigAComponent = isComponent(ast);
+  const isConfigAModule = isModule(types);
+
+  if (isConfigAModule && isConfigAComponent) {
     throw new Error(
       'Found type extending "TurboModule" and exported "codegenNativeComponent" declaration in one file. Split them into separated files.',
     );
   }
 
-  if (isModule) {
+  if (isConfigAModule) {
     return 'module';
-  } else if (isComponent) {
+  } else if (isConfigAComponent) {
     return 'component';
   } else {
     throw new Error(
-      `Default export for module specified incorrectly. It should containts
-    either type extending "TurboModule" or "codegenNativeComponent".`,
+      'File neither contains a module declaration, nor a component declaration. ' +
+        'For module declarations, please make sure your file has an InterfaceDeclaration extending TurboModule. ' +
+        'For component declarations, please make sure your file has a default export calling the codegenNativeComponent<Props>(...) macro.',
     );
   }
 }

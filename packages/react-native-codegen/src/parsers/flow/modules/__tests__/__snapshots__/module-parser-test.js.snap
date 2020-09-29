@@ -12,12 +12,9 @@ exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_REA
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_UNNAMED_PARAMS 1`] = `"Unsupported type for getBool. Please provide a name for every parameter."`;
 
-exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"Found two types extending \\"TurboModule\\" is one file. Split them into separated files."`;
+exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"File contains declarations of more than one module: Spec, Spec2. Please declare exactly one module in this file."`;
 
-exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `
-"Default export for module specified incorrectly. It should containts
-    either type extending \\"TurboModule\\" or \\"codegenNativeComponent\\"."
-`;
+exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `"File neither contains a module declaration, nor a component declaration. For module declarations, please make sure your file has an InterfaceDeclaration extending TurboModule. For component declarations, please make sure your file has a default export calling the codegenNativeComponent<Props>(...) macro."`;
 
 exports[`RN Codegen Flow Parser can generate fixture EMPTY_NATIVE_MODULE 1`] = `
 Object {
