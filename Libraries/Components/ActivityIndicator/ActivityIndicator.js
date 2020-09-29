@@ -187,7 +187,7 @@ ActivityIndicatorWithRef.defaultProps = {
   color: Platform.select({
     ios: GRAY,
     android: PlatformColor('?attr/colorControlActivated'),
-    default: GRAY,
+    default: null,
   }),
   hidesWhenStopped: true,
   size: 'small',
