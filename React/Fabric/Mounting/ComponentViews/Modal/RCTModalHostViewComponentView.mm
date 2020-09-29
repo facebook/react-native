@@ -101,6 +101,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   ModalHostViewShadowNode::ConcreteStateTeller _stateTeller;
   BOOL _shouldAnimatePresentation;
   BOOL _isPresented;
+  UIView *_modalContentsSnapshot;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -161,9 +162,21 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   BOOL shouldBeHidden = _isPresented && !self.superview;
   if (shouldBeHidden) {
     _isPresented = NO;
+    // To animate dismissal of view controller, snapshot of
+    // view hierarchy needs to be added to the UIViewController.
+    [self.viewController.view addSubview:_modalContentsSnapshot];
     [self dismissViewController:self.viewController animated:_shouldAnimatePresentation];
   }
 }
+
+#pragma mark - RCTMountingTransactionObserving
+
+- (void)mountingTransactionWillMountWithMetadata:(MountingTransactionMetadata const &)metadata
+{
+  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
+}
+
+#pragma mark - UIView methods
 
 - (void)didMoveToWindow
 {
