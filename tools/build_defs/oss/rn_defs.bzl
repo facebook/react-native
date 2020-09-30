@@ -196,11 +196,12 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
         "-XX:+UseConcMarkSweepGC",  # required by -XX:+CMSClassUnloadingEnabled
         "-XX:+CMSClassUnloadingEnabled",
         "-XX:ReservedCodeCacheSize=150M",
-        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.3.1",
-        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.3.1/*.jar",
+        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.4",
+        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.4/*.jar",
         "-Drobolectric.logging.enabled=true",
         "-XX:MaxPermSize=620m",
         "-Drobolectric.offline=true",
+        "-Drobolectric.looperMode=LEGACY",
     ]
     if native.read_config("user", "use_dev_shm"):
         extra_vm_args.append("-Djava.io.tmpdir=/dev/shm")
