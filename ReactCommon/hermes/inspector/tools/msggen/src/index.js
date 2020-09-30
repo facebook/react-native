@@ -23,6 +23,9 @@ import {PropsType, Type} from './Type';
 import {HeaderWriter} from './HeaderWriter';
 import {ImplementationWriter} from './ImplementationWriter';
 
+// $FlowFixMe: this isn't a module, just a JSON file.
+const proto = require('devtools-protocol/json/js_protocol.json');
+
 type Descriptor = {|
   types: Array<Type>,
   commands: Array<Command>,
@@ -78,7 +81,9 @@ function buildGraph(desc: Descriptor): Graph {
     if (props) {
       for (const prop of props) {
         const refId = prop.getRefDebuggerName();
-        if (refId) {
+        (prop: Object).recursive = refId && refId === nodeId;
+        if (refId && refId !== nodeId) {
+          // Don't add edges for recursive properties.
           graph.addEdge(nodeId, refId);
         }
       }
@@ -182,7 +187,7 @@ function filterReachableFromRoots(
 
 function main() {
   const args = yargs
-    .usage('Usage: msggen <proto_json_path> <header_path> <cpp_path>')
+    .usage('Usage: msggen <header_path> <cpp_path>')
     .alias('h', 'help')
     .help('h')
     .boolean('e')
@@ -191,16 +196,13 @@ function main() {
     .alias('r', 'roots')
     .describe('r', 'path to a file listing root types, events, and commands')
     .nargs('r', 1)
-    .demandCommand(3, 3).argv;
+    .demandCommand(2, 2).argv;
 
   const ignoreExperimental = !!args.e;
-  const [protoJsonPath, headerPath, implPath] = args._;
+  const [headerPath, implPath] = args._;
 
   const headerStream = fs.createWriteStream(headerPath);
   const implStream = fs.createWriteStream(implPath);
-
-  const protoJsonBuf = fs.readFileSync(protoJsonPath);
-  const proto = JSON.parse(protoJsonBuf.toString());
 
   const desc = parseDomains(proto.domains, ignoreExperimental);
   const graph = buildGraph(desc);

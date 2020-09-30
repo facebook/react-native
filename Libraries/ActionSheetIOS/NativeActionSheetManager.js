@@ -12,7 +12,7 @@
 
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-import type {NativeOrDynamicColorType} from '../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import type {ProcessedColorValue} from '../StyleSheet/processColor'; // TODO(macOS ISS#2323203)
 
 export interface Spec extends TurboModule {
   +getConstants: () => {||};
@@ -24,7 +24,8 @@ export interface Spec extends TurboModule {
       +destructiveButtonIndices?: ?Array<number>,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
-      +tintColor?: ?(number | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+      +tintColor?: ?ProcessedColorValue, // TODO(macOS ISS#2323203)
+      +userInterfaceStyle?: ?string,
     |},
     callback: (buttonIndex: number) => void,
   ) => void;
@@ -34,8 +35,9 @@ export interface Spec extends TurboModule {
       +url?: ?string,
       +subject?: ?string,
       +anchor?: ?number,
-      +tintColor?: ?(number | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+      +tintColor?: ?ProcessedColorValue, // TODO(macOS ISS#2323203)
       +excludedActivityTypes?: ?Array<string>,
+      +userInterfaceStyle?: ?string,
     |},
     failureCallback: (error: {|
       +domain: string,

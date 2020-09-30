@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.test.InstrumentationRegistry;
 import com.android.internal.util.Predicate;
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.NativeModuleRegistryBuilder;
 import com.facebook.react.R;
@@ -28,7 +29,6 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
-import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.Arrays;
@@ -79,7 +79,7 @@ public class ReactTestHelper {
         }
         JavaScriptExecutor executor = null;
         try {
-          executor = new JSCExecutorFactory("ReactTestHelperApp", "ReactTestHelperDevice").create();
+          executor = new HermesExecutorFactory().create();
         } catch (Exception e) {
           throw new RuntimeException(e);
         }
@@ -108,7 +108,8 @@ public class ReactTestHelper {
 
     @Override
     public ReactInstanceManagerBuilder getReactInstanceManagerBuilder() {
-      return ReactInstanceManager.builder();
+      return ReactInstanceManager.builder()
+          .setJavaScriptExecutorFactory(new HermesExecutorFactory());
     }
   }
 

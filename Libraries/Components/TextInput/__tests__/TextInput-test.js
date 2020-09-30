@@ -87,6 +87,10 @@ describe('TextInput tests', () => {
 
     expect(textInputRef.current.isFocused()).toBe(false);
     ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
+      if (ref == null) {
+        return null;
+      }
+
       if (
         ref === textInputRef.current ||
         ref === textInputRef.current.getNativeRef()
@@ -97,13 +101,17 @@ describe('TextInput tests', () => {
       return 2;
     });
 
-    const inputTag = ReactNative.findNodeHandle(textInputRef.current);
-
-    TextInput.State.focusTextInput(inputTag);
+    TextInput.State.focusTextInput(textInputRef.current);
     expect(textInputRef.current.isFocused()).toBe(true);
-    expect(TextInput.State.currentlyFocusedField()).toBe(inputTag);
-    TextInput.State.blurTextInput(inputTag);
+    expect(TextInput.State.currentlyFocusedInput()).toBe(textInputRef.current);
+    // This function is currently deprecated and will be removed in the future
+    expect(TextInput.State.currentlyFocusedField()).toBe(
+      ReactNative.findNodeHandle(textInputRef.current),
+    );
+    TextInput.State.blurTextInput(textInputRef.current);
     expect(textInputRef.current.isFocused()).toBe(false);
+    expect(TextInput.State.currentlyFocusedInput()).toBe(null);
+    // This function is currently deprecated and will be removed in the future
     expect(TextInput.State.currentlyFocusedField()).toBe(null);
   });
 
@@ -141,16 +149,20 @@ describe('TextInput tests', () => {
     const inputTag1 = ReactNative.findNodeHandle(textInputRe1.current);
     const inputTag2 = ReactNative.findNodeHandle(textInputRe2.current);
 
-    TextInput.State.focusTextInput(inputTag1);
+    TextInput.State.focusTextInput(textInputRe1.current);
 
     expect(textInputRe1.current.isFocused()).toBe(true);
     expect(textInputRe2.current.isFocused()).toBe(false);
+    expect(TextInput.State.currentlyFocusedInput()).toBe(textInputRe1.current);
+    // This function is currently deprecated and will be removed in the future
     expect(TextInput.State.currentlyFocusedField()).toBe(inputTag1);
 
-    TextInput.State.focusTextInput(inputTag2);
+    TextInput.State.focusTextInput(textInputRe2.current);
 
     expect(textInputRe1.current.isFocused()).toBe(false);
     expect(textInputRe2.current.isFocused()).toBe(true);
+    expect(TextInput.State.currentlyFocusedInput()).toBe(textInputRe2.current);
+    // This function is currently deprecated and will be removed in the future
     expect(TextInput.State.currentlyFocusedField()).toBe(inputTag2);
   });
 

@@ -275,6 +275,12 @@ type ModuleProps = $ReadOnly<{|
   color_array_optional_value: ?ColorArrayValue,
   color_array_optional_both?: ?ColorArrayValue,
 
+  // ProcessedColorValue props
+  processed_color_required: ProcessedColorValue,
+  processed_color_optional_key?: ProcessedColorValue,
+  processed_color_optional_value: ?ProcessedColorValue,
+  processed_color_optional_both?: ?ProcessedColorValue,
+
   // PointValue props
   point_required: PointValue,
   point_optional_key?: PointValue,
@@ -310,7 +316,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
-import type {ColorValue, PointValue, EdgeInsetsValue} from 'StyleSheetTypes';
+import type {ColorValue, PointValue, ProcessColorValue, EdgeInsetsValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
@@ -507,6 +513,12 @@ type ModuleProps = $ReadOnly<{|
   color_optional_key: $ReadOnly<{|prop?: ColorValue|}>,
   color_optional_value: $ReadOnly<{|prop: ?ColorValue|}>,
   color_optional_both: $ReadOnly<{|prop?: ?ColorValue|}>,
+
+  // ProcessedColorValue props
+  processed_color_required: $ReadOnly<{|prop: ProcessedColorValue|}>,
+  processed_color_optional_key: $ReadOnly<{|prop?: ProcessedColorValue|}>,
+  processed_color_optional_value: $ReadOnly<{|prop: ?ProcessedColorValue|}>,
+  processed_color_optional_both: $ReadOnly<{|prop?: ?ProcessedColorValue|}>,
 
   // PointValue props
   point_required: $ReadOnly<{|prop: PointValue|}>,

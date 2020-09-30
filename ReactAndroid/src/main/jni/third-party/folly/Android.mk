@@ -9,20 +9,22 @@ LOCAL_SRC_FILES:= \
   folly/memory/detail/MallocImpl.cpp \
   folly/String.cpp \
   folly/dynamic.cpp \
+  folly/FileUtil.cpp \
   folly/Format.cpp \
+  folly/net/NetOps.cpp \
   folly/json_pointer.cpp \
-  folly/lang/ColdClass.cpp \
+  folly/lang/CString.cpp \
+  folly/lang/SafeAssert.cpp \
   folly/detail/Demangle.cpp \
+  folly/detail/UniqueInstance.cpp \
   folly/hash/SpookyHashV2.cpp \
   folly/container/detail/F14Table.cpp \
   folly/ScopeGuard.cpp \
+  folly/portability/SysUio.cpp
 
 ifeq ($(APP_OPTIM),debug)
   LOCAL_SRC_FILES += \
-    folly/lang/Assume.cpp \
-    folly/lang/SafeAssert.cpp \
-    folly/FileUtil.cpp \
-    folly/portability/SysUio.cpp
+    folly/lang/Assume.cpp
 endif
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
@@ -34,7 +36,8 @@ FOLLY_FLAGS := \
   -DFOLLY_NO_CONFIG=1 \
   -DFOLLY_HAVE_CLOCK_GETTIME=1 \
   -DFOLLY_HAVE_MEMRCHR=1 \
-  -DFOLLY_USE_LIBCPP=1
+  -DFOLLY_USE_LIBCPP=1 \
+  -DFOLLY_MOBILE=1
 
 # If APP_PLATFORM in Application.mk targets android-23 above, please comment this line.
 # NDK uses GNU style stderror_r() after API 23.
@@ -62,13 +65,16 @@ LOCAL_SRC_FILES := \
   folly/Executor.cpp \
   folly/SharedMutex.cpp \
   folly/concurrency/CacheLocality.cpp \
+  folly/detail/AsyncTrace.cpp \
   folly/detail/AtFork.cpp \
   folly/detail/Futex.cpp \
   folly/detail/MemoryIdler.cpp \
   folly/detail/StaticSingletonManager.cpp \
   folly/detail/ThreadLocalDetail.cpp \
+  folly/executors/ExecutorWithPriority.cpp \
   folly/executors/InlineExecutor.cpp \
   folly/executors/TimedDrivableExecutor.cpp \
+  folly/executors/QueuedImmediateExecutor.cpp \
   folly/io/async/Request.cpp \
   folly/memory/MallctlHelper.cpp \
   folly/portability/SysMembarrier.cpp \
@@ -81,9 +87,6 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
 LOCAL_CFLAGS += -fexceptions -fno-omit-frame-pointer -frtti -Wno-sign-compare
-
-FOLLY_FLAGS += \
-  -DFOLLY_FUTURE_USING_FIBER=0
 
 LOCAL_CFLAGS += $(FOLLY_FLAGS)
 

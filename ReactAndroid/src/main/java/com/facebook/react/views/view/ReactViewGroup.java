@@ -186,7 +186,7 @@ public class ReactViewGroup extends ViewGroup
 
   public void setTranslucentBackgroundDrawable(@Nullable Drawable background) {
     // it's required to call setBackground to null, as in some of the cases we may set new
-    // background to be a layer drawable that contains a drawable that has been previously setup
+    // background to be a layer drawable that contains a drawable that has been setup
     // as a background previously. This will not work correctly as the drawable callback logic is
     // messed up in AOSP
     updateBackgroundDrawable(null);

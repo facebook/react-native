@@ -21,6 +21,7 @@
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import <React/RCTConvert+Text.h>
 #endif // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 @interface RCTBaseTextInputViewManager () <RCTUIManagerObserver>
 
@@ -45,7 +46,6 @@ RCT_REMAP_NOT_OSX_VIEW_PROPERTY(keyboardAppearance, backedTextInputView.keyboard
 RCT_REMAP_VIEW_PROPERTY(placeholder, backedTextInputView.placeholder, NSString)
 RCT_REMAP_VIEW_PROPERTY(placeholderTextColor, backedTextInputView.placeholderColor, UIColor)
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(returnKeyType, backedTextInputView.returnKeyType, UIReturnKeyType) // TODO(macOS ISS#2323203)
-RCT_REMAP_NOT_OSX_VIEW_PROPERTY(secureTextEntry, backedTextInputView.secureTextEntry, BOOL) // TODO(macOS ISS#2323203)
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(selectionColor, backedTextInputView.tintColor, UIColor) // TODO(macOS ISS#2323203)
 RCT_REMAP_OSX_VIEW_PROPERTY(selectionColor, backedTextInputView.selectionColor, UIColor) // TODO(macOS ISS#2323203)
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(spellCheck, backedTextInputView.spellCheckingType, UITextSpellCheckingType) // TODO(macOS ISS#2323203)
@@ -53,6 +53,7 @@ RCT_REMAP_OSX_VIEW_PROPERTY(spellCheck, backedTextInputView.automaticSpellingCor
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(caretHidden, backedTextInputView.caretHidden, BOOL) // TODO(macOS ISS#2323203)
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(clearButtonMode, backedTextInputView.clearButtonMode, UITextFieldViewMode) // TODO(macOS ISS#2323203)
 RCT_REMAP_VIEW_PROPERTY(scrollEnabled, backedTextInputView.scrollEnabled, BOOL)
+RCT_REMAP_NOT_OSX_VIEW_PROPERTY(secureTextEntry, backedTextInputView.secureTextEntry, BOOL) // TODO(macOS ISS#2323203)
 RCT_EXPORT_VIEW_PROPERTY(autoFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(clearTextOnFocus, BOOL) // TODO(macOS ISS#2323203)
@@ -75,6 +76,11 @@ RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(placeholder, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 
+RCT_CUSTOM_VIEW_PROPERTY(multiline, BOOL, RCTUIView) // TODO(macOS ISS#2323203)
+{
+  // No op.
+  // This View Manager doesn't use this prop but it must be exposed here via ViewConfig to enable Fabric component use it.
+}
 
 - (RCTShadowView *)shadowView
 {
@@ -103,6 +109,45 @@ RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
                                              object:[bridge moduleForName:@"AccessibilityManager"
                                                     lazilyLoadIfNecessary:YES]];
 #endif // TODO(macOS ISS#2323203)
+}
+
+RCT_EXPORT_METHOD(focus : (nonnull NSNumber *)viewTag)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#2323203)
+    RCTUIView *view = viewRegistry[viewTag]; // TODO(macOS ISS#2323203)
+    [view reactFocus];
+  }];
+}
+
+RCT_EXPORT_METHOD(blur : (nonnull NSNumber *)viewTag)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#2323203)
+    RCTUIView *view = viewRegistry[viewTag]; // TODO(macOS ISS#2323203)
+    [view reactBlur];
+  }];
+}
+
+RCT_EXPORT_METHOD(setTextAndSelection : (nonnull NSNumber *)viewTag
+                 mostRecentEventCount : (NSInteger)mostRecentEventCount
+                                value : (NSString *)value
+                                start : (NSInteger)start
+                                  end : (NSInteger)end)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#2323203)
+    RCTBaseTextInputView *view = (RCTBaseTextInputView *)viewRegistry[viewTag];
+    NSInteger eventLag = view.nativeEventCount - mostRecentEventCount;
+    if (eventLag != 0) {
+      return;
+    }
+    RCTExecuteOnUIManagerQueue(^{
+      RCTBaseTextInputShadowView *shadowView = (RCTBaseTextInputShadowView *)[self.bridge.uiManager shadowViewForReactTag:viewTag];
+      [shadowView setText:value];
+      [self.bridge.uiManager setNeedsLayout];
+      RCTExecuteOnMainQueue(^{
+        [view setSelectionStart:start selectionEnd:end];
+      });
+    });
+  }];
 }
 
 #pragma mark - RCTUIManagerObserver

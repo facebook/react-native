@@ -58,7 +58,8 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
   }
   // legacy matrix support
   if ([(NSArray *)json count] == kMatrixArrayLength && [json[0] isKindOfClass:[NSNumber class]]) {
-    RCTLogWarn(@"[RCTConvert CATransform3D:] has deprecated a matrix as input. Pass an array of configs (which can contain a matrix key) instead.");
+    RCTLogWarn(
+        @"[RCTConvert CATransform3D:] has deprecated a matrix as input. Pass an array of configs (which can contain a matrix key) instead.");
     return [self CATransform3DFromMatrix:json];
   }
 

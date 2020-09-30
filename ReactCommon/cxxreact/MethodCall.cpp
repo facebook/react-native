@@ -20,40 +20,45 @@ namespace react {
 
 static const char *errorPrefix = "Malformed calls from JS: ";
 
-std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) {
+std::vector<MethodCall> parseMethodCalls(folly::dynamic &&jsonData) {
   if (jsonData.isNull()) {
     return {};
   }
 
   if (!jsonData.isArray()) {
-    throw std::invalid_argument(
-      folly::to<std::string>(errorPrefix, "input isn't array but ", jsonData.typeName()));
+    throw std::invalid_argument(folly::to<std::string>(
+        errorPrefix, "input isn't array but ", jsonData.typeName()));
   }
 
   if (jsonData.size() < REQUEST_PARAMSS + 1) {
     throw std::invalid_argument(
-      folly::to<std::string>(errorPrefix, "size == ", jsonData.size()));
+        folly::to<std::string>(errorPrefix, "size == ", jsonData.size()));
   }
 
-  auto& moduleIds = jsonData[REQUEST_MODULE_IDS];
-  auto& methodIds = jsonData[REQUEST_METHOD_IDS];
-  auto& params = jsonData[REQUEST_PARAMSS];
-  int  callId = -1;
+  auto &moduleIds = jsonData[REQUEST_MODULE_IDS];
+  auto &methodIds = jsonData[REQUEST_METHOD_IDS];
+  auto &params = jsonData[REQUEST_PARAMSS];
+  int callId = -1;
 
   if (!moduleIds.isArray() || !methodIds.isArray() || !params.isArray()) {
-    throw std::invalid_argument(
-      folly::to<std::string>(errorPrefix, "not all fields are arrays.\n\n", folly::toJson(jsonData)));
+    throw std::invalid_argument(folly::to<std::string>(
+        errorPrefix,
+        "not all fields are arrays.\n\n",
+        folly::toJson(jsonData)));
   }
 
-  if (moduleIds.size() != methodIds.size() || moduleIds.size() != params.size()) {
-    throw std::invalid_argument(
-      folly::to<std::string>(errorPrefix, "field sizes are different.\n\n", folly::toJson(jsonData)));
+  if (moduleIds.size() != methodIds.size() ||
+      moduleIds.size() != params.size()) {
+    throw std::invalid_argument(folly::to<std::string>(
+        errorPrefix,
+        "field sizes are different.\n\n",
+        folly::toJson(jsonData)));
   }
 
   if (jsonData.size() > REQUEST_CALLID) {
     if (!jsonData[REQUEST_CALLID].isNumber()) {
-      throw std::invalid_argument(
-        folly::to<std::string>(errorPrefix, "invalid callId", jsonData[REQUEST_CALLID].typeName()));
+      throw std::invalid_argument(folly::to<std::string>(
+          errorPrefix, "invalid callId", jsonData[REQUEST_CALLID].typeName()));
     }
     callId = (int)jsonData[REQUEST_CALLID].asInt();
   }
@@ -61,15 +66,17 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) {
   std::vector<MethodCall> methodCalls;
   for (size_t i = 0; i < moduleIds.size(); i++) {
     if (!params[i].isArray()) {
-      throw std::invalid_argument(
-          folly::to<std::string>(errorPrefix, "method arguments isn't array but ", params[i].typeName()));
+      throw std::invalid_argument(folly::to<std::string>(
+          errorPrefix,
+          "method arguments isn't array but ",
+          params[i].typeName()));
     }
 
     methodCalls.emplace_back(
-      moduleIds[i].asInt(),
-      methodIds[i].asInt(),
-      std::move(params[i]),
-      callId);
+        moduleIds[i].asInt(),
+        methodIds[i].asInt(),
+        std::move(params[i]),
+        callId);
 
     // only increment callid if contains valid callid as callid is optional
     callId += (callId != -1) ? 1 : 0;
@@ -78,4 +85,5 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) {
   return methodCalls;
 }
 
-}}
+} // namespace react
+} // namespace facebook

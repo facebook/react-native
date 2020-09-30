@@ -14,7 +14,7 @@
 @class RCTBridge;
 @class RCTSurface;
 
-typedef RCTUIView *_Nullable(^RCTSurfaceHostingViewActivityIndicatorViewFactory)(void); // TODO(macOS ISS#2323203)
+typedef RCTUIView *_Nullable (^RCTSurfaceHostingViewActivityIndicatorViewFactory)(void); // TODO(macOS ISS#2323203)
 
 NS_ASSUME_NONNULL_BEGIN
 

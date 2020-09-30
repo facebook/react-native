@@ -62,6 +62,8 @@ public class ViewProps {
   public static final String START = "start";
   public static final String END = "end";
 
+  public static final String IS_ATTACHMENT = "isAttachment";
+
   public static final String AUTO = "auto";
   public static final String NONE = "none";
   public static final String BOX_NONE = "box-none";

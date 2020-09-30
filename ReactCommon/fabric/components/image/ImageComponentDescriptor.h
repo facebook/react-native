@@ -21,12 +21,9 @@ namespace react {
 class ImageComponentDescriptor final
     : public ConcreteComponentDescriptor<ImageShadowNode> {
  public:
-  ImageComponentDescriptor(
-      EventDispatcher::Weak eventDispatcher,
-      ContextContainer::Shared const &contextContainer,
-      ComponentDescriptor::Flavor const &flavor = {})
-      : ConcreteComponentDescriptor(eventDispatcher, contextContainer, flavor),
-        imageManager_(std::make_shared<ImageManager>(contextContainer)){};
+  ImageComponentDescriptor(ComponentDescriptorParameters const &parameters)
+      : ConcreteComponentDescriptor(parameters),
+        imageManager_(std::make_shared<ImageManager>(contextContainer_)){};
 
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);

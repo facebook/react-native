@@ -30,7 +30,7 @@ template class folly::Future<bool>;
 namespace folly {
 namespace futures {
 
-Future<Unit> sleep(Duration, Timekeeper *) {
+SemiFuture<Unit> sleep(Duration, Timekeeper *) {
   LOG(FATAL) << "folly::futures::sleep() not implemented";
 }
 
@@ -108,12 +108,13 @@ Inspector::Inspector(
     InspectorObserver &observer,
     bool pauseOnFirstStatement)
     : adapter_(adapter),
-      debugger_(adapter->getRuntime().getDebugger()),
+      debugger_(adapter->getDebugger()),
       observer_(observer),
       executor_(std::make_unique<detail::SerialExecutor>("hermes-inspector")) {
   // TODO (t26491391): make tickleJs a real Hermes runtime API
-  const char *src = "function __tickleJs() { return Math.random(); }";
-  adapter->getRuntime().debugJavaScript(src, "__tickleJsHackUrl", {});
+  std::string src = "function __tickleJs() { return Math.random(); }";
+  adapter->getRuntime().evaluateJavaScript(
+      std::make_shared<jsi::StringBuffer>(src), "__tickleJsHackUrl");
 
   {
     std::lock_guard<std::mutex> lock(mutex_);

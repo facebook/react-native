@@ -16,11 +16,6 @@
 #import <React/RCTImageCache.h>
 #import <React/RCTImageLoaderProtocol.h>
 
-RCT_EXTERN BOOL RCTImageLoadingInstrumentationEnabled(void);
-RCT_EXTERN BOOL RCTImageLoadingPerfInstrumentationEnabled(void);
-RCT_EXTERN void RCTEnableImageLoadingInstrumentation(BOOL enabled);
-RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
-
 @interface RCTImageLoader : NSObject <RCTBridgeModule, RCTImageLoaderProtocol>
 - (instancetype)init;
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate NS_DESIGNATED_INITIALIZER;

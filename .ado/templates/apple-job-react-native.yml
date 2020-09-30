@@ -28,12 +28,8 @@ steps:
   - script: brew link node@12 --overwrite --force
     displayName: 'ensure node 12'
 
-  # Task Group: XCode select proper version
+  # Task Group: Xcode select proper version
   - template: apple-xcode-select.yml
-
-  - template: apple-droid-node-patching.yml
-    parameters:
-      apply_office_patches: $(apply_office_patches)
 
   - task: CmdLine@2
     displayName: yarn install

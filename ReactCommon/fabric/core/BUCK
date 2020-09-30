@@ -1,5 +1,5 @@
 load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary")
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_preprocessor_flags_for_build_mode")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
@@ -45,8 +45,8 @@ rn_xplat_cxx_library(
         "-Wall",
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
-    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
-    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),
@@ -57,13 +57,13 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "fbsource//xplat/fbsystrace:fbsystrace",
-        "fbsource//xplat/folly:headers_only",
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/jsi:JSIDynamic",
-        "fbsource//xplat/jsi:jsi",
-        "fbsource//xplat/third-party/glog:glog",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:headers_only",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        "//xplat/jsi:JSIDynamic",
+        "//xplat/jsi:jsi",
+        "//xplat/third-party/glog:glog",
         react_native_xplat_target("utils:utils"),
         react_native_xplat_target("fabric/debug:debug"),
         react_native_xplat_target("fabric/graphics:graphics"),
@@ -83,8 +83,13 @@ fb_xplat_cxx_test(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     platforms = (ANDROID, APPLE, CXX),
     deps = [
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/gmock:gtest",
+        "//xplat/folly:molly",
+        "//xplat/js/react-native-github/ReactCommon/fabric/element:element",
+        react_native_xplat_target("fabric/components/view:view"),
+        react_native_xplat_target("fabric/components/scrollview:scrollview"),
+        react_native_xplat_target("fabric/components/text:text"),
+        "//xplat/third-party/gmock:gtest",
+        react_native_xplat_target("fabric/components/view:view"),
         ":core",
     ],
 )
@@ -101,11 +106,11 @@ fb_xplat_cxx_binary(
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
-    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     platforms = (ANDROID, APPLE, CXX),
     visibility = ["PUBLIC"],
     deps = [
-        "fbsource//xplat/third-party/benchmark:benchmark",
+        "//xplat/third-party/benchmark:benchmark",
         react_native_xplat_target("utils:utils"),
         react_native_xplat_target("fabric/components/view:view"),
         ":core",

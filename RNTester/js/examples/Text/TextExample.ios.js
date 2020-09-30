@@ -318,6 +318,23 @@ class TextBaseLineLayoutExample extends React.Component<*, *> {
           {marker}
         </View>
 
+        <Text style={subtitleStyle}>
+          {'Multi-line interleaved <View> and <Text>:'}
+        </Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          <Text selectable={true}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris
+            venenatis,{' '}
+            <View
+              style={{
+                backgroundColor: 'yellow',
+              }}>
+              <Text>mauris eu commodo maximus</Text>
+            </View>{' '}
+            , ante arcu vestibulum ligula, et scelerisque diam.
+          </Text>
+        </View>
+
         <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}

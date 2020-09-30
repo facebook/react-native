@@ -12,8 +12,8 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
-#import <React/RCTUtils.h>
 #import <React/RCTSRWebSocket.h>
+#import <React/RCTUtils.h>
 
 #import <ReactCommon/RCTTurboModule.h>
 
@@ -27,8 +27,7 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary<NSString *, id
 
 @end
 
-@implementation RCTWebSocketExecutor
-{
+@implementation RCTWebSocketExecutor {
   RCTSRWebSocket *_socket;
   dispatch_queue_t _jsQueue;
   NSMutableDictionary<NSNumber *, RCTWSMessageCallback> *_callbacks;
@@ -57,7 +56,8 @@ RCT_EXPORT_MODULE()
   if (!_url) {
     NSInteger port = [[[_bridge bundleURL] port] integerValue] ?: RCT_METRO_PORT;
     NSString *host = [[_bridge bundleURL] host] ?: @"localhost";
-    NSString *URLString = [NSString stringWithFormat:@"http://%@:%lld/debugger-proxy?role=client", host, (long long)port];
+    NSString *URLString =
+        [NSString stringWithFormat:@"http://%@:%lld/debugger-proxy?role=client", host, (long long)port];
     _url = [RCTConvert NSURL:URLString];
   }
 
@@ -71,14 +71,18 @@ RCT_EXPORT_MODULE()
   NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-js-devtools" relativeToURL:_url];
 
   NSURLSession *session = [NSURLSession sharedSession];
-  NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:[NSURLRequest requestWithURL:startDevToolsURL]
-                                              completionHandler:^(NSData *data, NSURLResponse *response, NSError *error){}];
+  NSURLSessionDataTask *dataTask =
+      [session dataTaskWithRequest:[NSURLRequest requestWithURL:startDevToolsURL]
+                 completionHandler:^(NSData *data, NSURLResponse *response, NSError *error){
+                 }];
   [dataTask resume];
   if (![self connectToProxy]) {
     [self invalidate];
-    NSString *error = [NSString stringWithFormat:@"Connection to %@ timed out. Are you "
-                       "running node proxy? If you are running on the device, check if "
-                       "you have the right IP address in `RCTWebSocketExecutor.m`.", _url];
+    NSString *error = [NSString stringWithFormat:
+                                    @"Connection to %@ timed out. Are you "
+                                     "running node proxy? If you are running on the device, check if "
+                                     "you have the right IP address in `RCTWebSocketExecutor.m`.",
+                                    _url];
     _setupError = RCTErrorWithMessage(error);
     RCTFatal(_setupError);
     return;
@@ -92,10 +96,11 @@ RCT_EXPORT_MODULE()
   }
   if (!runtimeIsReady) {
     [self invalidate];
-    NSString *error = @"Runtime is not ready for debugging.\n "
-                      "- Make sure Packager server is running.\n"
-                      "- Make sure the JavaScript Debugger is running and not paused on a "
-                      "breakpoint or exception and try reloading again.";
+    NSString *error =
+        @"Runtime is not ready for debugging.\n "
+         "- Make sure Packager server is running.\n"
+         "- Make sure the JavaScript Debugger is running and not paused on a "
+         "breakpoint or exception and try reloading again.";
     _setupError = RCTErrorWithMessage(error);
     RCTFatal(_setupError);
     return;
@@ -114,10 +119,11 @@ RCT_EXPORT_MODULE()
 {
   __block NSError *initError;
   dispatch_semaphore_t s = dispatch_semaphore_create(0);
-  [self sendMessage:@{@"method": @"prepareJSRuntime"} onReply:^(NSError *error, NSDictionary<NSString *, id> *reply) {
-    initError = error;
-    dispatch_semaphore_signal(s);
-  }];
+  [self sendMessage:@{@"method" : @"prepareJSRuntime"}
+            onReply:^(NSError *error, NSDictionary<NSString *, id> *reply) {
+              initError = error;
+              dispatch_semaphore_signal(s);
+            }];
   long runtimeIsReady = dispatch_semaphore_wait(s, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 10));
   if (initError) {
     RCTLogInfo(@"Websocket runtime setup failed: %@", initError);
@@ -171,7 +177,9 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)executeApplicationScript:(NSData *)script sourceURL:(NSURL *)URL onComplete:(RCTJavaScriptCompleteBlock)onComplete
+- (void)executeApplicationScript:(NSData *)script
+                       sourceURL:(NSURL *)URL
+                      onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
   // Hack: the bridge transitions out of loading state as soon as this method returns, which prevents us
   // from completely invalidating the bridge and preventing an endless barage of RCTLog.logIfNoNativeHook
@@ -179,19 +187,20 @@ RCT_EXPORT_MODULE()
   dispatch_semaphore_t scriptSem = dispatch_semaphore_create(0);
 
   NSDictionary<NSString *, id> *message = @{
-    @"method": @"executeApplicationScript",
-    @"url": RCTNullIfNil(URL.absoluteString),
-    @"inject": _injectedObjects,
+    @"method" : @"executeApplicationScript",
+    @"url" : RCTNullIfNil(URL.absoluteString),
+    @"inject" : _injectedObjects,
   };
-  [self sendMessage:message onReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {
-    if (socketError) {
-      onComplete(socketError);
-    } else {
-      NSString *error = reply[@"error"];
-      onComplete(error ? RCTErrorWithMessage(error) : nil);
-    }
-    dispatch_semaphore_signal(scriptSem);
-  }];
+  [self sendMessage:message
+            onReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {
+              if (socketError) {
+                onComplete(socketError);
+              } else {
+                NSString *error = reply[@"error"];
+                onComplete(error ? RCTErrorWithMessage(error) : nil);
+              }
+              dispatch_semaphore_signal(scriptSem);
+            }];
 
   dispatch_semaphore_wait(scriptSem, DISPATCH_TIME_FOREVER);
 }
@@ -206,37 +215,35 @@ RCT_EXPORT_MODULE()
                    arguments:(NSArray *)args
                     callback:(RCTJavaScriptCallback)onComplete
 {
-  [self _executeJSCall:@"callFunctionReturnFlushedQueue" arguments:@[module, method, args] callback:onComplete];
+  [self _executeJSCall:@"callFunctionReturnFlushedQueue" arguments:@[ module, method, args ] callback:onComplete];
 }
 
-- (void)invokeCallbackID:(NSNumber *)cbID
-               arguments:(NSArray *)args
-                callback:(RCTJavaScriptCallback)onComplete
+- (void)invokeCallbackID:(NSNumber *)cbID arguments:(NSArray *)args callback:(RCTJavaScriptCallback)onComplete
 {
-  [self _executeJSCall:@"invokeCallbackAndReturnFlushedQueue" arguments:@[cbID, args] callback:onComplete];
+  [self _executeJSCall:@"invokeCallbackAndReturnFlushedQueue" arguments:@[ cbID, args ] callback:onComplete];
 }
 
 - (void)_executeJSCall:(NSString *)method arguments:(NSArray *)arguments callback:(RCTJavaScriptCallback)onComplete
 {
   RCTAssert(onComplete != nil, @"callback was missing for exec JS call");
-  NSDictionary<NSString *, id> *message = @{
-    @"method": method,
-    @"arguments": arguments
-  };
-  [self sendMessage:message onReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {
-    if (socketError) {
-      onComplete(nil, socketError);
-      return;
-    }
+  NSDictionary<NSString *, id> *message = @{@"method" : method, @"arguments" : arguments};
+  [self sendMessage:message
+            onReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {
+              if (socketError) {
+                onComplete(nil, socketError);
+                return;
+              }
 
-    NSError *jsonError;
-    id result = RCTJSONParse(reply[@"result"], &jsonError);
-    NSString *error = reply[@"error"];
-    onComplete(result, error ? RCTErrorWithMessage(error) : jsonError);
-  }];
+              NSError *jsonError;
+              id result = RCTJSONParse(reply[@"result"], &jsonError);
+              NSString *error = reply[@"error"];
+              onComplete(result, error ? RCTErrorWithMessage(error) : jsonError);
+            }];
 }
 
-- (void)injectJSONText:(NSString *)script asGlobalObjectNamed:(NSString *)objectName callback:(RCTJavaScriptCompleteBlock)onComplete
+- (void)injectJSONText:(NSString *)script
+    asGlobalObjectNamed:(NSString *)objectName
+               callback:(RCTJavaScriptCompleteBlock)onComplete
 {
   dispatch_async(_jsQueue, ^{
     self->_injectedObjects[objectName] = script;
@@ -275,7 +282,8 @@ RCT_EXPORT_MODULE()
 
 #endif
 
-Class RCTWebSocketExecutorCls(void) {
+Class RCTWebSocketExecutorCls(void)
+{
 #if RCT_DEV
   return RCTWebSocketExecutor.class;
 #else

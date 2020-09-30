@@ -15,6 +15,9 @@ node_modules/warning/.*
 ; Flow doesn't support platforms
 .*/Libraries/Utilities/LoadingView.js
 
+; TODO(macOS ISS#2323203): Ignore metro.config.js
+<PROJECT_ROOT>/metro.config.js
+
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 
@@ -56,7 +59,6 @@ untyped-type-import=warn
 nonstrict-import=warn
 deprecated-type=warn
 unsafe-getters-setters=warn
-inexact-spread=warn
 unnecessary-invariant=warn
 signature-verification-failure=warn
 deprecated-utility=error
@@ -71,4 +73,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.113.0
+^0.122.0

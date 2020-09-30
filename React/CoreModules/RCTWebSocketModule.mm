@@ -11,8 +11,8 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConvert.h>
-#import <React/RCTUtils.h>
 #import <React/RCTSRWebSocket.h>
+#import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -34,8 +34,7 @@
 
 @end
 
-@implementation RCTWebSocketModule
-{
+@implementation RCTWebSocketModule {
   NSMutableDictionary<NSNumber *, RCTSRWebSocket *> *_sockets;
   NSMutableDictionary<NSNumber *, id<RCTWebSocketContentHandler>> *_contentHandlers;
 }
@@ -49,10 +48,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray *)supportedEvents
 {
-  return @[@"websocketMessage",
-           @"websocketOpen",
-           @"websocketFailed",
-           @"websocketClosed"];
+  return @[ @"websocketMessage", @"websocketOpen", @"websocketFailed", @"websocketClosed" ];
 }
 
 - (void)invalidate
@@ -64,7 +60,11 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols options:(JS::NativeWebSocketModule::SpecConnectOptions &)options socketID:(double)socketID)
+RCT_EXPORT_METHOD(connect
+                  : (NSURL *)URL protocols
+                  : (NSArray *)protocols options
+                  : (JS::NativeWebSocketModule::SpecConnectOptions &)options socketID
+                  : (double)socketID)
 {
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
 
@@ -99,27 +99,27 @@ RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols options:(J
   [webSocket open];
 }
 
-RCT_EXPORT_METHOD(send:(NSString *)message forSocketID:(double)socketID)
+RCT_EXPORT_METHOD(send : (NSString *)message forSocketID : (double)socketID)
 {
   [_sockets[@(socketID)] send:message];
 }
 
-RCT_EXPORT_METHOD(sendBinary:(NSString *)base64String forSocketID:(double)socketID)
+RCT_EXPORT_METHOD(sendBinary : (NSString *)base64String forSocketID : (double)socketID)
 {
   [self sendData:[[NSData alloc] initWithBase64EncodedString:base64String options:0] forSocketID:@(socketID)];
 }
 
-- (void)sendData:(NSData *)data forSocketID:(NSNumber * __nonnull)socketID
+- (void)sendData:(NSData *)data forSocketID:(NSNumber *__nonnull)socketID
 {
   [_sockets[socketID] send:data];
 }
 
-RCT_EXPORT_METHOD(ping:(double)socketID)
+RCT_EXPORT_METHOD(ping : (double)socketID)
 {
   [_sockets[@(socketID)] sendPing:NULL];
 }
 
-RCT_EXPORT_METHOD(close:(double)code reason:(NSString *)reason socketID:(double)socketID)
+RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (double)socketID)
 {
   [_sockets[@(socketID)] closeWithCode:code reason:reason];
   [_sockets removeObjectForKey:@(socketID)];
@@ -152,19 +152,13 @@ RCT_EXPORT_METHOD(close:(double)code reason:(NSString *)reason socketID:(double)
     }
   }
 
-  [self sendEventWithName:@"websocketMessage" body:@{
-    @"data": message,
-    @"type": type,
-    @"id": webSocket.reactTag
-  }];
+  [self sendEventWithName:@"websocketMessage" body:@{@"data" : message, @"type" : type, @"id" : webSocket.reactTag}];
 }
 
 - (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
 {
-  [self sendEventWithName:@"websocketOpen" body:@{
-    @"id": webSocket.reactTag,
-    @"protocol": webSocket.protocol ? webSocket.protocol : @""
-  }];
+  [self sendEventWithName:@"websocketOpen"
+                     body:@{@"id" : webSocket.reactTag, @"protocol" : webSocket.protocol ? webSocket.protocol : @""}];
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
@@ -172,31 +166,32 @@ RCT_EXPORT_METHOD(close:(double)code reason:(NSString *)reason socketID:(double)
   NSNumber *socketID = [webSocket reactTag];
   _contentHandlers[socketID] = nil;
   _sockets[socketID] = nil;
-  [self sendEventWithName:@"websocketFailed" body:@{
-    @"message": error.localizedDescription,
-    @"id": socketID
-  }];
+  [self sendEventWithName:@"websocketFailed" body:@{@"message" : error.localizedDescription, @"id" : socketID}];
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket
- didCloseWithCode:(NSInteger)code
-           reason:(NSString *)reason
-         wasClean:(BOOL)wasClean
+    didCloseWithCode:(NSInteger)code
+              reason:(NSString *)reason
+            wasClean:(BOOL)wasClean
 {
   NSNumber *socketID = [webSocket reactTag];
   _contentHandlers[socketID] = nil;
   _sockets[socketID] = nil;
-  [self sendEventWithName:@"websocketClosed" body:@{
-    @"code": @(code),
-    @"reason": RCTNullIfNil(reason),
-    @"clean": @(wasClean),
-    @"id": socketID
-  }];
+  [self sendEventWithName:@"websocketClosed"
+                     body:@{
+                       @"code" : @(code),
+                       @"reason" : RCTNullIfNil(reason),
+                       @"clean" : @(wasClean),
+                       @"id" : socketID
+                     }];
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeWebSocketModuleSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeWebSocketModuleSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end
@@ -210,6 +205,7 @@ RCT_EXPORT_METHOD(close:(double)code reason:(NSString *)reason socketID:(double)
 
 @end
 
-Class RCTWebSocketModuleCls(void) {
+Class RCTWebSocketModuleCls(void)
+{
   return RCTWebSocketModule.class;
 }

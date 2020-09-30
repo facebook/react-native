@@ -1,4 +1,4 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_preprocessor_flags_for_build_mode")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "APPLE",
@@ -31,8 +31,8 @@ rn_xplat_cxx_library(
         "-Wall",
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
-    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
-    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
     platforms = (APPLE),
     preprocessor_flags = [
@@ -42,6 +42,6 @@ rn_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         react_native_xplat_target("fabric/core:core"),
-        "fbsource//xplat/js/react-native-github:generated_components-rncore",
+        "//xplat/js/react-native-github:generated_components-rncore",
     ],
 )

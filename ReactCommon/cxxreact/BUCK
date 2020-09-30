@@ -1,5 +1,5 @@
 load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "get_android_inspector_flags", "get_apple_compiler_flags", "get_apple_inspector_flags", "get_debug_preprocessor_flags", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "get_android_inspector_flags", "get_apple_compiler_flags", "get_apple_inspector_flags", "get_preprocessor_flags_for_build_mode", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 CXX_LIBRARY_COMPILER_FLAGS = [
     "-std=c++14",
@@ -19,13 +19,13 @@ rn_xplat_cxx_library(
     ),
     compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
     fbobjc_compiler_flags = get_apple_compiler_flags(),
-    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     force_static = True,
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        "fbsource//xplat/folly:molly",
+        "//xplat/folly:molly",
     ],
 )
 
@@ -44,7 +44,7 @@ rn_xplat_cxx_library(
         "-frtti",
     ],
     fbobjc_compiler_flags = get_apple_compiler_flags(),
-    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     force_static = True,
     preprocessor_flags = [
         "-DWITH_FBREMAP=1",
@@ -53,9 +53,9 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/folly:scope_guard",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        "//xplat/folly:scope_guard",
     ],
 )
 
@@ -74,10 +74,10 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/glog:glog",
         ":module",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        "//xplat/third-party/glog:glog",
     ],
 )
 
@@ -129,8 +129,8 @@ rn_xplat_cxx_library(
     fbandroid_preprocessor_flags = get_android_inspector_flags(),
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     fbobjc_force_static = True,
-    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
-    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
@@ -142,15 +142,16 @@ rn_xplat_cxx_library(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        "fbsource//xplat/fbsystrace:fbsystrace",
-        "fbsource//xplat/folly:headers_only",
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
         ":jsbigstring",
         ":module",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:headers_only",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        react_native_xplat_target("callinvoker:callinvoker"),
         react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("microprofiler:microprofiler"),
-        "fbsource//xplat/folly:optional",
-        "fbsource//xplat/third-party/glog:glog",
+        "//xplat/folly:optional",
+        "//xplat/third-party/glog:glog",
     ],
 )

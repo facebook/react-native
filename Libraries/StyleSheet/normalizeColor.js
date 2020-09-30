@@ -12,15 +12,12 @@
 
 'use strict';
 
-import type {NativeOrDynamicColorType} from './NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import type {ColorValue} from './StyleSheetTypes';
+import type {ProcessedColorValue} from './processColor';
 
 function normalizeColor(
-  color: ?(
-    | string
-    | number
-    | NativeOrDynamicColorType
-  ) /* TODO(macOS ISS#2323203) */,
-): ?(number | NativeOrDynamicColorType) /* TODO(macOS ISS#2323203) */ {
+  color: ?(ColorValue | ProcessedColorValue),
+): ?ProcessedColorValue {
   const matchers = getMatchers();
   let match;
 
@@ -31,20 +28,20 @@ function normalizeColor(
     return null;
   }
 
-  // [TODO(macOS ISS#2323203)
-  if (typeof color === 'object' && color !== null) {
-    const normalizeColorObject = require('./normalizeColorObject'); // TODO(macOS ISS#2323203)
+  if (typeof color === 'object' && color != null) {
+    const normalizeColorObject = require('./PlatformColorValueTypes')
+      .normalizeColorObject;
 
     const normalizedColorObj = normalizeColorObject(color);
 
-    if (normalizedColorObj !== null) {
+    if (normalizedColorObj != null) {
       return color;
     }
   }
 
   if (typeof color !== 'string') {
     return null;
-  } // ]TODO(macOS ISS#2323203)
+  }
 
   // Ordered based on occurrences on Facebook codebase
   if ((match = matchers.hex6.exec(color))) {

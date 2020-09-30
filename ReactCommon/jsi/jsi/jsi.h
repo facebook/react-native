@@ -52,8 +52,8 @@ class StringBuffer : public Buffer {
   std::string s_;
 };
 
-/// PreparedJavaScript is a base class representing JavaScript which is in a form
-/// optimized for execution, in a runtime-specific way. Construct one via
+/// PreparedJavaScript is a base class representing JavaScript which is in a
+/// form optimized for execution, in a runtime-specific way. Construct one via
 /// jsi::Runtime::prepareJavaScript().
 /// ** This is an experimental API that is subject to change. **
 class PreparedJavaScript {
@@ -188,9 +188,10 @@ class Runtime {
   /// \return the global object
   virtual Object global() = 0;
 
-  /// \return a short printable description of the instance.  This
-  /// should only be used by logging, debugging, and other
-  /// developer-facing callers.
+  /// \return a short printable description of the instance.  It should
+  /// at least include some human-readable indication of the runtime
+  /// implementation.  This should only be used by logging, debugging,
+  /// and other developer-facing callers.
   virtual std::string description() = 0;
 
   /// \return whether or not the underlying runtime supports debugging via the
@@ -811,23 +812,35 @@ class Function : public Object {
       unsigned int paramCount,
       jsi::HostFunctionType func);
 
-  /// Calls the function with \c count \c args.  The \c this value of
-  /// the JS function will be undefined.
+  /// Calls the function with \c count \c args.  The \c this value of the JS
+  /// function will not be set by the C++ caller, similar to calling
+  /// Function.prototype.apply(undefined, args) in JS.
+  /// \b Note: as with Function.prototype.apply, \c this may not always be
+  /// \c undefined in the function itself.  If the function is non-strict,
+  /// \c this will be set to the global object.
   Value call(Runtime& runtime, const Value* args, size_t count) const;
 
   /// Calls the function with a \c std::initializer_list of Value
-  /// arguments. The \c this value of the JS function will be
-  /// undefined.
+  /// arguments.  The \c this value of the JS function will not be set by the
+  /// C++ caller, similar to calling Function.prototype.apply(undefined, args)
+  /// in JS.
+  /// \b Note: as with Function.prototype.apply, \c this may not always be
+  /// \c undefined in the function itself.  If the function is non-strict,
+  /// \c this will be set to the global object.
   Value call(Runtime& runtime, std::initializer_list<Value> args) const;
 
   /// Calls the function with any number of arguments similarly to
-  /// Object::setProperty().  The \c this value of the JS function
-  /// will be undefined.
+  /// Object::setProperty().  The \c this value of the JS function will not be
+  /// set by the C++ caller, similar to calling
+  /// Function.prototype.call(undefined, ...args) in JS.
+  /// \b Note: as with Function.prototype.call, \c this may not always be
+  /// \c undefined in the function itself.  If the function is non-strict,
+  /// \c this will be set to the global object.
   template <typename... Args>
   Value call(Runtime& runtime, Args&&... args) const;
 
   /// Calls the function with \c count \c args and \c jsThis value passed
-  /// as this value.
+  /// as the \c this value.
   Value callWithThis(
       Runtime& Runtime,
       const Object& jsThis,
@@ -835,16 +848,14 @@ class Function : public Object {
       size_t count) const;
 
   /// Calls the function with a \c std::initializer_list of Value
-  /// arguments. The \c this value of the JS function will be
-  /// undefined.
+  /// arguments and \c jsThis passed as the \c this value.
   Value callWithThis(
       Runtime& runtime,
       const Object& jsThis,
       std::initializer_list<Value> args) const;
 
   /// Calls the function with any number of arguments similarly to
-  /// Object::setProperty().  The \c this value of the JS function
-  /// will be undefined.
+  /// Object::setProperty(), and with \c jsThis passed as the \c this value.
   template <typename... Args>
   Value callWithThis(Runtime& runtime, const Object& jsThis, Args&&... args)
       const;
@@ -1191,7 +1202,7 @@ class Scope {
 };
 
 /// Base class for jsi exceptions
-class JSIException : public std::exception {
+class JSI_EXPORT JSIException : public std::exception {
  protected:
   JSIException(){};
   JSIException(std::string what) : what_(std::move(what)){};
@@ -1207,7 +1218,7 @@ class JSIException : public std::exception {
 
 /// This exception will be thrown by API functions on errors not related to
 /// JavaScript execution.
-class JSINativeException : public JSIException {
+class JSI_EXPORT JSINativeException : public JSIException {
  public:
   JSINativeException(std::string what) : JSIException(std::move(what)) {}
 };
@@ -1215,7 +1226,7 @@ class JSINativeException : public JSIException {
 /// This exception will be thrown by API functions whenever a JS
 /// operation causes an exception as described by the spec, or as
 /// otherwise described.
-class JSError : public JSIException {
+class JSI_EXPORT JSError : public JSIException {
  public:
   /// Creates a JSError referring to provided \c value
   JSError(Runtime& r, Value&& value);

@@ -31,6 +31,9 @@ public abstract class NativeDevSettingsSpec extends ReactContextBaseJavaModule i
   }
 
   @ReactMethod
+  public abstract void removeListeners(double count);
+
+  @ReactMethod
   public abstract void reload();
 
   @ReactMethod
@@ -51,4 +54,7 @@ public abstract class NativeDevSettingsSpec extends ReactContextBaseJavaModule i
 
   @ReactMethod
   public abstract void setIsShakeToShowDevMenuEnabled(boolean enabled);
+
+  @ReactMethod
+  public abstract void addListener(String eventName);
 }

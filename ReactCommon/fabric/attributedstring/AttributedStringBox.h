@@ -58,5 +58,23 @@ class AttributedStringBox final {
   std::shared_ptr<void> opaquePointer_;
 };
 
+bool operator==(AttributedStringBox const &lhs, AttributedStringBox const &rhs);
+bool operator!=(AttributedStringBox const &lhs, AttributedStringBox const &rhs);
+
 } // namespace react
 } // namespace facebook
+
+template <>
+struct std::hash<facebook::react::AttributedStringBox> {
+  size_t operator()(
+      facebook::react::AttributedStringBox const &attributedStringBox) const {
+    switch (attributedStringBox.getMode()) {
+      case facebook::react::AttributedStringBox::Mode::Value:
+        return std::hash<facebook::react::AttributedString>()(
+            attributedStringBox.getValue());
+      case facebook::react::AttributedStringBox::Mode::OpaquePointer:
+        return std::hash<std::shared_ptr<void>>()(
+            attributedStringBox.getOpaquePointer());
+    }
+  }
+};

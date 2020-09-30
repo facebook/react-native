@@ -303,14 +303,12 @@ jsi::Value ObjCTurboModule::createPromise(
           rejectWasCalled = YES;
         };
 
-        invokeCopy(rt, resolveBlock, rejectBlock);
+        invokeCopy(resolveBlock, rejectBlock);
         return jsi::Value::undefined();
       });
 
   return Promise.callAsConstructor(runtime, fn);
 }
-
-namespace {
 
 /**
  * Perform method invocation on a specific queue as configured by the module class.
@@ -321,84 +319,97 @@ namespace {
  * - ObjC module methods will be always be called from JS thread.
  *   They may decide to dispatch to a different queue as needed.
  */
-jsi::Value performMethodInvocation(
+jsi::Value ObjCTurboModule::performMethodInvocation(
     jsi::Runtime &runtime,
+    TurboModuleMethodValueKind returnType,
+    const char *methodName,
     NSInvocation *inv,
-    TurboModuleMethodValueKind valueKind,
-    const id<RCTTurboModule> module,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    NSMutableArray *retainedObjectsForInvocation)
+    NSMutableArray *retainedObjectsForInvocation,
+    MethodCallId methodCallId)
 {
   __block id result;
   jsi::Runtime *rt = &runtime;
+  __weak id<RCTTurboModule> weakModule = instance_;
+  id<RCTTurboModulePerformanceLogger> performanceLogger = performanceLogger_;
+  const char *moduleName = name_.c_str();
+  const bool isSync = returnType != VoidKind && returnType != PromiseKind;
+
   void (^block)() = ^{
-    [inv invokeWithTarget:module];
+    if (!weakModule) {
+      return;
+    }
+
+    id<RCTTurboModule> strongModule = weakModule;
+
+    if (isSync) {
+      [performanceLogger syncRCTTurboModuleMethodCallStart:moduleName methodName:methodName methodCallId:methodCallId];
+    } else {
+      [performanceLogger asyncRCTTurboModuleMethodCallStart:moduleName methodName:methodName methodCallId:methodCallId];
+    }
+
+    [inv invokeWithTarget:strongModule];
     [retainedObjectsForInvocation removeAllObjects];
 
-    if (valueKind == VoidKind) {
+    if (returnType == VoidKind) {
+      [performanceLogger asyncRCTTurboModuleMethodCallEnd:moduleName methodName:methodName methodCallId:methodCallId];
       return;
     }
     void *rawResult;
     [inv getReturnValue:&rawResult];
     result = (__bridge id)rawResult;
+    [performanceLogger syncRCTTurboModuleMethodCallEnd:moduleName methodName:methodName methodCallId:methodCallId];
   };
 
-  // Backward-compatibility layer for calling module methods on specific queue.
-  dispatch_queue_t methodQueue = NULL;
-  if ([module conformsToProtocol:@protocol(RCTBridgeModule)] && [module respondsToSelector:@selector(methodQueue)]) {
-    methodQueue = [module performSelector:@selector(methodQueue)];
-  }
-
-  if (methodQueue == NULL || methodQueue == RCTJSThread) {
-    // This is the default mode of execution: on JS thread.
-    block();
-  } else if (methodQueue == dispatch_get_main_queue()) {
-    if (valueKind == VoidKind) {
-      // Void methods are treated as async for now, so there's no need to block here.
-      RCTExecuteOnMainQueue(block);
-    } else {
-      // This is not ideal, but provides the simplest mechanism for now.
-      // Eventually, methods should be responsible to queue things up to different queue if they need to.
-      // TODO: consider adding timer to warn if this method invocation takes too long.
-      RCTUnsafeExecuteOnMainQueueSync(block);
-    }
+  if (returnType == VoidKind) {
+    nativeInvoker_->invokeAsync([block]() -> void { block(); });
   } else {
-    if (valueKind == VoidKind) {
-      dispatch_async(methodQueue, block);
-    } else {
-      dispatch_sync(methodQueue, block);
-    }
+    nativeInvoker_->invokeSync([block]() -> void { block(); });
   }
 
   // VoidKind can't be null
   // PromiseKind, and FunctionKind must throw errors always
-  if (valueKind != VoidKind && valueKind != PromiseKind && valueKind != FunctionKind &&
+  if (returnType != VoidKind && returnType != PromiseKind && returnType != FunctionKind &&
       (result == (id)kCFNull || result == nil)) {
     return jsi::Value::null();
   }
 
+  jsi::Value returnValue = jsi::Value::undefined();
+  [performanceLogger_ syncMethodCallReturnConversionStart:moduleName methodName:methodName methodCallId:methodCallId];
+
   // TODO: Re-use value conversion logic from existing impl, if possible.
-  switch (valueKind) {
-    case VoidKind:
-      return jsi::Value::undefined();
-    case BooleanKind:
-      return convertNSNumberToJSIBoolean(*rt, (NSNumber *)result);
-    case NumberKind:
-      return convertNSNumberToJSINumber(*rt, (NSNumber *)result);
-    case StringKind:
-      return convertNSStringToJSIString(*rt, (NSString *)result);
-    case ObjectKind:
-      return convertNSDictionaryToJSIObject(*rt, (NSDictionary *)result);
-    case ArrayKind:
-      return convertNSArrayToJSIArray(*rt, (NSArray *)result);
+  switch (returnType) {
+    case VoidKind: {
+      break;
+    }
+    case BooleanKind: {
+      returnValue = convertNSNumberToJSIBoolean(*rt, (NSNumber *)result);
+      break;
+    }
+    case NumberKind: {
+      returnValue = convertNSNumberToJSINumber(*rt, (NSNumber *)result);
+      break;
+    }
+    case StringKind: {
+      returnValue = convertNSStringToJSIString(*rt, (NSString *)result);
+      break;
+    }
+    case ObjectKind: {
+      returnValue = convertNSDictionaryToJSIObject(*rt, (NSDictionary *)result);
+      break;
+    }
+    case ArrayKind: {
+      returnValue = convertNSArrayToJSIArray(*rt, (NSArray *)result);
+      break;
+    }
     case FunctionKind:
       throw std::runtime_error("convertInvocationResultToJSIValue: FunctionKind is not supported yet.");
     case PromiseKind:
       throw std::runtime_error("convertInvocationResultToJSIValue: PromiseKind wasn't handled properly.");
   }
-}
 
-} // namespace
+  [performanceLogger_ syncMethodCallReturnConversionEnd:moduleName methodName:methodName methodCallId:methodCallId];
+  return returnValue;
+}
 
 /**
  * Given a method name, and an argument index, return type of that argument.
@@ -460,15 +471,28 @@ NSString *ObjCTurboModule::getArgumentTypeName(NSString *methodName, int argInde
 
 NSInvocation *ObjCTurboModule::getMethodInvocation(
     jsi::Runtime &runtime,
-    TurboModuleMethodValueKind valueKind,
-    const id<RCTTurboModule> module,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    const std::string &methodName,
+    TurboModuleMethodValueKind returnType,
+    const char *methodName,
     SEL selector,
     const jsi::Value *args,
     size_t count,
-    NSMutableArray *retainedObjectsForInvocation)
+    NSMutableArray *retainedObjectsForInvocation,
+    MethodCallId methodCallId)
 {
+  const bool isSync = returnType != VoidKind && returnType != PromiseKind;
+  const char *moduleName = name_.c_str();
+  const id<RCTTurboModule> module = instance_;
+
+  if (isSync) {
+    [performanceLogger_ syncMethodCallArgumentConversionStart:moduleName
+                                                   methodName:methodName
+                                                 methodCallId:methodCallId];
+  } else {
+    [performanceLogger_ asyncMethodCallArgumentConversionStart:moduleName
+                                                    methodName:methodName
+                                                  methodCallId:methodCallId];
+  }
+
   NSInvocation *inv =
       [NSInvocation invocationWithMethodSignature:[[module class] instanceMethodSignatureForSelector:selector]];
   [inv setSelector:selector];
@@ -516,10 +540,10 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
     /**
      * Convert arg to ObjC objects.
      */
-    id objCArg = convertJSIValueToObjCObject(runtime, *arg, jsInvoker);
+    id objCArg = convertJSIValueToObjCObject(runtime, *arg, jsInvoker_);
 
     if (objCArg) {
-      NSString *methodNameNSString = @(methodName.c_str());
+      NSString *methodNameNSString = @(methodName);
 
       /**
        * Convert objects using RCTConvert.
@@ -570,46 +594,78 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
     }
   }
 
+  if (isSync) {
+    [performanceLogger_ syncMethodCallArgumentConversionEnd:moduleName methodName:methodName methodCallId:methodCallId];
+  } else {
+    [performanceLogger_ asyncMethodCallArgumentConversionEnd:moduleName
+                                                  methodName:methodName
+                                                methodCallId:methodCallId];
+  }
+
   return inv;
 }
 
 ObjCTurboModule::ObjCTurboModule(
     const std::string &name,
     id<RCTTurboModule> instance,
-    std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(name, jsInvoker), instance_(instance)
+    std::shared_ptr<CallInvoker> jsInvoker,
+    std::shared_ptr<CallInvoker> nativeInvoker,
+    id<RCTTurboModulePerformanceLogger> perfLogger)
+    : TurboModule(name, jsInvoker), instance_(instance), nativeInvoker_(nativeInvoker), performanceLogger_(perfLogger)
 {
+}
+
+MethodCallId ObjCTurboModule::methodCallId_{0};
+
+MethodCallId ObjCTurboModule::getNewMethodCallId()
+{
+  return methodCallId_++;
 }
 
 jsi::Value ObjCTurboModule::invokeObjCMethod(
     jsi::Runtime &runtime,
-    TurboModuleMethodValueKind valueKind,
-    const std::string &methodName,
+    TurboModuleMethodValueKind returnType,
+    const std::string &methodNameStr,
     SEL selector,
     const jsi::Value *args,
     size_t count)
 {
-  NSMutableArray *retainedObjectsForInvocation = [NSMutableArray arrayWithCapacity:count + 2];
-  NSInvocation *inv = getMethodInvocation(
-      runtime, valueKind, instance_, jsInvoker_, methodName, selector, args, count, retainedObjectsForInvocation);
+  MethodCallId methodCallId = getNewMethodCallId();
+  const bool isSync = returnType != VoidKind && returnType != PromiseKind;
+  const char *moduleName = name_.c_str();
+  const char *methodName = methodNameStr.c_str();
 
-  if (valueKind == PromiseKind) {
-    // Promise return type is special cased today, i.e. it needs extra 2 function args for resolve() and reject(), to
-    // be passed to the actual ObjC++ class method.
-    return createPromise(
-        runtime,
-        jsInvoker_,
-        ^(jsi::Runtime &rt, RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
-          [inv setArgument:(void *)&resolveBlock atIndex:count + 2];
-          [inv setArgument:(void *)&rejectBlock atIndex:count + 3];
-          [retainedObjectsForInvocation addObject:resolveBlock];
-          [retainedObjectsForInvocation addObject:rejectBlock];
-          // The return type becomes void in the ObjC side.
-          performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_, retainedObjectsForInvocation);
-        });
+  if (isSync) {
+    [performanceLogger_ syncMethodCallStart:moduleName methodName:methodName methodCallId:methodCallId];
+  } else {
+    [performanceLogger_ asyncMethodCallStart:moduleName methodName:methodName methodCallId:methodCallId];
   }
 
-  return performMethodInvocation(runtime, inv, valueKind, instance_, jsInvoker_, retainedObjectsForInvocation);
+  NSMutableArray *retainedObjectsForInvocation = [NSMutableArray arrayWithCapacity:count + 2];
+  NSInvocation *inv = getMethodInvocation(
+      runtime, returnType, methodName, selector, args, count, retainedObjectsForInvocation, methodCallId);
+
+  jsi::Value returnValue = returnType == PromiseKind
+      ? createPromise(
+            runtime,
+            jsInvoker_,
+            ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
+              [inv setArgument:(void *)&resolveBlock atIndex:count + 2];
+              [inv setArgument:(void *)&rejectBlock atIndex:count + 3];
+              [retainedObjectsForInvocation addObject:resolveBlock];
+              [retainedObjectsForInvocation addObject:rejectBlock];
+              // The return type becomes void in the ObjC side.
+              performMethodInvocation(runtime, VoidKind, methodName, inv, retainedObjectsForInvocation, methodCallId);
+            })
+      : performMethodInvocation(runtime, returnType, methodName, inv, retainedObjectsForInvocation, methodCallId);
+
+  if (isSync) {
+    [performanceLogger_ syncMethodCallEnd:moduleName methodName:methodName methodCallId:methodCallId];
+  } else {
+    [performanceLogger_ asyncMethodCallEnd:moduleName methodName:methodName methodCallId:methodCallId];
+  }
+
+  return returnValue;
 }
 
 BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, int argIndex)

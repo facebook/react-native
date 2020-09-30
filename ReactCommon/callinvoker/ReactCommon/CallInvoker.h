@@ -20,7 +20,7 @@ namespace react {
 class CallInvoker {
  public:
   virtual void invokeAsync(std::function<void()> &&func) = 0;
-  // TODO: add sync support
+  virtual void invokeSync(std::function<void()> &&func) = 0;
   virtual ~CallInvoker() {}
 };
 

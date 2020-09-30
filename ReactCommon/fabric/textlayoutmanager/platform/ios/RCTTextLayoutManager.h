@@ -11,6 +11,7 @@
 #import <react/attributedstring/ParagraphAttributes.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/graphics/Geometry.h>
+#import <react/textlayoutmanager/TextMeasureCache.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,24 +20,21 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTTextLayoutManager : NSObject
 
-- (facebook::react::Size)measureAttributedString:(facebook::react::AttributedString)attributedString
-                             paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
-                               layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
+- (facebook::react::TextMeasurement)measureAttributedString:(facebook::react::AttributedString)attributedString
+                                        paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
+                                          layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
 
-- (facebook::react::Size)measureNSAttributedString:(NSAttributedString *)attributedString
-                               paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
-                                 layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
+- (facebook::react::TextMeasurement)measureNSAttributedString:(NSAttributedString *)attributedString
+                                          paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
+                                            layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
 
 - (void)drawAttributedString:(facebook::react::AttributedString)attributedString
-         paragraphAttributes:
-             (facebook::react::ParagraphAttributes)paragraphAttributes
+         paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                        frame:(CGRect)frame;
 
 - (facebook::react::SharedEventEmitter)
-    getEventEmitterWithAttributeString:
-        (facebook::react::AttributedString)attributedString
-                   paragraphAttributes:
-                       (facebook::react::ParagraphAttributes)paragraphAttributes
+    getEventEmitterWithAttributeString:(facebook::react::AttributedString)attributedString
+                   paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                                  frame:(CGRect)frame
                                atPoint:(CGPoint)point;
 

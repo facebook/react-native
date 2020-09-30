@@ -22,7 +22,7 @@ const nullthrows = require('nullthrows');
 const processColor = require('../StyleSheet/processColor');
 
 import type {PressEvent} from '../Types/CoreEventTypes';
-import type {NativeComponent} from '../Renderer/shims/ReactNative';
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {PressRetentionOffset, TextProps} from './TextProps';
 
 type ResponseHandlers = $ReadOnly<{|
@@ -83,7 +83,7 @@ const viewConfig = {
 /**
  * A React component for displaying text.
  *
- * See https://facebook.github.io/react-native/docs/text.html
+ * See https://reactnative.dev/docs/text.html
  */
 class TouchableText extends React.Component<Props, State> {
   static defaultProps = {
@@ -291,6 +291,12 @@ TextToExport.displayName = 'Text';
  * and run Flow. */
 TextToExport.propTypes = DeprecatedTextPropTypes;
 
-module.exports = ((TextToExport: $FlowFixMe): Class<
-  NativeComponent<TextProps>,
->);
+type TextStatics = $ReadOnly<{|
+  propTypes: typeof DeprecatedTextPropTypes,
+|}>;
+
+module.exports = ((TextToExport: any): React.AbstractComponent<
+  TextProps,
+  React.ElementRef<HostComponent<TextProps>>,
+> &
+  TextStatics);

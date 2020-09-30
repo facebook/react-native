@@ -9,15 +9,14 @@ package com.facebook.react.modules.sound;
 
 import android.content.Context;
 import android.media.AudioManager;
+import com.facebook.fbreact.specs.NativeSoundManagerSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** {@link NativeModule} that allows Playing device sounds from JS. */
 @ReactModule(name = SoundManagerModule.NAME)
-public class SoundManagerModule extends ReactContextBaseJavaModule {
+public class SoundManagerModule extends NativeSoundManagerSpec {
 
   public static final String NAME = "SoundManager";
 
@@ -30,7 +29,7 @@ public class SoundManagerModule extends ReactContextBaseJavaModule {
     return NAME;
   }
 
-  @ReactMethod
+  @Override
   public void playTouchSound() {
     AudioManager audioManager =
         (AudioManager) getReactApplicationContext().getSystemService(Context.AUDIO_SERVICE);

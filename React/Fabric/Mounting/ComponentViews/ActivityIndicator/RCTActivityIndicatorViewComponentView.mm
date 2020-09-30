@@ -11,6 +11,8 @@
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
 
+#import "FBRCTFabricComponentsPlugins.h"
+
 using namespace facebook::react;
 
 static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const ActivityIndicatorViewSize &size)
@@ -88,3 +90,8 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTActivityIndicatorViewCls(void)
+{
+  return RCTActivityIndicatorViewComponentView.class;
+}

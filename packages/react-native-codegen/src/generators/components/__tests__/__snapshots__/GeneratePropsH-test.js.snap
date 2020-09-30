@@ -194,17 +194,17 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const std::vector<std::string> names{};
-  const std::vector<bool> disableds{};
-  const std::vector<int> progress{};
-  const std::vector<Float> radii{};
-  const std::vector<SharedColor> colors{};
-  const std::vector<ImageSource> srcs{};
-  const std::vector<Point> points{};
-  const ArrayPropsNativeComponentSizesMask sizes{static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)};
-  const std::vector<ArrayPropsNativeComponentObjectStruct> object{};
-  const std::vector<ArrayPropsNativeComponentArrayStruct> array{};
-  const std::vector<std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>> arrayOfArrayOfObject{};
+  std::vector<std::string> names{};
+  std::vector<bool> disableds{};
+  std::vector<int> progress{};
+  std::vector<Float> radii{};
+  std::vector<SharedColor> colors{};
+  std::vector<ImageSource> srcs{};
+  std::vector<Point> points{};
+  ArrayPropsNativeComponentSizesMask sizes{static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)};
+  std::vector<ArrayPropsNativeComponentObjectStruct> object{};
+  std::vector<ArrayPropsNativeComponentArrayStruct> array{};
+  std::vector<std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>> arrayOfArrayOfObject{};
 };
 
 } // namespace react
@@ -277,7 +277,7 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const std::vector<ArrayPropsNativeComponentNativePrimitivesStruct> nativePrimitives{};
+  std::vector<ArrayPropsNativeComponentNativePrimitivesStruct> nativePrimitives{};
 };
 
 } // namespace react
@@ -309,7 +309,7 @@ class BooleanPropNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const bool disabled{false};
+  bool disabled{false};
 };
 
 } // namespace react
@@ -342,7 +342,7 @@ class ColorPropNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const SharedColor tintColor{};
+  SharedColor tintColor{};
 };
 
 } // namespace react
@@ -406,7 +406,7 @@ class CommandNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const std::string accessibilityHint{\\"\\"};
+  std::string accessibilityHint{\\"\\"};
 };
 
 } // namespace react
@@ -438,12 +438,12 @@ class DoublePropNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const double blurRadius{0.0};
-  const double blurRadius2{0.001};
-  const double blurRadius3{2.1};
-  const double blurRadius4{0.0};
-  const double blurRadius5{1.0};
-  const double blurRadius6{0.0};
+  double blurRadius{0.0};
+  double blurRadius2{0.001};
+  double blurRadius3{2.1};
+  double blurRadius4{0.0};
+  double blurRadius5{1.0};
+  double blurRadius6{0.0};
 };
 
 } // namespace react
@@ -475,7 +475,7 @@ class EventsNestedObjectNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const bool disabled{false};
+  bool disabled{false};
 };
 
 } // namespace react
@@ -507,7 +507,7 @@ class EventsNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const bool disabled{false};
+  bool disabled{false};
 };
 
 } // namespace react
@@ -603,12 +603,12 @@ class FloatPropNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const Float blurRadius{0.0};
-  const Float blurRadius2{0.001};
-  const Float blurRadius3{2.1};
-  const Float blurRadius4{0.0};
-  const Float blurRadius5{1.0};
-  const Float blurRadius6{0.0};
+  Float blurRadius{0.0};
+  Float blurRadius2{0.001};
+  Float blurRadius3{2.1};
+  Float blurRadius4{0.0};
+  Float blurRadius5{1.0};
+  Float blurRadius6{0.0};
 };
 
 } // namespace react
@@ -641,7 +641,7 @@ class ImagePropNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const ImageSource thumbImage{};
+  ImageSource thumbImage{};
 };
 
 } // namespace react
@@ -674,7 +674,7 @@ class InsetsPropNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const EdgeInsets contentInset{};
+  EdgeInsets contentInset{};
 };
 
 } // namespace react
@@ -733,7 +733,7 @@ class Int32EnumPropsNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const Int32EnumPropsNativeComponentMaxInterval maxInterval{Int32EnumPropsNativeComponentMaxInterval::MaxInterval0};
+  Int32EnumPropsNativeComponentMaxInterval maxInterval{Int32EnumPropsNativeComponentMaxInterval::MaxInterval0};
 };
 
 } // namespace react
@@ -765,9 +765,9 @@ class IntegerPropNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const int progress1{0};
-  const int progress2{-1};
-  const int progress3{10};
+  int progress1{0};
+  int progress2{-1};
+  int progress3{10};
 };
 
 } // namespace react
@@ -799,7 +799,7 @@ class InterfaceOnlyComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const std::string accessibilityHint{\\"\\"};
+  std::string accessibilityHint{\\"\\"};
 };
 
 } // namespace react
@@ -834,10 +834,10 @@ class ImageColorPropNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const ImageSource thumbImage{};
-  const SharedColor color{};
-  const SharedColor thumbTintColor{};
-  const Point point{};
+  ImageSource thumbImage{};
+  SharedColor color{};
+  SharedColor thumbTintColor{};
+  Point point{};
 };
 
 } // namespace react
@@ -1121,7 +1121,7 @@ class ObjectPropsProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const ObjectPropsObjectPropStruct objectProp{};
+  ObjectPropsObjectPropStruct objectProp{};
 };
 
 } // namespace react
@@ -1154,7 +1154,7 @@ class PointPropNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const Point startPoint{};
+  Point startPoint{};
 };
 
 } // namespace react
@@ -1204,7 +1204,7 @@ class StringEnumPropsNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const StringEnumPropsNativeComponentAlignment alignment{StringEnumPropsNativeComponentAlignment::Center};
+  StringEnumPropsNativeComponentAlignment alignment{StringEnumPropsNativeComponentAlignment::Center};
 };
 
 } // namespace react
@@ -1236,8 +1236,8 @@ class StringPropComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const std::string accessibilityHint{\\"\\"};
-  const std::string accessibilityRole{};
+  std::string accessibilityHint{\\"\\"};
+  std::string accessibilityRole{};
 };
 
 } // namespace react
@@ -1269,7 +1269,7 @@ class MultiFile1NativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const bool disabled{false};
+  bool disabled{false};
 };
 
 class MultiFile2NativeComponentProps final : public ViewProps {
@@ -1279,7 +1279,7 @@ class MultiFile2NativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const bool disabled{true};
+  bool disabled{true};
 };
 
 } // namespace react
@@ -1311,7 +1311,7 @@ class MultiComponent1NativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const bool disabled{false};
+  bool disabled{false};
 };
 
 class MultiComponent2NativeComponentProps final : public ViewProps {
@@ -1321,7 +1321,7 @@ class MultiComponent2NativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const bool disabled{true};
+  bool disabled{true};
 };
 
 } // namespace react

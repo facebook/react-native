@@ -17,74 +17,131 @@ namespace react {
 
 static TextAttributes convertRawProp(
     const RawProps &rawProps,
+    const TextAttributes sourceTextAttributes,
     const TextAttributes defaultTextAttributes) {
   auto textAttributes = TextAttributes{};
 
   // Color
-  textAttributes.foregroundColor =
-      convertRawProp(rawProps, "color", defaultTextAttributes.foregroundColor);
+  textAttributes.foregroundColor = convertRawProp(
+      rawProps,
+      "color",
+      sourceTextAttributes.foregroundColor,
+      defaultTextAttributes.foregroundColor);
   textAttributes.backgroundColor = convertRawProp(
-      rawProps, "backgroundColor", defaultTextAttributes.backgroundColor);
-  textAttributes.opacity =
-      convertRawProp(rawProps, "opacity", defaultTextAttributes.opacity);
+      rawProps,
+      "backgroundColor",
+      sourceTextAttributes.backgroundColor,
+      defaultTextAttributes.backgroundColor);
+  textAttributes.opacity = convertRawProp(
+      rawProps,
+      "opacity",
+      sourceTextAttributes.opacity,
+      defaultTextAttributes.opacity);
 
   // Font
-  textAttributes.fontFamily =
-      convertRawProp(rawProps, "fontFamily", defaultTextAttributes.fontFamily);
-  textAttributes.fontSize =
-      convertRawProp(rawProps, "fontSize", defaultTextAttributes.fontSize);
+  textAttributes.fontFamily = convertRawProp(
+      rawProps,
+      "fontFamily",
+      sourceTextAttributes.fontFamily,
+      defaultTextAttributes.fontFamily);
+  textAttributes.fontSize = convertRawProp(
+      rawProps,
+      "fontSize",
+      sourceTextAttributes.fontSize,
+      defaultTextAttributes.fontSize);
   textAttributes.fontSizeMultiplier = convertRawProp(
-      rawProps, "fontSizeMultiplier", defaultTextAttributes.fontSizeMultiplier);
-  textAttributes.fontWeight =
-      convertRawProp(rawProps, "fontWeight", defaultTextAttributes.fontWeight);
-  textAttributes.fontStyle =
-      convertRawProp(rawProps, "fontStyle", defaultTextAttributes.fontStyle);
+      rawProps,
+      "fontSizeMultiplier",
+      sourceTextAttributes.fontSizeMultiplier,
+      defaultTextAttributes.fontSizeMultiplier);
+  textAttributes.fontWeight = convertRawProp(
+      rawProps,
+      "fontWeight",
+      sourceTextAttributes.fontWeight,
+      defaultTextAttributes.fontWeight);
+  textAttributes.fontStyle = convertRawProp(
+      rawProps,
+      "fontStyle",
+      sourceTextAttributes.fontStyle,
+      defaultTextAttributes.fontStyle);
   textAttributes.fontVariant = convertRawProp(
-      rawProps, "fontVariant", defaultTextAttributes.fontVariant);
+      rawProps,
+      "fontVariant",
+      sourceTextAttributes.fontVariant,
+      defaultTextAttributes.fontVariant);
   textAttributes.allowFontScaling = convertRawProp(
-      rawProps, "allowFontScaling", defaultTextAttributes.allowFontScaling);
+      rawProps,
+      "allowFontScaling",
+      sourceTextAttributes.allowFontScaling,
+      defaultTextAttributes.allowFontScaling);
   textAttributes.letterSpacing = convertRawProp(
-      rawProps, "letterSpacing", defaultTextAttributes.letterSpacing);
+      rawProps,
+      "letterSpacing",
+      sourceTextAttributes.letterSpacing,
+      defaultTextAttributes.letterSpacing);
 
   // Paragraph
-  textAttributes.lineHeight =
-      convertRawProp(rawProps, "lineHeight", defaultTextAttributes.lineHeight);
-  textAttributes.alignment =
-      convertRawProp(rawProps, "textAlign", defaultTextAttributes.alignment);
+  textAttributes.lineHeight = convertRawProp(
+      rawProps,
+      "lineHeight",
+      sourceTextAttributes.lineHeight,
+      defaultTextAttributes.lineHeight);
+  textAttributes.alignment = convertRawProp(
+      rawProps,
+      "textAlign",
+      sourceTextAttributes.alignment,
+      defaultTextAttributes.alignment);
   textAttributes.baseWritingDirection = convertRawProp(
       rawProps,
       "baseWritingDirection",
+      sourceTextAttributes.baseWritingDirection,
       defaultTextAttributes.baseWritingDirection);
 
   // Decoration
   textAttributes.textDecorationColor = convertRawProp(
       rawProps,
       "textDecorationColor",
+      sourceTextAttributes.textDecorationColor,
       defaultTextAttributes.textDecorationColor);
   textAttributes.textDecorationLineType = convertRawProp(
       rawProps,
       "textDecorationLine",
+      sourceTextAttributes.textDecorationLineType,
       defaultTextAttributes.textDecorationLineType);
   textAttributes.textDecorationLineStyle = convertRawProp(
       rawProps,
       "textDecorationLineStyle",
+      sourceTextAttributes.textDecorationLineStyle,
       defaultTextAttributes.textDecorationLineStyle);
   textAttributes.textDecorationLinePattern = convertRawProp(
       rawProps,
       "textDecorationLinePattern",
+      sourceTextAttributes.textDecorationLinePattern,
       defaultTextAttributes.textDecorationLinePattern);
 
   // Shadow
   textAttributes.textShadowOffset = convertRawProp(
-      rawProps, "textShadowOffset", defaultTextAttributes.textShadowOffset);
+      rawProps,
+      "textShadowOffset",
+      sourceTextAttributes.textShadowOffset,
+      defaultTextAttributes.textShadowOffset);
   textAttributes.textShadowRadius = convertRawProp(
-      rawProps, "textShadowRadius", defaultTextAttributes.textShadowRadius);
+      rawProps,
+      "textShadowRadius",
+      sourceTextAttributes.textShadowRadius,
+      defaultTextAttributes.textShadowRadius);
   textAttributes.textShadowColor = convertRawProp(
-      rawProps, "textShadowColor", defaultTextAttributes.textShadowColor);
+      rawProps,
+      "textShadowColor",
+      sourceTextAttributes.textShadowColor,
+      defaultTextAttributes.textShadowColor);
 
   // Special
   textAttributes.isHighlighted = convertRawProp(
-      rawProps, "isHighlighted", defaultTextAttributes.isHighlighted);
+      rawProps,
+      "isHighlighted",
+      sourceTextAttributes.isHighlighted,
+      defaultTextAttributes.isHighlighted);
 
   return textAttributes;
 }
@@ -92,7 +149,10 @@ static TextAttributes convertRawProp(
 BaseTextProps::BaseTextProps(
     const BaseTextProps &sourceProps,
     const RawProps &rawProps)
-    : textAttributes(convertRawProp(rawProps, sourceProps.textAttributes)){};
+    : textAttributes(convertRawProp(
+          rawProps,
+          sourceProps.textAttributes,
+          TextAttributes{})){};
 
 #pragma mark - DebugStringConvertible
 

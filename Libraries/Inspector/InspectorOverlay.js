@@ -14,7 +14,6 @@ const Dimensions = require('../Utilities/Dimensions');
 const ElementBox = require('./ElementBox');
 const React = require('react');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const UIManager = require('../ReactNative/UIManager');
 const View = require('../Components/View/View');
 
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
@@ -27,24 +26,14 @@ type Inspected = $ReadOnly<{|
 
 type Props = $ReadOnly<{|
   inspected?: Inspected,
-  inspectedViewTag?: ?number,
-  onTouchViewTag: (tag: number, frame: Object, pointerY: number) => mixed,
+  onTouchPoint: (locationX: number, locationY: number) => void,
 |}>;
 
 class InspectorOverlay extends React.Component<Props> {
   findViewForTouchEvent: (e: PressEvent) => void = (e: PressEvent) => {
     const {locationX, locationY} = e.nativeEvent.touches[0];
-    UIManager.findSubviewIn(
-      this.props.inspectedViewTag,
-      [locationX, locationY],
-      (nativeViewTag, left, top, width, height) => {
-        this.props.onTouchViewTag(
-          nativeViewTag,
-          {left, top, width, height},
-          locationY,
-        );
-      },
-    );
+
+    this.props.onTouchPoint(locationX, locationY);
   };
 
   shouldSetResponser: (e: PressEvent) => boolean = (e: PressEvent): boolean => {

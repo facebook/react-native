@@ -26,8 +26,7 @@
 
 // TODO: this class behaves a lot like a module, and could be implemented as a
 // module if we were to assume that modules and RootViews had a 1:1 relationship
-@implementation RCTTouchHandler
-{
+@implementation RCTTouchHandler {
   __weak RCTEventDispatcher *_eventDispatcher;
 
   /**
@@ -77,7 +76,7 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)action)
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 #endif // ]TODO(macOS ISS#2323203)
@@ -107,8 +106,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   for (NSEvent *touch in touches) {
 #endif // ]TODO(macOS ISS#2323203)
 
-    RCTAssert(![_nativeTouches containsObject:touch],
-              @"Touch is already recorded. This is a critical bug.");
+    RCTAssert(![_nativeTouches containsObject:touch], @"Touch is already recorded. This is a critical bug.");
 
     // Find closest React-managed touchable view
     
@@ -183,7 +181,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
     NSInteger usedID = [reactTouch[@"identifier"] integerValue];
     if (usedID == touchID) {
       // ID has already been used, try next value
-      touchID ++;
+      touchID++;
     } else if (usedID > touchID) {
       // If usedID > touchID, touchID must be unique, so we can stop looking
       break;
@@ -236,7 +234,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   reactTouch[@"pageY"] = @(RCTSanitizeNaNValue(rootViewLocation.y, @"touchEvent.pageY"));
   reactTouch[@"locationX"] = @(RCTSanitizeNaNValue(touchViewLocation.x, @"touchEvent.locationX"));
   reactTouch[@"locationY"] = @(RCTSanitizeNaNValue(touchViewLocation.y, @"touchEvent.locationY"));
-  reactTouch[@"timestamp"] =  @(nativeTouch.timestamp * 1000); // in ms, for JS
+  reactTouch[@"timestamp"] = @(nativeTouch.timestamp * 1000); // in ms, for JS
+
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   // TODO: force for a 'normal' touch is usually 1.0;
   // should we expose a `normalTouchForce` constant somewhere (which would
@@ -283,8 +282,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
  * (start/end/move/cancel) and the indices that represent "changed" `Touch`es
  * from that array.
  */
-- (void)_updateAndDispatchTouches:(NSSet *)touches // TODO(macOS ISS#2323203)
-                        eventName:(NSString *)eventName
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+- (void)_updateAndDispatchTouches:(NSSet<UITouch *> *)touches eventName:(NSString *)eventName
+#else // [TODO(macOS ISS#2323203)
+- (void)_updateAndDispatchTouches:(NSSet<NSEvent *> *)touches eventName:(NSString *)eventName
+#endif // ]TODO(macOS ISS#2323203)
 {
   // Update touches
   NSMutableArray<NSNumber *> *changedIndexes = [NSMutableArray new];
@@ -316,8 +318,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
   // Deep copy the touches because they will be accessed from another thread
   // TODO: would it be safer to do this in the bridge or executor, rather than trusting caller?
-  NSMutableArray<NSDictionary *> *reactTouches =
-  [[NSMutableArray alloc] initWithCapacity:_reactTouches.count];
+  NSMutableArray<NSDictionary *> *reactTouches = [[NSMutableArray alloc] initWithCapacity:_reactTouches.count];
   for (NSDictionary *touch in _reactTouches) {
     [reactTouches addObject:[touch copy]];
   }
@@ -371,9 +372,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 static BOOL RCTAllTouchesAreCancelledOrEnded(NSSet *touches) // TODO(macOS ISS#2323203)
 {
   for (UITouch *touch in touches) {
-    if (touch.phase == UITouchPhaseBegan ||
-        touch.phase == UITouchPhaseMoved ||
-        touch.phase == UITouchPhaseStationary) {
+    if (touch.phase == UITouchPhaseBegan || touch.phase == UITouchPhaseMoved || touch.phase == UITouchPhaseStationary) {
       return NO;
     }
   }
@@ -383,8 +382,7 @@ static BOOL RCTAllTouchesAreCancelledOrEnded(NSSet *touches) // TODO(macOS ISS#2
 static BOOL RCTAnyTouchesChanged(NSSet *touches) // [TODO(macOS ISS#2323203)
 {
   for (UITouch *touch in touches) {
-    if (touch.phase == UITouchPhaseBegan ||
-        touch.phase == UITouchPhaseMoved) {
+    if (touch.phase == UITouchPhaseBegan || touch.phase == UITouchPhaseMoved) {
       return YES;
     }
   }
@@ -573,7 +571,8 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches) // [TODO(macOS ISS#2323203)
 
 #pragma mark - UIGestureRecognizerDelegate
 
-- (BOOL)gestureRecognizer:(__unused UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+- (BOOL)gestureRecognizer:(__unused UIGestureRecognizer *)gestureRecognizer
+    shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
   // Same condition for `failure of` as for `be prevented by`.
   return [self canBePreventedByGestureRecognizer:otherGestureRecognizer];

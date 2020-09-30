@@ -1,4 +1,4 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_debug_preprocessor_flags", "get_static_library_ios_flags")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags")
 load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_target", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
@@ -36,15 +36,15 @@ rn_xplat_cxx_library(
         "-fobjc-arc-exceptions",
     ],
     fbobjc_inherited_buck_flags = get_static_library_ios_flags(),
-    fbobjc_preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags(),
+    fbobjc_preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_preprocessor_flags_for_build_mode(),
     force_static = True,
     ios_deps = [
-        "fbsource//xplat/FBBaseLite:FBBaseLite",
-        "fbsource//xplat/js:RCTLinking",
-        "fbsource//xplat/js:RCTPushNotification",
-        "fbsource//xplat/js/react-native-github:RCTCxxBridge",
-        "fbsource//xplat/js/react-native-github:RCTCxxModule",
-        "fbsource//xplat/js/react-native-github:ReactInternal",
+        "//xplat/FBBaseLite:FBBaseLite",
+        "//xplat/js:RCTLinking",
+        "//xplat/js:RCTPushNotification",
+        "//xplat/js/react-native-github:RCTCxxBridge",
+        "//xplat/js/react-native-github:RCTCxxModule",
+        "//xplat/js/react-native-github:ReactInternal",
     ],
     ios_exported_headers = subdir_glob(
         [
@@ -73,7 +73,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("cxxreact:module"),
     ],
     exported_deps = [
-        "fbsource//xplat/jsi:jsi",
+        "//xplat/jsi:jsi",
         react_native_xplat_target("turbomodule/core:core"),
     ],
 )

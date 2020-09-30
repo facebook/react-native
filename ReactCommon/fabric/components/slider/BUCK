@@ -1,4 +1,4 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_preprocessor_flags_for_build_mode")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
@@ -57,8 +57,8 @@ rn_xplat_cxx_library(
         ["platform/android/*.cpp"],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
-    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
-    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
     ios_exported_headers = subdir_glob(
         [
@@ -80,11 +80,11 @@ rn_xplat_cxx_library(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        "fbsource//xplat/fbsystrace:fbsystrace",
-        "fbsource//xplat/folly:headers_only",
-        "fbsource//xplat/folly:memory",
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/glog:glog",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:headers_only",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        "//xplat/third-party/glog:glog",
         YOGA_CXX_TARGET,
         react_native_xplat_target("fabric/debug:debug"),
         react_native_xplat_target("fabric/core:core"),
@@ -93,7 +93,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("fabric/graphics:graphics"),
         react_native_xplat_target("fabric/imagemanager:imagemanager"),
         react_native_xplat_target("fabric/uimanager:uimanager"),
-        "fbsource//xplat/js/react-native-github:generated_components-rncore",
+        "//xplat/js/react-native-github:generated_components-rncore",
     ],
 )
 
@@ -115,8 +115,8 @@ fb_xplat_cxx_test(
         CXX,
     ),
     deps = [
-        "fbsource//xplat/folly:molly",
-        "fbsource//xplat/third-party/gmock:gtest",
         ":slider",
+        "//xplat/folly:molly",
+        "//xplat/third-party/gmock:gtest",
     ],
 )

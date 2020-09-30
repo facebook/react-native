@@ -106,7 +106,7 @@ function getJavaValueForProp(
     case 'NativePrimitiveTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
-          return 'value == null ? null : ((Double) value).intValue()';
+          return 'ColorPropConverter.getColor(value, view.getContext())';
         case 'ImageSourcePrimitive':
           return '(ReadableMap) value';
         case 'PointPrimitive':
@@ -230,7 +230,7 @@ function getClassExtendString(component): string {
 }
 
 function getDelegateImports(component) {
-  const imports = getImports(component);
+  const imports = getImports(component, 'delegate');
   // The delegate needs ReadableArray for commands always.
   // The interface doesn't always need it
   if (component.commands.length > 0) {

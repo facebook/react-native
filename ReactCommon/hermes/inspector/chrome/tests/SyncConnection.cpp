@@ -54,7 +54,9 @@ class SyncConnection::RemoteConnnection : public IRemoteConnection {
 
 SyncConnection::SyncConnection(std::shared_ptr<HermesRuntime> runtime)
     : connection_(
-          std::make_unique<SharedRuntimeAdapter>(std::move(runtime)),
+          std::make_unique<SharedRuntimeAdapter>(
+              runtime,
+              runtime->getDebugger()),
           "testConn") {
   connection_.connect(std::make_unique<RemoteConnnection>(*this));
 }

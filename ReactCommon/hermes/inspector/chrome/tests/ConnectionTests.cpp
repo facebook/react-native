@@ -227,8 +227,6 @@ m::runtime::ExecutionContextCreatedNotification expectExecutionContextCreated(
   EXPECT_EQ(note.context.id, 1);
   EXPECT_EQ(note.context.origin, "");
   EXPECT_EQ(note.context.name, "hermes");
-  EXPECT_EQ(note.context.isDefault, true);
-  EXPECT_EQ(note.context.isPageContext, true);
 
   return note;
 }
@@ -1170,6 +1168,38 @@ TEST(ConnectionTests, testRuntimeEvaluate) {
   asyncRuntime.stop();
 }
 
+TEST(ConnectionTests, testRuntimeEvaluateReturnByValue) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  asyncRuntime.executeScriptAsync("while(!shouldStop());");
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // We expect this JSON object to be evaluated and return by value, so
+  // that JSON encoding the result will give the same string.
+  auto object = "{\"key\":[1,\"two\"]}";
+
+  m::runtime::EvaluateRequest req;
+  req.id = msgId;
+  req.expression = std::string("(") + object + ")";
+  req.returnByValue = true;
+  conn.send(req.toJson());
+
+  auto resp =
+      expectResponse<m::debugger::EvaluateOnCallFrameResponse>(conn, msgId);
+  EXPECT_EQ(resp.result.type, "object");
+  ASSERT_TRUE(resp.result.value.hasValue());
+  EXPECT_EQ(folly::toJson(resp.result.value.value()), object);
+
+  // [3] exit run loop
+  asyncRuntime.stop();
+}
+
 TEST(ConnectionTests, testEvalOnCallFrameException) {
   TestContext context;
   AsyncHermesRuntime &asyncRuntime = context.runtime();
@@ -1225,7 +1255,7 @@ TEST(ConnectionTests, testEvalOnCallFrameException) {
        // TODO: unsure why these frames are here, but they're in hdb tests
        // too. Ask Hermes about if they really should be there.
        FrameInfo("eval", 0, 0).setLineNumberMax(19),
-       FrameInfo("(native)", 0, 0),
+       FrameInfo("callme", 12, 2),
        FrameInfo("global", 0, 0).setLineNumberMax(19)});
   expectEvalResponse(conn, msgId + 2, 5);
   msgId += 3;
@@ -1283,49 +1313,6 @@ TEST(ConnectionTests, testLoadMultipleScripts) {
 
   send<m::debugger::ResumeRequest>(conn, msgId++);
   expectNotification<m::debugger::ResumedNotification>(conn);
-}
-
-TEST(ConnectionTests, testGetHeapUsage) {
-  using HUReq = m::runtime::GetHeapUsageRequest;
-  using HUResp = m::runtime::GetHeapUsageResponse;
-
-  TestContext context;
-  AsyncHermesRuntime &asyncRuntime = context.runtime();
-  SyncConnection &conn = context.conn();
-
-  int msgId = 1;
-
-  asyncRuntime.executeScriptAsync(R"(
-    debugger; // [1]
-    var a = [];
-    for (var i = 0; i < 100; ++i) {
-      a.push({b: i});
-    }
-    debugger; // [2]
-  )");
-
-  send<m::debugger::EnableRequest>(conn, msgId++);
-  expectExecutionContextCreated(conn);
-  expectNotification<m::debugger::ScriptParsedNotification>(conn);
-
-  // [1] (line 1) hit debugger statement, check heap usage, resume.
-  expectNotification<m::debugger::PausedNotification>(conn);
-  const auto before = send<HUReq, HUResp>(conn, msgId++);
-  send<m::debugger::ResumeRequest>(conn, msgId++);
-  expectNotification<m::debugger::ResumedNotification>(conn);
-
-  // [2] (line 6) hit debugger statement, check heap usage, resume;
-  expectNotification<m::debugger::PausedNotification>(conn);
-  const auto after = send<HUReq, HUResp>(conn, msgId++);
-  send<m::debugger::ResumeRequest>(conn, msgId++);
-  expectNotification<m::debugger::ResumedNotification>(conn);
-
-  // Sanity checks
-  EXPECT_LE(before.usedSize, before.totalSize);
-  EXPECT_LE(after.usedSize, after.totalSize);
-
-  // Check for growth
-  EXPECT_LT(before.usedSize, after.usedSize);
 }
 
 TEST(ConnectionTests, testGetProperties) {
@@ -1459,7 +1446,9 @@ TEST(ConnectionTests, testGetPropertiesOnlyOwnProperties) {
       conn,
       msgId++,
       scopeObject.objectId.value(),
-      {{"this", PropInfo("undefined")}, {"obj", PropInfo("object")}, {"protoObject", PropInfo("object")}});
+      {{"this", PropInfo("undefined")},
+       {"obj", PropInfo("object")},
+       {"protoObject", PropInfo("object")}});
   EXPECT_EQ(scopeChildren.count("obj"), 1);
   std::string objId = scopeChildren.at("obj");
 

@@ -26,6 +26,6 @@ void logMarker(const ReactMarkerId markerId) {
   logTaggedMarker(markerId, nullptr);
 }
 
-}
-}
-}
+} // namespace ReactMarker
+} // namespace react
+} // namespace facebook

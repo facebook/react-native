@@ -94,6 +94,7 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         name: 'ImageSourcePrimitive',
       };
     case 'ColorValue':
+    case 'ProcessedColorValue':
       return {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'ColorPrimitive',
@@ -217,6 +218,7 @@ function getTypeAnnotation(
         name: 'ImageSourcePrimitive',
       };
     case 'ColorValue':
+    case 'ProcessedColorValue':
       return {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'ColorPrimitive',

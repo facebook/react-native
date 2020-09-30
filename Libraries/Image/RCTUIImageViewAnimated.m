@@ -6,7 +6,7 @@
  */
 
 #import <React/RCTUIImageViewAnimated.h>
-#import <React/RCTWeakProxy.h>
+#import <React/RCTDisplayWeakRefreshable.h>
 
 #import <mach/mach.h>
 #import <objc/runtime.h>
@@ -28,7 +28,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   return (vm_stat.free_count - vm_stat.speculative_count) * page_size;
 }
 
-@interface RCTUIImageViewAnimated () <CALayerDelegate>
+@interface RCTUIImageViewAnimated () <CALayerDelegate, RCTDisplayRefreshable>
 
 @property (nonatomic, assign) NSUInteger maxBufferSize;
 @property (nonatomic, strong, readwrite) UIImage *currentFrame;
@@ -160,7 +160,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   }
 
   if (!_displayLink) {
-    _displayLink = [CADisplayLink displayLinkWithTarget:[RCTWeakProxy weakProxyWithTarget:self] selector:@selector(displayDidRefresh:)];
+    _displayLink = [RCTDisplayWeakRefreshable displayLinkWithWeakRefreshable:self];
     NSString *runLoopMode = [NSProcessInfo processInfo].activeProcessorCount > 1 ? NSRunLoopCommonModes : NSDefaultRunLoopMode;
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:runLoopMode];
   }
@@ -277,8 +277,8 @@ static NSUInteger RCTDeviceFreeMemory() {
   if (_currentFrame) {
     layer.contentsScale = self.animatedImageScale;
     layer.contents = (__bridge id)_currentFrame.CGImage;
-  }  else {
-     [super displayLayer:layer];
+  } else {
+    [super displayLayer:layer];
   }
 }
 

@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 #import <React/RCTComponent.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 /**
  * Contains any methods related to scrolling. Any `RCTView` that has scrolling

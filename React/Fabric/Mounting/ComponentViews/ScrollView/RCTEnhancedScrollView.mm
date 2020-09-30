@@ -41,12 +41,6 @@
   return self;
 }
 
-- (void)dealloc
-{
-  // This is not strictly necessary but that prevents a crash caused by a bug in UIKit.
-  [self setPrivateDelegate:nil];
-}
-
 - (void)setPrivateDelegate:(id<UIScrollViewDelegate>)delegate
 {
   [super setDelegate:delegate];

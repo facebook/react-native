@@ -62,6 +62,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (facebook::react::ComponentDescriptor const *)findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:
     (facebook::react::ComponentHandle)handle;
 
+- (facebook::react::MountingCoordinator::Shared)mountingCoordinatorWithSurfaceId:(facebook::react::SurfaceId)surfaceId;
+
 @end
 
 NS_ASSUME_NONNULL_END

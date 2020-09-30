@@ -21,7 +21,26 @@ def detectEntryFile(config) {
     return "index.js";
 }
 
-def cliPath = config.cliPath ?: "node_modules/react-native/cli.js"
+/**
+ * Detects CLI location in a similar fashion to the React Native CLI
+ */
+def detectCliPath(config) {
+    if (config.cliPath) {
+        return config.cliPath
+    }
+
+    def cliPath = ["node", "-e", "console.log(require('react-native/cli').bin);"].execute([], projectDir).text.trim()
+    
+    if (cliPath) {
+        return cliPath
+    } else if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
+        return "${projectDir}/../../node_modules/react-native/cli.js"
+    } else {
+        throw new Exception("Couldn't determine CLI location. " +
+            "Please set `project.ext.react.cliPath` to the path of the react-native cli.js");
+    }
+}
+
 def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
 def entryFile = detectEntryFile(config)
@@ -30,7 +49,7 @@ def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 def enableVmCleanup = config.enableVmCleanup == null ? true : config.enableVmCleanup
-def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermes"
+def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermesc"
 
 def reactNativeDevServerPort() {
     def value = project.getProperties().get("reactNativeDevServerPort")
@@ -98,21 +117,16 @@ afterEvaluate {
 
         // Additional node and packager commandline arguments
         def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
-        def extraPackagerArgs = config.extraPackagerArgs ?: []
-        def npx = Os.isFamily(Os.FAMILY_WINDOWS) ? "npx.cmd" : "npx"
+        def cliPath = detectCliPath(config)
 
         def execCommand = []
 
-        if (config.cliPath || config.nodeExecutableAndArgs) {
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                execCommand.addAll(["cmd", "/c", *nodeExecutableAndArgs, cliPath])
-            } else {
-                execCommand.addAll([*nodeExecutableAndArgs, cliPath])
-            }
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            execCommand.addAll(["cmd", "/c", *nodeExecutableAndArgs, cliPath])
         } else {
-            execCommand.addAll([npx, "react-native"])
+            execCommand.addAll([*nodeExecutableAndArgs, cliPath])
         }
-
+        
         def enableHermes = enableHermesForVariant(variant)
 
         def currentBundleTask = tasks.create(
@@ -145,7 +159,7 @@ afterEvaluate {
             def devEnabled = !(config."devDisabledIn${targetName}"
                 || targetName.toLowerCase().contains("release"))
 
-            def extraArgs = extraPackagerArgs;
+            def extraArgs = config.extraPackagerArgs ?: [];
 
             if (bundleConfig) {
                 extraArgs = extraArgs.clone()

@@ -17,7 +17,7 @@ RawTextProps::RawTextProps(
     const RawTextProps &sourceProps,
     const RawProps &rawProps)
     : Props(sourceProps, rawProps),
-      text(convertRawProp(rawProps, "text", sourceProps.text)){};
+      text(convertRawProp(rawProps, "text", sourceProps.text, {})){};
 
 #pragma mark - DebugStringConvertible
 

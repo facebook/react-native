@@ -13,6 +13,29 @@
 namespace facebook {
 namespace react {
 
+static bool hasValue(
+    const RawProps &rawProps,
+    bool defaultValue,
+    const char *name,
+    const char *prefix,
+    const char *suffix) {
+  auto rawValue = rawProps.at(name, prefix, suffix);
+
+  // No change to prop - use default
+  if (rawValue == nullptr) {
+    return defaultValue;
+  }
+
+  // Value passed from JS
+  if (rawValue->hasValue()) {
+    return true;
+  }
+
+  // Null/undefined passed in, indicating that we should use the default
+  // platform value - thereby resetting this
+  return false;
+}
+
 AndroidTextInputProps::AndroidTextInputProps(
     const AndroidTextInputProps &sourceProps,
     const RawProps &rawProps)
@@ -222,7 +245,51 @@ AndroidTextInputProps::AndroidTextInputProps(
           {0})),
       text(convertRawProp(rawProps, "text", sourceProps.text, {})),
       paragraphAttributes(
-          convertRawProp(rawProps, sourceProps.paragraphAttributes)) {}
+          convertRawProp(rawProps, sourceProps.paragraphAttributes, {})),
+      // See AndroidTextInputComponentDescriptor for usage
+      // TODO T63008435: can these, and this feature, be removed entirely?
+      hasPadding(hasValue(rawProps, sourceProps.hasPadding, "", "padding", "")),
+      hasPaddingHorizontal(hasValue(
+          rawProps,
+          sourceProps.hasPaddingHorizontal,
+          "Horizontal",
+          "padding",
+          "")),
+      hasPaddingVertical(hasValue(
+          rawProps,
+          sourceProps.hasPaddingVertical,
+          "Vertical",
+          "padding",
+          "")),
+      hasPaddingLeft(hasValue(
+          rawProps,
+          sourceProps.hasPaddingLeft,
+          "Left",
+          "padding",
+          "")),
+      hasPaddingTop(
+          hasValue(rawProps, sourceProps.hasPaddingTop, "Top", "padding", "")),
+      hasPaddingRight(hasValue(
+          rawProps,
+          sourceProps.hasPaddingRight,
+          "Right",
+          "padding",
+          "")),
+      hasPaddingBottom(hasValue(
+          rawProps,
+          sourceProps.hasPaddingBottom,
+          "Bottom",
+          "padding",
+          "")),
+      hasPaddingStart(hasValue(
+          rawProps,
+          sourceProps.hasPaddingStart,
+          "Start",
+          "padding",
+          "")),
+      hasPaddingEnd(
+          hasValue(rawProps, sourceProps.hasPaddingEnd, "End", "padding", "")) {
+}
 
 // TODO T53300085: support this in codegen; this was hand-written
 folly::dynamic AndroidTextInputProps::getDynamic() const {
@@ -276,6 +343,17 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["cursorColor"] = toDynamic(cursorColor);
   props["mostRecentEventCount"] = mostRecentEventCount;
   props["text"] = text;
+
+  props["hasPadding"] = hasPadding;
+  props["hasPaddingHorizontal"] = hasPaddingHorizontal;
+  props["hasPaddingVertical"] = hasPaddingVertical;
+  props["hasPaddingStart"] = hasPaddingStart;
+  props["hasPaddingEnd"] = hasPaddingEnd;
+  props["hasPaddingLeft"] = hasPaddingLeft;
+  props["hasPaddingRight"] = hasPaddingRight;
+  props["hasPaddingTop"] = hasPaddingTop;
+  props["hasPaddingBottom"] = hasPaddingBottom;
+
   return props;
 }
 
@@ -283,7 +361,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 // TODO: codegen these
-SharedDebugStringConvertibleList TextProps::getDebugProps() const {
+SharedDebugStringConvertibleList AndroidTextInputProps::getDebugProps() const {
   return {};
 }
 #endif

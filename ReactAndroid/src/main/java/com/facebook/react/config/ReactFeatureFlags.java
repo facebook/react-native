@@ -16,33 +16,12 @@ package com.facebook.react.config;
  */
 public class ReactFeatureFlags {
 
-  /** Whether we should load a specific view manager immediately or when it is accessed by JS */
-  public static boolean lazilyLoadViewManagers = false;
-
-  /** Reduce the number of Java-JS interops while accessing native arrays */
-  public static boolean useArrayNativeAccessor = false;
-
-  /** Reduce the number of Java-JS interops while accessing native maps */
-  public static boolean useMapNativeAccessor = false;
-
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
    * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
    * CatalystInstanceImpl
    */
   public static volatile boolean useTurboModules = false;
-
-  /**
-   * Log tags of when a view deleted on the native side {@link
-   * com.facebook.react.uimanager.NativeViewHierarchyManager dropView}
-   */
-  public static boolean logDroppedViews = false;
-
-  /*
-   * This feature flag enables extra logging on ReactWebViews.
-   * Default value is false.
-   */
-  public static boolean enableExtraWebViewLogs = false;
 
   /*
    * This feature flag enables logs for Fabric
@@ -72,12 +51,10 @@ public class ReactFeatureFlags {
   public static boolean nullifyCatalystInstanceOnDestroy = false;
 
   /**
-   * Temporary flag that should be removed soon. See FabricUIManager: if this flag is disabled,
-   * mountItems scheduled on the UI thread will *always* be executed synchronously. If this flag is
-   * enabled, users of FabricUIManager may disable immediate execution of scheduled mount items.
-   * TODO T54997838: remove as followup
+   * Temporary flag. See UIImplementation: if this flag is enabled, ViewCommands will be queued and
+   * executed before any other types of UI operations.
    */
-  public static boolean allowDisablingImmediateExecutionOfScheduleMountItems = false;
+  public static boolean allowEarlyViewCommandExecution = false;
 
   /**
    * This react flag enables a custom algorithm for the getChildVisibleRect() method in the classes
@@ -90,4 +67,10 @@ public class ReactFeatureFlags {
    * <p>The react flag is disabled by default because this is increasing ANRs (T57363204)
    */
   public static boolean clipChildRectsIfOverflowIsHidden = false;
+
+  /**
+   * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
+   * remove this when bug is fixed
+   */
+  public static boolean enableTransitionLayoutOnlyViewCleanup = false;
 }

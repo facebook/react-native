@@ -68,7 +68,7 @@ abstract_target 'Shared' do
   pod 'React-jsi', :path => '../node_modules/react-native-macos/ReactCommon/jsi'
   pod 'React-jsiexecutor', :path => '../node_modules/react-native-macos/ReactCommon/jsiexecutor'
   pod 'React-jsinspector', :path => '../node_modules/react-native-macos/ReactCommon/jsinspector'
-  pod 'ReactCommon/callinvoker', :path => '../node_modules/react-native-macos/ReactCommon'
+  pod 'React-callinvoker', :path => '../node_modules/react-native-macos/ReactCommon/callinvoker'
   pod 'ReactCommon/turbomodule/core', :path => '../node_modules/react-native-macos/ReactCommon'
   pod 'Yoga', :path => '../node_modules/react-native-macos/ReactCommon/yoga', :modular_headers => true
 
@@ -95,7 +95,7 @@ abstract_target 'Shared' do
   end
 
   target 'HelloWorld-iOS' do
-    platform :ios, '9'
+    platform :ios, '10'
     use_native_modules!
 
     # Enables Flipper.

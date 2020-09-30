@@ -34,6 +34,7 @@ exports[`LogBoxContainer should render fatal with selectedIndex 2 1`] = `
           "stack": null,
           "status": "NONE",
         },
+        "type": undefined,
       }
     }
     onRetry={[Function]}
@@ -82,6 +83,7 @@ exports[`LogBoxContainer should render warning with selectedIndex 0 1`] = `
           "stack": null,
           "status": "NONE",
         },
+        "type": undefined,
       }
     }
     onRetry={[Function]}

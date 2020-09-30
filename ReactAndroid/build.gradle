@@ -374,7 +374,7 @@ task extractJNIFiles {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     compileOptions {
         sourceCompatibility(JavaVersion.VERSION_1_8)
@@ -441,6 +441,7 @@ dependencies {
     api("com.facebook.yoga:proguard-annotations:1.14.1")
     api("javax.inject:javax.inject:1")
     api("androidx.appcompat:appcompat:1.0.2")
+    api("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
     api("com.facebook.soloader:soloader:${SO_LOADER_VERSION}")

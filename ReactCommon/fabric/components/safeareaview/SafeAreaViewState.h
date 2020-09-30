@@ -17,14 +17,9 @@ namespace react {
  */
 class SafeAreaViewState final {
  public:
-  using Shared = std::shared_ptr<const SafeAreaViewState>;
+  using Shared = std::shared_ptr<SafeAreaViewState const>;
 
-  SafeAreaViewState() = default;
-  SafeAreaViewState(EdgeInsets padding_) : padding(padding_){};
-
-  const EdgeInsets padding{};
-
-#pragma mark - Getters
+  EdgeInsets const padding{};
 };
 
 } // namespace react

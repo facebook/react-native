@@ -31,12 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RCTBackedTextInputViewProtocol
 #endif // ]TODO(macOS ISS#2323203)
 
-@property (nonatomic, strong, nullable) RCTUIColor *textColor; // TODO(OSS Candidate ISS#2710739)
-@property (nonatomic, strong, nullable) UIFont *font;
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 @property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, strong, nullable) RCTUIColor *placeholderColor; // TODO(OSS Candidate ISS#2710739)
-@property (nonatomic, assign) NSTextAlignment textAlignment;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
 #else // [TODO(macOS ISS#2323203)
@@ -49,6 +46,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id<RCTBackedTextInputDelegate> textInputDelegate;
 @property (nonatomic, readonly) CGSize contentSize;
 @property (nonatomic, strong, nullable) NSDictionary<NSAttributedStringKey,id> *defaultTextAttributes;
+@property (nonatomic, assign) BOOL contextMenuHidden;
+@property (nonatomic, assign, getter=isEditable) BOOL editable;
+@property (nonatomic, assign) BOOL caretHidden;
+@property (nonatomic, assign) BOOL enablesReturnKeyAutomatically;
+#if !TARGET_OS_OSX // [TODO(macOS v0.63)
+@property (nonatomic, assign) UITextFieldViewMode clearButtonMode;
+#endif // ]TODO(macOS v0.63)
+@property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 
 // This protocol disallows direct access to `selectedTextRange` property because
 // unwise usage of it can break the `delegate` behavior. So, we always have to

@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import com.facebook.fbreact.specs.NativeDatePickerAndroidSpec;
 import com.facebook.react.bridge.*;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
@@ -27,7 +28,7 @@ import com.facebook.react.module.annotations.ReactModule;
  * the user selects a date.
  */
 @ReactModule(name = DatePickerDialogModule.FRAGMENT_TAG)
-public class DatePickerDialogModule extends ReactContextBaseJavaModule {
+public class DatePickerDialogModule extends NativeDatePickerAndroidSpec {
 
   @VisibleForTesting public static final String FRAGMENT_TAG = "DatePickerAndroid";
 
@@ -45,7 +46,6 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
     super(reactContext);
   }
 
-  @Override
   public @NonNull String getName() {
     return DatePickerDialogModule.FRAGMENT_TAG;
   }
@@ -100,7 +100,7 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
    *     action is {@code dateSetAction} or {@code dismissedAction}, depending on what the user did.
    *     If the action is dismiss, year, month and date are undefined.
    */
-  @ReactMethod
+  @Override
   public void open(@Nullable final ReadableMap options, Promise promise) {
     Activity raw_activity = getCurrentActivity();
     if (raw_activity == null || !(raw_activity instanceof FragmentActivity)) {

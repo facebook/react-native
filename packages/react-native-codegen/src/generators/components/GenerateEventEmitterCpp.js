@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {generateStructName} = require('./CppHelpers.js');
+const {generateEventStructName} = require('./CppHelpers.js');
 
 import type {
   ComponentShape,
@@ -151,10 +151,7 @@ function generateEvent(componentName: string, event): string {
       .replace(/::_CLASSNAME_::/g, componentName)
       .replace(/::_EVENT_NAME_::/g, event.name)
       .replace(/::_DISPATCH_EVENT_NAME_::/g, dispatchEventName)
-      .replace(
-        '::_STRUCT_NAME_::',
-        generateStructName(componentName, [event.name]),
-      )
+      .replace('::_STRUCT_NAME_::', generateEventStructName([event.name]))
       .replace('::_IMPLEMENTATION_::', implementation);
   }
 

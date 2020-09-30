@@ -6,6 +6,7 @@
  */
 
 #include "ShadowNode.h"
+#include "ShadowNodeFragment.h"
 
 #include <better/small_vector.h>
 
@@ -17,8 +18,6 @@
 namespace facebook {
 namespace react {
 
-using AncestorList = ShadowNode::AncestorList;
-
 SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
   static const auto emptySharedShadowNodeSharedList =
       std::make_shared<SharedShadowNodeList>();
@@ -29,11 +28,26 @@ bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
   return first.family_ == second.family_;
 }
 
+static int computeStateRevision(
+    State::Shared const &state,
+    SharedShadowNodeSharedList const &children) {
+  int fragmentStateRevision = state ? state->getRevision() : 0;
+  int childrenSum = 0;
+
+  if (children) {
+    for (auto const &child : *children) {
+      childrenSum += child->getStateRevision();
+    }
+  }
+
+  return fragmentStateRevision + childrenSum;
+}
+
 #pragma mark - Constructors
 
 ShadowNode::ShadowNode(
     ShadowNodeFragment const &fragment,
-    ComponentDescriptor const &componentDescriptor,
+    ShadowNodeFamily::Shared const &family,
     ShadowNodeTraits traits)
     :
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -44,20 +58,21 @@ ShadowNode::ShadowNode(
           fragment.children ? fragment.children
                             : emptySharedShadowNodeSharedList()),
       state_(fragment.state),
-      family_(std::make_shared<ShadowNodeFamily const>(
-          fragment.tag,
-          fragment.surfaceId,
-          fragment.eventEmitter,
-          componentDescriptor)),
+      orderIndex_(0),
+      stateRevision_(computeStateRevision(state_, children_)),
+      family_(family),
       traits_(traits) {
   assert(props_);
   assert(children_);
 
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
 
-  for (const auto &child : *children_) {
+  for (auto const &child : *children_) {
     child->family_->setParent(family_);
   }
+
+  // The first node of the family gets its state committed automatically.
+  family_->setMostRecentState(state_);
 }
 
 ShadowNode::ShadowNode(
@@ -70,19 +85,13 @@ ShadowNode::ShadowNode(
       props_(fragment.props ? fragment.props : sourceShadowNode.props_),
       children_(
           fragment.children ? fragment.children : sourceShadowNode.children_),
-      localData_(
-          fragment.localData ? fragment.localData
-                             : sourceShadowNode.localData_),
       state_(
           fragment.state ? fragment.state
                          : sourceShadowNode.getMostRecentState()),
+      orderIndex_(sourceShadowNode.orderIndex_),
+      stateRevision_(computeStateRevision(state_, children_)),
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
-  // `tag`, `surfaceId`, and `eventEmitter` cannot be changed with cloning.
-  assert(fragment.tag == ShadowNodeFragment::tagPlaceholder());
-  assert(fragment.surfaceId == ShadowNodeFragment::surfaceIdPlaceholder());
-  assert(
-      fragment.eventEmitter == ShadowNodeFragment::eventEmitterPlaceholder());
 
   assert(props_);
   assert(children_);
@@ -143,19 +152,11 @@ const State::Shared &ShadowNode::getState() const {
 }
 
 State::Shared ShadowNode::getMostRecentState() const {
-  if (state_) {
-    auto committedState = state_->getMostRecentState();
-
-    // Committed state can be `null` in case if no one node was committed yet;
-    // in this case we return own `state`.
-    return committedState ? committedState : state_;
-  }
-
-  return ShadowNodeFragment::statePlaceholder();
+  return family_->getMostRecentState();
 }
 
-SharedLocalData ShadowNode::getLocalData() const {
-  return localData_;
+int ShadowNode::getOrderIndex() const {
+  return orderIndex_;
 }
 
 void ShadowNode::sealRecursive() const {
@@ -174,7 +175,7 @@ void ShadowNode::sealRecursive() const {
 
 #pragma mark - Mutating Methods
 
-void ShadowNode::appendChild(const SharedShadowNode &child) {
+void ShadowNode::appendChild(const ShadowNode::Shared &child) {
   ensureUnsealed();
 
   cloneChildrenIfShared();
@@ -183,6 +184,8 @@ void ShadowNode::appendChild(const SharedShadowNode &child) {
   nonConstChildren->push_back(child);
 
   child->family_->setParent(family_);
+
+  stateRevision_ += child->getStateRevision();
 }
 
 void ShadowNode::replaceChild(
@@ -190,6 +193,8 @@ void ShadowNode::replaceChild(
     ShadowNode::Shared const &newChild,
     int suggestedIndex) {
   ensureUnsealed();
+
+  stateRevision_ += newChild->getStateRevision() - oldChild.getStateRevision();
 
   cloneChildrenIfShared();
 
@@ -218,11 +223,6 @@ void ShadowNode::replaceChild(
   assert(false && "Child to replace was not found.");
 }
 
-void ShadowNode::setLocalData(const SharedLocalData &localData) {
-  ensureUnsealed();
-  localData_ = localData;
-}
-
 void ShadowNode::cloneChildrenIfShared() {
   if (!traits_.check(ShadowNodeTraits::Trait::ChildrenAreShared)) {
     return;
@@ -233,49 +233,53 @@ void ShadowNode::cloneChildrenIfShared() {
 }
 
 void ShadowNode::setMounted(bool mounted) const {
+  if (mounted) {
+    family_->setMostRecentState(getState());
+  }
+
   family_->eventEmitter_->setEnabled(mounted);
 }
 
-AncestorList ShadowNode::getAncestors(
-    ShadowNode const &ancestorShadowNode) const {
-  auto ancestors = AncestorList{};
-  auto families = better::small_vector<ShadowNodeFamily const *, 64>{};
-  auto ancestorFamily = ancestorShadowNode.family_.get();
-  auto descendantFamily = family_.get();
+ShadowNodeFamily const &ShadowNode::getFamily() const {
+  return *family_;
+}
 
-  auto family = descendantFamily;
-  while (family && family != ancestorFamily) {
-    families.push_back(family);
-    family = family->parent_.lock().get();
+int ShadowNode::getStateRevision() const {
+  return stateRevision_;
+}
+
+ShadowNode::Unshared ShadowNode::cloneTree(
+    ShadowNodeFamily const &shadowNodeFamily,
+    std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
+        callback) const {
+  auto ancestors = shadowNodeFamily.getAncestors(*this);
+
+  if (ancestors.size() == 0) {
+    return ShadowNode::Unshared{nullptr};
   }
 
-  if (family != ancestorFamily) {
-    ancestors.clear();
-    return ancestors;
+  auto &parent = ancestors.back();
+  auto &oldShadowNode = parent.first.get().getChildren().at(parent.second);
+
+  auto newShadowNode = callback(*oldShadowNode);
+
+  auto childNode = newShadowNode;
+
+  for (auto it = ancestors.rbegin(); it != ancestors.rend(); ++it) {
+    auto &parentNode = it->first.get();
+    auto childIndex = it->second;
+
+    auto children = parentNode.getChildren();
+    assert(ShadowNode::sameFamily(*children.at(childIndex), *childNode));
+    children[childIndex] = childNode;
+
+    childNode = parentNode.clone({
+        ShadowNodeFragment::propsPlaceholder(),
+        std::make_shared<SharedShadowNodeList>(children),
+    });
   }
 
-  auto parentNode = &ancestorShadowNode;
-  for (auto it = families.rbegin(); it != families.rend(); it++) {
-    auto childFamily = *it;
-    auto found = bool{false};
-    auto childIndex = int{0};
-    for (const auto &childNode : *parentNode->children_) {
-      if (childNode->family_.get() == childFamily) {
-        ancestors.push_back({*parentNode, childIndex});
-        parentNode = childNode.get();
-        found = true;
-        break;
-      }
-      childIndex++;
-    }
-
-    if (!found) {
-      ancestors.clear();
-      return ancestors;
-    }
-  }
-
-  return ancestors;
+  return std::const_pointer_cast<ShadowNode>(childNode);
 }
 
 #pragma mark - DebugStringConvertible
@@ -286,7 +290,9 @@ std::string ShadowNode::getDebugName() const {
 }
 
 std::string ShadowNode::getDebugValue() const {
-  return "r" + folly::to<std::string>(revision_) +
+  return "r" + folly::to<std::string>(revision_) + "/sr" +
+      folly::to<std::string>(stateRevision_) + "/s" +
+      folly::to<std::string>(state_ ? state_->getRevision() : 0) +
       (getSealed() ? "/sealed" : "");
 }
 

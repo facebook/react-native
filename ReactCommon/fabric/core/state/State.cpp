@@ -7,33 +7,33 @@
 
 #include "State.h"
 
-#include <glog/logging.h>
 #include <react/core/ShadowNode.h>
 #include <react/core/ShadowNodeFragment.h>
 #include <react/core/State.h>
-#include <react/core/StateTarget.h>
-#include <react/core/StateUpdate.h>
-
-#ifdef ANDROID
-#include <folly/dynamic.h>
-#endif
+#include <react/core/StateData.h>
 
 namespace facebook {
 namespace react {
 
-State::State(State const &state) : stateCoordinator_(state.stateCoordinator_){};
+State::State(StateData::Shared const &data, State const &state)
+    : family_(state.family_), data_(data), revision_(state.revision_ + 1){};
 
-State::State(StateCoordinator::Shared const &stateCoordinator)
-    : stateCoordinator_(stateCoordinator){};
-
-void State::commit(std::shared_ptr<ShadowNode const> const &shadowNode) const {
-  stateCoordinator_->setTarget(StateTarget{shadowNode});
-}
+State::State(
+    StateData::Shared const &data,
+    ShadowNodeFamily::Shared const &family)
+    : family_(family), data_(data), revision_{State::initialRevisionValue} {};
 
 State::Shared State::getMostRecentState() const {
-  auto target = stateCoordinator_->getTarget();
-  return target ? target.getShadowNode().getState()
-                : ShadowNodeFragment::statePlaceholder();
+  auto family = family_.lock();
+  if (!family) {
+    return {};
+  }
+
+  return family->getMostRecentState();
+}
+
+size_t State::getRevision() const {
+  return revision_;
 }
 
 } // namespace react

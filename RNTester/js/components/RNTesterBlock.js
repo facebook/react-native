@@ -12,7 +12,7 @@
 
 const React = require('react');
 
-const {StyleSheet, Text, View} = require('react-native');
+const {PlatformColor, StyleSheet, Text, View} = require('react-native');
 import {Platform} from 'react-native'; // TODO(macOS ISS#2323203)
 import {RNTesterThemeContext} from './RNTesterTheme';
 
@@ -82,12 +82,12 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     ...Platform.select({
       macos: {
-        borderColor: {semantic: 'separatorColor'},
-        backgroundColor: {semantic: 'windowBackgroundColor'},
+        borderColor: PlatformColor('separatorColor'),
+        backgroundColor: PlatformColor('windowBackgroundColor'),
       },
       ios: {
-        borderColor: {semantic: 'separatorColor'},
-        backgroundColor: {semantic: 'tertiarySystemBackgroundColor'},
+        borderColor: PlatformColor('separatorColor'),
+        backgroundColor: PlatformColor('tertiarySystemBackgroundColor'),
       },
       default: {
         borderColor: '#d6d7da',
@@ -104,12 +104,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 2.5,
     ...Platform.select({
       macos: {
-        borderBottomColor: {semantic: 'separatorColor'},
-        backgroundColor: {semantic: 'controlBackgroundColor'},
+        borderBottomColor: PlatformColor('separatorColor'),
+        backgroundColor: PlatformColor('controlBackgroundColor'),
       },
       ios: {
-        borderBottomColor: {semantic: 'separatorColor'},
-        backgroundColor: {semantic: 'tertiarySystemBackgroundColor'},
+        borderBottomColor: PlatformColor('separatorColor'),
+        backgroundColor: PlatformColor('tertiarySystemBackgroundColor'),
       },
       default: {
         borderBottomColor: '#d6d7da',
@@ -122,10 +122,10 @@ const styles = StyleSheet.create({
   titleText: {
     ...Platform.select({
       macos: {
-        color: {semantic: 'labelColor'},
+        color: PlatformColor('labelColor'),
       },
       ios: {
-        color: {semantic: 'labelColor'},
+        color: PlatformColor('labelColor'),
       },
       default: undefined,
     }),
@@ -136,10 +136,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     ...Platform.select({
       macos: {
-        color: {semantic: 'secondaryLabelColor'},
+        color: PlatformColor('secondaryLabelColor'),
       },
       ios: {
-        color: {semantic: 'secondaryLabelColor'},
+        color: PlatformColor('secondaryLabelColor'),
       },
       default: undefined,
     }),

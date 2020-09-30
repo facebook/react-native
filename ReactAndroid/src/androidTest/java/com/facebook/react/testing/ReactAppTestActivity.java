@@ -75,6 +75,8 @@ public class ReactAppTestActivity extends FragmentActivity
     rootView.addView(mScreenshotingFrameLayout);
 
     mReactRootView = new ReactRootView(this);
+
+    // This is useful for standalone instrumentation tests, but not SSTs
     Intent intent = getIntent();
     if (intent != null && intent.getBooleanExtra(EXTRA_IS_FABRIC_TEST, false)) {
       mReactRootView.setIsFabric(true);
@@ -165,6 +167,11 @@ public class ReactAppTestActivity extends FragmentActivity
   }
 
   public void renderComponent(final String appKey, final @Nullable Bundle initialProps) {
+    // This is used by SSTs
+    boolean fabricEnabled =
+        (initialProps != null ? initialProps.getBoolean(EXTRA_IS_FABRIC_TEST, false) : false);
+    mReactRootView.setIsFabric(fabricEnabled);
+
     final CountDownLatch currentLayoutEvent = mLayoutEvent = new CountDownLatch(1);
     runOnUiThread(
         new Runnable() {

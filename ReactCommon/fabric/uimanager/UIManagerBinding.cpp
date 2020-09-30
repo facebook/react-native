@@ -251,6 +251,36 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "findNodeAtPoint") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          auto node = shadowNodeFromValue(runtime, arguments[0]);
+          auto locationX = (Float)arguments[1].getNumber();
+          auto locationY = (Float)arguments[2].getNumber();
+          auto onSuccessFunction =
+              arguments[3].getObject(runtime).getFunction(runtime);
+          auto targetNode =
+              uiManager->findNodeAtPoint(node, Point{locationX, locationY});
+          auto &eventTarget = targetNode->getEventEmitter()->eventTarget_;
+
+          EventEmitter::DispatchMutex().lock();
+          eventTarget->retain(runtime);
+          auto instanceHandle = eventTarget->getInstanceHandle(runtime);
+          eventTarget->release(runtime);
+          EventEmitter::DispatchMutex().unlock();
+
+          onSuccessFunction.call(runtime, std::move(instanceHandle));
+          return jsi::Value::undefined();
+        });
+  }
+
   if (methodName == "clearJSResponder") {
     return jsi::Function::createFromHostFunction(
         runtime,
@@ -423,7 +453,8 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
-              shadowNodeFromValue(runtime, arguments[1]).get());
+              shadowNodeFromValue(runtime, arguments[1]).get(),
+              {/* .includeTransform = */ true});
           auto frame = layoutMetrics.frame;
           auto result = jsi::Object(runtime);
           result.setProperty(runtime, "left", frame.origin.x);
@@ -466,7 +497,8 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
-              shadowNodeFromValue(runtime, arguments[1]).get());
+              shadowNodeFromValue(runtime, arguments[1]).get(),
+              {/* .includeTransform = */ false});
 
           if (layoutMetrics == EmptyLayoutMetrics) {
             auto onFailFunction =
@@ -500,7 +532,9 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNodeFromValue(runtime, arguments[0]), nullptr);
+              *shadowNodeFromValue(runtime, arguments[0]),
+              nullptr,
+              {/* .includeTransform = */ true});
           auto frame = layoutMetrics.frame;
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
@@ -509,10 +543,10 @@ jsi::Value UIManagerBinding::get(
               runtime,
               {0,
                0,
-               jsi::Value{runtime, (double)frame.origin.x},
-               jsi::Value{runtime, (double)frame.origin.y},
                jsi::Value{runtime, (double)frame.size.width},
-               jsi::Value{runtime, (double)frame.size.height}});
+               jsi::Value{runtime, (double)frame.size.height},
+               jsi::Value{runtime, (double)frame.origin.x},
+               jsi::Value{runtime, (double)frame.origin.y}});
           return jsi::Value::undefined();
         });
   }
@@ -528,7 +562,9 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNodeFromValue(runtime, arguments[0]), nullptr);
+              *shadowNodeFromValue(runtime, arguments[0]),
+              nullptr,
+              {/* .includeTransform = */ true});
 
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
@@ -559,27 +595,6 @@ jsi::Value UIManagerBinding::get(
               RawProps(runtime, arguments[1]));
 
           return jsi::Value::undefined();
-        });
-  }
-
-  if (methodName == "findShadowNodeByTag_DEPRECATED") {
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        1,
-        [uiManager](
-            jsi::Runtime &runtime,
-            jsi::Value const &thisValue,
-            jsi::Value const *arguments,
-            size_t count) -> jsi::Value {
-          auto shadowNode = uiManager->findShadowNodeByTag_DEPRECATED(
-              tagFromValue(runtime, arguments[0]));
-
-          if (!shadowNode) {
-            return jsi::Value::null();
-          }
-
-          return valueFromShadowNode(runtime, shadowNode);
         });
   }
 

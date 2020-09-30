@@ -1,6 +1,6 @@
+require_relative '../scripts/react_native_pods'
 source 'https://cdn.cocoapods.org/'
-
-require_relative '../scripts/autolink-ios'
+platform :ios, '10.0'
 
 # TODO(macOS GH#214)
 # Otherwise duplicate UUIDs are being generated between the iOS and macOS targets.
@@ -37,16 +37,16 @@ def flipper_pods()
   pod 'FlipperKit/FlipperKitReactPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
 
   if ENV['USE_FRAMEWORKS'] == '1'
-    $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly',
+    static_frameworks = ['FlipperKit', 'Flipper', 'Flipper-Folly',
         'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
         'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket',
         'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
-
+  
     pre_install do |installer|
       Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
       installer.pod_targets.each do |pod|
-          if $static_framework.include?(pod.name)
-            def pod.build_type;
+          if static_frameworks.include?(pod.name)
+            def pod.build_type
               Pod::Target::BuildType.static_library
             end
           end
@@ -74,53 +74,54 @@ def flipper_post_install(installer)
 end
 
 target 'RNTester' do
-  platform :ios, '9.0'
+  platform :ios, '10.0'
   pods()
   flipper_pods()
+  # use_flipper!
 end
 
 target 'RNTester-macOS' do
-  platform :osx, '10.13'
+  platform :osx, '10.14'
   pods(:hermes_enabled => true)
 end
 
 target 'RNTesterUnitTests' do
-  platform :ios, '9.0'
+  platform :ios, '10.0'
   pods()
-  pod 'React-RCTTest', :path => "RCTTest"
+  pod 'React-RCTTest', :path => "./RCTTest"
 end
 
 target 'RNTester-macOSUnitTests' do
-  platform :osx, '10.13'
+  platform :osx, '10.14'
   pods()
-  pod 'React-RCTTest', :path => "RCTTest"
+  pod 'React-RCTTest', :path => "./RCTTest"
 end
 
 target 'RNTesterIntegrationTests' do
-  platform :ios, '9.0'
+  platform :ios, '10.0'
   pods()
-  pod 'React-RCTTest', :path => "RCTTest"
+  pod 'React-RCTTest', :path => "./RCTTest"
 end
 
 target 'RNTester-macOSIntegrationTests' do
-  platform :osx, '10.13'
+  platform :osx, '10.14'
   pods()
-  pod 'React-RCTTest', :path => "RCTTest"
+  pod 'React-RCTTest', :path => "./RCTTest"
 end
 
 # [TODO(macOS ISS#2323203): these are special targets used by the internal Microsoft build pipeline
 target 'iosDeviceBuild' do
-  platform :ios, '9.0'
+  platform :ios, '10.0'
   pods()
 end
 
 target 'iosSimulatorBuild' do
-  platform :ios, '9.0'
+  platform :ios, '10.0'
   pods()
 end
 
 target 'macOSBuild' do
-  platform :osx, '10.13'
+  platform :osx, '10.14'
   pods()
 end
 # ]TODO(macOS ISS#2323203)

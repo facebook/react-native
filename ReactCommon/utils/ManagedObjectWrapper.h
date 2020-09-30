@@ -35,11 +35,13 @@ namespace react {
  * represented as multiple bumps of C++ counter, so we can have multiple
  * counters for the same object that form some kind of counters tree.
  */
-inline std::shared_ptr<void> wrapManagedObject(id object) {
+inline std::shared_ptr<void> wrapManagedObject(id object)
+{
   return std::shared_ptr<void>((__bridge_retained void *)object, CFRelease);
 }
 
-inline id unwrapManagedObject(std::shared_ptr<void> const &object) {
+inline id unwrapManagedObject(std::shared_ptr<void> const &object)
+{
   return (__bridge id)object.get();
 }
 

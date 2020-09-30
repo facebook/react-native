@@ -30,6 +30,12 @@ struct Point {
     return *this;
   }
 
+  Point &operator-=(const Point &point) {
+    x -= point.x;
+    y -= point.y;
+    return *this;
+  }
+
   Point &operator*=(const Point &point) {
     x *= point.x;
     y *= point.y;
@@ -40,6 +46,10 @@ struct Point {
     return lhs += rhs;
   }
 
+  friend Point operator-(Point lhs, const Point &rhs) {
+    return lhs -= rhs;
+  }
+
   bool operator==(const Point &rhs) const {
     return std::tie(this->x, this->y) == std::tie(rhs.x, rhs.y);
   }
@@ -47,6 +57,13 @@ struct Point {
   bool operator!=(const Point &rhs) const {
     return !(*this == rhs);
   }
+};
+
+struct Vector {
+  Float x{0};
+  Float y{0};
+  Float z{0};
+  Float w{0};
 };
 
 /*
@@ -105,6 +122,15 @@ struct Rect {
   Float getMinY() const {
     return size.height >= 0 ? origin.y : origin.y + size.height;
   }
+  Float getMidX() const {
+    return origin.x + size.width / 2;
+  }
+  Float getMidY() const {
+    return origin.y + size.height / 2;
+  }
+  Point getCenter() const {
+    return {getMidX(), getMidY()};
+  }
 
   void unionInPlace(const Rect &rect) {
     auto x1 = std::min(getMinX(), rect.getMinX());
@@ -113,6 +139,38 @@ struct Rect {
     auto y2 = std::max(getMaxY(), rect.getMaxY());
     origin = {x1, y1};
     size = {x2 - x1, y2 - y1};
+  }
+
+  bool containsPoint(Point point) {
+    return point.x >= origin.x && point.y >= origin.y &&
+        point.x <= (origin.x + size.width) &&
+        point.y <= (origin.y + size.height);
+  }
+
+  static Rect
+  boundingRect(Point const &a, Point const &b, Point const &c, Point const &d) {
+    auto leftTopPoint = a;
+    auto rightBottomPoint = a;
+
+    leftTopPoint.x = std::min(leftTopPoint.x, b.x);
+    leftTopPoint.x = std::min(leftTopPoint.x, c.x);
+    leftTopPoint.x = std::min(leftTopPoint.x, d.x);
+
+    leftTopPoint.y = std::min(leftTopPoint.y, b.y);
+    leftTopPoint.y = std::min(leftTopPoint.y, c.y);
+    leftTopPoint.y = std::min(leftTopPoint.y, d.y);
+
+    rightBottomPoint.x = std::max(rightBottomPoint.x, b.x);
+    rightBottomPoint.x = std::max(rightBottomPoint.x, c.x);
+    rightBottomPoint.x = std::max(rightBottomPoint.x, d.x);
+
+    rightBottomPoint.y = std::max(rightBottomPoint.y, b.y);
+    rightBottomPoint.y = std::max(rightBottomPoint.y, c.y);
+    rightBottomPoint.y = std::max(rightBottomPoint.y, d.y);
+
+    return {leftTopPoint,
+            {rightBottomPoint.x - leftTopPoint.x,
+             rightBottomPoint.y - leftTopPoint.y}};
   }
 };
 

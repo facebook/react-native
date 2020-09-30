@@ -8,9 +8,11 @@
 #include "ImageManager.h"
 
 #import <React/RCTImageLoaderWithAttributionProtocol.h>
+#import <React/RCTUtils.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "RCTImageManager.h"
+#import "RCTSyncImageManager.h"
 
 namespace facebook {
 namespace react {
@@ -20,7 +22,11 @@ ImageManager::ImageManager(ContextContainer::Shared const &contextContainer)
   id<RCTImageLoaderWithAttributionProtocol> imageLoader =
       (id<RCTImageLoaderWithAttributionProtocol>)unwrapManagedObject(
           contextContainer->at<std::shared_ptr<void>>("RCTImageLoader"));
-  self_ = (__bridge_retained void *)[[RCTImageManager alloc] initWithImageLoader:imageLoader];
+  if (RCTRunningInTestEnvironment()) {
+    self_ = (__bridge_retained void *)[[RCTSyncImageManager alloc] initWithImageLoader:imageLoader];
+  } else {
+    self_ = (__bridge_retained void *)[[RCTImageManager alloc] initWithImageLoader:imageLoader];
+  }
 }
 
 ImageManager::~ImageManager()

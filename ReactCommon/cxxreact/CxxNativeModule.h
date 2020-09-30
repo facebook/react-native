@@ -21,26 +21,31 @@ class Instance;
 class MessageQueueThread;
 
 std::function<void(folly::dynamic)> makeCallback(
-  std::weak_ptr<Instance> instance, const folly::dynamic& callbackId);
+    std::weak_ptr<Instance> instance,
+    const folly::dynamic &callbackId);
 
 class RN_EXPORT CxxNativeModule : public NativeModule {
-public:
-  CxxNativeModule(std::weak_ptr<Instance> instance,
-                  std::string name,
-                  xplat::module::CxxModule::Provider provider,
-                  std::shared_ptr<MessageQueueThread> messageQueueThread)
-  : instance_(instance)
-  , name_(std::move(name))
-  , provider_(provider)
-  , messageQueueThread_(messageQueueThread) {}
+ public:
+  CxxNativeModule(
+      std::weak_ptr<Instance> instance,
+      std::string name,
+      xplat::module::CxxModule::Provider provider,
+      std::shared_ptr<MessageQueueThread> messageQueueThread)
+      : instance_(instance),
+        name_(std::move(name)),
+        provider_(provider),
+        messageQueueThread_(messageQueueThread) {}
 
   std::string getName() override;
   std::vector<MethodDescriptor> getMethods() override;
   folly::dynamic getConstants() override;
-  void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) override;
-  MethodCallResult callSerializableNativeHook(unsigned int hookId, folly::dynamic&& args) override;
+  void invoke(unsigned int reactMethodId, folly::dynamic &&params, int callId)
+      override;
+  MethodCallResult callSerializableNativeHook(
+      unsigned int hookId,
+      folly::dynamic &&args) override;
 
-private:
+ private:
   void lazyInit();
 
   std::weak_ptr<Instance> instance_;
@@ -51,5 +56,5 @@ private:
   std::vector<xplat::module::CxxModule::Method> methods_;
 };
 
-}
-}
+} // namespace react
+} // namespace facebook

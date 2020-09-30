@@ -17,8 +17,9 @@
 
 using namespace facebook::react;
 
-static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
-  switch(idiom) {
+static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom)
+{
+  switch (idiom) {
     case UIUserInterfaceIdiomPhone:
       return @"phone";
     case UIUserInterfaceIdiomPad:
@@ -60,27 +61,31 @@ RCT_EXPORT_MODULE(PlatformConstants)
   UIDevice *device = [UIDevice currentDevice];
   auto versions = RCTGetReactNativeVersion();
   return typedConstants<JS::NativePlatformConstantsIOS::Constants>({
-    .forceTouchAvailable = RCTForceTouchAvailable() ? true : false,
-    .osVersion = [device systemVersion],
-    .systemName = [device systemName],
-    .interfaceIdiom = interfaceIdiom([device userInterfaceIdiom]),
-    .isTesting = RCTRunningInTestEnvironment() ? true : false,
-    .reactNativeVersion = JS::NativePlatformConstantsIOS::ConstantsReactNativeVersion::Builder({
-      .minor = [versions[@"minor"] doubleValue],
-      .major = [versions[@"major"] doubleValue],
-      .patch = [versions[@"patch"] doubleValue],
-      .prerelease = [versions[@"prerelease"] isKindOfClass: [NSNull class]] ? folly::Optional<double>{} : [versions[@"prerelease"] doubleValue]
-    }),
+      .forceTouchAvailable = RCTForceTouchAvailable() ? true : false,
+      .osVersion = [device systemVersion],
+      .systemName = [device systemName],
+      .interfaceIdiom = interfaceIdiom([device userInterfaceIdiom]),
+      .isTesting = RCTRunningInTestEnvironment() ? true : false,
+      .reactNativeVersion = JS::NativePlatformConstantsIOS::ConstantsReactNativeVersion::Builder(
+          {.minor = [versions[@"minor"] doubleValue],
+           .major = [versions[@"major"] doubleValue],
+           .patch = [versions[@"patch"] doubleValue],
+           .prerelease = [versions[@"prerelease"] isKindOfClass:[NSNull class]]
+               ? folly::Optional<double>{}
+               : [versions[@"prerelease"] doubleValue]}),
   });
 }
 
 - (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                                              nativeInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
+                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<NativePlatformConstantsIOSSpecJSI>(self, jsInvoker);
+  return std::make_shared<NativePlatformConstantsIOSSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end
 
-Class RCTPlatformCls(void) {
+Class RCTPlatformCls(void)
+{
   return RCTPlatform.class;
 }
