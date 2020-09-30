@@ -12,6 +12,7 @@
 
 import typeof AccessibilityInfo from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
 import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/ActivityIndicator';
+import typeof AppContainer from './Libraries/ReactNative/AppContainer';
 import typeof Button from './Libraries/Components/Button';
 import typeof DatePickerIOS from './Libraries/Components/DatePicker/DatePickerIOS';
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
@@ -114,6 +115,9 @@ module.exports = {
   },
   get ActivityIndicator(): ActivityIndicator {
     return require('./Libraries/Components/ActivityIndicator/ActivityIndicator');
+  },
+  get AppContainer(): AppContainer {
+    return require('./Libraries/ReactNative/AppContainer');
   },
   get Button(): Button {
     return require('./Libraries/Components/Button');
