@@ -18,24 +18,21 @@
 
 @implementation RCTConvert (UIAlertViewStyle)
 
-RCT_ENUM_CONVERTER(
-    RCTAlertViewStyle,
-    (@{
-      @"default" : @(RCTAlertViewStyleDefault),
-      @"secure-text" : @(RCTAlertViewStyleSecureTextInput),
-      @"plain-text" : @(RCTAlertViewStylePlainTextInput),
-      @"login-password" : @(RCTAlertViewStyleLoginAndPasswordInput),
-    }),
-    RCTAlertViewStyleDefault,
-    integerValue)
+RCT_ENUM_CONVERTER(RCTAlertViewStyle, (@{
+  @"default": @(RCTAlertViewStyleDefault),
+  @"secure-text": @(RCTAlertViewStyleSecureTextInput),
+  @"plain-text": @(RCTAlertViewStylePlainTextInput),
+  @"login-password": @(RCTAlertViewStyleLoginAndPasswordInput),
+}), RCTAlertViewStyleDefault, integerValue)
 
 @end
 
-@interface RCTAlertManager () <NativeAlertManagerSpec>
+@interface RCTAlertManager() <NativeAlertManagerSpec>
 
 @end
 
-@implementation RCTAlertManager {
+@implementation RCTAlertManager
+{
   NSHashTable *_alertControllers;
 }
 
@@ -77,15 +74,13 @@ RCT_EXPORT_MODULE()
  * The key from the `buttons` dictionary is passed back in the callback on click.
  * Buttons are displayed in the order they are specified.
  */
-RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback : (RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(alertWithArgs:(JS::NativeAlertManager::Args &)args
+                  callback:(RCTResponseSenderBlock)callback)
 {
   NSString *title = [RCTConvert NSString:args.title()];
   NSString *message = [RCTConvert NSString:args.message()];
   RCTAlertViewStyle type = [RCTConvert RCTAlertViewStyle:args.type()];
-  NSArray<NSDictionary *> *buttons =
-      [RCTConvert NSDictionaryArray:RCTConvertOptionalVecToArray(args.buttons(), ^id(id<NSObject> element) {
-                    return element;
-                  })];
+  NSArray<NSDictionary *> *buttons = [RCTConvert NSDictionaryArray:RCTConvertOptionalVecToArray(args.buttons(), ^id(id<NSObject> element) { return element; })];
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   NSString *defaultValue = [RCTConvert NSString:args.defaultValue()];
   NSString *cancelButtonKey = [RCTConvert NSString:args.cancelButtonKey()];
@@ -104,12 +99,12 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (buttons.count == 0) {
     if (type == RCTAlertViewStyleDefault) {
-      buttons = @[ @{@"0" : RCTUIKitLocalizedString(@"OK")} ];
+      buttons = @[@{@"0": RCTUIKitLocalizedString(@"OK")}];
       cancelButtonKey = @"0";
     } else {
       buttons = @[
-        @{@"0" : RCTUIKitLocalizedString(@"OK")},
-        @{@"1" : RCTUIKitLocalizedString(@"Cancel")},
+        @{@"0": RCTUIKitLocalizedString(@"OK")},
+        @{@"1": RCTUIKitLocalizedString(@"Cancel")},
       ];
       cancelButtonKey = @"1";
     }
@@ -118,26 +113,22 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
   UIViewController *presentingController = RCTPresentedViewController();
   if (presentingController == nil) {
     RCTLogError(@"Tried to display alert view but there is no application window. args: %@", @{
-      @"title" : args.title() ?: [NSNull null],
-      @"message" : args.message() ?: [NSNull null],
-      @"buttons" : RCTConvertOptionalVecToArray(
-          args.buttons(),
-          ^id(id<NSObject> element) {
-            return element;
-          })
-          ?: [NSNull null],
-      @"type" : args.type() ?: [NSNull null],
-      @"defaultValue" : args.defaultValue() ?: [NSNull null],
-      @"cancelButtonKey" : args.cancelButtonKey() ?: [NSNull null],
-      @"destructiveButtonKey" : args.destructiveButtonKey() ?: [NSNull null],
-      @"keyboardType" : args.keyboardType() ?: [NSNull null],
+      @"title": args.title() ?: [NSNull null],
+      @"message": args.message() ?: [NSNull null],
+      @"buttons": RCTConvertOptionalVecToArray(args.buttons(), ^id(id<NSObject> element) { return element; }) ?: [NSNull null],
+      @"type": args.type() ?: [NSNull null],
+      @"defaultValue": args.defaultValue() ?: [NSNull null],
+      @"cancelButtonKey": args.cancelButtonKey() ?: [NSNull null],
+      @"destructiveButtonKey": args.destructiveButtonKey() ?: [NSNull null],
+      @"keyboardType": args.keyboardType() ?: [NSNull null],
     });
     return;
   }
 
-  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
-                                                                           message:nil
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertController *alertController = [UIAlertController
+                                        alertControllerWithTitle:title
+                                        message:nil
+                                        preferredStyle:UIAlertControllerStyleAlert];
   switch (type) {
     case RCTAlertViewStylePlainTextInput: {
       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
@@ -187,29 +178,27 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
       buttonStyle = UIAlertActionStyleDestructive;
     }
     __weak UIAlertController *weakAlertController = alertController;
-    [alertController
-        addAction:[UIAlertAction
-                      actionWithTitle:buttonTitle
-                                style:buttonStyle
-                              handler:^(__unused UIAlertAction *action) {
-                                switch (type) {
-                                  case RCTAlertViewStylePlainTextInput:
-                                  case RCTAlertViewStyleSecureTextInput:
-                                    callback(@[ buttonKey, [weakAlertController.textFields.firstObject text] ]);
-                                    break;
-                                  case RCTAlertViewStyleLoginAndPasswordInput: {
-                                    NSDictionary<NSString *, NSString *> *loginCredentials = @{
-                                      @"login" : [weakAlertController.textFields.firstObject text],
-                                      @"password" : [weakAlertController.textFields.lastObject text]
-                                    };
-                                    callback(@[ buttonKey, loginCredentials ]);
-                                    break;
-                                  }
-                                  case RCTAlertViewStyleDefault:
-                                    callback(@[ buttonKey ]);
-                                    break;
-                                }
-                              }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:buttonTitle
+                                                        style:buttonStyle
+                                                      handler:^(__unused UIAlertAction *action) {
+      switch (type) {
+        case RCTAlertViewStylePlainTextInput:
+        case RCTAlertViewStyleSecureTextInput:
+          callback(@[buttonKey, [weakAlertController.textFields.firstObject text]]);
+          break;
+        case RCTAlertViewStyleLoginAndPasswordInput: {
+          NSDictionary<NSString *, NSString *> *loginCredentials = @{
+            @"login": [weakAlertController.textFields.firstObject text],
+            @"password": [weakAlertController.textFields.lastObject text]
+          };
+          callback(@[buttonKey, loginCredentials]);
+          break;
+        }
+        case RCTAlertViewStyleDefault:
+          callback(@[buttonKey]);
+          break;
+      }
+    }]];
   }
 
   if (!_alertControllers) {
@@ -317,17 +306,13 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
 #endif // ]TODO(macOS ISS#2323203)
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  return std::make_shared<facebook::react::NativeAlertManagerSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeAlertManagerSpecJSI>(self, jsInvoker);
 }
 
 @end
 
-Class RCTAlertManagerCls(void)
-{
+Class RCTAlertManagerCls(void) {
   return RCTAlertManager.class;
 }

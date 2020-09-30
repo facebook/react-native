@@ -16,8 +16,6 @@
 #import <React/RCTRefreshableProtocol.h>
 #import <React/RCTScrollViewComponentView.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
-
 using namespace facebook::react;
 
 @interface RCTPullToRefreshViewComponentView () <RCTPullToRefreshViewViewProtocol, RCTRefreshableProtocol>
@@ -132,7 +130,7 @@ using namespace facebook::react;
     return;
   }
 
-  if (@available(macOS 13.0, *)) {
+  if (@available(iOS 10.0, macOS 13.0, *)) {
     _scrollViewComponentView.scrollView.refreshControl = _refreshControl;
   }
 }
@@ -146,7 +144,7 @@ using namespace facebook::react;
   // iOS requires to end refreshing before unmounting.
   [_refreshControl endRefreshing];
 
-  if (@available(macOS 13.0, *)) {
+  if (@available(iOS 10.0, macOS 13.0, *)) {
     _scrollViewComponentView.scrollView.refreshControl = nil;
   }
   _scrollViewComponentView = nil;
@@ -183,8 +181,3 @@ using namespace facebook::react;
 }
 
 @end
-
-Class<RCTComponentViewProtocol> RCTPullToRefreshViewCls(void)
-{
-  return RCTPullToRefreshViewComponentView.class;
-}

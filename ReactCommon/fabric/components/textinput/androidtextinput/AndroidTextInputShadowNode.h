@@ -55,11 +55,6 @@ class AndroidTextInputShadowNode : public ConcreteViewShadowNode<
  private:
   ContextContainer *contextContainer_{};
 
-  /**
-   * Get the most up-to-date attributed string for measurement and State.
-   */
-  AttributedString getMostRecentAttributedString() const;
-
   /*
    * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.

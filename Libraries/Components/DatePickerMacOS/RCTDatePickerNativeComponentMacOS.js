@@ -16,7 +16,7 @@ const requireNativeComponent = require('../../ReactNative/requireNativeComponent
 
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -34,7 +34,7 @@ type NativeProps = $ReadOnly<{|
   pickerStyle?: ?['textfield-stepper', 'clock-calendar', 'textfield'],
   timeZoneOffsetInMinutes?: ?number,
 |}>;
-type RCTDatePickerNativeType = HostComponent<NativeProps>;
+type RCTDatePickerNativeType = Class<NativeComponent<NativeProps>>;
 
 module.exports = ((requireNativeComponent(
   'RCTDatePicker',

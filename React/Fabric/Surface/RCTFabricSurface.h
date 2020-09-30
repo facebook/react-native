@@ -7,7 +7,6 @@
 
 #import <React/RCTPrimitives.h>
 #import <React/RCTSurfaceStage.h>
-#import <react/mounting/MountingCoordinator.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -122,9 +121,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Synchronously blocks the current thread up to given `timeout` until
- * the Surface is rendered.
+ * the Surface reaches `stage`.
+ * NOT SUPPORTED IN FABRIC YET.
  */
-- (BOOL)synchronouslyWaitFor:(NSTimeInterval)timeout;
+- (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout;
 
 @end
 

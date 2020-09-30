@@ -9,12 +9,13 @@
 
 #import <UIKit/UIScrollView.h>
 
-#import "RCTAutoInsetsProtocol.h"
 #import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
+#import "RCTAutoInsetsProtocol.h"
 
-@implementation RCTWrapperViewController {
+@implementation RCTWrapperViewController
+{
   UIView *_wrapperView;
   UIView *_contentView;
   RCTEventDispatcher *_eventDispatcher;
@@ -36,8 +37,8 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithNibName : (NSString *)nn bundle : (NSBundle *)nb)
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithNibName:(NSString *)nn bundle:(NSBundle *)nb)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)viewWillLayoutSubviews
 {
@@ -50,7 +51,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 static BOOL RCTFindScrollViewAndRefreshContentInsetInView(UIView *view)
 {
   if ([view conformsToProtocol:@protocol(RCTAutoInsetsProtocol)]) {
-    [(id<RCTAutoInsetsProtocol>)view refreshContentInset];
+    [(id <RCTAutoInsetsProtocol>) view refreshContentInset];
     return YES;
   }
   for (UIView *subview in view.subviews) {

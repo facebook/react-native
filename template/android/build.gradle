@@ -2,17 +2,18 @@
 
 buildscript {
     ext {
-        buildToolsVersion = "29.0.2"
+        buildToolsVersion = "28.0.3"
         minSdkVersion = 16
-        compileSdkVersion = 29
-        targetSdkVersion = 29
+        compileSdkVersion = 28
+        targetSdkVersion = 28
     }
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.5.3")
+        classpath("com.android.tools.build:gradle:3.5.2")
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

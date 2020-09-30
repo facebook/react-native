@@ -11,7 +11,7 @@
 
 #include <cxxreact/MessageQueueThread.h>
 #include <cxxreact/SystraceSection.h>
-#include <hermes/hermes.h>
+#include <hermes/hermes_tracing.h>
 #include <jsi/decorator.h>
 
 #ifdef HERMES_ENABLE_DEBUGGER
@@ -50,21 +50,18 @@ class HermesExecutorRuntimeAdapter
 
   virtual ~HermesExecutorRuntimeAdapter() = default;
 
-  jsi::Runtime &getRuntime() override {
-    return *runtime_;
-  }
-
-  debugger::Debugger &getDebugger() override {
-    return hermesRuntime_.getDebugger();
+  HermesRuntime &getRuntime() override {
+    return hermesRuntime_;
   }
 
   void tickleJs() override {
     // The queue will ensure that runtime_ is still valid when this
     // gets invoked.
-    thread_->runOnQueue([&runtime = runtime_]() {
-      auto func =
-          runtime->global().getPropertyAsFunction(*runtime, "__tickleJs");
-      func.call(*runtime);
+    // clang-format off
+    thread_->runOnQueue([&runtime = hermesRuntime_]() {
+      // clang-format on
+      auto func = runtime.global().getPropertyAsFunction(runtime, "__tickleJs");
+      func.call(runtime);
     });
   }
 
@@ -148,9 +145,9 @@ struct ReentrancyCheck {
 // Runtime.
 class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
  public:
-  // The first argument may be another decorater which itself
+  // The first argument may be a tracing runtime which itself
   // decorates the real HermesRuntime, depending on the build config.
-  // The second argument is the real HermesRuntime as well to
+  // The second argument is the the real HermesRuntime as well to
   // manage the debugger registration.
   DecoratedRuntime(
       std::unique_ptr<Runtime> runtime,
@@ -176,8 +173,9 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
   }
 
  private:
-  // runtime_ is a potentially decorated Runtime.
-  // hermesRuntime is a reference to a HermesRuntime managed by runtime_.
+  // runtime_ is a TracingRuntime, but we don't need to worry about
+  // the details.  hermesRuntime is a reference to the HermesRuntime
+  // managed by the TracingRuntime.
   //
   // HermesExecutorRuntimeAdapter requirements are kept, because the
   // dtor will disable debugging on the HermesRuntime before the
@@ -195,18 +193,20 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
     std::shared_ptr<MessageQueueThread> jsQueue) {
   std::unique_ptr<HermesRuntime> hermesRuntime =
       makeHermesRuntimeSystraced(runtimeConfig_);
-  HermesRuntime &hermesRuntimeRef = *hermesRuntime;
+  HermesRuntime& hermesRuntimeRef = *hermesRuntime;
   auto decoratedRuntime = std::make_shared<DecoratedRuntime>(
-      std::move(hermesRuntime), hermesRuntimeRef, jsQueue);
+      makeTracingHermesRuntime(std::move(hermesRuntime), runtimeConfig_),
+      hermesRuntimeRef,
+      jsQueue);
 
   // So what do we have now?
-  // DecoratedRuntime -> HermesRuntime
+  // DecoratedRuntime -> TracingRuntime -> HermesRuntime
   //
   // DecoratedRuntime is held by JSIExecutor.  When it gets used, it
   // will check that it's on the right thread, do any necessary trace
   // logging, then call the real HermesRuntime.  When it is destroyed,
   // it will shut down the debugger before the HermesRuntime is.  In
-  // the normal case where debugging is not compiled in,
+  // the normal case where tracing and debugging are not compiled in,
   // all that's left is the thread checking.
 
   // Add js engine information to Error.prototype so in error reporting we

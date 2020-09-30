@@ -10,10 +10,9 @@
 #include <memory>
 
 #include <folly/dynamic.h>
-#include <react/components/view/ConcreteViewShadowNode.h>
-#include <react/components/view/ViewEventEmitter.h>
-#include <react/components/view/ViewProps.h>
 #include <react/core/ConcreteComponentDescriptor.h>
+#include <react/core/ConcreteShadowNode.h>
+#include <react/core/LocalData.h>
 #include <react/core/RawProps.h>
 #include <react/core/ShadowNode.h>
 
@@ -24,40 +23,33 @@ using namespace facebook::react;
  * ComponentDescriptor. To be used for testing purpose.
  */
 
-class TestState {
+class TestLocalData : public LocalData {
  public:
-  int number;
+  void setNumber(const int &number) {
+    number_ = number;
+  }
+
+  int getNumber() const {
+    return number_;
+  }
+
+ private:
+  int number_{0};
 };
 
 static const char TestComponentName[] = "Test";
 
-class TestProps : public ViewProps {
+class TestProps : public Props {
  public:
-  using ViewProps::ViewProps;
-
-  TestProps(const TestProps &sourceProps, const RawProps &rawProps)
-      : ViewProps(sourceProps, rawProps) {}
+  using Props::Props;
 };
-
 using SharedTestProps = std::shared_ptr<const TestProps>;
 
 class TestShadowNode;
-
 using SharedTestShadowNode = std::shared_ptr<const TestShadowNode>;
-
-class TestShadowNode : public ConcreteViewShadowNode<
-                           TestComponentName,
-                           TestProps,
-                           ViewEventEmitter,
-                           TestState> {
+class TestShadowNode : public ConcreteShadowNode<TestComponentName, TestProps> {
  public:
-  using ConcreteViewShadowNode::ConcreteViewShadowNode;
-
-  Transform _transform{Transform::Identity()};
-
-  Transform getTransform() const override {
-    return _transform;
-  }
+  using ConcreteShadowNode::ConcreteShadowNode;
 };
 
 class TestComponentDescriptor

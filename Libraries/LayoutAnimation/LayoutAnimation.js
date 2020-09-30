@@ -33,7 +33,7 @@ type AnimationConfig = $ReadOnly<{|
   property?: Property,
 |}>;
 
-export type LayoutAnimationConfig = $ReadOnly<{|
+type LayoutAnimationConfig = $ReadOnly<{|
   duration: number,
   create?: AnimationConfig,
   update?: AnimationConfig,

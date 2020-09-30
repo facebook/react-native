@@ -73,14 +73,9 @@ class AttributedString : public Sealable, public DebugStringConvertible {
   void prependAttributedString(const AttributedString &attributedString);
 
   /*
-   * Returns a read-only reference to a list of fragments.
+   * Returns read-only reference to a list of fragments.
    */
-  Fragments const &getFragments() const;
-
-  /*
-   * Returns a reference to a list of fragments.
-   */
-  Fragments &getFragments();
+  const Fragments &getFragments() const;
 
   /*
    * Returns a string constructed from all strings in all fragments.
@@ -91,11 +86,6 @@ class AttributedString : public Sealable, public DebugStringConvertible {
    * Returns `true` if the string is empty (has no any fragments).
    */
   bool isEmpty() const;
-
-  /**
-   * Compares equality of TextAttributes of all Fragments on both sides.
-   */
-  bool compareTextAttributesWithoutFrame(const AttributedString &rhs) const;
 
   bool operator==(const AttributedString &rhs) const;
   bool operator!=(const AttributedString &rhs) const;
@@ -119,7 +109,10 @@ struct hash<facebook::react::AttributedString::Fragment> {
   size_t operator()(
       const facebook::react::AttributedString::Fragment &fragment) const {
     return folly::hash::hash_combine(
-        0, fragment.string, fragment.textAttributes, fragment.parentShadowView);
+        0,
+        fragment.string,
+        fragment.textAttributes,
+        fragment.parentShadowView);
   }
 };
 

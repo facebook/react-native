@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterTheme} from '../components/RNTesterTheme';
+
 export type RNTesterBackAction = {type: 'RNTesterBackAction', ...};
 
 export type RNTesterListAction = {type: 'RNTesterListAction', ...};

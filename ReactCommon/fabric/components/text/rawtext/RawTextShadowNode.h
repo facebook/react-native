@@ -22,7 +22,7 @@ extern const char RawTextComponentName[];
  * <RawText> component must not have any children.
  */
 using RawTextShadowNode =
-    ConcreteShadowNode<RawTextComponentName, ShadowNode, RawTextProps>;
+    ConcreteShadowNode<RawTextComponentName, RawTextProps>;
 
 } // namespace react
 } // namespace facebook

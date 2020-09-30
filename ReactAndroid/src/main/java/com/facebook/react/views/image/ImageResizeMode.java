@@ -15,29 +15,23 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 /** Converts JS resize modes into Android-specific scale type. */
 public class ImageResizeMode {
 
-  private static final String RESIZE_MODE_CONTAIN = "contain";
-  private static final String RESIZE_MODE_COVER = "cover";
-  private static final String RESIZE_MODE_STRETCH = "stretch";
-  private static final String RESIZE_MODE_CENTER = "center";
-  private static final String RESIZE_MODE_REPEAT = "repeat";
-
   /**
    * Converts JS resize modes into {@code ScalingUtils.ScaleType}. See {@code ImageResizeMode.js}.
    */
   public static ScalingUtils.ScaleType toScaleType(@Nullable String resizeModeValue) {
-    if (RESIZE_MODE_CONTAIN.equals(resizeModeValue)) {
+    if ("contain".equals(resizeModeValue)) {
       return ScalingUtils.ScaleType.FIT_CENTER;
     }
-    if (RESIZE_MODE_COVER.equals(resizeModeValue)) {
+    if ("cover".equals(resizeModeValue)) {
       return ScalingUtils.ScaleType.CENTER_CROP;
     }
-    if (RESIZE_MODE_STRETCH.equals(resizeModeValue)) {
+    if ("stretch".equals(resizeModeValue)) {
       return ScalingUtils.ScaleType.FIT_XY;
     }
-    if (RESIZE_MODE_CENTER.equals(resizeModeValue)) {
+    if ("center".equals(resizeModeValue)) {
       return ScalingUtils.ScaleType.CENTER_INSIDE;
     }
-    if (RESIZE_MODE_REPEAT.equals(resizeModeValue)) {
+    if ("repeat".equals(resizeModeValue)) {
       // Handled via a combination of ScaleType and TileMode
       return ScaleTypeStartInside.INSTANCE;
     }
@@ -51,13 +45,13 @@ public class ImageResizeMode {
 
   /** Converts JS resize modes into {@code Shader.TileMode}. See {@code ImageResizeMode.js}. */
   public static Shader.TileMode toTileMode(@Nullable String resizeModeValue) {
-    if (RESIZE_MODE_CONTAIN.equals(resizeModeValue)
-        || RESIZE_MODE_COVER.equals(resizeModeValue)
-        || RESIZE_MODE_STRETCH.equals(resizeModeValue)
-        || RESIZE_MODE_CENTER.equals(resizeModeValue)) {
+    if ("contain".equals(resizeModeValue)
+        || "cover".equals(resizeModeValue)
+        || "stretch".equals(resizeModeValue)
+        || "center".equals(resizeModeValue)) {
       return Shader.TileMode.CLAMP;
     }
-    if (RESIZE_MODE_REPEAT.equals(resizeModeValue)) {
+    if ("repeat".equals(resizeModeValue)) {
       // Handled via a combination of ScaleType and TileMode
       return Shader.TileMode.REPEAT;
     }

@@ -8,7 +8,6 @@ exports[`TextInput tests should render as expected: should deep render when mock
   enableFocusRing={true}
   focusable={true}
   forwardedRef={null}
-  mostRecentEventCount={0}
   onBlur={[Function]}
   onChange={[Function]}
   onClick={[Function]}
@@ -37,7 +36,6 @@ exports[`TextInput tests should render as expected: should deep render when not 
   enableFocusRing={true}
   focusable={true}
   forwardedRef={null}
-  mostRecentEventCount={0}
   onBlur={[Function]}
   onChange={[Function]}
   onClick={[Function]}

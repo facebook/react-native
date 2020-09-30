@@ -23,30 +23,22 @@ namespace react {
  */
 template <
     ComponentName concreteComponentName,
-    typename BaseShadowNodeT,
     typename PropsT,
     typename EventEmitterT = EventEmitter,
     typename StateDataT = StateData>
-class ConcreteShadowNode : public BaseShadowNodeT {
-  static_assert(
-      std::is_base_of<ShadowNode, BaseShadowNodeT>::value,
-      "BaseShadowNodeT must be a descendant of ShadowNode");
+class ConcreteShadowNode : public ShadowNode {
   static_assert(
       std::is_base_of<Props, PropsT>::value,
       "PropsT must be a descendant of Props");
 
- protected:
-  using ShadowNode::props_;
-  using ShadowNode::state_;
-
  public:
-  using BaseShadowNodeT::BaseShadowNodeT;
+  using ShadowNode::ShadowNode;
 
   using ConcreteProps = PropsT;
-  using SharedConcreteProps = std::shared_ptr<PropsT const>;
+  using SharedConcreteProps = std::shared_ptr<const PropsT>;
   using ConcreteEventEmitter = EventEmitterT;
-  using SharedConcreteEventEmitter = std::shared_ptr<EventEmitterT const>;
-  using SharedConcreteShadowNode = std::shared_ptr<ConcreteShadowNode const>;
+  using SharedConcreteEventEmitter = std::shared_ptr<const EventEmitterT>;
+  using SharedConcreteShadowNode = std::shared_ptr<const ConcreteShadowNode>;
   using ConcreteState = ConcreteState<StateDataT>;
   using ConcreteStateData = StateDataT;
 
@@ -63,14 +55,15 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Reimplement in subclasses to declare class-specific traits.
    */
   static ShadowNodeTraits BaseTraits() {
-    return BaseShadowNodeT::BaseTraits();
+    return ShadowNodeTraits{};
   }
 
   static SharedConcreteProps Props(
-      RawProps const &rawProps,
-      SharedProps const &baseProps = nullptr) {
-    return std::make_shared<PropsT const>(
-        baseProps ? static_cast<PropsT const &>(*baseProps) : PropsT(),
+      const RawProps &rawProps,
+      const SharedProps &baseProps = nullptr) {
+    return std::make_shared<const PropsT>(
+        baseProps ? *std::static_pointer_cast<const PropsT>(baseProps)
+                  : PropsT(),
         rawProps);
   }
 
@@ -82,21 +75,16 @@ class ConcreteShadowNode : public BaseShadowNodeT {
 
   static ConcreteStateData initialStateData(
       ShadowNodeFragment const &fragment,
-      SurfaceId const surfaceId,
       ComponentDescriptor const &componentDescriptor) {
     return {};
   }
 
-  /*
-   * Returns a concrete props object associated with the node.
-   * Thread-safe after the node is sealed.
-   */
-  ConcreteProps const &getConcreteProps() const {
-    assert(BaseShadowNodeT::props_ && "Props must not be `nullptr`.");
+  const SharedConcreteProps getProps() const {
+    assert(props_ && "Props must not be `nullptr`.");
     assert(
         std::dynamic_pointer_cast<ConcreteProps const>(props_) &&
         "Props must be an instance of ConcreteProps class.");
-    return static_cast<ConcreteProps const &>(*props_);
+    return std::static_pointer_cast<ConcreteProps const>(props_);
   }
 
   /*
@@ -108,7 +96,7 @@ class ConcreteShadowNode : public BaseShadowNodeT {
     assert(
         std::dynamic_pointer_cast<ConcreteState const>(state_) &&
         "State must be an instance of ConcreteState class.");
-    return static_cast<ConcreteState const *>(state_.get())->getData();
+    return std::static_pointer_cast<ConcreteState const>(state_)->getData();
   }
 
   /*
@@ -116,9 +104,29 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Can be called only before the node is sealed (usually during construction).
    */
   void setStateData(ConcreteStateData &&data) {
-    Sealable::ensureUnsealed();
-    state_ = std::make_shared<ConcreteState const>(
-        std::make_shared<ConcreteStateData const>(std::move(data)), *state_);
+    ensureUnsealed();
+    state_ = std::make_shared<ConcreteState const>(std::move(data), *state_);
+  }
+
+  /*
+   * Returns subset of children that are inherited from `SpecificShadowNodeT`.
+   */
+  template <typename SpecificShadowNodeT>
+  better::
+      small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
+      getChildrenSlice() const {
+    better::
+        small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
+            children;
+    for (const auto &childShadowNode : getChildren()) {
+      auto specificChildShadowNode =
+          dynamic_cast<const SpecificShadowNodeT *>(childShadowNode.get());
+      if (specificChildShadowNode) {
+        children.push_back(
+            const_cast<SpecificShadowNodeT *>(specificChildShadowNode));
+      }
+    }
+    return children;
   }
 };
 

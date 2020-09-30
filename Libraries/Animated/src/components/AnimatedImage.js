@@ -10,16 +10,8 @@
 
 'use strict';
 
-import * as React from 'react';
-
 const Image = require('../../../Image/Image');
+
 const createAnimatedComponent = require('../createAnimatedComponent');
 
-import type {AnimatedComponentType} from '../createAnimatedComponent';
-
-module.exports = (createAnimatedComponent(
-  (Image: $FlowFixMe),
-): AnimatedComponentType<
-  React.ElementConfig<typeof Image>,
-  React.ElementRef<typeof Image>,
->);
+module.exports = (createAnimatedComponent(Image): $FlowFixMe);

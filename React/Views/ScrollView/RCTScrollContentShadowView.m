@@ -31,7 +31,8 @@
 }
 #endif // ]TODO(macOS ISS#2323203)
 
-- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics layoutContext:(RCTLayoutContext)layoutContext
+- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics
+            layoutContext:(RCTLayoutContext)layoutContext
 {
   if (layoutMetrics.layoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
     // Motivation:

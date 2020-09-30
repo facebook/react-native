@@ -12,15 +12,12 @@
 
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
-const invariant = require('invariant');
 const processColor = require('../../StyleSheet/processColor');
 
 const nullthrows = require('nullthrows');
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
-import AndroidCheckBoxNativeComponent, {
-  Commands as AndroidCheckBoxCommands,
-} from './AndroidCheckBoxNativeComponent';
+import AndroidCheckBoxNativeComponent from './AndroidCheckBoxNativeComponent';
 
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
@@ -144,7 +141,7 @@ class CheckBox extends React.Component<Props> {
 
   _onChange = (event: CheckBoxEvent) => {
     const value = this.props.value ?? false;
-    AndroidCheckBoxCommands.setNativeValue(nullthrows(this._nativeRef), value);
+    nullthrows(this._nativeRef).setNativeProps({value: value});
     // Change the props after the native props are set in case the props
     // change removes the component
     this.props.onChange && this.props.onChange(event);
@@ -153,26 +150,12 @@ class CheckBox extends React.Component<Props> {
   };
 
   _getTintColors(tintColors) {
-    if (tintColors) {
-      const processedTextColorTrue = processColor(tintColors.true);
-      invariant(
-        processedTextColorTrue == null ||
-          typeof processedTextColorTrue === 'number',
-        'Unexpected color given for tintColors.true',
-      );
-      const processedTextColorFalse = processColor(tintColors.true);
-      invariant(
-        processedTextColorFalse == null ||
-          typeof processedTextColorFalse === 'number',
-        'Unexpected color given for tintColors.false',
-      );
-      return {
-        true: processedTextColorTrue,
-        false: processedTextColorFalse,
-      };
-    } else {
-      return undefined;
-    }
+    return tintColors
+      ? {
+          true: processColor(tintColors.true),
+          false: processColor(tintColors.false),
+        }
+      : undefined;
   }
 
   render() {

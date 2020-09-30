@@ -22,13 +22,14 @@ export type Mapping = {[key: string]: Mapping, ...} | AnimatedValue;
 export type EventConfig = {
   listener?: ?Function,
   useNativeDriver: boolean,
+  ...
 };
 
 function attachNativeEvent(
   viewRef: any,
   eventName: string,
-  argMapping: $ReadOnlyArray<?Mapping>,
-): {detach: () => void} {
+  argMapping: Array<?Mapping>,
+): {|detach: () => void|} {
   // Find animated values in `argMapping` and create an array representing their
   // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
   const eventMappings = [];
@@ -57,6 +58,7 @@ function attachNativeEvent(
   traverse(argMapping[0].nativeEvent, []);
 
   const viewTag = ReactNative.findNodeHandle(viewRef);
+
   if (viewTag != null) {
     eventMappings.forEach(mapping => {
       NativeAnimatedHelper.API.addAnimatedEventToView(
@@ -82,64 +84,19 @@ function attachNativeEvent(
   };
 }
 
-function validateMapping(argMapping, args) {
-  const validate = (recMapping, recEvt, key) => {
-    if (recMapping instanceof AnimatedValue) {
-      invariant(
-        typeof recEvt === 'number',
-        'Bad mapping of event key ' +
-          key +
-          ', should be number but got ' +
-          typeof recEvt,
-      );
-      return;
-    }
-    if (typeof recEvt === 'number') {
-      invariant(
-        recMapping instanceof AnimatedValue,
-        'Bad mapping of type ' +
-          typeof recMapping +
-          ' for key ' +
-          key +
-          ', event value must map to AnimatedValue',
-      );
-      return;
-    }
-    invariant(
-      typeof recMapping === 'object',
-      'Bad mapping of type ' + typeof recMapping + ' for key ' + key,
-    );
-    invariant(
-      typeof recEvt === 'object',
-      'Bad event of type ' + typeof recEvt + ' for key ' + key,
-    );
-    for (const mappingKey in recMapping) {
-      validate(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
-    }
-  };
-
-  invariant(
-    args.length >= argMapping.length,
-    'Event has less arguments than mapping',
-  );
-  argMapping.forEach((mapping, idx) => {
-    validate(mapping, args[idx], 'arg' + idx);
-  });
-}
-
 class AnimatedEvent {
-  _argMapping: $ReadOnlyArray<?Mapping>;
+  _argMapping: Array<?Mapping>;
   _listeners: Array<Function> = [];
   _callListeners: Function;
   _attachedEvent: ?{detach: () => void, ...};
   __isNative: boolean;
 
-  constructor(argMapping: $ReadOnlyArray<?Mapping>, config: EventConfig) {
+  constructor(argMapping: Array<?Mapping>, config: EventConfig) {
     this._argMapping = argMapping;
 
     if (config == null) {
       console.warn('Animated.event now requires a second argument for options');
-      config = {useNativeDriver: false};
+      config = {};
     }
 
     if (config.listener) {
@@ -148,6 +105,10 @@ class AnimatedEvent {
     this._callListeners = this._callListeners.bind(this);
     this._attachedEvent = null;
     this.__isNative = shouldUseNativeDriver(config);
+
+    if (__DEV__) {
+      this._validateMapping();
+    }
   }
 
   __addListener(callback: Function): void {
@@ -182,51 +143,61 @@ class AnimatedEvent {
 
   __getHandler(): any | ((...args: any) => void) {
     if (this.__isNative) {
-      if (__DEV__) {
-        let validatedMapping = false;
-        return (...args: any) => {
-          if (!validatedMapping) {
-            validateMapping(this._argMapping, args);
-            validatedMapping = true;
-          }
-          this._callListeners(...args);
-        };
-      } else {
-        return this._callListeners;
-      }
+      return this._callListeners;
     }
 
-    let validatedMapping = false;
     return (...args: any) => {
-      if (__DEV__ && !validatedMapping) {
-        validateMapping(this._argMapping, args);
-        validatedMapping = true;
-      }
-
       const traverse = (recMapping, recEvt, key) => {
-        if (recMapping instanceof AnimatedValue) {
-          if (typeof recEvt === 'number') {
-            recMapping.setValue(recEvt);
-          }
+        if (typeof recEvt === 'number' && recMapping instanceof AnimatedValue) {
+          recMapping.setValue(recEvt);
         } else if (typeof recMapping === 'object') {
           for (const mappingKey in recMapping) {
-            /* $FlowFixMe(>=0.120.0) This comment suppresses an error found
-             * when Flow v0.120 was deployed. To see the error, delete this
-             * comment and run Flow. */
+            /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+             * comment suppresses an error when upgrading Flow's support for
+             * React. To see the error delete this comment and run Flow. */
             traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
           }
         }
       };
-      this._argMapping.forEach((mapping, idx) => {
-        traverse(mapping, args[idx], 'arg' + idx);
-      });
 
+      if (!this.__isNative) {
+        this._argMapping.forEach((mapping, idx) => {
+          traverse(mapping, args[idx], 'arg' + idx);
+        });
+      }
       this._callListeners(...args);
     };
   }
 
   _callListeners(...args: any) {
     this._listeners.forEach(listener => listener(...args));
+  }
+
+  _validateMapping() {
+    const traverse = (recMapping, recEvt, key) => {
+      if (typeof recEvt === 'number') {
+        invariant(
+          recMapping instanceof AnimatedValue,
+          'Bad mapping of type ' +
+            typeof recMapping +
+            ' for key ' +
+            key +
+            ', event value must map to AnimatedValue',
+        );
+        return;
+      }
+      invariant(
+        typeof recMapping === 'object',
+        'Bad mapping of type ' + typeof recMapping + ' for key ' + key,
+      );
+      invariant(
+        typeof recEvt === 'object',
+        'Bad event of type ' + typeof recEvt + ' for key ' + key,
+      );
+      for (const mappingKey in recMapping) {
+        traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
+      }
+    };
   }
 }
 

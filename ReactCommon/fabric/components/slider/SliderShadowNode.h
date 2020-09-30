@@ -10,7 +10,6 @@
 #include <react/components/rncore/EventEmitters.h>
 #include <react/components/rncore/Props.h>
 #include <react/components/slider/SliderMeasurementsManager.h>
-#include <react/components/slider/SliderState.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 #include <react/imagemanager/ImageManager.h>
 #include <react/imagemanager/primitives.h>
@@ -26,8 +25,7 @@ extern const char SliderComponentName[];
 class SliderShadowNode final : public ConcreteViewShadowNode<
                                    SliderComponentName,
                                    SliderProps,
-                                   SliderEventEmitter,
-                                   SliderState> {
+                                   SliderEventEmitter> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
@@ -38,28 +36,14 @@ class SliderShadowNode final : public ConcreteViewShadowNode<
   void setSliderMeasurementsManager(
       const std::shared_ptr<SliderMeasurementsManager> &measurementsManager);
 
-  static SliderState initialStateData(
-      ShadowNodeFragment const &fragment,
-      SurfaceId const surfaceId,
-      ComponentDescriptor const &componentDescriptor) {
-    auto imageSource = ImageSource{ImageSource::Type::Invalid};
-    return {imageSource,
-            {imageSource, nullptr},
-            imageSource,
-            {imageSource, nullptr},
-            imageSource,
-            {imageSource, nullptr},
-            imageSource,
-            {imageSource, nullptr}};
-  }
-
 #pragma mark - LayoutableShadowNode
 
   Size measure(LayoutConstraints layoutConstraints) const override;
   void layout(LayoutContext layoutContext) override;
 
  private:
-  void updateStateIfNeeded();
+  // (Re)Creates a `LocalData` object (with `ImageRequest`) if needed.
+  void updateLocalData();
 
   ImageSource getTrackImageSource() const;
   ImageSource getMinimumTrackImageSource() const;

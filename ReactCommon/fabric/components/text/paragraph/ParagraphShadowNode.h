@@ -41,16 +41,13 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
-    traits.set(ShadowNodeTraits::Trait::TextKind);
-
-#ifdef ANDROID
-    // Unsetting `FormsStackingContext` trait is essential on Android where we
-    // can't mount views inside `TextView`.
-    traits.unset(ShadowNodeTraits::Trait::FormsStackingContext);
-#endif
-
     return traits;
   }
+
+  /*
+   * Returns a `AttributedString` which represents text content of the node.
+   */
+  AttributedString getAttributedString() const;
 
   /*
    * Associates a shared TextLayoutManager with the node.
@@ -64,42 +61,20 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
   void layout(LayoutContext layoutContext) override;
   Size measure(LayoutConstraints layoutConstraints) const override;
 
-  /*
-   * Internal representation of the nested content of the node in a format
-   * suitable for future processing.
-   */
-  class Content final {
-   public:
-    AttributedString attributedString;
-    ParagraphAttributes paragraphAttributes;
-    Attachments attachments;
-  };
-
  private:
-  /*
-   * Builds (if needed) and returns a reference to a `Content` object.
-   */
-  Content const &getContent() const;
-
-  /*
-   * Builds and returns a `Content` object with given `layoutConstraints`.
-   */
-  Content getContentWithMeasuredAttachments(
-      LayoutContext const &layoutContext,
-      LayoutConstraints const &layoutConstraints) const;
-
   /*
    * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
-  void updateStateIfNeeded(Content const &content);
+  void updateStateIfNeeded();
 
   SharedTextLayoutManager textLayoutManager_;
 
   /*
-   * Cached content of the subtree started from the node.
+   * Cached attributed string that represents the content of the subtree started
+   * from the node.
    */
-  mutable better::optional<Content> content_{};
+  mutable folly::Optional<AttributedString> cachedAttributedString_{};
 };
 
 } // namespace react

@@ -15,7 +15,6 @@ const React = require('react');
 import ProgressBarAndroidNativeComponent from './ProgressBarAndroidNativeComponent';
 
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 
 export type ProgressBarAndroidProps = $ReadOnly<{|
   ...ViewProps,
@@ -50,7 +49,7 @@ export type ProgressBarAndroidProps = $ReadOnly<{|
   /**
    * Color of the progress bar.
    */
-  color?: ?ColorValue,
+  color?: ?string,
   /**
    * Used to locate this view in end-to-end tests.
    */

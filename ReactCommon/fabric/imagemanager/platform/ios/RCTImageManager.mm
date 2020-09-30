@@ -12,11 +12,9 @@
 #import <react/utils/SharedFunction.h>
 
 #import <React/RCTImageLoaderWithAttributionProtocol.h>
-
 #import <react/imagemanager/ImageResponse.h>
 #import <react/imagemanager/ImageResponseObserver.h>
 
-#import "RCTImageInstrumentationProxy.h"
 #import "RCTImagePrimitivesConversions.h"
 
 using namespace facebook::react;
@@ -41,8 +39,7 @@ using namespace facebook::react;
 {
   SystraceSection s("RCTImageManager::requestImage");
 
-  auto imageInstrumentation = std::make_shared<RCTImageInstrumentationProxy>(_imageLoader);
-  auto imageRequest = ImageRequest(imageSource, imageInstrumentation);
+  auto imageRequest = ImageRequest(imageSource);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 
@@ -84,7 +81,7 @@ using namespace facebook::react;
       observerCoordinator->nativeImageResponseProgress(progress / (float)total);
     };
 
-    RCTImageURLLoaderRequest *loaderRequest =
+    RCTImageLoaderCancellationBlock cancelationBlock =
         [self->_imageLoader loadImageWithURLRequest:request
                                                size:CGSizeMake(imageSource.size.width, imageSource.size.height)
                                               scale:imageSource.scale
@@ -96,12 +93,8 @@ using namespace facebook::react;
                                       progressBlock:progressBlock
                                    partialLoadBlock:nil
                                     completionBlock:completionBlock];
-    RCTImageLoaderCancellationBlock cancelationBlock = loaderRequest.cancellationBlock;
-    sharedCancelationFunction.assign([cancelationBlock]() { cancelationBlock(); });
 
-    if (imageInstrumentation) {
-      imageInstrumentation->setImageURLLoaderRequest(loaderRequest);
-    }
+    sharedCancelationFunction.assign([cancelationBlock]() { cancelationBlock(); });
   });
 
   return imageRequest;

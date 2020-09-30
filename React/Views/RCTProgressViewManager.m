@@ -18,16 +18,12 @@ RCT_ENUM_CONVERTER(NSProgressIndicatorStyle, (@{
   @"bar": @(NSProgressIndicatorBarStyle),
 }), NSProgressIndicatorBarStyle, integerValue)
 #else // ]TODO(macOS ISS#2323203)
-RCT_ENUM_CONVERTER(
-    UIProgressViewStyle,
-    (@{
-      @"default" : @(UIProgressViewStyleDefault),
+RCT_ENUM_CONVERTER(UIProgressViewStyle, (@{
+  @"default": @(UIProgressViewStyleDefault),
 #if !TARGET_OS_TV
-      @"bar" : @(UIProgressViewStyleBar),
+  @"bar": @(UIProgressViewStyleBar),
 #endif
-    }),
-    UIProgressViewStyleDefault,
-    integerValue)
+}), UIProgressViewStyleDefault, integerValue)
 #endif // TODO(macOS ISS#2323203)
 
 @end

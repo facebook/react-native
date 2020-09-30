@@ -7,7 +7,6 @@
 
 #include "TurboModuleBinding.h"
 
-#include <stdexcept>
 #include <string>
 
 #include <ReactCommon/LongLivedObject.h>
@@ -22,12 +21,12 @@ namespace react {
  * Public API to install the TurboModule system.
  */
 TurboModuleBinding::TurboModuleBinding(
-    const TurboModuleProviderFunctionType &&moduleProvider)
-    : moduleProvider_(std::move(moduleProvider)) {}
+    const TurboModuleProviderFunctionType &moduleProvider)
+    : moduleProvider_(moduleProvider) {}
 
 void TurboModuleBinding::install(
     jsi::Runtime &runtime,
-    const TurboModuleProviderFunctionType &&moduleProvider) {
+    std::shared_ptr<TurboModuleBinding> binding) {
   runtime.global().setProperty(
       runtime,
       "__turboModuleProxy",
@@ -35,8 +34,7 @@ void TurboModuleBinding::install(
           runtime,
           jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
           1,
-          [binding =
-               std::make_shared<TurboModuleBinding>(std::move(moduleProvider))](
+          [binding](
               jsi::Runtime &rt,
               const jsi::Value &thisVal,
               const jsi::Value *args,
@@ -45,7 +43,7 @@ void TurboModuleBinding::install(
           }));
 }
 
-TurboModuleBinding::~TurboModuleBinding() {
+void TurboModuleBinding::invalidate() const {
   LongLivedObjectCollection::get().clear();
 }
 

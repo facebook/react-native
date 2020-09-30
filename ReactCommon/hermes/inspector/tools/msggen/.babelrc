@@ -1,5 +1,5 @@
 {
-  "presets": [ "@babel/preset-flow", ["@babel/preset-env", {
+  "presets": [ "flow", ["env", {
       "targets": {
         "node": "current"
       }

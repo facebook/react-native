@@ -83,7 +83,9 @@ public:
     return *this;
   }
 
-  ~ScopedLocalRef() { reset(); }
+  ~ScopedLocalRef() {
+    reset();
+  }
 
   /**
    * Deletes the currently held reference and reassigns a new one to the
@@ -117,7 +119,9 @@ public:
   /**
    * Returns true if the underlying JNI reference is not NULL.
    */
-  operator bool() const { return mLocalRef != NULL; }
+  operator bool() const {
+    return mLocalRef != NULL;
+  }
 
   ScopedLocalRef(const ScopedLocalRef& ref) = delete;
   ScopedLocalRef& operator=(const ScopedLocalRef& other) = delete;

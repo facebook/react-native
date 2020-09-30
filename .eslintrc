@@ -13,7 +13,6 @@
       rules: {
         '@react-native-community/no-haste-imports': 2,
         '@react-native-community/error-subclass-name': 2,
-        '@react-native-community/platform-colors': 2,
       }
     },
     {

@@ -11,7 +11,6 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
@@ -34,7 +33,7 @@ public class SliderManagerDelegate<T extends View, U extends BaseViewManagerInte
         mViewManager.setMaximumTrackImage(view, (ReadableMap) value);
         break;
       case "maximumTrackTintColor":
-        mViewManager.setMaximumTrackTintColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setMaximumTrackTintColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "maximumValue":
         mViewManager.setMaximumValue(view, value == null ? 1f : ((Double) value).doubleValue());
@@ -43,7 +42,7 @@ public class SliderManagerDelegate<T extends View, U extends BaseViewManagerInte
         mViewManager.setMinimumTrackImage(view, (ReadableMap) value);
         break;
       case "minimumTrackTintColor":
-        mViewManager.setMinimumTrackTintColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setMinimumTrackTintColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "minimumValue":
         mViewManager.setMinimumValue(view, value == null ? 0f : ((Double) value).doubleValue());
@@ -58,7 +57,7 @@ public class SliderManagerDelegate<T extends View, U extends BaseViewManagerInte
         mViewManager.setThumbImage(view, (ReadableMap) value);
         break;
       case "thumbTintColor":
-        mViewManager.setThumbTintColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setThumbTintColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "trackImage":
         mViewManager.setTrackImage(view, (ReadableMap) value);

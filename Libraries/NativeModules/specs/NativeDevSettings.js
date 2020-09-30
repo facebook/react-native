@@ -23,10 +23,6 @@ export interface Spec extends TurboModule {
   +toggleElementInspector: () => void;
   +addMenuItem: (title: string) => void;
 
-  // Events
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-
   // iOS only.
   +setIsShakeToShowDevMenuEnabled: (enabled: boolean) => void;
 

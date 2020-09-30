@@ -10,14 +10,12 @@
 
 'use strict';
 
-import Pressability, {
-  type PressabilityConfig,
-} from '../../Pressability/Pressability';
-import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
-import StyleSheet, {type ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import TVTouchable from './TVTouchable';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
+import Pressability from '../../Pressability/Pressability.js';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug.js';
+import StyleSheet, {type ViewStyleProp} from '../../StyleSheet/StyleSheet.js';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes.js';
+import TVTouchable from './TVTouchable.js';
+import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback.js';
 import Platform from '../../Utilities/Platform';
 import View from '../../Components/View/View';
 import * as React from 'react';
@@ -161,21 +159,21 @@ class TouchableHighlight extends React.Component<Props, State> {
   _tvTouchable: ?TVTouchable;
 
   state: State = {
-    pressability: new Pressability(this._createPressabilityConfig()),
-    extraStyles:
-      this.props.testOnly_pressed === true ? this._createExtraStyles() : null,
-  };
-
-  _createPressabilityConfig(): PressabilityConfig {
-    return {
-      cancelable: !this.props.rejectResponderTermination,
-      disabled: this.props.disabled,
-      hitSlop: this.props.hitSlop,
-      delayLongPress: this.props.delayLongPress,
-      delayPressIn: this.props.delayPressIn,
-      delayPressOut: this.props.delayPressOut,
-      pressRectOffset: this.props.pressRetentionOffset,
-      android_disableSound: this.props.touchSoundDisabled,
+    pressability: new Pressability({
+      getHitSlop: () => this.props.hitSlop,
+      getLongPressDelayMS: () => {
+        if (this.props.delayLongPress != null) {
+          const maybeNumber = this.props.delayLongPress;
+          if (typeof maybeNumber === 'number') {
+            return maybeNumber;
+          }
+        }
+        return 500;
+      },
+      getPressDelayMS: () => this.props.delayPressIn,
+      getPressOutDelayMS: () => this.props.delayPressOut,
+      getPressRectOffset: () => this.props.pressRetentionOffset,
+      getTouchSoundDisabled: () => this.props.touchSoundDisabled,
       onBlur: event => {
         if (Platform.isTV) {
           this._hideUnderlay();
@@ -229,8 +227,13 @@ class TouchableHighlight extends React.Component<Props, State> {
           this.props.onPressOut(event);
         }
       },
-    };
-  }
+      onResponderTerminationRequest: () =>
+        !this.props.rejectResponderTermination,
+      onStartShouldSetResponder: () => !this.props.disabled,
+    }),
+    extraStyles:
+      this.props.testOnly_pressed === true ? this._createExtraStyles() : null,
+  };
 
   _createExtraStyles(): ExtraStyles {
     return {
@@ -379,10 +382,6 @@ class TouchableHighlight extends React.Component<Props, State> {
         },
       });
     }
-  }
-
-  componentDidUpdate(prevProps: Props, prevState: State) {
-    this.state.pressability.configure(this._createPressabilityConfig());
   }
 
   componentWillUnmount(): void {

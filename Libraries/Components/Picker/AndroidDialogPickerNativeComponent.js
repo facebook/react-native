@@ -14,6 +14,7 @@ import * as React from 'react';
 
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import requireNativeComponent from '../../ReactNative/requireNativeComponent';
+import type {NativeOrDynamicColorType} from '../../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 import type {
   DirectEventHandler,
@@ -23,12 +24,11 @@ import type {
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {ViewProps} from '../../Components/View/ViewPropTypes';
 
 type PickerItem = $ReadOnly<{|
   label: string,
-  color?: ?ProcessedColorValue,
+  color?: ?Int32 | ?NativeOrDynamicColorType, // TODO(macOS ISS#2323203)
 |}>;
 
 type PickerItemSelectEvent = $ReadOnly<{|
@@ -41,7 +41,6 @@ type NativeProps = $ReadOnly<{|
 
   // Props
   color?: ?ColorValue,
-  backgroundColor?: ?ColorValue,
   enabled?: WithDefault<boolean, true>,
   items: $ReadOnlyArray<PickerItem>,
   prompt?: WithDefault<string, ''>,

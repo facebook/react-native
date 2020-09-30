@@ -7,7 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import <RCTImageManagerProtocol.h>
+#import <react/core/ReactPrimitives.h>
+#import <react/imagemanager/ImageRequest.h>
+#import <react/imagemanager/primitives.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * iOS-specific ImageManager.
  */
-@interface RCTImageManager : NSObject <RCTImageManagerProtocol>
+@interface RCTImageManager : NSObject
 
 - (instancetype)initWithImageLoader:(id<RCTImageLoaderWithAttributionProtocol>)imageLoader;
 

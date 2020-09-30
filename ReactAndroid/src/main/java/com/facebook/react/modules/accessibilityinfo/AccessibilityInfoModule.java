@@ -19,10 +19,11 @@ import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
-import com.facebook.fbreact.specs.NativeAccessibilityInfoSpec;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
@@ -31,7 +32,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
  * device. For API >= 19.
  */
 @ReactModule(name = AccessibilityInfoModule.NAME)
-public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
+public class AccessibilityInfoModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener {
 
   public static final String NAME = "AccessibilityInfo";
@@ -100,12 +101,12 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     return value != null && value.equals("0.0");
   }
 
-  @Override
+  @ReactMethod
   public void isReduceMotionEnabled(Callback successCallback) {
     successCallback.invoke(mReduceMotionEnabled);
   }
 
-  @Override
+  @ReactMethod
   public void isTouchExplorationEnabled(Callback successCallback) {
     successCallback.invoke(mTouchExplorationEnabled);
   }
@@ -182,7 +183,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   @Override
   public void onHostDestroy() {}
 
-  @Override
+  @ReactMethod
   public void announceForAccessibility(String message) {
     if (mAccessibilityManager == null || !mAccessibilityManager.isEnabled()) {
       return;
@@ -194,10 +195,5 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     event.setPackageName(getReactApplicationContext().getPackageName());
 
     mAccessibilityManager.sendAccessibilityEvent(event);
-  }
-
-  @Override
-  public void setAccessibilityFocus(double reactTag) {
-    // iOS only
   }
 }

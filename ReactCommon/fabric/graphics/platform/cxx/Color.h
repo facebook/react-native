@@ -42,14 +42,6 @@ class SharedColor {
     return color_;
   }
 
-  bool operator==(const SharedColor &otherColor) const {
-    return color_ == otherColor.color_;
-  }
-
-  bool operator!=(const SharedColor &otherColor) const {
-    return color_ != otherColor.color_;
-  }
-
   operator bool() const {
     return color_ != UndefinedColor;
   }

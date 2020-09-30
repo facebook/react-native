@@ -7,8 +7,8 @@
 
 #import <React/RCTPackagerConnection.h>
 
-#import <objc/runtime.h>
 #import <algorithm>
+#import <objc/runtime.h>
 #import <vector>
 
 #import <React/RCTAssert.h>
@@ -40,7 +40,7 @@ struct Registration {
   std::mutex _mutex; // protects all ivars
   RCTReconnectingWebSocket *_socket;
   BOOL _socketConnected;
-  NSString *_serverHostForSocket;
+  NSString *_jsLocationForSocket;
   id _bundleURLChangeObserver;
   uint32_t _nextToken;
   std::vector<Registration<RCTNotificationHandler>> _notificationRegistrations;
@@ -62,31 +62,32 @@ struct Registration {
 {
   if (self = [super init]) {
     _nextToken = 1; // Prevent randomly erasing a handler if you pass a bogus 0 token
-    _serverHostForSocket = [[RCTBundleURLProvider sharedSettings] packagerServerHost];
-    _socket = socketForLocation(_serverHostForSocket);
+    _jsLocationForSocket = [RCTBundleURLProvider sharedSettings].jsLocation;
+    _socket = socketForLocation(_jsLocationForSocket);
     _socket.delegate = self;
     [_socket start];
 
     RCTPackagerConnection *const __weak weakSelf = self;
     _bundleURLChangeObserver =
-        [[NSNotificationCenter defaultCenter] addObserverForName:RCTBundleURLProviderUpdatedNotification
-                                                          object:nil
-                                                           queue:[NSOperationQueue mainQueue]
-                                                      usingBlock:^(NSNotification *_Nonnull __unused note) {
-                                                        [weakSelf bundleURLSettingsChanged];
-                                                      }];
+    [[NSNotificationCenter defaultCenter]
+     addObserverForName:RCTBundleURLProviderUpdatedNotification
+     object:nil
+     queue:[NSOperationQueue mainQueue]
+     usingBlock:^(NSNotification *_Nonnull __unused note) {
+       [weakSelf bundleURLSettingsChanged];
+     }];
   }
   return self;
 }
 
-static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHost)
+static RCTReconnectingWebSocket *socketForLocation(NSString *const jsLocation)
 {
   NSURLComponents *const components = [NSURLComponents new];
-  components.host = serverHost ?: @"localhost";
+  components.host = jsLocation ?: @"localhost";
   components.scheme = @"http";
   components.port = @(kRCTBundleURLProviderDefaultPort);
   components.path = @"/message";
-  components.queryItems = @[ [NSURLQueryItem queryItemWithName:@"role" value:kRCTPlatformName] ]; // TODO(macOS ISS#2323203)
+  components.queryItems = @[[NSURLQueryItem queryItemWithName:@"role" value:kRCTPlatformName]]; // TODO(macOS ISS#2323203)
   static dispatch_queue_t queue;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -118,22 +119,20 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHost)
     return; // already stopped
   }
 
-  NSString *const serverHost = [[RCTBundleURLProvider sharedSettings] packagerServerHost];
-  if ([serverHost isEqual:_serverHostForSocket]) {
+  NSString *const jsLocation = [RCTBundleURLProvider sharedSettings].jsLocation;
+  if ([jsLocation isEqual:_jsLocationForSocket]) {
     return; // unchanged
   }
 
   _socket.delegate = nil;
   [_socket stop];
-  _serverHostForSocket = serverHost;
-  _socket = socketForLocation(serverHost);
+  _jsLocationForSocket = jsLocation;
+  _socket = socketForLocation(jsLocation);
   _socket.delegate = self;
   [_socket start];
 }
 
-- (RCTHandlerToken)addNotificationHandler:(RCTNotificationHandler)handler
-                                    queue:(dispatch_queue_t)queue
-                                forMethod:(NSString *)method
+- (RCTHandlerToken)addNotificationHandler:(RCTNotificationHandler)handler queue:(dispatch_queue_t)queue forMethod:(NSString *)method
 {
   std::lock_guard<std::mutex> l(_mutex);
   const auto token = _nextToken++;
@@ -141,9 +140,7 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHost)
   return token;
 }
 
-- (RCTHandlerToken)addRequestHandler:(RCTRequestHandler)handler
-                               queue:(dispatch_queue_t)queue
-                           forMethod:(NSString *)method
+- (RCTHandlerToken)addRequestHandler:(RCTRequestHandler)handler queue:(dispatch_queue_t)queue forMethod:(NSString *)method
 {
   std::lock_guard<std::mutex> l(_mutex);
   const auto token = _nextToken++;
@@ -177,29 +174,22 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHost)
 template <typename Handler>
 static void eraseRegistrationsWithToken(std::vector<Registration<Handler>> &registrations, RCTHandlerToken token)
 {
-  registrations.erase(
-      std::remove_if(
-          registrations.begin(), registrations.end(), [&token](const auto &reg) { return reg.token == token; }),
-      registrations.end());
+  registrations.erase(std::remove_if(registrations.begin(), registrations.end(),
+                                     [&token](const auto &reg) { return reg.token == token; }),
+                      registrations.end());
 }
 
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forMethod:(NSString *)method
 {
-  dispatch_queue_t queue =
-      [handler respondsToSelector:@selector(methodQueue)] ? [handler methodQueue] : dispatch_get_main_queue();
+  dispatch_queue_t queue = [handler respondsToSelector:@selector(methodQueue)]
+  ? [handler methodQueue] : dispatch_get_main_queue();
 
-  [self
-      addNotificationHandler:^(NSDictionary<NSString *, id> *notification) {
-        [handler handleNotification:notification];
-      }
-                       queue:queue
-                   forMethod:method];
-  [self
-      addRequestHandler:^(NSDictionary<NSString *, id> *request, RCTPackagerClientResponder *responder) {
-        [handler handleRequest:request withResponder:responder];
-      }
-                  queue:queue
-              forMethod:method];
+  [self addNotificationHandler:^(NSDictionary<NSString *, id> *notification) {
+    [handler handleNotification:notification];
+  } queue:queue forMethod:method];
+  [self addRequestHandler:^(NSDictionary<NSString *, id> *request, RCTPackagerClientResponder *responder) {
+    [handler handleRequest:request withResponder:responder];
+  } queue:queue forMethod:method];
 }
 
 static BOOL isSupportedVersion(NSNumber *version)
@@ -222,9 +212,7 @@ static BOOL isSupportedVersion(NSNumber *version)
   for (const auto &registration : registrations) {
     // Beware: don't capture the reference to handler in a dispatched block!
     RCTConnectedHandler handler = registration.handler;
-    dispatch_async(registration.queue, ^{
-      handler();
-    });
+    dispatch_async(registration.queue, ^{ handler(); });
   }
 }
 
@@ -248,12 +236,13 @@ static BOOL isSupportedVersion(NSNumber *version)
   id messageId = msg[@"id"];
 
   if (messageId) { // Request
-    const std::vector<Registration<RCTRequestHandler>> registrations(
-        registrationsWithMethod(_mutex, _requestRegistrations, method));
+    const std::vector<Registration<RCTRequestHandler>> registrations(registrationsWithMethod(_mutex, _requestRegistrations, method));
     if (registrations.empty()) {
       RCTLogError(@"No handler found for packager method %@", msg[@"method"]);
-      [[[RCTPackagerClientResponder alloc] initWithId:messageId socket:webSocket]
-          respondWithError:[NSString stringWithFormat:@"No handler found for packager method %@", msg[@"method"]]];
+      [[[RCTPackagerClientResponder alloc] initWithId:messageId
+                                               socket:webSocket]
+       respondWithError:
+       [NSString stringWithFormat:@"No handler found for packager method %@", msg[@"method"]]];
     } else {
       // If there are multiple matching request registrations, only one can win;
       // otherwise the packager would get multiple responses. Choose the last one.
@@ -263,14 +252,11 @@ static BOOL isSupportedVersion(NSNumber *version)
       });
     }
   } else { // Notification
-    const std::vector<Registration<RCTNotificationHandler>> registrations(
-        registrationsWithMethod(_mutex, _notificationRegistrations, method));
+    const std::vector<Registration<RCTNotificationHandler>> registrations(registrationsWithMethod(_mutex, _notificationRegistrations, method));
     for (const auto &registration : registrations) {
       // Beware: don't capture the reference to handler in a dispatched block!
       RCTNotificationHandler handler = registration.handler;
-      dispatch_async(registration.queue, ^{
-        handler(params);
-      });
+      dispatch_async(registration.queue, ^{ handler(params); });
     }
   }
 }
@@ -282,8 +268,7 @@ static BOOL isSupportedVersion(NSNumber *version)
 }
 
 template <typename Handler>
-static std::vector<Registration<Handler>>
-registrationsWithMethod(std::mutex &mutex, const std::vector<Registration<Handler>> &registrations, NSString *method)
+static std::vector<Registration<Handler>> registrationsWithMethod(std::mutex &mutex, const std::vector<Registration<Handler>> &registrations, NSString *method)
 {
   std::lock_guard<std::mutex> l(mutex); // Scope lock acquisition to prevent deadlock when calling out
   std::vector<Registration<Handler>> matches;

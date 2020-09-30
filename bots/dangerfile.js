@@ -51,16 +51,12 @@ if (!includesTestPlan) {
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
-const changelogRegex = /\[\s?(ANDROID|GENERAL|MACOS|IOS|JS|JAVASCRIPT|INTERNAL)\s?\]\s?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?-?\s*?(.*)/gi;
-const internalChangelogRegex = /\[\s?(INTERNAL)\s?\].*/gi;
+const changelogRegex = /\[\s?(ANDROID|GENERAL|MACOS|IOS|JS|JAVASCRIPT|INTERNAL)\s?\]\s*?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?\-?\s*?(.*)/gi;
 const includesChangelog =
   danger.github.pr.body &&
   (danger.github.pr.body.toLowerCase().includes('## changelog') ||
     danger.github.pr.body.toLowerCase().includes('release notes'));
 const correctlyFormattedChangelog = changelogRegex.test(danger.github.pr.body);
-const containsInternalChangelog = internalChangelogRegex.test(
-  danger.github.pr.body,
-);
 
 // Provides advice if a changelog is missing
 const changelogInstructions =
@@ -72,7 +68,7 @@ if (!includesChangelog) {
     'To do so, add a "## Changelog" section to your PR description. ' +
     changelogInstructions;
   message(`${title} - <i>${idea}</i>`);
-} else if (!correctlyFormattedChangelog && !containsInternalChangelog) {
+} else if (!correctlyFormattedChangelog) {
   const title = ':clipboard: Verify Changelog Format';
   const idea = changelogInstructions;
   message(`${title} - <i>${idea}</i>`);
@@ -90,6 +86,6 @@ if (!isMergeRefMaster && isMergeRefStable) {
 } else if (!isMergeRefMaster && !isMergeRefStable) {
   const title = ':exclamation: Base Branch';
   const idea =
-    'The base branch for this PR is something other than `master`. [Are you sure you want to target something other than the `master` branch?](https://reactnative.dev/docs/contributing.html#pull-requests)';
+    'The base branch for this PR is something other than `master`. [Are you sure you want to target something other than the `master` branch?](http://facebook.github.io/react-native/docs/contributing.html#pull-requests)';
   fail(`${title} - <i>${idea}</i>`);
 }

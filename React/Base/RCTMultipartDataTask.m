@@ -54,8 +54,7 @@ static BOOL isStreamTaskSupported() {
 - (void)startTask
 {
   NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
-                                                        delegate:self
-                                                   delegateQueue:nil];
+                                                        delegate:self delegateQueue:nil];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:_url];
   [request addValue:@"multipart/mixed" forHTTPHeaderField:@"Accept"];
   NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request];
@@ -64,9 +63,9 @@ static BOOL isStreamTaskSupported() {
 }
 
 - (void)URLSession:(__unused NSURLSession *)session
-              dataTask:(__unused NSURLSessionDataTask *)dataTask
-    didReceiveResponse:(NSURLResponse *)response
-     completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler
+          dataTask:(__unused NSURLSessionDataTask *)dataTask
+didReceiveResponse:(NSURLResponse *)response
+ completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler
 {
   if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
@@ -81,13 +80,8 @@ static BOOL isStreamTaskSupported() {
       }
     }
 
-    NSRegularExpression *regex =
-        [NSRegularExpression regularExpressionWithPattern:@"multipart/mixed;.*boundary=\"([^\"]+)\""
-                                                  options:0
-                                                    error:nil];
-    NSTextCheckingResult *match = [regex firstMatchInString:contentType
-                                                    options:0
-                                                      range:NSMakeRange(0, contentType.length)];
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"multipart/mixed;.*boundary=\"([^\"]+)\"" options:0 error:nil];
+    NSTextCheckingResult *match = [regex firstMatchInString:contentType options:0 range:NSMakeRange(0, contentType.length)];
     if (match) {
       _boundary = [contentType substringWithRange:[match rangeAtIndex:1]];
       if (@available(macOS 10.11, iOS 9.0, *)) { // TODO(OSS Candidate ISS#2710739)
@@ -102,27 +96,21 @@ static BOOL isStreamTaskSupported() {
   completionHandler(NSURLSessionResponseAllow);
 }
 
-- (void)URLSession:(__unused NSURLSession *)session
-                    task:(__unused NSURLSessionTask *)task
-    didCompleteWithError:(NSError *)error
+- (void)URLSession:(__unused NSURLSession *)session task:(__unused NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
   if (_partHandler) {
     _partHandler(_statusCode, _headers, _data, error, YES);
   }
 }
 
-- (void)URLSession:(__unused NSURLSession *)session
-          dataTask:(__unused NSURLSessionDataTask *)dataTask
-    didReceiveData:(NSData *)data
+- (void)URLSession:(__unused NSURLSession *)session dataTask:(__unused NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
 {
   [_data appendData:data];
 }
 
 #pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
 #pragma clang diagnostic ignored "-Wunguarded-availability"
-- (void)URLSession:(__unused NSURLSession *)session
-               dataTask:(__unused NSURLSessionDataTask *)dataTask
-    didBecomeStreamTask:(NSURLSessionStreamTask *)streamTask
+- (void)URLSession:(__unused NSURLSession *)session dataTask:(__unused NSURLSessionDataTask *)dataTask didBecomeStreamTask:(NSURLSessionStreamTask *)streamTask
 #pragma clang diagnostic pop
 {
   [streamTask captureStreams];
@@ -131,26 +119,23 @@ static BOOL isStreamTaskSupported() {
 #pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
 #pragma clang diagnostic ignored "-Wunguarded-availability"
 - (void)URLSession:(__unused NSURLSession *)session
-              streamTask:(__unused NSURLSessionStreamTask *)streamTask
-    didBecomeInputStream:(NSInputStream *)inputStream
-            outputStream:(__unused NSOutputStream *)outputStream
+        streamTask:(__unused NSURLSessionStreamTask *)streamTask
+didBecomeInputStream:(NSInputStream *)inputStream
+      outputStream:(__unused NSOutputStream *)outputStream
 #pragma clang diagnostic pop
 {
-  RCTMultipartStreamReader *reader = [[RCTMultipartStreamReader alloc] initWithInputStream:inputStream
-                                                                                  boundary:_boundary];
+  RCTMultipartStreamReader *reader = [[RCTMultipartStreamReader alloc] initWithInputStream:inputStream boundary:_boundary];
   RCTMultipartDataTaskCallback partHandler = _partHandler;
   _partHandler = nil;
   NSInteger statusCode = _statusCode;
 
-  BOOL completed = [reader
-      readAllPartsWithCompletionCallback:^(NSDictionary *headers, NSData *content, BOOL done) {
-        partHandler(statusCode, headers, content, nil, done);
-      }
-                        progressCallback:_progressHandler];
+  BOOL completed = [reader readAllPartsWithCompletionCallback:^(NSDictionary *headers, NSData *content, BOOL done) {
+    partHandler(statusCode, headers, content, nil, done);
+  } progressCallback:_progressHandler];
   if (!completed) {
-    partHandler(
-        statusCode, nil, nil, [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:nil], YES);
+    partHandler(statusCode, nil, nil, [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:nil], YES);
   }
 }
+
 
 @end

@@ -9,8 +9,7 @@
 
 #import "RCTTextUIKit.h" // TODO(macOS ISS#2323203)
 
-#import <React/RCTBackedTextInputViewProtocol.h>
-#import <React/RCTBackedTextInputDelegate.h>
+#import "RCTBackedTextInputViewProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -40,10 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
 #else // [TODO(macOS ISS#2323203)
 @property (assign, getter=isEditable) BOOL editable;
-#endif // ]TODO(macOS ISS#2323203)
-@property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
-
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#endif
+#if TARGET_OS_OSX
 @property (nonatomic, copy, nullable) NSString *text;
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 @property (nonatomic, copy) NSDictionary<NSAttributedStringKey, id> *defaultTextAttributes;

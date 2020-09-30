@@ -16,9 +16,10 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.provider.Settings.Secure;
 import androidx.annotation.Nullable;
-import com.facebook.fbreact.specs.NativePlatformConstantsAndroidSpec;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
@@ -28,7 +29,7 @@ import java.util.Map;
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = AndroidInfoModule.NAME)
 @SuppressLint("HardwareIds")
-public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implements TurboModule {
+public class AndroidInfoModule extends ReactContextBaseJavaModule implements TurboModule {
   public static final String NAME = "PlatformConstants";
   private static final String IS_TESTING = "IS_TESTING";
 
@@ -65,7 +66,7 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
   }
 
   @Override
-  public @Nullable Map<String, Object> getTypedExportedConstants() {
+  public @Nullable Map<String, Object> getConstants() {
     HashMap<String, Object> constants = new HashMap<>();
     constants.put("Version", Build.VERSION.SDK_INT);
     constants.put("Release", Build.VERSION.RELEASE);
@@ -82,7 +83,7 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
     return constants;
   }
 
-  @Override
+  @ReactMethod(isBlockingSynchronousMethod = true)
   public String getAndroidID() {
     return Secure.getString(getReactApplicationContext().getContentResolver(), Secure.ANDROID_ID);
   }

@@ -17,9 +17,9 @@
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     sharedInstance = [self new];
-    [sharedInstance swapLeftAndRightInRTL:true];
+    [sharedInstance swapLeftAndRightInRTL: true];
   });
-
+  
   return sharedInstance;
 }
 
@@ -66,7 +66,8 @@
  */
 - (BOOL)isRTLForced
 {
-  BOOL rtlStatus = [[NSUserDefaults standardUserDefaults] boolForKey:@"RCTI18nUtil_forceRTL"];
+  BOOL rtlStatus = [[NSUserDefaults standardUserDefaults]
+                            boolForKey:@"RCTI18nUtil_forceRTL"];
   return rtlStatus;
 }
 
@@ -90,8 +91,7 @@
 // Check if the current device language is RTL
 - (BOOL)isDevicePreferredLanguageRTL
 {
-  NSLocaleLanguageDirection direction =
-      [NSLocale characterDirectionForLanguage:[[NSLocale preferredLanguages] objectAtIndex:0]];
+  NSLocaleLanguageDirection direction = [NSLocale characterDirectionForLanguage:[[NSLocale preferredLanguages] objectAtIndex:0]];
   return direction == NSLocaleLanguageDirectionRightToLeft;
 }
 

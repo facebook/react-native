@@ -8,8 +8,8 @@
 #pragma once
 
 #include <folly/SharedMutex.h>
-#include <mutex>
 #include <shared_mutex>
+#include <mutex>
 
 namespace facebook {
 namespace better {

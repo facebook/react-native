@@ -49,6 +49,11 @@ using namespace facebook::react;
   // Default implementation does nothing.
 }
 
+- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
+{
+  // Default implementation does nothing.
+}
+
 - (void)updateState:(facebook::react::State::Shared const &)state
            oldState:(facebook::react::State::Shared const &)oldState
 {
@@ -63,9 +68,7 @@ using namespace facebook::react;
 - (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
            oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
 {
-  bool forceUpdate = oldLayoutMetrics == EmptyLayoutMetrics;
-
-  if (forceUpdate || (layoutMetrics.frame != oldLayoutMetrics.frame)) {
+  if (layoutMetrics.frame != oldLayoutMetrics.frame) {
     CGRect frame = RCTCGRectFromRect(layoutMetrics.frame);
 
     if (!std::isfinite(frame.origin.x) || !std::isfinite(frame.origin.y) || !std::isfinite(frame.size.width) ||
@@ -88,13 +91,13 @@ using namespace facebook::react;
     self.bounds = CGRect{CGPointZero, frame.size};
   }
 
-  if (forceUpdate || (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection)) {
+  if (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection) {
     self.semanticContentAttribute = layoutMetrics.layoutDirection == LayoutDirection::RightToLeft
         ? UISemanticContentAttributeForceRightToLeft
         : UISemanticContentAttributeForceLeftToRight;
   }
 
-  if (forceUpdate || (layoutMetrics.displayType != oldLayoutMetrics.displayType)) {
+  if (layoutMetrics.displayType != oldLayoutMetrics.displayType) {
     self.hidden = layoutMetrics.displayType == DisplayType::None;
   }
 }

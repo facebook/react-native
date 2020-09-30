@@ -39,6 +39,12 @@ void ComponentDescriptorRegistry::add(
   _registryByHandle[componentDescriptorProvider.handle] =
       sharedComponentDescriptor;
   _registryByName[componentDescriptorProvider.name] = sharedComponentDescriptor;
+
+  if (strcmp(componentDescriptorProvider.name, "UnimplementedNativeView") ==
+      0) {
+    auto *self = const_cast<ComponentDescriptorRegistry *>(this);
+    self->setFallbackComponentDescriptor(sharedComponentDescriptor);
+  }
 }
 
 void ComponentDescriptorRegistry::registerComponentDescriptor(
@@ -65,12 +71,6 @@ static std::string componentNameByReactViewName(std::string viewName) {
   // in semantic.
   if (viewName == "Text") {
     return "Paragraph";
-  }
-
-  // TODO T63839307: remove this condition after deleting TextInlineImage from
-  // Paper
-  if (viewName == "TextInlineImage") {
-    return "Image";
   }
   if (viewName == "VirtualText") {
     return "Text";
@@ -102,12 +102,6 @@ static std::string componentNameByReactViewName(std::string viewName) {
       viewName == "AndroidHorizontalScrollContentView" // Android
   ) {
     return "View";
-  }
-
-  // iOS-only
-  if (viewName == "MultilineTextInputView" ||
-      viewName == "SinglelineTextInputView") {
-    return "TextInput";
   }
 
   return viewName;
@@ -178,21 +172,22 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
   auto unifiedComponentName = componentNameByReactViewName(viewName);
   auto const &componentDescriptor = this->at(unifiedComponentName);
 
-  auto family = componentDescriptor.createFamily(
-      ShadowNodeFamilyFragment{tag, surfaceId, nullptr},
-      std::move(eventTarget));
+  auto const eventEmitter =
+      componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
   auto const props =
       componentDescriptor.cloneProps(nullptr, RawProps(propsDynamic));
-  auto const state =
-      componentDescriptor.createInitialState(ShadowNodeFragment{props}, family);
+  auto const state = componentDescriptor.createInitialState(
+      ShadowNodeFragment{surfaceId, tag, props, eventEmitter});
 
-  return componentDescriptor.createShadowNode(
-      {
-          /* .props = */ props,
-          /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-          /* .state = */ state,
-      },
-      family);
+  return componentDescriptor.createShadowNode({
+      /* .tag = */ tag,
+      /* .surfaceId = */ surfaceId,
+      /* .props = */ props,
+      /* .eventEmitter = */ eventEmitter,
+      /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
+      /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
+      /* .state = */ state,
+  });
 }
 
 void ComponentDescriptorRegistry::setFallbackComponentDescriptor(

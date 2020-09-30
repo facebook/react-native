@@ -18,8 +18,7 @@ import type {AnimatedComponentType} from './createAnimatedComponent';
 const AnimatedMock = require('./AnimatedMock');
 const AnimatedImplementation = require('./AnimatedImplementation');
 
-//TODO(T57411659): Remove the bridgeless check when Animated perf regressions are fixed.
-const Animated = ((Platform.isTesting || global.RN$Bridgeless
+const Animated = ((Platform.isTesting
   ? AnimatedMock
   : AnimatedImplementation): typeof AnimatedMock);
 

@@ -7,8 +7,8 @@
 
 #import "RCTLayoutAnimationGroup.h"
 
-#import "RCTConvert.h"
 #import "RCTLayoutAnimation.h"
+#import "RCTConvert.h"
 
 @implementation RCTLayoutAnimationGroup
 
@@ -27,7 +27,8 @@
   return self;
 }
 
-- (instancetype)initWithConfig:(NSDictionary *)config callback:(RCTResponseSenderBlock)callback
+- (instancetype)initWithConfig:(NSDictionary *)config
+                      callback:(RCTResponseSenderBlock)callback
 {
   if (!config) {
     return nil;
@@ -56,24 +57,16 @@
   RCTLayoutAnimation *updatingLayoutAnimation = layoutAnimation.updatingLayoutAnimation;
   RCTLayoutAnimation *deletingLayoutAnimation = layoutAnimation.deletingLayoutAnimation;
 
-  return (_creatingLayoutAnimation == creatingLayoutAnimation ||
-          [_creatingLayoutAnimation isEqual:creatingLayoutAnimation]) &&
-      (_updatingLayoutAnimation == updatingLayoutAnimation ||
-       [_updatingLayoutAnimation isEqual:updatingLayoutAnimation]) &&
-      (_deletingLayoutAnimation == deletingLayoutAnimation ||
-       [_deletingLayoutAnimation isEqual:deletingLayoutAnimation]);
+  return
+    (_creatingLayoutAnimation == creatingLayoutAnimation || [_creatingLayoutAnimation isEqual:creatingLayoutAnimation]) &&
+    (_updatingLayoutAnimation == updatingLayoutAnimation || [_updatingLayoutAnimation isEqual:updatingLayoutAnimation]) &&
+    (_deletingLayoutAnimation == deletingLayoutAnimation || [_deletingLayoutAnimation isEqual:deletingLayoutAnimation]);
 }
 
 - (NSString *)description
 {
-  return
-      [NSString stringWithFormat:
-                    @"<%@: %p; creatingLayoutAnimation: %@; updatingLayoutAnimation: %@; deletingLayoutAnimation: %@>",
-                    NSStringFromClass([self class]),
-                    self,
-                    [_creatingLayoutAnimation description],
-                    [_updatingLayoutAnimation description],
-                    [_deletingLayoutAnimation description]];
+  return [NSString stringWithFormat:@"<%@: %p; creatingLayoutAnimation: %@; updatingLayoutAnimation: %@; deletingLayoutAnimation: %@>",
+          NSStringFromClass([self class]), self, [_creatingLayoutAnimation description], [_updatingLayoutAnimation description], [_deletingLayoutAnimation description]];
 }
 
 @end

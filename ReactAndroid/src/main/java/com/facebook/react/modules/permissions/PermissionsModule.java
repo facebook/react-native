@@ -13,10 +13,11 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Process;
 import android.util.SparseArray;
-import com.facebook.fbreact.specs.NativePermissionsAndroidSpec;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 
 /** Module that exposes the Android M Permission system to JS. */
 @ReactModule(name = PermissionsModule.NAME)
-public class PermissionsModule extends NativePermissionsAndroidSpec implements PermissionListener {
+public class PermissionsModule extends ReactContextBaseJavaModule implements PermissionListener {
 
   private static final String ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY";
   public static final String NAME = "PermissionsAndroid";
@@ -51,7 +52,7 @@ public class PermissionsModule extends NativePermissionsAndroidSpec implements P
    * Check if the app has the permission given. successCallback is called with true if the
    * permission had been granted, false otherwise. See {@link Activity#checkSelfPermission}.
    */
-  @Override
+  @ReactMethod
   public void checkPermission(final String permission, final Promise promise) {
     Context context = getReactApplicationContext().getBaseContext();
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -71,7 +72,7 @@ public class PermissionsModule extends NativePermissionsAndroidSpec implements P
    * again). For devices before Android M, this always returns false. See {@link
    * Activity#shouldShowRequestPermissionRationale}.
    */
-  @Override
+  @ReactMethod
   public void shouldShowRequestPermissionRationale(final String permission, final Promise promise) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       promise.resolve(false);
@@ -91,7 +92,7 @@ public class PermissionsModule extends NativePermissionsAndroidSpec implements P
    * user has the permission given or not and resolves with GRANTED or DENIED. See {@link
    * Activity#checkSelfPermission}.
    */
-  @Override
+  @ReactMethod
   public void requestPermission(final String permission, final Promise promise) {
     Context context = getReactApplicationContext().getBaseContext();
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -136,7 +137,7 @@ public class PermissionsModule extends NativePermissionsAndroidSpec implements P
     }
   }
 
-  @Override
+  @ReactMethod
   public void requestMultiplePermissions(final ReadableArray permissions, final Promise promise) {
     final WritableMap grantedPermissions = new WritableNativeMap();
     final ArrayList<String> permissionsToCheck = new ArrayList<String>();

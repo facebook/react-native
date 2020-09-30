@@ -44,7 +44,7 @@ class NativeModuleRegistry {
 
 class UITemplateProcessor {
  public:
-  static ShadowNode::Shared buildShadowTree(
+  static SharedShadowNode buildShadowTree(
       const std::string &jsonStr,
       int rootTag,
       const folly::dynamic &params,
@@ -53,7 +53,7 @@ class UITemplateProcessor {
       const std::shared_ptr<const ReactNativeConfig> reactNativeConfig);
 
  private:
-  static ShadowNode::Shared runCommand(
+  static SharedShadowNode runCommand(
       const folly::dynamic &command,
       Tag rootTag,
       std::vector<SharedShadowNode> &nodes,

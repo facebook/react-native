@@ -32,7 +32,7 @@ class Connection {
   ~Connection();
 
   /// getRuntime returns the underlying runtime being debugged.
-  jsi::Runtime &getRuntime();
+  HermesRuntime &getRuntime();
 
   /// getTitle returns the name of the friendly name of the runtime that's shown
   /// to users in Nuclide.

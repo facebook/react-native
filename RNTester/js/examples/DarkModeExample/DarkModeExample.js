@@ -13,7 +13,7 @@
 const React = require('react');
 const ReactNative = require('react-native');
 import {Platform} from 'react-native';
-const {PlatformColor, Text, View} = ReactNative;
+const {Text, View} = ReactNative;
 
 class SemanticColorsExample extends React.Component<{}> {
   createTable() {
@@ -45,8 +45,8 @@ class SemanticColorsExample extends React.Component<{}> {
         // Table Colors
         'gridColor',
         'headerTextColor',
-        'alternatingEvenContentBackgroundColor',
-        'alternatingOddContentBackgroundColor',
+        'alternatingContentBackgroundColorEven',
+        'alternatingContentBackgroundColorOdd',
         // Control Colors
         'controlAccentColor',
         'controlColor',
@@ -138,7 +138,7 @@ class SemanticColorsExample extends React.Component<{}> {
             style={{
               flex: 1,
               alignItems: 'stretch',
-              color: PlatformColor('labelColor'),
+              color: {semantic: 'labelColor'},
             }}>
             {color}
           </Text>
@@ -146,7 +146,7 @@ class SemanticColorsExample extends React.Component<{}> {
             style={{
               flex: 0.25,
               alignItems: 'stretch',
-              backgroundColor: PlatformColor(color),
+              backgroundColor: {semantic: `${color}`},
             }}
           />
         </View>,

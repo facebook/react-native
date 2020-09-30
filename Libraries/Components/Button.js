@@ -22,7 +22,6 @@ const invariant = require('invariant');
 
 import type {PressEvent} from '../Types/CoreEventTypes';
 import type {FocusEvent, BlurEvent} from './TextInput/TextInput'; // TODO(OSS Candidate ISS#2710739)
-import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -43,7 +42,7 @@ type ButtonProps = $ReadOnly<{|
   /**
    * Color of the text (iOS), or background color of the button (Android)
    */
-  color?: ?ColorValue,
+  color?: ?string,
 
   /**
    * TV preferred focus (see documentation for the View component).

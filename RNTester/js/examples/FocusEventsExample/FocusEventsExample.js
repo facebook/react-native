@@ -10,10 +10,10 @@
 
 'use strict'; // TODO(OSS Candidate ISS#2710739)
 
-const React = require('react');
-const ReactNative = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 import {Platform} from 'react-native';
-const {Button, PlatformColor, StyleSheet, Text, View, TextInput} = ReactNative;
+var {Button, StyleSheet, Text, View, TextInput} = ReactNative;
 
 type State = {
   eventStream: string,
@@ -46,7 +46,7 @@ class FocusEventExample extends React.Component<{}, State> {
             }}
             placeholder={'TextInput'}
             placeholderTextColor={
-              Platform.OS === 'macos' ? PlatformColor('textColor') : 'black'
+              Platform.OS === 'macos' ? {semantic: 'textColor'} : 'black'
             }
             style={styles.textInput}
           />
@@ -103,7 +103,7 @@ class FocusEventExample extends React.Component<{}, State> {
               style={styles.textInput}
               placeholder={'Nested Singleline TextInput'}
               placeholderTextColor={
-                Platform.OS === 'macos' ? PlatformColor('textColor') : 'black'
+                Platform.OS === 'macos' ? {semantic: 'textColor'} : 'black'
               }
             />
           </View>
@@ -244,7 +244,7 @@ class FocusEventExample extends React.Component<{}, State> {
               multiline={true}
               placeholder={'Nested Multiline TextInput'}
               placeholderTextColor={
-                Platform.OS === 'macos' ? PlatformColor('textColor') : 'black'
+                Platform.OS === 'macos' ? {semantic: 'textColor'} : 'black'
               }
             />
           </View>
@@ -260,9 +260,9 @@ var styles = StyleSheet.create({
   textInput: {
     ...Platform.select({
       macos: {
-        color: PlatformColor('textColor'),
-        backgroundColor: PlatformColor('textBackgroundColor'),
-        borderColor: PlatformColor('gridColor'),
+        color: {semantic: 'textColor'},
+        backgroundColor: {semantic: 'textBackgroundColor'},
+        borderColor: {semantic: 'gridColor'},
       },
       default: {
         borderColor: '#0f0f0f',

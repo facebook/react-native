@@ -7,6 +7,8 @@
 
 #include "SerialExecutor.h"
 
+#include <pthread.h>
+
 namespace facebook {
 namespace hermes {
 namespace inspector {

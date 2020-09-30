@@ -10,12 +10,7 @@
 
 'use strict';
 
-import {
-  jsTypeToCppType,
-  toCppNamespace,
-  toCppType,
-  type JsTypeString,
-} from './Converters';
+import {jsTypeToCppType, toCppNamespace, toCppType} from './Converters';
 
 export class Property {
   domain: string;
@@ -115,6 +110,14 @@ function toFullCppType(curDomain: string, absOrRelRef: string) {
   return `${toCppNamespace(domain)}::${toCppType(id)}`;
 }
 
+type JsTypeString =
+  | 'any'
+  | 'boolean'
+  | 'integer'
+  | 'number'
+  | 'object'
+  | 'string';
+
 class PrimitiveProperty extends Property {
   type: JsTypeString;
 
@@ -156,9 +159,15 @@ class RefProperty extends Property {
   constructor(domain: string, obj: any) {
     super(domain, obj);
     this.$ref = obj.$ref;
+    this.recursive = obj.recursive;
   }
 
   getRefDebuggerName(): ?string {
+    // recursive props cause cycles--just ignore them
+    if (this.recursive) {
+      return null;
+    }
+
     const [domain, id] = toDomainAndId(this.domain, this.$ref);
     return `${domain}.${id}`;
   }

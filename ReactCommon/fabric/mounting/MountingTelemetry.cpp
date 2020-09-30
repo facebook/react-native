@@ -9,108 +9,110 @@
 
 #include <cassert>
 
+#include <react/utils/TimeUtils.h>
+
 namespace facebook {
 namespace react {
 
 void MountingTelemetry::willCommit() {
-  assert(commitStartTime_ == kTelemetryUndefinedTimePoint);
-  assert(commitEndTime_ == kTelemetryUndefinedTimePoint);
-  commitStartTime_ = telemetryTimePointNow();
+  assert(commitStartTime_ == kUndefinedTime);
+  assert(commitEndTime_ == kUndefinedTime);
+  commitStartTime_ = monotonicTimeInMilliseconds();
   commitNumber_++;
 }
 
 void MountingTelemetry::didCommit() {
-  assert(commitStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(commitEndTime_ == kTelemetryUndefinedTimePoint);
-  commitEndTime_ = telemetryTimePointNow();
+  assert(commitStartTime_ != kUndefinedTime);
+  assert(commitEndTime_ == kUndefinedTime);
+  commitEndTime_ = monotonicTimeInMilliseconds();
 }
 
 void MountingTelemetry::willDiff() {
-  assert(diffStartTime_ == kTelemetryUndefinedTimePoint);
-  assert(diffEndTime_ == kTelemetryUndefinedTimePoint);
-  diffStartTime_ = telemetryTimePointNow();
+  assert(diffStartTime_ == kUndefinedTime);
+  assert(diffEndTime_ == kUndefinedTime);
+  diffStartTime_ = monotonicTimeInMilliseconds();
 }
 
 void MountingTelemetry::didDiff() {
-  assert(diffStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(diffEndTime_ == kTelemetryUndefinedTimePoint);
-  diffEndTime_ = telemetryTimePointNow();
+  assert(diffStartTime_ != kUndefinedTime);
+  assert(diffEndTime_ == kUndefinedTime);
+  diffEndTime_ = monotonicTimeInMilliseconds();
 }
 
 void MountingTelemetry::willLayout() {
-  assert(layoutStartTime_ == kTelemetryUndefinedTimePoint);
-  assert(layoutEndTime_ == kTelemetryUndefinedTimePoint);
-  layoutStartTime_ = telemetryTimePointNow();
+  assert(layoutStartTime_ == kUndefinedTime);
+  assert(layoutEndTime_ == kUndefinedTime);
+  layoutStartTime_ = monotonicTimeInMilliseconds();
 }
 
 void MountingTelemetry::didLayout() {
-  assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(layoutEndTime_ == kTelemetryUndefinedTimePoint);
-  layoutEndTime_ = telemetryTimePointNow();
+  assert(layoutStartTime_ != kUndefinedTime);
+  assert(layoutEndTime_ == kUndefinedTime);
+  layoutEndTime_ = monotonicTimeInMilliseconds();
 }
 
 void MountingTelemetry::willMount() {
-  assert(mountStartTime_ == kTelemetryUndefinedTimePoint);
-  assert(mountEndTime_ == kTelemetryUndefinedTimePoint);
-  mountStartTime_ = telemetryTimePointNow();
+  assert(mountStartTime_ == kUndefinedTime);
+  assert(mountEndTime_ == kUndefinedTime);
+  mountStartTime_ = monotonicTimeInMilliseconds();
 }
 
 void MountingTelemetry::didMount() {
-  assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(mountEndTime_ == kTelemetryUndefinedTimePoint);
-  mountEndTime_ = telemetryTimePointNow();
+  assert(mountStartTime_ != kUndefinedTime);
+  assert(mountEndTime_ == kUndefinedTime);
+  mountEndTime_ = monotonicTimeInMilliseconds();
 }
 
-TelemetryTimePoint MountingTelemetry::getDiffStartTime() const {
-  assert(diffStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(diffEndTime_ != kTelemetryUndefinedTimePoint);
+int64_t MountingTelemetry::getDiffStartTime() const {
+  assert(diffStartTime_ != kUndefinedTime);
+  assert(diffEndTime_ != kUndefinedTime);
   return diffStartTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getDiffEndTime() const {
-  assert(diffStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(diffEndTime_ != kTelemetryUndefinedTimePoint);
+int64_t MountingTelemetry::getDiffEndTime() const {
+  assert(diffStartTime_ != kUndefinedTime);
+  assert(diffEndTime_ != kUndefinedTime);
   return diffEndTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getCommitStartTime() const {
-  assert(commitStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(commitEndTime_ != kTelemetryUndefinedTimePoint);
+int64_t MountingTelemetry::getCommitNumber() const {
+  return commitNumber_;
+}
+
+int64_t MountingTelemetry::getCommitStartTime() const {
+  assert(commitStartTime_ != kUndefinedTime);
+  assert(commitEndTime_ != kUndefinedTime);
   return commitStartTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getCommitEndTime() const {
-  assert(commitStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(commitEndTime_ != kTelemetryUndefinedTimePoint);
+int64_t MountingTelemetry::getCommitEndTime() const {
+  assert(commitStartTime_ != kUndefinedTime);
+  assert(commitEndTime_ != kUndefinedTime);
   return commitEndTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getLayoutStartTime() const {
-  assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(layoutEndTime_ != kTelemetryUndefinedTimePoint);
+int64_t MountingTelemetry::getLayoutStartTime() const {
+  assert(layoutStartTime_ != kUndefinedTime);
+  assert(layoutEndTime_ != kUndefinedTime);
   return layoutStartTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getLayoutEndTime() const {
-  assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(layoutEndTime_ != kTelemetryUndefinedTimePoint);
+int64_t MountingTelemetry::getLayoutEndTime() const {
+  assert(layoutStartTime_ != kUndefinedTime);
+  assert(layoutEndTime_ != kUndefinedTime);
   return layoutEndTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getMountStartTime() const {
-  assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(mountEndTime_ != kTelemetryUndefinedTimePoint);
+int64_t MountingTelemetry::getMountStartTime() const {
+  assert(mountStartTime_ != kUndefinedTime);
+  assert(mountEndTime_ != kUndefinedTime);
   return mountStartTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getMountEndTime() const {
-  assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(mountEndTime_ != kTelemetryUndefinedTimePoint);
+int64_t MountingTelemetry::getMountEndTime() const {
+  assert(mountStartTime_ != kUndefinedTime);
+  assert(mountEndTime_ != kUndefinedTime);
   return mountEndTime_;
-}
-
-int MountingTelemetry::getCommitNumber() const {
-  return commitNumber_;
 }
 
 } // namespace react

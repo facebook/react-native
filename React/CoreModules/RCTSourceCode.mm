@@ -37,20 +37,17 @@ RCT_EXPORT_MODULE()
 - (NSDictionary<NSString *, id> *)getConstants
 {
   return @{
-    @"scriptURL" : self.bridge.bundleURL.absoluteString ?: @"",
+    @"scriptURL": self.bridge.bundleURL.absoluteString ?: @"",
   };
 }
 
 - (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-                                              nativeInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
-                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<NativeSourceCodeSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<NativeSourceCodeSpecJSI>(self, jsInvoker);
 }
 
 @end
 
-Class RCTSourceCodeCls(void)
-{
+Class RCTSourceCodeCls(void) {
   return RCTSourceCode.class;
 }

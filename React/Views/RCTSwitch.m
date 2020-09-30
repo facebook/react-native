@@ -28,8 +28,7 @@
 #endif
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-- (void)setOn:(BOOL)on animated:(BOOL)animated
-{
+- (void)setOn:(BOOL)on animated:(BOOL)animated {
   _wasOn = on;
   [super setOn:on animated:animated];
 }

@@ -15,6 +15,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
@@ -151,16 +152,6 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
     } else {
       builder.addStatement("$T map = new $T()", MAP_TYPE, INSTANTIATED_MAP_TYPE);
 
-      String turboModuleInterfaceCanonicalName =
-          "com.facebook.react.turbomodule.core.interfaces.TurboModule";
-      TypeMirror turboModuleInterface =
-          mElements.getTypeElement(turboModuleInterfaceCanonicalName).asType();
-
-      if (turboModuleInterface == null) {
-        throw new RuntimeException(
-            "com.facebook.react.turbomodule.core.interfaces.TurboModule interface not found.");
-      }
-
       for (String nativeModule : nativeModules) {
         String keyString = nativeModule;
 
@@ -180,15 +171,12 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
                   + "Did you forget to add the @ReactModule annotation to the native module?");
         }
 
-        boolean isTurboModule;
-        try {
-          isTurboModule = mTypes.isAssignable(typeElement.asType(), turboModuleInterface);
-        } catch (Exception ex) {
-          throw new RuntimeException(
-              "Failed to check if "
-                  + nativeModule
-                  + " is type-assignable to "
-                  + turboModuleInterfaceCanonicalName);
+        boolean isTurboModule = isTurboModuleTypeElement(typeElement);
+        if (!isTurboModule) {
+          TypeMirror nativeModuleSpecTypeMirror = typeElement.getSuperclass();
+          isTurboModule =
+              isTurboModuleTypeElement(
+                  mElements.getTypeElement(nativeModuleSpecTypeMirror.toString()));
         }
 
         List<? extends Element> elements = typeElement.getEnclosedElements();
@@ -232,6 +220,18 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
       builder.addStatement("return map");
     }
     return builder.build();
+  }
+
+  /**
+   * A Module is a Turbo Module if it either implements TurboModule or its super class, typically
+   * NativeModuleSpec implements TurboMobile
+   */
+  private boolean isTurboModuleTypeElement(TypeElement typeElement) {
+    if (typeElement == null) {
+      return false;
+    }
+    return typeElement.getInterfaces().stream()
+        .anyMatch(el -> el.toString().equals(TurboModule.class.getName()));
   }
 
   private static class ReactModuleSpecException extends Exception {

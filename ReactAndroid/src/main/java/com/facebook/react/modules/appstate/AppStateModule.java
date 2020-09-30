@@ -7,11 +7,12 @@
 
 package com.facebook.react.modules.appstate;
 
-import com.facebook.fbreact.specs.NativeAppStateSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WindowFocusChangeListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
@@ -22,7 +23,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 @ReactModule(name = AppStateModule.NAME)
-public class AppStateModule extends NativeAppStateSpec
+public class AppStateModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener, WindowFocusChangeListener {
   public static final String TAG = AppStateModule.class.getSimpleName();
 
@@ -51,13 +52,13 @@ public class AppStateModule extends NativeAppStateSpec
   }
 
   @Override
-  public Map<String, Object> getTypedExportedConstants() {
+  public Map<String, Object> getConstants() {
     HashMap<String, Object> constants = new HashMap<>();
     constants.put(INITIAL_STATE, mAppState);
     return constants;
   }
 
-  @Override
+  @ReactMethod
   public void getCurrentAppState(Callback success, Callback error) {
     success.invoke(createAppStateEventMap());
   }
@@ -92,31 +93,14 @@ public class AppStateModule extends NativeAppStateSpec
   }
 
   private void sendEvent(String eventName, @Nullable Object data) {
-    ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
-    if (reactApplicationContext == null) {
-      return;
+    if (reactApplicationContext != null) {
+      reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit(eventName, data);
     }
-    // We don't gain anything interesting from logging here, and it's an extremely common
-    // race condition for an AppState event to be triggered as the Catalyst instance is being
-    // set up or torn down. So, just fail silently here.
-    if (!reactApplicationContext.hasActiveCatalystInstance()) {
-      return;
-    }
-    reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit(eventName, data);
   }
 
   private void sendAppStateChangeEvent() {
     sendEvent("appStateDidChange", createAppStateEventMap());
-  }
-
-  @Override
-  public void addListener(String eventName) {
-    // iOS only
-  }
-
-  @Override
-  public void removeListeners(double count) {
-    // iOS only
   }
 }

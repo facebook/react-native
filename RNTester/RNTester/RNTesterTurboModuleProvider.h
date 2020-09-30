@@ -25,9 +25,7 @@ std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name
  */
 std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name,
                                                          id<RCTTurboModule> instance,
-                                                         std::shared_ptr<CallInvoker> jsInvoker,
-                                                         std::shared_ptr<CallInvoker> nativeInvoker,
-                                                         id<RCTTurboModulePerformanceLogger> perfLogger);
+                                                         std::shared_ptr<CallInvoker> jsInvoker);
 
 } // namespace react
 } // namespace facebook

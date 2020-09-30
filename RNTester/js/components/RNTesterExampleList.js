@@ -16,7 +16,6 @@ const React = require('react');
 
 const {
   Platform,
-  PlatformColor,
   SectionList,
   StyleSheet,
   Text,
@@ -253,10 +252,10 @@ const styles = StyleSheet.create({
     ...Platform.select({
       // [TODO(macOS ISS#2323203)
       macos: {
-        backgroundColor: PlatformColor('controlBackgroundColor'),
+        backgroundColor: {semantic: 'controlBackgroundColor'},
       },
       ios: {
-        backgroundColor: PlatformColor('systemBackgroundColor'),
+        backgroundColor: {semantic: 'systemBackgroundColor'},
       },
       default: {
         // ]TODO(macOS ISS#2323203)
@@ -271,13 +270,13 @@ const styles = StyleSheet.create({
         backgroundColor: {
           semantic: 'unemphasizedSelectedContentBackgroundColor',
         },
-        color: PlatformColor('headerTextColor'),
+        color: {semantic: 'headerTextColor'},
       },
       ios: {
         backgroundColor: {
           semantic: 'systemGroupedBackgroundColor',
         },
-        color: PlatformColor('secondaryLabelColor'),
+        color: {semantic: 'secondaryLabelColor'},
       },
       default: {
         // ]TODO(macOS ISS#2323203)
@@ -293,10 +292,10 @@ const styles = StyleSheet.create({
     ...Platform.select({
       // [TODO(macOS ISS#2323203)
       macos: {
-        backgroundColor: PlatformColor('controlBackgroundColor'),
+        backgroundColor: {semantic: 'controlBackgroundColor'},
       },
       ios: {
-        backgroundColor: PlatformColor('secondarySystemGroupedBackgroundColor'),
+        backgroundColor: {semantic: 'secondarySystemGroupedBackgroundColor'},
       },
       default: {
         // ]TODO(macOS ISS#2323203)
@@ -320,10 +319,10 @@ const styles = StyleSheet.create({
     ...Platform.select({
       // [TODO(macOS ISS#2323203)
       macos: {
-        backgroundColor: PlatformColor('separatorColor'),
+        backgroundColor: {semantic: 'separatorColor'},
       },
       ios: {
-        backgroundColor: PlatformColor('separatorColor'),
+        backgroundColor: {semantic: 'separatorColor'},
       },
       default: {
         // ]TODO(macOS ISS#2323203)
@@ -337,8 +336,8 @@ const styles = StyleSheet.create({
   },
   sectionListContentContainer: Platform.select({
     // [TODO(macOS ISS#2323203)
-    macos: {backgroundColor: PlatformColor('separatorColor')},
-    ios: {backgroundColor: PlatformColor('separatorColor')},
+    macos: {backgroundColor: {semantic: 'separatorColor'}},
+    ios: {backgroundColor: {semantic: 'separatorColor'}},
     default: {backgroundColor: 'white'},
   }), // ]TODO(macOS ISS#2323203)
   rowTitleText: {
@@ -347,10 +346,10 @@ const styles = StyleSheet.create({
     ...Platform.select({
       // [TODO(macOS ISS#2323203)
       macos: {
-        color: PlatformColor('controlTextColor'),
+        color: {semantic: 'controlTextColor'},
       },
       ios: {
-        color: PlatformColor('labelColor'),
+        color: {semantic: 'labelColor'},
       },
       default: {
         // ]TODO(macOS ISS#2323203)

@@ -33,8 +33,6 @@ type NativeProps = $ReadOnly<{|
   selectedIndex?: WithDefault<Int32, 0>,
   enabled?: WithDefault<boolean, true>,
   tintColor?: ?ColorValue,
-  textColor?: ?ColorValue,
-  backgroundColor?: ?ColorValue,
   momentary?: WithDefault<boolean, false>,
 
   // Events

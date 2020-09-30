@@ -11,15 +11,17 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
-import com.facebook.fbreact.specs.NativeLogBoxSpec;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.util.RNLog;
 
 @ReactModule(name = LogBoxModule.NAME)
-public class LogBoxModule extends NativeLogBoxSpec {
+public class LogBoxModule extends ReactContextBaseJavaModule {
 
   public static final String NAME = "LogBox";
 
@@ -35,10 +37,12 @@ public class LogBoxModule extends NativeLogBoxSpec {
         new Runnable() {
           @Override
           public void run() {
-            if (mReactRootView == null && mDevSupportManager != null) {
+            if (mReactRootView == null) {
               mReactRootView = mDevSupportManager.createRootView("LogBox");
               if (mReactRootView == null) {
-                RNLog.e("Unable to launch logbox because react was unable to create the root view");
+                FLog.e(
+                    ReactConstants.TAG,
+                    "Unable to launch logbox because react was unable to create the root view");
               }
             }
           }
@@ -50,38 +54,37 @@ public class LogBoxModule extends NativeLogBoxSpec {
     return NAME;
   }
 
-  @Override
+  @ReactMethod
   public void show() {
-    if (mReactRootView != null) {
-      UiThreadUtil.runOnUiThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              if (mLogBoxDialog == null && mReactRootView != null) {
-                Activity context = getCurrentActivity();
-                if (context == null || context.isFinishing()) {
-                  RNLog.e(
-                      "Unable to launch logbox because react activity "
-                          + "is not available, here is the error that logbox would've displayed: ");
-                  return;
-                }
-                mLogBoxDialog = new LogBoxDialog(context, mReactRootView);
-                mLogBoxDialog.setCancelable(false);
-                mLogBoxDialog.show();
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            if (mLogBoxDialog == null) {
+              Activity context = getCurrentActivity();
+              if (context == null || context.isFinishing()) {
+                FLog.e(
+                    ReactConstants.TAG,
+                    "Unable to launch logbox because react activity "
+                        + "is not available, here is the error that logbox would've displayed: ");
+                return;
               }
+              mLogBoxDialog = new LogBoxDialog(context, mReactRootView);
+              mLogBoxDialog.setCancelable(false);
+              mLogBoxDialog.show();
             }
-          });
-    }
+          }
+        });
   }
 
-  @Override
+  @ReactMethod
   public void hide() {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             if (mLogBoxDialog != null) {
-              if (mReactRootView != null && mReactRootView.getParent() != null) {
+              if (mReactRootView.getParent() != null) {
                 ((ViewGroup) mReactRootView.getParent()).removeView(mReactRootView);
               }
               mLogBoxDialog.dismiss();

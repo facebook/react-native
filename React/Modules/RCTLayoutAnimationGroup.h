@@ -24,6 +24,7 @@
                         deletingLayoutAnimation:(RCTLayoutAnimation *)deletingLayoutAnimation
                                        callback:(RCTResponseSenderBlock)callback;
 
-- (instancetype)initWithConfig:(NSDictionary *)config callback:(RCTResponseSenderBlock)callback;
+- (instancetype)initWithConfig:(NSDictionary *)config
+                      callback:(RCTResponseSenderBlock)callback;
 
 @end

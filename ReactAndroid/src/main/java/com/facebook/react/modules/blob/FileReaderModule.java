@@ -8,14 +8,15 @@
 package com.facebook.react.modules.blob;
 
 import android.util.Base64;
-import com.facebook.fbreact.specs.NativeFileReaderModuleSpec;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
 @ReactModule(name = FileReaderModule.NAME)
-public class FileReaderModule extends NativeFileReaderModuleSpec {
+public class FileReaderModule extends ReactContextBaseJavaModule {
 
   public static final String NAME = "FileReaderModule";
   private static final String ERROR_INVALID_BLOB = "ERROR_INVALID_BLOB";
@@ -39,7 +40,7 @@ public class FileReaderModule extends NativeFileReaderModuleSpec {
     return null;
   }
 
-  @Override
+  @ReactMethod
   public void readAsText(ReadableMap blob, String encoding, Promise promise) {
     BlobModule blobModule = getBlobModule("readAsText");
 
@@ -64,7 +65,7 @@ public class FileReaderModule extends NativeFileReaderModuleSpec {
     }
   }
 
-  @Override
+  @ReactMethod
   public void readAsDataURL(ReadableMap blob, Promise promise) {
     BlobModule blobModule = getBlobModule("readAsDataURL");
 

@@ -16,8 +16,9 @@ using namespace facebook::react;
 
 TEST(RecoverableError, RunRethrowingAsRecoverableRecoverTest) {
   try {
-    RecoverableError::runRethrowingAsRecoverable<std::runtime_error>(
-        []() { throw std::runtime_error("catch me"); });
+    RecoverableError::runRethrowingAsRecoverable<std::runtime_error>([]() {
+        throw std::runtime_error("catch me");
+      });
     FAIL() << "Unthrown exception";
   } catch (const RecoverableError &err) {
     ASSERT_STREQ(err.what(), "facebook::react::Recoverable: catch me");
@@ -28,8 +29,9 @@ TEST(RecoverableError, RunRethrowingAsRecoverableRecoverTest) {
 
 TEST(RecoverableError, RunRethrowingAsRecoverableFallthroughTest) {
   try {
-    RecoverableError::runRethrowingAsRecoverable<std::runtime_error>(
-        []() { throw std::logic_error("catch me"); });
+    RecoverableError::runRethrowingAsRecoverable<std::runtime_error>([]() {
+        throw std::logic_error("catch me");
+      });
     FAIL() << "Unthrown exception";
   } catch (const RecoverableError &err) {
     FAIL() << "Recovered exception that should have fallen through";

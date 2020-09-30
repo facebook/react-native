@@ -29,7 +29,6 @@
 const start = Date.now();
 
 require('./setUpGlobals');
-require('./setUpPerformance');
 require('./setUpSystrace');
 require('./setUpErrorHandling');
 require('./polyfillPromise');

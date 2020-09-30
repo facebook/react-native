@@ -23,7 +23,8 @@
 {
   if ((self = [super initWithFrame:frame])) {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-    [self addTarget:self action:@selector(didChange) forControlEvents:UIControlEventValueChanged];
+    [self addTarget:self action:@selector(didChange)
+               forControlEvents:UIControlEventValueChanged];
 #else // [TODO(macOS ISS#2323203)
     self.target = self;
     self.action = @selector(didChange);
@@ -33,7 +34,7 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)didChange
 {

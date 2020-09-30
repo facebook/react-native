@@ -16,23 +16,6 @@
 namespace facebook {
 namespace react {
 
-/*
- * Describes a result of text measuring.
- */
-class TextMeasurement final {
- public:
-  class Attachment final {
-   public:
-    Rect frame;
-    bool isClipped;
-  };
-
-  using Attachments = std::vector<Attachment>;
-
-  Size size;
-  Attachments attachments;
-};
-
 // The Key type that is used for Text Measure Cache.
 // The equivalence and hashing operations of this are defined to respect the
 // nature of text measuring.
@@ -56,7 +39,7 @@ constexpr auto kSimpleThreadSafeCacheSizeCap = size_t{256};
  */
 using TextMeasureCache = SimpleThreadSafeCache<
     TextMeasureCacheKey,
-    TextMeasurement,
+    Size,
     kSimpleThreadSafeCacheSizeCap>;
 
 inline bool areTextAttributesEquivalentLayoutWise(

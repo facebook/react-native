@@ -110,11 +110,6 @@ class Share {
         const tintColor = processColor(options.tintColor);
 
         invariant(
-          tintColor == null || typeof tintColor === 'number',
-          'Unexpected color given for options.tintColor',
-        );
-
-        invariant(
           NativeActionSheetManager,
           'NativeActionSheetManager is not registered on iOS, but it should be.',
         );
@@ -125,7 +120,7 @@ class Share {
               typeof content.message === 'string' ? content.message : undefined,
             url: typeof content.url === 'string' ? content.url : undefined,
             subject: options.subject,
-            tintColor: typeof tintColor === 'number' ? tintColor : undefined,
+            tintColor: tintColor != null ? tintColor : undefined,
             excludedActivityTypes: options.excludedActivityTypes,
           },
           error => reject(error),

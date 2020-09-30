@@ -31,14 +31,6 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name);
 // Lookup functions
 Class<RCTComponentViewProtocol> RCTSafeAreaViewCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTScrollViewCls(void) __attribute__((used));
-Class<RCTComponentViewProtocol> RCTPullToRefreshViewCls(void) __attribute__((used));
-Class<RCTComponentViewProtocol> RCTActivityIndicatorViewCls(void) __attribute__((used));
-Class<RCTComponentViewProtocol> RCTSliderCls(void) __attribute__((used));
-Class<RCTComponentViewProtocol> RCTSwitchCls(void) __attribute__((used));
-Class<RCTComponentViewProtocol> RCTUnimplementedNativeViewCls(void) __attribute__((used));
-Class<RCTComponentViewProtocol> RCTModalHostViewCls(void) __attribute__((used));
-Class<RCTComponentViewProtocol> RCTARTSurfaceViewCls(void) __attribute__((used));
-Class<RCTComponentViewProtocol> RCTImageCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }

@@ -11,9 +11,7 @@ namespace facebook {
 namespace react {
 
 ShadowTreeRegistry::~ShadowTreeRegistry() {
-  assert(
-      registry_.size() == 0 &&
-      "Deallocation of non-empty `ShadowTreeRegistry`.");
+  assert(registry_.size() == 0 && "Deallocation of non-empty `ShadowTreeRegistry`.");
 }
 
 void ShadowTreeRegistry::add(std::unique_ptr<ShadowTree> &&shadowTree) const {

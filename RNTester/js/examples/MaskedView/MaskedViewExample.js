@@ -35,12 +35,12 @@ class AnimatedMaskExample extends React.Component<Props> {
       Animated.sequence([
         Animated.timing(this._maskScaleAnimatedValue, {
           toValue: 1.3,
-          duration: 750,
+          timing: 750,
           useNativeDriver: true,
         }),
         Animated.timing(this._maskScaleAnimatedValue, {
           toValue: 1,
-          duration: 750,
+          timing: 750,
           useNativeDriver: true,
         }),
       ]),
@@ -49,7 +49,7 @@ class AnimatedMaskExample extends React.Component<Props> {
     Animated.loop(
       Animated.timing(this._maskRotateAnimatedValue, {
         toValue: 360,
-        duration: 2000,
+        timing: 2000,
         useNativeDriver: true,
       }),
     ).start();
@@ -76,9 +76,6 @@ class AnimatedMaskExample extends React.Component<Props> {
                 {
                   rotate: this._maskRotateAnimatedValue.interpolate({
                     inputRange: [0, 360],
-                    /* $FlowFixMe(>=0.38.0) - Flow error detected during the
-                     * deployment of v0.38.0. To see the error, remove this
-                     * comment and run flow */
                     outputRange: ['0deg', '360deg'],
                   }),
                 },

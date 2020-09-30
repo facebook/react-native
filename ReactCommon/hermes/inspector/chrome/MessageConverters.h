@@ -15,7 +15,6 @@
 #include <hermes/hermes.h>
 #include <hermes/inspector/chrome/MessageTypes.h>
 #include <hermes/inspector/chrome/RemoteObjectsTable.h>
-#include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 
 namespace facebook {
@@ -99,13 +98,13 @@ CallFrame makeCallFrame(
     const facebook::hermes::debugger::CallFrameInfo &callFrameInfo,
     const facebook::hermes::debugger::LexicalInfo &lexicalInfo,
     facebook::hermes::inspector::chrome::RemoteObjectsTable &objTable,
-    jsi::Runtime &runtime,
+    HermesRuntime &runtime,
     const facebook::hermes::debugger::ProgramState &state);
 
 std::vector<CallFrame> makeCallFrames(
     const facebook::hermes::debugger::ProgramState &state,
     facebook::hermes::inspector::chrome::RemoteObjectsTable &objTable,
-    jsi::Runtime &runtime);
+    HermesRuntime &runtime);
 
 } // namespace debugger
 
@@ -123,8 +122,7 @@ RemoteObject makeRemoteObject(
     facebook::jsi::Runtime &runtime,
     const facebook::jsi::Value &value,
     facebook::hermes::inspector::chrome::RemoteObjectsTable &objTable,
-    const std::string &objectGroup,
-    bool byValue = false);
+    const std::string &objectGroup);
 
 } // namespace runtime
 

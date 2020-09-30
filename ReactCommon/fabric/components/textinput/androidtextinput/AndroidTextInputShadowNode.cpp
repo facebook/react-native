@@ -32,20 +32,17 @@ void AndroidTextInputShadowNode::setContextContainer(
 AttributedString AndroidTextInputShadowNode::getAttributedString() const {
   // Use BaseTextShadowNode to get attributed string from children
   auto childTextAttributes = TextAttributes::defaultTextAttributes();
-  childTextAttributes.apply(getConcreteProps().textAttributes);
-
-  auto attributedString = AttributedString{};
-  auto attachments = BaseTextShadowNode::Attachments{};
-  BaseTextShadowNode::buildAttributedString(
-      childTextAttributes, *this, attributedString, attachments);
+  childTextAttributes.apply(getProps()->textAttributes);
+  auto attributedString =
+      BaseTextShadowNode::getAttributedString(childTextAttributes, *this);
 
   // BaseTextShadowNode only gets children. We must detect and prepend text
   // value attributes manually.
-  if (!getConcreteProps().text.empty()) {
+  if (!getProps()->text.empty()) {
     auto textAttributes = TextAttributes::defaultTextAttributes();
-    textAttributes.apply(getConcreteProps().textAttributes);
+    textAttributes.apply(getProps()->textAttributes);
     auto fragment = AttributedString::Fragment{};
-    fragment.string = getConcreteProps().text;
+    fragment.string = getProps()->text;
     fragment.textAttributes = textAttributes;
     // If the TextInput opacity is 0 < n < 1, the opacity of the TextInput and
     // text value's background will stack. This is a hack/workaround to prevent
@@ -67,14 +64,14 @@ AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
   // Return placeholder text, since text and children are empty.
   auto textAttributedString = AttributedString{};
   auto fragment = AttributedString::Fragment{};
-  fragment.string = getConcreteProps().placeholder;
+  fragment.string = getProps()->placeholder;
 
   if (fragment.string.empty()) {
     fragment.string = " ";
   }
 
   auto textAttributes = TextAttributes::defaultTextAttributes();
-  textAttributes.apply(getConcreteProps().textAttributes);
+  textAttributes.apply(getProps()->textAttributes);
 
   // If there's no text, it's possible that this Fragment isn't actually
   // appended to the AttributedString (see implementation of appendFragment)
@@ -89,25 +86,6 @@ void AndroidTextInputShadowNode::setTextLayoutManager(
     SharedTextLayoutManager textLayoutManager) {
   ensureUnsealed();
   textLayoutManager_ = textLayoutManager;
-}
-
-AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
-    const {
-  auto const &state = getStateData();
-
-  auto reactTreeAttributedString = getAttributedString();
-
-  // Sometimes the treeAttributedString will only differ from the state
-  // not by inherent properties (string or prop attributes), but by the frame of
-  // the parent which has changed Thus, we can't directly compare the entire
-  // AttributedString
-  bool treeAttributedStringChanged =
-      !state.reactTreeAttributedString.compareTextAttributesWithoutFrame(
-          reactTreeAttributedString);
-
-  return (
-      !treeAttributedStringChanged ? state.attributedString
-                                   : reactTreeAttributedString);
 }
 
 void AndroidTextInputShadowNode::updateStateIfNeeded() {
@@ -135,42 +113,34 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   // in the AttributedString, and when State is updated, it needs some way to
   // reconstruct a Fragment with default TextAttributes.
   auto defaultTextAttributes = TextAttributes::defaultTextAttributes();
-  defaultTextAttributes.apply(getConcreteProps().textAttributes);
-
-  auto newEventCount =
-      (state.reactTreeAttributedString == reactTreeAttributedString
-           ? 0
-           : getConcreteProps().mostRecentEventCount);
-  auto newAttributedString = getMostRecentAttributedString();
+  defaultTextAttributes.apply(getProps()->textAttributes);
 
   // Even if we're here and updating state, it may be only to update the layout
   // manager If that is the case, make sure we don't update text: pass in the
   // current attributedString unchanged, and pass in zero for the "event count"
   // so no changes are applied There's no way to prevent a state update from
   // flowing to Java, so we just ensure it's a noop in those cases.
-  setStateData(AndroidTextInputState{newEventCount,
-                                     newAttributedString,
-                                     reactTreeAttributedString,
-                                     getConcreteProps().paragraphAttributes,
-                                     defaultTextAttributes,
-                                     ShadowView(*this),
-                                     textLayoutManager_,
-                                     state.defaultThemePaddingStart,
-                                     state.defaultThemePaddingEnd,
-                                     state.defaultThemePaddingTop,
-                                     state.defaultThemePaddingBottom});
+  setStateData(AndroidTextInputState{
+      (state.reactTreeAttributedString == reactTreeAttributedString
+           ? 0
+           : getProps()->mostRecentEventCount),
+      (state.reactTreeAttributedString == reactTreeAttributedString
+           ? state.attributedString
+           : reactTreeAttributedString),
+      reactTreeAttributedString,
+      getProps()->paragraphAttributes,
+      defaultTextAttributes,
+      ShadowView(*this),
+      textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode
 
 Size AndroidTextInputShadowNode::measure(
     LayoutConstraints layoutConstraints) const {
-  // Layout is called right after measure.
-  // Measure is marked as `const`, and `layout` is not; so State can be updated
-  // during layout, but not during `measure`. If State is out-of-date in layout,
-  // it's too late: measure will have already operated on old State. Thus, we
-  // use the same value here that we *will* use in layout to update the state.
-  AttributedString attributedString = getMostRecentAttributedString();
+  auto const &state = getStateData();
+
+  AttributedString attributedString = state.attributedString;
 
   if (attributedString.isEmpty()) {
     attributedString = getPlaceholderAttributedString();
@@ -180,12 +150,10 @@ Size AndroidTextInputShadowNode::measure(
     return {0, 0};
   }
 
-  return textLayoutManager_
-      ->measure(
-          AttributedStringBox{attributedString},
-          getConcreteProps().paragraphAttributes,
-          layoutConstraints)
-      .size;
+  return textLayoutManager_->measure(
+      AttributedStringBox{attributedString},
+      getProps()->paragraphAttributes,
+      layoutConstraints);
 }
 
 void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {

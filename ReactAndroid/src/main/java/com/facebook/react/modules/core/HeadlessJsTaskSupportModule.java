@@ -8,9 +8,10 @@
 package com.facebook.react.modules.core;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.fbreact.specs.NativeHeadlessJsTaskSupportSpec;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
 import com.facebook.react.module.annotations.ReactModule;
 
@@ -19,7 +20,7 @@ import com.facebook.react.module.annotations.ReactModule;
  * it can e.g. release any resources, stop timers etc.
  */
 @ReactModule(name = HeadlessJsTaskSupportModule.NAME)
-public class HeadlessJsTaskSupportModule extends NativeHeadlessJsTaskSupportSpec {
+public class HeadlessJsTaskSupportModule extends ReactContextBaseJavaModule {
 
   public static final String NAME = "HeadlessJsTaskSupport";
 
@@ -32,10 +33,8 @@ public class HeadlessJsTaskSupportModule extends NativeHeadlessJsTaskSupportSpec
     return NAME;
   }
 
-  @Override
-  public void notifyTaskRetry(double taskIdDouble, Promise promise) {
-    int taskId = (int) taskIdDouble;
-
+  @ReactMethod
+  public void notifyTaskRetry(int taskId, Promise promise) {
     HeadlessJsTaskContext headlessJsTaskContext =
         HeadlessJsTaskContext.getInstance(getReactApplicationContext());
     if (headlessJsTaskContext.isTaskRunning(taskId)) {
@@ -50,10 +49,8 @@ public class HeadlessJsTaskSupportModule extends NativeHeadlessJsTaskSupportSpec
     }
   }
 
-  @Override
-  public void notifyTaskFinished(double taskIdDouble) {
-    int taskId = (int) taskIdDouble;
-
+  @ReactMethod
+  public void notifyTaskFinished(int taskId) {
     HeadlessJsTaskContext headlessJsTaskContext =
         HeadlessJsTaskContext.getInstance(getReactApplicationContext());
     if (headlessJsTaskContext.isTaskRunning(taskId)) {

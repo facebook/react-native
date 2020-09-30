@@ -16,8 +16,8 @@ import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 export interface Spec extends TurboModule {
   +showMessage: (
     message: string,
-    withColor: ?number,
-    withBackgroundColor: ?number,
+    color: Object,
+    backgroundColor: Object,
   ) => void;
   +hide: () => void;
 }

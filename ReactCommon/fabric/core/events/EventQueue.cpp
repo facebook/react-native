@@ -105,7 +105,8 @@ void EventQueue::flushStateUpdates() const {
   }
 
   for (const auto &stateUpdate : stateUpdateQueue) {
-    statePipe_(stateUpdate);
+    auto pair = stateUpdate();
+    statePipe_(pair.second, pair.first);
   }
 }
 

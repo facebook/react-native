@@ -84,7 +84,9 @@ public:
     return *this;
   }
 
-  ~ScopedGlobalRef() { reset(); }
+  ~ScopedGlobalRef() {
+    reset();
+  }
 
   /**
    * Deletes the currently held reference and reassigns a new one to the
@@ -118,7 +120,9 @@ public:
   /**
    * Returns true if the underlying JNI reference is not NULL.
    */
-  operator bool() const { return mGlobalRef != NULL; }
+  operator bool() const {
+    return mGlobalRef != NULL;
+  }
 
   ScopedGlobalRef(const ScopedGlobalRef& ref) = delete;
   ScopedGlobalRef& operator=(const ScopedGlobalRef& other) = delete;

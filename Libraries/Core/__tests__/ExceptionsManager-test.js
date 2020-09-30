@@ -137,9 +137,8 @@ describe('ExceptionsManager', () => {
           message +
           '\n\n' +
           'This error is located at:' +
-          capturedErrorDefaults.componentStack +
-          ', js engine: ' +
-          jsEngine,
+          capturedErrorDefaults.componentStack,
+        // JS engine omitted here!
       );
     });
 
@@ -294,8 +293,7 @@ describe('ExceptionsManager', () => {
       );
       expect(exceptionData.isFatal).toBe(false);
       expect(mockError.mock.calls[0]).toHaveLength(1);
-      expect(mockError.mock.calls[0][0]).toBeInstanceOf(Error);
-      expect(mockError.mock.calls[0][0].toString()).toBe(formattedMessage);
+      expect(mockError.mock.calls[0][0]).toBe(formattedMessage);
     });
 
     test('logging a string', () => {
@@ -463,23 +461,6 @@ describe('ExceptionsManager', () => {
   });
 
   describe('unstable_setExceptionDecorator', () => {
-    let mockError;
-    beforeEach(() => {
-      // NOTE: We initialise a fresh mock every time using spyOn, above.
-      // We can't use `console._errorOriginal` for this, because that's a bound
-      // (=wrapped) version of the mock and Jest does not approve.
-      mockError = console.error;
-      ExceptionsManager.installConsoleErrorReporter();
-    });
-
-    afterEach(() => {
-      // There is no uninstallConsoleErrorReporter. Do this so the next install
-      // works.
-      console.error = console._errorOriginal;
-      delete console._errorOriginal;
-      delete console.reportErrorsAsExceptions;
-    });
-
     test('modifying the exception data', () => {
       const error = new Error('Some error happened');
       const decorator = jest.fn().mockImplementation(data => ({
@@ -528,7 +509,7 @@ describe('ExceptionsManager', () => {
       expect(nativeReportException).toHaveBeenCalled();
     });
 
-    test('prevents decorator recursion from error handler', () => {
+    test('prevents decorator recursion', () => {
       const error = new Error('Some error happened');
       const decorator = jest.fn().mockImplementation(data => {
         console.error('Logging an error within the decorator');
@@ -538,87 +519,17 @@ describe('ExceptionsManager', () => {
         };
       });
 
+      ExceptionsManager.installConsoleErrorReporter();
       ExceptionsManager.unstable_setExceptionDecorator(decorator);
       ExceptionsManager.handleException(error, true);
 
-      expect(nativeReportException).toHaveBeenCalledTimes(1);
-      expect(nativeReportException.mock.calls[0][0].message).toMatch(
-        /decorated: .*Some error happened/,
-      );
-      expect(mockError).toHaveBeenCalledTimes(2);
-      expect(mockError.mock.calls[0][0]).toMatch(
-        /Logging an error within the decorator/,
-      );
-      expect(mockError.mock.calls[1][0]).toMatch(
-        /decorated: .*Some error happened/,
-      );
-    });
-
-    test('prevents decorator recursion from console.error', () => {
-      const error = new Error('Some error happened');
-      const decorator = jest.fn().mockImplementation(data => {
-        console.error('Logging an error within the decorator');
-        return {
-          ...data,
-          message: 'decorated: ' + data.message,
-        };
-      });
-
-      ExceptionsManager.unstable_setExceptionDecorator(decorator);
-      console.error(error);
-
+      expect(decorator).toHaveBeenCalled();
       expect(nativeReportException).toHaveBeenCalledTimes(2);
       expect(nativeReportException.mock.calls[0][0].message).toMatch(
         /Logging an error within the decorator/,
       );
       expect(nativeReportException.mock.calls[1][0].message).toMatch(
         /decorated: .*Some error happened/,
-      );
-      expect(mockError).toHaveBeenCalledTimes(2);
-      // console.error calls are chained without exception pre-processing, so decorator doesn't apply
-      expect(mockError.mock.calls[0][0].toString()).toMatch(
-        /Error: Some error happened/,
-      );
-      expect(mockError.mock.calls[1][0]).toMatch(
-        /Logging an error within the decorator/,
-      );
-    });
-
-    test('can handle throwing decorators recursion when exception is thrown', () => {
-      const error = new Error('Some error happened');
-      const decorator = jest.fn().mockImplementation(data => {
-        throw new Error('Throwing an error within the decorator');
-      });
-
-      ExceptionsManager.unstable_setExceptionDecorator(decorator);
-      ExceptionsManager.handleException(error, true);
-
-      expect(nativeReportException).toHaveBeenCalledTimes(1);
-      // Exceptions in decorators are ignored and the decorator is not applied
-      expect(nativeReportException.mock.calls[0][0].message).toMatch(
-        /Error: Some error happened/,
-      );
-      expect(mockError).toHaveBeenCalledTimes(1);
-      expect(mockError.mock.calls[0][0]).toMatch(/Error: Some error happened/);
-    });
-
-    test('can handle throwing decorators recursion when exception is logged', () => {
-      const error = new Error('Some error happened');
-      const decorator = jest.fn().mockImplementation(data => {
-        throw new Error('Throwing an error within the decorator');
-      });
-
-      ExceptionsManager.unstable_setExceptionDecorator(decorator);
-      console.error(error);
-
-      expect(nativeReportException).toHaveBeenCalledTimes(1);
-      // Exceptions in decorators are ignored and the decorator is not applied
-      expect(nativeReportException.mock.calls[0][0].message).toMatch(
-        /Error: Some error happened/,
-      );
-      expect(mockError).toHaveBeenCalledTimes(1);
-      expect(mockError.mock.calls[0][0].toString()).toMatch(
-        /Error: Some error happened/,
       );
     });
   });

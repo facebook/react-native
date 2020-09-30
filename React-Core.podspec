@@ -17,7 +17,7 @@ else
 end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2020.01.13.00'
+folly_version = '2018.10.22.00'
 boost_compiler_flags = '-Wno-documentation'
 
 header_subspecs = {
@@ -39,12 +39,11 @@ Pod::Spec.new do |s|
   s.name                   = "React-Core"
   s.version                = version
   s.summary                = "The core of React Native."
-  s.homepage               = "https://reactnative.dev/"
+  s.homepage               = "http://facebook.github.io/react-native/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "10.0", :tvos => "10.0", :osx => "10.13" } # TODO(macOS ISS#2323203)
+  s.platforms              = { :ios => "9.0", :tvos => "9.2", :osx => "10.13" } # TODO(macOS ISS#2323203)
   s.source                 = source
-  s.resource_bundle        = { "AccessibilityResources" => ["React/AccessibilityResources/*.lproj"]}
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
   s.framework              = "JavaScriptCore"
@@ -93,7 +92,7 @@ Pod::Spec.new do |s|
                       "ReactCommon/hermes/inspector/detail/*.{cpp,h}"
     ss.pod_target_xcconfig = { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" }
     ss.dependency "RCT-Folly/Futures"
-    ss.dependency "hermes", "~> 0.5.0"
+    ss.dependency "hermes", "~> 0.4.1"
   end
   # ]TODO(macOS GH#214)
 

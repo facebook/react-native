@@ -11,13 +11,6 @@
 #include "YGEnums.h"
 #include "YGMacros.h"
 
-#if defined(_MSC_VER) && defined(__clang__)
-#define COMPILING_WITH_CLANG_ON_WINDOWS
-#endif
-#if defined(COMPILING_WITH_CLANG_ON_WINDOWS)
-#include <limits>
-constexpr float YGUndefined = std::numeric_limits<float>::quiet_NaN();
-#else
 YG_EXTERN_C_BEGIN
 
 // Not defined in MSVC++
@@ -27,7 +20,6 @@ static const uint32_t __nan = 0x7fc00000;
 #endif
 
 #define YGUndefined NAN
-#endif
 
 typedef struct YGValue {
   float value;
@@ -38,10 +30,7 @@ YOGA_EXPORT extern const YGValue YGValueAuto;
 YOGA_EXPORT extern const YGValue YGValueUndefined;
 YOGA_EXPORT extern const YGValue YGValueZero;
 
-#if !defined(COMPILING_WITH_CLANG_ON_WINDOWS)
 YG_EXTERN_C_END
-#endif
-#undef COMPILING_WITH_CLANG_ON_WINDOWS
 
 #ifdef __cplusplus
 

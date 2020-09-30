@@ -31,7 +31,7 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   Props(Props const &sourceProps, RawProps const &rawProps);
   virtual ~Props() = default;
 
-  std::string nativeId;
+  std::string const nativeId;
 
   /*
    * Special value that represents generation number of `Props` object, which

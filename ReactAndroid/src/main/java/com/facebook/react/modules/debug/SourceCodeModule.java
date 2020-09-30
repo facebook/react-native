@@ -37,7 +37,7 @@ public class SourceCodeModule extends NativeSourceCodeSpec {
 
     String sourceURL =
         Assertions.assertNotNull(
-            getReactApplicationContext().getSourceURL(),
+            getReactApplicationContext().getCatalystInstance().getSourceURL(),
             "No source URL loaded, have you initialised the instance?");
 
     constants.put("scriptURL", sourceURL);

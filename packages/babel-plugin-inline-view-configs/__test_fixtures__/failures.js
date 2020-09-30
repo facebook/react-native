@@ -16,13 +16,13 @@ const COMMANDS_EXPORTED_WITH_DIFFERENT_NAME = `
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponentType} from 'codegenNativeComponent';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 |}>;
 
-type NativeType = NativeComponentType<ModuleProps>;
+type NativeType = NativeComponent<ModuleProps>;
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>) => void;
@@ -39,13 +39,13 @@ const OTHER_COMMANDS_EXPORT = `
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponentType} from 'codegenNativeComponent';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 |}>;
 
-type NativeType = NativeComponentType<ModuleProps>;
+type NativeType = NativeComponent<ModuleProps>;
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>) => void;
@@ -60,7 +60,7 @@ const COMMANDS_EXPORTED_WITH_SHORTHAND = `
 // @flow
 
 const codegenNativeComponent = require('codegenNativeComponent');
-import type {NativeComponentType} from 'codegenNativeComponent';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 import type {ViewProps} from 'ViewPropTypes';
 
@@ -68,7 +68,7 @@ type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 |}>;
 
-type NativeType = NativeComponentType<ModuleProps>;
+type NativeType = NativeComponent<ModuleProps>;
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>) => void;

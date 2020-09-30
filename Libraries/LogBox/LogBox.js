@@ -13,7 +13,7 @@
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
 import * as LogBoxData from './Data/LogBoxData';
-import {parseLogBoxLog, parseInterpolation} from './Data/parseLogBoxLog';
+import {parseLogBoxLog} from './Data/parseLogBoxLog';
 
 import type {IgnorePattern} from './Data/LogBoxData';
 
@@ -37,12 +37,13 @@ if (__DEV__) {
   };
 
   LogBox = {
-    ignoreLogs: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
-      LogBoxData.addIgnorePatterns(patterns);
+    // TODO: deprecated, replace with ignoreLogs
+    ignoreWarnings: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
+      LogBox.ignoreLogs(patterns);
     },
 
-    ignoreAllLogs: (value?: ?boolean): void => {
-      LogBoxData.setDisabled(value == null ? true : value);
+    ignoreLogs: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
+      LogBoxData.addIgnorePatterns(patterns);
     },
 
     uninstall: (): void => {
@@ -63,26 +64,18 @@ if (__DEV__) {
         registerWarning(...args);
       };
 
-      if ((console: any).disableYellowBox === true) {
+      if ((console: any).disableLogBox === true) {
         LogBoxData.setDisabled(true);
-        console.warn(
-          'console.disableYellowBox has been deprecated and will be removed in a future release. Please use LogBox.ignoreAllLogs(value) instead.',
-        );
       }
 
-      (Object.defineProperty: any)(console, 'disableYellowBox', {
+      (Object.defineProperty: any)(console, 'disableLogBox', {
         configurable: true,
         get: () => LogBoxData.isDisabled(),
-        set: value => {
-          LogBoxData.setDisabled(value);
-          console.warn(
-            'console.disableYellowBox has been deprecated and will be removed in a future release. Please use LogBox.ignoreAllLogs(value) instead.',
-          );
-        },
+        set: value => LogBoxData.setDisabled(value),
       });
 
       if (Platform.isTesting) {
-        LogBoxData.setDisabled(true);
+        (console: any).disableLogBox = true;
       }
 
       RCTLog.setWarningHandler((...args) => {
@@ -102,12 +95,6 @@ if (__DEV__) {
   };
 
   const registerWarning = (...args): void => {
-    // Let warnings within LogBox itself fall through.
-    if (LogBoxData.isLogBoxErrorMessage(String(args[0]))) {
-      error.call(console, ...args);
-      return;
-    }
-
     try {
       if (!isRCTLogAdviceWarning(...args)) {
         const {category, message, componentStack} = parseLogBoxLog(args);
@@ -116,12 +103,14 @@ if (__DEV__) {
           // Be sure to pass LogBox warnings through.
           warn.call(console, ...args);
 
-          LogBoxData.addLog({
-            level: 'warn',
-            category,
-            message,
-            componentStack,
-          });
+          if (!LogBoxData.isLogBoxErrorMessage(message.content)) {
+            LogBoxData.addLog({
+              level: 'warn',
+              category,
+              message,
+              componentStack,
+            });
+          }
         }
       }
     } catch (err) {
@@ -130,21 +119,9 @@ if (__DEV__) {
   };
 
   const registerError = (...args): void => {
-    // Let errors within LogBox itself fall through.
-    if (LogBoxData.isLogBoxErrorMessage(args[0])) {
-      error.call(console, ...args);
-      return;
-    }
-
     try {
       if (!isWarningModuleWarning(...args)) {
-        // Only show LogBox for the 'warning' module, otherwise pass through.
-        // By passing through, this will get picked up by the React console override,
-        // potentially adding the component stack. React then passes it back to the
-        // React Native ExceptionsManager, which reports it to LogBox as an error.
-        //
-        // The 'warning' module needs to be handled here because React internally calls
-        // `console.error('Warning: ')` with the component stack already included.
+        // Only show LogBox for the `warning` module, otherwise pass through and skip.
         error.call(console, ...args);
         return;
       }
@@ -167,17 +144,17 @@ if (__DEV__) {
       const {category, message, componentStack} = parseLogBoxLog(args);
 
       if (!LogBoxData.isMessageIgnored(message.content)) {
-        // Interpolate the message so they are formatted for adb and other CLIs.
-        // This is different than the message.content above because it includes component stacks.
-        const interpolated = parseInterpolation(args);
-        error.call(console, interpolated.message.content);
+        // Be sure to pass LogBox errors through.
+        error.call(console, ...args);
 
-        LogBoxData.addLog({
-          level,
-          category,
-          message,
-          componentStack,
-        });
+        if (!LogBoxData.isLogBoxErrorMessage(message.content)) {
+          LogBoxData.addLog({
+            level,
+            category,
+            message,
+            componentStack,
+          });
+        }
       }
     } catch (err) {
       LogBoxData.reportLogBoxError(err);
@@ -185,11 +162,12 @@ if (__DEV__) {
   };
 } else {
   LogBox = {
-    ignoreLogs: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
+    // TODO: deprecated, replace with ignoreLogs
+    ignoreWarnings: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
       // Do nothing.
     },
 
-    ignoreAllLogs: (value?: ?boolean): void => {
+    ignoreLogs: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
       // Do nothing.
     },
 
@@ -204,8 +182,9 @@ if (__DEV__) {
 }
 
 module.exports = (LogBox: {
+  // TODO: deprecated, replace with ignoreLogs
+  ignoreWarnings($ReadOnlyArray<IgnorePattern>): void,
   ignoreLogs($ReadOnlyArray<IgnorePattern>): void,
-  ignoreAllLogs(?boolean): void,
   install(): void,
   uninstall(): void,
   ...

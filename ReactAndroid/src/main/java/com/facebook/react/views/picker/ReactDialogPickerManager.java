@@ -8,8 +8,6 @@
 package com.facebook.react.views.picker;
 
 import android.widget.Spinner;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerDelegate;
@@ -42,10 +40,5 @@ public class ReactDialogPickerManager extends ReactPickerManager
   @Override
   protected ViewManagerDelegate<ReactPicker> getDelegate() {
     return mDelegate;
-  }
-
-  @Override
-  public void setBackgroundColor(@NonNull ReactPicker view, @Nullable Integer backgroundColor) {
-    view.setStagedBackgroundColor(backgroundColor);
   }
 }

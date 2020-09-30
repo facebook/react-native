@@ -30,11 +30,9 @@ std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name
 
 std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name,
                                                          id<RCTTurboModule> instance,
-                                                         std::shared_ptr<CallInvoker> jsInvoker,
-                                                         std::shared_ptr<CallInvoker> nativeInvoker,
-                                                         id<RCTTurboModulePerformanceLogger> perfLogger) {
+                                                         std::shared_ptr<CallInvoker> jsInvoker) {
   if (name == "SampleTurboModule") {
-    return std::make_shared<NativeSampleTurboModuleSpecJSI>(instance, jsInvoker, nativeInvoker, perfLogger);
+    return std::make_shared<NativeSampleTurboModuleSpecJSI>(instance, jsInvoker);
   }
 
   return nullptr;

@@ -7,16 +7,16 @@
 
 package com.facebook.react;
 
+import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.devsupport.JSCHeapCapture;
-import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.devsupport.JSDevSupport;
 import com.facebook.react.module.annotations.ReactModuleList;
-import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Provider;
 
 /**
  * Package defining core framework modules (e.g. UIManager). It should be used for modules that
@@ -26,59 +26,29 @@ import java.util.Map;
 @ReactModuleList(
     nativeModules = {
       JSCHeapCapture.class,
+      JSDevSupport.class,
     })
-public class DebugCorePackage extends TurboReactPackage {
-  public DebugCorePackage() {}
+/* package */ class DebugCorePackage extends LazyReactPackage {
+
+  DebugCorePackage() {}
 
   @Override
-  public NativeModule getModule(String name, ReactApplicationContext reactContext) {
-    switch (name) {
-      case JSCHeapCapture.TAG:
-        return new JSCHeapCapture(reactContext);
-      default:
-        throw new IllegalArgumentException(
-            "In CoreModulesPackage, could not find Native module for " + name);
-    }
+  public List<ModuleSpec> getNativeModules(final ReactApplicationContext reactContext) {
+    List<ModuleSpec> moduleSpecList = new ArrayList<>();
+    moduleSpecList.add(
+        ModuleSpec.nativeModuleSpec(
+            JSCHeapCapture.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new JSCHeapCapture(reactContext);
+              }
+            }));
+    return moduleSpecList;
   }
 
   @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
-    try {
-      Class<?> reactModuleInfoProviderClass =
-          Class.forName("com.facebook.react.DebugCorePackage$$ReactModuleInfoProvider");
-      return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
-    } catch (ClassNotFoundException e) {
-      // In OSS case, the annotation processor does not run. We fall back on creating this by hand
-      Class<? extends NativeModule>[] moduleList = new Class[] {JSCHeapCapture.class};
-
-      final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
-      for (Class<? extends NativeModule> moduleClass : moduleList) {
-        ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
-
-        reactModuleInfoMap.put(
-            reactModule.name(),
-            new ReactModuleInfo(
-                reactModule.name(),
-                moduleClass.getName(),
-                reactModule.canOverrideExistingModule(),
-                reactModule.needsEagerInit(),
-                reactModule.hasConstants(),
-                reactModule.isCxxModule(),
-                TurboModule.class.isAssignableFrom(moduleClass)));
-      }
-
-      return new ReactModuleInfoProvider() {
-        @Override
-        public Map<String, ReactModuleInfo> getReactModuleInfos() {
-          return reactModuleInfoMap;
-        }
-      };
-    } catch (InstantiationException e) {
-      throw new RuntimeException(
-          "No ReactModuleInfoProvider for DebugCorePackage$$ReactModuleInfoProvider", e);
-    } catch (IllegalAccessException e) {
-      throw new RuntimeException(
-          "No ReactModuleInfoProvider for DebugCorePackage$$ReactModuleInfoProvider", e);
-    }
+    return LazyReactPackage.getReactModuleInfoProviderViaReflection(this);
   }
 }

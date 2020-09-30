@@ -13,10 +13,11 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 import androidx.annotation.Nullable;
-import com.facebook.fbreact.specs.NativeBlobModuleSpec;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
@@ -42,7 +43,7 @@ import okhttp3.ResponseBody;
 import okio.ByteString;
 
 @ReactModule(name = BlobModule.NAME)
-public class BlobModule extends NativeBlobModuleSpec {
+public class BlobModule extends ReactContextBaseJavaModule {
 
   public static final String NAME = "BlobModule";
 
@@ -155,14 +156,14 @@ public class BlobModule extends NativeBlobModuleSpec {
   }
 
   @Override
-  public @Nullable Map<String, Object> getTypedExportedConstants() {
+  public @Nullable Map<String, Object> getConstants() {
     // The application can register BlobProvider as a ContentProvider so that blobs are resolvable.
     // If it does, it needs to tell us what authority was used via this string resource.
     Resources resources = getReactApplicationContext().getResources();
     String packageName = getReactApplicationContext().getPackageName();
     int resourceId = resources.getIdentifier("blob_provider_authority", "string", packageName);
     if (resourceId == 0) {
-      return MapBuilder.<String, Object>of();
+      return null;
     }
 
     return MapBuilder.<String, Object>of(
@@ -295,7 +296,7 @@ public class BlobModule extends NativeBlobModuleSpec {
     return null;
   }
 
-  @Override
+  @ReactMethod
   public void addNetworkingHandler() {
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
@@ -308,10 +309,8 @@ public class BlobModule extends NativeBlobModuleSpec {
     }
   }
 
-  @Override
-  public void addWebSocketHandler(final double idDouble) {
-    final int id = (int) idDouble;
-
+  @ReactMethod
+  public void addWebSocketHandler(final int id) {
     WebSocketModule webSocketModule = getWebSocketModule("addWebSocketHandler");
 
     if (webSocketModule != null) {
@@ -319,10 +318,8 @@ public class BlobModule extends NativeBlobModuleSpec {
     }
   }
 
-  @Override
-  public void removeWebSocketHandler(final double idDouble) {
-    final int id = (int) idDouble;
-
+  @ReactMethod
+  public void removeWebSocketHandler(final int id) {
     WebSocketModule webSocketModule = getWebSocketModule("removeWebSocketHandler");
 
     if (webSocketModule != null) {
@@ -330,10 +327,8 @@ public class BlobModule extends NativeBlobModuleSpec {
     }
   }
 
-  @Override
-  public void sendOverSocket(ReadableMap blob, double idDouble) {
-    int id = (int) idDouble;
-
+  @ReactMethod
+  public void sendOverSocket(ReadableMap blob, int id) {
     WebSocketModule webSocketModule = getWebSocketModule("sendOverSocket");
 
     if (webSocketModule != null) {
@@ -347,7 +342,7 @@ public class BlobModule extends NativeBlobModuleSpec {
     }
   }
 
-  @Override
+  @ReactMethod
   public void createFromParts(ReadableArray parts, String blobId) {
     int totalBlobSize = 0;
     ArrayList<byte[]> partList = new ArrayList<>(parts.size());
@@ -375,7 +370,7 @@ public class BlobModule extends NativeBlobModuleSpec {
     store(buffer.array(), blobId);
   }
 
-  @Override
+  @ReactMethod
   public void release(String blobId) {
     remove(blobId);
   }

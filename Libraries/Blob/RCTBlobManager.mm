@@ -38,7 +38,6 @@ RCT_EXPORT_MODULE(BlobModule)
 
 @synthesize bridge = _bridge;
 @synthesize methodQueue = _methodQueue;
-@synthesize turboModuleLookupDelegate = _turboModuleLookupDelegate;
 
 - (void)setBridge:(RCTBridge *)bridge
 {
@@ -140,17 +139,9 @@ RCT_EXPORT_MODULE(BlobModule)
 
 RCT_EXPORT_METHOD(addNetworkingHandler)
 {
-  RCTNetworking *const networking = _bridge ? _bridge.networking : [_turboModuleLookupDelegate moduleForName:"RCTNetworking"];
-
-  // TODO(T63516227): Why can methodQueue be nil here? 
-  // We don't want to do anything when methodQueue is nil.
-  if (!networking.methodQueue) {
-    return;
-  }
-
-  dispatch_async(networking.methodQueue, ^{
-    [networking addRequestHandler:self];
-    [networking addResponseHandler:self];
+  dispatch_async(_bridge.networking.methodQueue, ^{
+    [self->_bridge.networking addRequestHandler:self];
+    [self->_bridge.networking addResponseHandler:self];
   });
 }
 
@@ -310,12 +301,9 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
   };
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  return std::make_shared<facebook::react::NativeBlobModuleSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeBlobModuleSpecJSI>(self, jsInvoker);
 }
 
 @end

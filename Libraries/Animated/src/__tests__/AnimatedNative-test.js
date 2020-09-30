@@ -260,9 +260,9 @@ describe('Native Animated', () => {
         listener,
       });
       const handler = event.__getHandler();
-      handler({nativeEvent: {foo: 42}});
+      handler({foo: 42});
       expect(listener).toHaveBeenCalledTimes(1);
-      expect(listener).toBeCalledWith({nativeEvent: {foo: 42}});
+      expect(listener).toBeCalledWith({foo: 42});
     });
   });
 

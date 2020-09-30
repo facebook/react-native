@@ -10,11 +10,10 @@
 namespace facebook {
 
 struct nonmovable {
-  nonmovable(nonmovable &&) = delete;
-  nonmovable &operator=(nonmovable &&) = delete;
-
- protected:
+  nonmovable(nonmovable&&) = delete;
+  nonmovable& operator=(nonmovable&&) = delete;
+protected:
   nonmovable() = default;
 };
 
-} // namespace facebook
+}

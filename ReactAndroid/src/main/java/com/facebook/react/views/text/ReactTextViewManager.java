@@ -8,6 +8,7 @@
 package com.facebook.react.views.text;
 
 import android.content.Context;
+import android.text.Layout;
 import android.text.Spannable;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
@@ -32,8 +33,6 @@ public class ReactTextViewManager
     implements IViewManagerWithChildren {
 
   @VisibleForTesting public static final String REACT_CLASS = "RCTText";
-
-  protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
 
   @Override
   public String getName() {
@@ -60,11 +59,6 @@ public class ReactTextViewManager
     return new ReactTextShadowNode();
   }
 
-  public ReactTextShadowNode createShadowNodeInstance(
-      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
-    return new ReactTextShadowNode(reactTextViewManagerCallback);
-  }
-
   @Override
   public Class<ReactTextShadowNode> getShadowNodeClass() {
     return ReactTextShadowNode.class;
@@ -89,20 +83,42 @@ public class ReactTextViewManager
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
 
     Spannable spanned =
-        TextLayoutManager.getOrCreateSpannableForText(
-            view.getContext(), attributedString, mReactTextViewManagerCallback);
+        TextLayoutManager.getOrCreateSpannableForText(view.getContext(), attributedString);
     view.setSpanned(spanned);
 
+    TextAttributeProps textViewProps = new TextAttributeProps(props);
+
     int textBreakStrategy =
-        TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
+        getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
+
+    // TODO add justificationMode prop into local Data
+    int justificationMode = Layout.JUSTIFICATION_MODE_NONE;
 
     return new ReactTextUpdate(
         spanned,
         state.hasKey("mostRecentEventCount") ? state.getInt("mostRecentEventCount") : -1,
         false, // TODO add this into local Data
-        TextAttributeProps.getTextAlignment(props),
+        textViewProps.getTextAlign(),
         textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props));
+        justificationMode);
+  }
+
+  private int getTextBreakStrategy(@Nullable String textBreakStrategy) {
+    int androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+    if (textBreakStrategy != null) {
+      switch (textBreakStrategy) {
+        case "simple":
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
+          break;
+        case "balanced":
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
+          break;
+        default:
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+          break;
+      }
+    }
+    return androidTextBreakStrategy;
   }
 
   @Override
@@ -121,19 +137,10 @@ public class ReactTextViewManager
       float width,
       YogaMeasureMode widthMode,
       float height,
-      YogaMeasureMode heightMode,
-      @Nullable int[] attachmentsPositions) {
+      YogaMeasureMode heightMode) {
 
     return TextLayoutManager.measureText(
-        context,
-        localData,
-        props,
-        width,
-        widthMode,
-        height,
-        heightMode,
-        mReactTextViewManagerCallback,
-        attachmentsPositions);
+        context, localData, props, width, widthMode, height, heightMode);
   }
 
   @Override

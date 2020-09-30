@@ -12,12 +12,10 @@
 #import <react/components/text/ParagraphState.h>
 #import <react/components/text/RawTextComponentDescriptor.h>
 #import <react/components/text/TextComponentDescriptor.h>
+#import <react/core/LocalData.h>
 #import <react/graphics/Geometry.h>
-#import <react/textlayoutmanager/RCTAttributedTextUtils.h>
 #import <react/textlayoutmanager/RCTTextLayoutManager.h>
 #import <react/textlayoutmanager/TextLayoutManager.h>
-#import <react/utils/ManagedObjectWrapper.h>
-
 #import "RCTConversions.h"
 
 using namespace facebook::react;
@@ -40,27 +38,6 @@ using namespace facebook::react;
   }
 
   return self;
-}
-
-- (NSString *)description
-{
-  NSString *superDescription = [super description];
-
-  // Cutting the last `>` character.
-  if (superDescription.length > 0 && [superDescription characterAtIndex:superDescription.length - 1] == '>') {
-    superDescription = [superDescription substringToIndex:superDescription.length - 1];
-  }
-
-  return [NSString stringWithFormat:@"%@; attributedText = %@>", superDescription, self.attributedText];
-}
-
-- (NSAttributedString *_Nullable)attributedText
-{
-  if (!_state) {
-    return nil;
-  }
-
-  return RCTNSAttributedStringFromAttributedString(_state->getData().attributedString);
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -104,15 +81,9 @@ using namespace facebook::react;
     return;
   }
 
-  auto textLayoutManager = _state->getData().layoutManager;
-  assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
-
-  if (!textLayoutManager) {
-    return;
-  }
-
+  SharedTextLayoutManager textLayoutManager = _state->getData().layoutManager;
   RCTTextLayoutManager *nativeTextLayoutManager =
-      (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
+      (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
 
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
@@ -143,22 +114,16 @@ using namespace facebook::react;
     return _eventEmitter;
   }
 
-  auto textLayoutManager = _state->getData().layoutManager;
-
-  assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
-
-  if (!textLayoutManager) {
-    return _eventEmitter;
-  }
-
+  SharedTextLayoutManager textLayoutManager = _state->getData().layoutManager;
   RCTTextLayoutManager *nativeTextLayoutManager =
-      (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
+      (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  auto eventEmitter = [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().attributedString
-                                                              paragraphAttributes:_paragraphAttributes
-                                                                            frame:frame
-                                                                          atPoint:point];
+  SharedEventEmitter eventEmitter =
+      [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().attributedString
+                                              paragraphAttributes:_paragraphAttributes
+                                                            frame:frame
+                                                          atPoint:point];
 
   if (!eventEmitter) {
     return _eventEmitter;

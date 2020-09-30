@@ -41,7 +41,7 @@ if (__DEV__) {
       const WebSocket = require('../WebSocket/WebSocket');
       const ws = new WebSocket('ws://' + host + ':' + port);
 
-      const viewConfig = require('../Components/View/ReactNativeViewViewConfig');
+      const viewConfig = require('../Components/View/ReactNativeViewViewConfig.js');
       reactDevTools.connectToDevTools({
         isAppActive,
         resolveRNStyle: require('../StyleSheet/flattenStyle'),

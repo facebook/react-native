@@ -1,0 +1,95 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`YellowBoxCategory renders a single substitution 1`] = `
+Array [
+  <Text
+    style={
+      Object {
+        "fontWeight": "bold",
+      }
+    }
+  >
+    A
+  </Text>,
+]
+`;
+
+exports[`YellowBoxCategory renders content with no substitutions 1`] = `
+Array [
+  <Text>
+    A
+  </Text>,
+]
+`;
+
+exports[`YellowBoxCategory renders multiple substitutions 1`] = `
+Array [
+  <Text
+    style={
+      Object {
+        "fontWeight": "bold",
+      }
+    }
+  >
+    A
+  </Text>,
+  <Text>
+     
+  </Text>,
+  <Text
+    style={
+      Object {
+        "fontWeight": "bold",
+      }
+    }
+  >
+    B
+  </Text>,
+  <Text>
+     
+  </Text>,
+  <Text
+    style={
+      Object {
+        "fontWeight": "bold",
+      }
+    }
+  >
+    C
+  </Text>,
+]
+`;
+
+exports[`YellowBoxCategory renders substitutions with leading content 1`] = `
+Array [
+  <Text>
+    !
+  </Text>,
+  <Text
+    style={
+      Object {
+        "fontWeight": "bold",
+      }
+    }
+  >
+    A
+  </Text>,
+]
+`;
+
+exports[`YellowBoxCategory renders substitutions with trailing content 1`] = `
+Array [
+  <Text
+    style={
+      Object {
+        "fontWeight": "bold",
+      }
+    }
+  >
+    A
+  </Text>,
+  <Text>
+    !
+  </Text>,
+]
+`;

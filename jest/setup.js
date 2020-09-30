@@ -35,12 +35,6 @@ jest.setMock(
 
 jest
   .mock('../Libraries/Core/InitializeCore', () => {})
-  .mock('../Libraries/Core/NativeExceptionsManager', () => ({
-    __esModule: true,
-    default: {
-      reportException: jest.fn(),
-    },
-  }))
   .mock('../Libraries/ReactNative/UIManager', () => ({
     AndroidViewPager: {
       Commands: {
@@ -117,7 +111,7 @@ jest
     isInvertColorsEnabled: jest.fn(),
     isReduceMotionEnabled: jest.fn(),
     isReduceTransparencyEnabled: jest.fn(),
-    isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
+    isScreenReaderEnabled: jest.fn(),
     removeEventListener: jest.fn(),
     setAccessibilityFocus: jest.fn(),
   }))
@@ -126,26 +120,11 @@ jest
       '../Libraries/Components/RefreshControl/__mocks__/RefreshControlMock',
     ),
   )
-  .mock('../Libraries/Components/ScrollView/ScrollView', () => {
-    const baseComponent = mockComponent(
-      '../Libraries/Components/ScrollView/ScrollView',
-      {
-        ...MockNativeMethods,
-        getScrollResponder: jest.fn(),
-        getScrollableNode: jest.fn(),
-        getInnerViewNode: jest.fn(),
-        getInnerViewRef: jest.fn(),
-        getNativeScrollRef: jest.fn(),
-        scrollTo: jest.fn(),
-        scrollToEnd: jest.fn(),
-        flashScrollIndicators: jest.fn(),
-        scrollResponderZoomTo: jest.fn(),
-        scrollResponderScrollNativeHandleToKeyboard: jest.fn(),
-      },
-    );
-    const mockScrollView = jest.requireActual('./mockScrollView');
-    return mockScrollView(baseComponent);
-  })
+  .mock('../Libraries/Components/ScrollView/ScrollView', () =>
+    jest.requireActual(
+      '../Libraries/Components/ScrollView/__mocks__/ScrollViewMock',
+    ),
+  )
   .mock('../Libraries/Components/ActivityIndicator/ActivityIndicator', () =>
     mockComponent(
       '../Libraries/Components/ActivityIndicator/ActivityIndicator',
@@ -164,6 +143,19 @@ jest
     removeEventListener: jest.fn(),
     sendIntent: jest.fn(),
   }))
+  .mock('../Libraries/Renderer/shims/ReactNative', () => {
+    const ReactNative = jest.requireActual(
+      '../Libraries/Renderer/shims/ReactNative',
+    );
+    const NativeMethodsMixin =
+      ReactNative.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
+        .NativeMethodsMixin;
+
+    Object.assign(NativeMethodsMixin, MockNativeMethods);
+    Object.assign(ReactNative.NativeComponent.prototype, MockNativeMethods);
+
+    return ReactNative;
+  })
   // Mock modules defined by the native layer (ex: Objective-C, Java)
   .mock('../Libraries/BatchedBridge/NativeModules', () => ({
     AlertManager: {

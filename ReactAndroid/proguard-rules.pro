@@ -51,9 +51,6 @@
 -dontwarn com.facebook.react.**
 -keep,includedescriptorclasses class com.facebook.react.bridge.** { *; }
 
-# hermes
--keep class com.facebook.jni.** { *; }
-
 # okhttp
 
 -keepattributes Signature

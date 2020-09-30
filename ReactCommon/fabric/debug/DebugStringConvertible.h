@@ -10,8 +10,8 @@
 #include <climits>
 #include <memory>
 #include <string>
-#include <unordered_set>
 #include <vector>
+#include <unordered_set>
 
 namespace facebook {
 namespace react {

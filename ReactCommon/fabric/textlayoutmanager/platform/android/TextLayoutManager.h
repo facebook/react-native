@@ -32,7 +32,7 @@ class TextLayoutManager {
   /*
    * Measures `attributedString` using native text rendering infrastructure.
    */
-  TextMeasurement measure(
+  Size measure(
       AttributedStringBox attributedStringBox,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
@@ -44,7 +44,7 @@ class TextLayoutManager {
   void *getNativeTextLayoutManager() const;
 
  private:
-  TextMeasurement doMeasure(
+  Size doMeasure(
       AttributedString attributedString,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;

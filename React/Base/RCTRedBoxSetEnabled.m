@@ -13,12 +13,10 @@ static BOOL redBoxEnabled = YES;
 static BOOL redBoxEnabled = NO;
 #endif
 
-void RCTRedBoxSetEnabled(BOOL enabled)
-{
+void RCTRedBoxSetEnabled(BOOL enabled) {
   redBoxEnabled = enabled;
 }
 
-BOOL RCTRedBoxGetEnabled()
-{
+BOOL RCTRedBoxGetEnabled() {
   return redBoxEnabled;
 }

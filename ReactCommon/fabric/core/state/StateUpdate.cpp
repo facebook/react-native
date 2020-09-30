@@ -6,3 +6,13 @@
  */
 
 #include "StateUpdate.h"
+
+namespace facebook {
+namespace react {
+
+std::pair<StateTarget, StateData::Shared> StateUpdate::operator()() const {
+  return callback_();
+}
+
+} // namespace react
+} // namespace facebook

@@ -34,18 +34,16 @@
   return [[RCTSurface alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
-RCT_NOT_IMPLEMENTED(-(instancetype)init)
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
-RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
 {
-  RCTSurface *surface = [[self class] createSurfaceWithBridge:bridge
-                                                   moduleName:moduleName
-                                            initialProperties:initialProperties];
+  RCTSurface *surface = [[self class] createSurfaceWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
   [surface start];
   return [self initWithSurface:surface sizeMeasureMode:sizeMeasureMode];
 }
@@ -77,9 +75,14 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
   CGSize maximumSize;
 
   RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
-      self.bounds.size, _sizeMeasureMode, &minimumSize, &maximumSize);
+    self.bounds.size,
+    _sizeMeasureMode,
+    &minimumSize,
+    &maximumSize
+  );
 
-  [_surface setMinimumSize:minimumSize maximumSize:maximumSize];
+    [_surface setMinimumSize:minimumSize
+                 maximumSize:maximumSize];
 }
 
 - (CGSize)intrinsicContentSize
@@ -112,9 +115,15 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
   CGSize minimumSize;
   CGSize maximumSize;
 
-  RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(size, _sizeMeasureMode, &minimumSize, &maximumSize);
+  RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
+    size,
+    _sizeMeasureMode,
+    &minimumSize,
+    &maximumSize
+  );
 
-  return [_surface sizeThatFitsMinimumSize:minimumSize maximumSize:maximumSize];
+  return [_surface sizeThatFitsMinimumSize:minimumSize
+                               maximumSize:maximumSize];
 }
 
 - (void)setStage:(RCTSurfaceStage)stage
@@ -123,8 +132,9 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
     return;
   }
 
-  BOOL shouldInvalidateLayout = RCTSurfaceStageIsRunning(stage) != RCTSurfaceStageIsRunning(_stage) ||
-      RCTSurfaceStageIsPreparing(stage) != RCTSurfaceStageIsPreparing(_stage);
+  BOOL shouldInvalidateLayout =
+    RCTSurfaceStageIsRunning(stage) != RCTSurfaceStageIsRunning(_stage) ||
+    RCTSurfaceStageIsPreparing(stage) != RCTSurfaceStageIsPreparing(_stage);
 
   _stage = stage;
 
@@ -205,12 +215,11 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
   [super traitCollectionDidChange:previousTraitCollection];
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:RCTUserInterfaceStyleDidChangeNotification
-                    object:self
-                  userInfo:@{
-                    RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey : self.traitCollection,
-                  }];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTUserInterfaceStyleDidChangeNotification
+                                                      object:self
+                                                    userInfo:@{
+                                                      RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey: self.traitCollection,
+                                                    }];
 }
 #endif // TODO(macOS ISS#2323203)
 

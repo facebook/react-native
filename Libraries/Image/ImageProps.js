@@ -14,6 +14,7 @@ import type {SyntheticEvent, LayoutEvent} from '../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../StyleSheet/EdgeInsetsPropType';
 import type {ImageSource} from './ImageSource';
 import type {ViewStyleProp, ImageStyleProp} from '../StyleSheet/StyleSheet';
+import type {DimensionValue} from '../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 
 export type ImageLoadEvent = SyntheticEvent<
@@ -31,19 +32,19 @@ type IOSImageProps = $ReadOnly<{|
   /**
    * A static image to display while loading the image source.
    *
-   * See https://reactnative.dev/docs/image.html#defaultsource
+   * See https://facebook.github.io/react-native/docs/image.html#defaultsource
    */
   defaultSource?: ?ImageSource,
   /**
    * Invoked when a partial load of the image is complete.
    *
-   * See https://reactnative.dev/docs/image.html#onpartialload
+   * See https://facebook.github.io/react-native/docs/image.html#onpartialload
    */
   onPartialLoad?: ?() => void,
   /**
    * Invoked on download progress with `{nativeEvent: {loaded, total}}`.
    *
-   * See https://reactnative.dev/docs/image.html#onprogress
+   * See https://facebook.github.io/react-native/docs/image.html#onprogress
    */
   onProgress?: ?(
     event: SyntheticEvent<$ReadOnly<{|loaded: number, total: number|}>>,
@@ -64,39 +65,34 @@ export type ImageProps = {|
   /**
    * When true, indicates the image is an accessibility element.
    *
-   * See https://reactnative.dev/docs/image.html#accessible
+   * See https://facebook.github.io/react-native/docs/image.html#accessible
    */
   accessible?: ?boolean,
-
-  /**
-   * Internal prop to set an "Analytics Tag" that can will be set on the Image
-   */
-  internal_analyticTag?: ?string,
 
   /**
    * The text that's read by the screen reader when the user interacts with
    * the image.
    *
-   * See https://reactnative.dev/docs/image.html#accessibilitylabel
+   * See https://facebook.github.io/react-native/docs/image.html#accessibilitylabel
    */
   accessibilityLabel?: ?Stringish,
 
   /**
    * blurRadius: the blur radius of the blur filter added to the image
    *
-   * See https://reactnative.dev/docs/image.html#blurradius
+   * See https://facebook.github.io/react-native/docs/image.html#blurradius
    */
   blurRadius?: ?number,
 
   /**
-   * See https://reactnative.dev/docs/image.html#capinsets
+   * See https://facebook.github.io/react-native/docs/image.html#capinsets
    */
   capInsets?: ?EdgeInsetsProp,
 
   /**
    * Invoked on load error with `{nativeEvent: {error}}`.
    *
-   * See https://reactnative.dev/docs/image.html#onerror
+   * See https://facebook.github.io/react-native/docs/image.html#onerror
    */
   onError?: ?(
     event: SyntheticEvent<
@@ -110,7 +106,7 @@ export type ImageProps = {|
    * Invoked on mount and layout changes with
    * `{nativeEvent: {layout: {x, y, width, height}}}`.
    *
-   * See https://reactnative.dev/docs/image.html#onlayout
+   * See https://facebook.github.io/react-native/docs/image.html#onlayout
    */
 
   onLayout?: ?(event: LayoutEvent) => mixed,
@@ -118,46 +114,50 @@ export type ImageProps = {|
   /**
    * Invoked when load completes successfully.
    *
-   * See https://reactnative.dev/docs/image.html#onload
+   * See https://facebook.github.io/react-native/docs/image.html#onload
    */
   onLoad?: ?(event: ImageLoadEvent) => void,
 
   /**
    * Invoked when load either succeeds or fails.
    *
-   * See https://reactnative.dev/docs/image.html#onloadend
+   * See https://facebook.github.io/react-native/docs/image.html#onloadend
    */
   onLoadEnd?: ?() => void,
 
   /**
    * Invoked on load start.
    *
-   * See https://reactnative.dev/docs/image.html#onloadstart
+   * See https://facebook.github.io/react-native/docs/image.html#onloadstart
    */
   onLoadStart?: ?() => void,
 
   /**
-   * See https://reactnative.dev/docs/image.html#resizemethod
+   * See https://facebook.github.io/react-native/docs/image.html#resizemethod
    */
   resizeMethod?: ?('auto' | 'resize' | 'scale'),
 
   /**
    * The image source (either a remote URL or a local file resource).
    *
-   * See https://reactnative.dev/docs/image.html#source
+   * See https://facebook.github.io/react-native/docs/image.html#source
    */
   source?: ?ImageSource,
 
   /**
-   * See https://reactnative.dev/docs/image.html#style
+   * See https://facebook.github.io/react-native/docs/image.html#style
    */
   style?: ?ImageStyleProp,
+
+  // Can be set via props or style, for now
+  height?: ?DimensionValue,
+  width?: ?DimensionValue,
 
   /**
    * Determines how to resize the image when the frame doesn't match the raw
    * image dimensions.
    *
-   * See https://reactnative.dev/docs/image.html#resizemode
+   * See https://facebook.github.io/react-native/docs/image.html#resizemode
    */
   resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
 
@@ -165,7 +165,7 @@ export type ImageProps = {|
    * A unique identifier for this element to be used in UI Automation
    * testing scripts.
    *
-   * See https://reactnative.dev/docs/image.html#testid
+   * See https://facebook.github.io/react-native/docs/image.html#testid
    */
   testID?: ?string,
 

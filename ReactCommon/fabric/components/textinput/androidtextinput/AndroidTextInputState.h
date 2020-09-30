@@ -67,15 +67,6 @@ class AndroidTextInputState final {
    */
   SharedTextLayoutManager layoutManager{};
 
-  /**
-   * Communicates Android theme padding back to the ShadowNode / Component
-   * Descriptor for layout.
-   */
-  float defaultThemePaddingStart{NAN};
-  float defaultThemePaddingEnd{NAN};
-  float defaultThemePaddingTop{NAN};
-  float defaultThemePaddingBottom{NAN};
-
 #ifdef ANDROID
   AttributedString updateAttributedString(
       TextAttributes const &defaultTextAttributes,
@@ -126,30 +117,19 @@ class AndroidTextInputState final {
       ParagraphAttributes const &paragraphAttributes,
       TextAttributes const &defaultTextAttributes,
       ShadowView const &defaultParentShadowView,
-      SharedTextLayoutManager const &layoutManager,
-      float defaultThemePaddingStart,
-      float defaultThemePaddingEnd,
-      float defaultThemePaddingTop,
-      float defaultThemePaddingBottom)
+      SharedTextLayoutManager const &layoutManager)
       : mostRecentEventCount(mostRecentEventCount),
         attributedString(attributedString),
         reactTreeAttributedString(reactTreeAttributedString),
         paragraphAttributes(paragraphAttributes),
         defaultTextAttributes(defaultTextAttributes),
         defaultParentShadowView(defaultParentShadowView),
-        layoutManager(layoutManager),
-        defaultThemePaddingStart(defaultThemePaddingStart),
-        defaultThemePaddingEnd(defaultThemePaddingEnd),
-        defaultThemePaddingTop(defaultThemePaddingTop),
-        defaultThemePaddingBottom(defaultThemePaddingBottom) {}
+        layoutManager(layoutManager) {}
   AndroidTextInputState() = default;
   AndroidTextInputState(
       AndroidTextInputState const &previousState,
       folly::dynamic const &data)
-      : mostRecentEventCount(data.getDefault(
-                                     "mostRecentEventCount",
-                                     previousState.mostRecentEventCount)
-                                 .getInt()),
+      : mostRecentEventCount((int64_t)data["mostRecentEventCount"].getInt()),
         attributedString(updateAttributedString(
             previousState.defaultTextAttributes,
             previousState.defaultParentShadowView,
@@ -159,24 +139,7 @@ class AndroidTextInputState final {
         paragraphAttributes(previousState.paragraphAttributes),
         defaultTextAttributes(previousState.defaultTextAttributes),
         defaultParentShadowView(previousState.defaultParentShadowView),
-        layoutManager(previousState.layoutManager),
-        defaultThemePaddingStart(data.getDefault(
-                                         "themePaddingStart",
-                                         previousState.defaultThemePaddingStart)
-                                     .getDouble()),
-        defaultThemePaddingEnd(data.getDefault(
-                                       "themePaddingEnd",
-                                       previousState.defaultThemePaddingEnd)
-                                   .getDouble()),
-        defaultThemePaddingTop(data.getDefault(
-                                       "themePaddingTop",
-                                       previousState.defaultThemePaddingTop)
-                                   .getDouble()),
-        defaultThemePaddingBottom(
-            data.getDefault(
-                    "themePaddingBottom",
-                    previousState.defaultThemePaddingBottom)
-                .getDouble()){};
+        layoutManager(previousState.layoutManager){};
   folly::dynamic getDynamic() const;
 #endif
 };

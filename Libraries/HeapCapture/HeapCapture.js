@@ -10,7 +10,7 @@
 
 'use strict';
 
-import NativeJSCHeapCapture from './NativeJSCHeapCapture';
+import NativeHeapCapture from './NativeHeapCapture';
 
 const HeapCapture = {
   captureHeap: function(path: string) {
@@ -22,8 +22,8 @@ const HeapCapture = {
       console.log('HeapCapture.captureHeap error: ' + e.toString());
       error = e.toString();
     }
-    if (NativeJSCHeapCapture) {
-      NativeJSCHeapCapture.captureComplete(path, error);
+    if (NativeHeapCapture) {
+      NativeHeapCapture.captureComplete(path, error);
     }
   },
 };

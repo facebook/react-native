@@ -11,7 +11,6 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
@@ -31,13 +30,13 @@ public class AndroidSwitchManagerDelegate<T extends View, U extends BaseViewMana
         mViewManager.setEnabled(view, value == null ? true : (boolean) value);
         break;
       case "thumbColor":
-        mViewManager.setThumbColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setThumbColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "trackColorForFalse":
-        mViewManager.setTrackColorForFalse(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setTrackColorForFalse(view, value == null ? null : ((Double) value).intValue());
         break;
       case "trackColorForTrue":
-        mViewManager.setTrackColorForTrue(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setTrackColorForTrue(view, value == null ? null : ((Double) value).intValue());
         break;
       case "value":
         mViewManager.setValue(view, value == null ? false : (boolean) value);
@@ -46,10 +45,10 @@ public class AndroidSwitchManagerDelegate<T extends View, U extends BaseViewMana
         mViewManager.setOn(view, value == null ? false : (boolean) value);
         break;
       case "thumbTintColor":
-        mViewManager.setThumbTintColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setThumbTintColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "trackTintColor":
-        mViewManager.setTrackTintColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setTrackTintColor(view, value == null ? null : ((Double) value).intValue());
         break;
       default:
         super.setProperty(view, propName, value);

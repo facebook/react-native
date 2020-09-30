@@ -8,34 +8,22 @@
 #import <UIKit/UIKit.h>
 
 #include <react/attributedstring/AttributedString.h>
-#include <react/attributedstring/AttributedStringBox.h>
 #include <react/attributedstring/TextAttributes.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const RCTAttributedStringIsHighlightedAttributeName = @"IsHighlighted";
+NSString *const RCTAttributedStringIsHighlightedAttributeName =
+    @"IsHighlighted";
 NSString *const RCTAttributedStringEventEmitterKey = @"EventEmitter";
 
-/*
- * Creates `NSTextAttributes` from given `facebook::react::TextAttributes`
- */
-NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(
-    facebook::react::TextAttributes const &textAttributes);
-
-/*
- * Conversions amond `NSAttributedString`, `AttributedString` and `AttributedStringBox`.
+/**
+ * Constructs ready-to-render `NSAttributedString` by given `AttributedString`.
  */
 NSAttributedString *RCTNSAttributedStringFromAttributedString(
-    facebook::react::AttributedString const &attributedString);
-
-NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(
-    facebook::react::AttributedStringBox const &attributedStringBox);
-
-facebook::react::AttributedStringBox RCTAttributedStringBoxFromNSAttributedString(
-    NSAttributedString *nsAttributedString);
+    const facebook::react::AttributedString &attributedString);
 
 @interface RCTWeakEventEmitterWrapper : NSObject
-@property (nonatomic, assign) facebook::react::SharedEventEmitter eventEmitter;
+@property(nonatomic, assign) facebook::react::SharedEventEmitter eventEmitter;
 @end
 
 NS_ASSUME_NONNULL_END

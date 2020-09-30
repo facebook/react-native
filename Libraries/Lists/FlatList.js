@@ -19,7 +19,9 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 
 const invariant = require('invariant');
 
-import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
+import ScrollView, {
+  type ScrollResponderType,
+} from '../Components/ScrollView/ScrollView';
 import type {ScrollViewNativeComponentType} from '../Components/ScrollView/ScrollViewNativeComponentType.js';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
@@ -374,7 +376,14 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     | ?React.ElementRef<typeof View>
     | ?React.ElementRef<ScrollViewNativeComponentType> {
     if (this._listRef) {
-      return this._listRef.getScrollRef();
+      const scrollRef = this._listRef.getScrollRef();
+      if (scrollRef != null) {
+        if (scrollRef instanceof ScrollView) {
+          return scrollRef.getNativeScrollRef();
+        } else {
+          return scrollRef;
+        }
+      }
     }
   }
 
@@ -403,10 +412,10 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         }),
       );
     } else if (this.props.onViewableItemsChanged) {
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       this._virtualizedListPairs.push({
-        /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.63 was deployed. To see the error delete
-         * this comment and run Flow. */
         viewabilityConfig: this.props.viewabilityConfig,
         onViewableItemsChanged: this._createOnViewableItemsChanged(
           this.props.onViewableItemsChanged,

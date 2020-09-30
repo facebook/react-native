@@ -14,6 +14,7 @@ const Blob = require('../Blob/Blob');
 const BlobManager = require('../Blob/BlobManager');
 const EventTarget = require('event-target-shim');
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+const Platform = require('../Utilities/Platform');
 const WebSocketEvent = require('./WebSocketEvent');
 
 const base64 = require('base64-js');

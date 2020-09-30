@@ -102,8 +102,6 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
       builder.addHeader("Cookie", cookie);
     }
 
-    boolean hasOriginHeader = false;
-
     if (options != null
         && options.hasKey("headers")
         && options.getType("headers").equals(ReadableType.Map)) {
@@ -111,20 +109,19 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
       ReadableMap headers = options.getMap("headers");
       ReadableMapKeySetIterator iterator = headers.keySetIterator();
 
+      if (!headers.hasKey("origin")) {
+        builder.addHeader("origin", getDefaultOrigin(url));
+      }
+
       while (iterator.hasNextKey()) {
         String key = iterator.nextKey();
         if (ReadableType.String.equals(headers.getType(key))) {
-          if (key.equalsIgnoreCase("origin")) {
-            hasOriginHeader = true;
-          }
           builder.addHeader(key, headers.getString(key));
         } else {
           FLog.w(ReactConstants.TAG, "Ignoring: requested " + key + ", value not a string");
         }
       }
-    }
-
-    if (!hasOriginHeader) {
+    } else {
       builder.addHeader("origin", getDefaultOrigin(url));
     }
 

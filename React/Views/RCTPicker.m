@@ -10,9 +10,9 @@
 #import "RCTConvert.h"
 #import "RCTUtils.h"
 
-@interface RCTPicker ()
+@interface RCTPicker()
 #if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-  <UIPickerViewDataSource, UIPickerViewDelegate, UIPickerViewAccessibilityDelegate>
+  <UIPickerViewDataSource, UIPickerViewDelegate>
 #else
   <NSComboBoxDataSource, NSComboBoxDelegate>
 #endif // ]TODO(macOS ISS#2323203)
@@ -33,6 +33,7 @@
     _selectedIndex = NSNotFound;
     _textAlign = NSTextAlignmentCenter;
     self.delegate = self;
+
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
     self.controlSize = NSControlSizeRegular;
     self.editable = NO;
@@ -40,16 +41,13 @@
     self.usesDataSource = YES;
     self.dataSource = self;
 #else
-    [self selectRow:0 inComponent:0
-           animated:
-               YES]; // Workaround for missing selection indicator lines (see
-                     // https://stackoverflow.com/questions/39564660/uipickerview-selection-indicator-not-visible-in-ios10)
+    [self selectRow:0 inComponent:0 animated:YES]; // Workaround for missing selection indicator lines (see https://stackoverflow.com/questions/39564660/uipickerview-selection-indicator-not-visible-in-ios10)
 #endif // ]TODO(macOS ISS#2323203)
   }
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setItems:(NSArray<NSDictionary *> *)items
 {
@@ -110,7 +108,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   return 1;
 }
 
-- (NSInteger)pickerView:(__unused UIPickerView *)pickerView numberOfRowsInComponent:(__unused NSInteger)component
+- (NSInteger)pickerView:(__unused UIPickerView *)pickerView
+numberOfRowsInComponent:(__unused NSInteger)component
 {
   return _items.count;
 }
@@ -124,8 +123,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   return [RCTConvert NSString:_items[row][@"label"]];
 }
 
-- (CGFloat)pickerView:(__unused UIPickerView *)pickerView rowHeightForComponent:(NSInteger)__unused component
-{
+- (CGFloat)pickerView:(__unused UIPickerView *)pickerView rowHeightForComponent:(NSInteger)__unused component {
   return _font.pointSize + 19;
 }
 
@@ -135,11 +133,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
            reusingView:(UILabel *)label
 {
   if (!label) {
-    label = [[UILabel alloc] initWithFrame:(CGRect){CGPointZero,
-                                                    {
-                                                        [pickerView rowSizeForComponent:component].width,
-                                                        [pickerView rowSizeForComponent:component].height,
-                                                    }}];
+    label = [[UILabel alloc] initWithFrame:(CGRect){
+      CGPointZero,
+      {
+        [pickerView rowSizeForComponent:component].width,
+        [pickerView rowSizeForComponent:component].height,
+      }
+    }];
   }
 
   label.font = _font;
@@ -152,18 +152,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 }
 
 - (void)pickerView:(__unused UIPickerView *)pickerView
-      didSelectRow:(NSInteger)row
-       inComponent:(__unused NSInteger)component
+      didSelectRow:(NSInteger)row inComponent:(__unused NSInteger)component
 {
 // [TODO(macOS ISS#2323203)
   [self didSelectRowAtIndex:row];
-}
-
-#pragma mark - UIPickerViewAccessibilityDelegate protocol
-
-- (NSString *)pickerView:(UIPickerView *)pickerView accessibilityLabelForComponent:(NSInteger)component
-{
-  return super.accessibilityLabel;
 }
 
 #else
@@ -201,8 +193,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 // ]TODO(macOS ISS#2323203)
     _onChange(@{
 // [TODO(macOS ISS#2323203)
-      @"newIndex" : @(idx),
-      @"newValue" : RCTNullIfNil(_items[idx][@"value"]),
+      @"newIndex": @(idx),
+      @"newValue": RCTNullIfNil(_items[idx][@"value"]),
 // ]TODO(macOS ISS#2323203)
     });
   }

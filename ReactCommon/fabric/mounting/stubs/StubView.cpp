@@ -32,31 +32,29 @@ bool operator!=(StubView const &lhs, StubView const &rhs) {
 #if RN_DEBUG_STRING_CONVERTIBLE
 
 std::string getDebugName(StubView const &stubView) {
-  return std::string{"Stub"} +
-      std::string{stubView.componentHandle ? stubView.componentName
-                                           : "[invalid]"};
+  return stubView.componentHandle == 0 ? "Invalid" : stubView.componentName;
 }
 
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    StubView const &stubView,
+    StubView const &stabView,
     DebugStringConvertibleOptions options) {
   return {
-      {"tag", getDebugDescription(stubView.tag, options)},
-      {"props", getDebugDescription(stubView.props, options)},
-      {"eventEmitter", getDebugDescription(stubView.eventEmitter, options)},
-      {"layoutMetrics", getDebugDescription(stubView.layoutMetrics, options)},
-      {"state", getDebugDescription(stubView.state, options)},
+      {"tag", getDebugDescription(stabView.tag, options)},
+      {"props", getDebugDescription(stabView.props, options)},
+      {"eventEmitter", getDebugDescription(stabView.eventEmitter, options)},
+      {"layoutMetrics", getDebugDescription(stabView.layoutMetrics, options)},
+      {"state", getDebugDescription(stabView.state, options)},
   };
 }
 
 std::vector<StubView> getDebugChildren(
     StubView const &stubView,
     DebugStringConvertibleOptions options) {
-  std::vector<StubView> result;
-  for (auto const &child : stubView.children) {
-    result.push_back(*child);
+  auto children = std::vector<StubView>{};
+  for (auto const &childStabView : stubView.children) {
+    children.push_back(*childStabView);
   }
-  return result;
+  return children;
 }
 
 #endif

@@ -32,13 +32,13 @@ class UIManagerDelegate {
    * instances.
    */
   virtual void uiManagerDidCreateShadowNode(
-      const ShadowNode::Shared &shadowNode) = 0;
+      const SharedShadowNode &shadowNode) = 0;
 
   /*
    * Called when UIManager wants to dispatch a command to the mounting layer.
    */
   virtual void uiManagerDidDispatchCommand(
-      const ShadowNode::Shared &shadowNode,
+      const SharedShadowNode &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) = 0;
 
@@ -47,7 +47,7 @@ class UIManagerDelegate {
    */
   virtual void uiManagerDidSetJSResponder(
       SurfaceId surfaceId,
-      ShadowNode::Shared const &shadowView,
+      SharedShadowNode const &shadowView,
       bool blockNativeResponder) = 0;
 
   /*

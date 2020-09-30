@@ -29,7 +29,7 @@ const RCTLog = {
     if (typeof global.nativeLoggingHook === 'undefined') {
       RCTLog.logToConsole(level, ...args);
     } else {
-      // Report native warnings to LogBox
+      // Report native warnings to YellowBox
       if (warningHandler && level === 'warn') {
         warningHandler(...args);
       }

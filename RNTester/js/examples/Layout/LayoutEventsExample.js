@@ -102,7 +102,8 @@ class LayoutEventExample extends React.Component<Props, State> {
             onLayout={this.onImageLayout}
             style={styles.image}
             source={{
-              uri: 'https://www.facebook.com/favicon.ico',
+              uri:
+                'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851561_767334496626293_1958532586_n.png',
             }}
           />
           <Text>

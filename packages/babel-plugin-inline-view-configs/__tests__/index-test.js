@@ -14,14 +14,13 @@ const {transform: babelTransform} = require('@babel/core');
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const failures = require('../__test_fixtures__/failures.js');
 
-const transform = (fixture, filename) =>
-  babelTransform(fixture, {
-    babelrc: false,
-    cwd: '/',
-    filename: filename,
-    highlightCode: false,
+function transform(fixture, filename) {
+  return babelTransform(fixture, {
     plugins: [require('@babel/plugin-syntax-flow'), require('../index')],
+    babelrc: false,
+    filename,
   }).code;
+}
 
 describe('Babel plugin inline view configs', () => {
   Object.keys(fixtures)
@@ -37,12 +36,7 @@ describe('Babel plugin inline view configs', () => {
     .forEach(fixtureName => {
       it(`fails on inline config for ${fixtureName}`, () => {
         expect(() => {
-          try {
-            transform(failures[fixtureName], fixtureName);
-          } catch (err) {
-            err.message = err.message.replace(/^[A-z]:\\/g, '/'); // Ensure platform consistent snapshots.
-            throw err;
-          }
+          transform(failures[fixtureName], fixtureName);
         }).toThrowErrorMatchingSnapshot();
       });
     });

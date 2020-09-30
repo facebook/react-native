@@ -9,8 +9,9 @@
 
 #import "RCTTextUIKit.h" // TODO(macOS ISS#2323203)
 
-#import <React/RCTBackedTextInputViewProtocol.h>
-#import <React/RCTBackedTextInputDelegate.h>
+#import "RCTBackedTextInputViewProtocol.h"
+
+#import "RCTBackedTextInputDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

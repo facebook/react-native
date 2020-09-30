@@ -53,7 +53,8 @@ let viewConfig:
       },
     |};
 
-if (__DEV__ || global.RN$Bridgeless) {
+// Only use the JS view config in DEV
+if (__DEV__) {
   // On Android, View extends the base component with additional view-only props
   // On iOS, the base component is View
   if (Platform.OS === 'android') {

@@ -14,10 +14,10 @@ using namespace facebook::react;
 
 TEST(SealableTest, sealObjectCorrectly) {
   Sealable obj;
-  EXPECT_FALSE(obj.getSealed());
+  ASSERT_FALSE(obj.getSealed());
 
   obj.seal();
-  EXPECT_TRUE(obj.getSealed());
+  ASSERT_TRUE(obj.getSealed());
 }
 
 TEST(SealableTest, handleAssignmentsCorrectly) {
@@ -37,5 +37,5 @@ TEST(SealableTest, handleAssignmentsCorrectly) {
 
   // Fresh creation off other Sealable is still unsealed.
   Sealable other3(obj);
-  EXPECT_FALSE(other3.getSealed());
+  ASSERT_FALSE(other3.getSealed());
 }

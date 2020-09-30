@@ -7,9 +7,10 @@
 
 package com.facebook.react.modules.debug;
 
-import com.facebook.fbreact.specs.NativeDevSettingsSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
@@ -21,7 +22,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
  */
 @ReactModule(name = DevSettingsModule.NAME)
-public class DevSettingsModule extends NativeDevSettingsSpec {
+public class DevSettingsModule extends ReactContextBaseJavaModule {
 
   public static final String NAME = "DevSettings";
 
@@ -39,7 +40,7 @@ public class DevSettingsModule extends NativeDevSettingsSpec {
     return NAME;
   }
 
-  @Override
+  @ReactMethod
   public void reload() {
     if (mDevSupportManager.getDevSupportEnabled()) {
       UiThreadUtil.runOnUiThread(
@@ -52,37 +53,37 @@ public class DevSettingsModule extends NativeDevSettingsSpec {
     }
   }
 
-  @Override
+  @ReactMethod
   public void reloadWithReason(String reason) {
     this.reload();
   }
 
-  @Override
+  @ReactMethod
   public void onFastRefresh() {
     // noop
   }
 
-  @Override
+  @ReactMethod
   public void setHotLoadingEnabled(boolean isHotLoadingEnabled) {
     mDevSupportManager.setHotModuleReplacementEnabled(isHotLoadingEnabled);
   }
 
-  @Override
+  @ReactMethod
   public void setIsDebuggingRemotely(boolean isDebugginRemotelyEnabled) {
     mDevSupportManager.setRemoteJSDebugEnabled(isDebugginRemotelyEnabled);
   }
 
-  @Override
+  @ReactMethod
   public void setProfilingEnabled(boolean isProfilingEnabled) {
     mDevSupportManager.setFpsDebugEnabled(isProfilingEnabled);
   }
 
-  @Override
+  @ReactMethod
   public void toggleElementInspector() {
     mDevSupportManager.toggleElementInspector();
   }
 
-  @Override
+  @ReactMethod
   public void addMenuItem(final String title) {
     mDevSupportManager.addCustomDevOption(
         title,
@@ -102,20 +103,5 @@ public class DevSettingsModule extends NativeDevSettingsSpec {
             }
           }
         });
-  }
-
-  @Override
-  public void setIsShakeToShowDevMenuEnabled(boolean enabled) {
-    // iOS only
-  }
-
-  @Override
-  public void addListener(String eventName) {
-    // iOS only
-  }
-
-  @Override
-  public void removeListeners(double count) {
-    // iOS only
   }
 }

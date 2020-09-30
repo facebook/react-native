@@ -65,7 +65,8 @@
 
 - (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
 {
-  if (CGSizeEqualToSize(minimumSize, _minimumSize) && CGSizeEqualToSize(maximumSize, _maximumSize)) {
+  if (CGSizeEqualToSize(minimumSize, _minimumSize) &&
+      CGSizeEqualToSize(maximumSize, _maximumSize)) {
     return;
   }
 

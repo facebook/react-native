@@ -10,10 +10,11 @@
 
 'use strict';
 
-import * as React from 'react';
-
 const View = require('../../../Components/View/View');
+
 const createAnimatedComponent = require('../createAnimatedComponent');
+
+const React = require('react');
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 

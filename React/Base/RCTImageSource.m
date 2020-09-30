@@ -28,7 +28,9 @@
 
 - (instancetype)imageSourceWithSize:(CGSize)size scale:(CGFloat)scale
 {
-  RCTImageSource *imageSource = [[RCTImageSource alloc] initWithURLRequest:_request size:size scale:scale];
+  RCTImageSource *imageSource = [[RCTImageSource alloc] initWithURLRequest:_request
+                                                                      size:size
+                                                                     scale:scale];
   imageSource.packagerAsset = _packagerAsset;
   return imageSource;
 }
@@ -39,16 +41,13 @@
     return NO;
   }
   return [_request isEqual:object.request] && _scale == object.scale &&
-      (CGSizeEqualToSize(_size, object.size) || CGSizeEqualToSize(object.size, CGSizeZero));
+  (CGSizeEqualToSize(_size, object.size) || CGSizeEqualToSize(object.size, CGSizeZero));
 }
 
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<RCTImageSource: %p URL=%@, size=%@, scale=%0.f>",
-                                    self,
-                                    _request.URL,
-                                    NSStringFromCGSize(_size),
-                                    _scale];
+          self, _request.URL, NSStringFromCGSize(_size), _scale];
 }
 
 @end
@@ -79,7 +78,9 @@
     return nil;
   }
 
-  RCTImageSource *imageSource = [[RCTImageSource alloc] initWithURLRequest:request size:size scale:scale];
+  RCTImageSource *imageSource = [[RCTImageSource alloc] initWithURLRequest:request
+                                                                      size:size
+                                                                     scale:scale];
   imageSource.packagerAsset = packagerAsset;
   return imageSource;
 }

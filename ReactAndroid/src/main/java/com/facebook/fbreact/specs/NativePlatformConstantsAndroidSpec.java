@@ -47,12 +47,11 @@ public abstract class NativePlatformConstantsAndroidSpec extends ReactContextBas
           "Version",
           "reactNativeVersion",
           "Model",
+          "ServerHost",
           "isTesting",
           "Release"
       ));
-      Set<String> optionalFlowConstants = new HashSet<>(Arrays.asList(
-          "ServerHost"
-      ));
+      Set<String> optionalFlowConstants = new HashSet<>();
       Set<String> undeclaredConstants = new HashSet<>(constants.keySet());
       undeclaredConstants.removeAll(obligatoryFlowConstants);
       undeclaredConstants.removeAll(optionalFlowConstants);

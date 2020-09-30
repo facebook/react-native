@@ -18,7 +18,6 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
 import com.facebook.react.views.text.TextInlineImageSpan;
@@ -33,7 +32,6 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
   private float mWidth = YogaConstants.UNDEFINED;
-  private @Nullable String mResizeMode;
   private float mHeight = YogaConstants.UNDEFINED;
   private int mTintColor = 0;
 
@@ -99,11 +97,6 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     }
   }
 
-  @ReactProp(name = ViewProps.RESIZE_MODE)
-  public void setResizeMode(@Nullable String resizeMode) {
-    mResizeMode = resizeMode;
-  }
-
   public @Nullable Uri getUri() {
     return mUri;
   }
@@ -143,8 +136,7 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
         getUri(),
         getHeaders(),
         getDraweeControllerBuilder(),
-        getCallerContext(),
-        mResizeMode);
+        getCallerContext());
   }
 
   public AbstractDraweeControllerBuilder getDraweeControllerBuilder() {

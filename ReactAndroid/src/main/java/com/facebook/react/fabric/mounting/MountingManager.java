@@ -18,14 +18,13 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
-import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.fabric.FabricUIManager;
@@ -114,17 +113,6 @@ public class MountingManager {
   public void addViewAt(int parentTag, int tag, int index) {
     UiThreadUtil.assertOnUiThread();
     ViewState parentViewState = getViewState(parentTag);
-    if (!(parentViewState.mView instanceof ViewGroup)) {
-      String message =
-          "Unable to add a view into a view that is not a ViewGroup. ParentTag: "
-              + parentTag
-              + " - Tag: "
-              + tag
-              + " - Index: "
-              + index;
-      FLog.e(TAG, message);
-      throw new IllegalStateException(message);
-    }
     final ViewGroup parentView = (ViewGroup) parentViewState.mView;
     ViewState viewState = getViewState(tag);
     final View view = viewState.mView;
@@ -155,18 +143,21 @@ public class MountingManager {
     // view hierarchy. For example, TextInput may send a "blur" command in response to the view
     // disappearing. Throw `ReactNoCrashSoftException` so they're logged but don't crash in dev
     // for now.
+    // TODO T58653970: Crash in debug again and fix all the places that cause this to crash.
     if (viewState == null) {
-      throw new RetryableMountingLayerException(
-          "Unable to find viewState for tag: " + reactTag + " for commandId: " + commandId);
+      ReactSoftException.logSoftException(
+          MountingManager.TAG,
+          new ReactNoCrashSoftException(
+              "Unable to find viewState for tag: " + reactTag + " for commandId: " + commandId));
+      return;
     }
 
     if (viewState.mViewManager == null) {
-      throw new RetryableMountingLayerException("Unable to find viewManager for tag " + reactTag);
+      throw new IllegalStateException("Unable to find viewManager for tag " + reactTag);
     }
 
     if (viewState.mView == null) {
-      throw new RetryableMountingLayerException(
-          "Unable to find viewState view for tag " + reactTag);
+      throw new IllegalStateException("Unable to find viewState view for tag " + reactTag);
     }
 
     viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
@@ -176,23 +167,20 @@ public class MountingManager {
       int reactTag, @NonNull String commandId, @Nullable ReadableArray commandArgs) {
     ViewState viewState = getNullableViewState(reactTag);
 
-    // It's not uncommon for JS to send events as/after a component is being removed from the
-    // view hierarchy. For example, TextInput may send a "blur" command in response to the view
-    // disappearing. Throw `ReactNoCrashSoftException` so they're logged but don't crash in dev
-    // for now.
     if (viewState == null) {
-      throw new RetryableMountingLayerException(
-          "Unable to find viewState for tag: " + reactTag + " for commandId: " + commandId);
+      ReactSoftException.logSoftException(
+          MountingManager.TAG,
+          new IllegalStateException(
+              "Unable to find viewState for tag: " + reactTag + " for commandId: " + commandId));
+      return;
     }
 
     if (viewState.mViewManager == null) {
-      throw new RetryableMountingLayerException(
-          "Unable to find viewState manager for tag " + reactTag);
+      throw new IllegalStateException("Unable to find viewState manager for tag " + reactTag);
     }
 
     if (viewState.mView == null) {
-      throw new RetryableMountingLayerException(
-          "Unable to find viewState view for tag " + reactTag);
+      throw new IllegalStateException("Unable to find viewState view for tag " + reactTag);
     }
 
     viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
@@ -445,13 +433,7 @@ public class MountingManager {
   @UiThread
   public void updateEventEmitter(int reactTag, @NonNull EventEmitterWrapper eventEmitter) {
     UiThreadUtil.assertOnUiThread();
-    ViewState viewState = mTagToViewState.get(reactTag);
-    if (viewState == null) {
-      // TODO T62717437 - Use a flag to determine that these event emitters belong to virtual nodes
-      // only.
-      viewState = new ViewState(reactTag, null, null);
-      mTagToViewState.put(reactTag, viewState);
-    }
+    ViewState viewState = getViewState(reactTag);
     viewState.mEventEmitter = eventEmitter;
   }
 
@@ -518,21 +500,11 @@ public class MountingManager {
       float width,
       @NonNull YogaMeasureMode widthMode,
       float height,
-      @NonNull YogaMeasureMode heightMode,
-      @Nullable int[] attachmentsPositions) {
+      @NonNull YogaMeasureMode heightMode) {
 
     return mViewManagerRegistry
         .get(componentName)
-        .measure(
-            context,
-            localData,
-            props,
-            state,
-            width,
-            widthMode,
-            height,
-            heightMode,
-            attachmentsPositions);
+        .measure(context, localData, props, state, width, widthMode, height, heightMode);
   }
 
   @AnyThread

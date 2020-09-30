@@ -8,9 +8,9 @@
 #include <cstdlib>
 #include <limits>
 
+#include <react/components/image/ImageLocalData.h>
 #include <react/components/image/ImageShadowNode.h>
 #include <react/core/LayoutContext.h>
-#include "ImageState.h"
 
 namespace facebook {
 namespace react {
@@ -22,23 +22,31 @@ void ImageShadowNode::setImageManager(const SharedImageManager &imageManager) {
   imageManager_ = imageManager;
 }
 
-void ImageShadowNode::updateStateIfNeeded() {
-  ensureUnsealed();
-
-  auto const &imageSource = getImageSource();
-  auto const &currentState = getStateData();
-
-  if (currentState.getImageSource() == imageSource) {
-    return;
+void ImageShadowNode::updateLocalData() {
+  const auto &imageSource = getImageSource();
+  const auto &currentLocalData = getLocalData();
+  if (currentLocalData) {
+    assert(std::dynamic_pointer_cast<const ImageLocalData>(currentLocalData));
+    auto currentImageLocalData =
+        std::static_pointer_cast<const ImageLocalData>(currentLocalData);
+    if (currentImageLocalData->getImageSource() == imageSource) {
+      // Same `imageSource` is already in `localData`,
+      // no need to (re)request an image resource.
+      return;
+    }
   }
 
-  auto state = ImageState{
-      imageSource, imageManager_->requestImage(imageSource, getSurfaceId())};
-  setStateData(std::move(state));
+  // Now we are about to mutate the Shadow Node.
+  ensureUnsealed();
+
+  auto imageRequest = imageManager_->requestImage(imageSource, getSurfaceId());
+  auto imageLocalData =
+      std::make_shared<ImageLocalData>(imageSource, std::move(imageRequest));
+  setLocalData(imageLocalData);
 }
 
 ImageSource ImageShadowNode::getImageSource() const {
-  auto sources = getConcreteProps().sources;
+  auto sources = getProps()->sources;
 
   if (sources.size() == 0) {
     return {
@@ -78,7 +86,7 @@ ImageSource ImageShadowNode::getImageSource() const {
 #pragma mark - LayoutableShadowNode
 
 void ImageShadowNode::layout(LayoutContext layoutContext) {
-  updateStateIfNeeded();
+  updateLocalData();
   ConcreteViewShadowNode::layout(layoutContext);
 }
 

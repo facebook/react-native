@@ -386,14 +386,6 @@ YOGA_EXPORT void YGNodeInsertChild(
   owner->markDirtyAndPropogate();
 }
 
-YOGA_EXPORT void YGNodeSwapChild(
-    const YGNodeRef owner,
-    const YGNodeRef child,
-    const uint32_t index) {
-  owner->replaceChild(child, index);
-  child->setOwner(owner);
-}
-
 YOGA_EXPORT void YGNodeRemoveChild(
     const YGNodeRef owner,
     const YGNodeRef excludedChild) {
@@ -2338,8 +2330,7 @@ static void YGDistributeFreeSpaceFirstPass(
           // first and second passes.
           deltaFreeSpace += boundMainSize - childFlexBasis;
           collectedFlexItemsValues.totalFlexShrinkScaledFactors -=
-              (-currentRelativeChild->resolveFlexShrink() *
-               currentRelativeChild->getLayout().computedFlexBasis.unwrap());
+              flexShrinkScaledFactor;
         }
       }
     } else if (

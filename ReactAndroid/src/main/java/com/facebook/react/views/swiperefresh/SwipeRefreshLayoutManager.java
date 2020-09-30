@@ -14,19 +14,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
-import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerHelper;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.viewmanagers.AndroidSwipeRefreshLayoutManagerDelegate;
 import com.facebook.react.viewmanagers.AndroidSwipeRefreshLayoutManagerInterface;
 import java.util.Map;
@@ -69,11 +67,7 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
     if (colors != null) {
       int[] colorValues = new int[colors.size()];
       for (int i = 0; i < colors.size(); i++) {
-        if (colors.getType(i) == ReadableType.Map) {
-          colorValues[i] = ColorPropConverter.getColor(colors.getMap(i), view.getContext());
-        } else {
-          colorValues[i] = colors.getInt(i);
-        }
+        colorValues[i] = colors.getInt(i);
       }
       view.setColorSchemeColors(colorValues);
     } else {
@@ -141,11 +135,10 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
         new OnRefreshListener() {
           @Override
           public void onRefresh() {
-            EventDispatcher eventDispatcher =
-                UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.getId());
-            if (eventDispatcher != null) {
-              eventDispatcher.dispatchEvent(new RefreshEvent(view.getId()));
-            }
+            reactContext
+                .getNativeModule(UIManagerModule.class)
+                .getEventDispatcher()
+                .dispatchEvent(new RefreshEvent(view.getId()));
           }
         });
   }

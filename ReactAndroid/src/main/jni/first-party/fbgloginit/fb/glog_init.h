@@ -9,10 +9,8 @@
 
 #include <string>
 
-namespace facebook {
-namespace gloginit {
+namespace facebook { namespace gloginit {
 
-void initialize(const char *tag = "ReactNativeJNI");
+void initialize(const char* tag = "ReactNativeJNI");
 
-}
-} // namespace facebook
+}}

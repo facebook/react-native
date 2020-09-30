@@ -11,7 +11,6 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -24,7 +23,7 @@ public class InputAccessoryViewManagerDelegate<T extends View, U extends BaseVie
   public void setProperty(T view, String propName, @Nullable Object value) {
     switch (propName) {
       case "backgroundColor":
-        mViewManager.setBackgroundColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setBackgroundColor(view, value == null ? null : ((Double) value).intValue());
         break;
       default:
         super.setProperty(view, propName, value);

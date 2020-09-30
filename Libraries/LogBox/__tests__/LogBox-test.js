@@ -36,7 +36,6 @@ describe('LogBox', () => {
     jest.resetModules();
     console.error = jest.fn();
     console.warn = jest.fn();
-    console.disableYellowBox = false;
   });
 
   afterEach(() => {
@@ -45,51 +44,27 @@ describe('LogBox', () => {
     console.warn = warn;
   });
 
-  it('can call `ignoreAllLogs` after installing', () => {
-    expect(LogBoxData.isDisabled()).toBe(false);
+  it('can set `disableLogBox` after installing', () => {
+    expect(console.disableLogBox).toBe(undefined);
 
     LogBox.install();
 
+    expect(console.disableLogBox).toBe(false);
     expect(LogBoxData.isDisabled()).toBe(false);
 
-    LogBox.ignoreAllLogs(true);
+    console.disableLogBox = true;
 
+    expect(console.disableLogBox).toBe(true);
     expect(LogBoxData.isDisabled()).toBe(true);
   });
 
-  it('can call `ignoreAllLogs` before installing', () => {
-    expect(LogBoxData.isDisabled()).toBe(false);
+  it('can set `disableLogBox` before installing', () => {
+    expect(console.disableLogBox).toBe(undefined);
 
-    LogBox.ignoreAllLogs(true);
-
-    expect(LogBoxData.isDisabled()).toBe(true);
-
+    console.disableLogBox = true;
     LogBox.install();
 
-    expect(LogBoxData.isDisabled()).toBe(true);
-  });
-
-  it('will not ignore logs for `ignoreAllLogs(false)`', () => {
-    expect(LogBoxData.isDisabled()).toBe(false);
-
-    LogBox.install();
-
-    expect(LogBoxData.isDisabled()).toBe(false);
-
-    LogBox.ignoreAllLogs(false);
-
-    expect(LogBoxData.isDisabled()).toBe(false);
-  });
-
-  it('will ignore logs for `ignoreAllLogs()`', () => {
-    expect(LogBoxData.isDisabled()).toBe(false);
-
-    LogBox.install();
-
-    expect(LogBoxData.isDisabled()).toBe(false);
-
-    LogBox.ignoreAllLogs();
-
+    expect(console.disableLogBox).toBe(true);
     expect(LogBoxData.isDisabled()).toBe(true);
   });
 

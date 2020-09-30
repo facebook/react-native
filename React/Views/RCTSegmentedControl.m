@@ -10,7 +10,6 @@
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "UIView+React.h"
-#import "RCTUIKit.h" // TODO(macOS ISS#2323203)
 
 @implementation RCTSegmentedControl
 
@@ -19,7 +18,8 @@
   if ((self = [super initWithFrame:frame])) {
     _selectedIndex = self.selectedSegmentIndex;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-    [self addTarget:self action:@selector(didChange) forControlEvents:UIControlEventValueChanged];
+    [self addTarget:self action:@selector(didChange)
+               forControlEvents:UIControlEventValueChanged];
 #else // [TODO(macOS ISS#2323203)
     self.segmentStyle = NSSegmentStyleRounded;    
     self.target = self;
@@ -52,26 +52,6 @@
   self.selectedSegmentIndex = selectedIndex; // TODO(macOS ISS#2323203)
 }
 
-- (void)setBackgroundColor:(RCTUIColor *)backgroundColor // TODO(macOS ISS#2323203)
-{
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
-  if (@available(iOS 13.0, *)) {
-    [super setBackgroundColor:backgroundColor];
-  }
-#endif
-}
-
-- (void)setTextColor:(RCTUIColor *)textColor // TODO(macOS ISS#2323203)
-{
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
-  if (@available(iOS 13.0, *)) {
-    [self setTitleTextAttributes:@{NSForegroundColorAttributeName : textColor} forState:UIControlStateNormal];
-  }
-#endif
-}
-
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203) - no concept of tintColor on macOS
 - (void)setTintColor:(UIColor *)tintColor // TODO(macOS ISS#2323203)
 {
@@ -80,9 +60,10 @@
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   if (@available(iOS 13.0, *)) {
     [self setSelectedSegmentTintColor:tintColor];
-    [self setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}
+    [self setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}
                         forState:UIControlStateSelected];
-    [self setTitleTextAttributes:@{NSForegroundColorAttributeName : tintColor} forState:UIControlStateNormal];
+    [self setTitleTextAttributes:@{NSForegroundColorAttributeName: tintColor}
+                        forState:UIControlStateNormal];
   }
 #endif
 }
@@ -92,7 +73,10 @@
 {
   _selectedIndex = self.selectedSegmentIndex;
   if (_onChange) {
-    _onChange(@{@"value" : [self titleForSegmentAtIndex:_selectedIndex], @"selectedSegmentIndex" : @(_selectedIndex)});
+    _onChange(@{
+      @"value": [self titleForSegmentAtIndex:_selectedIndex],
+      @"selectedSegmentIndex": @(_selectedIndex)
+    });
   }
 }
 

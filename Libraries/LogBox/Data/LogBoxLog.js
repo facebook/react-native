@@ -26,7 +26,6 @@ export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax';
 
 export type LogBoxLogData = $ReadOnly<{|
   level: LogLevel,
-  type?: ?string,
   message: Message,
   stack: Stack,
   category: string,
@@ -37,7 +36,6 @@ export type LogBoxLogData = $ReadOnly<{|
 
 class LogBoxLog {
   message: Message;
-  type: ?string;
   category: Category;
   componentStack: ComponentStack;
   stack: Stack;
@@ -57,7 +55,6 @@ class LogBoxLog {
 
   constructor(data: LogBoxLogData) {
     this.level = data.level;
-    this.type = data.type;
     this.message = data.message;
     this.stack = data.stack;
     this.category = data.category;

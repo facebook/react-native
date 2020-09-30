@@ -11,16 +11,14 @@
   std::shared_ptr<void> _pointer;
 }
 
-- (instancetype)initWithPointer:(std::shared_ptr<void>)pointer
-{
+- (instancetype)initWithPointer:(std::shared_ptr<void>)pointer {
   if (self = [super init]) {
     _pointer = std::move(pointer);
   }
   return self;
 }
 
-- (void *)voidPointer
-{
+- (void *)voidPointer {
   return _pointer.get();
 }
 

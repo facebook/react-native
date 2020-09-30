@@ -18,7 +18,6 @@
 namespace facebook {
 namespace react {
 
-class ComponentDescriptorParameters;
 class ComponentDescriptor;
 
 using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor const>;
@@ -45,7 +44,10 @@ class ComponentDescriptor {
    */
   using Flavor = std::shared_ptr<void const>;
 
-  ComponentDescriptor(ComponentDescriptorParameters const &parameters);
+  ComponentDescriptor(
+      EventDispatcher::Weak const &eventDispatcher,
+      ContextContainer::Shared const &contextContainer,
+      ComponentDescriptor::Flavor const &flavor);
 
   virtual ~ComponentDescriptor() = default;
 
@@ -75,9 +77,8 @@ class ComponentDescriptor {
   /*
    * Creates a new `ShadowNode` of a particular component type.
    */
-  virtual ShadowNode::Shared createShadowNode(
-      const ShadowNodeFragment &fragment,
-      ShadowNodeFamily::Shared const &family) const = 0;
+  virtual SharedShadowNode createShadowNode(
+      const ShadowNodeFragment &fragment) const = 0;
 
   /*
    * Clones a `ShadowNode` with optionally new `props` and/or `children`.
@@ -90,8 +91,8 @@ class ComponentDescriptor {
    * Appends (by mutating) a given `childShadowNode` to `parentShadowNode`.
    */
   virtual void appendChild(
-      const ShadowNode::Shared &parentShadowNode,
-      const ShadowNode::Shared &childShadowNode) const = 0;
+      const SharedShadowNode &parentShadowNode,
+      const SharedShadowNode &childShadowNode) const = 0;
 
   /*
    * Creates a new `Props` of a particular type with all values copied from
@@ -104,44 +105,33 @@ class ComponentDescriptor {
       const RawProps &rawProps) const = 0;
 
   /*
+   * Creates a new `EventEmitter` object compatible with particular type of
+   * shadow nodes.
+   */
+  virtual SharedEventEmitter createEventEmitter(
+      SharedEventTarget eventTarget,
+      const Tag &tag) const = 0;
+
+  /*
    * Create an initial State object that represents (and contains) an initial
    * State's data which can be constructed based on initial Props.
    */
   virtual State::Shared createInitialState(
-      ShadowNodeFragment const &fragment,
-      ShadowNodeFamily::Shared const &family) const = 0;
+      ShadowNodeFragment const &fragment) const = 0;
 
   /*
    * Creates a new State object that represents (and contains) a new version of
    * State's data.
    */
   virtual State::Shared createState(
-      ShadowNodeFamily const &family,
+      const State::Shared &previousState,
       const StateData::Shared &data) const = 0;
-
-  /*
-   * Creates a shadow node family for particular node.
-   */
-  virtual ShadowNodeFamily::Shared createFamily(
-      ShadowNodeFamilyFragment const &fragment,
-      SharedEventTarget eventTarget) const = 0;
 
  protected:
   EventDispatcher::Weak eventDispatcher_;
   ContextContainer::Shared contextContainer_;
   RawPropsParser rawPropsParser_{};
   Flavor flavor_;
-};
-
-/*
- * Represents a collection of arguments that sufficient to construct a
- * `ComponentDescriptor`.
- */
-class ComponentDescriptorParameters {
- public:
-  EventDispatcher::Weak eventDispatcher;
-  ContextContainer::Shared contextContainer;
-  ComponentDescriptor::Flavor flavor;
 };
 
 } // namespace react

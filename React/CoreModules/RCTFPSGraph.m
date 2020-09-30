@@ -11,14 +11,15 @@
 
 #if RCT_DEV
 
-@interface RCTFPSGraph ()
+@interface RCTFPSGraph()
 
 @property (nonatomic, strong, readonly) CAShapeLayer *graph;
 @property (nonatomic, strong, readonly) UILabel *label;
 
 @end
 
-@implementation RCTFPSGraph {
+@implementation RCTFPSGraph
+{
   CAShapeLayer *_graph;
   UILabel *_label;
 
@@ -57,8 +58,8 @@
   free(_frames);
 }
 
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (CAShapeLayer *)graph
 {

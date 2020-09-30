@@ -26,7 +26,6 @@ import typeof MaskedViewIOS from './Libraries/Components/MaskedView/MaskedViewIO
 import typeof Modal from './Libraries/Modal/Modal';
 import typeof Picker from './Libraries/Components/Picker/Picker';
 import typeof PickerIOS from './Libraries/Components/Picker/PickerIOS';
-import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 import typeof ProgressViewIOS from './Libraries/Components/ProgressViewIOS/ProgressViewIOS';
 import typeof SafeAreaView from './Libraries/Components/SafeAreaView/SafeAreaView';
@@ -89,16 +88,12 @@ import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
 import typeof UTFSequence from './Libraries/UTFSequence';
 import typeof Vibration from './Libraries/Vibration/Vibration';
-import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
-import typeof LogBox from './Libraries/LogBox/LogBox';
+import typeof YellowBox from './Libraries/YellowBox/YellowBox';
 import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEventEmitter';
 import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
 import typeof NativeModules from './Libraries/BatchedBridge/NativeModules';
 import typeof Platform from './Libraries/Utilities/Platform';
 import typeof processColor from './Libraries/StyleSheet/processColor';
-import typeof {PlatformColor} from './Libraries/StyleSheet/PlatformColorValueTypes';
-import typeof {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
-import typeof {ColorAndroid} from './Libraries/StyleSheet/PlatformColorValueTypesAndroid';
 import typeof RootTagContext from './Libraries/ReactNative/RootTagContext';
 import typeof DeprecatedColorPropType from './Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
 import typeof DeprecatedEdgeInsetsPropType from './Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType';
@@ -198,9 +193,6 @@ module.exports = {
         'See https://github.com/react-native-community/react-native-picker',
     );
     return require('./Libraries/Components/Picker/PickerIOS');
-  },
-  get Pressable(): Pressable {
-    return require('./Libraries/Components/Pressable/Pressable').default;
   },
   get ProgressBarAndroid(): ProgressBarAndroid {
     warnOnce(
@@ -386,9 +378,6 @@ module.exports = {
   get Linking(): Linking {
     return require('./Libraries/Linking/Linking');
   },
-  get LogBox(): LogBox {
-    return require('./Libraries/LogBox/LogBox');
-  },
   get NativeDialogManagerAndroid(): NativeDialogManagerAndroid {
     return require('./Libraries/NativeModules/specs/NativeDialogManagerAndroid')
       .default;
@@ -468,7 +457,7 @@ module.exports = {
     return require('./Libraries/Vibration/Vibration');
   },
   get YellowBox(): YellowBox {
-    return require('./Libraries/YellowBox/YellowBoxDeprecated');
+    return require('./Libraries/YellowBox/YellowBox');
   },
 
   // Plugins
@@ -487,18 +476,6 @@ module.exports = {
   get processColor(): processColor {
     return require('./Libraries/StyleSheet/processColor');
   },
-  get PlatformColor(): PlatformColor {
-    return require('./Libraries/StyleSheet/PlatformColorValueTypes')
-      .PlatformColor;
-  },
-  get DynamicColorIOS(): DynamicColorIOS {
-    return require('./Libraries/StyleSheet/PlatformColorValueTypesIOS')
-      .DynamicColorIOS;
-  },
-  get ColorAndroid(): ColorAndroid {
-    return require('./Libraries/StyleSheet/PlatformColorValueTypesAndroid')
-      .ColorAndroid;
-  },
   get requireNativeComponent(): <T>(
     uiViewClassName: string,
   ) => HostComponent<T> {
@@ -508,11 +485,9 @@ module.exports = {
     return require('./Libraries/ReactNative/RootTagContext');
   },
   get unstable_enableLogBox(): () => void {
-    return () =>
-      console.warn(
-        'LogBox is enabled by default so there is no need to call unstable_enableLogBox() anymore. This is a no op and will be removed in the next version.',
-      );
+    return require('./Libraries/YellowBox/YellowBox').__unstable_enableLogBox;
   },
+
   // Prop Types
   get ColorPropType(): DeprecatedColorPropType {
     return require('./Libraries/DeprecatedPropTypes/DeprecatedColorPropType');
@@ -643,19 +618,6 @@ if (__DEV__) {
         'TimePickerAndroid has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
           'See https://github.com/react-native-community/datetimepicker',
-      );
-    },
-  });
-
-  // $FlowFixMe This is intentional: Flow will error when attempting to access ToolbarAndroid.
-  Object.defineProperty(module.exports, 'ToolbarAndroid', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'ToolbarAndroid has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-community/toolbar-android' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/toolbar-android',
       );
     },
   });

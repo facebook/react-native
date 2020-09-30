@@ -29,7 +29,7 @@ type Timespan = {
 export type IPerformanceLogger = {
   addTimespan(string, number, string | void): void,
   startTimespan(string, string | void): void,
-  stopTimespan(string, options?: {update?: boolean}): void,
+  stopTimespan(string): void,
   clear(): void,
   clearCompleted(): void,
   clearExceptTimespans(Array<string>): void,
@@ -107,7 +107,7 @@ function createPerformanceLogger(): IPerformanceLogger {
       }
     },
 
-    stopTimespan(key: string, options?: {update?: boolean}) {
+    stopTimespan(key: string) {
       const timespan = this._timespans[key];
       if (!timespan || !timespan.startTime) {
         if (PRINT_TO_CONSOLE && __DEV__) {
@@ -118,7 +118,7 @@ function createPerformanceLogger(): IPerformanceLogger {
         }
         return;
       }
-      if (timespan.endTime && !options?.update) {
+      if (timespan.endTime) {
         if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
             'PerformanceLogger: Attempting to end a timespan that has already ended ',
@@ -134,10 +134,8 @@ function createPerformanceLogger(): IPerformanceLogger {
         infoLog('PerformanceLogger.js', 'end: ' + key);
       }
 
-      if (_cookies[key] != null) {
-        Systrace.endAsyncEvent(key, _cookies[key]);
-        delete _cookies[key];
-      }
+      Systrace.endAsyncEvent(key, _cookies[key]);
+      delete _cookies[key];
     },
 
     clear() {

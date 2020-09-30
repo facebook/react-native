@@ -14,7 +14,7 @@ NSString *const RCTTVNavigationEventNotification = @"RCTTVNavigationEventNotific
 
 static NSString *const TVNavigationEventName = @"onHWKeyEvent";
 
-@interface RCTTVNavigationEventEmitter () <NativeTVNavigationEventEmitterSpec>
+@interface RCTTVNavigationEventEmitter() <NativeTVNavigationEventEmitterSpec>
 @end
 
 @implementation RCTTVNavigationEventEmitter
@@ -33,13 +33,14 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(handleTVNavigationEventNotification:)
                                                  name:RCTTVNavigationEventNotification
                                                object:nil];
+
   }
   return self;
 }
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[ TVNavigationEventName ];
+  return @[TVNavigationEventName];
 }
 
 - (void)handleTVNavigationEventNotification:(NSNotification *)notif
@@ -49,18 +50,13 @@ RCT_EXPORT_MODULE()
   }
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  return std::make_shared<facebook::react::NativeTVNavigationEventEmitterSpecJSI>(
-      self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeTVNavigationEventEmitterSpecJSI>(self, jsInvoker);
 }
 
 @end
 
-Class RCTTVNavigationEventEmitterCls(void)
-{
+Class RCTTVNavigationEventEmitterCls(void) {
   return RCTTVNavigationEventEmitter.class;
 }

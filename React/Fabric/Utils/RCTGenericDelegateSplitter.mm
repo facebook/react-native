@@ -35,12 +35,6 @@
   [self _updateDelegate];
 }
 
-- (void)removeAllDelegates
-{
-  [_delegates removeAllObjects];
-  [self _updateDelegate];
-}
-
 #pragma mark - Private
 
 - (void)_updateDelegate
@@ -78,16 +72,10 @@
 
 - (void)forwardInvocation:(NSInvocation *)invocation
 {
-  NSMutableArray *targets = [[NSMutableArray alloc] initWithCapacity:_delegates.count];
-
   for (id delegate in _delegates) {
     if ([delegate respondsToSelector:[invocation selector]]) {
-      [targets addObject:delegate];
+      [invocation invokeWithTarget:delegate];
     }
-  }
-
-  for (id target in targets) {
-    [invocation invokeWithTarget:target];
   }
 }
 

@@ -85,14 +85,8 @@ class FileReader extends (EventTarget(...READER_EVENTS): any) {
     throw new Error('FileReader.readAsArrayBuffer is not implemented');
   }
 
-  readAsDataURL(blob: ?Blob) {
+  readAsDataURL(blob: Blob) {
     this._aborted = false;
-
-    if (blob == null) {
-      throw new TypeError(
-        "Failed to execute 'readAsDataURL' on 'FileReader': parameter 1 is not of type 'Blob'",
-      );
-    }
 
     NativeFileReaderModule.readAsDataURL(blob.data).then(
       (text: string) => {
@@ -112,14 +106,8 @@ class FileReader extends (EventTarget(...READER_EVENTS): any) {
     );
   }
 
-  readAsText(blob: ?Blob, encoding: string = 'UTF-8') {
+  readAsText(blob: Blob, encoding: string = 'UTF-8') {
     this._aborted = false;
-
-    if (blob == null) {
-      throw new TypeError(
-        "Failed to execute 'readAsText' on 'FileReader': parameter 1 is not of type 'Blob'",
-      );
-    }
 
     NativeFileReaderModule.readAsText(blob.data, encoding).then(
       (text: string) => {

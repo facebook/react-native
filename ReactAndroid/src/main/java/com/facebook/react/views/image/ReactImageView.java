@@ -51,7 +51,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.UIManagerHelper;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
@@ -89,11 +89,6 @@ public class ReactImageView extends GenericDraweeView {
   private static final Matrix sMatrix = new Matrix();
   private static final Matrix sInverse = new Matrix();
   private ImageResizeMethod mResizeMethod = ImageResizeMethod.AUTO;
-
-  public void updateCallerContext(@Nullable Object callerContext) {
-    mCallerContext = callerContext;
-    mIsDirty = true;
-  }
 
   private class RoundedCornerPostprocessor extends BasePostprocessor {
 
@@ -202,7 +197,7 @@ public class ReactImageView extends GenericDraweeView {
   private @Nullable ControllerListener mControllerListener;
   private @Nullable ControllerListener mControllerForTesting;
   private @Nullable GlobalImageLoadListener mGlobalImageLoadListener;
-  private @Nullable Object mCallerContext;
+  private final @Nullable Object mCallerContext;
   private int mFadeDurationMs = -1;
   private boolean mProgressiveRenderingEnabled;
   private ReadableMap mHeaders;
@@ -234,7 +229,7 @@ public class ReactImageView extends GenericDraweeView {
       mControllerListener = null;
     } else {
       final EventDispatcher mEventDispatcher =
-          UIManagerHelper.getEventDispatcherForReactTag((ReactContext) getContext(), getId());
+          ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher();
 
       mControllerListener =
           new BaseControllerListener<ImageInfo>() {

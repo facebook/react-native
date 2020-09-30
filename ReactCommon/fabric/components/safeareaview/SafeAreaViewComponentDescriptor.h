@@ -35,10 +35,7 @@ class SafeAreaViewComponentDescriptor final
             shadowNode->getState());
     auto stateData = state->getData();
 
-    if (safeAreaViewShadowNode->alreadyAppliedPadding != stateData.padding) {
-      safeAreaViewShadowNode->alreadyAppliedPadding = stateData.padding;
-      layoutableShadowNode->setPadding(stateData.padding);
-    }
+    layoutableShadowNode->setPadding(stateData.padding);
 
     ConcreteComponentDescriptor::adopt(shadowNode);
   }

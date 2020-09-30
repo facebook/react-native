@@ -21,7 +21,7 @@ namespace react {
  * don't have a state.
  */
 struct StateData final {
-  using Shared = std::shared_ptr<void const>;
+  using Shared = std::shared_ptr<void>;
 
 #ifdef ANDROID
   StateData() = default;

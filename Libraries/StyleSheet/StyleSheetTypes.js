@@ -11,10 +11,9 @@
 'use strict';
 
 const AnimatedNode = require('../Animated/src/nodes/AnimatedNode');
+import type {NativeOrDynamicColorType} from '../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
-import type {NativeColorValue} from './PlatformColorValueTypes';
-
-export type ColorValue = null | string | NativeColorValue;
+export type ColorValue = null | string | NativeOrDynamicColorType; // TODO(macOS ISS#2323203)
 
 export type ColorArrayValue = null | $ReadOnlyArray<ColorValue>;
 export type PointValue = {|
@@ -467,7 +466,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{|
   /** `direction` specifies the directional flow of the user interface.
    *  The default is `inherit`, except for root node which will have
    *  value based on the current locale.
-   *  See https://yogalayout.com/docs/layout-direction
+   *  See https://facebook.github.io/yoga/docs/rtl/
    *  for more details.
    *  @platform ios
    */

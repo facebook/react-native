@@ -11,9 +11,9 @@
 
 'use strict';
 
-import Platform from '../../Utilities/Platform';
-import * as React from 'react';
-import StyleSheet from '../../StyleSheet/StyleSheet';
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
 
 import AndroidSwitchNativeComponent, {
   Commands as AndroidSwitchCommands,
@@ -113,18 +113,48 @@ class Switch extends React.Component<Props> {
       ...props
     } = this.props;
 
-    const trackColorForFalse = trackColor?.false;
-    const trackColorForTrue = trackColor?.true;
+    // Support deprecated color props.
+    let _thumbColor = thumbColor;
+    let _trackColorForFalse = trackColor?.false;
+    let _trackColorForTrue = trackColor?.true;
+
+    // TODO: Remove support for these props after a couple releases.
+    const {thumbTintColor, tintColor, onTintColor} = (props: $FlowFixMe);
+    if (thumbTintColor != null) {
+      _thumbColor = thumbTintColor;
+      if (__DEV__) {
+        console.warn(
+          'Switch: `thumbTintColor` is deprecated, use `thumbColor` instead.',
+        );
+      }
+    }
+    if (tintColor != null) {
+      _trackColorForFalse = tintColor;
+      if (__DEV__) {
+        console.warn(
+          'Switch: `tintColor` is deprecated, use `trackColor` instead.',
+        );
+      }
+    }
+    if (onTintColor != null) {
+      _trackColorForTrue = onTintColor;
+      if (__DEV__) {
+        console.warn(
+          'Switch: `onTintColor` is deprecated, use `trackColor` instead.',
+        );
+      }
+    }
 
     if (Platform.OS === 'android') {
       const platformProps = {
         enabled: disabled !== true,
         on: value === true,
         style,
-        thumbTintColor: thumbColor,
-        trackColorForFalse: trackColorForFalse,
-        trackColorForTrue: trackColorForTrue,
-        trackTintColor: value === true ? trackColorForTrue : trackColorForFalse,
+        thumbTintColor: _thumbColor,
+        trackColorForFalse: _trackColorForFalse,
+        trackColorForTrue: _trackColorForTrue,
+        trackTintColor:
+          value === true ? _trackColorForTrue : _trackColorForFalse,
       };
 
       return (
@@ -142,7 +172,7 @@ class Switch extends React.Component<Props> {
 
     const platformProps = {
       disabled,
-      onTintColor: trackColorForTrue,
+      onTintColor: _trackColorForTrue,
       style: StyleSheet.compose(
         {height: 31, width: 51},
         StyleSheet.compose(
@@ -155,8 +185,8 @@ class Switch extends React.Component<Props> {
               },
         ),
       ),
-      thumbTintColor: thumbColor,
-      tintColor: trackColorForFalse,
+      thumbTintColor: _thumbColor,
+      tintColor: _trackColorForFalse,
       value: value === true,
     };
 

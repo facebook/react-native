@@ -18,15 +18,7 @@ export function toCppType(type: string): string {
   return type.substr(0, 1).toUpperCase() + type.substr(1);
 }
 
-export type JsTypeString =
-  | 'any'
-  | 'boolean'
-  | 'integer'
-  | 'number'
-  | 'object'
-  | 'string';
-
-const jsTypeMappings = {
+const jsTypeMappings: {[key: string]: string, ...} = {
   any: 'folly::dynamic',
   array: 'folly::dynamic',
   boolean: 'bool',
@@ -36,6 +28,10 @@ const jsTypeMappings = {
   string: 'std::string',
 };
 
-export function jsTypeToCppType(jsTypeStr: JsTypeString): string {
-  return jsTypeMappings[jsTypeStr];
+export function jsTypeToCppType(jsTypeStr: string): string {
+  const cppType = jsTypeMappings[jsTypeStr];
+  if (!cppType) {
+    throw new TypeError(`${jsTypeStr} is not an expected JS type string`);
+  }
+  return cppType;
 }

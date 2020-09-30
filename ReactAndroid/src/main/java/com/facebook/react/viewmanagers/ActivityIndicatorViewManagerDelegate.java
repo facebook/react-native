@@ -11,7 +11,6 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -30,7 +29,7 @@ public class ActivityIndicatorViewManagerDelegate<T extends View, U extends Base
         mViewManager.setAnimating(view, value == null ? false : (boolean) value);
         break;
       case "color":
-        mViewManager.setColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "size":
         mViewManager.setSize(view, (String) value);

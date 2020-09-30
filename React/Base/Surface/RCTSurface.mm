@@ -9,7 +9,6 @@
 #import "RCTSurfaceView+Internal.h"
 
 #import <mutex>
-
 #import <stdatomic.h>
 
 #import "RCTAssert.h"
@@ -58,11 +57,12 @@
   atomic_bool _waitingForMountingStageOnMainQueue;
 }
 
+
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
 {
-  RCTAssert(bridge.valid, @"Valid bridge is required to instantiate `RCTSurface`.");
+  RCTAssert(bridge.valid, @"Valid bridge is required to instanciate `RCTSurface`.");
 
   if (self = [super init]) {
     _bridge = bridge;
@@ -165,14 +165,14 @@
     return;
   }
 
-  RCTSurfaceRootView *rootView = (RCTSurfaceRootView *)[self._uiManager viewForReactTag:self->_rootViewTag];
+  RCTSurfaceRootView *rootView =
+    (RCTSurfaceRootView *)[self._uiManager viewForReactTag:self->_rootViewTag];
   if (!rootView) {
     return;
   }
 
-  RCTAssert(
-      [rootView isKindOfClass:[RCTSurfaceRootView class]],
-      @"Received root view is not an instance of `RCTSurfaceRootView`.");
+  RCTAssert([rootView isKindOfClass:[RCTSurfaceRootView class]],
+    @"Received root view is not an instance of `RCTSurfaceRootView`.");
 
   if (rootView.superview != view) {
     view.rootView = rootView;
@@ -297,10 +297,11 @@
     return;
   }
 
-  NSDictionary *applicationParameters = @{
-    @"rootTag" : _rootViewTag,
-    @"initialProps" : properties,
-  };
+  NSDictionary *applicationParameters =
+    @{
+      @"rootTag": _rootViewTag,
+      @"initialProps": properties,
+    };
 
   RCTLogInfo(@"Running surface %@ (%@)", _moduleName, applicationParameters);
 
@@ -335,32 +336,33 @@
     [uiManager registerRootViewTag:self->_rootViewTag];
 
     RCTSurfaceRootShadowView *rootShadowView =
-        (RCTSurfaceRootShadowView *)[uiManager shadowViewForReactTag:self->_rootViewTag];
-    RCTAssert(
-        [rootShadowView isKindOfClass:[RCTSurfaceRootShadowView class]],
-        @"Received shadow view is not an instance of `RCTSurfaceRootShadowView`.");
+      (RCTSurfaceRootShadowView *)[uiManager shadowViewForReactTag:self->_rootViewTag];
+    RCTAssert([rootShadowView isKindOfClass:[RCTSurfaceRootShadowView class]],
+      @"Received shadow view is not an instance of `RCTSurfaceRootShadowView`.");
 
-    [rootShadowView setMinimumSize:minimumSize maximumSize:maximumSize];
+    [rootShadowView setMinimumSize:minimumSize
+                       maximumSize:maximumSize];
     rootShadowView.delegate = self;
   });
 }
 
 #pragma mark - Layout
 
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
+                      maximumSize:(CGSize)maximumSize
 {
   RCTUIManager *uiManager = self._uiManager;
   __block CGSize fittingSize;
 
   RCTUnsafeExecuteOnUIManagerQueueSync(^{
     RCTSurfaceRootShadowView *rootShadowView =
-        (RCTSurfaceRootShadowView *)[uiManager shadowViewForReactTag:self->_rootViewTag];
+      (RCTSurfaceRootShadowView *)[uiManager shadowViewForReactTag:self->_rootViewTag];
 
-    RCTAssert(
-        [rootShadowView isKindOfClass:[RCTSurfaceRootShadowView class]],
-        @"Received shadow view is not an instance of `RCTSurfaceRootShadowView`.");
+    RCTAssert([rootShadowView isKindOfClass:[RCTSurfaceRootShadowView class]],
+      @"Received shadow view is not an instance of `RCTSurfaceRootShadowView`.");
 
-    fittingSize = [rootShadowView sizeThatFitsMinimumSize:minimumSize maximumSize:maximumSize];
+    fittingSize = [rootShadowView sizeThatFitsMinimumSize:minimumSize
+                                              maximumSize:maximumSize];
   });
 
   return fittingSize;
@@ -373,11 +375,13 @@
   [self setMinimumSize:size maximumSize:size];
 }
 
-- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+- (void)setMinimumSize:(CGSize)minimumSize
+           maximumSize:(CGSize)maximumSize
 {
   {
     std::lock_guard<std::mutex> lock(_mutex);
-    if (CGSizeEqualToSize(minimumSize, _minimumSize) && CGSizeEqualToSize(maximumSize, _maximumSize)) {
+    if (CGSizeEqualToSize(minimumSize, _minimumSize) &&
+        CGSizeEqualToSize(maximumSize, _maximumSize)) {
       return;
     }
 
@@ -389,10 +393,9 @@
 
   RCTUnsafeExecuteOnUIManagerQueueSync(^{
     RCTSurfaceRootShadowView *rootShadowView =
-        (RCTSurfaceRootShadowView *)[uiManager shadowViewForReactTag:self->_rootViewTag];
-    RCTAssert(
-        [rootShadowView isKindOfClass:[RCTSurfaceRootShadowView class]],
-        @"Received shadow view is not an instance of `RCTSurfaceRootShadowView`.");
+      (RCTSurfaceRootShadowView *)[uiManager shadowViewForReactTag:self->_rootViewTag];
+    RCTAssert([rootShadowView isKindOfClass:[RCTSurfaceRootShadowView class]],
+      @"Received shadow view is not an instance of `RCTSurfaceRootShadowView`.");
 
     [rootShadowView setMinimumSize:minimumSize maximumSize:maximumSize];
     [uiManager setNeedsLayout];
@@ -467,9 +470,7 @@
       semaphore = _uiManagerDidPerformMountingSemaphore;
       break;
     default:
-      RCTAssert(
-          NO,
-          @"Only waiting for `RCTSurfaceStageSurfaceDidInitialRendering`, `RCTSurfaceStageSurfaceDidInitialLayout` and `RCTSurfaceStageSurfaceDidInitialMounting` stages are supported.");
+      RCTAssert(NO, @"Only waiting for `RCTSurfaceStageSurfaceDidInitialRendering`, `RCTSurfaceStageSurfaceDidInitialLayout` and `RCTSurfaceStageSurfaceDidInitialMounting` stages are supported.");
   }
 
   BOOL timeoutOccurred = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_SEC));
@@ -529,7 +530,7 @@
 
 #pragma mark - RCTUIManagerObserver
 
-- (BOOL)uiManager:(__unused RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block
+- (BOOL)uiManager:(__unused RCTUIManager *) manager performMountingWithBlock:(RCTUIManagerMountingBlock)block
 {
   if (atomic_load(&_waitingForMountingStageOnMainQueue) && (self.stage & RCTSurfaceStageSurfaceDidInitialLayout)) {
     // Atomic equivalent of `_waitingForMountingStageOnMainQueue = NO;`.
@@ -574,19 +575,14 @@
 
 #pragma mark - Mounting/Unmounting of React components
 
-- (void)mountReactComponentWithBridge:(RCTBridge *)bridge
-                           moduleName:(NSString *)moduleName
-                               params:(NSDictionary *)params
+- (void)mountReactComponentWithBridge:(RCTBridge *)bridge moduleName:(NSString *)moduleName params:(NSDictionary *)params
 {
-  [bridge enqueueJSCall:@"AppRegistry" method:@"runApplication" args:@[ moduleName, params ] completion:NULL];
+  [bridge enqueueJSCall:@"AppRegistry" method:@"runApplication" args:@[moduleName, params] completion:NULL];
 }
 
 - (void)unmountReactComponentWithBridge:(RCTBridge *)bridge rootViewTag:(NSNumber *)rootViewTag
 {
-  [bridge enqueueJSCall:@"AppRegistry"
-                 method:@"unmountApplicationComponentAtRootTag"
-                   args:@[ rootViewTag ]
-             completion:NULL];
+  [bridge enqueueJSCall:@"AppRegistry" method:@"unmountApplicationComponentAtRootTag" args:@[rootViewTag] completion:NULL];
 }
 
 @end

@@ -22,6 +22,7 @@ export type AnimationConfig = {
   useNativeDriver: boolean,
   onComplete?: ?EndCallback,
   iterations?: number,
+  ...
 };
 
 // Important note: start() and stop() will only be called at most once.

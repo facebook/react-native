@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <limits>
-
 #include <react/components/text/BaseTextShadowNode.h>
 #include <react/components/text/TextProps.h>
 #include <react/components/view/ViewEventEmitter.h>
@@ -21,40 +19,11 @@ extern const char TextComponentName[];
 
 using TextEventEmitter = TouchEventEmitter;
 
-class TextShadowNode : public ConcreteShadowNode<
-                           TextComponentName,
-                           ShadowNode,
-                           TextProps,
-                           TextEventEmitter>,
-                       public BaseTextShadowNode {
+class TextShadowNode
+    : public ConcreteShadowNode<TextComponentName, TextProps, TextEventEmitter>,
+      public BaseTextShadowNode {
  public:
-  static ShadowNodeTraits BaseTraits() {
-    auto traits = ConcreteShadowNode::BaseTraits();
-
-#ifdef ANDROID
-    traits.set(ShadowNodeTraits::Trait::FormsView);
-#endif
-
-    return traits;
-  }
-
   using ConcreteShadowNode::ConcreteShadowNode;
-
-#ifdef ANDROID
-  using BaseShadowNode = ConcreteShadowNode<
-      TextComponentName,
-      ShadowNode,
-      TextProps,
-      TextEventEmitter>;
-
-  TextShadowNode(
-      ShadowNodeFragment const &fragment,
-      ShadowNodeFamily::Shared const &family,
-      ShadowNodeTraits traits)
-      : BaseShadowNode(fragment, family, traits), BaseTextShadowNode() {
-    orderIndex_ = std::numeric_limits<decltype(orderIndex_)>::max();
-  }
-#endif
 };
 
 } // namespace react

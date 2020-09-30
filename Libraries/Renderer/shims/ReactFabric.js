@@ -23,10 +23,6 @@ if (__DEV__) {
   ReactFabric = require('../implementations/ReactFabric-prod');
 }
 
-if (global.RN$Bridgeless) {
-  global.RN$stopSurface = ReactFabric.stopSurface;
-} else {
-  BatchedBridge.registerCallableModule('ReactFabric', ReactFabric);
-}
+BatchedBridge.registerCallableModule('ReactFabric', ReactFabric);
 
 module.exports = (ReactFabric: ReactNativeType);

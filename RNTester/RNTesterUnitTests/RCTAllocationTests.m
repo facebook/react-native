@@ -60,6 +60,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
    "  callFunctionReturnFlushedQueue: function() { return null; },"
    "  invokeCallbackAndReturnFlushedQueue: function() { return null; },"
    "  flushedQueue: function() { return null; },"
+   "  callFunctionReturnResultAndFlushedQueue: function() { return null; },"
    "};";
 
   NSURL *tempDir = [NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES];

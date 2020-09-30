@@ -8,8 +8,8 @@
 #pragma once
 
 #include <cstdint>
-#include <stdexcept>
 #include <string>
+#include <stdexcept>
 
 #include <folly/Conv.h>
 
@@ -24,13 +24,12 @@ class JSModulesUnbundle {
    * The class is non-copyable because copying instances might involve copying
    * several megabytes of memory.
    */
- public:
+public:
   class ModuleNotFound : public std::out_of_range {
-   public:
+  public:
     using std::out_of_range::out_of_range;
-    ModuleNotFound(uint32_t moduleId)
-        : std::out_of_range::out_of_range(
-              folly::to<std::string>("Module not found: ", moduleId)) {}
+    ModuleNotFound(uint32_t moduleId) : std::out_of_range::out_of_range(
+      folly::to<std::string>("Module not found: ", moduleId)) {}
   };
   struct Module {
     std::string name;
@@ -40,9 +39,9 @@ class JSModulesUnbundle {
   virtual ~JSModulesUnbundle() {}
   virtual Module getModule(uint32_t moduleId) const = 0;
 
- private:
-  JSModulesUnbundle(const JSModulesUnbundle &) = delete;
+private:
+  JSModulesUnbundle(const JSModulesUnbundle&) = delete;
 };
 
-} // namespace react
-} // namespace facebook
+}
+}

@@ -7,11 +7,11 @@
 
 package com.facebook.react.modules.core;
 
-import com.facebook.fbreact.specs.NativeTimingSpec;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
 import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
@@ -19,7 +19,7 @@ import com.facebook.react.module.annotations.ReactModule;
 
 /** Native module for JS timer execution. Timers fire on frame boundaries. */
 @ReactModule(name = TimingModule.NAME)
-public final class TimingModule extends NativeTimingSpec
+public final class TimingModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener, HeadlessJsTaskEventListener {
 
   public class BridgeTimerManager implements JavaScriptTimerManager {
@@ -79,26 +79,21 @@ public final class TimingModule extends NativeTimingSpec
     return NAME;
   }
 
-  @Override
+  @ReactMethod
   public void createTimer(
-      final double callbackIDDouble,
-      final double durationDouble,
+      final int callbackID,
+      final int duration,
       final double jsSchedulingTime,
       final boolean repeat) {
-    final int callbackID = (int) callbackIDDouble;
-    final int duration = (int) durationDouble;
-
     mJavaTimerManager.createAndMaybeCallTimer(callbackID, duration, jsSchedulingTime, repeat);
   }
 
-  @Override
-  public void deleteTimer(double timerIdDouble) {
-    int timerId = (int) timerIdDouble;
-
+  @ReactMethod
+  public void deleteTimer(int timerId) {
     mJavaTimerManager.deleteTimer(timerId);
   }
 
-  @Override
+  @ReactMethod
   public void setSendIdleEvents(final boolean sendIdleEvents) {
     mJavaTimerManager.setSendIdleEvents(sendIdleEvents);
   }
@@ -134,10 +129,5 @@ public final class TimingModule extends NativeTimingSpec
         HeadlessJsTaskContext.getInstance(getReactApplicationContext());
     headlessJsTaskContext.removeTaskEventListener(this);
     mJavaTimerManager.onInstanceDestroy();
-  }
-
-  @VisibleForTesting
-  public boolean hasActiveTimersInRange(long rangeMs) {
-    return mJavaTimerManager.hasActiveTimersInRange(rangeMs);
   }
 }

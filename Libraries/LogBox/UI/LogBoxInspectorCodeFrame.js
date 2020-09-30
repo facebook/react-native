@@ -87,19 +87,9 @@ function AppInfo() {
   }
 
   return (
-    <LogBoxButton
-      backgroundColor={{
-        default: 'transparent',
-        pressed: appInfo.onPress
-          ? LogBoxStyle.getBackgroundColor(1)
-          : 'transparent',
-      }}
-      style={appInfoStyles.buildButton}
-      onPress={appInfo.onPress}>
-      <Text style={appInfoStyles.text}>
-        {appInfo.appVersion} ({appInfo.engine})
-      </Text>
-    </LogBoxButton>
+    <Text style={appInfoStyles.text}>
+      {appInfo.appVersion} ({appInfo.engine})
+    </Text>
   );
 }
 
@@ -108,14 +98,8 @@ const appInfoStyles = StyleSheet.create({
     color: LogBoxStyle.getTextColor(0.4),
     fontSize: 12,
     lineHeight: 12,
-  },
-  buildButton: {
     flex: 0,
     flexGrow: 0,
-    paddingVertical: 4,
-    paddingHorizontal: 5,
-    borderRadius: 5,
-    marginRight: -8,
   },
 });
 

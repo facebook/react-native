@@ -9,9 +9,10 @@ package com.facebook.react.modules.toast;
 
 import android.view.Gravity;
 import android.widget.Toast;
-import com.facebook.fbreact.specs.NativeToastAndroidSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -19,7 +20,7 @@ import java.util.Map;
 
 /** {@link NativeModule} that allows JS to show an Android Toast. */
 @ReactModule(name = ToastModule.NAME)
-public class ToastModule extends NativeToastAndroidSpec {
+public class ToastModule extends ReactContextBaseJavaModule {
 
   private static final String DURATION_SHORT_KEY = "SHORT";
   private static final String DURATION_LONG_KEY = "LONG";
@@ -39,7 +40,7 @@ public class ToastModule extends NativeToastAndroidSpec {
   }
 
   @Override
-  public Map<String, Object> getTypedExportedConstants() {
+  public Map<String, Object> getConstants() {
     final Map<String, Object> constants = MapBuilder.newHashMap();
     constants.put(DURATION_SHORT_KEY, Toast.LENGTH_SHORT);
     constants.put(DURATION_LONG_KEY, Toast.LENGTH_LONG);
@@ -49,10 +50,8 @@ public class ToastModule extends NativeToastAndroidSpec {
     return constants;
   }
 
-  @Override
-  public void show(final String message, final double durationDouble) {
-    final int duration = (int) durationDouble;
-
+  @ReactMethod
+  public void show(final String message, final int duration) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -62,12 +61,8 @@ public class ToastModule extends NativeToastAndroidSpec {
         });
   }
 
-  @Override
-  public void showWithGravity(
-      final String message, final double durationDouble, final double gravityDouble) {
-    final int duration = (int) durationDouble;
-    final int gravity = (int) gravityDouble;
-
+  @ReactMethod
+  public void showWithGravity(final String message, final int duration, final int gravity) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -79,18 +74,13 @@ public class ToastModule extends NativeToastAndroidSpec {
         });
   }
 
-  @Override
+  @ReactMethod
   public void showWithGravityAndOffset(
       final String message,
-      final double durationDouble,
-      final double gravityDouble,
-      final double xOffsetDouble,
-      final double yOffsetDouble) {
-    final int duration = (int) durationDouble;
-    final int gravity = (int) gravityDouble;
-    final int xOffset = (int) xOffsetDouble;
-    final int yOffset = (int) yOffsetDouble;
-
+      final int duration,
+      final int gravity,
+      final int xOffset,
+      final int yOffset) {
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override

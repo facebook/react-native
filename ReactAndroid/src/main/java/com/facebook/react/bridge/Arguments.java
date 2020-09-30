@@ -9,6 +9,7 @@ package com.facebook.react.bridge;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.util.AbstractList;

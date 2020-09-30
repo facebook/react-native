@@ -58,10 +58,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/Picker/PickerExample'),
   },
   {
-    key: 'PressableExample',
-    module: require('../examples/Pressable/PressableExample'),
-  },
-  {
     key: 'ProgressBarAndroidExample',
     module: require('../examples/ProgressBarAndroid/ProgressBarAndroidExample'),
   },
@@ -199,10 +195,6 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'PermissionsExampleAndroid',
     module: require('../examples/PermissionsAndroid/PermissionsExample'),
-  },
-  {
-    key: 'PlatformColorExample',
-    module: require('../examples/PlatformColor/PlatformColorExample'),
   },
   {
     key: 'PointerEventsExample',

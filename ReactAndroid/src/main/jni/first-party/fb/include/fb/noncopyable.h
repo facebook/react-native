@@ -10,11 +10,10 @@
 namespace facebook {
 
 struct noncopyable {
-  noncopyable(const noncopyable &) = delete;
-  noncopyable &operator=(const noncopyable &) = delete;
-
- protected:
+  noncopyable(const noncopyable&) = delete;
+  noncopyable& operator=(const noncopyable&) = delete;
+protected:
   noncopyable() = default;
 };
 
-} // namespace facebook
+}

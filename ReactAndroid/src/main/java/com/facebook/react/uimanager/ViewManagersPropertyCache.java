@@ -7,11 +7,9 @@
 
 package com.facebook.react.uimanager;
 
-import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.DynamicFromObject;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -83,13 +81,13 @@ import java.util.Map;
       try {
         if (mIndex == null) {
           VIEW_MGR_ARGS[0] = viewToUpdate;
-          VIEW_MGR_ARGS[1] = getValueOrDefault(value, viewToUpdate.getContext());
+          VIEW_MGR_ARGS[1] = getValueOrDefault(value);
           mSetter.invoke(viewManager, VIEW_MGR_ARGS);
           Arrays.fill(VIEW_MGR_ARGS, null);
         } else {
           VIEW_MGR_GROUP_ARGS[0] = viewToUpdate;
           VIEW_MGR_GROUP_ARGS[1] = mIndex;
-          VIEW_MGR_GROUP_ARGS[2] = getValueOrDefault(value, viewToUpdate.getContext());
+          VIEW_MGR_GROUP_ARGS[2] = getValueOrDefault(value);
           mSetter.invoke(viewManager, VIEW_MGR_GROUP_ARGS);
           Arrays.fill(VIEW_MGR_GROUP_ARGS, null);
         }
@@ -107,12 +105,12 @@ import java.util.Map;
     public void updateShadowNodeProp(ReactShadowNode nodeToUpdate, Object value) {
       try {
         if (mIndex == null) {
-          SHADOW_ARGS[0] = getValueOrDefault(value, nodeToUpdate.getThemedContext());
+          SHADOW_ARGS[0] = getValueOrDefault(value);
           mSetter.invoke(nodeToUpdate, SHADOW_ARGS);
           Arrays.fill(SHADOW_ARGS, null);
         } else {
           SHADOW_GROUP_ARGS[0] = mIndex;
-          SHADOW_GROUP_ARGS[1] = getValueOrDefault(value, nodeToUpdate.getThemedContext());
+          SHADOW_GROUP_ARGS[1] = getValueOrDefault(value);
           mSetter.invoke(nodeToUpdate, SHADOW_GROUP_ARGS);
           Arrays.fill(SHADOW_GROUP_ARGS, null);
         }
@@ -127,7 +125,7 @@ import java.util.Map;
       }
     }
 
-    protected abstract @Nullable Object getValueOrDefault(Object value, Context context);
+    protected abstract @Nullable Object getValueOrDefault(Object value);
   }
 
   private static class DynamicPropSetter extends PropSetter {
@@ -141,7 +139,7 @@ import java.util.Map;
     }
 
     @Override
-    protected Object getValueOrDefault(Object value, Context context) {
+    protected Object getValueOrDefault(Object value) {
       if (value instanceof Dynamic) {
         return value;
       } else {
@@ -165,7 +163,7 @@ import java.util.Map;
     }
 
     @Override
-    protected Object getValueOrDefault(Object value, Context context) {
+    protected Object getValueOrDefault(Object value) {
       // All numbers from JS are Doubles which can't be simply cast to Integer
       return value == null ? mDefaultValue : (Integer) ((Double) value).intValue();
     }
@@ -186,31 +184,8 @@ import java.util.Map;
     }
 
     @Override
-    protected Object getValueOrDefault(Object value, Context context) {
+    protected Object getValueOrDefault(Object value) {
       return value == null ? mDefaultValue : (Double) value;
-    }
-  }
-
-  private static class ColorPropSetter extends PropSetter {
-
-    private final int mDefaultValue;
-
-    public ColorPropSetter(ReactProp prop, Method setter) {
-      this(prop, setter, 0);
-    }
-
-    public ColorPropSetter(ReactProp prop, Method setter, int defaultValue) {
-      super(prop, "mixed", setter);
-      mDefaultValue = defaultValue;
-    }
-
-    @Override
-    protected Object getValueOrDefault(Object value, Context context) {
-      if (value == null) {
-        return mDefaultValue;
-      }
-
-      return ColorPropConverter.getColor(value, context);
     }
   }
 
@@ -224,7 +199,7 @@ import java.util.Map;
     }
 
     @Override
-    protected Object getValueOrDefault(Object value, Context context) {
+    protected Object getValueOrDefault(Object value) {
       boolean val = value == null ? mDefaultValue : (boolean) value;
       return val ? Boolean.TRUE : Boolean.FALSE;
     }
@@ -245,7 +220,7 @@ import java.util.Map;
     }
 
     @Override
-    protected Object getValueOrDefault(Object value, Context context) {
+    protected Object getValueOrDefault(Object value) {
       // All numbers from JS are Doubles which can't be simply cast to Float
       return value == null ? mDefaultValue : (Float) ((Double) value).floatValue();
     }
@@ -258,7 +233,7 @@ import java.util.Map;
     }
 
     @Override
-    protected @Nullable Object getValueOrDefault(Object value, Context context) {
+    protected @Nullable Object getValueOrDefault(Object value) {
       return (ReadableArray) value;
     }
   }
@@ -270,7 +245,7 @@ import java.util.Map;
     }
 
     @Override
-    protected @Nullable Object getValueOrDefault(Object value, Context context) {
+    protected @Nullable Object getValueOrDefault(Object value) {
       return (ReadableMap) value;
     }
   }
@@ -282,7 +257,7 @@ import java.util.Map;
     }
 
     @Override
-    protected @Nullable Object getValueOrDefault(Object value, Context context) {
+    protected @Nullable Object getValueOrDefault(Object value) {
       return (String) value;
     }
   }
@@ -294,7 +269,7 @@ import java.util.Map;
     }
 
     @Override
-    protected @Nullable Object getValueOrDefault(Object value, Context context) {
+    protected @Nullable Object getValueOrDefault(Object value) {
       if (value != null) {
         return (boolean) value ? Boolean.TRUE : Boolean.FALSE;
       }
@@ -313,7 +288,7 @@ import java.util.Map;
     }
 
     @Override
-    protected @Nullable Object getValueOrDefault(Object value, Context context) {
+    protected @Nullable Object getValueOrDefault(Object value) {
       if (value != null) {
         if (value instanceof Double) {
           return ((Double) value).intValue();
@@ -404,9 +379,6 @@ import java.util.Map;
     } else if (propTypeClass == boolean.class) {
       return new BooleanPropSetter(annotation, method, annotation.defaultBoolean());
     } else if (propTypeClass == int.class) {
-      if ("Color".equals(annotation.customType())) {
-        return new ColorPropSetter(annotation, method, annotation.defaultInt());
-      }
       return new IntPropSetter(annotation, method, annotation.defaultInt());
     } else if (propTypeClass == float.class) {
       return new FloatPropSetter(annotation, method, annotation.defaultFloat());
@@ -417,9 +389,6 @@ import java.util.Map;
     } else if (propTypeClass == Boolean.class) {
       return new BoxedBooleanPropSetter(annotation, method);
     } else if (propTypeClass == Integer.class) {
-      if ("Color".equals(annotation.customType())) {
-        return new ColorPropSetter(annotation, method);
-      }
       return new BoxedIntPropSetter(annotation, method);
     } else if (propTypeClass == ReadableArray.class) {
       return new ArrayPropSetter(annotation, method);

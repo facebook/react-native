@@ -38,9 +38,7 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
       jfloat minWidth,
       jfloat maxWidth,
       jfloat minHeight,
-      jfloat maxHeight,
-      jboolean isRTL,
-      jboolean doLeftAndRightSwapInRTL);
+      jfloat maxHeight);
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
@@ -64,9 +62,7 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
       jfloat minWidth,
       jfloat maxWidth,
       jfloat minHeight,
-      jfloat maxHeight,
-      jboolean isRTL,
-      jboolean doLeftAndRightSwapInRTL);
+      jfloat maxHeight);
 
   void renderTemplateToSurface(jint surfaceId, jstring uiTemplate);
 
@@ -111,8 +107,6 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
   bool shouldCollateRemovesAndDeletes_{false};
   bool collapseDeleteCreateMountingInstructions_{false};
   bool disablePreallocateViews_{false};
-  bool disableVirtualNodePreallocation_{false};
-  bool enableOptimizedMovesDiffer_{false};
 };
 
 } // namespace react

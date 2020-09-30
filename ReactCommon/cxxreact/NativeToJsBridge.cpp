@@ -7,7 +7,6 @@
 
 #include "NativeToJsBridge.h"
 
-#include <ReactCommon/CallInvoker.h>
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
 #include <glog/logging.h>
@@ -43,7 +42,7 @@ class JsToNativeBridge : public react::ExecutorDelegate {
   }
 
   bool isBatchActive() {
-    return m_batchHadNativeModuleOrTurboModuleCalls;
+    return m_batchHadNativeModuleCalls;
   }
 
   void callNativeModules(
@@ -52,8 +51,7 @@ class JsToNativeBridge : public react::ExecutorDelegate {
       bool isEndOfBatch) override {
     CHECK(m_registry || calls.empty())
         << "native module calls cannot be completed with no native modules";
-    m_batchHadNativeModuleOrTurboModuleCalls =
-        m_batchHadNativeModuleOrTurboModuleCalls || !calls.empty();
+    m_batchHadNativeModuleCalls = m_batchHadNativeModuleCalls || !calls.empty();
 
     // An exception anywhere in here stops processing of the batch.  This
     // was the behavior of the Android bridge, and since exception handling
@@ -67,9 +65,9 @@ class JsToNativeBridge : public react::ExecutorDelegate {
       // decrementPendingJSCalls will be called sync. Be aware that the bridge
       // may still be processing native calls when the bridge idle signaler
       // fires.
-      if (m_batchHadNativeModuleOrTurboModuleCalls) {
+      if (m_batchHadNativeModuleCalls) {
         m_callback->onBatchComplete();
-        m_batchHadNativeModuleOrTurboModuleCalls = false;
+        m_batchHadNativeModuleCalls = false;
       }
       m_callback->decrementPendingJSCalls();
     }
@@ -84,17 +82,13 @@ class JsToNativeBridge : public react::ExecutorDelegate {
         moduleId, methodId, std::move(args));
   }
 
-  void recordTurboModuleAsyncMethodCall() {
-    m_batchHadNativeModuleOrTurboModuleCalls = true;
-  }
-
  private:
   // These methods are always invoked from an Executor.  The NativeToJsBridge
   // keeps a reference to the executor, and when destroy() is called, the
   // executor is destroyed synchronously on its queue.
   std::shared_ptr<ModuleRegistry> m_registry;
   std::shared_ptr<InstanceCallback> m_callback;
-  bool m_batchHadNativeModuleOrTurboModuleCalls = false;
+  bool m_batchHadNativeModuleCalls = false;
 };
 
 NativeToJsBridge::NativeToJsBridge(
@@ -114,12 +108,7 @@ NativeToJsBridge::~NativeToJsBridge() {
       << "NativeToJsBridge::destroy() must be called before deallocating the NativeToJsBridge!";
 }
 
-void NativeToJsBridge::initializeRuntime() {
-  runOnExecutorQueue(
-      [](JSExecutor *executor) mutable { executor->initializeRuntime(); });
-}
-
-void NativeToJsBridge::loadBundle(
+void NativeToJsBridge::loadApplication(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL) {
@@ -134,7 +123,7 @@ void NativeToJsBridge::loadBundle(
           executor->setBundleRegistry(std::move(bundleRegistry));
         }
         try {
-          executor->loadBundle(
+          executor->loadApplicationScript(
               std::move(*startupScript), std::move(startupScriptSourceURL));
         } catch (...) {
           m_applicationScriptHasFailure = true;
@@ -143,7 +132,7 @@ void NativeToJsBridge::loadBundle(
       });
 }
 
-void NativeToJsBridge::loadBundleSync(
+void NativeToJsBridge::loadApplicationSync(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL) {
@@ -151,7 +140,7 @@ void NativeToJsBridge::loadBundleSync(
     m_executor->setBundleRegistry(std::move(bundleRegistry));
   }
   try {
-    m_executor->loadBundle(
+    m_executor->loadApplicationScript(
         std::move(startupScript), std::move(startupScriptSourceURL));
   } catch (...) {
     m_applicationScriptHasFailure = true;
@@ -300,35 +289,6 @@ void NativeToJsBridge::runOnExecutorQueue(
         // 3. we just confirmed that the executor hasn't been unregistered above
         task(m_executor.get());
       });
-}
-
-std::shared_ptr<CallInvoker> NativeToJsBridge::getDecoratedNativeCallInvoker(
-    std::shared_ptr<CallInvoker> nativeInvoker) {
-  class NativeCallInvoker : public CallInvoker {
-   private:
-    std::weak_ptr<JsToNativeBridge> m_jsToNativeBridge;
-    std::shared_ptr<CallInvoker> m_nativeInvoker;
-
-   public:
-    NativeCallInvoker(
-        std::weak_ptr<JsToNativeBridge> jsToNativeBridge,
-        std::shared_ptr<CallInvoker> nativeInvoker)
-        : m_jsToNativeBridge(jsToNativeBridge),
-          m_nativeInvoker(nativeInvoker) {}
-
-    void invokeAsync(std::function<void()> &&func) override {
-      if (auto strongJsToNativeBridge = m_jsToNativeBridge.lock()) {
-        strongJsToNativeBridge->recordTurboModuleAsyncMethodCall();
-      }
-      m_nativeInvoker->invokeAsync(std::move(func));
-    }
-
-    void invokeSync(std::function<void()> &&func) override {
-      m_nativeInvoker->invokeSync(std::move(func));
-    }
-  };
-
-  return std::make_shared<NativeCallInvoker>(m_delegate, nativeInvoker);
 }
 
 } // namespace react

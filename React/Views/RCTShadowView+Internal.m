@@ -7,7 +7,8 @@
 
 #import "RCTShadowView+Layout.h"
 
-@interface RCTShadowView () {
+@interface RCTShadowView ()
+{
   __weak RCTRootShadowView *_rootView;
 }
 

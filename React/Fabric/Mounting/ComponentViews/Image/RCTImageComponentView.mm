@@ -11,23 +11,19 @@
 #import <React/RCTImageResponseObserverProxy.h>
 #import <react/components/image/ImageComponentDescriptor.h>
 #import <react/components/image/ImageEventEmitter.h>
+#import <react/components/image/ImageLocalData.h>
 #import <react/components/image/ImageProps.h>
-#import <react/imagemanager/ImageInstrumentation.h>
 #import <react/imagemanager/ImageRequest.h>
-#import <react/imagemanager/RCTImageInstrumentationProxy.h>
 #import <react/imagemanager/RCTImagePrimitivesConversions.h>
 
 #import "RCTConversions.h"
-#import "RCTFabricComponentsPlugins.h"
-
-using namespace facebook::react;
 
 @interface RCTImageComponentView () <RCTImageResponseDelegate>
 @end
 
 @implementation RCTImageComponentView {
   UIImageView *_imageView;
-  ImageShadowNode::ConcreteState::Shared _state;
+  SharedImageLocalData _imageLocalData;
   ImageResponseObserverCoordinator const *_coordinator;
   RCTImageResponseObserverProxy _imageResponseObserverProxy;
 }
@@ -81,30 +77,29 @@ using namespace facebook::react;
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
+- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
 {
-  _state = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
-  auto _oldState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(oldState);
-  auto data = _state->getData();
+  auto imageLocalData = std::static_pointer_cast<ImageLocalData const>(localData);
 
-  // This call (setting `coordinator`) must be unconditional (at the same block as setting `State`)
-  // because the setter stores a raw pointer to object that `State` owns.
-  self.coordinator = &data.getImageRequest().getObserverCoordinator();
+  // This call (setting `coordinator`) must be unconditional (at the same block as setting `LocalData`)
+  // because the setter stores a raw pointer to object that `LocalData` owns.
+  self.coordinator = imageLocalData ? &imageLocalData->getImageRequest().getObserverCoordinator() : nullptr;
 
-  bool havePreviousData = _oldState && _oldState->getData().getImageSource() != ImageSource{};
+  auto previousData = _imageLocalData;
+  _imageLocalData = imageLocalData;
 
-  if (!havePreviousData || data.getImageSource() != _oldState->getData().getImageSource()) {
+  if (!_imageLocalData) {
+    // This might happen in very rare cases (e.g. inside a subtree inside a node with `display: none`).
+    // That's quite normal.
+    return;
+  }
+
+  bool havePreviousData = previousData != nullptr;
+
+  if (!havePreviousData || _imageLocalData->getImageSource() != previousData->getImageSource()) {
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
     std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadStart();
-
-    // TODO (T58941612): Tracking for visibility should be done directly on this class.
-    // For now, we consolidate instrumentation logic in the image loader, so that pre-Fabric gets the same treatment.
-    auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
-        data.getImageRequest().getSharedImageInstrumentation());
-    if (instrumentation) {
-      instrumentation->trackNativeImageView(self);
-    }
   }
 }
 
@@ -124,7 +119,7 @@ using namespace facebook::react;
   [super prepareForRecycle];
   self.coordinator = nullptr;
   _imageView.image = nil;
-  _state.reset();
+  _imageLocalData.reset();
 }
 
 - (void)dealloc
@@ -136,7 +131,7 @@ using namespace facebook::react;
 
 - (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
 {
-  if (!_eventEmitter || !_state) {
+  if (!_eventEmitter) {
     // Notifications are delivered asynchronously and might arrive after the view is already recycled.
     // In the future, we should incorporate an `EventEmitter` into a separate object owned by `ImageRequest` or `State`.
     // See for more info: T46311063.
@@ -166,13 +161,6 @@ using namespace facebook::react;
   // Apply trilinear filtering to smooth out mis-sized images.
   self->_imageView.layer.minificationFilter = kCAFilterTrilinear;
   self->_imageView.layer.magnificationFilter = kCAFilterTrilinear;
-
-  auto data = _state->getData();
-  auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
-      data.getImageRequest().getSharedImageInstrumentation());
-  if (instrumentation) {
-    instrumentation->didSetImage();
-  }
 }
 
 - (void)didReceiveProgress:(float)progress fromObserver:(void const *)observer
@@ -197,8 +185,3 @@ using namespace facebook::react;
 }
 
 @end
-
-Class<RCTComponentViewProtocol> RCTImageCls(void)
-{
-  return RCTImageComponentView.class;
-}

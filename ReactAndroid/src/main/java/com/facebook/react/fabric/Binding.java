@@ -51,9 +51,7 @@ public class Binding {
       float minWidth,
       float maxWidth,
       float minHeight,
-      float maxHeight,
-      boolean isRTL,
-      boolean doLeftAndRightSwapInRTL);
+      float maxHeight);
 
   public native void renderTemplateToSurface(int surfaceId, String uiTemplate);
 
@@ -62,13 +60,7 @@ public class Binding {
   public native void setPixelDensity(float pointScaleFactor);
 
   public native void setConstraints(
-      int surfaceId,
-      float minWidth,
-      float maxWidth,
-      float minHeight,
-      float maxHeight,
-      boolean isRTL,
-      boolean doLeftAndRightSwapInRTL);
+      int surfaceId, float minWidth, float maxWidth, float minHeight, float maxHeight);
 
   public void register(
       @NonNull JavaScriptContextHolder jsContext,

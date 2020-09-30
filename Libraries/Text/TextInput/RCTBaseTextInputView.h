@@ -44,7 +44,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onScroll;
 
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
-@property (nonatomic, assign, readonly) NSInteger nativeEventCount;
 @property (nonatomic, assign) BOOL autoFocus;
 @property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
@@ -58,12 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @property (nonatomic, assign) UIKeyboardType keyboardType;
 #endif // TODO(macOS ISS#2323203)
-
-/**
- Sets selection intext input if both start and end are within range of the text input.
- **/
-- (void)setSelectionStart:(NSInteger)start
-             selectionEnd:(NSInteger)end;
 
 @end
 

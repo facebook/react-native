@@ -59,7 +59,7 @@ m::debugger::CallFrame m::debugger::makeCallFrame(
     const h::debugger::CallFrameInfo &callFrameInfo,
     const h::debugger::LexicalInfo &lexicalInfo,
     RemoteObjectsTable &objTable,
-    jsi::Runtime &runtime,
+    HermesRuntime &runtime,
     const facebook::hermes::debugger::ProgramState &state) {
   m::debugger::CallFrame result;
 
@@ -115,7 +115,7 @@ m::debugger::CallFrame m::debugger::makeCallFrame(
 std::vector<m::debugger::CallFrame> m::debugger::makeCallFrames(
     const h::debugger::ProgramState &state,
     RemoteObjectsTable &objTable,
-    jsi::Runtime &runtime) {
+    HermesRuntime &runtime) {
   const h::debugger::StackTrace &stackTrace = state.getStackTrace();
   uint32_t count = stackTrace.callFrameCount();
 
@@ -180,8 +180,7 @@ m::runtime::RemoteObject m::runtime::makeRemoteObject(
     facebook::jsi::Runtime &runtime,
     const facebook::jsi::Value &value,
     RemoteObjectsTable &objTable,
-    const std::string &objectGroup,
-    bool byValue) {
+    const std::string &objectGroup) {
   m::runtime::RemoteObject result;
 
   if (value.isUndefined()) {
@@ -230,13 +229,8 @@ m::runtime::RemoteObject m::runtime::makeRemoteObject(
       result.description = result.className = "Object";
     }
 
-    if (byValue) {
-      // FIXME: JSI currently does not handle cycles and functions well here
-      result.value = jsi::dynamicFromValue(runtime, value);
-    } else {
-      result.objectId =
-          objTable.addValue(jsi::Value(std::move(obj)), objectGroup);
-    }
+    result.objectId =
+        objTable.addValue(jsi::Value(std::move(obj)), objectGroup);
   }
 
   return result;

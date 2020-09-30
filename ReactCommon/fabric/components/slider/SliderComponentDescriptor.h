@@ -20,12 +20,15 @@ namespace react {
 class SliderComponentDescriptor final
     : public ConcreteComponentDescriptor<SliderShadowNode> {
  public:
-  SliderComponentDescriptor(ComponentDescriptorParameters const &parameters)
-      : ConcreteComponentDescriptor(parameters),
-        imageManager_(std::make_shared<ImageManager>(contextContainer_)),
+  SliderComponentDescriptor(
+      EventDispatcher::Weak eventDispatcher,
+      ContextContainer::Shared const &contextContainer,
+      ComponentDescriptor::Flavor const &flavor = {})
+      : ConcreteComponentDescriptor(eventDispatcher, contextContainer, flavor),
+        imageManager_(std::make_shared<ImageManager>(contextContainer)),
         measurementsManager_(
             SliderMeasurementsManager::shouldMeasureSlider()
-                ? std::make_shared<SliderMeasurementsManager>(contextContainer_)
+                ? std::make_shared<SliderMeasurementsManager>(contextContainer)
                 : nullptr) {}
 
   void adopt(UnsharedShadowNode shadowNode) const override {

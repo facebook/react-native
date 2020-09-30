@@ -7,11 +7,11 @@
 
 #import "RCTSwitchManager.h"
 
-#import <React/RCTUIManager.h>
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 #import "RCTSwitch.h"
 #import "UIView+React.h"
+#import <React/RCTUIManager.h>
 
 @implementation RCTSwitchManager
 
@@ -21,7 +21,9 @@ RCT_EXPORT_MODULE()
 {
   RCTSwitch *switcher = [RCTSwitch new];
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  [switcher addTarget:self action:@selector(onChange:) forControlEvents:UIControlEventValueChanged];
+  [switcher addTarget:self
+               action:@selector(onChange:)
+     forControlEvents:UIControlEventValueChanged];
 #else // [TODO(macOS ISS#2323203)
   [switcher setTarget:self];
   [switcher setAction:@selector(onChange:)];
@@ -34,7 +36,7 @@ RCT_EXPORT_MODULE()
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (sender.wasOn != sender.on) {
     if (sender.onChange) {
-      sender.onChange(@{@"value" : @(sender.on)});
+      sender.onChange(@{ @"value": @(sender.on) });
     }
     sender.wasOn = sender.on;
   }
@@ -45,9 +47,9 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
-    RCTUIView *view = viewRegistry[viewTag]; // TODO(macOS ISS#3536887)
-
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) {
+    RCTUIView *view = viewRegistry[viewTag];
+    
     if ([view isKindOfClass:[RCTSwitch class]]) {
       [(RCTSwitch *)view setOn:value animated:NO];
     } else {

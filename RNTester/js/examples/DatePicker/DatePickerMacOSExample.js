@@ -8,9 +8,9 @@
  */
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {
+var React = require('react');
+var ReactNative = require('react-native');
+var {
   DatePickerMacOS,
   StyleSheet,
   Text,

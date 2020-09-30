@@ -11,7 +11,6 @@
 'use strict';
 import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
 import ReactNativeViewViewConfigMacOS from './ReactNativeViewViewConfigMacOS'; // TODO(macOS ISS#2323203)
-import {Platform} from 'react-native';
 
 const ReactNativeViewConfig = {
   uiViewClassName: 'RCTView',
@@ -326,9 +325,7 @@ const ReactNativeViewConfig = {
       textTransform: true,
       tintColor: {process: require('../../StyleSheet/processColor')},
       top: true,
-      transform: ((Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS ISS#2323203)
-        ? {diff: require('../../Utilities/differ/matricesDiffer')}
-        : {process: require('../../StyleSheet/processTransform')}): any),
+      transform: {diff: require('../../Utilities/differ/matricesDiffer')},
       transformMatrix: true,
       translateX: true,
       translateY: true,
@@ -338,9 +335,7 @@ const ReactNativeViewConfig = {
     },
     testID: true,
     top: true,
-    transform: ((Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS ISS#2323203)
-      ? {diff: require('../../Utilities/differ/matricesDiffer')}
-      : {process: require('../../StyleSheet/processTransform')}): any),
+    transform: {diff: require('../../Utilities/differ/matricesDiffer')},
     translateX: true,
     translateY: true,
     width: true,

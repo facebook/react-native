@@ -11,12 +11,14 @@
 
 const {parseString} = require('react-native-codegen/src/parsers/flow');
 const RNCodegen = require('react-native-codegen/src/generators/RNCodegen');
-const {basename} = require('path');
+const path = require('path');
 
 function generateViewConfig(filename, code) {
   const schema = parseString(code);
 
-  const libraryName = basename(filename).replace(/NativeComponent\.js$/, '');
+  const libraryName = path
+    .basename(filename)
+    .replace(/NativeComponent\.js$/, '');
   return RNCodegen.generateViewConfig({
     schema,
     libraryName,
@@ -63,17 +65,17 @@ module.exports = function(context) {
       this.codeInserted = false;
     },
     visitor: {
-      ExportNamedDeclaration(path) {
+      ExportNamedDeclaration(nodePath) {
         if (this.codeInserted) {
           return;
         }
 
         if (
-          path.node.declaration &&
-          path.node.declaration.declarations &&
-          path.node.declaration.declarations[0]
+          nodePath.node.declaration &&
+          nodePath.node.declaration.declarations &&
+          nodePath.node.declaration.declarations[0]
         ) {
-          const firstDeclaration = path.node.declaration.declarations[0];
+          const firstDeclaration = nodePath.node.declaration.declarations[0];
 
           if (firstDeclaration.type === 'VariableDeclarator') {
             if (
@@ -85,37 +87,40 @@ module.exports = function(context) {
                 firstDeclaration.id.type === 'Identifier' &&
                 firstDeclaration.id.name !== 'Commands'
               ) {
-                throw path.buildCodeFrameError(
+                throw new Error(
                   "Native commands must be exported with the name 'Commands'",
                 );
               }
-              this.commandsExport = path;
+              this.commandsExport = nodePath;
               return;
             } else {
               if (firstDeclaration.id.name === 'Commands') {
-                throw path.buildCodeFrameError(
+                throw new Error(
                   "'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands.",
                 );
               }
             }
           }
-        } else if (path.node.specifiers && path.node.specifiers.length > 0) {
-          path.node.specifiers.forEach(specifier => {
+        } else if (
+          nodePath.node.specifiers &&
+          nodePath.node.specifiers.length > 0
+        ) {
+          nodePath.node.specifiers.forEach(specifier => {
             if (
               specifier.type === 'ExportSpecifier' &&
               specifier.local.type === 'Identifier' &&
               specifier.local.name === 'Commands'
             ) {
-              throw path.buildCodeFrameError(
+              throw new Error(
                 "'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands.",
               );
             }
           });
         }
       },
-      ExportDefaultDeclaration(path, state) {
-        if (isCodegenDeclaration(path.node.declaration)) {
-          this.defaultExport = path;
+      ExportDefaultDeclaration(nodePath, state) {
+        if (isCodegenDeclaration(nodePath.node.declaration)) {
+          this.defaultExport = nodePath;
         }
       },
       Program: {

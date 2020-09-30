@@ -11,7 +11,7 @@
 'use strict';
 
 import invariant from 'invariant';
-import ReactNative from '../../Renderer/shims/ReactNative';
+import ReactNative from '../../Renderer/shims/ReactNative.js';
 import type {
   BlurEvent,
   FocusEvent,

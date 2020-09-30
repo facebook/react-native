@@ -29,7 +29,8 @@
  * delegate methods, or the delegate won't recognize the token.
  * Following common Objective-C pattern, `delegate` will not be retained.
  */
-- (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate;
+- (id)sendRequest:(NSURLRequest *)request
+     withDelegate:(id<RCTURLRequestDelegate>)delegate;
 
 @optional
 

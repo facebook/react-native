@@ -6,6 +6,7 @@
  */
 
 #include "SliderShadowNode.h"
+#include "SliderLocalData.h"
 
 #include <react/core/LayoutContext.h>
 
@@ -25,26 +26,33 @@ void SliderShadowNode::setSliderMeasurementsManager(
   measurementsManager_ = measurementsManager;
 }
 
-void SliderShadowNode::updateStateIfNeeded() {
+void SliderShadowNode::updateLocalData() {
   const auto &newTrackImageSource = getTrackImageSource();
   const auto &newMinimumTrackImageSource = getMinimumTrackImageSource();
   const auto &newMaximumTrackImageSource = getMaximumTrackImageSource();
   const auto &newThumbImageSource = getThumbImageSource();
 
-  auto const &currentState = getStateData();
+  const auto &localData = getLocalData();
+  if (localData) {
+    assert(std::dynamic_pointer_cast<const SliderLocalData>(localData));
+    auto currentLocalData =
+        std::static_pointer_cast<const SliderLocalData>(localData);
 
-  auto trackImageSource = currentState.getTrackImageSource();
-  auto minimumTrackImageSource = currentState.getMinimumTrackImageSource();
-  auto maximumTrackImageSource = currentState.getMaximumTrackImageSource();
-  auto thumbImageSource = currentState.getThumbImageSource();
+    auto trackImageSource = currentLocalData->getTrackImageSource();
+    auto minimumTrackImageSource =
+        currentLocalData->getMinimumTrackImageSource();
+    auto maximumTrackImageSource =
+        currentLocalData->getMaximumTrackImageSource();
+    auto thumbImageSource = currentLocalData->getThumbImageSource();
 
-  bool anyChanged = newTrackImageSource != trackImageSource ||
-      newMinimumTrackImageSource != minimumTrackImageSource ||
-      newMaximumTrackImageSource != maximumTrackImageSource ||
-      newThumbImageSource != thumbImageSource;
+    bool anyChanged = newTrackImageSource != trackImageSource ||
+        newMinimumTrackImageSource != minimumTrackImageSource ||
+        newMaximumTrackImageSource != maximumTrackImageSource ||
+        newThumbImageSource != thumbImageSource;
 
-  if (!anyChanged) {
-    return;
+    if (!anyChanged) {
+      return;
+    }
   }
 
   // Now we are about to mutate the Shadow Node.
@@ -53,7 +61,7 @@ void SliderShadowNode::updateStateIfNeeded() {
   // It is not possible to copy or move image requests from SliderLocalData,
   // so instead we recreate any image requests (that may already be in-flight?)
   // TODO: check if multiple requests are cached or if it's a net loss
-  auto state = SliderState{
+  const auto &newLocalData = std::make_shared<SliderLocalData>(
       newTrackImageSource,
       imageManager_->requestImage(newTrackImageSource, getSurfaceId()),
       newMinimumTrackImageSource,
@@ -61,24 +69,24 @@ void SliderShadowNode::updateStateIfNeeded() {
       newMaximumTrackImageSource,
       imageManager_->requestImage(newMaximumTrackImageSource, getSurfaceId()),
       newThumbImageSource,
-      imageManager_->requestImage(newThumbImageSource, getSurfaceId())};
-  setStateData(std::move(state));
+      imageManager_->requestImage(newThumbImageSource, getSurfaceId()));
+  setLocalData(newLocalData);
 }
 
 ImageSource SliderShadowNode::getTrackImageSource() const {
-  return getConcreteProps().trackImage;
+  return getProps()->trackImage;
 }
 
 ImageSource SliderShadowNode::getMinimumTrackImageSource() const {
-  return getConcreteProps().minimumTrackImage;
+  return getProps()->minimumTrackImage;
 }
 
 ImageSource SliderShadowNode::getMaximumTrackImageSource() const {
-  return getConcreteProps().maximumTrackImage;
+  return getProps()->maximumTrackImage;
 }
 
 ImageSource SliderShadowNode::getThumbImageSource() const {
-  return getConcreteProps().thumbImage;
+  return getProps()->thumbImage;
 }
 
 #pragma mark - LayoutableShadowNode
@@ -92,7 +100,7 @@ Size SliderShadowNode::measure(LayoutConstraints layoutConstraints) const {
 }
 
 void SliderShadowNode::layout(LayoutContext layoutContext) {
-  updateStateIfNeeded();
+  updateLocalData();
   ConcreteViewShadowNode::layout(layoutContext);
 }
 

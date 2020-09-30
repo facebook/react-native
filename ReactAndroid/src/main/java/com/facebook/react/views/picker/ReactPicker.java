@@ -25,7 +25,6 @@ public class ReactPicker extends AppCompatSpinner {
   private @Nullable List<ReactPickerItem> mStagedItems;
   private @Nullable Integer mStagedSelection;
   private @Nullable Integer mStagedPrimaryTextColor;
-  private @Nullable Integer mStagedBackgroundColor;
 
   private final OnItemSelectedListener mItemSelectedListener =
       new OnItemSelectedListener() {
@@ -137,10 +136,6 @@ public class ReactPicker extends AppCompatSpinner {
     mStagedPrimaryTextColor = primaryColor;
   }
 
-  /* package */ void setStagedBackgroundColor(@Nullable Integer backgroundColor) {
-    mStagedBackgroundColor = backgroundColor;
-  }
-
   /**
    * Used to commit staged data into ReactPicker view. During this period, we will disable {@link
    * OnSelectListener#onItemSelected(int)} temporarily, so we don't get an event when changing the
@@ -174,13 +169,6 @@ public class ReactPicker extends AppCompatSpinner {
         && mStagedPrimaryTextColor != adapter.getPrimaryTextColor()) {
       adapter.setPrimaryTextColor(mStagedPrimaryTextColor);
       mStagedPrimaryTextColor = null;
-    }
-
-    if (mStagedBackgroundColor != null
-        && adapter != null
-        && mStagedBackgroundColor != adapter.getBackgroundColor()) {
-      adapter.setBackgroundColor(mStagedBackgroundColor);
-      mStagedBackgroundColor = null;
     }
 
     setOnItemSelectedListener(mItemSelectedListener);

@@ -16,8 +16,6 @@
 
 #import <React/RCTConversions.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
-
 using namespace facebook::react;
 
 @implementation RCTUnimplementedViewComponentView {
@@ -66,8 +64,3 @@ using namespace facebook::react;
 }
 
 @end
-
-Class<RCTComponentViewProtocol> RCTUnimplementedNativeViewCls(void)
-{
-  return RCTUnimplementedViewComponentView.class;
-}

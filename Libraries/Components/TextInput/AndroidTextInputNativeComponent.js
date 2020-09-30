@@ -24,10 +24,7 @@ import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
-import type {TextInputNativeCommands} from './TextInputNativeCommands';
 import * as React from 'react';
-import AndroidTextInputViewConfig from './AndroidTextInputViewConfig';
-const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
 
 export type KeyboardType =
   // Cross Platform
@@ -541,23 +538,33 @@ export type NativeProps = $ReadOnly<{|
 
 type NativeType = HostComponent<NativeProps>;
 
-type NativeCommands = TextInputNativeCommands<NativeType>;
-
-export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
-});
-
-let AndroidTextInputNativeComponent;
-if (global.RN$Bridgeless) {
-  ReactNativeViewConfigRegistry.register('AndroidTextInput', () => {
-    return AndroidTextInputViewConfig;
-  });
-  AndroidTextInputNativeComponent = 'AndroidTextInput';
-} else {
-  AndroidTextInputNativeComponent = requireNativeComponent<NativeProps>(
-    'AndroidTextInput',
-  );
+interface NativeCommands {
+  +focus: (viewRef: React.ElementRef<NativeType>) => void;
+  +blur: (viewRef: React.ElementRef<NativeType>) => void;
+  +setMostRecentEventCount: (
+    viewRef: React.ElementRef<NativeType>,
+    eventCount: Int32,
+  ) => void;
+  +setTextAndSelection: (
+    viewRef: React.ElementRef<NativeType>,
+    mostRecentEventCount: Int32,
+    value: ?string, // in theory this is nullable
+    start: Int32,
+    end: Int32,
+  ) => void;
 }
 
-// flowlint-next-line unclear-type:off
-export default ((AndroidTextInputNativeComponent: any): HostComponent<NativeProps>);
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: [
+    'focus',
+    'blur',
+    'setMostRecentEventCount',
+    'setTextAndSelection',
+  ],
+});
+
+const AndroidTextInputNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
+  'AndroidTextInput',
+);
+
+export default AndroidTextInputNativeComponent;

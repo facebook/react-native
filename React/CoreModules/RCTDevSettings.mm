@@ -49,8 +49,7 @@ static BOOL devSettingsMenuEnabled = YES;
 static BOOL devSettingsMenuEnabled = NO;
 #endif
 
-void RCTDevSettingsSetEnabled(BOOL enabled)
-{
+void RCTDevSettingsSetEnabled(BOOL enabled) {
   devSettingsMenuEnabled = enabled;
 }
 
@@ -116,7 +115,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 @end
 
-@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec> {
+@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating> {
   BOOL _isJSLoaded;
 #if ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _reloadToken;
@@ -132,9 +131,14 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 RCT_EXPORT_MODULE()
 
++ (BOOL)requiresMainQueueSetup
+{
+  return YES; // RCT_DEV-only
+}
+
 - (instancetype)init
 {
-  // Default behavior is to use NSUserDefaults with shake and hot loading enabled.
+  // default behavior is to use NSUserDefaults
   NSDictionary *defaultValues = @{
 #if DEBUG // [TODO(OSS Candidate ISS#2710739)
     kRCTDevSettingDevModeEnabled: @YES,
@@ -146,11 +150,6 @@ RCT_EXPORT_MODULE()
   RCTDevSettingsUserDefaultsDataSource *dataSource =
       [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
   return [self initWithDataSource:dataSource];
-}
-
-+ (BOOL)requiresMainQueueSetup
-{
-  return NO;
 }
 
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource
@@ -184,9 +183,11 @@ RCT_EXPORT_MODULE()
 #endif
 
 #if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC && DEBUG // TODO(OSS Candidate ISS#2710739)
-  // We need this dispatch to the main thread because the bridge is not yet
-  // finished with its initialisation. By the time it relinquishes control of
-  // the main thread, this operation can be performed.
+  // we need this dispatch back to the main thread because even though this
+  // is executed on the main thread, at this point the bridge is not yet
+  // finished with its initialisation. But it does finish by the time it
+  // relinquishes control of the main thread, so only queue on the JS thread
+  // after the current main thread operation is done.
   dispatch_async(dispatch_get_main_queue(), ^{
     [bridge
         dispatchBlock:^{
@@ -215,7 +216,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[ @"didPressMenuItem" ];
+  return @[@"didPressMenuItem"];
 }
 
 - (void)_updateSettingWithValue:(id)value forKey:(NSString *)key
@@ -268,14 +269,14 @@ RCT_EXPORT_METHOD(reload)
   RCTTriggerReloadCommandListeners(@"Unknown From JS");
 }
 
-RCT_EXPORT_METHOD(reloadWithReason : (NSString *)reason)
+RCT_EXPORT_METHOD(reloadWithReason : (NSString *) reason)
 {
   RCTTriggerReloadCommandListeners(reason);
 }
 
 RCT_EXPORT_METHOD(onFastRefresh)
 {
-  [self.bridge onFastRefresh];
+    [self.bridge onFastRefresh];
 }
 
 RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
@@ -384,14 +385,12 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 }
 
-RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
+RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 {
   __weak __typeof(self) weakSelf = self;
-  [self.bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:title
-                                                           handler:^{
-                                                             [weakSelf sendEventWithName:@"didPressMenuItem"
-                                                                                    body:@{@"title" : title}];
-                                                           }]];
+  [self.bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:title handler:^{
+    [weakSelf sendEventWithName:@"didPressMenuItem" body:@{@"title": title}];
+  }]];
 }
 
 - (BOOL)isElementInspectorShown
@@ -426,6 +425,8 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
   }
 }
 
+#if RCT_DEV_MENU
+
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {
 #if ENABLE_PACKAGER_CONNECTION
@@ -433,22 +434,7 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 #endif
 }
 
-- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL
-{
-  if (bundleURL && !bundleURL.fileURL) { // isHotLoadingAvailable check
-    NSString *const path = [bundleURL.path substringFromIndex:1]; // Strip initial slash.
-    NSString *const host = bundleURL.host;
-    NSNumber *const port = bundleURL.port;
-    if (self.bridge) {
-      [self.bridge enqueueJSCall:@"HMRClient"
-                          method:@"setup"
-                            args:@[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]
-                      completion:NULL];
-    } else {
-      self.invokeJS(@"HMRClient", @"setup", @[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]);
-    }
-  }
-}
+#endif
 
 #pragma mark - Internal
 
@@ -483,20 +469,9 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
   });
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
-{
-  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
-}
-
 @end
 
-#else // #if RCT_DEV_MENU
-
-@interface RCTDevSettings () <NativeDevSettingsSpec>
-@end
+#else // #if RCT_DEV
 
 @implementation RCTDevSettings
 
@@ -509,10 +484,6 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
   return NO;
 }
 - (BOOL)isRemoteDebuggingAvailable
-{
-  return NO;
-}
-+ (BOOL)requiresMainQueueSetup
 {
   return NO;
 }
@@ -541,9 +512,6 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (void)toggleElementInspector
 {
 }
-- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL
-{
-}
 - (void)addMenuItem:(NSString *)title
 {
 }
@@ -551,17 +519,9 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 {
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
-{
-  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
-}
-
 @end
 
-#endif // #if RCT_DEV_MENU
+#endif
 
 @implementation RCTBridge (RCTDevSettings)
 
@@ -576,7 +536,6 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 
 @end
 
-Class RCTDevSettingsCls(void)
-{
+Class RCTDevSettingsCls(void) {
   return RCTDevSettings.class;
 }

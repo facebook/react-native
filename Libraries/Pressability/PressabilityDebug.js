@@ -10,15 +10,13 @@
 
 'use strict';
 
-import normalizeColor from '../StyleSheet/normalizeColor';
-import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
-
+import normalizeColor from '../StyleSheet/normalizeColor.js';
 import Touchable from '../Components/Touchable/Touchable';
 import View from '../Components/View/View';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|
-  color: ColorValue,
+  color: string,
   hitSlop: ?$ReadOnly<{|
     bottom?: ?number,
     left?: ?number,
@@ -45,12 +43,12 @@ type Props = $ReadOnly<{|
 export function PressabilityDebugView({color, hitSlop}: Props): React.Node {
   if (__DEV__) {
     if (isEnabled()) {
-      const normalizedColor = normalizeColor(color);
-      if (typeof normalizedColor !== 'number') {
-        return null;
-      }
+      const processedColor = normalizeColor(color);
       const baseColor =
-        '#' + (normalizedColor ?? 0).toString(16).padStart(8, '0');
+        '#' +
+        (typeof processedColor === 'number' ? processedColor : 0)
+          .toString(16)
+          .padStart(8, '0');
 
       return (
         <View

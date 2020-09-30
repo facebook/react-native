@@ -15,5 +15,4 @@ namespace react {
 folly::dynamic convertIdToFollyDynamic(id json);
 id convertFollyDynamicToId(const folly::dynamic &dyn);
 
-} // namespace react
-} // namespace facebook
+} }

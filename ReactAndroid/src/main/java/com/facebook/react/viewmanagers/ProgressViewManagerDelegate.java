@@ -11,7 +11,6 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
@@ -31,10 +30,10 @@ public class ProgressViewManagerDelegate<T extends View, U extends BaseViewManag
         mViewManager.setProgress(view, value == null ? 0f : ((Double) value).floatValue());
         break;
       case "progressTintColor":
-        mViewManager.setProgressTintColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setProgressTintColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "trackTintColor":
-        mViewManager.setTrackTintColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setTrackTintColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "progressImage":
         mViewManager.setProgressImage(view, (ReadableMap) value);

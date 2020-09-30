@@ -22,13 +22,14 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
-import com.facebook.fbreact.specs.NativeImageEditorSpec;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
@@ -41,11 +42,13 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /** Native module that provides image cropping functionality. */
 @ReactModule(name = ImageEditingManager.NAME)
-public class ImageEditingManager extends NativeImageEditorSpec {
+public class ImageEditingManager extends ReactContextBaseJavaModule {
 
   public static final String NAME = "ImageEditingManager";
 
@@ -94,6 +97,11 @@ public class ImageEditingManager extends NativeImageEditorSpec {
   @Override
   public String getName() {
     return NAME;
+  }
+
+  @Override
+  public Map<String, Object> getConstants() {
+    return Collections.emptyMap();
   }
 
   @Override
@@ -153,14 +161,11 @@ public class ImageEditingManager extends NativeImageEditorSpec {
    *     is passed to this callback is the file:// URI of the new image
    * @param error callback to be invoked when an error occurs (e.g. can't create file etc.)
    */
-  @Override
+  @ReactMethod
   public void cropImage(
       String uri, ReadableMap options, final Callback success, final Callback error) {
     ReadableMap offset = options.hasKey("offset") ? options.getMap("offset") : null;
     ReadableMap size = options.hasKey("size") ? options.getMap("size") : null;
-    boolean allowExternalStorage =
-        options.hasKey("allowExternalStorage") ? options.getBoolean("allowExternalStorage") : true;
-
     if (offset == null
         || size == null
         || !offset.hasKey("x")
@@ -181,7 +186,6 @@ public class ImageEditingManager extends NativeImageEditorSpec {
             (int) offset.getDouble("y"),
             (int) size.getDouble("width"),
             (int) size.getDouble("height"),
-            allowExternalStorage,
             success,
             error);
     if (options.hasKey("displaySize")) {
@@ -199,7 +203,6 @@ public class ImageEditingManager extends NativeImageEditorSpec {
     final int mY;
     final int mWidth;
     final int mHeight;
-    final boolean mAllowExternalStorage;
     int mTargetWidth = 0;
     int mTargetHeight = 0;
     final Callback mSuccess;
@@ -212,7 +215,6 @@ public class ImageEditingManager extends NativeImageEditorSpec {
         int y,
         int width,
         int height,
-        boolean allowExternalStorage,
         Callback success,
         Callback error) {
       super(context);
@@ -226,7 +228,6 @@ public class ImageEditingManager extends NativeImageEditorSpec {
       mY = y;
       mWidth = width;
       mHeight = height;
-      mAllowExternalStorage = allowExternalStorage;
       mSuccess = success;
       mError = error;
     }
@@ -274,17 +275,8 @@ public class ImageEditingManager extends NativeImageEditorSpec {
           throw new IOException("Could not determine MIME type");
         }
 
-        File tempFile;
-        try {
-          tempFile = writeBitmapToInternalCache(mContext, cropped, mimeType);
-        } catch (Exception e) {
-          if (mAllowExternalStorage) {
-            tempFile = writeBitmapToExternalCache(mContext, cropped, mimeType);
-          } else {
-            throw new SecurityException(
-                "We couldn't create file in internal cache and external cache is disabled. Did you forget to pass allowExternalStorage=true?");
-          }
-        }
+        File tempFile = createTempFile(mContext, mimeType);
+        writeCompressedBitmapToFile(cropped, mimeType, tempFile);
 
         if (mimeType.equals("image/jpeg")) {
           copyExif(mContext, Uri.parse(mUri), tempFile);
@@ -471,35 +463,41 @@ public class ImageEditingManager extends NativeImageEditorSpec {
     return Bitmap.CompressFormat.JPEG;
   }
 
-  private static File writeBitmapToInternalCache(Context context, Bitmap cropped, String mimeType)
-      throws IOException {
-    File tempFile = createTempFile(context.getCacheDir(), mimeType);
-    writeCompressedBitmapToFile(cropped, mimeType, tempFile);
-    return tempFile;
-  }
-
-  private static File writeBitmapToExternalCache(Context context, Bitmap cropped, String mimeType)
-      throws IOException {
-    File tempFile = createTempFile(context.getExternalCacheDir(), mimeType);
-    writeCompressedBitmapToFile(cropped, mimeType, tempFile);
-    return tempFile;
-  }
-
   private static void writeCompressedBitmapToFile(Bitmap cropped, String mimeType, File tempFile)
       throws IOException {
     OutputStream out = new FileOutputStream(tempFile);
-    cropped.compress(getCompressFormatForType(mimeType), COMPRESS_QUALITY, out);
+    try {
+      cropped.compress(getCompressFormatForType(mimeType), COMPRESS_QUALITY, out);
+    } finally {
+      if (out != null) {
+        out.close();
+      }
+    }
   }
 
   /**
-   * Create a temporary file in internal / external storage to use for image scaling and caching.
+   * Create a temporary file in the cache directory on either internal or external storage,
+   * whichever is available and has more free space.
    *
    * @param mimeType the MIME type of the file to create (image/*)
    */
-  private static File createTempFile(@Nullable File cacheDir, @Nullable String mimeType)
+  private static File createTempFile(Context context, @Nullable String mimeType)
       throws IOException {
-    if (cacheDir == null) {
+    File externalCacheDir = context.getExternalCacheDir();
+    File internalCacheDir = context.getCacheDir();
+    File cacheDir;
+    if (externalCacheDir == null && internalCacheDir == null) {
       throw new IOException("No cache directory available");
+    }
+    if (externalCacheDir == null) {
+      cacheDir = internalCacheDir;
+    } else if (internalCacheDir == null) {
+      cacheDir = externalCacheDir;
+    } else {
+      cacheDir =
+          externalCacheDir.getFreeSpace() > internalCacheDir.getFreeSpace()
+              ? externalCacheDir
+              : internalCacheDir;
     }
     return File.createTempFile(TEMP_FILE_PREFIX, getFileExtensionForType(mimeType), cacheDir);
   }

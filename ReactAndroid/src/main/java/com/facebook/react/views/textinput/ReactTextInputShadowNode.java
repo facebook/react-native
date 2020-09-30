@@ -25,7 +25,6 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactBaseTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
-import com.facebook.react.views.text.ReactTextViewManagerCallback;
 import com.facebook.react.views.view.MeasureUtil;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
@@ -51,19 +50,13 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   private int mSelectionStart = UNSET;
   private int mSelectionEnd = UNSET;
 
-  public ReactTextInputShadowNode(
-      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
-    super(reactTextViewManagerCallback);
+  public ReactTextInputShadowNode() {
     mTextBreakStrategy =
         (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
             ? Layout.BREAK_STRATEGY_SIMPLE
             : Layout.BREAK_STRATEGY_HIGH_QUALITY;
 
     initMeasureFunction();
-  }
-
-  public ReactTextInputShadowNode() {
-    this(null);
   }
 
   private void initMeasureFunction() {

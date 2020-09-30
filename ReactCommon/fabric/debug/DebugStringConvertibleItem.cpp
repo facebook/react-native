@@ -17,7 +17,7 @@ DebugStringConvertibleItem::DebugStringConvertibleItem(
     const std::string &value,
     const SharedDebugStringConvertibleList &props,
     const SharedDebugStringConvertibleList &children)
-    : name_(name), value_(value), debugProps_(props), children_(children) {}
+    : name_(name), value_(value), props_(props), children_(children) {}
 
 std::string DebugStringConvertibleItem::getDebugName() const {
   return name_;
@@ -29,7 +29,7 @@ std::string DebugStringConvertibleItem::getDebugValue() const {
 
 SharedDebugStringConvertibleList DebugStringConvertibleItem::getDebugProps()
     const {
-  return debugProps_;
+  return props_;
 }
 
 SharedDebugStringConvertibleList DebugStringConvertibleItem::getDebugChildren()

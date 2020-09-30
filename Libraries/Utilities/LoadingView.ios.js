@@ -16,21 +16,13 @@ import NativeDevLoadingView from './NativeDevLoadingView';
 module.exports = {
   showMessage(message: string, type: 'load' | 'refresh') {
     if (NativeDevLoadingView) {
-      const green = processColor('#005a00');
-      const blue = processColor('#2584e8');
-      const white = processColor('#ffffff');
-
       NativeDevLoadingView.showMessage(
         message,
         // Use same colors as iOS "Personal Hotspot" bar.
-        typeof white === 'number' ? white : null,
+        processColor('#ffffff'),
         type && type === 'load'
-          ? typeof green === 'number'
-            ? green
-            : null
-          : typeof blue === 'number'
-          ? blue
-          : null,
+          ? processColor('#275714')
+          : processColor('#2584e8'),
       );
     }
   },

@@ -49,6 +49,8 @@ class NotificationExample extends React.Component<{...}> {
       'localNotification',
       this._onLocalNotification,
     );
+
+    PushNotificationIOS.requestPermissions();
   }
 
   componentWillUnmount() {
@@ -171,51 +173,18 @@ class NotificationPermissionExample extends React.Component<
     return (
       <View>
         <Button
-          onPress={this._requestPermissions}
-          label="Request Notifications (Should Display Alert)"
+          onPress={this._showPermissions.bind(this)}
+          label="Show enabled permissions"
         />
-        <Button onPress={this._checkPermissions} label="Check permissions" />
-        <Text style={{textAlign: 'center'}}>
-          {JSON.stringify(this.state.permissions)}
-        </Text>
+        <Text>{JSON.stringify(this.state.permissions)}</Text>
       </View>
     );
   }
 
-  _requestPermissions = () => {
-    PushNotificationIOS.requestPermissions().then(
-      onFulfill => {
-        this._showAlert(
-          'Successfully requested permissions -- ' +
-            'Alert: ' +
-            onFulfill.alert.toString() +
-            ', Badge: ' +
-            onFulfill.badge.toString() +
-            ', Sound: ' +
-            onFulfill.sound.toString(),
-        );
-        this._checkPermissions();
-      },
-      (onReject?) => {
-        this._showAlert('Error requesting permissions');
-        this._checkPermissions();
-      },
-    );
-  };
-
-  _checkPermissions = () => {
+  _showPermissions() {
     PushNotificationIOS.checkPermissions(permissions => {
       this.setState({permissions});
     });
-  };
-
-  _showAlert(text) {
-    Alert.alert('Notification Permission', text, [
-      {
-        text: 'Dismiss',
-        onPress: null,
-      },
-    ]);
   }
 }
 
@@ -234,18 +203,6 @@ exports.title = 'PushNotificationIOS';
 exports.description = 'Apple PushNotification and badge value';
 exports.examples = [
   {
-    title: 'Notifications Permissions',
-    render(): React.Element<any> {
-      return <NotificationPermissionExample />;
-    },
-  },
-  {
-    title: 'Push Notifications',
-    render(): React.Element<any> {
-      return <NotificationExample />;
-    },
-  },
-  {
     title: 'Badge Number',
     render(): React.Element<any> {
       return (
@@ -262,6 +219,18 @@ exports.examples = [
           />
         </View>
       );
+    },
+  },
+  {
+    title: 'Push Notifications',
+    render(): React.Element<any> {
+      return <NotificationExample />;
+    },
+  },
+  {
+    title: 'Notifications Permissions',
+    render(): React.Element<any> {
+      return <NotificationPermissionExample />;
     },
   },
 ];

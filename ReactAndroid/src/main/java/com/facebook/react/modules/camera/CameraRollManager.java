@@ -22,13 +22,14 @@ import android.provider.MediaStore.Images;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
-import com.facebook.fbreact.specs.NativeCameraRollManagerSpec;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -55,7 +56,7 @@ import java.util.List;
  * {@link MediaStore.Images}).
  */
 @ReactModule(name = CameraRollManager.NAME)
-public class CameraRollManager extends NativeCameraRollManagerSpec {
+public class CameraRollManager extends ReactContextBaseJavaModule {
 
   public static final String NAME = "CameraRollManager";
 
@@ -101,7 +102,7 @@ public class CameraRollManager extends NativeCameraRollManagerSpec {
    * @param uri the file://, http:// or https:// URI of the image to save
    * @param promise to be resolved or rejected
    */
-  @Override
+  @ReactMethod
   public void saveToCameraRoll(String uri, String type, Promise promise) {
     new SaveToCameraRoll(getReactApplicationContext(), Uri.parse(uri), promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -222,7 +223,7 @@ public class CameraRollManager extends NativeCameraRollManagerSpec {
    * @param promise the Promise to be resolved when the photos are loaded; for a format of the
    *     parameters passed to this callback, see {@code getPhotosReturnChecker} in CameraRoll.js
    */
-  @Override
+  @ReactMethod
   public void getPhotos(final ReadableMap params, final Promise promise) {
     int first = params.getInt("first");
     String after = params.hasKey("after") ? params.getString("after") : null;
@@ -521,10 +522,5 @@ public class CameraRollManager extends NativeCameraRollManagerSpec {
       location.putDouble("latitude", latitude);
       node.putMap("location", location);
     }
-  }
-
-  @Override
-  public void deletePhotos(ReadableArray assets, Promise promise) {
-    // iOS only
   }
 }

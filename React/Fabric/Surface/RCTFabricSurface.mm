@@ -20,8 +20,6 @@
 
 #import "RCTSurfacePresenter.h"
 
-using namespace facebook::react;
-
 @implementation RCTFabricSurface {
   // Immutable
   RCTSurfacePresenter *_surfacePresenter;
@@ -255,9 +253,10 @@ using namespace facebook::react;
 
 #pragma mark - Synchronous Waiting
 
-- (BOOL)synchronouslyWaitFor:(NSTimeInterval)timeout
+- (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout
 {
-  return [_surfacePresenter synchronouslyWaitSurface:self timeout:timeout];
+  // TODO: Not supported yet.
+  return NO;
 }
 
 #pragma mark - Deprecated

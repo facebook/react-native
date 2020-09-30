@@ -187,7 +187,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, RCTPlatformView *> *vie
 /**
  * Applies computed layout metrics to the view.
  */
-- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics layoutContext:(RCTLayoutContext)layoutContext;
+- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics
+            layoutContext:(RCTLayoutContext)layoutContext;
 
 /**
  * Calculates (if needed) and applies layout to subviews.
@@ -198,7 +199,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, RCTPlatformView *> *vie
  * Measures shadow view without side-effects.
  * Default implementation uses Yoga for measuring.
  */
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize;
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
+                      maximumSize:(CGSize)maximumSize;
 
 /**
  * Returns whether or not this view can have any subviews.

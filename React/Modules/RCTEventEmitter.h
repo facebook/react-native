@@ -6,16 +6,14 @@
  */
 
 #import <React/RCTBridge.h>
-#import <React/RCTJSInvokerModule.h>
 
 /**
  * RCTEventEmitter is an abstract base class to be used for modules that emit
  * events to be observed by JS.
  */
-@interface RCTEventEmitter : NSObject <RCTBridgeModule, RCTJSInvokerModule>
+@interface RCTEventEmitter : NSObject <RCTBridgeModule>
 
 @property (nonatomic, weak) RCTBridge *bridge;
-@property (nonatomic, copy, nonnull) void (^invokeJS)(NSString *module, NSString *method, NSArray *args);
 
 /**
  * Override this method to return an array of supported event names. Attempting

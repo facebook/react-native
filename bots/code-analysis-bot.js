@@ -18,6 +18,9 @@ if (!process.env.GITHUB_REPO) {
   process.exit(1);
 }
 
+// https://octokit.github.io/rest.js/
+const octokit = require('@octokit/rest')();
+
 const path = require('path');
 
 function push(arr, key, value) {
@@ -113,7 +116,7 @@ const converters = {
   },
 };
 
-function getShaFromPullRequest(octokit, owner, repo, number, callback) {
+function getShaFromPullRequest(owner, repo, number, callback) {
   octokit.pullRequests.get({owner, repo, number}, (error, res) => {
     if (error) {
       console.error(error);
@@ -124,7 +127,7 @@ function getShaFromPullRequest(octokit, owner, repo, number, callback) {
   });
 }
 
-function getFilesFromPullRequest(octokit, owner, repo, number, callback) {
+function getFilesFromPullRequest(owner, repo, number, callback) {
   octokit.pullRequests.listFiles(
     {owner, repo, number, per_page: 100},
     (error, res) => {
@@ -166,7 +169,7 @@ function getLineMapFromPatch(patchString) {
   return lineMap;
 }
 
-function sendReview(octokit, owner, repo, number, commit_id, body, comments) {
+function sendReview(owner, repo, number, commit_id, body, comments) {
   if (process.env.GITHUB_TOKEN) {
     if (comments.length === 0) {
       // Do not leave an empty review.
@@ -222,20 +225,19 @@ function main(messages, owner, repo, number) {
     return;
   }
 
-  if (!process.env.GITHUB_TOKEN) {
+  if (process.env.GITHUB_TOKEN) {
+    octokit.authenticate({
+      type: 'oauth',
+      token: process.env.GITHUB_TOKEN,
+    });
+  } else {
     console.log(
       'Missing GITHUB_TOKEN. Example: 5fd88b964fa214c4be2b144dc5af5d486a2f8c1e. Review feedback with code analysis results will not be provided on GitHub without a valid token.',
     );
   }
 
-  // https://octokit.github.io/rest.js/
-  const {Octokit} = require('@octokit/rest');
-  const octokit = new Octokit({
-    auth: process.env.GITHUB_TOKEN,
-  });
-
-  getShaFromPullRequest(octokit, owner, repo, number, sha => {
-    getFilesFromPullRequest(octokit, owner, repo, number, files => {
+  getShaFromPullRequest(owner, repo, number, sha => {
+    getFilesFromPullRequest(owner, repo, number, files => {
       let comments = [];
       let convertersUsed = [];
       files
@@ -265,7 +267,7 @@ function main(messages, owner, repo, number) {
         body += '* ' + converterSummary[converter] + '\n';
       });
 
-      sendReview(octokit, owner, repo, number, sha, body, comments);
+      sendReview(owner, repo, number, sha, body, comments);
     }); // getFilesFromPullRequest
   }); // getShaFromPullRequest
 }

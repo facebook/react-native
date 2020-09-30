@@ -17,8 +17,7 @@ const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
 import type AnimatedValue from '../nodes/AnimatedValue';
 import type {AnimationConfig, EndCallback} from './Animation';
 
-export type DecayAnimationConfig = {
-  ...AnimationConfig,
+export type DecayAnimationConfig = AnimationConfig & {
   velocity:
     | number
     | {
@@ -27,12 +26,13 @@ export type DecayAnimationConfig = {
         ...
       },
   deceleration?: number,
+  ...
 };
 
-export type DecayAnimationConfigSingle = {
-  ...AnimationConfig,
+export type DecayAnimationConfigSingle = AnimationConfig & {
   velocity: number,
   deceleration?: number,
+  ...
 };
 
 class DecayAnimation extends Animation {

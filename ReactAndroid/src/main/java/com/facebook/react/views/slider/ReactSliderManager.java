@@ -250,8 +250,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
       float width,
       YogaMeasureMode widthMode,
       float height,
-      YogaMeasureMode heightMode,
-      @Nullable int[] attachmentsPositions) {
+      YogaMeasureMode heightMode) {
     SeekBar reactSlider = new ReactSlider(context, null, STYLE);
     final int spec =
         View.MeasureSpec.makeMeasureSpec(

@@ -48,7 +48,7 @@ class Connection::Impl : public inspector::InspectorObserver,
       bool waitForDebugger);
   ~Impl();
 
-  jsi::Runtime &getRuntime();
+  HermesRuntime &getRuntime();
   std::string getTitle() const;
 
   bool connect(std::unique_ptr<IRemoteConnection> remoteConn);
@@ -82,11 +82,8 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::debugger::StepOutRequest &req) override;
   void handle(const m::debugger::StepOverRequest &req) override;
   void handle(const m::heapProfiler::TakeHeapSnapshotRequest &req) override;
-  void handle(
-      const m::heapProfiler::StartTrackingHeapObjectsRequest &req) override;
-  void handle(
-      const m::heapProfiler::StopTrackingHeapObjectsRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
+  void handle(const m::runtime::GetHeapUsageRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
 
  private:
@@ -99,11 +96,6 @@ class Connection::Impl : public inspector::InspectorObserver,
       const std::string &objectGroup,
       bool onlyOwnProperties);
 
-  void sendSnapshot(
-      int reqId,
-      std::string message,
-      bool reportProgress,
-      bool stopStackTraceCapture);
   void sendToClient(const std::string &str);
   void sendResponseToClient(const m::Response &resp);
   void sendNotificationToClient(const m::Notification &resp);
@@ -160,7 +152,7 @@ Connection::Impl::Impl(
 
 Connection::Impl::~Impl() = default;
 
-jsi::Runtime &Connection::Impl::getRuntime() {
+HermesRuntime &Connection::Impl::getRuntime() {
   return runtimeAdapter_->getRuntime();
 }
 
@@ -265,6 +257,11 @@ void Connection::Impl::onContextCreated(Inspector &inspector) {
   note.context.id = 1;
   note.context.name = "hermes";
 
+  // isDefault and isPageContext are custom properties that the legacy RN to
+  // JSC adapter set for some unknown reason.
+  note.context.isDefault = true;
+  note.context.isPageContext = true;
+
   sendNotificationToClientViaExecutor(note);
 }
 
@@ -367,18 +364,14 @@ void Connection::Impl::handle(
       ->evaluate(
           atoi(req.callFrameId.c_str()),
           req.expression,
-          [this,
-           remoteObjPtr,
-           objectGroup = req.objectGroup,
-           byValue = req.returnByValue.value_or(false)](
+          [this, remoteObjPtr, objectGroup = req.objectGroup](
               const facebook::hermes::debugger::EvalResult
                   &evalResult) mutable {
             *remoteObjPtr = m::runtime::makeRemoteObject(
                 getRuntime(),
                 evalResult.value,
                 objTable_,
-                objectGroup.value_or(""),
-                byValue);
+                objectGroup.value_or(""));
           })
       .via(executor_.get())
       .thenValue(
@@ -398,16 +391,15 @@ void Connection::Impl::handle(
       .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
-void Connection::Impl::sendSnapshot(
-    int reqId,
-    std::string message,
-    bool reportProgress,
-    bool stopStackTraceCapture) {
+void Connection::Impl::handle(
+    const m::heapProfiler::TakeHeapSnapshotRequest &req) {
+  const auto id = req.id;
+  const bool reportProgress = req.reportProgress && *req.reportProgress;
+
   inspector_
       ->executeIfEnabled(
-          message,
-          [this, reportProgress, stopStackTraceCapture](
-              const debugger::ProgramState &) {
+          "HeapProfiler.takeHeapSnapshot",
+          [this, reportProgress](const debugger::ProgramState &) {
             if (reportProgress) {
               // A progress notification with finished = true indicates the
               // snapshot has been captured and is ready to be sent.  Our
@@ -431,51 +423,11 @@ void Connection::Impl::sendSnapshot(
                 });
 
             getRuntime().instrumentation().createSnapshotToStream(cos);
-            if (stopStackTraceCapture) {
-              getRuntime()
-                  .instrumentation()
-                  .stopTrackingHeapObjectStackTraces();
-            }
-          })
-      .via(executor_.get())
-      .thenValue([this, reqId](auto &&) {
-        sendResponseToClient(m::makeOkResponse(reqId));
-      })
-      .thenError<std::exception>(sendErrorToClient(reqId));
-}
-
-void Connection::Impl::handle(
-    const m::heapProfiler::TakeHeapSnapshotRequest &req) {
-  sendSnapshot(
-      req.id,
-      "HeapSnapshot.takeHeapSnapshot",
-      req.reportProgress && *req.reportProgress,
-      /* stopStackTraceCapture */ false);
-}
-
-void Connection::Impl::handle(
-    const m::heapProfiler::StartTrackingHeapObjectsRequest &req) {
-  const auto id = req.id;
-
-  inspector_
-      ->executeIfEnabled(
-          "HeapProfiler.startTrackingHeapObjects",
-          [this](const debugger::ProgramState &) {
-            getRuntime().instrumentation().startTrackingHeapObjectStackTraces();
           })
       .via(executor_.get())
       .thenValue(
           [this, id](auto &&) { sendResponseToClient(m::makeOkResponse(id)); })
       .thenError<std::exception>(sendErrorToClient(req.id));
-}
-
-void Connection::Impl::handle(
-    const m::heapProfiler::StopTrackingHeapObjectsRequest &req) {
-  sendSnapshot(
-      req.id,
-      "HeapSnapshot.takeHeapSnapshot",
-      req.reportProgress && *req.reportProgress,
-      /* stopStackTraceCapture */ true);
 }
 
 void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {
@@ -485,18 +437,14 @@ void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {
       ->evaluate(
           0, // Top of the stackframe
           req.expression,
-          [this,
-           remoteObjPtr,
-           objectGroup = req.objectGroup,
-           byValue = req.returnByValue.value_or(false)](
+          [this, remoteObjPtr, objectGroup = req.objectGroup](
               const facebook::hermes::debugger::EvalResult
                   &evalResult) mutable {
             *remoteObjPtr = m::runtime::makeRemoteObject(
                 getRuntime(),
                 evalResult.value,
                 objTable_,
-                objectGroup.value_or("ConsoleObjectGroup"),
-                byValue);
+                objectGroup.value_or("ConsoleObjectGroup"));
           })
       .via(executor_.get())
       .thenValue(
@@ -622,6 +570,26 @@ void Connection::Impl::handle(const m::debugger::StepOverRequest &req) {
   sendResponseToClientViaExecutor(inspector_->stepOver(), req.id);
 }
 
+void Connection::Impl::handle(const m::runtime::GetHeapUsageRequest &req) {
+  auto resp = std::make_shared<m::runtime::GetHeapUsageResponse>();
+  resp->id = req.id;
+
+  inspector_
+      ->executeIfEnabled(
+          "Runtime.getHeapUsage",
+          [this, resp](const debugger::ProgramState &state) {
+            HermesRuntime &rt = getRuntime();
+            jsi::Instrumentation &i = rt.instrumentation();
+            auto info = i.getHeapInfo(/* includeExpensive */ false);
+
+            resp->usedSize = info["hermes_allocatedBytes"];
+            resp->totalSize = info["hermes_heapSize"];
+          })
+      .via(executor_.get())
+      .thenValue([this, resp](auto &&) { sendResponseToClient(*resp); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
 std::vector<m::runtime::PropertyDescriptor>
 Connection::Impl::makePropsFromScope(
     std::pair<uint32_t, uint32_t> frameAndScopeIndex,
@@ -675,7 +643,7 @@ Connection::Impl::makePropsFromValue(
   std::vector<m::runtime::PropertyDescriptor> result;
 
   if (value.isObject()) {
-    jsi::Runtime &runtime = getRuntime();
+    HermesRuntime &runtime = getRuntime();
     jsi::Object obj = value.getObject(runtime);
 
     // TODO(hypuk): obj.getPropertyNames only returns enumerable properties.
@@ -826,7 +794,7 @@ Connection::Connection(
 
 Connection::~Connection() = default;
 
-jsi::Runtime &Connection::getRuntime() {
+HermesRuntime &Connection::getRuntime() {
   return impl_->getRuntime();
 }
 

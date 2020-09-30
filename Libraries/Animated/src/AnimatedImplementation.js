@@ -91,7 +91,7 @@ const diffClamp = function(
 
 const _combineCallbacks = function(
   callback: ?EndCallback,
-  config: {...AnimationConfig, ...},
+  config: AnimationConfig,
 ) {
   if (callback && config.onComplete) {
     return (...args) => {
@@ -170,6 +170,9 @@ const spring = function(
 
       _startNativeLoop: function(iterations?: number): void {
         const singleConfig = {...config, iterations};
+        /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+         * an error found when Flow v0.111 was deployed. To see the error,
+         * delete this comment and run Flow. */
         start(value, singleConfig);
       },
 
@@ -224,6 +227,9 @@ const timing = function(
 
       _startNativeLoop: function(iterations?: number): void {
         const singleConfig = {...config, iterations};
+        /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+         * an error found when Flow v0.111 was deployed. To see the error,
+         * delete this comment and run Flow. */
         start(value, singleConfig);
       },
 
@@ -266,6 +272,9 @@ const decay = function(
 
       _startNativeLoop: function(iterations?: number): void {
         const singleConfig = {...config, iterations};
+        /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+         * an error found when Flow v0.111 was deployed. To see the error,
+         * delete this comment and run Flow. */
         start(value, singleConfig);
       },
 
@@ -513,10 +522,7 @@ function unforkEvent(
   }
 }
 
-const event = function(
-  argMapping: $ReadOnlyArray<?Mapping>,
-  config: EventConfig,
-): any {
+const event = function(argMapping: Array<?Mapping>, config: EventConfig): any {
   const animatedEvent = new AnimatedEvent(argMapping, config);
   if (animatedEvent.__isNative) {
     return animatedEvent;
@@ -533,33 +539,33 @@ const event = function(
  * If additional transforms are added, be sure to include them in
  * AnimatedMock.js as well.
  *
- * See https://reactnative.dev/docs/animated.html
+ * See http://facebook.github.io/react-native/docs/animated.html
  */
 module.exports = {
   /**
    * Standard value class for driving animations.  Typically initialized with
    * `new Animated.Value(0);`
    *
-   * See https://reactnative.dev/docs/animated.html#value
+   * See http://facebook.github.io/react-native/docs/animated.html#value
    */
   Value: AnimatedValue,
   /**
    * 2D value class for driving 2D animations, such as pan gestures.
    *
-   * See https://reactnative.dev/docs/animatedvaluexy.html
+   * See https://facebook.github.io/react-native/docs/animatedvaluexy.html
    */
   ValueXY: AnimatedValueXY,
   /**
    * Exported to use the Interpolation type in flow.
    *
-   * See https://reactnative.dev/docs/animated.html#interpolation
+   * See http://facebook.github.io/react-native/docs/animated.html#interpolation
    */
   Interpolation: AnimatedInterpolation,
   /**
    * Exported for ease of type checking. All animated values derive from this
    * class.
    *
-   * See https://reactnative.dev/docs/animated.html#node
+   * See http://facebook.github.io/react-native/docs/animated.html#node
    */
   Node: AnimatedNode,
 
@@ -567,21 +573,21 @@ module.exports = {
    * Animates a value from an initial velocity to zero based on a decay
    * coefficient.
    *
-   * See https://reactnative.dev/docs/animated.html#decay
+   * See http://facebook.github.io/react-native/docs/animated.html#decay
    */
   decay,
   /**
    * Animates a value along a timed easing curve. The Easing module has tons of
    * predefined curves, or you can use your own function.
    *
-   * See https://reactnative.dev/docs/animated.html#timing
+   * See http://facebook.github.io/react-native/docs/animated.html#timing
    */
   timing,
   /**
    * Animates a value according to an analytical spring model based on
    * damped harmonic oscillation.
    *
-   * See https://reactnative.dev/docs/animated.html#spring
+   * See http://facebook.github.io/react-native/docs/animated.html#spring
    */
   spring,
 
@@ -589,7 +595,7 @@ module.exports = {
    * Creates a new Animated value composed from two Animated values added
    * together.
    *
-   * See https://reactnative.dev/docs/animated.html#add
+   * See http://facebook.github.io/react-native/docs/animated.html#add
    */
   add,
 
@@ -597,7 +603,7 @@ module.exports = {
    * Creates a new Animated value composed by subtracting the second Animated
    * value from the first Animated value.
    *
-   * See https://reactnative.dev/docs/animated.html#subtract
+   * See http://facebook.github.io/react-native/docs/animated.html#subtract
    */
   subtract,
 
@@ -605,7 +611,7 @@ module.exports = {
    * Creates a new Animated value composed by dividing the first Animated value
    * by the second Animated value.
    *
-   * See https://reactnative.dev/docs/animated.html#divide
+   * See http://facebook.github.io/react-native/docs/animated.html#divide
    */
   divide,
 
@@ -613,7 +619,7 @@ module.exports = {
    * Creates a new Animated value composed from two Animated values multiplied
    * together.
    *
-   * See https://reactnative.dev/docs/animated.html#multiply
+   * See http://facebook.github.io/react-native/docs/animated.html#multiply
    */
   multiply,
 
@@ -621,7 +627,7 @@ module.exports = {
    * Creates a new Animated value that is the (non-negative) modulo of the
    * provided Animated value.
    *
-   * See https://reactnative.dev/docs/animated.html#modulo
+   * See http://facebook.github.io/react-native/docs/animated.html#modulo
    */
   modulo,
 
@@ -630,14 +636,14 @@ module.exports = {
    * difference between the last value so even if the value is far from the
    * bounds it will start changing when the value starts getting closer again.
    *
-   * See https://reactnative.dev/docs/animated.html#diffclamp
+   * See http://facebook.github.io/react-native/docs/animated.html#diffclamp
    */
   diffClamp,
 
   /**
    * Starts an animation after the given delay.
    *
-   * See https://reactnative.dev/docs/animated.html#delay
+   * See http://facebook.github.io/react-native/docs/animated.html#delay
    */
   delay,
   /**
@@ -645,7 +651,7 @@ module.exports = {
    * before starting the next. If the current running animation is stopped, no
    * following animations will be started.
    *
-   * See https://reactnative.dev/docs/animated.html#sequence
+   * See http://facebook.github.io/react-native/docs/animated.html#sequence
    */
   sequence,
   /**
@@ -653,21 +659,21 @@ module.exports = {
    * of the animations is stopped, they will all be stopped. You can override
    * this with the `stopTogether` flag.
    *
-   * See https://reactnative.dev/docs/animated.html#parallel
+   * See http://facebook.github.io/react-native/docs/animated.html#parallel
    */
   parallel,
   /**
    * Array of animations may run in parallel (overlap), but are started in
    * sequence with successive delays.  Nice for doing trailing effects.
    *
-   * See https://reactnative.dev/docs/animated.html#stagger
+   * See http://facebook.github.io/react-native/docs/animated.html#stagger
    */
   stagger,
   /**
    * Loops a given animation continuously, so that each time it reaches the
    * end, it resets and begins again from the start.
    *
-   * See https://reactnative.dev/docs/animated.html#loop
+   * See http://facebook.github.io/react-native/docs/animated.html#loop
    */
   loop,
 
@@ -675,14 +681,14 @@ module.exports = {
    * Takes an array of mappings and extracts values from each arg accordingly,
    * then calls `setValue` on the mapped outputs.
    *
-   * See https://reactnative.dev/docs/animated.html#event
+   * See http://facebook.github.io/react-native/docs/animated.html#event
    */
   event,
 
   /**
    * Make any React component Animatable.  Used to create `Animated.View`, etc.
    *
-   * See https://reactnative.dev/docs/animated.html#createanimatedcomponent
+   * See http://facebook.github.io/react-native/docs/animated.html#createanimatedcomponent
    */
   createAnimatedComponent,
 
@@ -690,7 +696,7 @@ module.exports = {
    * Imperative API to attach an animated value to an event on a view. Prefer
    * using `Animated.event` with `useNativeDrive: true` if possible.
    *
-   * See https://reactnative.dev/docs/animated.html#attachnativeevent
+   * See http://facebook.github.io/react-native/docs/animated.html#attachnativeevent
    */
   attachNativeEvent,
 
@@ -698,7 +704,7 @@ module.exports = {
    * Advanced imperative API for snooping on animated events that are passed in
    * through props. Use values directly where possible.
    *
-   * See https://reactnative.dev/docs/animated.html#forkevent
+   * See http://facebook.github.io/react-native/docs/animated.html#forkevent
    */
   forkEvent,
   unforkEvent,

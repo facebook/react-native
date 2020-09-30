@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`YellowBox should render LogBoxNotificationContainer when LogBox is enabled 1`] = `<LogBoxNotificationContainer />`;
+
+exports[`YellowBox should render YellowBoxContainer by default 1`] = `<YellowBoxContainer />`;

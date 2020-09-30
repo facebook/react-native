@@ -81,15 +81,6 @@ const QuickPerformanceLogger = {
     }
   },
 
-  markerDrop(
-    markerId: number,
-    instanceKey?: number = DUMMY_INSTANCE_KEY,
-  ): void {
-    if (global.nativeQPLMarkerDrop) {
-      global.nativeQPLMarkerDrop(markerId, instanceKey);
-    }
-  },
-
   currentTimestamp(): number {
     if (global.nativeQPLTimestamp) {
       return global.nativeQPLTimestamp();

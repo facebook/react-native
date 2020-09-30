@@ -15,21 +15,25 @@
 namespace facebook {
 namespace react {
 
-class YogaStylableProps : public Props {
+class YogaStylableProps {
  public:
   YogaStylableProps() = default;
+  YogaStylableProps(YGStyle const &yogaStyle);
   YogaStylableProps(
       YogaStylableProps const &sourceProps,
       RawProps const &rawProps);
 
 #pragma mark - Props
 
-  YGStyle yogaStyle{};
+ protected:
+  friend class YogaLayoutableShadowNode;
+  YGStyle const yogaStyle{};
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
 #pragma mark - DebugStringConvertible (Partial)
 
+ public:
   SharedDebugStringConvertibleList getDebugProps() const;
 
 #endif

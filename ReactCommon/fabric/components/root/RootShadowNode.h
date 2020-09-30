@@ -35,11 +35,9 @@ class RootShadowNode final
   using Unshared = std::shared_ptr<RootShadowNode>;
 
   /*
-   * Layouts the shadow tree if needed.
-   * Returns `false` if the three is already laid out.
+   * Layouts the shadow tree.
    */
-  bool layoutIfNeeded(
-      std::vector<LayoutableShadowNode const *> *affectedNodes = {});
+  void layout(std::vector<LayoutableShadowNode const *> *affectedNodes = {});
 
   /*
    * Clones the node with given `layoutConstraints` and `layoutContext`.
@@ -47,6 +45,22 @@ class RootShadowNode final
   RootShadowNode::Unshared clone(
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext) const;
+
+  /*
+   * Clones the node (and partially the tree starting from the node) by
+   * replacing a `oldShadowNode` (which corresponds to a given `shadowNode`)
+   * with a node that `callback` returns. `oldShadowNode` might not be the same
+   * as `shadowNode` but they must share the same family.
+   *
+   * Returns `nullptr` if the operation cannot be performed successfully.
+   */
+  RootShadowNode::Unshared clone(
+      ShadowNode const &shadowNode,
+      std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
+          callback) const;
+
+ private:
+  using YogaLayoutableShadowNode::layout;
 };
 
 } // namespace react

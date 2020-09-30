@@ -102,7 +102,6 @@ function LogBoxInspectorBody(props) {
   }, [props.log]);
 
   const headerTitle =
-    props.log.type ??
     headerTitleMap[props.log.isComponentError ? 'component' : props.log.level];
 
   if (collapsed) {

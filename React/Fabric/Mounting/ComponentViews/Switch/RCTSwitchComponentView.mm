@@ -12,8 +12,6 @@
 #import <react/components/rncore/Props.h>
 #import <react/components/rncore/RCTComponentViewHelpers.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
-
 using namespace facebook::react;
 
 @interface RCTSwitchComponentView () <RCTSwitchViewProtocol>
@@ -99,7 +97,7 @@ using namespace facebook::react;
   }
 
   std::dynamic_pointer_cast<const SwitchEventEmitter>(_eventEmitter)
-      ->onChange(SwitchEventEmitter::OnChange{.value = static_cast<bool>(sender.on)});
+      ->onChange(SwitchOnChangeStruct{.value = static_cast<bool>(sender.on)});
 }
 
 #pragma mark - Native Commands
@@ -115,8 +113,3 @@ using namespace facebook::react;
 }
 
 @end
-
-Class<RCTComponentViewProtocol> RCTSwitchCls(void)
-{
-  return RCTSwitchComponentView.class;
-}

@@ -9,7 +9,6 @@ package com.facebook.react.modules.core;
 
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -294,7 +293,6 @@ public class JavaTimerManager {
    * @param delay The time in ms before the callback should be invoked.
    * @param repeat Whether the timer should be repeated (used for setInterval).
    */
-  @DoNotStrip
   public void createTimer(final int callbackID, final long delay, final boolean repeat) {
     long initialTargetTime = SystemClock.nanoTime() / 1000000 + delay;
     Timer timer = new Timer(callbackID, initialTargetTime, (int) delay, repeat);
@@ -345,7 +343,6 @@ public class JavaTimerManager {
     createTimer(callbackID, adjustedDuration, repeat);
   }
 
-  @DoNotStrip
   public void deleteTimer(int timerId) {
     synchronized (mTimerGuard) {
       Timer timer = mTimerIdsToTimers.get(timerId);
@@ -357,7 +354,6 @@ public class JavaTimerManager {
     }
   }
 
-  @DoNotStrip
   public void setSendIdleEvents(final boolean sendIdleEvents) {
     synchronized (mIdleCallbackGuard) {
       mSendIdleEvents = sendIdleEvents;
@@ -376,38 +372,5 @@ public class JavaTimerManager {
             }
           }
         });
-  }
-
-  /**
-   * Returns a bool representing whether there are any active timers that will be fired within a
-   * certain period of time. Disregards repeating timers (setInterval). Used for testing to
-   * determine if RN is idle.
-   *
-   * @param rangeMs The time range, in ms, to check
-   * @return True if there are pending timers within the given range; false otherwise
-   */
-  /* package */ boolean hasActiveTimersInRange(long rangeMs) {
-    synchronized (mTimerGuard) {
-      Timer nextTimer = mTimers.peek();
-      if (nextTimer == null) {
-        // Timers queue is empty
-        return false;
-      }
-      if (isTimerInRange(nextTimer, rangeMs)) {
-        // First check the next timer, so we can avoid iterating over the entire queue if it's
-        // already within range.
-        return true;
-      }
-      for (Timer timer : mTimers) {
-        if (isTimerInRange(timer, rangeMs)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private static boolean isTimerInRange(Timer timer, long rangeMs) {
-    return !timer.mRepeat && timer.mInterval < rangeMs;
   }
 }

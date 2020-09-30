@@ -9,12 +9,7 @@
 
 #import <React/RCTMultipartStreamReader.h>
 
-typedef void (^RCTMultipartDataTaskCallback)(
-    NSInteger statusCode,
-    NSDictionary *headers,
-    NSData *content,
-    NSError *error,
-    BOOL done);
+typedef void (^RCTMultipartDataTaskCallback)(NSInteger statusCode, NSDictionary *headers, NSData *content, NSError *error, BOOL done);
 
 @interface RCTMultipartDataTask : NSObject
 

@@ -12,8 +12,7 @@
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
 #import <react/components/slider/SliderComponentDescriptor.h>
-
-#import "FBRCTFabricComponentsPlugins.h"
+#import <react/components/slider/SliderLocalData.h>
 
 using namespace facebook::react;
 
@@ -23,6 +22,7 @@ using namespace facebook::react;
 @implementation RCTSliderComponentView {
   UISlider *_sliderView;
   float _previousValue;
+  SharedSliderLocalData _sliderLocalData;
 
   UIImage *_trackImage;
   UIImage *_minimumTrackImage;
@@ -76,6 +76,8 @@ using namespace facebook::react;
   self.minimumTrackImageCoordinator = nullptr;
   self.maximumTrackImageCoordinator = nullptr;
   self.thumbImageCoordinator = nullptr;
+
+  _sliderLocalData.reset();
 
   // Tint colors will be taken care of when props are set again - we just
   // need to make sure that image properties are reset here
@@ -148,38 +150,26 @@ using namespace facebook::react;
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateState:(facebook::react::State::Shared const &)state
-           oldState:(facebook::react::State::Shared const &)oldState
+- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
 {
-  auto _state = std::static_pointer_cast<SliderShadowNode::ConcreteState const>(state);
-  auto _oldState = std::static_pointer_cast<SliderShadowNode::ConcreteState const>(oldState);
+  SharedSliderLocalData previousData = _sliderLocalData;
+  _sliderLocalData = std::static_pointer_cast<const SliderLocalData>(localData);
+  assert(_sliderLocalData);
+  bool havePreviousData = previousData != nullptr;
 
-  auto data = _state->getData();
-
-  bool havePreviousData = _oldState != nullptr;
-
-  auto getCoordinator = [](ImageRequest const *request) -> ImageResponseObserverCoordinator const * {
-    if (request) {
-      return &request->getObserverCoordinator();
-    } else {
-      return nullptr;
-    }
-  };
-
-  if (!havePreviousData || data.getTrackImageSource() != _oldState->getData().getTrackImageSource()) {
-    self.trackImageCoordinator = getCoordinator(&data.getTrackImageRequest());
+  if (!havePreviousData || _sliderLocalData->getTrackImageSource() != previousData->getTrackImageSource()) {
+    self.trackImageCoordinator = &_sliderLocalData->getTrackImageRequest().getObserverCoordinator();
   }
-
-  if (!havePreviousData || data.getMinimumTrackImageSource() != _oldState->getData().getMinimumTrackImageSource()) {
-    self.minimumTrackImageCoordinator = getCoordinator(&data.getMinimumTrackImageRequest());
+  if (!havePreviousData ||
+      _sliderLocalData->getMinimumTrackImageSource() != previousData->getMinimumTrackImageSource()) {
+    self.minimumTrackImageCoordinator = &_sliderLocalData->getMinimumTrackImageRequest().getObserverCoordinator();
   }
-
-  if (!havePreviousData || data.getMaximumTrackImageSource() != _oldState->getData().getMaximumTrackImageSource()) {
-    self.maximumTrackImageCoordinator = getCoordinator(&data.getMaximumTrackImageRequest());
+  if (!havePreviousData ||
+      _sliderLocalData->getMaximumTrackImageSource() != previousData->getMaximumTrackImageSource()) {
+    self.maximumTrackImageCoordinator = &_sliderLocalData->getMaximumTrackImageRequest().getObserverCoordinator();
   }
-
-  if (!havePreviousData || data.getThumbImageSource() != _oldState->getData().getThumbImageSource()) {
-    self.thumbImageCoordinator = getCoordinator(&data.getThumbImageRequest());
+  if (!havePreviousData || _sliderLocalData->getThumbImageSource() != previousData->getThumbImageSource()) {
+    self.thumbImageCoordinator = &_sliderLocalData->getThumbImageRequest().getObserverCoordinator();
   }
 }
 
@@ -309,11 +299,11 @@ using namespace facebook::react;
 
   if (continuous && _previousValue != value) {
     std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)
-        ->onValueChange(SliderEventEmitter::OnValueChange{.value = static_cast<Float>(value)});
+        ->onValueChange(SliderOnValueChangeStruct{.value = static_cast<Float>(value)});
   }
   if (!continuous) {
     std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)
-        ->onSlidingComplete(SliderEventEmitter::OnSlidingComplete{.value = static_cast<Float>(value)});
+        ->onSlidingComplete(SliderOnSlidingCompleteStruct{.value = static_cast<Float>(value)});
   }
 
   _previousValue = value;
@@ -343,8 +333,3 @@ using namespace facebook::react;
 }
 
 @end
-
-Class<RCTComponentViewProtocol> RCTSliderCls(void)
-{
-  return RCTSliderComponentView.class;
-}

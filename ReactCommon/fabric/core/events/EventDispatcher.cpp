@@ -13,6 +13,8 @@
 #include "RawEvent.h"
 #include "UnbatchedEventQueue.h"
 
+#define REACT_FABRIC_SYNC_EVENT_DISPATCHING_DISABLED
+
 namespace facebook {
 namespace react {
 
@@ -56,6 +58,10 @@ void EventDispatcher::dispatchStateUpdate(
 }
 
 const EventQueue &EventDispatcher::getEventQueue(EventPriority priority) const {
+#ifdef REACT_FABRIC_SYNC_EVENT_DISPATCHING_DISABLED
+  priority = EventPriority::AsynchronousBatched;
+#endif
+
   return *eventQueues_[(int)priority];
 }
 

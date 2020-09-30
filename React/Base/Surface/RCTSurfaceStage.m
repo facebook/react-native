@@ -7,12 +7,14 @@
 
 #import "RCTSurfaceStage.h"
 
-BOOL RCTSurfaceStageIsRunning(RCTSurfaceStage stage)
-{
-  return (stage & RCTSurfaceStageSurfaceDidInitialLayout) && !(stage & RCTSurfaceStageSurfaceDidStop);
+BOOL RCTSurfaceStageIsRunning(RCTSurfaceStage stage) {
+  return
+    (stage & RCTSurfaceStageSurfaceDidInitialLayout) &&
+    !(stage & RCTSurfaceStageSurfaceDidStop);
 }
 
-BOOL RCTSurfaceStageIsPreparing(RCTSurfaceStage stage)
-{
-  return !(stage & RCTSurfaceStageSurfaceDidInitialLayout) && !(stage & RCTSurfaceStageSurfaceDidStop);
+BOOL RCTSurfaceStageIsPreparing(RCTSurfaceStage stage) {
+  return
+    !(stage & RCTSurfaceStageSurfaceDidInitialLayout) &&
+    !(stage & RCTSurfaceStageSurfaceDidStop);
 }

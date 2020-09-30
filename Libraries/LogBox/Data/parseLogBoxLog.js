@@ -16,8 +16,7 @@ import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {LogBoxLogData} from './LogBoxLog';
 
 const BABEL_TRANSFORM_ERROR_FORMAT = /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
-const BABEL_CODE_FRAME_ERROR_FORMAT = /^(?:TransformError )?(?:.*):? (?:.*?)(\/.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
-const METRO_ERROR_FORMAT = /^(?:InternalError Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
+const BABEL_CODE_FRAME_ERROR_FORMAT = /^(?:TransformError )?(?:.*): (.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
 
 export type ExtendedExceptionData = ExceptionData & {
   isComponentError: boolean,
@@ -47,7 +46,7 @@ export type ComponentStack = $ReadOnlyArray<CodeFrame>;
 
 const SUBSTITUTION = UTFSequence.BOM + '%s';
 
-export function parseInterpolation(
+export function parseCategory(
   args: $ReadOnlyArray<mixed>,
 ): $ReadOnly<{|
   category: Category,
@@ -152,38 +151,6 @@ export function parseLogBoxException(
   const message =
     error.originalMessage != null ? error.originalMessage : 'Unknown';
 
-  const metroInternalError = message.match(METRO_ERROR_FORMAT);
-  if (metroInternalError) {
-    const [
-      content,
-      fileName,
-      row,
-      column,
-      codeFrame,
-    ] = metroInternalError.slice(1);
-
-    return {
-      level: 'fatal',
-      type: 'Metro Error',
-      stack: [],
-      isComponentError: false,
-      componentStack: [],
-      codeFrame: {
-        fileName,
-        location: {
-          row: parseInt(row, 10),
-          column: parseInt(column, 10),
-        },
-        content: codeFrame,
-      },
-      message: {
-        content,
-        substitutions: [],
-      },
-      category: `${fileName}-${row}-${column}`,
-    };
-  }
-
   const babelTransformError = message.match(BABEL_TRANSFORM_ERROR_FORMAT);
   if (babelTransformError) {
     // Transform errors are thrown from inside the Babel transformer.
@@ -239,50 +206,21 @@ export function parseLogBoxException(
     };
   }
 
-  if (message.match(/^TransformError /)) {
-    return {
-      level: 'syntax',
-      stack: error.stack,
-      isComponentError: error.isComponentError,
-      componentStack: [],
-      message: {
-        content: message,
-        substitutions: [],
-      },
-      category: message,
-    };
-  }
+  const level = message.match(/^TransformError /)
+    ? 'syntax'
+    : error.isFatal || error.isComponentError
+    ? 'fatal'
+    : 'error';
 
-  const componentStack = error.componentStack;
-  if (error.isFatal || error.isComponentError) {
-    return {
-      level: 'fatal',
-      stack: error.stack,
-      isComponentError: error.isComponentError,
-      componentStack:
-        componentStack != null ? parseComponentStack(componentStack) : [],
-      ...parseInterpolation([message]),
-    };
-  }
-
-  if (componentStack != null) {
-    // It is possible that console errors have a componentStack.
-    return {
-      level: 'error',
-      stack: error.stack,
-      isComponentError: error.isComponentError,
-      componentStack: parseComponentStack(componentStack),
-      ...parseInterpolation([message]),
-    };
-  }
-
-  // Most `console.error` calls won't have a componentStack. We parse them like
-  // regular logs which have the component stack burried in the message.
   return {
-    level: 'error',
+    level: level,
     stack: error.stack,
     isComponentError: error.isComponentError,
-    ...parseLogBoxLog([message]),
+    componentStack:
+      error.componentStack != null
+        ? parseComponentStack(error.componentStack)
+        : [],
+    ...parseCategory([message]),
   };
 }
 
@@ -315,13 +253,7 @@ export function parseLogBoxLog(
   if (componentStack.length === 0) {
     // Try finding the component stack elsewhere.
     for (const arg of args) {
-      if (typeof arg === 'string' && /\n {4}in /.exec(arg)) {
-        // Strip out any messages before the component stack.
-        const messageEndIndex = arg.indexOf('\n    in ');
-        if (messageEndIndex > 0) {
-          argsWithoutComponentStack.push(arg.slice(0, messageEndIndex));
-        }
-
+      if (typeof arg === 'string' && /^\n {4}in/.exec(arg)) {
         componentStack = parseComponentStack(arg);
       } else {
         argsWithoutComponentStack.push(arg);
@@ -330,7 +262,7 @@ export function parseLogBoxLog(
   }
 
   return {
-    ...parseInterpolation(argsWithoutComponentStack),
+    ...parseCategory(argsWithoutComponentStack),
     componentStack,
   };
 }

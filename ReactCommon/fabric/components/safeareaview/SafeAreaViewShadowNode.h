@@ -26,9 +26,6 @@ class SafeAreaViewShadowNode final : public ConcreteViewShadowNode<
                                          ViewEventEmitter,
                                          SafeAreaViewState> {
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
-
- public:
-  EdgeInsets alreadyAppliedPadding{};
 };
 
 } // namespace react
