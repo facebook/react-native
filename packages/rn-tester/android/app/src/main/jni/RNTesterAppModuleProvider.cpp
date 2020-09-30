@@ -9,8 +9,7 @@
 
 #include <PackagesRnTesterAndroidAppSpec.h>
 #include <ReactAndroidSpec.h>
-// TODO: Remove SampleTurboModule from ReactAndroidSpec, then uncomment.
-// #include <ReactCommon/SampleTurboModuleSpec.h>
+#include <ReactCommon/SampleTurboModuleSpec.h>
 
 namespace facebook {
 namespace react {
@@ -21,11 +20,10 @@ std::shared_ptr<TurboModule> RNTesterAppModuleProvider(const std::string moduleN
     return module;
   }
 
-  // TODO: Remove SampleTurboModule from ReactAndroidSpec, then uncomment.
-  // module = SampleTurboModuleSpec_ModuleProvider(moduleName, params);
-  // if (module != nullptr) {
-  //   return module;
-  // }
+  module = SampleTurboModuleSpec_ModuleProvider(moduleName, params);
+  if (module != nullptr) {
+    return module;
+  }
 
   // TODO: fix up the ReactAndroidSpec_ModuleProvider() to avoid the Android prefix.
   if (moduleName == "DatePicker") {
