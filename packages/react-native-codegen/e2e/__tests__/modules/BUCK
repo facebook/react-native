@@ -1,0 +1,11 @@
+load("@fbsource//xplat/js/RKJSModules/Libraries/NativeModules:defs.bzl", "react_native_module_flow_types_library")
+
+react_native_module_flow_types_library(
+    name = "RNCodegenModuleFixtures",
+    android_package_name = "com.facebook.fbreact.specs",
+    js_srcs = glob(
+        [
+            "../../__test_fixtures__/modules/*.js",
+        ],
+    ),
+)

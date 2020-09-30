@@ -11,6 +11,7 @@
 
 #import "RCTConvert.h"
 #import "RCTLog.h"
+#import "RCTRefreshControl.h"
 #import "RCTScrollEvent.h"
 #import "RCTUIManager.h"
 #import "RCTUIManagerObserverCoordinator.h"
@@ -18,10 +19,6 @@
 #import "RCTUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
-
-#if !TARGET_OS_TV
-#import "RCTRefreshControl.h"
-#endif
 
 /**
  * Include a custom scroll view subclass because we want to limit certain
@@ -31,10 +28,8 @@
 @interface RCTCustomScrollView : UIScrollView <UIGestureRecognizerDelegate>
 
 @property (nonatomic, assign) BOOL centerContent;
-#if !TARGET_OS_TV
 @property (nonatomic, strong) UIView<RCTCustomRefreshContolProtocol> *customRefreshControl;
 @property (nonatomic, assign) BOOL pinchGestureEnabled;
-#endif
 
 @end
 
@@ -52,9 +47,7 @@
       self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
     }
 
-#if !TARGET_OS_TV
     _pinchGestureEnabled = YES;
-#endif
   }
   return self;
 }
@@ -223,7 +216,6 @@
   }
 }
 
-#if !TARGET_OS_TV
 - (void)setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)refreshControl
 {
   if (_customRefreshControl) {
@@ -256,7 +248,6 @@
   // in the setter gets overridden when the view loads.
   self.pinchGestureRecognizer.enabled = _pinchGestureEnabled;
 }
-#endif // TARGET_OS_TV
 
 - (BOOL)shouldGroupAccessibilityChildren
 {
@@ -351,15 +342,12 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 - (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:view atIndex:atIndex];
-#if !TARGET_OS_TV
   if ([view conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
     [_scrollView setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)view];
     if (![view isKindOfClass:[UIRefreshControl class]] && [view conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
       [self addScrollListener:(UIView<UIScrollViewDelegate> *)view];
     }
-  } else
-#endif
-  {
+  } else {
     RCTAssert(
         _contentView == nil,
         @"RCTScrollView may only contain a single subview, the already set subview looks like: %@",
@@ -373,16 +361,13 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 - (void)removeReactSubview:(UIView *)subview
 {
   [super removeReactSubview:subview];
-#if !TARGET_OS_TV
   if ([subview conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
     [_scrollView setCustomRefreshControl:nil];
     if (![subview isKindOfClass:[UIRefreshControl class]] &&
         [subview conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
       [self removeScrollListener:(UIView<UIScrollViewDelegate> *)subview];
     }
-  } else
-#endif
-  {
+  } else {
     RCTAssert(_contentView == subview, @"Attempted to remove non-existent subview");
     _contentView = nil;
   }
@@ -994,10 +979,8 @@ RCT_SET_AND_PRESERVE_OFFSET(setKeyboardDismissMode, keyboardDismissMode, UIScrol
 RCT_SET_AND_PRESERVE_OFFSET(setMaximumZoomScale, maximumZoomScale, CGFloat)
 RCT_SET_AND_PRESERVE_OFFSET(setMinimumZoomScale, minimumZoomScale, CGFloat)
 RCT_SET_AND_PRESERVE_OFFSET(setScrollEnabled, isScrollEnabled, BOOL)
-#if !TARGET_OS_TV
 RCT_SET_AND_PRESERVE_OFFSET(setPagingEnabled, isPagingEnabled, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setScrollsToTop, scrollsToTop, BOOL)
-#endif
 RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);

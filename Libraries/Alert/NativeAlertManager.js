@@ -26,6 +26,7 @@ export type Args = {|
 
 export interface Spec extends TurboModule {
   +alertWithArgs: (
+    // eslint-disable-next-line @react-native/codegen/react-native-modules
     args: Args,
     callback: (id: number, value: string) => void,
   ) => void;

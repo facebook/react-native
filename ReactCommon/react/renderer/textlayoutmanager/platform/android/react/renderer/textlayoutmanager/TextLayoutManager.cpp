@@ -37,7 +37,7 @@ TextMeasurement TextLayoutManager::measure(
 }
 
 TextMeasurement TextLayoutManager::measureCachedSpannableById(
-    int cacheId,
+    int64_t cacheId,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   const jni::global_ref<jobject> &fabricUIManager =
@@ -64,7 +64,7 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   auto maximumSize = layoutConstraints.maximumSize;
 
   local_ref<JString> componentName = make_jstring("RCTText");
-  folly::dynamic cacheIdMap;
+  folly::dynamic cacheIdMap = folly::dynamic::object;
   cacheIdMap["cacheId"] = cacheId;
   local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
       ReadableNativeMap::newObjectCxxArgs(cacheIdMap);
@@ -88,10 +88,58 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
       maximumSize.height,
       attachmentPositions));
 
+  // Clean up allocated ref - it still takes up space in the JNI ref table even
+  // though it's 0 length
+  env->DeleteLocalRef(attachmentPositions);
+
   // TODO: currently we do not support attachments for cached IDs - should we?
   auto attachments = TextMeasurement::Attachments{};
 
   return TextMeasurement{size, attachments};
+}
+
+LinesMeasurements TextLayoutManager::measureLines(
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    Size size) const {
+  const jni::global_ref<jobject> &fabricUIManager =
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+  static auto measureLines =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<NativeArray::javaobject(
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              jfloat,
+              jfloat)>("measureLines");
+
+  auto serializedAttributedString = toDynamic(attributedString);
+
+  local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
+      ReadableNativeMap::newObjectCxxArgs(serializedAttributedString);
+  local_ref<ReadableNativeMap::javaobject> paragraphAttributesRNM =
+      ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes));
+
+  local_ref<ReadableMap::javaobject> attributedStringRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(attributedStringRNM.get()));
+  local_ref<ReadableMap::javaobject> paragraphAttributesRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
+
+  auto array = measureLines(
+      fabricUIManager,
+      attributedStringRM.get(),
+      paragraphAttributesRM.get(),
+      size.width,
+      size.height);
+
+  auto dynamicArray = cthis(array)->consume();
+  LinesMeasurements lineMeasurements;
+  lineMeasurements.reserve(dynamicArray.size());
+
+  for (auto const &data : dynamicArray) {
+    lineMeasurements.push_back(LineMeasurement(data));
+  }
+
+  return lineMeasurements;
 }
 
 TextMeasurement TextLayoutManager::doMeasure(
@@ -172,8 +220,10 @@ TextMeasurement TextLayoutManager::doMeasure(
       }
     }
   }
-  // DELETE REF
+
+  // Clean up allocated ref
   env->DeleteLocalRef(attachmentPositions);
+
   return TextMeasurement{size, attachments};
 }
 

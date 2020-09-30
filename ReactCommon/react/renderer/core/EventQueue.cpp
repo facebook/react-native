@@ -8,6 +8,7 @@
 #include "EventQueue.h"
 
 #include "EventEmitter.h"
+#include "ShadowNodeFamily.h"
 
 namespace facebook {
 namespace react {
@@ -35,6 +36,12 @@ void EventQueue::enqueueEvent(const RawEvent &rawEvent) const {
 void EventQueue::enqueueStateUpdate(const StateUpdate &stateUpdate) const {
   {
     std::lock_guard<std::mutex> lock(queueMutex_);
+    if (!stateUpdateQueue_.empty()) {
+      auto const position = stateUpdateQueue_.back();
+      if (stateUpdate.family == position.family) {
+        stateUpdateQueue_.pop_back();
+      }
+    }
     stateUpdateQueue_.push_back(stateUpdate);
   }
 

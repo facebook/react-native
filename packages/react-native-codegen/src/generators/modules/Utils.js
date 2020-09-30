@@ -10,35 +10,43 @@
 
 'use strict';
 
-import type {ObjectTypeAliasTypeShape} from '../../CodegenSchema';
+import type {
+  SchemaType,
+  NativeModuleAliasMap,
+  Required,
+  NativeModuleObjectTypeAnnotation,
+  NativeModuleSchema,
+} from '../../CodegenSchema';
 
-function getTypeAliasTypeAnnotation(
-  name: string,
-  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
-): $ReadOnly<ObjectTypeAliasTypeShape> {
-  const typeAnnotation = aliases[name];
-  if (!typeAnnotation) {
-    throw Error(`No type annotation found for "${name}" in schema`);
-  }
-  if (typeAnnotation.type === 'ObjectTypeAnnotation') {
-    if (typeAnnotation.properties) {
-      return typeAnnotation;
-    }
+const invariant = require('invariant');
 
-    throw new Error(
-      `Unsupported type for "${name}". Please provide properties.`,
+export type AliasResolver = (
+  aliasName: string,
+) => Required<NativeModuleObjectTypeAnnotation>;
+
+function createAliasResolver(aliasMap: NativeModuleAliasMap): AliasResolver {
+  return (aliasName: string) => {
+    const alias = aliasMap[aliasName];
+    invariant(alias != null, `Unable to resolve type alias '${aliasName}'.`);
+    return alias;
+  };
+}
+
+function getModules(
+  schema: SchemaType,
+): $ReadOnly<{|[moduleName: string]: NativeModuleSchema|}> {
+  return Object.keys(schema.modules)
+    .map<?{+[string]: NativeModuleSchema}>(
+      moduleName => schema.modules[moduleName].nativeModules,
+    )
+    .filter(Boolean)
+    .reduce<{+[string]: NativeModuleSchema}>(
+      (acc, modules) => ({...acc, ...modules}),
+      {},
     );
-  }
-  // $FlowFixMe[incompatible-type]
-  if (typeAnnotation.type === 'TypeAliasTypeAnnotation') {
-    return getTypeAliasTypeAnnotation(typeAnnotation.name, aliases);
-  }
-
-  throw Error(
-    `Unsupported type annotation in alias "${name}", found: ${typeAnnotation.type}`,
-  );
 }
 
 module.exports = {
-  getTypeAliasTypeAnnotation,
+  createAliasResolver,
+  getModules,
 };

@@ -110,6 +110,12 @@ struct AnimationKeyFrame {
   bool invalidated{false};
 };
 
+struct ConsecutiveAdjustmentMetadata {
+  Tag lastAdjustedParent{-1};
+  int lastAdjustedDelta{0};
+  int lastIndexOriginal{0};
+};
+
 class LayoutAnimationCallbackWrapper {
  public:
   LayoutAnimationCallbackWrapper(jsi::Function &&callback)
@@ -212,16 +218,14 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   void adjustImmediateMutationIndicesForDelayedMutations(
       SurfaceId surfaceId,
       ShadowViewMutation &mutation,
-      ShadowViewMutationList *auxiliaryMutations = nullptr) const;
+      ConsecutiveAdjustmentMetadata &consecutiveAdjustmentMetadata,
+      bool skipLastAnimation = false,
+      bool lastAnimationOnly = false) const;
 
   void adjustDelayedMutationIndicesForMutation(
       SurfaceId surfaceId,
       ShadowViewMutation const &mutation,
-      bool lastAnimationOnly = false) const;
-
-  void adjustLastAnimationDelayedMutationIndicesForMutation(
-      SurfaceId surfaceId,
-      ShadowViewMutation const &mutation) const;
+      bool skipLastAnimation = false) const;
 
   std::vector<std::tuple<AnimationKeyFrame, AnimationConfig, LayoutAnimation *>>
   getAndEraseConflictingAnimations(
@@ -304,12 +308,30 @@ static inline bool shouldFirstComeBeforeSecondMutation(
       return true;
     }
 
+    // Update comes last, before deletes
+    if (rhs.type == ShadowViewMutation::Type::Update) {
+      return true;
+    }
+    if (lhs.type == ShadowViewMutation::Type::Update) {
+      return false;
+    }
+
     // Remove comes before insert
     if (lhs.type == ShadowViewMutation::Type::Remove &&
         rhs.type == ShadowViewMutation::Type::Insert) {
       return true;
     }
     if (rhs.type == ShadowViewMutation::Type::Remove &&
+        lhs.type == ShadowViewMutation::Type::Insert) {
+      return false;
+    }
+
+    // Create comes before insert
+    if (lhs.type == ShadowViewMutation::Type::Create &&
+        rhs.type == ShadowViewMutation::Type::Insert) {
+      return true;
+    }
+    if (rhs.type == ShadowViewMutation::Type::Create &&
         lhs.type == ShadowViewMutation::Type::Insert) {
       return false;
     }

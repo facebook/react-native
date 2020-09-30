@@ -9,6 +9,7 @@
 
 #include <better/optional.h>
 
+#include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
@@ -29,41 +30,12 @@ class ShadowTreeRevision final {
    */
   using Number = int64_t;
 
-  /*
-   * Creates the object with given root shadow node, revision number and
-   * telemetry.
-   */
-  ShadowTreeRevision(
-      ShadowNode::Shared const &rootShadowNode,
-      Number number,
-      TransactionTelemetry telemetry);
-
-  /*
-   * Returns telemetry associated with this revision.
-   */
-  TransactionTelemetry const &getTelemetry() const;
-
-  /*
-   * Methods from this section are meant to be used by
-   * `MountingOverrideDelegate` only.
-   */
- public:
-  ShadowNode const &getRootShadowNode();
-  ShadowNode::Shared getSharedRootShadowNode();
-
-  /*
-   * Methods from this section are meant to be used by `MountingCoordinator`
-   * only.
-   */
- private:
+  friend class ShadowTree;
   friend class MountingCoordinator;
 
-  Number getNumber() const;
-
- private:
-  ShadowNode::Shared rootShadowNode_;
-  Number number_;
-  TransactionTelemetry telemetry_;
+  RootShadowNode::Shared rootShadowNode;
+  Number number;
+  TransactionTelemetry telemetry;
 };
 
 } // namespace react
