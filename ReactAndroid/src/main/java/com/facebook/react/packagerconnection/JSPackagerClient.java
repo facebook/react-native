@@ -18,8 +18,6 @@ import org.json.JSONObject;
 /** A client for packager that uses WebSocket connection. */
 public final class JSPackagerClient implements ReconnectingWebSocket.MessageCallback {
   private static final String TAG = JSPackagerClient.class.getSimpleName();
-  private static final String PACKAGER_CONNECTION_URL_FORMAT =
-      "ws://%s/message?device=%s&app=%s&context=%s";
   private static final int PROTOCOL_VERSION = 2;
 
   private class ResponderImpl implements Responder {

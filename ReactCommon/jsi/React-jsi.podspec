@@ -17,17 +17,17 @@ else
 end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2018.10.22.00'
+folly_version = '2020.01.13.00'
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
   s.name                   = "React-jsi"
   s.version                = version
   s.summary                = "-"  # TODO
-  s.homepage               = "http://facebook.github.io/react-native/"
+  s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "9.0", :tvos => "9.2", :osx => "10.13" } # TODO(macOS GH#214)
+  s.platforms              = { :ios => "10.0", :tvos => "10.0", :osx => "10.13" } # TODO(macOS GH#214)
   s.source                 = source
   s.source_files           = "**/*.{cpp,h}"
   s.exclude_files          = "**/test/*"

@@ -132,6 +132,11 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       };
 
   public ReactTextShadowNode() {
+    this(null);
+  }
+
+  public ReactTextShadowNode(@Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
+    super(reactTextViewManagerCallback);
     initMeasureFunction();
   }
 

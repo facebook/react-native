@@ -9,17 +9,17 @@ package com.facebook.react.modules.appearance;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import androidx.annotation.Nullable;
+import com.facebook.fbreact.specs.NativeAppearanceSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 /** Module that exposes the user's preferred color scheme. */
 @ReactModule(name = AppearanceModule.NAME)
-public class AppearanceModule extends ReactContextBaseJavaModule {
+public class AppearanceModule extends NativeAppearanceSpec {
 
   public static final String NAME = "Appearance";
 
@@ -27,13 +27,34 @@ public class AppearanceModule extends ReactContextBaseJavaModule {
 
   private String mColorScheme = "light";
 
+  private final @Nullable OverrideColorScheme mOverrideColorScheme;
+
+  /** Optional override to the current color scheme */
+  public interface OverrideColorScheme {
+
+    /**
+     * Color scheme will use the return value instead of the current system configuration. Available
+     * scheme: {light, dark}
+     */
+    public String getScheme();
+  }
+
   public AppearanceModule(ReactApplicationContext reactContext) {
+    this(reactContext, null);
+  }
+
+  public AppearanceModule(
+      ReactApplicationContext reactContext, @Nullable OverrideColorScheme overrideColorScheme) {
     super(reactContext);
 
+    mOverrideColorScheme = overrideColorScheme;
     mColorScheme = colorSchemeForCurrentConfiguration(reactContext);
   }
 
-  private static String colorSchemeForCurrentConfiguration(Context context) {
+  private String colorSchemeForCurrentConfiguration(Context context) {
+    if (mOverrideColorScheme != null) {
+      return mOverrideColorScheme.getScheme();
+    }
     int currentNightMode =
         context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
     switch (currentNightMode) {
@@ -51,18 +72,18 @@ public class AppearanceModule extends ReactContextBaseJavaModule {
     return NAME;
   }
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
+  @Override
   public String getColorScheme() {
     mColorScheme = colorSchemeForCurrentConfiguration(getReactApplicationContext());
     return mColorScheme;
   }
 
   /** Stub */
-  @ReactMethod
+  @Override
   public void addListener(String eventName) {}
 
   /** Stub */
-  @ReactMethod
+  @Override
   public void removeListeners(double count) {}
 
   /*

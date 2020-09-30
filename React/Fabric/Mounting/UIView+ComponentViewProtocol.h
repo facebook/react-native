@@ -27,9 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateEventEmitter:(facebook::react::EventEmitter::Shared const &)eventEmitter;
 
-- (void)updateLocalData:(facebook::react::SharedLocalData)localData
-           oldLocalData:(facebook::react::SharedLocalData)oldLocalData;
-
 - (void)updateState:(facebook::react::State::Shared const &)state
            oldState:(facebook::react::State::Shared const &)oldState;
 

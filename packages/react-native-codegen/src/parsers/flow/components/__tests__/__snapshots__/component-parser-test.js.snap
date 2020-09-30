@@ -457,6 +457,38 @@ Object {
               },
             },
             Object {
+              "name": "processed_color_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "name": "ColorPrimitive",
+                "type": "NativePrimitiveTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "processed_color_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "name": "ColorPrimitive",
+                "type": "NativePrimitiveTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "processed_color_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "name": "ColorPrimitive",
+                "type": "NativePrimitiveTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "processed_color_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "name": "ColorPrimitive",
+                "type": "NativePrimitiveTypeAnnotation",
+              },
+            },
+            Object {
               "name": "point_required",
               "optional": false,
               "typeAnnotation": Object {
@@ -5465,6 +5497,74 @@ Object {
             },
             Object {
               "name": "color_optional_both",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ColorPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "processed_color_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "name": "ColorPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "processed_color_optional_key",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ColorPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "processed_color_optional_value",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ColorPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "processed_color_optional_both",
               "optional": false,
               "typeAnnotation": Object {
                 "properties": Array [

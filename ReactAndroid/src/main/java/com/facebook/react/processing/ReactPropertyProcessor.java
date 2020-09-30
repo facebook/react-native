@@ -348,7 +348,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       if (BOXED_PRIMITIVES.contains(propertyInfo.propertyType)) {
         builder.add("value == null ? null : ");
       }
-      getPropertyExtractor(propertyInfo, builder);
+      getPropertyExtractor(info, propertyInfo, builder);
       builder.addStatement(")");
 
       builder.addStatement("break").unindent();
@@ -359,7 +359,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
   }
 
   private static CodeBlock.Builder getPropertyExtractor(
-      PropertyInfo info, CodeBlock.Builder builder) {
+      ClassInfo classInfo, PropertyInfo info, CodeBlock.Builder builder) {
     TypeName propertyType = info.propertyType;
     if (propertyType.equals(STRING_TYPE)) {
       return builder.add("($L)value", STRING_TYPE);
@@ -394,7 +394,20 @@ public class ReactPropertyProcessor extends AbstractProcessor {
         return builder.add("value == null ? $Lf : ((Double)value).floatValue()", defaultFloat);
       }
     }
-    if (propertyType.equals(TypeName.INT)) {
+    if ("Color".equals(info.mProperty.customType())) {
+      switch (classInfo.getType()) {
+        case VIEW_MANAGER:
+          return builder.add(
+              "value == null ? $L : $T.getColor(value, view.getContext())",
+              info.mProperty.defaultInt(),
+              com.facebook.react.bridge.ColorPropConverter.class);
+        case SHADOW_NODE:
+          return builder.add(
+              "value == null ? $L : $T.getColor(value, node.getThemedContext())",
+              info.mProperty.defaultInt(),
+              com.facebook.react.bridge.ColorPropConverter.class);
+      }
+    } else if (propertyType.equals(TypeName.INT)) {
       return builder.add(
           "value == null ? $L : ((Double)value).intValue()", info.mProperty.defaultInt());
     }

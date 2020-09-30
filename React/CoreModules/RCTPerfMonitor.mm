@@ -17,6 +17,7 @@
 
 #import <React/RCTDevSettings.h>
 
+#import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTFPSGraph.h>
 #import <React/RCTInvalidating.h>
@@ -24,7 +25,6 @@
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUIManager.h>
-#import <React/RCTBridge+Private.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/RCTTurboModule.h>
 
@@ -74,17 +74,18 @@ static BOOL RCTJSCSetOption(const char *option)
 
 static vm_size_t RCTGetResidentMemorySize(void)
 {
-    vm_size_t memoryUsageInByte = 0;
-    task_vm_info_data_t vmInfo;
-    mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
-    kern_return_t kernelReturn = task_info(mach_task_self(), TASK_VM_INFO, (task_info_t) &vmInfo, &count);
-    if(kernelReturn == KERN_SUCCESS) {
-        memoryUsageInByte = (vm_size_t) vmInfo.phys_footprint;
-    }
-    return memoryUsageInByte;
+  vm_size_t memoryUsageInByte = 0;
+  task_vm_info_data_t vmInfo;
+  mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
+  kern_return_t kernelReturn = task_info(mach_task_self(), TASK_VM_INFO, (task_info_t)&vmInfo, &count);
+  if (kernelReturn == KERN_SUCCESS) {
+    memoryUsageInByte = (vm_size_t)vmInfo.phys_footprint;
+  }
+  return memoryUsageInByte;
 }
 
-@interface RCTPerfMonitor : NSObject <RCTBridgeModule, RCTTurboModule, RCTInvalidating, UITableViewDataSource, UITableViewDelegate>
+@interface RCTPerfMonitor
+    : NSObject <RCTBridgeModule, RCTTurboModule, RCTInvalidating, UITableViewDataSource, UITableViewDelegate>
 
 #if __has_include(<React/RCTDevMenu.h>)
 @property (nonatomic, strong, readonly) RCTDevMenuItem *devMenuItem;
@@ -171,20 +172,19 @@ RCT_EXPORT_MODULE()
     if (devSettings.isPerfMonitorShown) {
       [weakSelf show];
     }
-    _devMenuItem =
-    [RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return (devSettings.isPerfMonitorShown) ?
-        @"Hide Perf Monitor" :
-        @"Show Perf Monitor";
-    } handler:^{
-      if (devSettings.isPerfMonitorShown) {
-        [weakSelf hide];
-        devSettings.isPerfMonitorShown = NO;
-      } else {
-        [weakSelf show];
-        devSettings.isPerfMonitorShown = YES;
-      }
-    }];
+    _devMenuItem = [RCTDevMenuItem
+        buttonItemWithTitleBlock:^NSString * {
+          return (devSettings.isPerfMonitorShown) ? @"Hide Perf Monitor" : @"Show Perf Monitor";
+        }
+        handler:^{
+          if (devSettings.isPerfMonitorShown) {
+            [weakSelf hide];
+            devSettings.isPerfMonitorShown = NO;
+          } else {
+            [weakSelf show];
+            devSettings.isPerfMonitorShown = YES;
+          }
+        }];
   }
 
   return _devMenuItem;
@@ -194,8 +194,7 @@ RCT_EXPORT_MODULE()
 - (UIPanGestureRecognizer *)gestureRecognizer
 {
   if (!_gestureRecognizer) {
-    _gestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self
-                                                                 action:@selector(gesture:)];
+    _gestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gesture:)];
   }
 
   return _gestureRecognizer;
@@ -208,16 +207,15 @@ RCT_EXPORT_MODULE()
     _container.layer.borderWidth = 2;
     _container.layer.borderColor = [UIColor lightGrayColor].CGColor;
     [_container addGestureRecognizer:self.gestureRecognizer];
-    [_container addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                             action:@selector(tap)]];
-    
+    [_container addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap)]];
+
     _container.backgroundColor = [UIColor whiteColor];
-    #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
     if (@available(iOS 13.0, *)) {
       _container.backgroundColor = [UIColor systemBackgroundColor];
     }
-    #endif
+#endif
   }
 
   return _container;
@@ -262,8 +260,7 @@ RCT_EXPORT_MODULE()
 - (RCTFPSGraph *)uiGraph
 {
   if (!_uiGraph) {
-    _uiGraph = [[RCTFPSGraph alloc] initWithFrame:CGRectMake(134, 14, 40, 30)
-                                            color:[UIColor lightGrayColor]];
+    _uiGraph = [[RCTFPSGraph alloc] initWithFrame:CGRectMake(134, 14, 40, 30) color:[UIColor lightGrayColor]];
   }
   return _uiGraph;
 }
@@ -271,8 +268,7 @@ RCT_EXPORT_MODULE()
 - (RCTFPSGraph *)jsGraph
 {
   if (!_jsGraph) {
-    _jsGraph = [[RCTFPSGraph alloc] initWithFrame:CGRectMake(178, 14, 40, 30)
-                                            color:[UIColor lightGrayColor]];
+    _jsGraph = [[RCTFPSGraph alloc] initWithFrame:CGRectMake(178, 14, 40, 30) color:[UIColor lightGrayColor]];
   }
   return _jsGraph;
 }
@@ -305,11 +301,10 @@ RCT_EXPORT_MODULE()
 {
   if (!_metrics) {
     _metrics = [[UITableView alloc] initWithFrame:CGRectMake(
-      0,
-      RCTPerfMonitorBarHeight,
-      self.container.frame.size.width,
-      self.container.frame.size.height - RCTPerfMonitorBarHeight
-    )];
+                                                      0,
+                                                      RCTPerfMonitorBarHeight,
+                                                      self.container.frame.size.width,
+                                                      self.container.frame.size.height - RCTPerfMonitorBarHeight)];
     _metrics.dataSource = self;
     _metrics.delegate = self;
     _metrics.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -340,27 +335,20 @@ RCT_EXPORT_MODULE()
   UIWindow *window = RCTSharedApplication().delegate.window;
   [window addSubview:self.container];
 
+  _uiDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(threadUpdate:)];
+  [_uiDisplayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 
-  _uiDisplayLink = [CADisplayLink displayLinkWithTarget:self
-                                               selector:@selector(threadUpdate:)];
-  [_uiDisplayLink addToRunLoop:[NSRunLoop mainRunLoop]
-                       forMode:NSRunLoopCommonModes];
-
-  self.container.frame = (CGRect) {
-    self.container.frame.origin, {
-      self.container.frame.size.width + 44,
-      self.container.frame.size.height
-    }
-  };
+  self.container.frame =
+      (CGRect){self.container.frame.origin, {self.container.frame.size.width + 44, self.container.frame.size.height}};
   [self.container addSubview:self.jsGraph];
   [self.container addSubview:self.jsGraphLabel];
 
-  [_bridge dispatchBlock:^{
-    self->_jsDisplayLink = [CADisplayLink displayLinkWithTarget:self
-                                                       selector:@selector(threadUpdate:)];
-    [self->_jsDisplayLink addToRunLoop:[NSRunLoop currentRunLoop]
-                               forMode:NSRunLoopCommonModes];
-  } queue:RCTJSThread];
+  [_bridge
+      dispatchBlock:^{
+        self->_jsDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(threadUpdate:)];
+        [self->_jsDisplayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+      }
+              queue:RCTJSThread];
 }
 
 - (void)hide
@@ -399,40 +387,28 @@ RCT_EXPORT_MODULE()
   __weak __typeof__(self) weakSelf = self;
   _queue = dispatch_queue_create("com.facebook.react.RCTPerfMonitor", DISPATCH_QUEUE_SERIAL);
   _io = dispatch_io_create(
-    DISPATCH_IO_STREAM,
-    _pipe[0],
-    _queue,
-    ^(__unused int error) {});
+      DISPATCH_IO_STREAM,
+      _pipe[0],
+      _queue,
+      ^(__unused int error){
+      });
 
   dispatch_io_set_low_water(_io, 20);
 
-  dispatch_io_read(
-    _io,
-    0,
-    SIZE_MAX,
-    _queue,
-    ^(__unused bool done, dispatch_data_t data, __unused int error) {
-      if (!data) {
-        return;
+  dispatch_io_read(_io, 0, SIZE_MAX, _queue, ^(__unused bool done, dispatch_data_t data, __unused int error) {
+    if (!data) {
+      return;
     }
 
-      dispatch_data_apply(
-        data,
-        ^bool(
-          __unused dispatch_data_t region,
-          __unused size_t offset,
-          const void *buffer,
-          size_t size
-        ) {
+    dispatch_data_apply(
+        data, ^bool(__unused dispatch_data_t region, __unused size_t offset, const void *buffer, size_t size) {
           write(self->_stderr, buffer, size);
 
-          NSString *log = [[NSString alloc] initWithBytes:buffer
-                                                   length:size
-                                                 encoding:NSUTF8StringEncoding];
+          NSString *log = [[NSString alloc] initWithBytes:buffer length:size encoding:NSUTF8StringEncoding];
           [weakSelf parse:log];
           return true;
         });
-    });
+  });
 }
 
 - (void)stopLogs
@@ -446,10 +422,9 @@ RCT_EXPORT_MODULE()
   static NSRegularExpression *GCRegex;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    NSString *pattern = @"\\[GC: [\\d\\.]+ \\wb => (Eden|Full)Collection, (?:Skipped copying|Did copy), ([\\d\\.]+) \\wb, [\\d.]+ \\ws\\]";
-    GCRegex = [NSRegularExpression regularExpressionWithPattern:pattern
-                                                        options:0
-                                                          error:nil];
+    NSString *pattern =
+        @"\\[GC: [\\d\\.]+ \\wb => (Eden|Full)Collection, (?:Skipped copying|Did copy), ([\\d\\.]+) \\wb, [\\d.]+ \\ws\\]";
+    GCRegex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
   });
 
   if (_remaining) {
@@ -484,31 +459,25 @@ RCT_EXPORT_MODULE()
   }
 
   double mem = (double)RCTGetResidentMemorySize() / 1024 / 1024;
-  self.memory.text  =[NSString stringWithFormat:@"RAM\n%.2lf\nMB", mem];
+  self.memory.text = [NSString stringWithFormat:@"RAM\n%.2lf\nMB", mem];
   self.heap.text = [NSString stringWithFormat:@"JSC\n%.2lf\nMB", (double)_heapSize / 1024];
-  self.views.text = [NSString stringWithFormat:@"Views\n%lu\n%lu", (unsigned long)visibleViewCount, (unsigned long)viewCount];
+  self.views.text =
+      [NSString stringWithFormat:@"Views\n%lu\n%lu", (unsigned long)visibleViewCount, (unsigned long)viewCount];
 
   __weak __typeof__(self) weakSelf = self;
-  dispatch_after(
-    dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
-    dispatch_get_main_queue(),
-    ^{
-      __strong __typeof__(weakSelf) strongSelf = weakSelf;
-      if (strongSelf && strongSelf->_container.superview) {
-        [strongSelf updateStats];
-      }
-    });
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    __strong __typeof__(weakSelf) strongSelf = weakSelf;
+    if (strongSelf && strongSelf->_container.superview) {
+      [strongSelf updateStats];
+    }
+  });
 }
 
 - (void)gesture:(UIPanGestureRecognizer *)gestureRecognizer
 {
   CGPoint translation = [gestureRecognizer translationInView:self.container.superview];
-  self.container.center = CGPointMake(
-    self.container.center.x + translation.x,
-    self.container.center.y + translation.y
-  );
-  [gestureRecognizer setTranslation:CGPointMake(0, 0)
-                             inView:self.container.superview];
+  self.container.center = CGPointMake(self.container.center.x + translation.x, self.container.center.y + translation.y);
+  [gestureRecognizer setTranslation:CGPointMake(0, 0) inView:self.container.superview];
 }
 
 - (void)tap
@@ -521,11 +490,12 @@ RCT_EXPORT_MODULE()
     [_metrics reloadData];
   }
 
-  [UIView animateWithDuration:.25 animations:^{
-    CGRect tmp = self.container.frame;
-    self.container.frame = self->_storedMonitorFrame;
-    self->_storedMonitorFrame = tmp;
-  }];
+  [UIView animateWithDuration:.25
+                   animations:^{
+                     CGRect tmp = self.container.frame;
+                     self.container.frame = self->_storedMonitorFrame;
+                     self->_storedMonitorFrame = tmp;
+                   }];
 }
 
 - (void)threadUpdate:(CADisplayLink *)displayLink
@@ -541,7 +511,7 @@ RCT_EXPORT_MODULE()
   RCTPerformanceLogger *performanceLogger = [_bridge performanceLogger];
   NSArray<NSNumber *> *values = [performanceLogger valuesForTags];
   for (NSString *label in [performanceLogger labelsForTags]) {
-    long long value = values[i+1].longLongValue - values[i].longLongValue;
+    long long value = values[i + 1].longLongValue - values[i].longLongValue;
     NSString *unit = @"ms";
     if ([label hasSuffix:@"Size"]) {
       unit = @"b";
@@ -561,14 +531,12 @@ RCT_EXPORT_MODULE()
   return 1;
 }
 
-- (NSInteger)tableView:(__unused UITableView *)tableView
- numberOfRowsInSection:(__unused NSInteger)section
+- (NSInteger)tableView:(__unused UITableView *)tableView numberOfRowsInSection:(__unused NSInteger)section
 {
   return _perfLoggerMarks.count;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView
-         cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:RCTPerfMonitorCellIdentifier
                                                           forIndexPath:indexPath];
@@ -586,8 +554,7 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - UITableViewDelegate
 
-- (CGFloat)tableView:(__unused UITableView *)tableView
-heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath
+- (CGFloat)tableView:(__unused UITableView *)tableView heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath
 {
   return 20;
 }
@@ -596,7 +563,8 @@ heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath
 
 #endif
 
-Class RCTPerfMonitorCls(void) {
+Class RCTPerfMonitorCls(void)
+{
 #if RCT_DEV
   return RCTPerfMonitor.class;
 #else

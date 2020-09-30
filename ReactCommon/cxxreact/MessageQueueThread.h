@@ -17,12 +17,13 @@ namespace react {
 class MessageQueueThread {
  public:
   virtual ~MessageQueueThread() {}
-  virtual void runOnQueue(std::function<void()>&&) = 0;
+  virtual void runOnQueue(std::function<void()> &&) = 0;
   // runOnQueueSync and quitSynchronous are dangerous.  They should only be
   // used for initialization and cleanup.
-  virtual void runOnQueueSync(std::function<void()>&&) = 0;
+  virtual void runOnQueueSync(std::function<void()> &&) = 0;
   // Once quitSynchronous() returns, no further work should run on the queue.
   virtual void quitSynchronous() = 0;
 };
 
-}}
+} // namespace react
+} // namespace facebook

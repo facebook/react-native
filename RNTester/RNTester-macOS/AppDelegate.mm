@@ -18,6 +18,8 @@
 #import <ReactCommon/TurboModule.h>
 #import "../NativeModuleExample/ScreenshotMacOS.h"
 
+#import <ReactCommon/RCTTurboModuleManager.h>
+
 NSString *kBundleNameJS = @"RNTesterApp";
 
 @interface AppDelegate () <RCTCxxBridgeDelegate, NSUserNotificationCenterDelegate>
@@ -91,7 +93,8 @@ NSString *kBundleNameJS = @"RNTesterApp";
     if (strongSelf) {
       strongSelf->_turboModuleManagerDelegate = [ScreenshotManagerTurboModuleManagerDelegate new];
       strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
-                                                                             delegate:strongSelf->_turboModuleManagerDelegate];
+                                                                             delegate:strongSelf->_turboModuleManagerDelegate
+                                                                            jsInvoker:bridge.jsCallInvoker];
       [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
     }
   });

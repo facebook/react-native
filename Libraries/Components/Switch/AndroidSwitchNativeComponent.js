@@ -11,7 +11,6 @@
 'use strict';
 
 import * as React from 'react';
-import type {NativeOrDynamicColorType} from '../../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 import type {
   WithDefault,
@@ -22,7 +21,7 @@ import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativ
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ProcessedColorValue} from '../../StyleSheet/processColor'; // TODO(macOS ISS#2323203)
 import type {ViewProps} from '../View/ViewPropTypes';
 
 type SwitchChangeEvent = $ReadOnly<{|
@@ -35,13 +34,13 @@ type NativeProps = $ReadOnly<{|
   // Props
   disabled?: WithDefault<boolean, false>,
   enabled?: WithDefault<boolean, true>,
-  thumbColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  trackColorForFalse?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  trackColorForTrue?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+  thumbColor?: ?(string | ProcessedColorValue), // TODO(macOS ISS#2323203)
+  trackColorForFalse?: ?(string | ProcessedColorValue), // TODO(macOS ISS#2323203)
+  trackColorForTrue?: ?(string | ProcessedColorValue), // TODO(macOS ISS#2323203)
   value?: WithDefault<boolean, false>,
   on?: WithDefault<boolean, false>,
-  thumbTintColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  trackTintColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+  thumbTintColor?: ?(string | ProcessedColorValue), // TODO(macOS ISS#2323203)
+  trackTintColor?: ?(string | ProcessedColorValue), // TODO(macOS ISS#2323203)
 
   // Events
   onChange?: BubblingEventHandler<SwitchChangeEvent>,

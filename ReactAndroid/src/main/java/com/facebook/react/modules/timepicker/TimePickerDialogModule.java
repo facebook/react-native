@@ -17,11 +17,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import com.facebook.fbreact.specs.NativeTimePickerAndroidSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -33,7 +32,7 @@ import com.facebook.react.module.annotations.ReactModule;
  * the user selects a time.
  */
 @ReactModule(name = TimePickerDialogModule.FRAGMENT_TAG)
-public class TimePickerDialogModule extends ReactContextBaseJavaModule {
+public class TimePickerDialogModule extends NativeTimePickerAndroidSpec {
 
   @VisibleForTesting public static final String FRAGMENT_TAG = "TimePickerAndroid";
 
@@ -87,14 +86,14 @@ public class TimePickerDialogModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void open(@Nullable final ReadableMap options, Promise promise) {
 
     Activity raw_activity = getCurrentActivity();
     if (raw_activity == null || !(raw_activity instanceof FragmentActivity)) {
       promise.reject(
-        ERROR_NO_ACTIVITY,
-        "Tried to open a DatePicker dialog while not attached to a FragmentActivity");
+          ERROR_NO_ACTIVITY,
+          "Tried to open a DatePicker dialog while not attached to a FragmentActivity");
       return;
     }
 

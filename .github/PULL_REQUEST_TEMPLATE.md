@@ -23,7 +23,9 @@ If you are making a new change then one of the following should be done:
 
 ## Changelog
 
-<!-- Help reviewers and the release process by writing your own changelog entry. See https://github.com/facebook/react-native/wiki/Changelog for an example. -->
+<!-- Help reviewers and the release process by writing your own changelog entry. For an example, see:
+https://github.com/facebook/react-native/wiki/Changelog
+-->
 
 [CATEGORY] [TYPE] - Message
 

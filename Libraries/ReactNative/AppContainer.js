@@ -14,7 +14,6 @@ const EmitterSubscription = require('../vendor/emitter/EmitterSubscription');
 const PropTypes = require('prop-types');
 const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
 const React = require('react');
-const ReactNative = require('../Renderer/shims/ReactNative');
 const RootTagContext = require('./RootTagContext');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
@@ -68,14 +67,11 @@ class AppContainer extends React.Component<Props, State> {
             const Inspector = require('../Inspector/Inspector');
             const inspector = this.state.inspector ? null : (
               <Inspector
-                inspectedViewTag={ReactNative.findNodeHandle(this._mainRef)}
-                onRequestRerenderApp={updateInspectedViewTag => {
+                inspectedView={this._mainRef}
+                onRequestRerenderApp={updateInspectedView => {
                   this.setState(
                     s => ({mainKey: s.mainKey + 1}),
-                    () =>
-                      updateInspectedViewTag(
-                        ReactNative.findNodeHandle(this._mainRef),
-                      ),
+                    () => updateInspectedView(this._mainRef),
                   );
                 }}
               />
@@ -94,14 +90,15 @@ class AppContainer extends React.Component<Props, State> {
   }
 
   render(): React.Node {
-    let yellowBox = null;
+    let logBox = null;
     if (__DEV__) {
       if (
         !global.__RCTProfileIsProfiling &&
         !this.props.internal_excludeLogBox
       ) {
-        const YellowBox = require('../YellowBox/YellowBox');
-        yellowBox = <YellowBox />;
+        const LogBoxNotificationContainer = require('../LogBox/LogBoxNotificationContainer')
+          .default;
+        logBox = <LogBoxNotificationContainer />;
       }
     }
 
@@ -135,7 +132,7 @@ class AppContainer extends React.Component<Props, State> {
         <View style={styles.appContainer} pointerEvents="box-none">
           {!this.state.hasError && innerView}
           {this.state.inspector}
-          {yellowBox}
+          {logBox}
         </View>
       </RootTagContext.Provider>
     );
@@ -150,8 +147,8 @@ const styles = StyleSheet.create({
 
 if (__DEV__) {
   if (!global.__RCTProfileIsProfiling) {
-    const YellowBox = require('../YellowBox/YellowBox');
-    YellowBox.install();
+    const LogBox = require('../LogBox/LogBox');
+    LogBox.install();
   }
 }
 

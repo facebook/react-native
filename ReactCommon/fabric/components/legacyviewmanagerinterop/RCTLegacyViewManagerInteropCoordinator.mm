@@ -41,7 +41,7 @@ using namespace facebook::react;
       __typeof(self) strongSelf = weakSelf;
       InterceptorBlock block = [strongSelf->_eventInterceptors objectForKey:reactTag];
       if (block) {
-        block(std::string([RCTNormalizeInputEventName(eventName) UTF8String]), convertIdToFollyDynamic(event));
+        block(std::string([RCTNormalizeInputEventName(eventName) UTF8String]), convertIdToFollyDynamic(event ?: @{}));
       }
     };
   }

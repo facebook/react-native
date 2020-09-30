@@ -40,19 +40,22 @@ RCT_NUMBER_CONVERTER(NSUInteger, unsignedIntegerValue)
  * representable json values that require no conversion.
  */
 #if RCT_DEBUG
-#define RCT_JSON_CONVERTER(type)           \
-+ (type *)type:(id)json                    \
-{                                          \
-  if ([json isKindOfClass:[type class]]) { \
-    return json;                           \
-  } else if (json) {                       \
-    RCTLogConvertError(json, @#type);      \
-  }                                        \
-  return nil;                              \
-}
+#define RCT_JSON_CONVERTER(type)             \
+  +(type *)type : (id)json                   \
+  {                                          \
+    if ([json isKindOfClass:[type class]]) { \
+      return json;                           \
+    } else if (json) {                       \
+      RCTLogConvertError(json, @ #type);     \
+    }                                        \
+    return nil;                              \
+  }
 #else
-#define RCT_JSON_CONVERTER(type)           \
-+ (type *)type:(id)json { return json; }
+#define RCT_JSON_CONVERTER(type) \
+  +(type *)type : (id)json       \
+  {                              \
+    return json;                 \
+  }
 #endif
 
 RCT_JSON_CONVERTER(NSArray)
@@ -79,7 +82,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
 
 + (NSURL *)NSURL:(id)json
 {
-  NSString *path = [self NSString:json];
+  NSString *path = [self NSString:RCTNilIfNull(json)];
   if (!path) {
     return nil;
   }
@@ -120,20 +123,22 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
       RCTLogConvertError(json, @"a valid URL");
     }
     return URL;
-  }
-  @catch (__unused NSException *e) {
+  } @catch (__unused NSException *e) {
     RCTLogConvertError(json, @"a valid URL");
     return nil;
   }
 }
 
-RCT_ENUM_CONVERTER(NSURLRequestCachePolicy, (@{
-                                               @"default": @(NSURLRequestUseProtocolCachePolicy),
-                                               @"reload": @(NSURLRequestReloadIgnoringLocalCacheData),
-                                               @"force-cache": @(NSURLRequestReturnCacheDataElseLoad),
-                                               @"only-if-cached": @(NSURLRequestReturnCacheDataDontLoad),
-                                               }), NSURLRequestUseProtocolCachePolicy, integerValue)
-
+RCT_ENUM_CONVERTER(
+    NSURLRequestCachePolicy,
+    (@{
+      @"default" : @(NSURLRequestUseProtocolCachePolicy),
+      @"reload" : @(NSURLRequestReloadIgnoringLocalCacheData),
+      @"force-cache" : @(NSURLRequestReturnCacheDataElseLoad),
+      @"only-if-cached" : @(NSURLRequestReturnCacheDataDontLoad),
+    }),
+    NSURLRequestUseProtocolCachePolicy,
+    integerValue)
 
 + (NSURLRequest *)NSURLRequest:(id)json
 {
@@ -159,7 +164,8 @@ RCT_ENUM_CONVERTER(NSURLRequestCachePolicy, (@{
     NSString *method = [self NSString:json[@"method"]].uppercaseString ?: @"GET";
     NSURLRequestCachePolicy cachePolicy = [self NSURLRequestCachePolicy:json[@"cache"]];
     NSDictionary *headers = [self NSDictionary:json[@"headers"]];
-    if ([method isEqualToString:@"GET"] && headers == nil && body == nil && cachePolicy == NSURLRequestUseProtocolCachePolicy) {
+    if ([method isEqualToString:@"GET"] && headers == nil && body == nil &&
+        cachePolicy == NSURLRequestUseProtocolCachePolicy) {
       return [NSURLRequest requestWithURL:URL];
     }
 
@@ -167,8 +173,10 @@ RCT_ENUM_CONVERTER(NSURLRequestCachePolicy, (@{
       __block BOOL allHeadersAreStrings = YES;
       [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id header, BOOL *stop) {
         if (![header isKindOfClass:[NSString class]]) {
-          RCTLogError(@"Values of HTTP headers passed must be  of type string. "
-                      "Value of header '%@' is not a string.", key);
+          RCTLogError(
+              @"Values of HTTP headers passed must be  of type string. "
+               "Value of header '%@' is not a string.",
+              key);
           allHeadersAreStrings = NO;
           *stop = YES;
         }
@@ -221,8 +229,10 @@ RCT_ENUM_CONVERTER(NSURLRequestCachePolicy, (@{
     });
     NSDate *date = [formatter dateFromString:json];
     if (!date) {
-      RCTLogError(@"JSON String '%@' could not be interpreted as a date. "
-                  "Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ", json);
+      RCTLogError(
+          @"JSON String '%@' could not be interpreted as a date. "
+           "Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ",
+          json);
     }
     return date;
   } else if (json) {
@@ -265,12 +275,15 @@ NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNum
     return defaultValue;
   }
   if (RCT_DEBUG && ![json isKindOfClass:[NSString class]]) {
-    RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@",
-                typeName, [json classForCoder], json);
+    RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@", typeName, [json classForCoder], json);
   }
   id value = mapping[json];
   if (RCT_DEBUG && !value && [json description].length > 0) {
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, [[mapping allKeys] sortedArrayUsingSelector: @selector(caseInsensitiveCompare:)]);
+    RCTLogError(
+        @"Invalid %s '%@'. should be one of: %@",
+        typeName,
+        json,
+        [[mapping allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]);
   }
   return value ?: defaultValue;
 }
@@ -291,71 +304,107 @@ NSNumber *RCTConvertMultiEnumValue(const char *typeName, NSDictionary *mapping, 
   return RCTConvertEnumValue(typeName, mapping, defaultValue, json);
 }
 
-RCT_ENUM_CONVERTER(NSLineBreakMode, (@{
-  @"clip": @(NSLineBreakByClipping),
-  @"head": @(NSLineBreakByTruncatingHead),
-  @"tail": @(NSLineBreakByTruncatingTail),
-  @"middle": @(NSLineBreakByTruncatingMiddle),
-  @"wordWrapping": @(NSLineBreakByWordWrapping),
-}), NSLineBreakByTruncatingTail, integerValue)
+RCT_ENUM_CONVERTER(
+    NSLineBreakMode,
+    (@{
+      @"clip" : @(NSLineBreakByClipping),
+      @"head" : @(NSLineBreakByTruncatingHead),
+      @"tail" : @(NSLineBreakByTruncatingTail),
+      @"middle" : @(NSLineBreakByTruncatingMiddle),
+      @"wordWrapping" : @(NSLineBreakByWordWrapping),
+    }),
+    NSLineBreakByTruncatingTail,
+    integerValue)
 
-RCT_ENUM_CONVERTER(NSTextAlignment, (@{
-  @"auto": @(NSTextAlignmentNatural),
-  @"left": @(NSTextAlignmentLeft),
-  @"center": @(NSTextAlignmentCenter),
-  @"right": @(NSTextAlignmentRight),
-  @"justify": @(NSTextAlignmentJustified),
-}), NSTextAlignmentNatural, integerValue)
+RCT_ENUM_CONVERTER(
+    NSTextAlignment,
+    (@{
+      @"auto" : @(NSTextAlignmentNatural),
+      @"left" : @(NSTextAlignmentLeft),
+      @"center" : @(NSTextAlignmentCenter),
+      @"right" : @(NSTextAlignmentRight),
+      @"justify" : @(NSTextAlignmentJustified),
+    }),
+    NSTextAlignmentNatural,
+    integerValue)
 
-RCT_ENUM_CONVERTER(NSUnderlineStyle, (@{
-  @"solid": @(NSUnderlineStyleSingle),
-  @"double": @(NSUnderlineStyleDouble),
-  @"dotted": @(NSUnderlinePatternDot | NSUnderlineStyleSingle),
-  @"dashed": @(NSUnderlinePatternDash | NSUnderlineStyleSingle),
-}), NSUnderlineStyleSingle, integerValue)
+RCT_ENUM_CONVERTER(
+    NSUnderlineStyle,
+    (@{
+      @"solid" : @(NSUnderlineStyleSingle),
+      @"double" : @(NSUnderlineStyleDouble),
+      @"dotted" : @(NSUnderlinePatternDot | NSUnderlineStyleSingle),
+      @"dashed" : @(NSUnderlinePatternDash | NSUnderlineStyleSingle),
+    }),
+    NSUnderlineStyleSingle,
+    integerValue)
 
-RCT_ENUM_CONVERTER(RCTBorderStyle, (@{
-  @"solid": @(RCTBorderStyleSolid),
-  @"dotted": @(RCTBorderStyleDotted),
-  @"dashed": @(RCTBorderStyleDashed),
-}), RCTBorderStyleSolid, integerValue)
+RCT_ENUM_CONVERTER(
+    RCTBorderStyle,
+    (@{
+      @"solid" : @(RCTBorderStyleSolid),
+      @"dotted" : @(RCTBorderStyleDotted),
+      @"dashed" : @(RCTBorderStyleDashed),
+    }),
+    RCTBorderStyleSolid,
+    integerValue)
 
-RCT_ENUM_CONVERTER(RCTTextDecorationLineType, (@{
-  @"none": @(RCTTextDecorationLineTypeNone),
-  @"underline": @(RCTTextDecorationLineTypeUnderline),
-  @"line-through": @(RCTTextDecorationLineTypeStrikethrough),
-  @"underline line-through": @(RCTTextDecorationLineTypeUnderlineStrikethrough),
-}), RCTTextDecorationLineTypeNone, integerValue)
+RCT_ENUM_CONVERTER(
+    RCTTextDecorationLineType,
+    (@{
+      @"none" : @(RCTTextDecorationLineTypeNone),
+      @"underline" : @(RCTTextDecorationLineTypeUnderline),
+      @"line-through" : @(RCTTextDecorationLineTypeStrikethrough),
+      @"underline line-through" : @(RCTTextDecorationLineTypeUnderlineStrikethrough),
+    }),
+    RCTTextDecorationLineTypeNone,
+    integerValue)
 
 // [TODO(OSS Candidate ISS#2710739)
-RCT_ENUM_CONVERTER(RCTFontSmoothing, (@{
-  @"auto": @(RCTFontSmoothingAuto),
-  @"none": @(RCTFontSmoothingNone),
-  @"antialiased": @(RCTFontSmoothingAntialiased),
-  @"subpixel-antialiased": @(RCTFontSmoothingSubpixelAntialiased),
-}), RCTFontSmoothingAuto, integerValue)
+RCT_ENUM_CONVERTER(
+    RCTFontSmoothing,
+    (@{
+      @"auto": @(RCTFontSmoothingAuto),
+      @"none": @(RCTFontSmoothingNone),
+      @"antialiased": @(RCTFontSmoothingAntialiased),
+      @"subpixel-antialiased": @(RCTFontSmoothingSubpixelAntialiased),
+    }),
+    RCTFontSmoothingAuto,
+    integerValue)
 // ]TODO(OSS Candidate ISS#2710739)
 
-RCT_ENUM_CONVERTER(NSWritingDirection, (@{
-  @"auto": @(NSWritingDirectionNatural),
-  @"ltr": @(NSWritingDirectionLeftToRight),
-  @"rtl": @(NSWritingDirectionRightToLeft),
-}), NSWritingDirectionNatural, integerValue)
+RCT_ENUM_CONVERTER(
+    NSWritingDirection,
+    (@{
+      @"auto" : @(NSWritingDirectionNatural),
+      @"ltr" : @(NSWritingDirectionLeftToRight),
+      @"rtl" : @(NSWritingDirectionRightToLeft),
+    }),
+    NSWritingDirectionNatural,
+    integerValue)
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-RCT_ENUM_CONVERTER(UITextAutocapitalizationType, (@{
-  @"none": @(UITextAutocapitalizationTypeNone),
-  @"words": @(UITextAutocapitalizationTypeWords),
-  @"sentences": @(UITextAutocapitalizationTypeSentences),
-  @"characters": @(UITextAutocapitalizationTypeAllCharacters)
-}), UITextAutocapitalizationTypeSentences, integerValue)
+RCT_ENUM_CONVERTER(
+    UITextAutocapitalizationType,
+    (@{
+      @"none" : @(UITextAutocapitalizationTypeNone),
+      @"words" : @(UITextAutocapitalizationTypeWords),
+      @"sentences" : @(UITextAutocapitalizationTypeSentences),
+      @"characters" : @(UITextAutocapitalizationTypeAllCharacters)
+    }),
+    UITextAutocapitalizationTypeSentences,
+    integerValue)
 
-RCT_ENUM_CONVERTER(UITextFieldViewMode, (@{
-  @"never": @(UITextFieldViewModeNever),
-  @"while-editing": @(UITextFieldViewModeWhileEditing),
-  @"unless-editing": @(UITextFieldViewModeUnlessEditing),
-  @"always": @(UITextFieldViewModeAlways),
-}), UITextFieldViewModeNever, integerValue)
+RCT_ENUM_CONVERTER(
+    UITextFieldViewMode,
+    (@{
+      @"never" : @(UITextFieldViewModeNever),
+      @"while-editing" : @(UITextFieldViewModeWhileEditing),
+      @"unless-editing" : @(UITextFieldViewModeUnlessEditing),
+      @"always" : @(UITextFieldViewModeAlways),
+    }),
+    UITextFieldViewModeNever,
+    integerValue)
 
 + (UIKeyboardType)UIKeyboardType:(id)json RCT_DYNAMIC
 {
@@ -363,104 +412,125 @@ RCT_ENUM_CONVERTER(UITextFieldViewMode, (@{
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     NSMutableDictionary<NSString *, NSNumber *> *temporaryMapping = [NSMutableDictionary dictionaryWithDictionary:@{
-          @"default": @(UIKeyboardTypeDefault),
-          @"ascii-capable": @(UIKeyboardTypeASCIICapable),
-          @"numbers-and-punctuation": @(UIKeyboardTypeNumbersAndPunctuation),
-          @"url": @(UIKeyboardTypeURL),
-          @"number-pad": @(UIKeyboardTypeNumberPad),
-          @"phone-pad": @(UIKeyboardTypePhonePad),
-          @"name-phone-pad": @(UIKeyboardTypeNamePhonePad),
-          @"email-address": @(UIKeyboardTypeEmailAddress),
-          @"decimal-pad": @(UIKeyboardTypeDecimalPad),
-          @"twitter": @(UIKeyboardTypeTwitter),
-          @"web-search": @(UIKeyboardTypeWebSearch),
-          // Added for Android compatibility
-          @"numeric": @(UIKeyboardTypeDecimalPad),
-        }];
-    // TODO: T56867629
-    if (@available(iOS 10.0, tvOS 10.0, *)) {
-      temporaryMapping[@"ascii-capable-number-pad"] = @(UIKeyboardTypeASCIICapableNumberPad);
-    }
+      @"default" : @(UIKeyboardTypeDefault),
+      @"ascii-capable" : @(UIKeyboardTypeASCIICapable),
+      @"numbers-and-punctuation" : @(UIKeyboardTypeNumbersAndPunctuation),
+      @"url" : @(UIKeyboardTypeURL),
+      @"number-pad" : @(UIKeyboardTypeNumberPad),
+      @"phone-pad" : @(UIKeyboardTypePhonePad),
+      @"name-phone-pad" : @(UIKeyboardTypeNamePhonePad),
+      @"email-address" : @(UIKeyboardTypeEmailAddress),
+      @"decimal-pad" : @(UIKeyboardTypeDecimalPad),
+      @"twitter" : @(UIKeyboardTypeTwitter),
+      @"web-search" : @(UIKeyboardTypeWebSearch),
+      // Added for Android compatibility
+      @"numeric" : @(UIKeyboardTypeDecimalPad),
+    }];
+    temporaryMapping[@"ascii-capable-number-pad"] = @(UIKeyboardTypeASCIICapableNumberPad);
     mapping = temporaryMapping;
   });
-  
+
   UIKeyboardType type = RCTConvertEnumValue("UIKeyboardType", mapping, @(UIKeyboardTypeDefault), json).integerValue;
   return type;
 }
 
 #if !TARGET_OS_TV
-RCT_MULTI_ENUM_CONVERTER(UIDataDetectorTypes, (@{
-  @"phoneNumber": @(UIDataDetectorTypePhoneNumber),
-  @"link": @(UIDataDetectorTypeLink),
-  @"address": @(UIDataDetectorTypeAddress),
-  @"calendarEvent": @(UIDataDetectorTypeCalendarEvent),
-  @"none": @(UIDataDetectorTypeNone),
-  @"all": @(UIDataDetectorTypeAll),
-}), UIDataDetectorTypePhoneNumber, unsignedLongLongValue)
+RCT_MULTI_ENUM_CONVERTER(
+    UIDataDetectorTypes,
+    (@{
+      @"phoneNumber" : @(UIDataDetectorTypePhoneNumber),
+      @"link" : @(UIDataDetectorTypeLink),
+      @"address" : @(UIDataDetectorTypeAddress),
+      @"calendarEvent" : @(UIDataDetectorTypeCalendarEvent),
+      @"none" : @(UIDataDetectorTypeNone),
+      @"all" : @(UIDataDetectorTypeAll),
+    }),
+    UIDataDetectorTypePhoneNumber,
+    unsignedLongLongValue)
 
 #if WEBKIT_IOS_10_APIS_AVAILABLE
-RCT_MULTI_ENUM_CONVERTER(WKDataDetectorTypes, (@{
- @"phoneNumber": @(WKDataDetectorTypePhoneNumber),
- @"link": @(WKDataDetectorTypeLink),
- @"address": @(WKDataDetectorTypeAddress),
- @"calendarEvent": @(WKDataDetectorTypeCalendarEvent),
- @"trackingNumber": @(WKDataDetectorTypeTrackingNumber),
- @"flightNumber": @(WKDataDetectorTypeFlightNumber),
- @"lookupSuggestion": @(WKDataDetectorTypeLookupSuggestion),
- @"none": @(WKDataDetectorTypeNone),
- @"all": @(WKDataDetectorTypeAll),
- }), WKDataDetectorTypePhoneNumber, unsignedLongLongValue)
- #endif // WEBKIT_IOS_10_APIS_AVAILABLE
+RCT_MULTI_ENUM_CONVERTER(
+    WKDataDetectorTypes,
+    (@{
+      @"phoneNumber" : @(WKDataDetectorTypePhoneNumber),
+      @"link" : @(WKDataDetectorTypeLink),
+      @"address" : @(WKDataDetectorTypeAddress),
+      @"calendarEvent" : @(WKDataDetectorTypeCalendarEvent),
+      @"trackingNumber" : @(WKDataDetectorTypeTrackingNumber),
+      @"flightNumber" : @(WKDataDetectorTypeFlightNumber),
+      @"lookupSuggestion" : @(WKDataDetectorTypeLookupSuggestion),
+      @"none" : @(WKDataDetectorTypeNone),
+      @"all" : @(WKDataDetectorTypeAll),
+    }),
+    WKDataDetectorTypePhoneNumber,
+    unsignedLongLongValue)
+#endif // WEBKIT_IOS_10_APIS_AVAILABLE
 
- #endif // !TARGET_OS_TV
+#endif // !TARGET_OS_TV
 
-RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{
-  @"default": @(UIKeyboardAppearanceDefault),
-  @"light": @(UIKeyboardAppearanceLight),
-  @"dark": @(UIKeyboardAppearanceDark),
-}), UIKeyboardAppearanceDefault, integerValue)
+RCT_ENUM_CONVERTER(
+    UIKeyboardAppearance,
+    (@{
+      @"default" : @(UIKeyboardAppearanceDefault),
+      @"light" : @(UIKeyboardAppearanceLight),
+      @"dark" : @(UIKeyboardAppearanceDark),
+    }),
+    UIKeyboardAppearanceDefault,
+    integerValue)
 
-RCT_ENUM_CONVERTER(UIReturnKeyType, (@{
-  @"default": @(UIReturnKeyDefault),
-  @"go": @(UIReturnKeyGo),
-  @"google": @(UIReturnKeyGoogle),
-  @"join": @(UIReturnKeyJoin),
-  @"next": @(UIReturnKeyNext),
-  @"route": @(UIReturnKeyRoute),
-  @"search": @(UIReturnKeySearch),
-  @"send": @(UIReturnKeySend),
-  @"yahoo": @(UIReturnKeyYahoo),
-  @"done": @(UIReturnKeyDone),
-  @"emergency-call": @(UIReturnKeyEmergencyCall),
-}), UIReturnKeyDefault, integerValue)
+RCT_ENUM_CONVERTER(
+    UIReturnKeyType,
+    (@{
+      @"default" : @(UIReturnKeyDefault),
+      @"go" : @(UIReturnKeyGo),
+      @"google" : @(UIReturnKeyGoogle),
+      @"join" : @(UIReturnKeyJoin),
+      @"next" : @(UIReturnKeyNext),
+      @"route" : @(UIReturnKeyRoute),
+      @"search" : @(UIReturnKeySearch),
+      @"send" : @(UIReturnKeySend),
+      @"yahoo" : @(UIReturnKeyYahoo),
+      @"done" : @(UIReturnKeyDone),
+      @"emergency-call" : @(UIReturnKeyEmergencyCall),
+    }),
+    UIReturnKeyDefault,
+    integerValue)
 
-RCT_ENUM_CONVERTER(UIViewContentMode, (@{
-  @"scale-to-fill": @(UIViewContentModeScaleToFill),
-  @"scale-aspect-fit": @(UIViewContentModeScaleAspectFit),
-  @"scale-aspect-fill": @(UIViewContentModeScaleAspectFill),
-  @"redraw": @(UIViewContentModeRedraw),
-  @"center": @(UIViewContentModeCenter),
-  @"top": @(UIViewContentModeTop),
-  @"bottom": @(UIViewContentModeBottom),
-  @"left": @(UIViewContentModeLeft),
-  @"right": @(UIViewContentModeRight),
-  @"top-left": @(UIViewContentModeTopLeft),
-  @"top-right": @(UIViewContentModeTopRight),
-  @"bottom-left": @(UIViewContentModeBottomLeft),
-  @"bottom-right": @(UIViewContentModeBottomRight),
-  // Cross-platform values
-  @"cover": @(UIViewContentModeScaleAspectFill),
-  @"contain": @(UIViewContentModeScaleAspectFit),
-  @"stretch": @(UIViewContentModeScaleToFill),
-}), UIViewContentModeScaleAspectFill, integerValue)
+RCT_ENUM_CONVERTER(
+    UIViewContentMode,
+    (@{
+      @"scale-to-fill" : @(UIViewContentModeScaleToFill),
+      @"scale-aspect-fit" : @(UIViewContentModeScaleAspectFit),
+      @"scale-aspect-fill" : @(UIViewContentModeScaleAspectFill),
+      @"redraw" : @(UIViewContentModeRedraw),
+      @"center" : @(UIViewContentModeCenter),
+      @"top" : @(UIViewContentModeTop),
+      @"bottom" : @(UIViewContentModeBottom),
+      @"left" : @(UIViewContentModeLeft),
+      @"right" : @(UIViewContentModeRight),
+      @"top-left" : @(UIViewContentModeTopLeft),
+      @"top-right" : @(UIViewContentModeTopRight),
+      @"bottom-left" : @(UIViewContentModeBottomLeft),
+      @"bottom-right" : @(UIViewContentModeBottomRight),
+      // Cross-platform values
+      @"cover" : @(UIViewContentModeScaleAspectFill),
+      @"contain" : @(UIViewContentModeScaleAspectFit),
+      @"stretch" : @(UIViewContentModeScaleToFill),
+    }),
+    UIViewContentModeScaleAspectFill,
+    integerValue)
 
 #if !TARGET_OS_TV
-RCT_ENUM_CONVERTER(UIBarStyle, (@{
-  @"default": @(UIBarStyleDefault),
-  @"black": @(UIBarStyleBlack),
-  @"blackOpaque": @(UIBarStyleBlackOpaque),
-  @"blackTranslucent": @(UIBarStyleBlackTranslucent),  
-}), UIBarStyleDefault, integerValue)
+RCT_ENUM_CONVERTER(
+    UIBarStyle,
+    (@{
+      @"default" : @(UIBarStyleDefault),
+      @"black" : @(UIBarStyleBlack),
+      @"blackOpaque" : @(UIBarStyleBlackOpaque),
+      @"blackTranslucent" : @(UIBarStyleBlackTranslucent),
+    }),
+    UIBarStyleDefault,
+    integerValue)
 #endif
 #else // [TODO(macOS ISS#2323203)
 RCT_MULTI_ENUM_CONVERTER(NSTextCheckingTypes, (@{
@@ -485,7 +555,11 @@ static void convertCGStruct(const char *type, NSArray *fields, CGFloat *result, 
   NSUInteger count = fields.count;
   if ([json isKindOfClass:[NSArray class]]) {
     if (RCT_DEBUG && [json count] != count) {
-      RCTLogError(@"Expected array with count %llu, but count is %llu: %@", (unsigned long long)count, (unsigned long long)[json count], json);
+      RCTLogError(
+          @"Expected array with count %llu, but count is %llu: %@",
+          (unsigned long long)count,
+          (unsigned long long)[json count],
+          json);
     } else {
       for (NSUInteger i = 0; i < count; i++) {
         result[i] = [RCTConvert CGFloat:RCTNilIfNull(json[i])];
@@ -504,49 +578,54 @@ static void convertCGStruct(const char *type, NSArray *fields, CGFloat *result, 
  * This macro is used for creating converter functions for structs that consist
  * of a number of CGFloat properties, such as CGPoint, CGRect, etc.
  */
-#define RCT_CGSTRUCT_CONVERTER(type, values)                \
-+ (type)type:(id)json                                       \
-{                                                           \
-  static NSArray *fields;                                   \
-  static dispatch_once_t onceToken;                         \
-  dispatch_once(&onceToken, ^{                              \
-    fields = values;                                        \
-  });                                                       \
-  type result;                                              \
-  convertCGStruct(#type, fields, (CGFloat *)&result, json); \
-  return result;                                            \
-}
+#define RCT_CGSTRUCT_CONVERTER(type, values)                  \
+  +(type)type : (id)json                                      \
+  {                                                           \
+    static NSArray *fields;                                   \
+    static dispatch_once_t onceToken;                         \
+    dispatch_once(&onceToken, ^{                              \
+      fields = values;                                        \
+    });                                                       \
+    type result;                                              \
+    convertCGStruct(#type, fields, (CGFloat *)&result, json); \
+    return result;                                            \
+  }
 
 RCT_CUSTOM_CONVERTER(CGFloat, CGFloat, [self double:json])
 
-RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]))
-RCT_CGSTRUCT_CONVERTER(CGSize, (@[@"width", @"height"]))
-RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"width", @"height"]))
-RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[@"top", @"left", @"bottom", @"right"]))
+RCT_CGSTRUCT_CONVERTER(CGPoint, (@[ @"x", @"y" ]))
+RCT_CGSTRUCT_CONVERTER(CGSize, (@[ @"width", @"height" ]))
+RCT_CGSTRUCT_CONVERTER(CGRect, (@[ @"x", @"y", @"width", @"height" ]))
+RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[ @"top", @"left", @"bottom", @"right" ]))
 
-RCT_ENUM_CONVERTER(CGLineJoin, (@{
-  @"miter": @(kCGLineJoinMiter),
-  @"round": @(kCGLineJoinRound),
-  @"bevel": @(kCGLineJoinBevel),
-}), kCGLineJoinMiter, intValue)
+RCT_ENUM_CONVERTER(
+    CGLineJoin,
+    (@{
+      @"miter" : @(kCGLineJoinMiter),
+      @"round" : @(kCGLineJoinRound),
+      @"bevel" : @(kCGLineJoinBevel),
+    }),
+    kCGLineJoinMiter,
+    intValue)
 
-RCT_ENUM_CONVERTER(CGLineCap, (@{
-  @"butt": @(kCGLineCapButt),
-  @"round": @(kCGLineCapRound),
-  @"square": @(kCGLineCapSquare),
-}), kCGLineCapButt, intValue)
+RCT_ENUM_CONVERTER(
+    CGLineCap,
+    (@{
+      @"butt" : @(kCGLineCapButt),
+      @"round" : @(kCGLineCapRound),
+      @"square" : @(kCGLineCapSquare),
+    }),
+    kCGLineCapButt,
+    intValue)
 
-RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
-  @"a", @"b", @"c", @"d", @"tx", @"ty"
-]))
+RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[ @"a", @"b", @"c", @"d", @"tx", @"ty" ]))
 
-// [TODO(macOS ISS#2323203)
 static NSString *const RCTFallback = @"fallback";
 static NSString *const RCTFallbackARGB = @"fallback-argb";
 static NSString *const RCTSelector = @"selector";
 static NSString *const RCTIndex = @"index";
 
-/** The following dictionary defines the react-native semantic colors for macos and ios.
+/** The following dictionary defines the react-native semantic colors for ios.
  *  If the value for a given name is empty then the name itself
  *  is used as the UIColor selector.
  *  If the RCTSelector key is present then that value is used for a selector instead
@@ -556,12 +635,12 @@ static NSString *const RCTIndex = @"index";
  *  If the RCTIndex key is present then object returned from UIColor is an
  *  NSArray and the object at index RCTIndex is to be used.
  */
-static NSDictionary<NSString *, NSDictionary *>* RCTSemanticColorsMap()
+static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
 {
   static NSDictionary<NSString *, NSDictionary *> *colorMap = nil;
   if (colorMap == nil) {
-    colorMap = @{
-#if TARGET_OS_OSX
+    NSMutableDictionary<NSString *, NSDictionary *> *map = [@{
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
       // https://developer.apple.com/documentation/appkit/nscolor/ui_element_colors
       // Label Colors
       @"labelColor": @{}, // 10_10
@@ -597,12 +676,12 @@ static NSDictionary<NSString *, NSDictionary *>* RCTSemanticColorsMap()
       // Table Colors
       @"gridColor": @{},
       @"headerTextColor": @{},
-      @"alternatingContentBackgroundColorEven": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
+      @"alternatingEvenContentBackgroundColor": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
         RCTSelector: @"alternatingContentBackgroundColors",
         RCTIndex: @0,
         RCTFallback: @"controlAlternatingRowBackgroundColors"
       },
-      @"alternatingContentBackgroundColorOdd": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
+      @"alternatingOddContentBackgroundColor": @{ // 10_14: Alias for +controlAlternatingRowBackgroundColors
         RCTSelector: @"alternatingContentBackgroundColors",
         RCTIndex: @1,
         RCTFallback: @"controlAlternatingRowBackgroundColors"
@@ -640,130 +719,171 @@ static NSDictionary<NSString *, NSDictionary *>* RCTSemanticColorsMap()
       @"systemPurpleColor": @{}, // 10_10
       @"systemRedColor": @{},    // 10_10
       @"systemYellowColor": @{}, // 10_10
-#else // TARGET_OS_IOS
+#else // ]TODO(macOS ISS#2323203)
       // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
       // Label Colors
-      @"labelColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFF000000) // fallback for iOS<=12: RGBA returned by this semantic color in light mode on iOS 13
+      @"labelColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB :
+            @(0xFF000000) // fallback for iOS<=12: RGBA returned by this semantic color in light mode on iOS 13
       },
-      @"secondaryLabelColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x993c3c43)
+      @"secondaryLabelColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0x993c3c43)
       },
-      @"tertiaryLabelColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x4c3c3c43)
+      @"tertiaryLabelColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0x4c3c3c43)
       },
-      @"quaternaryLabelColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x2d3c3c43)
+      @"quaternaryLabelColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0x2d3c3c43)
       },
       // Fill Colors
-      @"systemFillColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x33787880)
+      @"systemFillColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0x33787880)
       },
-      @"secondarySystemFillColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x28787880)
+      @"secondarySystemFillColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0x28787880)
       },
-      @"tertiarySystemFillColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x1e767680)
+      @"tertiarySystemFillColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0x1e767680)
       },
-      @"quaternarySystemFillColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x14747480)
+      @"quaternarySystemFillColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0x14747480)
       },
       // Text Colors
-      @"placeholderTextColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x4c3c3c43)
+      @"placeholderTextColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0x4c3c3c43)
       },
       // Standard Content Background Colors
-      @"systemBackgroundColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFffffff)
+      @"systemBackgroundColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFFffffff)
       },
-      @"secondarySystemBackgroundColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFf2f2f7)
+      @"secondarySystemBackgroundColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFFf2f2f7)
       },
-      @"tertiarySystemBackgroundColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFffffff)
+      @"tertiarySystemBackgroundColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFFffffff)
       },
       // Grouped Content Background Colors
-      @"systemGroupedBackgroundColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFf2f2f7)
+      @"systemGroupedBackgroundColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFFf2f2f7)
       },
-      @"secondarySystemGroupedBackgroundColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFffffff)
+      @"secondarySystemGroupedBackgroundColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFFffffff)
       },
-      @"tertiarySystemGroupedBackgroundColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFf2f2f7)
+      @"tertiarySystemGroupedBackgroundColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFFf2f2f7)
       },
       // Separator Colors
-      @"separatorColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0x493c3c43)
+      @"separatorColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0x493c3c43)
       },
-      @"opaqueSeparatorColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFc6c6c8)
+      @"opaqueSeparatorColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFFc6c6c8)
       },
       // Link Color
-      @"linkColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFF007aff)
+      @"linkColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFF007aff)
       },
       // Nonadaptable Colors
-      @"darkTextColor": @{},
-      @"lightTextColor": @{},
+      @"darkTextColor" : @{},
+      @"lightTextColor" : @{},
       // https://developer.apple.com/documentation/uikit/uicolor/standard_colors
       // Adaptable Colors
-      @"systemBlueColor": @{},
-      @"systemBrownColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFa2845e)
+      @"systemBlueColor" : @{},
+      @"systemBrownColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFFa2845e)
       },
-      @"systemGreenColor": @{},
-      @"systemIndigoColor": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFF5856d6)
+      @"systemGreenColor" : @{},
+      @"systemIndigoColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFF5856d6)
       },
-      @"systemOrangeColor": @{},
-      @"systemPinkColor": @{},
-      @"systemPurpleColor": @{},
-      @"systemRedColor": @{},
-      @"systemTealColor": @{},
-      @"systemYellowColor": @{},
+      @"systemOrangeColor" : @{},
+      @"systemPinkColor" : @{},
+      @"systemPurpleColor" : @{},
+      @"systemRedColor" : @{},
+      @"systemTealColor" : @{},
+      @"systemYellowColor" : @{},
       // Adaptable Gray Colors
-      @"systemGrayColor": @{},
-      @"systemGray2Color": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFaeaeb2)
+      @"systemGrayColor" : @{},
+      @"systemGray2Color" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFFaeaeb2)
       },
-      @"systemGray3Color": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFc7c7cc)
+      @"systemGray3Color" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFFc7c7cc)
       },
-      @"systemGray4Color": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFd1d1d6)
+      @"systemGray4Color" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFFd1d1d6)
       },
-      @"systemGray5Color": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFe5e5ea)
+      @"systemGray5Color" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFFe5e5ea)
       },
-      @"systemGray6Color": @{ // iOS 13.0
-        RCTFallbackARGB: @(0xFFf2f2f7)
+      @"systemGray6Color" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0xFFf2f2f7)
       },
-#endif
+#endif // TODO(macOS ISS#2323203)
+    } mutableCopy];
+    // The color names are the Objective-C UIColor selector names,
+    // but Swift selector names are valid as well, so make aliases.
+    static NSString *const RCTColorSuffix = @"Color";
+    NSMutableDictionary<NSString *, NSDictionary *> *aliases = [NSMutableDictionary new];
+    for (NSString *objcSelector in map) {
+      RCTAssert([objcSelector hasSuffix:RCTColorSuffix], @"A selector in the color map did not end with the suffix Color.");
+      NSMutableDictionary *entry = [map[objcSelector] mutableCopy];
+      if ([entry objectForKey:RCTSelector] == nil) {
+        entry[RCTSelector] = objcSelector;
+      }
+      NSString *swiftSelector = [objcSelector substringToIndex:[objcSelector length] - [RCTColorSuffix length]];
+      aliases[swiftSelector] = entry;
+    }
+    [map addEntriesFromDictionary:aliases];
 #if DEBUG
+    [map addEntriesFromDictionary:@{
       // The follow exist for Unit Tests
-      @"unitTestFallbackColor": @{
-        RCTFallback: @"gridColor"
+      @"unitTestFallbackColor" : @{RCTFallback : @"gridColor"},
+      @"unitTestFallbackColorIOS" : @{RCTFallback : @"blueColor"},
+      @"unitTestFallbackColorEven" : @{
+        RCTSelector : @"unitTestFallbackColorEven",
+        RCTIndex : @0,
+        RCTFallback : @"controlAlternatingRowBackgroundColors"
       },
-      @"unitTestFallbackColorIOS": @{
-        RCTFallback: @"blueColor"
+      @"unitTestFallbackColorOdd" : @{
+        RCTSelector : @"unitTestFallbackColorOdd",
+        RCTIndex : @1,
+        RCTFallback : @"controlAlternatingRowBackgroundColors"
       },
-      @"unitTestFallbackColorEven": @{
-        RCTSelector: @"unitTestFallbackColorEven",
-        RCTIndex: @0,
-        RCTFallback: @"controlAlternatingRowBackgroundColors"
-      },
-      @"unitTestFallbackColorOdd": @{
-        RCTSelector: @"unitTestFallbackColorOdd",
-        RCTIndex: @1,
-        RCTFallback: @"controlAlternatingRowBackgroundColors"
-      },
+    }];
 #endif
-    };
+    colorMap = [map copy];
   }
+
   return colorMap;
 }
 
+// [TODO(macOS ISS#2323203)
 /** Returns a UIColor based on a semantic color name.
  *  Returns nil if the semantic color name is invalid.
  */
@@ -805,6 +925,7 @@ static RCTUIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
   }
   return color;
 }
+// ]TODO(macOS ISS#2323203)
 
 /** Returns a comma seperated list of the valid semantic color names
  */
@@ -823,6 +944,7 @@ static NSString *RCTSemanticColorNames()
   return names;
 }
 
+// [TODO(macOS ISS#2323203)
 + (RCTUIColor *)NSColor:(id)json
 {
   return [RCTConvert UIColor:json];
@@ -853,12 +975,31 @@ static NSString *RCTSemanticColorNames()
     NSDictionary *dictionary = json;
     id value = nil;
     if ((value = [dictionary objectForKey:@"semantic"])) {
-      NSString *semanticName = value;
-      RCTUIColor *color = RCTColorFromSemanticColorName(semanticName);
-      if (color == nil) {
-        RCTLogConvertError(json, [@"a UIColor.  Expected one of the following values: " stringByAppendingString:RCTSemanticColorNames()]);
+      if ([value isKindOfClass:[NSString class]]) {
+        NSString *semanticName = value;
+        RCTUIColor *color = RCTColorFromSemanticColorName(semanticName);
+        if (color == nil) {
+          RCTLogConvertError(
+              json,
+              [@"a UIColor.  Expected one of the following values: " stringByAppendingString:RCTSemanticColorNames()]);
+        }
+        return color;
+      } else if ([value isKindOfClass:[NSArray class]]) {
+        for (id name in value) {
+          RCTUIColor *color = RCTColorFromSemanticColorName(name);
+          if (color != nil) {
+            return color;
+          }
+        }
+        RCTLogConvertError(
+            json,
+            [@"a UIColor.  None of the names in the array were one of the following values: "
+                stringByAppendingString:RCTSemanticColorNames()]);
+        return nil;
       }
-      return color;
+      RCTLogConvertError(
+          json, @"a UIColor.  Expected either a single name or an array of names but got something else.");
+      return nil;
     } else if ((value = [dictionary objectForKey:@"dynamic"])) {
       NSDictionary *appearances = value;
       id light = [appearances objectForKey:@"light"];
@@ -872,9 +1013,10 @@ static NSString *RCTSemanticColorNames()
 #else
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         if (@available(iOS 13.0, *)) {
-          UIColor *color = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull collection) {
-            return collection.userInterfaceStyle == UIUserInterfaceStyleLight ? lightColor : darkColor;
-          }];
+          UIColor *color =
+              [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(UITraitCollection *_Nonnull collection) {
+                return collection.userInterfaceStyle == UIUserInterfaceStyleDark ? darkColor : lightColor;
+              }];
           return color;
         } else {
 #endif
@@ -883,12 +1025,13 @@ static NSString *RCTSemanticColorNames()
         }
 #endif
 #endif
+// [TODO(macOS ISS#2323203)
       } else {
-        RCTLogConvertError(json, @"a UIColor. Expected a mac dynamic appearance aware color.");
+        RCTLogConvertError(json, @"a UIColor. Expected a dynamic appearance aware color.");
         return nil;
       }
     } else {
-      RCTLogConvertError(json, @"a UIColor. Expected a mac semantic color or dynamic appearance aware color.");
+      RCTLogConvertError(json, @"a UIColor. Expected a semantic color or dynamic appearance aware color.");
       return nil;
     }
 // ]TODO(macOS ISS#2323203)
@@ -908,13 +1051,13 @@ static NSString *RCTSemanticColorNames()
   if (!json) {
     return YGValueUndefined;
   } else if ([json isKindOfClass:[NSNumber class]]) {
-    return (YGValue) { [json floatValue], YGUnitPoint };
+    return (YGValue){[json floatValue], YGUnitPoint};
   } else if ([json isKindOfClass:[NSString class]]) {
-    NSString *s = (NSString *) json;
+    NSString *s = (NSString *)json;
     if ([s isEqualToString:@"auto"]) {
-      return (YGValue) { YGUndefined, YGUnitAuto };
+      return (YGValue){YGUndefined, YGUnitAuto};
     } else if ([s hasSuffix:@"%"]) {
-      return (YGValue) { [[s substringToIndex:s.length] floatValue], YGUnitPercent };
+      return (YGValue){[[s substringToIndex:s.length] floatValue], YGUnitPercent};
     } else {
       RCTLogConvertError(json, @"a YGValue. Did you forget the % or pt suffix?");
     }
@@ -960,7 +1103,11 @@ RCT_ARRAY_CONVERTER(RCTUIColor) // TODO(OSS Candidate ISS#2710739)
 #if RCT_DEBUG
 #define RCT_JSON_ARRAY_CONVERTER_NAMED(type, name) RCT_ARRAY_CONVERTER_NAMED(type, name)
 #else
-#define RCT_JSON_ARRAY_CONVERTER_NAMED(type, name) + (NSArray *)name##Array:(id)json { return json; }
+#define RCT_JSON_ARRAY_CONVERTER_NAMED(type, name) \
+  +(NSArray *)name##Array : (id)json               \
+  {                                                \
+    return json;                                   \
+  }
 #endif
 #define RCT_JSON_ARRAY_CONVERTER(type) RCT_JSON_ARRAY_CONVERTER_NAMED(type, type)
 
@@ -1062,85 +1209,115 @@ static id RCTConvertPropertyListValue(id json)
   return RCTConvertPropertyListValue(json);
 }
 
-RCT_ENUM_CONVERTER(css_backface_visibility_t, (@{
-  @"hidden": @NO,
-  @"visible": @YES
-}), YES, boolValue)
+RCT_ENUM_CONVERTER(css_backface_visibility_t, (@{@"hidden" : @NO, @"visible" : @YES}), YES, boolValue)
 
-RCT_ENUM_CONVERTER(YGOverflow, (@{
-  @"hidden": @(YGOverflowHidden),
-  @"visible": @(YGOverflowVisible),
-  @"scroll": @(YGOverflowScroll),
-}), YGOverflowVisible, intValue)
+RCT_ENUM_CONVERTER(
+    YGOverflow,
+    (@{
+      @"hidden" : @(YGOverflowHidden),
+      @"visible" : @(YGOverflowVisible),
+      @"scroll" : @(YGOverflowScroll),
+    }),
+    YGOverflowVisible,
+    intValue)
 
-RCT_ENUM_CONVERTER(YGDisplay, (@{
-  @"flex": @(YGDisplayFlex),
-  @"none": @(YGDisplayNone),
-}), YGDisplayFlex, intValue)
+RCT_ENUM_CONVERTER(
+    YGDisplay,
+    (@{
+      @"flex" : @(YGDisplayFlex),
+      @"none" : @(YGDisplayNone),
+    }),
+    YGDisplayFlex,
+    intValue)
 
-RCT_ENUM_CONVERTER(YGFlexDirection, (@{
-  @"row": @(YGFlexDirectionRow),
-  @"row-reverse": @(YGFlexDirectionRowReverse),
-  @"column": @(YGFlexDirectionColumn),
-  @"column-reverse": @(YGFlexDirectionColumnReverse)
-}), YGFlexDirectionColumn, intValue)
+RCT_ENUM_CONVERTER(
+    YGFlexDirection,
+    (@{
+      @"row" : @(YGFlexDirectionRow),
+      @"row-reverse" : @(YGFlexDirectionRowReverse),
+      @"column" : @(YGFlexDirectionColumn),
+      @"column-reverse" : @(YGFlexDirectionColumnReverse)
+    }),
+    YGFlexDirectionColumn,
+    intValue)
 
-RCT_ENUM_CONVERTER(YGJustify, (@{
-  @"flex-start": @(YGJustifyFlexStart),
-  @"flex-end": @(YGJustifyFlexEnd),
-  @"center": @(YGJustifyCenter),
-  @"space-between": @(YGJustifySpaceBetween),
-  @"space-around": @(YGJustifySpaceAround),
-  @"space-evenly": @(YGJustifySpaceEvenly)
-}), YGJustifyFlexStart, intValue)
+RCT_ENUM_CONVERTER(
+    YGJustify,
+    (@{
+      @"flex-start" : @(YGJustifyFlexStart),
+      @"flex-end" : @(YGJustifyFlexEnd),
+      @"center" : @(YGJustifyCenter),
+      @"space-between" : @(YGJustifySpaceBetween),
+      @"space-around" : @(YGJustifySpaceAround),
+      @"space-evenly" : @(YGJustifySpaceEvenly)
+    }),
+    YGJustifyFlexStart,
+    intValue)
 
-RCT_ENUM_CONVERTER(YGAlign, (@{
-  @"flex-start": @(YGAlignFlexStart),
-  @"flex-end": @(YGAlignFlexEnd),
-  @"center": @(YGAlignCenter),
-  @"auto": @(YGAlignAuto),
-  @"stretch": @(YGAlignStretch),
-  @"baseline": @(YGAlignBaseline),
-  @"space-between": @(YGAlignSpaceBetween),
-  @"space-around": @(YGAlignSpaceAround)
-}), YGAlignFlexStart, intValue)
+RCT_ENUM_CONVERTER(
+    YGAlign,
+    (@{
+      @"flex-start" : @(YGAlignFlexStart),
+      @"flex-end" : @(YGAlignFlexEnd),
+      @"center" : @(YGAlignCenter),
+      @"auto" : @(YGAlignAuto),
+      @"stretch" : @(YGAlignStretch),
+      @"baseline" : @(YGAlignBaseline),
+      @"space-between" : @(YGAlignSpaceBetween),
+      @"space-around" : @(YGAlignSpaceAround)
+    }),
+    YGAlignFlexStart,
+    intValue)
 
-RCT_ENUM_CONVERTER(YGDirection, (@{
-  @"inherit": @(YGDirectionInherit),
-  @"ltr": @(YGDirectionLTR),
-  @"rtl": @(YGDirectionRTL),
-}), YGDirectionInherit, intValue)
+RCT_ENUM_CONVERTER(
+    YGDirection,
+    (@{
+      @"inherit" : @(YGDirectionInherit),
+      @"ltr" : @(YGDirectionLTR),
+      @"rtl" : @(YGDirectionRTL),
+    }),
+    YGDirectionInherit,
+    intValue)
 
-RCT_ENUM_CONVERTER(YGPositionType, (@{
-  @"absolute": @(YGPositionTypeAbsolute),
-  @"relative": @(YGPositionTypeRelative)
-}), YGPositionTypeRelative, intValue)
+RCT_ENUM_CONVERTER(
+    YGPositionType,
+    (@{@"absolute" : @(YGPositionTypeAbsolute), @"relative" : @(YGPositionTypeRelative)}),
+    YGPositionTypeRelative,
+    intValue)
 
-RCT_ENUM_CONVERTER(YGWrap, (@{
-  @"wrap": @(YGWrapWrap),
-  @"nowrap": @(YGWrapNoWrap),
-  @"wrap-reverse": @(YGWrapWrapReverse)
-}), YGWrapNoWrap, intValue)
+RCT_ENUM_CONVERTER(
+    YGWrap,
+    (@{@"wrap" : @(YGWrapWrap), @"nowrap" : @(YGWrapNoWrap), @"wrap-reverse" : @(YGWrapWrapReverse)}),
+    YGWrapNoWrap,
+    intValue)
 
-RCT_ENUM_CONVERTER(RCTPointerEvents, (@{
-  @"none": @(RCTPointerEventsNone),
-  @"box-only": @(RCTPointerEventsBoxOnly),
-  @"box-none": @(RCTPointerEventsBoxNone),
-  @"auto": @(RCTPointerEventsUnspecified)
-}), RCTPointerEventsUnspecified, integerValue)
+RCT_ENUM_CONVERTER(
+    RCTPointerEvents,
+    (@{
+      @"none" : @(RCTPointerEventsNone),
+      @"box-only" : @(RCTPointerEventsBoxOnly),
+      @"box-none" : @(RCTPointerEventsBoxNone),
+      @"auto" : @(RCTPointerEventsUnspecified)
+    }),
+    RCTPointerEventsUnspecified,
+    integerValue)
 
-RCT_ENUM_CONVERTER(RCTAnimationType, (@{
+RCT_ENUM_CONVERTER(
+    RCTAnimationType,
+    (@{
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  @"spring": @(RCTAnimationTypeSpring),
+      @"spring" : @(RCTAnimationTypeSpring),
 #endif // TODO(macOS ISS#2323203)
-  @"linear": @(RCTAnimationTypeLinear),
-  @"easeIn": @(RCTAnimationTypeEaseIn),
-  @"easeOut": @(RCTAnimationTypeEaseOut),
-  @"easeInEaseOut": @(RCTAnimationTypeEaseInEaseOut),
+      @"linear" : @(RCTAnimationTypeLinear),
+      @"easeIn" : @(RCTAnimationTypeEaseIn),
+      @"easeOut" : @(RCTAnimationTypeEaseOut),
+      @"easeInEaseOut" : @(RCTAnimationTypeEaseInEaseOut),
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  @"keyboard": @(RCTAnimationTypeKeyboard),
+      @"keyboard" : @(RCTAnimationTypeKeyboard),
 #endif // TODO(macOS ISS#2323203)
-}), RCTAnimationTypeEaseInEaseOut, integerValue)
+    }),
+    RCTAnimationTypeEaseInEaseOut,
+    integerValue)
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 + (NSString*)accessibilityRoleFromTrait:(NSString*)trait
@@ -1251,7 +1428,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
     // This check is added here instead of being inside RCTImageFromLocalAssetURL, since
     // we don't want breaking changes to RCTImageFromLocalAssetURL, which is called in a lot of places
     // This is a deprecated method, and hence has the least impact on existing code. Basically,
-    // instead of crashing the app, it tries one more location for the image. 
+    // instead of crashing the app, it tries one more location for the image.
     if (!image) {
       image = RCTImageFromLocalBundleAssetURL(URL);
     }
@@ -1275,9 +1452,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
     scale = CGImageGetWidth(imageRef) / imageSource.size.width; // TODO(macOS ISS#2323203)
   }
   if (scale) {
-    image = [UIImage imageWithCGImage:imageRef
-                                scale:scale
-                          orientation:image.imageOrientation];
+    image = [UIImage imageWithCGImage:imageRef scale:scale orientation:image.imageOrientation];
   }
 #else // [TODO(macOS ISS#2323203)
   if (!CGSizeEqualToSize(image.size, imageSource.size)) {
@@ -1285,12 +1460,12 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   }
 #endif // ]TODO(macOS ISS#2323203)
 
-  if (!CGSizeEqualToSize(imageSource.size, CGSizeZero) &&
-      !CGSizeEqualToSize(imageSource.size, image.size)) {
-    RCTLogError(@"Image source %@ size %@ does not match loaded image size %@.",
-                URL.path.lastPathComponent,
-                NSStringFromCGSize(imageSource.size),
-                NSStringFromCGSize(image.size));
+  if (!CGSizeEqualToSize(imageSource.size, CGSizeZero) && !CGSizeEqualToSize(imageSource.size, image.size)) {
+    RCTLogError(
+        @"Image source %@ size %@ does not match loaded image size %@.",
+        URL.path.lastPathComponent,
+        NSStringFromCGSize(imageSource.size),
+        NSStringFromCGSize(image.size));
   }
 
   return image;

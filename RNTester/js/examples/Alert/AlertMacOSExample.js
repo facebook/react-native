@@ -10,11 +10,11 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {StyleSheet, View, Text, TouchableHighlight, AlertMacOS} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, View, Text, TouchableHighlight, AlertMacOS} = ReactNative;
 
-var {SimpleAlertExampleBlock} = require('./AlertExample');
+const {SimpleAlertExampleBlock} = require('./AlertExample');
 
 exports.framework = 'React';
 exports.title = 'AlertMacOS';

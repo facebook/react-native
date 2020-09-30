@@ -1,9 +1,8 @@
-/**
- * Copyright (c) 2015-present, Facebook, Inc.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
  */
 
 // TODO(macOS ISS#3536887)
@@ -15,6 +14,19 @@
 @interface RCTConvert_NSColorTests : XCTestCase
 
 @end
+
+static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2) {
+  CGFloat rgba1[4];
+  CGFloat rgba2[4];
+  RCTGetRGBAColorComponents(color1, rgba1);
+  RCTGetRGBAColorComponents(color2, rgba2);
+  for (int i = 0; i < 4; i++) {
+    if (rgba1[i] != rgba2[i]) {
+      return NO;
+    }
+  }
+  return YES;
+}
 
 @implementation RCTConvert_NSColorTests
 
@@ -47,7 +59,7 @@
 {
   id json = RCTJSONParse(@"{ \"semantic\": \"unitTestFallbackColorIOS\" }", nil);
   UIColor *value = [RCTConvert UIColor:json];
-  XCTAssertEqualObjects(value, [UIColor blueColor]);
+  XCTAssertTrue(CGColorsAreEqual([value CGColor], [[UIColor blueColor] CGColor]));
 }
 
 - (void)testDynamicColor
@@ -61,7 +73,6 @@
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
   if (@available(iOS 13.0, *)) {
     id savedTraitCollection = [UITraitCollection currentTraitCollection];
-    
     [UITraitCollection setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
     CGFloat rgba[4];
     RCTGetRGBAColorComponents([value CGColor], rgba);
@@ -69,14 +80,12 @@
     XCTAssertEqual(rgba[1], 0);
     XCTAssertEqual(rgba[2], 0);
     XCTAssertEqual(rgba[3], 0);
-    
     [UITraitCollection setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark]];
     RCTGetRGBAColorComponents([value CGColor], rgba);
     XCTAssertEqual(rgba[0], 1);
     XCTAssertEqual(rgba[1], 1);
     XCTAssertEqual(rgba[2], 1);
     XCTAssertEqual(rgba[3], 0);
-    
     [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
   }
 #endif
@@ -91,27 +100,15 @@
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
   if (@available(iOS 13.0, *)) {
     id savedTraitCollection = [UITraitCollection currentTraitCollection];
-    
+
     [UITraitCollection setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
-    
-    CGFloat rgba1[4];
-    CGFloat rgba2[4];
-    RCTGetRGBAColorComponents([value CGColor], rgba1);
-    RCTGetRGBAColorComponents([[UIColor systemRedColor] CGColor], rgba2);
-    XCTAssertEqual(rgba1[0], rgba2[0]);
-    XCTAssertEqual(rgba1[1], rgba2[1]);
-    XCTAssertEqual(rgba1[2], rgba2[2]);
-    XCTAssertEqual(rgba1[3], rgba2[3]);
-    
+
+    XCTAssertTrue(CGColorsAreEqual([value CGColor], [[UIColor systemRedColor] CGColor]));
+
     [UITraitCollection setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark]];
-    
-    RCTGetRGBAColorComponents([value CGColor], rgba1);
-    RCTGetRGBAColorComponents([[UIColor systemBlueColor] CGColor], rgba2);
-    XCTAssertEqual(rgba1[0], rgba2[0]);
-    XCTAssertEqual(rgba1[1], rgba2[1]);
-    XCTAssertEqual(rgba1[2], rgba2[2]);
-    XCTAssertEqual(rgba1[3], rgba2[3]);
-    
+
+    XCTAssertTrue(CGColorsAreEqual([value CGColor], [[UIColor systemBlueColor] CGColor]));
+
     [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
   }
 #endif
@@ -157,12 +154,10 @@
     @"systemGray5Color": @(0xFFe5e5ea),
     @"systemGray6Color": @(0xFFf2f2f7),
   };
-  
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
   id savedTraitCollection = nil;
   if (@available(iOS 13.0, *)) {
     savedTraitCollection = [UITraitCollection currentTraitCollection];
-    
     [UITraitCollection setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
   }
 #endif
@@ -191,7 +186,6 @@
     XCTAssertEqual(blue1, blue2);
     XCTAssertEqual(alpha1, alpha2);
   }
-  
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
   if (@available(iOS 13.0, *)) {
     [UITraitCollection setCurrentTraitCollection:savedTraitCollection];

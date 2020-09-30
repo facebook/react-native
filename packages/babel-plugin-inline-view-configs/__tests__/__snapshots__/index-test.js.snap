@@ -7,7 +7,7 @@ const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type { Int32, BubblingEventHandler, DirectEventHandler, WithDefault } from 'CodegenFlowtypes';
-import type { NativeComponent } from 'codegenNativeComponent';
+import type { NativeComponentType } from 'codegenNativeComponent';
 import type { ViewProps } from 'ViewPropTypes';
 type ModuleProps = $ReadOnly<{| ...ViewProps,
   // Props
@@ -16,7 +16,7 @@ type ModuleProps = $ReadOnly<{| ...ViewProps,
   onDirectEventDefinedInlineNull: DirectEventHandler<null>,
   onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
 |}>;
-type NativeType = NativeComponent<ModuleProps>;
+type NativeType = NativeComponentType<ModuleProps>;
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void,
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
@@ -71,7 +71,7 @@ const codegenNativeCommands = require('codegenNativeCommands');
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type { NativeComponent } from 'codegenNativeComponent';
+import type { NativeComponentType } from 'codegenNativeComponent';
 import type { Int32, BubblingEventHandler, DirectEventHandler, WithDefault } from 'CodegenFlowtypes';
 import type { ViewProps } from 'ViewPropTypes';
 type ModuleProps = $ReadOnly<{| ...ViewProps,
@@ -81,7 +81,7 @@ type ModuleProps = $ReadOnly<{| ...ViewProps,
   onDirectEventDefinedInlineNull: DirectEventHandler<null>,
   onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
 |}>;
-type NativeType = NativeComponent<ModuleProps>;
+type NativeType = NativeComponentType<ModuleProps>;
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void,
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
@@ -136,8 +136,35 @@ exports[`Babel plugin inline view configs can inline config for NotANativeCompon
 export default 'Not a view config';"
 `;
 
-exports[`Babel plugin inline view configs fails on inline config for CommandsExportedWithDifferentNameNativeComponent.js 1`] = `"Native commands must be exported with the name 'Commands'"`;
+exports[`Babel plugin inline view configs fails on inline config for CommandsExportedWithDifferentNameNativeComponent.js 1`] = `
+"/CommandsExportedWithDifferentNameNativeComponent.js: Native commands must be exported with the name 'Commands'
+  17 | }
+  18 | 
+> 19 | export const Foo = codegenNativeCommands<NativeCommands>();
+     | ^
+  20 | 
+  21 | export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
+  22 | "
+`;
 
-exports[`Babel plugin inline view configs fails on inline config for CommandsExportedWithShorthandNativeComponent.js 1`] = `"'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands."`;
+exports[`Babel plugin inline view configs fails on inline config for CommandsExportedWithShorthandNativeComponent.js 1`] = `
+"/CommandsExportedWithShorthandNativeComponent.js: 'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands.
+  19 | const Commands = 4;
+  20 | 
+> 21 | export {Commands};
+     | ^
+  22 | 
+  23 | export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
+  24 | "
+`;
 
-exports[`Babel plugin inline view configs fails on inline config for OtherCommandsExportNativeComponent.js 1`] = `"'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands."`;
+exports[`Babel plugin inline view configs fails on inline config for OtherCommandsExportNativeComponent.js 1`] = `
+"/OtherCommandsExportNativeComponent.js: 'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands.
+  17 | }
+  18 | 
+> 19 | export const Commands = 4;
+     | ^
+  20 | 
+  21 | export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
+  22 | "
+`;

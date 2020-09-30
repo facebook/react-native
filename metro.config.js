@@ -9,57 +9,33 @@
  */
 
 'use strict';
-const path = require('path');
+
 const getPolyfills = require('./rn-get-polyfills');
 
-const fs = require('fs');
 /**
  * This cli config is needed for development purposes, e.g. for running
  * integration tests during local development or on CI services.
  */
-
-// In sdx repo we need to use metro-resources to handle all the rush symlinking
-if (
-  fs.existsSync(path.resolve(__dirname, '../../scripts/metro-resources.js'))
-) {
-  const sdxHelpers = require('../../scripts/metro-resources');
-
-  module.exports = sdxHelpers.createConfig({
+const config = {
+  serializer: {
+    getPolyfills,
+  },
+  resolver: {
+    platforms: ['ios', 'macos', 'android'],
     extraNodeModules: {
       'react-native': __dirname,
     },
-    roots: [path.resolve(__dirname)],
-    projectRoot: path.resolve(__dirname, '../../'),
+  },
+  transformer: {},
+};
 
-    serializer: {
-      getModulesRunBeforeMainModule: () => [
-        require.resolve('./Libraries/Core/InitializeCore'),
-      ],
-      getPolyfills,
-    },
-    resolver: {
-      platforms: ['ios', 'macos', 'android'],
-    },
-    transformer: {
-      assetRegistryPath: require.resolve('./Libraries/Image/AssetRegistry'),
-    },
-  });
-} else {
-  module.exports = {
-    serializer: {
-      getModulesRunBeforeMainModule: () => [
-        require.resolve('./Libraries/Core/InitializeCore'),
-      ],
-      getPolyfills,
-    },
-    resolver: {
-      platforms: ['ios', 'macos', 'android'],
-      extraNodeModules: {
-        'react-native': __dirname,
-      },
-    },
-    transformer: {
-      assetRegistryPath: require.resolve('./Libraries/Image/AssetRegistry'),
-    },
-  };
+// In scripts/run-ci-e2e-tests.js this file gets copied to a new app, in which
+// case these settings do not apply.
+if (!process.env.REACT_NATIVE_RUNNING_E2E_TESTS) {
+  const InitializeCore = require.resolve('./Libraries/Core/InitializeCore');
+  const AssetRegistry = require.resolve('./Libraries/Image/AssetRegistry');
+  config.serializer.getModulesRunBeforeMainModule = () => [InitializeCore];
+  config.transformer.assetRegistryPath = AssetRegistry;
 }
+
+module.exports = config;

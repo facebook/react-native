@@ -117,8 +117,7 @@
 @end
 #endif // ]TODO(macOS ISS#2323203)
 
-@implementation RCTSlider
-{
+@implementation RCTSlider {
   float _unclippedValue;
 }
 
@@ -244,12 +243,10 @@
     _trackImage = trackImage;
     CGFloat width = trackImage.size.width / 2;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-    UIImage *minimumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){
-      0, width, 0, width
-    } resizingMode:UIImageResizingModeStretch];
-    UIImage *maximumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){
-      0, width, 0, width
-    } resizingMode:UIImageResizingModeStretch];
+    UIImage *minimumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){0, width, 0, width}
+                                                            resizingMode:UIImageResizingModeStretch];
+    UIImage *maximumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){0, width, 0, width}
+                                                            resizingMode:UIImageResizingModeStretch];
     [self setMinimumTrackImage:minimumTrackImage forState:UIControlStateNormal];
     [self setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
 #else // [TODO(macOS ISS#2323203)
@@ -265,9 +262,9 @@
 {
   _trackImage = nil;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  minimumTrackImage = [minimumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){
-    0, minimumTrackImage.size.width, 0, 0
-  } resizingMode:UIImageResizingModeStretch];
+  minimumTrackImage =
+      [minimumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){0, minimumTrackImage.size.width, 0, 0}
+                                        resizingMode:UIImageResizingModeStretch];
   [self setMinimumTrackImage:minimumTrackImage forState:UIControlStateNormal];
 #else // [TODO(macOS ISS#2323203)
   minimumTrackImage.capInsets = NSEdgeInsetsMake(0, minimumTrackImage.size.width-0.5, 0, 0);
@@ -289,9 +286,9 @@
 {
   _trackImage = nil;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  maximumTrackImage = [maximumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){
-    0, 0, 0, maximumTrackImage.size.width
-  } resizingMode:UIImageResizingModeStretch];
+  maximumTrackImage =
+      [maximumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){0, 0, 0, maximumTrackImage.size.width}
+                                        resizingMode:UIImageResizingModeStretch];
   [self setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
 #else // [TODO(macOS ISS#2323203)
   maximumTrackImage.capInsets = NSEdgeInsetsMake(0, 0, 0, maximumTrackImage.size.width-0.5);
@@ -333,7 +330,7 @@
   [super accessibilityIncrement];
   if (_onSlidingComplete) {
     _onSlidingComplete(@{
-        @"value": @(self.value),
+      @"value" : @(self.value),
     });
   }
 }
@@ -343,7 +340,7 @@
   [super accessibilityDecrement];
   if (_onSlidingComplete) {
     _onSlidingComplete(@{
-        @"value": @(self.value),
+      @"value" : @(self.value),
     });
   }
 }

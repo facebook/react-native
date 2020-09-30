@@ -12,17 +12,14 @@
 
 import type {TurboModule} from '../../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
-import type {NativeOrDynamicColorType} from '../../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import type {ProcessedColorValue} from '../../StyleSheet/processColor'; // TODO(macOS ISS#2323203)
 
 export interface Spec extends TurboModule {
   +getConstants: () => {|
     +HEIGHT: number,
     +DEFAULT_BACKGROUND_COLOR: number,
   |};
-  +setColor: (
-    color: number | NativeOrDynamicColorType,
-    animated: boolean,
-  ) => void; // TODO(macOS ISS#2323203)
+  +setColor: (color: ProcessedColorValue, animated: boolean) => void; // TODO(macOS ISS#2323203)
   +setTranslucent: (translucent: boolean) => void;
 
   /**

@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewParent;
@@ -173,7 +174,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
               && accessibilityState.getType(STATE_CHECKED) == ReadableType.String)) {
         updateViewContentDescription(view);
         break;
-      } else if (view.isAccessibilityFocused()) {
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+          && view.isAccessibilityFocused()) {
         // Internally Talkback ONLY uses TYPE_VIEW_CLICKED for "checked" and
         // "selected" announcements. Send a click event to make sure Talkback
         // get notified for the state changes that don't happen upon users' click.

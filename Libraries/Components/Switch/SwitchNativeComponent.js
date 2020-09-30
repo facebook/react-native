@@ -12,13 +12,13 @@
 
 import type {BubblingEventHandler, WithDefault} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ProcessedColorValue} from '../../StyleSheet/processColor'; // TODO(macOS ISS#2323203)
 import type {ViewProps} from '../View/ViewPropTypes';
 import * as React from 'react';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {NativeOrDynamicColorType} from '../../StyleSheet/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 type SwitchChangeEvent = $ReadOnly<{|
   value: boolean,
@@ -30,14 +30,14 @@ type NativeProps = $ReadOnly<{|
   // Props
   disabled?: WithDefault<boolean, false>,
   value?: WithDefault<boolean, false>,
-  tintColor?: ?(ColorValue | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  onTintColor?: ?(ColorValue | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  thumbTintColor?: ?(ColorValue | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+  tintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
+  onTintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
+  thumbTintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
 
   // Deprecated props
-  thumbColor?: ?(ColorValue | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  trackColorForFalse?: ?(ColorValue | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
-  trackColorForTrue?: ?(ColorValue | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+  thumbColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
+  trackColorForFalse?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
+  trackColorForTrue?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
 
   // Events
   onChange?: ?BubblingEventHandler<SwitchChangeEvent>,

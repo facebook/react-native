@@ -20,7 +20,7 @@ class XHRExampleAbortController extends React.Component<{...}, {...}> {
   _submit(abortDelay) {
     clearTimeout(this._timeout);
     const abortController = new global.AbortController();
-    fetch('https://facebook.github.io/react-native/', {
+    fetch('https://reactnative.dev/', {
       signal: abortController.signal,
     })
       .then(res => res.text())

@@ -113,16 +113,11 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
   }
 
   if (__DEV__) {
-    Systrace.beginEvent('Systrace.callTimer: ' + type);
+    Systrace.beginEvent(type + ' [invoke]');
   }
 
   // Clear the metadata
-  if (
-    type === 'setTimeout' ||
-    type === 'setImmediate' ||
-    type === 'requestAnimationFrame' ||
-    type === 'requestIdleCallback'
-  ) {
+  if (type !== 'setInterval') {
     _clearIndex(timerIndex);
   }
 
@@ -167,21 +162,23 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
  * more immediates are queued up (can be used as a condition a while loop).
  */
 function _callImmediatesPass() {
+  if (immediates.length === 0) {
+    return false;
+  }
+
   if (__DEV__) {
     Systrace.beginEvent('callImmediatesPass()');
   }
 
   // The main reason to extract a single pass is so that we can track
   // in the system trace
-  if (immediates.length > 0) {
-    const passImmediates = immediates.slice();
-    immediates = [];
+  const passImmediates = immediates;
+  immediates = [];
 
-    // Use for loop rather than forEach as per @vjeux's advice
-    // https://github.com/facebook/react-native/commit/c8fd9f7588ad02d2293cac7224715f4af7b0f352#commitcomment-14570051
-    for (let i = 0; i < passImmediates.length; ++i) {
-      _callTimer(passImmediates[i], 0);
-    }
+  // Use for loop rather than forEach as per @vjeux's advice
+  // https://github.com/facebook/react-native/commit/c8fd9f7588ad02d2293cac7224715f4af7b0f352#commitcomment-14570051
+  for (let i = 0; i < passImmediates.length; ++i) {
+    _callTimer(passImmediates[i], 0);
   }
 
   if (__DEV__) {
@@ -381,8 +378,7 @@ const JSTimers = {
       'Cannot call `callTimers` with an empty list of IDs.',
     );
 
-    // $FlowFixMe: optionals do not allow assignment from null
-    errors = null;
+    errors = (null: ?Array<Error>);
     for (let i = 0; i < timersToCall.length; i++) {
       _callTimer(timersToCall[i], 0);
     }
@@ -413,10 +409,9 @@ const JSTimers = {
       return;
     }
 
-    // $FlowFixMe: optionals do not allow assignment from null
-    errors = null;
+    errors = (null: ?Array<Error>);
     if (requestIdleCallbacks.length > 0) {
-      const passIdleCallbacks = requestIdleCallbacks.slice();
+      const passIdleCallbacks = requestIdleCallbacks;
       requestIdleCallbacks = [];
 
       for (let i = 0; i < passIdleCallbacks.length; ++i) {
@@ -442,7 +437,7 @@ const JSTimers = {
    * before we hand control back to native.
    */
   callImmediates() {
-    errors = null;
+    errors = (null: ?Array<Error>);
     while (_callImmediatesPass()) {}
     if (errors) {
       errors.forEach(error =>
@@ -501,6 +496,7 @@ let ExportedJSTimers: {|
   setInterval: (func: any, duration: number, ...args: any) => number,
   setTimeout: (func: any, duration: number, ...args: any) => number,
 |};
+
 if (!NativeTiming) {
   console.warn("Timing native module is not available, can't set timers.");
   // $FlowFixMe: we can assume timers are generally available
@@ -512,8 +508,6 @@ if (!NativeTiming) {
   ExportedJSTimers = JSTimers;
 }
 
-BatchedBridge.setImmediatesCallback(
-  ExportedJSTimers.callImmediates.bind(ExportedJSTimers),
-);
+BatchedBridge.setImmediatesCallback(JSTimers.callImmediates);
 
 module.exports = ExportedJSTimers;

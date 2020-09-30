@@ -107,10 +107,10 @@ TEST(UITemplateProcessorTest, testSimpleBytecode) {
   LOG(INFO) << std::endl << root1->getDebugDescription();
 #endif
   auto props1 = std::dynamic_pointer_cast<const ViewProps>(root1->getProps());
-  ASSERT_NEAR(props1->opacity, 0.5, 0.001);
+  EXPECT_NEAR(props1->opacity, 0.5, 0.001);
   ASSERT_STREQ(props1->testId.c_str(), "root");
   auto children1 = root1->getChildren();
-  ASSERT_EQ(children1.size(), 1);
+  EXPECT_EQ(children1.size(), 1);
   auto child_props1 =
       std::dynamic_pointer_cast<const ViewProps>(children1.at(0)->getProps());
   ASSERT_STREQ(child_props1->testId.c_str(), "child");
@@ -148,7 +148,7 @@ TEST(UITemplateProcessorTest, testConditionalBytecode) {
   auto props1 = std::dynamic_pointer_cast<const ViewProps>(root1->getProps());
   ASSERT_STREQ(props1->testId.c_str(), "root");
   auto children1 = root1->getChildren();
-  ASSERT_EQ(children1.size(), 1);
+  EXPECT_EQ(children1.size(), 1);
   auto child_props1 =
       std::dynamic_pointer_cast<const ViewProps>(children1.at(0)->getProps());
   ASSERT_STREQ(child_props1->testId.c_str(), "cond_true");

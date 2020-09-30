@@ -184,25 +184,25 @@ Map {
 namespace facebook {
 namespace react {
 
-struct EventsNestedObjectNativeComponentOnChangeLocationSourceStruct {
-  std::string url;
-};
-
-struct EventsNestedObjectNativeComponentOnChangeLocationStruct {
-  EventsNestedObjectNativeComponentOnChangeLocationSourceStruct source;
-  int x;
-  int y;
-};
-
-struct EventsNestedObjectNativeComponentOnChangeStruct {
-  EventsNestedObjectNativeComponentOnChangeLocationStruct location;
-};
-
 class EventsNestedObjectNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
-  void onChange(EventsNestedObjectNativeComponentOnChangeStruct value) const;
+  struct OnChangeLocationSource {
+      std::string url;
+    };
+
+  struct OnChangeLocation {
+      OnChangeLocationSource source;
+    int x;
+    int y;
+    };
+
+  struct OnChange {
+      OnChangeLocation location;
+    };
+
+  void onChange(OnChange value) const;
 };
 
 } // namespace react
@@ -227,42 +227,42 @@ Map {
 namespace facebook {
 namespace react {
 
-struct EventsNativeComponentOnChangeStruct {
-  bool value;
-  std::string source;
-  int progress;
-  Float scale;
-};
-
-struct EventsNativeComponentOnEventDirectStruct {
-  bool value;
-};
-
-enum class EventsNativeComponentOnOrientationChangeOrientationStruct {
-  Landscape,
-  Portrait
-};
-
-inline char const *toString(const EventsNativeComponentOnOrientationChangeOrientationStruct value) {
-  switch (value) {
-    case EventsNativeComponentOnOrientationChangeOrientationStruct::Landscape: return \\"landscape\\";
-    case EventsNativeComponentOnOrientationChangeOrientationStruct::Portrait: return \\"portrait\\";
-  }
-}
-
-struct EventsNativeComponentOnOrientationChangeStruct {
-  EventsNativeComponentOnOrientationChangeOrientationStruct orientation;
-};
-
 class EventsNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
-  void onChange(EventsNativeComponentOnChangeStruct value) const;
+  struct OnChange {
+      bool value;
+    std::string source;
+    int progress;
+    Float scale;
+    };
 
-  void onEventDirect(EventsNativeComponentOnEventDirectStruct value) const;
+  struct OnEventDirect {
+      bool value;
+    };
 
-  void onOrientationChange(EventsNativeComponentOnOrientationChangeStruct value) const;
+  enum class OnOrientationChangeOrientation {
+    Landscape,
+    Portrait
+  };
+
+  static char const *toString(const OnOrientationChangeOrientation value) {
+    switch (value) {
+      case OnOrientationChangeOrientation::Landscape: return \\"landscape\\";
+      case OnOrientationChangeOrientation::Portrait: return \\"portrait\\";
+    }
+  }
+
+  struct OnOrientationChange {
+      OnOrientationChangeOrientation orientation;
+    };
+
+  void onChange(OnChange value) const;
+
+  void onEventDirect(OnEventDirect value) const;
+
+  void onOrientationChange(OnOrientationChange value) const;
 
   void onEnd() const;
 };
@@ -289,21 +289,21 @@ Map {
 namespace facebook {
 namespace react {
 
-struct InterfaceOnlyComponentOnChangeStruct {
-  bool value;
-};
-
-struct InterfaceOnlyComponentOnDire tChangeStruct {
-  bool value;
-};
-
 class InterfaceOnlyComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
-  void onChange(InterfaceOnlyComponentOnChangeStruct value) const;
+  struct OnChange {
+      bool value;
+    };
 
-  void onDire tChange(InterfaceOnlyComponentOnDire tChangeStruct value) const;
+  struct OnDire tChange {
+      bool value;
+    };
+
+  void onChange(OnChange value) const;
+
+  void onDire tChange(OnDire tChange value) const;
 };
 
 } // namespace react
@@ -472,15 +472,15 @@ Map {
 namespace facebook {
 namespace react {
 
-struct InterfaceOnlyComponentOnChangeStruct {
-  bool value;
-};
-
 class InterfaceOnlyComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
-  void onChange(InterfaceOnlyComponentOnChangeStruct value) const;
+  struct OnChange {
+      bool value;
+    };
+
+  void onChange(OnChange value) const;
 };
 
 } // namespace react

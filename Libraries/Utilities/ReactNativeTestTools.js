@@ -16,15 +16,30 @@ const React = require('react');
 
 const ReactTestRenderer = require('react-test-renderer');
 const ShallowRenderer = require('react-test-renderer/shallow');
+/* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.122.0 was deployed. To see the error, delete this comment
+ * and run Flow. */
 const shallowRenderer = new ShallowRenderer();
 
-const {Switch, Text, TextInput, VirtualizedList} = require('react-native');
+import type {ReactTestRenderer as ReactTestRendererType} from 'react-test-renderer';
 
-import type {
-  ReactTestInstance,
-  ReactTestRendererNode,
-  Predicate,
-} from 'react-test-renderer';
+export type ReactTestInstance = $PropertyType<ReactTestRendererType, 'root'>;
+
+export type Predicate = (node: ReactTestInstance) => boolean;
+
+type $ReturnType<Fn> = $Call<<Ret, A>((...A) => Ret) => Ret, Fn>;
+/* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.122.0 was deployed. To see the error, delete this comment
+ * and run Flow. */
+export type ReactTestRendererJSON = $ReturnType<ReactTestRenderer.create.toJSON>;
+
+const {
+  Switch,
+  Text,
+  TextInput,
+  View,
+  VirtualizedList,
+} = require('react-native');
 
 function byClickable(): Predicate {
   return withMessage(
@@ -36,10 +51,18 @@ function byClickable(): Predicate {
         typeof node.props.onPress === 'function') ||
       // note: Special casing <Switch /> since it doesn't use touchable
       (node.type === Switch && node.props && node.props.disabled !== true) ||
+      (node.type === View &&
+        node?.props?.onStartShouldSetResponder?.testOnly_pressabilityConfig) ||
       // HACK: Find components that use `Pressability`.
       node.instance?.state?.pressability != null ||
       // TODO: Remove this after deleting `Touchable`.
+      /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.122.0 was deployed. To see the error, delete
+       * this comment and run Flow. */
       (node.instance &&
+        /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses
+         * an error found when Flow v0.122.0 was deployed. To see the error,
+         * delete this comment and run Flow. */
         typeof node.instance.touchableHandlePress === 'function'),
     'is clickable',
   );
@@ -54,6 +77,9 @@ function byTestID(testID: string): Predicate {
 
 function byTextMatching(regex: RegExp): Predicate {
   return withMessage(
+    /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.122.0 was deployed. To see the error, delete
+     * this comment and run Flow. */
     node => node.props && regex.exec(node.props.children),
     `text content matches ${regex.toString()}`,
   );
@@ -67,7 +93,7 @@ function enter(instance: ReactTestInstance, text: string) {
 
 // Returns null if there is no error, otherwise returns an error message string.
 function maximumDepthError(
-  tree: {toJSON: () => ReactTestRendererNode, ...},
+  tree: ReactTestRendererType,
   maxDepthLimit: number,
 ): ?string {
   const maxDepth = maximumDepthOfJSON(tree.toJSON());
@@ -139,7 +165,7 @@ function expectRendersMatchingSnapshot(
 }
 
 // Takes a node from toJSON()
-function maximumDepthOfJSON(node: ReactTestRendererNode): number {
+function maximumDepthOfJSON(node: ?ReactTestRendererJSON): number {
   if (node == null) {
     return 0;
   } else if (typeof node === 'string' || node.children == null) {
@@ -158,7 +184,7 @@ function renderAndEnforceStrictMode(element: React.Node): any {
   return renderWithStrictMode(element);
 }
 
-function renderWithStrictMode(element: React.Node): any {
+function renderWithStrictMode(element: React.Node): ReactTestRendererType {
   const WorkAroundBugWithStrictModeInTestRenderer = prps => prps.children;
   const StrictMode = (React: $FlowFixMe).StrictMode;
   return ReactTestRenderer.create(
@@ -177,6 +203,16 @@ function tap(instance: ReactTestInstance) {
     const {onChange, onValueChange} = touchable.props;
     onChange && onChange({nativeEvent: {value}});
     onValueChange && onValueChange(value);
+  } else if (
+    touchable?.props?.onStartShouldSetResponder?.testOnly_pressabilityConfig
+  ) {
+    const {
+      onPress,
+      disabled,
+    } = touchable.props.onStartShouldSetResponder.testOnly_pressabilityConfig();
+    if (!disabled) {
+      onPress({nativeEvent: {}});
+    }
   } else {
     // Only tap when props.disabled isn't set (or there aren't any props)
     if (!touchable.props || !touchable.props.disabled) {

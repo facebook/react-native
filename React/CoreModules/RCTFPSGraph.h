@@ -17,8 +17,7 @@
 @property (nonatomic, assign, readonly) NSUInteger maxFPS;
 @property (nonatomic, assign, readonly) NSUInteger minFPS;
 
-- (instancetype)initWithFrame:(CGRect)frame
-                        color:(RCTUIColor *)color NS_DESIGNATED_INITIALIZER; // TODO(macOS ISS#2323203)
+- (instancetype)initWithFrame:(CGRect)frame color:(RCTUIColor *)color NS_DESIGNATED_INITIALIZER; // TODO(macOS ISS#2323203)
 
 - (void)onTick:(NSTimeInterval)timestamp;
 

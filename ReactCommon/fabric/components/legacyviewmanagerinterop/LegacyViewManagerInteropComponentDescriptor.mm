@@ -37,7 +37,7 @@ inline NSString *RCTNSStringFromString(const std::string &string)
   return [NSString stringWithCString:string.c_str() encoding:NSUTF8StringEncoding];
 }
 
-static std::shared_ptr<void> const contructCoordinator(
+static std::shared_ptr<void> const constructCoordinator(
     ContextContainer::Shared const &contextContainer,
     ComponentDescriptor::Flavor const &flavor)
 {
@@ -52,32 +52,27 @@ static std::shared_ptr<void> const contructCoordinator(
 }
 
 LegacyViewManagerInteropComponentDescriptor::LegacyViewManagerInteropComponentDescriptor(
-    EventDispatcher::Weak const &eventDispatcher,
-    ContextContainer::Shared const &contextContainer,
-    ComponentDescriptor::Flavor const &flavor)
-    : ConcreteComponentDescriptor(eventDispatcher, contextContainer, flavor),
-      _coordinator(contructCoordinator(contextContainer, flavor))
+    ComponentDescriptorParameters const &parameters)
+    : ConcreteComponentDescriptor(parameters), _coordinator(constructCoordinator(contextContainer_, flavor_))
 {
 }
 
-ComponentHandle
-LegacyViewManagerInteropComponentDescriptor::getComponentHandle() const {
+ComponentHandle LegacyViewManagerInteropComponentDescriptor::getComponentHandle() const
+{
   return reinterpret_cast<ComponentHandle>(getComponentName());
 }
 
-ComponentName LegacyViewManagerInteropComponentDescriptor::getComponentName()
-    const {
+ComponentName LegacyViewManagerInteropComponentDescriptor::getComponentName() const
+{
   return std::static_pointer_cast<std::string const>(this->flavor_)->c_str();
 }
 
-void LegacyViewManagerInteropComponentDescriptor::adopt(
-    ShadowNode::Unshared shadowNode) const {
+void LegacyViewManagerInteropComponentDescriptor::adopt(ShadowNode::Unshared shadowNode) const
+{
   ConcreteComponentDescriptor::adopt(shadowNode);
 
-  assert(std::dynamic_pointer_cast<LegacyViewManagerInteropShadowNode>(
-      shadowNode));
-  auto legacyViewManagerInteropShadowNode =
-      std::static_pointer_cast<LegacyViewManagerInteropShadowNode>(shadowNode);
+  assert(std::dynamic_pointer_cast<LegacyViewManagerInteropShadowNode>(shadowNode));
+  auto legacyViewManagerInteropShadowNode = std::static_pointer_cast<LegacyViewManagerInteropShadowNode>(shadowNode);
 
   auto state = LegacyViewManagerInteropState{};
   state.coordinator = _coordinator;

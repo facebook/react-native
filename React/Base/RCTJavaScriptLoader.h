@@ -11,21 +11,21 @@
 
 extern NSString *const RCTJavaScriptLoaderErrorDomain;
 
-NS_ENUM(NSInteger) {
-  RCTJavaScriptLoaderErrorNoScriptURL = 1,
-  RCTJavaScriptLoaderErrorFailedOpeningFile = 2,
-  RCTJavaScriptLoaderErrorFailedReadingFile = 3,
-  RCTJavaScriptLoaderErrorFailedStatingFile = 3,
-  RCTJavaScriptLoaderErrorURLLoadFailed = 3,
-  RCTJavaScriptLoaderErrorBCVersion = 4,
-  RCTJavaScriptLoaderErrorBCNotSupported = 4,
+NS_ENUM(NSInteger){
+    RCTJavaScriptLoaderErrorNoScriptURL = 1,
+    RCTJavaScriptLoaderErrorFailedOpeningFile = 2,
+    RCTJavaScriptLoaderErrorFailedReadingFile = 3,
+    RCTJavaScriptLoaderErrorFailedStatingFile = 3,
+    RCTJavaScriptLoaderErrorURLLoadFailed = 3,
+    RCTJavaScriptLoaderErrorBCVersion = 4,
+    RCTJavaScriptLoaderErrorBCNotSupported = 4,
 
-  RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously = 1000,
+    RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously = 1000,
 };
 
-NS_ENUM(NSInteger) {
-  RCTSourceFilesChangedCountNotBuiltByBundler = -2,
-  RCTSourceFilesChangedCountRebuiltFromScratch = -1,
+NS_ENUM(NSInteger){
+    RCTSourceFilesChangedCountNotBuiltByBundler = -2,
+    RCTSourceFilesChangedCountRebuiltFromScratch = -1,
 };
 
 @interface RCTLoadingProgress : NSObject

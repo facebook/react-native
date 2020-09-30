@@ -10,15 +10,14 @@ package com.facebook.react.modules.vibration;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Vibrator;
+import com.facebook.fbreact.specs.NativeVibrationSpec;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
 
 @SuppressLint("MissingPermission")
 @ReactModule(name = VibrationModule.NAME)
-public class VibrationModule extends ReactContextBaseJavaModule {
+public class VibrationModule extends NativeVibrationSpec {
 
   public static final String NAME = "Vibration";
 
@@ -31,7 +30,7 @@ public class VibrationModule extends ReactContextBaseJavaModule {
     return NAME;
   }
 
-  @ReactMethod
+  @Override
   public void vibrate(double durationDouble) {
     int duration = (int) durationDouble;
 
@@ -41,8 +40,10 @@ public class VibrationModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
-  public void vibrateByPattern(ReadableArray pattern, int repeat) {
+  @Override
+  public void vibrateByPattern(ReadableArray pattern, double repeatDouble) {
+    int repeat = (int) repeatDouble;
+
     Vibrator v = (Vibrator) getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
     if (v != null) {
       long[] patternLong = new long[pattern.size()];
@@ -53,7 +54,7 @@ public class VibrationModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void cancel() {
     Vibrator v = (Vibrator) getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
     if (v != null) {

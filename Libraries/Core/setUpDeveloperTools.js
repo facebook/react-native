@@ -54,6 +54,7 @@ if (__DEV__) {
           'trace',
           'info',
           'warn',
+          'error',
           'log',
           'group',
           'groupCollapsed',

@@ -23,12 +23,11 @@ NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 
 static NSString *const kLocalNotificationReceived = @"LocalNotificationReceived";
 static NSString *const kRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
-static NSString *const kRegisterUserNotificationSettings = @"RegisterUserNotificationSettings";
 static NSString *const kRemoteNotificationRegistrationFailed = @"RemoteNotificationRegistrationFailed";
 
 static NSString *const kErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
 
-#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
+#if !TARGET_OS_TV
 @implementation RCTConvert (NSCalendarUnit)
 
 RCT_ENUM_CONVERTER(NSCalendarUnit,
@@ -124,9 +123,6 @@ RCT_ENUM_CONVERTER(UIBackgroundFetchResult, (@{
 #endif //TARGET_OS_TV / TARGET_OS_UIKITFORMAC
 
 @implementation RCTPushNotificationManager
-{
-  RCTPromiseResolveBlock _requestPermissionsResolveBlock;
-}
 
 #if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC && !TARGET_OS_OSX
 
@@ -214,10 +210,6 @@ RCT_EXPORT_MODULE()
                                                name:RCTRemoteNotificationReceived
                                              object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(handleRegisterUserNotificationSettings:)
-                                               name:kRegisterUserNotificationSettings
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleRemoteNotificationsRegistered:)
                                                name:kRemoteNotificationsRegistered
                                              object:nil];
@@ -243,23 +235,11 @@ RCT_EXPORT_MODULE()
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 + (void)didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings *)notificationSettings
 {
-  if ([UIApplication instancesRespondToSelector:@selector(registerForRemoteNotifications)]) {
-    [RCTSharedApplication() registerForRemoteNotifications];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kRegisterUserNotificationSettings
-                                                        object:self
-                                                      userInfo:@{@"notificationSettings": notificationSettings}];
-  }
 }
 #endif // TODO(macOS ISS#2323203)
 
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-  [[NSNotificationCenter defaultCenter] postNotificationName:kRegisterUserNotificationSettings
-                                                      object:self
-                                                    userInfo:@{@"notificationSettings": @(RCTSharedApplication().enabledRemoteNotificationTypes)}];
-#endif // ]TODO(macOS ISS#2323203)
-  
   NSMutableString *hexString = [NSMutableString string];
   NSUInteger deviceTokenLength = deviceToken.length;
   const unsigned char *bytes = reinterpret_cast<const unsigned char *>(deviceToken.bytes);
@@ -359,34 +339,6 @@ RCT_EXPORT_MODULE()
   [self sendEventWithName:@"remoteNotificationRegistrationError" body:errorDetails];
 }
 
-- (void)handleRegisterUserNotificationSettings:(NSNotification *)notification
-{
-  if (_requestPermissionsResolveBlock == nil) {
-    return;
-  }
-
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  UIUserNotificationSettings *notificationSettings = notification.userInfo[@"notificationSettings"];
-  NSDictionary *notificationTypes = @{
-    @"alert": @((notificationSettings.types & UIUserNotificationTypeAlert) > 0),
-    @"sound": @((notificationSettings.types & UIUserNotificationTypeSound) > 0),
-    @"badge": @((notificationSettings.types & UIUserNotificationTypeBadge) > 0),
-  };
-#else // [TODO(macOS ISS#2323203)
-  NSRemoteNotificationType remoteNotificationType = [notification.userInfo[@"notificationSettings"] unsignedIntegerValue];
-  NSDictionary *notificationTypes = @{
-    @"alert": @((remoteNotificationType & NSRemoteNotificationTypeAlert) > 0),
-    @"sound": @((remoteNotificationType & NSRemoteNotificationTypeSound) > 0),
-    @"badge": @((remoteNotificationType & NSRemoteNotificationTypeBadge) > 0),
-  };
-#endif // ]TODO(macOS ISS#2323203)
-
-  _requestPermissionsResolveBlock(notificationTypes);
-  // Clean up listener added in requestPermissions
-  [self removeListeners:1];
-  _requestPermissionsResolveBlock = nil;
-}
-
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 RCT_EXPORT_METHOD(onFinishRemoteNotification:(NSString *)notificationId fetchResult:(NSString *)fetchResult) {
   UIBackgroundFetchResult result = [RCTConvert UIBackgroundFetchResult:fetchResult];
@@ -437,14 +389,8 @@ RCT_EXPORT_METHOD(requestPermissions:(JS::NativePushNotificationManagerIOS::Spec
   }
 #endif // TODO(macOS ISS#2323203)
 
-  if (_requestPermissionsResolveBlock != nil) {
-    RCTLogError(@"Cannot call requestPermissions twice before the first has returned.");
-    return;
-  }
-
   // Add a listener to make sure that startObserving has been called
   [self addListener:@"remoteNotificationsRegistered"];
-  _requestPermissionsResolveBlock = resolve;
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIUserNotificationType types = UIUserNotificationTypeNone;
@@ -459,9 +405,18 @@ RCT_EXPORT_METHOD(requestPermissions:(JS::NativePushNotificationManagerIOS::Spec
     types |= UIUserNotificationTypeSound;
   }
 
-  UIUserNotificationSettings *notificationSettings =
-    [UIUserNotificationSettings settingsForTypes:types categories:nil];
-  [RCTSharedApplication() registerUserNotificationSettings:notificationSettings];
+  [UNUserNotificationCenter.currentNotificationCenter
+   requestAuthorizationWithOptions:types
+   completionHandler:^(BOOL granted, NSError *_Nullable error) {
+    if (error != NULL) {
+      reject(@"-1", @"Error - Push authorization request failed.", error);
+    } else {
+      [RCTSharedApplication() registerForRemoteNotifications];
+      [UNUserNotificationCenter.currentNotificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+         resolve(RCTPromiseResolveValueForUNNotificationSettings(settings));
+      }];
+    }
+  }];
 #else // [TODO(macOS ISS#2323203)
   NSRemoteNotificationType types = NSRemoteNotificationTypeNone;
   if (permissions.alert()) {
@@ -486,18 +441,15 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (RCTRunningInAppExtension()) {
-    callback(@[@{@"alert": @NO, @"badge": @NO, @"sound": @NO}]);
+    callback(@[RCTSettingsDictForUNNotificationSettings(NO, NO, NO)]);
     return;
   }
 #endif // TODO(macOS ISS#2323203)
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  NSUInteger types = [RCTSharedApplication() currentUserNotificationSettings].types;
-  callback(@[@{
-    @"alert": @((types & UIUserNotificationTypeAlert) > 0),
-    @"badge": @((types & UIUserNotificationTypeBadge) > 0),
-    @"sound": @((types & UIUserNotificationTypeSound) > 0),
-  }]);
+  [UNUserNotificationCenter.currentNotificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+    callback(@[RCTPromiseResolveValueForUNNotificationSettings(settings)]);
+  }];
 #else // [TODO(macOS ISS#2323203)
   NSRemoteNotificationType types = RCTSharedApplication().enabledRemoteNotificationTypes;
   callback(@[@{
@@ -506,6 +458,18 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
     @"sound": @((types & NSRemoteNotificationTypeSound) > 0),
   }]);
 #endif // ]TODO(macOS ISS#2323203)
+}
+
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+static inline NSDictionary *RCTPromiseResolveValueForUNNotificationSettings(UNNotificationSettings* _Nonnull settings) {
+  return RCTSettingsDictForUNNotificationSettings(settings.alertSetting == UNNotificationSettingEnabled,
+                                                  settings.badgeSetting == UNNotificationSettingEnabled,
+                                                  settings.soundSetting == UNNotificationSettingEnabled);
+}
+#endif
+
+static inline NSDictionary *RCTSettingsDictForUNNotificationSettings(BOOL alert, BOOL badge, BOOL sound) {
+  return @{@"alert": @(alert), @"badge": @(badge), @"sound": @(sound)};
 }
 
 #if !TARGET_OS_OSX
@@ -655,11 +619,8 @@ RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callbac
 RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  // TODO: T56867629
-  if (@available(iOS 10.0, tvOS 10.0, *)) {
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center removeAllDeliveredNotifications];
-  }
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  [center removeAllDeliveredNotifications];
 #else // [TODO(macOS ISS#2323203)
   [[NSUserNotificationCenter defaultUserNotificationCenter] removeAllDeliveredNotifications];
 #endif // ]TODO(macOS ISS#2323203)
@@ -668,11 +629,8 @@ RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
 RCT_EXPORT_METHOD(removeDeliveredNotifications:(NSArray<NSString *> *)identifiers)
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  // TODO: T56867629
-  if (@available(iOS 10.0, tvOS 10.0, *)) {
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center removeDeliveredNotificationsWithIdentifiers:identifiers];
-  }
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  [center removeDeliveredNotificationsWithIdentifiers:identifiers];
 #else // [TODO(macOS ISS#2323203)
   NSArray<NSUserNotification*> *notificationsToRemove = [[NSUserNotificationCenter defaultUserNotificationCenter].deliveredNotifications filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSUserNotification* evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
     return [identifiers containsObject:evaluatedObject.identifier];
@@ -686,18 +644,15 @@ RCT_EXPORT_METHOD(removeDeliveredNotifications:(NSArray<NSString *> *)identifier
 RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTResponseSenderBlock)callback)
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  // TODO: T56867629
-  if (@available(iOS 10.0, tvOS 10.0, *)) {
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> *_Nonnull notifications) {
-      NSMutableArray<NSDictionary *> *formattedNotifications = [NSMutableArray new];
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> *_Nonnull notifications) {
+    NSMutableArray<NSDictionary *> *formattedNotifications = [NSMutableArray new];
 
-      for (UNNotification *notification in notifications) {
-        [formattedNotifications addObject:RCTFormatUNNotification(notification)];
-      }
-      callback(@[formattedNotifications]);
-    }];
-  }
+    for (UNNotification *notification in notifications) {
+      [formattedNotifications addObject:RCTFormatUNNotification(notification)];
+    }
+    callback(@[formattedNotifications]);
+  }];
 #else // [TODO(macOS ISS#2323203)
   NSMutableArray<NSDictionary *> *formattedNotifications = [NSMutableArray new];
   for (NSUserNotification *notification in [NSUserNotificationCenter defaultUserNotificationCenter].deliveredNotifications) {
@@ -794,9 +749,12 @@ RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTResponseSenderBlock)callback)
 
 #endif //TARGET_OS_TV / TARGET_OS_UIKITFORMAC
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativePushNotificationManagerIOSSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativePushNotificationManagerIOSSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end

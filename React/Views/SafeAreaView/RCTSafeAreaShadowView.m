@@ -16,8 +16,9 @@
 
 - (void)setLocalData:(RCTSafeAreaViewLocalData *)localData
 {
-  RCTAssert([localData isKindOfClass:[RCTSafeAreaViewLocalData class]],
-    @"Local data object for `RCTSafeAreaShadowView` must be `RCTSafeAreaViewLocalData` instance.");
+  RCTAssert(
+      [localData isKindOfClass:[RCTSafeAreaViewLocalData class]],
+      @"Local data object for `RCTSafeAreaShadowView` must be `RCTSafeAreaViewLocalData` instance.");
 
   UIEdgeInsets insets = localData.insets;
 
@@ -26,17 +27,27 @@
   super.paddingTop = (YGValue){insets.top, YGUnitPoint};
   super.paddingBottom = (YGValue){insets.bottom, YGUnitPoint};
 
-  [self didSetProps:@[@"paddingLeft", @"paddingRight", @"paddingTop", @"paddingBottom"]];
+  [self didSetProps:@[ @"paddingLeft", @"paddingRight", @"paddingTop", @"paddingBottom" ]];
 }
 
 /**
  * Removing support for setting padding from any outside code
  * to prevent interferring this with local data.
  */
-- (void)setPadding:(__unused YGValue)value {}
-- (void)setPaddingLeft:(__unused YGValue)value {}
-- (void)setPaddingRight:(__unused YGValue)value {}
-- (void)setPaddingTop:(__unused YGValue)value {}
-- (void)setPaddingBottom:(__unused YGValue)value {}
+- (void)setPadding:(__unused YGValue)value
+{
+}
+- (void)setPaddingLeft:(__unused YGValue)value
+{
+}
+- (void)setPaddingRight:(__unused YGValue)value
+{
+}
+- (void)setPaddingTop:(__unused YGValue)value
+{
+}
+- (void)setPaddingBottom:(__unused YGValue)value
+{
+}
 
 @end

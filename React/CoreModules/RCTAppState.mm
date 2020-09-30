@@ -22,10 +22,7 @@ static NSString *RCTCurrentAppState()
   static NSDictionary *states;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    states = @{
-      @(UIApplicationStateActive): @"active",
-      @(UIApplicationStateBackground): @"background"
-    };
+    states = @{@(UIApplicationStateActive) : @"active", @(UIApplicationStateBackground) : @"background"};
   });
   if (RCTRunningInAppExtension()) {
     return @"extension";
@@ -44,11 +41,10 @@ static NSString *RCTCurrentAppState()
   
 }
 
-@interface RCTAppState() <NativeAppStateSpec>
+@interface RCTAppState () <NativeAppStateSpec>
 @end
 
-@implementation RCTAppState
-{
+@implementation RCTAppState {
   NSString *_lastKnownState;
 }
 
@@ -72,7 +68,7 @@ RCT_EXPORT_MODULE()
 - (facebook::react::ModuleConstants<JS::NativeAppState::Constants>)getConstants
 {
   return facebook::react::typedConstants<JS::NativeAppState::Constants>({
-    .initialAppState = RCTCurrentAppState(),
+      .initialAppState = RCTCurrentAppState(),
   });
 }
 
@@ -80,17 +76,18 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"appStateDidChange", @"memoryWarning"];
+  return @[ @"appStateDidChange", @"memoryWarning" ];
 }
 
 - (void)startObserving
 {
-  for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
-                           UIApplicationDidEnterBackgroundNotification,
-                           UIApplicationDidFinishLaunchingNotification,
-                           UIApplicationWillResignActiveNotification,
-                           UIApplicationWillEnterForegroundNotification]) {
-
+  for (NSString *name in @[
+         UIApplicationDidBecomeActiveNotification,
+         UIApplicationDidEnterBackgroundNotification,
+         UIApplicationDidFinishLaunchingNotification,
+         UIApplicationWillResignActiveNotification,
+         UIApplicationWillEnterForegroundNotification
+       ]) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAppStateDidChange:)
                                                  name:name
@@ -110,11 +107,18 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)invalidate
+{
+  [self stopObserving];
+}
+
 #pragma mark - App Notification Methods
 
 - (void)handleMemoryWarning
 {
-  [self sendEventWithName:@"memoryWarning" body:nil];
+  if (self.bridge) {
+    [self sendEventWithName:@"memoryWarning" body:nil];
+  }
 }
 
 - (void)handleAppStateDidChange:(NSNotification *)notification
@@ -131,8 +135,9 @@ RCT_EXPORT_MODULE()
 
   if (![newState isEqualToString:_lastKnownState]) {
     _lastKnownState = newState;
-    [self sendEventWithName:@"appStateDidChange"
-                       body:@{@"app_state": _lastKnownState}];
+    if (self.bridge) {
+      [self sendEventWithName:@"appStateDidChange" body:@{@"app_state" : _lastKnownState}];
+    }
   }
 }
 
@@ -141,19 +146,22 @@ RCT_EXPORT_MODULE()
 /**
  * Get the current background/foreground state of the app
  */
-RCT_EXPORT_METHOD(getCurrentAppState:(RCTResponseSenderBlock)callback
-                  error:(__unused RCTResponseSenderBlock)error)
+RCT_EXPORT_METHOD(getCurrentAppState : (RCTResponseSenderBlock)callback error : (__unused RCTResponseSenderBlock)error)
 {
-  callback(@[@{@"app_state": RCTCurrentAppState()}]);
+  callback(@[ @{@"app_state" : RCTCurrentAppState()} ]);
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeAppStateSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeAppStateSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 @end
 
-Class RCTAppStateCls(void) {
+Class RCTAppStateCls(void)
+{
   return RCTAppState.class;
 }

@@ -27,7 +27,7 @@ struct ShadowNodeWrapper : public jsi::HostObject {
   ShadowNodeWrapper(SharedShadowNode shadowNode)
       : shadowNode(std::move(shadowNode)) {}
 
-  SharedShadowNode shadowNode;
+  ShadowNode::Shared shadowNode;
 };
 
 struct ShadowNodeListWrapper : public jsi::HostObject {
@@ -37,7 +37,7 @@ struct ShadowNodeListWrapper : public jsi::HostObject {
   SharedShadowNodeUnsharedList shadowNodeList;
 };
 
-inline static SharedShadowNode shadowNodeFromValue(
+inline static ShadowNode::Shared shadowNodeFromValue(
     jsi::Runtime &runtime,
     const jsi::Value &value) {
   return value.getObject(runtime)
@@ -47,7 +47,7 @@ inline static SharedShadowNode shadowNodeFromValue(
 
 inline static jsi::Value valueFromShadowNode(
     jsi::Runtime &runtime,
-    const SharedShadowNode &shadowNode) {
+    const ShadowNode::Shared &shadowNode) {
   return jsi::Object::createFromHostObject(
       runtime, std::make_shared<ShadowNodeWrapper>(shadowNode));
 }

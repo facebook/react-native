@@ -23,44 +23,41 @@ class ViewProps;
 
 using SharedViewProps = std::shared_ptr<ViewProps const>;
 
-class ViewProps : public Props,
-                  public YogaStylableProps,
-                  public AccessibilityProps {
+class ViewProps : public YogaStylableProps, public AccessibilityProps {
  public:
   ViewProps() = default;
-  ViewProps(YGStyle const &yogaStyle);
   ViewProps(ViewProps const &sourceProps, RawProps const &rawProps);
 
 #pragma mark - Props
 
   // Color
-  Float const opacity{1.0};
-  SharedColor const foregroundColor{};
-  SharedColor const backgroundColor{};
+  Float opacity{1.0};
+  SharedColor foregroundColor{};
+  SharedColor backgroundColor{};
 
   // Borders
-  CascadedBorderRadii const borderRadii{};
-  CascadedBorderColors const borderColors{};
-  CascadedBorderStyles const borderStyles{};
+  CascadedBorderRadii borderRadii{};
+  CascadedBorderColors borderColors{};
+  CascadedBorderStyles borderStyles{};
 
   // Shadow
-  SharedColor const shadowColor{};
-  Size const shadowOffset{};
-  Float const shadowOpacity{};
-  Float const shadowRadius{};
+  SharedColor shadowColor{};
+  Size shadowOffset{};
+  Float shadowOpacity{};
+  Float shadowRadius{};
 
   // Transform
   Transform transform{};
-  BackfaceVisibility const backfaceVisibility{};
-  bool const shouldRasterize{};
-  int const zIndex{};
+  BackfaceVisibility backfaceVisibility{};
+  bool shouldRasterize{};
+  int zIndex{};
 
   // Events
-  PointerEventsMode const pointerEvents{};
-  EdgeInsets const hitSlop{};
-  bool const onLayout{};
+  PointerEventsMode pointerEvents{};
+  EdgeInsets hitSlop{};
+  bool onLayout{};
 
-  bool const collapsable{true};
+  bool collapsable{true};
 
 #pragma mark - Convenience Methods
 

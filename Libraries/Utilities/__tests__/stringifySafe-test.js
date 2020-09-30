@@ -5,14 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow strict-local
  * @emails oncall+react_native
  */
 
 'use strict';
 
-describe('stringifySafe', () => {
-  const stringifySafe = require('../stringifySafe');
+import stringifySafe, {createStringifySafeWithLimits} from '../stringifySafe';
 
+describe('stringifySafe', () => {
   it('stringifySafe stringifies undefined values', () => {
     expect(stringifySafe(undefined)).toEqual('undefined');
   });
@@ -41,9 +42,8 @@ describe('stringifySafe', () => {
   });
 
   it('stringifySafe stringifies circular objects without toString', () => {
-    const arg = {};
-    arg.arg = arg;
-    arg.toString = undefined;
+    const arg = {x: {}, toString: undefined};
+    arg.x = arg;
     const result = stringifySafe(arg);
     expect(result).toEqual('["object" failed to stringify]');
   });
@@ -52,5 +52,39 @@ describe('stringifySafe', () => {
     const error = new Error('error');
     const result = stringifySafe(error);
     expect(result).toEqual('Error: error');
+  });
+
+  it('stringifySafe truncates long strings', () => {
+    const stringify = createStringifySafeWithLimits({maxStringLimit: 3});
+    expect(stringify('abcdefghijklmnopqrstuvwxyz')).toEqual(
+      '"abc...(truncated)..."',
+    );
+    expect(stringify({a: 'abcdefghijklmnopqrstuvwxyz'})).toEqual(
+      '{"a":"abc...(truncated)..."}',
+    );
+  });
+
+  it('stringifySafe truncates large arrays', () => {
+    const stringify = createStringifySafeWithLimits({maxArrayLimit: 3});
+    expect(stringify([1, 2, 3, 4, 5])).toEqual(
+      '[1,2,3,"... extra 2 values truncated ..."]',
+    );
+    expect(stringify({a: [1, 2, 3, 4, 5]})).toEqual(
+      '{"a":[1,2,3,"... extra 2 values truncated ..."]}',
+    );
+  });
+
+  it('stringifySafe truncates large objects', () => {
+    const stringify = createStringifySafeWithLimits({maxObjectKeysLimit: 3});
+    expect(stringify({a: 1, b: 2, c: 3, d: 4, e: 5})).toEqual(
+      '{"a":1,"b":2,"c":3,"...(truncated keys)...":2}',
+    );
+  });
+
+  it('stringifySafe truncates deep objects', () => {
+    const stringify = createStringifySafeWithLimits({maxDepth: 3});
+    expect(stringify({a: {a: {a: {x: 0, y: 1, z: 2}}}})).toEqual(
+      '{"a":{"a":{"a":"{ ... object with 3 keys ... }"}}}',
+    );
   });
 });

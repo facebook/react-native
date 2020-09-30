@@ -39,11 +39,9 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   protected long mNativePointer;
   @Nullable private Object mData;
 
-  @DoNotStrip
-  private @Nullable float[] arr = null;
+  @DoNotStrip private @Nullable float[] arr = null;
 
-  @DoNotStrip
-  private int mLayoutDirection = 0;
+  @DoNotStrip private int mLayoutDirection = 0;
 
   private boolean mHasNewLayout = true;
 
@@ -59,7 +57,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   YogaNodeJNIBase(YogaConfig config) {
-    this(YogaNative.jni_YGNodeNewWithConfigJNI(((YogaConfigJNIBase)config).mNativePointer));
+    this(YogaNative.jni_YGNodeNewWithConfigJNI(((YogaConfigJNIBase) config).mNativePointer));
   }
 
   public void reset() {
@@ -106,6 +104,32 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     return YogaNative.jni_YGNodeIsReferenceBaselineJNI(mNativePointer);
   }
 
+  public void swapChildAt(YogaNode newChild, int position) {
+    YogaNodeJNIBase child = (YogaNodeJNIBase) newChild;
+    mChildren.remove(position);
+    mChildren.add(position, child);
+    child.mOwner = this;
+    YogaNative.jni_YGNodeSwapChildJNI(mNativePointer, child.mNativePointer, position);
+  }
+
+  @Override
+  public YogaNodeJNIBase cloneWithChildren() {
+    try {
+      YogaNodeJNIBase clonedYogaNode = (YogaNodeJNIBase) super.clone();
+      long clonedNativePointer = YogaNative.jni_YGNodeCloneJNI(mNativePointer);
+      clonedYogaNode.mOwner = null;
+      clonedYogaNode.mNativePointer = clonedNativePointer;
+      for (int i = 0; i < clonedYogaNode.getChildCount(); i++) {
+        clonedYogaNode.swapChildAt(clonedYogaNode.getChildAt(i).cloneWithChildren(), i);
+      }
+
+      return clonedYogaNode;
+    } catch (CloneNotSupportedException ex) {
+      // This class implements Cloneable, this should not happen
+      throw new RuntimeException(ex);
+    }
+  }
+
   @Override
   public YogaNodeJNIBase cloneWithoutChildren() {
     try {
@@ -138,10 +162,9 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   /**
-   * The owner is used to identify the YogaTree that a {@link YogaNode} belongs to.
-   * This method will return the parent of the {@link YogaNode} when the
-   * {@link YogaNode} only belongs to one YogaTree or null when the
-   * {@link YogaNode} is shared between two or more YogaTrees.
+   * The owner is used to identify the YogaTree that a {@link YogaNode} belongs to. This method will
+   * return the parent of the {@link YogaNode} when the {@link YogaNode} only belongs to one
+   * YogaTree or null when the {@link YogaNode} is shared between two or more YogaTrees.
    *
    * @return the {@link YogaNode} that owns this {@link YogaNode}.
    */
@@ -168,7 +191,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     ArrayList<YogaNodeJNIBase> n = new ArrayList<>();
     n.add(this);
     for (int i = 0; i < n.size(); ++i) {
-      List<YogaNodeJNIBase> children  = n.get(i).mChildren;
+      List<YogaNodeJNIBase> children = n.get(i).mChildren;
       if (children != null) {
         n.addAll(children);
       }
@@ -509,8 +532,8 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   /**
-   * Use the set logger (defaults to adb log) to print out the styles, children, and computed
-   * layout of the tree rooted at this node.
+   * Use the set logger (defaults to adb log) to print out the styles, children, and computed layout
+   * of the tree rooted at this node.
    */
   public void print() {
     YogaNative.jni_YGNodePrintJNI(mNativePointer);
@@ -559,7 +582,9 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public boolean getDoesLegacyStretchFlagAffectsLayout() {
-    return arr != null && (((int) arr[LAYOUT_EDGE_SET_FLAG_INDEX] & DOES_LEGACY_STRETCH_BEHAVIOUR) == DOES_LEGACY_STRETCH_BEHAVIOUR);
+    return arr != null
+        && (((int) arr[LAYOUT_EDGE_SET_FLAG_INDEX] & DOES_LEGACY_STRETCH_BEHAVIOUR)
+            == DOES_LEGACY_STRETCH_BEHAVIOUR);
   }
 
   @Override
@@ -575,9 +600,13 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
         case BOTTOM:
           return arr[LAYOUT_MARGIN_START_INDEX + 3];
         case START:
-          return getLayoutDirection() == YogaDirection.RTL ? arr[LAYOUT_MARGIN_START_INDEX + 2] : arr[LAYOUT_MARGIN_START_INDEX];
+          return getLayoutDirection() == YogaDirection.RTL
+              ? arr[LAYOUT_MARGIN_START_INDEX + 2]
+              : arr[LAYOUT_MARGIN_START_INDEX];
         case END:
-          return getLayoutDirection() == YogaDirection.RTL ? arr[LAYOUT_MARGIN_START_INDEX] : arr[LAYOUT_MARGIN_START_INDEX + 2];
+          return getLayoutDirection() == YogaDirection.RTL
+              ? arr[LAYOUT_MARGIN_START_INDEX]
+              : arr[LAYOUT_MARGIN_START_INDEX + 2];
         default:
           throw new IllegalArgumentException("Cannot get layout margins of multi-edge shorthands");
       }
@@ -589,7 +618,9 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   @Override
   public float getLayoutPadding(YogaEdge edge) {
     if (arr != null && ((int) arr[LAYOUT_EDGE_SET_FLAG_INDEX] & PADDING) == PADDING) {
-      int paddingStartIndex = LAYOUT_PADDING_START_INDEX - ((((int)arr[LAYOUT_EDGE_SET_FLAG_INDEX] & MARGIN) == MARGIN) ? 0 : 4);
+      int paddingStartIndex =
+          LAYOUT_PADDING_START_INDEX
+              - ((((int) arr[LAYOUT_EDGE_SET_FLAG_INDEX] & MARGIN) == MARGIN) ? 0 : 4);
       switch (edge) {
         case LEFT:
           return arr[paddingStartIndex];
@@ -600,9 +631,13 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
         case BOTTOM:
           return arr[paddingStartIndex + 3];
         case START:
-          return getLayoutDirection() == YogaDirection.RTL ? arr[paddingStartIndex + 2] : arr[paddingStartIndex];
+          return getLayoutDirection() == YogaDirection.RTL
+              ? arr[paddingStartIndex + 2]
+              : arr[paddingStartIndex];
         case END:
-          return getLayoutDirection() == YogaDirection.RTL ? arr[paddingStartIndex] : arr[paddingStartIndex + 2];
+          return getLayoutDirection() == YogaDirection.RTL
+              ? arr[paddingStartIndex]
+              : arr[paddingStartIndex + 2];
         default:
           throw new IllegalArgumentException("Cannot get layout paddings of multi-edge shorthands");
       }
@@ -614,7 +649,10 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   @Override
   public float getLayoutBorder(YogaEdge edge) {
     if (arr != null && ((int) arr[LAYOUT_EDGE_SET_FLAG_INDEX] & BORDER) == BORDER) {
-      int borderStartIndex = LAYOUT_BORDER_START_INDEX - ((((int) arr[LAYOUT_EDGE_SET_FLAG_INDEX] & MARGIN) == MARGIN) ? 0 : 4) - ((((int) arr[LAYOUT_EDGE_SET_FLAG_INDEX] & PADDING) == PADDING) ? 0 : 4);
+      int borderStartIndex =
+          LAYOUT_BORDER_START_INDEX
+              - ((((int) arr[LAYOUT_EDGE_SET_FLAG_INDEX] & MARGIN) == MARGIN) ? 0 : 4)
+              - ((((int) arr[LAYOUT_EDGE_SET_FLAG_INDEX] & PADDING) == PADDING) ? 0 : 4);
       switch (edge) {
         case LEFT:
           return arr[borderStartIndex];
@@ -625,9 +663,13 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
         case BOTTOM:
           return arr[borderStartIndex + 3];
         case START:
-          return getLayoutDirection() == YogaDirection.RTL ? arr[borderStartIndex + 2] : arr[borderStartIndex];
+          return getLayoutDirection() == YogaDirection.RTL
+              ? arr[borderStartIndex + 2]
+              : arr[borderStartIndex];
         case END:
-          return getLayoutDirection() == YogaDirection.RTL ? arr[borderStartIndex] : arr[borderStartIndex + 2];
+          return getLayoutDirection() == YogaDirection.RTL
+              ? arr[borderStartIndex]
+              : arr[borderStartIndex + 2];
         default:
           throw new IllegalArgumentException("Cannot get layout border of multi-edge shorthands");
       }
@@ -638,7 +680,8 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   @Override
   public YogaDirection getLayoutDirection() {
-    return YogaDirection.fromInt(arr != null ? (int) arr[LAYOUT_DIRECTION_INDEX] : mLayoutDirection);
+    return YogaDirection.fromInt(
+        arr != null ? (int) arr[LAYOUT_DIRECTION_INDEX] : mLayoutDirection);
   }
 
   @Override

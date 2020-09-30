@@ -18,7 +18,7 @@ export interface Spec extends TurboModule {
     ERROR_CODE_EXCEPTION: number,
     ERROR_CODE_VIEW_NOT_FOUND: number,
   |};
-  +onSuccess: (data: Object) => void;
+  +onSuccess: (data: string) => void;
   +onFailure: (errorCode: number, error: string) => void;
 }
 

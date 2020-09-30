@@ -32,6 +32,7 @@ exports[`LogBoxNotificationContainer should render inspector with logs, even whe
             "stack": null,
             "status": "NONE",
           },
+          "type": undefined,
         },
         LogBoxLog {
           "category": "Some kind of message (latest)",
@@ -50,6 +51,7 @@ exports[`LogBoxNotificationContainer should render inspector with logs, even whe
             "stack": null,
             "status": "NONE",
           },
+          "type": undefined,
         },
       ]
     }

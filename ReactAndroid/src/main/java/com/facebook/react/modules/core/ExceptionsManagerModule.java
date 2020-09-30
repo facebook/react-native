@@ -8,10 +8,9 @@
 package com.facebook.react.modules.core;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeExceptionsManagerSpec;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.JavaOnlyMap;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.JavascriptException;
@@ -22,13 +21,14 @@ import com.facebook.react.util.ExceptionDataHelper;
 import com.facebook.react.util.JSStackTrace;
 
 @ReactModule(name = ExceptionsManagerModule.NAME)
-public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
+public class ExceptionsManagerModule extends NativeExceptionsManagerSpec {
 
   public static final String NAME = "ExceptionsManager";
 
   private final DevSupportManager mDevSupportManager;
 
   public ExceptionsManagerModule(DevSupportManager devSupportManager) {
+    super(null);
     mDevSupportManager = devSupportManager;
   }
 
@@ -37,8 +37,10 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
     return NAME;
   }
 
-  @ReactMethod
-  public void reportFatalException(String message, ReadableArray stack, int id) {
+  @Override
+  public void reportFatalException(String message, ReadableArray stack, double idDouble) {
+    int id = (int) idDouble;
+
     JavaOnlyMap data = new JavaOnlyMap();
     data.putString("message", message);
     data.putArray("stack", stack);
@@ -47,8 +49,10 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
     reportException(data);
   }
 
-  @ReactMethod
-  public void reportSoftException(String message, ReadableArray stack, int id) {
+  @Override
+  public void reportSoftException(String message, ReadableArray stack, double idDouble) {
+    int id = (int) idDouble;
+
     JavaOnlyMap data = new JavaOnlyMap();
     data.putString("message", message);
     data.putArray("stack", stack);
@@ -57,7 +61,7 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
     reportException(data);
   }
 
-  @ReactMethod
+  @Override
   public void reportException(ReadableMap data) {
     String message = data.hasKey("message") ? data.getString("message") : "";
     ReadableArray stack = data.hasKey("stack") ? data.getArray("stack") : Arguments.createArray();
@@ -87,14 +91,17 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
-  public void updateExceptionMessage(String title, ReadableArray details, int exceptionId) {
+  @Override
+  public void updateExceptionMessage(
+      String title, ReadableArray details, double exceptionIdDouble) {
+    int exceptionId = (int) exceptionIdDouble;
+
     if (mDevSupportManager.getDevSupportEnabled()) {
       mDevSupportManager.updateJSError(title, details, exceptionId);
     }
   }
 
-  @ReactMethod
+  @Override
   public void dismissRedbox() {
     if (mDevSupportManager.getDevSupportEnabled()) {
       mDevSupportManager.hideRedboxDialog();

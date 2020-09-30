@@ -16,7 +16,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReactModuleWithSpec;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.Arrays;
@@ -34,7 +33,7 @@ public abstract class NativeJSDevSupportSpec extends ReactContextBaseJavaModule 
   public abstract void onFailure(double errorCode, String error);
 
   @ReactMethod
-  public abstract void onSuccess(ReadableMap data);
+  public abstract void onSuccess(String data);
 
   protected abstract Map<String, Object> getTypedExportedConstants();
 

@@ -172,6 +172,7 @@ const STYLES_WHITELIST = {
   borderTopRightRadius: true,
   borderTopStartRadius: true,
   elevation: true,
+  zIndex: true,
   /* ios styles */
   shadowOpacity: true,
   shadowRadius: true,
@@ -276,7 +277,9 @@ function assertNativeAnimatedModule(): void {
 
 let _warnedMissingNativeAnimated = false;
 
-function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
+function shouldUseNativeDriver(
+  config: {...AnimationConfig, ...} | EventConfig,
+): boolean {
   if (config.useNativeDriver == null) {
     console.warn(
       'Animated: `useNativeDriver` was not specified. This is a required ' +
@@ -291,7 +294,7 @@ function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
           'animated module is missing. Falling back to JS-based animation. To ' +
           'resolve this, add `RCTAnimation` module to this app, or remove ' +
           '`useNativeDriver`. ' +
-          'More info: https://github.com/facebook/react-native/issues/11094#issuecomment-263240420',
+          'Make sure to run `pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md',
       );
       _warnedMissingNativeAnimated = true;
     }

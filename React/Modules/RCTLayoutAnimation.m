@@ -100,8 +100,7 @@ static NSString *CAMediaTimingFunctionNameFromRCTAnimationType(RCTAnimationType 
   return self;
 }
 
-- (instancetype)initWithDuration:(NSTimeInterval)duration
-                          config:(NSDictionary *)config
+- (instancetype)initWithDuration:(NSTimeInterval)duration config:(NSDictionary *)config
 {
   if (!config) {
     return nil;
@@ -134,8 +133,7 @@ static NSString *CAMediaTimingFunctionNameFromRCTAnimationType(RCTAnimationType 
   return self;
 }
 
-- (void)performAnimations:(void (^)(void))animations
-      withCompletionBlock:(void (^)(BOOL completed))completionBlock
+- (void)performAnimations:(void (^)(void))animations withCompletionBlock:(void (^)(BOOL completed))completionBlock
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (_animationType == RCTAnimationTypeSpring) {
@@ -148,8 +146,7 @@ static NSString *CAMediaTimingFunctionNameFromRCTAnimationType(RCTAnimationType 
                      completion:completionBlock];
   } else {
     UIViewAnimationOptions options =
-      UIViewAnimationOptionBeginFromCurrentState |
-      UIViewAnimationOptionsFromRCTAnimationType(_animationType);
+        UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionsFromRCTAnimationType(_animationType);
 
     [UIView animateWithDuration:_duration
                           delay:_delay
@@ -190,19 +187,25 @@ static NSString *CAMediaTimingFunctionNameFromRCTAnimationType(RCTAnimationType 
 
 - (BOOL)isEqual:(RCTLayoutAnimation *)animation
 {
-  return
-    _duration == animation.duration &&
-    _delay == animation.delay &&
-    (_property == animation.property || [_property isEqualToString:animation.property]) &&
-    _springDamping == animation.springDamping &&
-    _initialVelocity == animation.initialVelocity &&
-    _animationType == animation.animationType;
+  return _duration == animation.duration && _delay == animation.delay &&
+      (_property == animation.property || [_property isEqualToString:animation.property]) &&
+      _springDamping == animation.springDamping && _initialVelocity == animation.initialVelocity &&
+      _animationType == animation.animationType;
 }
 
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"<%@: %p; duration: %f; delay: %f; property: %@; springDamping: %f; initialVelocity: %f; animationType: %li;>",
-          NSStringFromClass([self class]), self, _duration, _delay, _property, _springDamping, _initialVelocity, (long)_animationType];
+  return [NSString
+      stringWithFormat:
+          @"<%@: %p; duration: %f; delay: %f; property: %@; springDamping: %f; initialVelocity: %f; animationType: %li;>",
+          NSStringFromClass([self class]),
+          self,
+          _duration,
+          _delay,
+          _property,
+          _springDamping,
+          _initialVelocity,
+          (long)_animationType];
 }
 
 @end

@@ -30,7 +30,7 @@ inline Value toValue(Runtime& runtime, const char* str) {
   return String::createFromAscii(runtime, str);
 }
 inline Value toValue(Runtime& runtime, const std::string& str) {
-  return String::createFromAscii(runtime, str);
+  return String::createFromUtf8(runtime, str);
 }
 template <typename T>
 inline Value toValue(Runtime& runtime, const T& other) {

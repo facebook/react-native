@@ -1,6 +1,6 @@
 
 [android]
-  target = android-28
+  target = android-29
 
 [download]
   max_number_of_retries = 3

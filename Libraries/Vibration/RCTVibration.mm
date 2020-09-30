@@ -30,10 +30,12 @@ RCT_EXPORT_METHOD(vibrate:(double)pattern)
   [self vibrate];
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-  (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)
+    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
+                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
 {
-  return std::make_shared<facebook::react::NativeVibrationSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeVibrationSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
 }
 
 RCT_EXPORT_METHOD(vibrateByPattern:(NSArray *)pattern

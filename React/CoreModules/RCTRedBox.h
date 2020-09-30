@@ -29,8 +29,12 @@ typedef void (^RCTRedBoxButtonPressHandler)(void);
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack errorCookie:(int)errorCookie;
 - (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack;
 - (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack;
-- (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack errorCookie:(int)errorCookie;
-- (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack errorCookie:(int)errorCookie;
+- (void)showErrorMessage:(NSString *)message
+         withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
+             errorCookie:(int)errorCookie;
+- (void)updateErrorMessage:(NSString *)message
+           withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
+               errorCookie:(int)errorCookie;
 
 - (void)dismiss;
 

@@ -20,7 +20,7 @@ class ShadowTree;
 class ShadowTreeDelegate {
  public:
   /*
-   * Called right after Shadow Tree commit a new state of the the tree.
+   * Called right after Shadow Tree commit a new state of the tree.
    */
   virtual void shadowTreeDidFinishTransaction(
       ShadowTree const &shadowTree,

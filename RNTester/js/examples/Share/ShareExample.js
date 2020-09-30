@@ -71,7 +71,7 @@ class ShareMessageExample extends React.Component<Props, State> {
     Share.share(
       {
         message: 'A framework for building native apps using React',
-        url: 'http://facebook.github.io/react-native/',
+        url: 'https://reactnative.dev/',
         title: 'React Native',
       },
       {

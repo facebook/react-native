@@ -12,7 +12,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
-import android.util.Log;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -123,7 +122,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final NativeModuleRegistry nativeModuleRegistry,
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
-    Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
+    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstanceImpl");
 
     mHybridData = initHybrid();
@@ -140,7 +139,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mTraceListener = new JSProfilerTraceListener(this);
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
-    Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
+    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "initializeCxxBridge");
     initializeBridge(
         new BridgeCallback(this),
@@ -149,7 +148,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         mNativeModulesQueueThread,
         mNativeModuleRegistry.getJavaModules(this),
         mNativeModuleRegistry.getCxxModules());
-    Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
+    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
@@ -253,7 +252,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public void runJSBundle() {
-    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.runJSBundle()");
+    FLog.d(ReactConstants.TAG, "CatalystInstanceImpl.runJSBundle()");
     Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
     // incrementPendingJSCalls();
     mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
@@ -333,7 +332,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   @ThreadConfined(UI)
   public void destroy() {
-    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() start");
+    FLog.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() start");
     UiThreadUtil.assertOnUiThread();
 
     if (ReactFeatureFlags.useCatalystTeardownV2) {
@@ -345,7 +344,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @ThreadConfined(UI)
   public void destroyV1() {
-    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroyV1() start");
+    FLog.d(ReactConstants.TAG, "CatalystInstanceImpl.destroyV1() start");
     UiThreadUtil.assertOnUiThread();
 
     if (mDestroyed) {
@@ -405,7 +404,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
                                             mHybridData.resetNative();
                                             getReactQueueConfiguration().destroy();
-                                            Log.d(
+                                            FLog.d(
                                                 ReactConstants.TAG,
                                                 "CatalystInstanceImpl.destroy() end");
                                             ReactMarker.logMarker(
@@ -430,7 +429,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
    */
   @ThreadConfined(UI)
   public void destroyV2() {
-    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroyV2() start");
+    FLog.d(ReactConstants.TAG, "CatalystInstanceImpl.destroyV2() start");
     UiThreadUtil.assertOnUiThread();
 
     if (mDestroyed) {
@@ -447,7 +446,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         new Runnable() {
           @Override
           public void run() {
-            Log.d("CatalystInstanceImpl", ".destroy on native modules thread");
+            FLog.d("CatalystInstanceImpl", ".destroy on native modules thread");
             mNativeModuleRegistry.notifyJSInstanceDestroy();
 
             // Notifies all JSI modules that they are being destroyed, including the FabricUIManager
@@ -464,7 +463,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
             }
 
             mNativeModulesThreadDestructionComplete = true;
-            Log.d("CatalystInstanceImpl", ".destroy on native modules thread finished");
+            FLog.d("CatalystInstanceImpl", ".destroy on native modules thread finished");
           }
         });
 
@@ -474,14 +473,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
             new Runnable() {
               @Override
               public void run() {
-                Log.d("CatalystInstanceImpl", ".destroy on JS thread");
+                FLog.d("CatalystInstanceImpl", ".destroy on JS thread");
                 // We need to destroy the TurboModuleManager on the JS Thread
                 if (mTurboModuleManagerJSIModule != null) {
                   mTurboModuleManagerJSIModule.onCatalystInstanceDestroy();
                 }
 
                 mJSThreadDestructionComplete = true;
-                Log.d("CatalystInstanceImpl", ".destroy on JS thread finished");
+                FLog.d("CatalystInstanceImpl", ".destroy on JS thread finished");
               }
             });
 
@@ -490,7 +489,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     while (!mNativeModulesThreadDestructionComplete || !mJSThreadDestructionComplete) {
       // Never wait here, blocking the UI thread, for more than 100ms
       if ((System.currentTimeMillis() - waitStartTime) > 100) {
-        Log.w(
+        FLog.w(
             ReactConstants.TAG,
             "CatalystInstanceImpl.destroy() timed out waiting for Native Modules and JS thread teardown");
         break;
@@ -511,7 +510,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mHybridData.resetNative();
 
     getReactQueueConfiguration().destroy();
-    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
+    FLog.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
     ReactMarker.logMarker(ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_END);
 
     // This is a noop if the listener was not yet registered.
@@ -527,7 +526,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @VisibleForTesting
   @Override
   public void initialize() {
-    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.initialize()");
+    FLog.d(ReactConstants.TAG, "CatalystInstanceImpl.initialize()");
     Assertions.assertCondition(
         !mInitialized, "This catalyst instance has already been initialized");
     // We assume that the instance manager blocks on running the JS bundle. If
@@ -582,6 +581,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
     if (getTurboModuleRegistry() != null) {
       TurboModule turboModule = getTurboModuleRegistry().getModule(moduleName);
 
+      // TODO(T46487253): Remove after task is closed
+      FLog.e(
+          ReactConstants.TAG,
+          "CatalystInstanceImpl.getNativeModule: TurboModule "
+              + moduleName
+              + (turboModule == null ? " not" : "")
+              + " found");
       if (turboModule != null) {
         return (NativeModule) turboModule;
       }
@@ -709,6 +715,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private void onNativeException(Exception e) {
+    // TODO T62192299: remove this after investigation
+    FLog.e(ReactConstants.TAG, "CatalystInstanceImpl caught native exception", e);
+
     mNativeModuleCallExceptionHandler.handleException(e);
     mReactQueueConfiguration
         .getUIQueueThread()

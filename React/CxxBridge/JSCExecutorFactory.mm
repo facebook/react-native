@@ -9,19 +9,17 @@
 
 #import <jsi/JSCRuntime.h>
 
-#import<memory>
+#import <memory>
 
 namespace facebook {
 namespace react {
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
-    std::shared_ptr<MessageQueueThread> __unused jsQueue) {
+    std::shared_ptr<MessageQueueThread> __unused jsQueue)
+{
   return std::make_unique<JSIExecutor>(
-      facebook::jsc::makeJSCRuntime(),
-      delegate,
-      JSIExecutor::defaultTimeoutInvoker,
-      runtimeInstaller_);
+      facebook::jsc::makeJSCRuntime(), delegate, JSIExecutor::defaultTimeoutInvoker, runtimeInstaller_);
 }
 
 } // namespace react

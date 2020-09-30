@@ -42,7 +42,11 @@ namespace react {
  */
 class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
  public:
-  NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+  NativeSampleTurboModuleSpecJSI(
+      id<RCTTurboModule> instance,
+      std::shared_ptr<CallInvoker> jsInvoker,
+      std::shared_ptr<CallInvoker> nativeInvoker,
+      id<RCTTurboModulePerformanceLogger> perfLogger);
 };
 
 } // namespace react

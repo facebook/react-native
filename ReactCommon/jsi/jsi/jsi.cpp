@@ -37,6 +37,27 @@ std::string kindToString(const Value& v, Runtime* rt = nullptr) {
   }
 }
 
+// getPropertyAsFunction() will try to create a JSError.  If the
+// failure is in building a JSError, this will lead to infinite
+// recursion.  This function is used in place of getPropertyAsFunction
+// when building JSError, to avoid that infinite recursion.
+Value callGlobalFunction(Runtime& runtime, const char* name, const Value& arg) {
+  Value v = runtime.global().getProperty(runtime, name);
+  if (!v.isObject()) {
+    throw JSINativeException(
+        std::string("callGlobalFunction: JS global property '") + name +
+        "' is " + kindToString(v, &runtime) + ", expected a Function");
+  }
+  Object o = v.getObject(runtime);
+  if (!o.isFunction(runtime)) {
+    throw JSINativeException(
+        std::string("callGlobalFunction: JS global property '") + name +
+        "' is a non-callable Object, expected a Function");
+  }
+  Function f = std::move(o).getFunction(runtime);
+  return f.call(runtime, arg);
+}
+
 } // namespace
 
 namespace detail {
@@ -78,15 +99,20 @@ Instrumentation& Runtime::instrumentation() {
 
     void collectGarbage() override {}
 
-    bool createSnapshotToFile(const std::string&) override {
-      return false;
+    void startTrackingHeapObjectStackTraces() override {}
+    void stopTrackingHeapObjectStackTraces() override {}
+
+    void createSnapshotToFile(const std::string&) override {
+      throw JSINativeException(
+          "Default instrumentation cannot create a heap snapshot");
     }
 
-    bool createSnapshotToStream(std::ostream&) override {
-      return false;
+    void createSnapshotToStream(std::ostream&) override {
+      throw JSINativeException(
+          "Default instrumentation cannot create a heap snapshot");
     }
 
-    void writeBridgeTrafficTraceToFile(const std::string&) const override {
+    std::string flushAndDisableBridgeTrafficTrace() override {
       std::abort();
     }
 
@@ -142,9 +168,7 @@ Function Object::getPropertyAsFunction(Runtime& runtime, const char* name)
             kindToString(std::move(obj), &runtime) + ", expected a Function");
   };
 
-  Runtime::PointerValue* value = obj.ptr_;
-  obj.ptr_ = nullptr;
-  return Function(value);
+  return std::move(obj).getFunction(runtime);
 }
 
 Array Object::asArray(Runtime& runtime) const& {
@@ -347,7 +371,11 @@ JSError::JSError(Runtime& rt, Value&& value) {
 JSError::JSError(Runtime& rt, std::string msg) : message_(std::move(msg)) {
   try {
     setValue(
-        rt, rt.global().getPropertyAsFunction(rt, "Error").call(rt, message_));
+        rt,
+        callGlobalFunction(rt, "Error", String::createFromUtf8(rt, message_)));
+  } catch (const std::exception& ex) {
+    message_ = std::string(ex.what()) + " (while raising " + message_ + ")";
+    setValue(rt, String::createFromUtf8(rt, message_));
   } catch (...) {
     setValue(rt, Value());
   }
@@ -360,6 +388,8 @@ JSError::JSError(Runtime& rt, std::string msg, std::string stack)
     e.setProperty(rt, "message", String::createFromUtf8(rt, message_));
     e.setProperty(rt, "stack", String::createFromUtf8(rt, stack_));
     setValue(rt, std::move(e));
+  } catch (const std::exception& ex) {
+    setValue(rt, String::createFromUtf8(rt, ex.what()));
   } catch (...) {
     setValue(rt, Value());
   }
@@ -380,20 +410,23 @@ void JSError::setValue(Runtime& rt, Value&& value) {
       if (message_.empty()) {
         jsi::Value message = obj.getProperty(rt, "message");
         if (!message.isUndefined()) {
-          message_ = message.toString(rt).utf8(rt);
+          message_ =
+              callGlobalFunction(rt, "String", message).getString(rt).utf8(rt);
         }
       }
 
       if (stack_.empty()) {
         jsi::Value stack = obj.getProperty(rt, "stack");
         if (!stack.isUndefined()) {
-          stack_ = stack.toString(rt).utf8(rt);
+          stack_ =
+              callGlobalFunction(rt, "String", stack).getString(rt).utf8(rt);
         }
       }
     }
 
     if (message_.empty()) {
-      message_ = value_->toString(rt).utf8(rt);
+      message_ =
+          callGlobalFunction(rt, "String", *value_).getString(rt).utf8(rt);
     }
 
     if (stack_.empty()) {
@@ -403,6 +436,13 @@ void JSError::setValue(Runtime& rt, Value&& value) {
     if (what_.empty()) {
       what_ = message_ + "\n\n" + stack_;
     }
+  } catch (const std::exception& ex) {
+    message_ = std::string("[Exception while creating message string: ") +
+        ex.what() + "]";
+    stack_ = std::string("Exception while creating stack string: ") +
+        ex.what() + "]";
+    what_ =
+        std::string("Exception while getting value fields: ") + ex.what() + "]";
   } catch (...) {
     message_ = "[Exception caught creating message string]";
     stack_ = "[Exception caught creating stack string]";

@@ -40,5 +40,26 @@ std::shared_ptr<void> AttributedStringBox::getOpaquePointer() const {
   return opaquePointer_;
 }
 
+bool operator==(
+    AttributedStringBox const &lhs,
+    AttributedStringBox const &rhs) {
+  if (lhs.getMode() != rhs.getMode()) {
+    return false;
+  }
+
+  switch (lhs.getMode()) {
+    case facebook::react::AttributedStringBox::Mode::Value:
+      return lhs.getValue() == rhs.getValue();
+    case facebook::react::AttributedStringBox::Mode::OpaquePointer:
+      return lhs.getOpaquePointer() == rhs.getOpaquePointer();
+  }
+}
+
+bool operator!=(
+    AttributedStringBox const &lhs,
+    AttributedStringBox const &rhs) {
+  return !(lhs == rhs);
+}
+
 } // namespace react
 } // namespace facebook

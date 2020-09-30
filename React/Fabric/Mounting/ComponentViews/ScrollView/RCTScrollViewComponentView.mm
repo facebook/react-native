@@ -48,6 +48,11 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   CGSize _contentSize;
   NSTimeInterval _lastScrollEventDispatchTime;
   NSTimeInterval _scrollEventThrottle;
+  // Flag indicating whether the scrolling that is currently happening
+  // is triggered by user or not.
+  // This helps to only update state from `scrollViewDidScroll` in case
+  // some other part of the system scrolls scroll view.
+  BOOL _isUserTriggeredScrolling;
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
@@ -67,6 +72,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delaysContentTouches = NO;
+    _isUserTriggeredScrolling = NO;
     [self addSubview:_scrollView];
 
     _containerView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -78,6 +84,13 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   }
 
   return self;
+}
+
+- (void)dealloc
+{
+  // Removing all delegates from the splitter nils the actual delegate which prevents a crash on UIScrollView
+  // deallocation.
+  [self.scrollViewDelegateSplitter removeAllDelegates];
 }
 
 - (RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *)scrollViewDelegateSplitter
@@ -197,23 +210,22 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)_updateStateWithContentOffset
 {
-  /*
-  Propagation ScrollView's contentOffset value to ShadowNode tree is temporarily disabled.
-
+  if (!_state) {
+    return;
+  }
   auto contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
-
   _state->updateState([contentOffset](ScrollViewShadowNode::ConcreteState::Data const &data) {
     auto newData = data;
     newData.contentOffset = contentOffset;
     return newData;
   });
-  */
 }
 
 - (void)prepareForRecycle
 {
   _scrollView.contentOffset = CGPointZero;
   _state.reset();
+  _isUserTriggeredScrolling = NO;
   [super prepareForRecycle];
 }
 
@@ -221,6 +233,9 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+  if (!_isUserTriggeredScrolling) {
+    [self _updateStateWithContentOffset];
+  }
   if (!_eventEmitter) {
     return;
   }
@@ -240,6 +255,18 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   [self scrollViewDidScroll:scrollView];
 }
 
+- (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView
+{
+  _isUserTriggeredScrolling = YES;
+  return YES;
+}
+
+- (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView
+{
+  _isUserTriggeredScrolling = NO;
+  [self _updateStateWithContentOffset];
+}
+
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
   [self _forceDispatchNextScrollEvent];
@@ -249,6 +276,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   }
 
   std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
+  _isUserTriggeredScrolling = YES;
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
@@ -285,6 +313,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
   std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
+  _isUserTriggeredScrolling = NO;
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView

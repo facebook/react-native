@@ -5,7 +5,7 @@
 
 Pod::Spec.new do |spec|
   spec.name = 'RCT-Folly'
-  spec.version = '2018.10.22.00'
+  spec.version = '2020.01.13.00'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
@@ -21,7 +21,9 @@ Pod::Spec.new do |spec|
   spec.source_files = 'folly/String.cpp',
                       'folly/Conv.cpp',
                       'folly/Demangle.cpp',
+                      'folly/FileUtil.cpp',
                       'folly/Format.cpp',
+                      'folly/lang/SafeAssert.cpp',
                       'folly/ScopeGuard.cpp',
                       'folly/Unicode.cpp',
                       'folly/dynamic.cpp',
@@ -29,10 +31,13 @@ Pod::Spec.new do |spec|
                       'folly/json_pointer.cpp',
                       'folly/container/detail/F14Table.cpp',
                       'folly/detail/Demangle.cpp',
+                      'folly/detail/UniqueInstance.cpp',
                       'folly/hash/SpookyHashV2.cpp',
                       'folly/lang/Assume.cpp',
-                      'folly/lang/ColdClass.cpp',
+                      'folly/lang/CString.cpp',
                       'folly/memory/detail/MallocImpl.cpp',
+                      'folly/net/NetOps.cpp',
+                      'folly/portability/SysUio.cpp',
                       'folly/*.h',
                       'folly/container/*.h',
                       'folly/container/detail/*.h',
@@ -42,6 +47,8 @@ Pod::Spec.new do |spec|
                       'folly/lang/*.h',
                       'folly/memory/*.h',
                       'folly/memory/detail/*.h',
+                      'folly/net/*.h',
+                      'folly/net/detail/*.h',
                       'folly/portability/*.h'
 
   # workaround for https://github.com/facebook/react-native/issues/14326
@@ -54,6 +61,8 @@ Pod::Spec.new do |spec|
                         'folly/lang/*.h',
                         'folly/memory/*.h',
                         'folly/memory/detail/*.h',
+                        'folly/net/*.h',
+                        'folly/net/detail/*.h',
                         'folly/portability/*.h'
   spec.libraries           = "stdc++"
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
@@ -70,12 +79,9 @@ Pod::Spec.new do |spec|
   end
 
   spec.subspec 'Fabric' do |fabric|
-    fabric.source_files = 'folly/portability/SysUio.cpp',
-                          'folly/FileUtil.cpp',
-                          'folly/SharedMutex.cpp',
+    fabric.source_files = 'folly/SharedMutex.cpp',
                           'folly/concurrency/CacheLocality.cpp',
                           'folly/detail/Futex.cpp',
-                          'folly/lang/SafeAssert.cpp',
                           'folly/synchronization/ParkingLot.cpp',
                           'folly/portability/Malloc.cpp'
     fabric.preserve_paths = 'folly/concurrency/CacheLocality.h',
@@ -84,7 +90,6 @@ Pod::Spec.new do |spec|
                             'folly/system/ThreadId.h'
   end
 
-  # [TODO(macOS GH#214)
   spec.subspec 'Futures' do |futures|
     futures.dependency 'libevent'
     futures.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => ["$(inherited)", "$(PODS_ROOT)/Headers/Public/libevent/event"] }
@@ -92,20 +97,21 @@ Pod::Spec.new do |spec|
                            'folly/futures/detail/*.{h,cpp}',
                            'folly/executors/*.{h,cpp}',
                            'folly/executors/thread_factory/{NamedThreadFactory,ThreadFactory}.{h,cpp}',
-                           'folly/executors/task_queue/{BlockingQueue,LifoSemMPMCQueue,PriorityLifoSemMPMCQueue}.{h,cpp}',
+                           'folly/executors/task_queue/{BlockingQueue,UnboundedBlockingQueue,LifoSemMPMCQueue,PriorityUnboundedBlockingQueue,PriorityLifoSemMPMCQueue}.{h,cpp}',
                            'folly/concurrency/*.{h,cpp}',
-                           'folly/system/{ThreadId,ThreadName}.{h,cpp}',
+                           'folly/system/{ThreadId,ThreadName,HardwareConcurrency}.{h,cpp}',
                            'folly/synchronization/*.{h,cpp}',
                            'folly/synchronization/detail/*.{h,cpp}',
-                           'folly/experimental/{ExecutionObserver,ReadMostlySharedPtr,TLRefCount}.{h,cpp}',
-                           'folly/io/async/{AsyncTimeout,DelayedDestruction,DelayedDestructionBase,EventBase,EventBaseManager,EventHandler,EventUtil,HHWheelTimer,NotificationQueue,Request,TimeoutManager,VirtualEventBase}.{h,cpp}',
+                           'folly/experimental/{ExecutionObserver,ReadMostlySharedPtr,SingleWriterFixedHashMap,TLRefCount}.{h,cpp}',
+                           'folly/io/async/{AsyncTimeout,DelayedDestruction,DelayedDestructionBase,EventBase,EventBaseManager,EventBaseBackendBase,EventHandler,EventUtil,HHWheelTimer,HHWheelTimer-fwd,NotificationQueue,Request,TimeoutManager,VirtualEventBase}.{h,cpp}',
                            'folly/io/{Cursor,Cursor-inl,IOBuf,IOBufQueue}.{h,cpp}',
                            'folly/tracing/StaticTracepoint.{h,cpp}',
                            'folly/{Executor,ExceptionWrapper,ExceptionWrapper-inl,FileUtil,Singleton,SharedMutex}.{h,cpp}',
-                           'folly/detail/{AtFork,Futex,Futex-inl,MemoryIdler,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
+                           'folly/detail/{AsyncTrace,AtFork,Futex,Futex-inl,MemoryIdler,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
                            'folly/lang/SafeAssert.{h,cpp}',
                            'folly/memory/MallctlHelper.{h,cpp}',
-                           'folly/portability/SysUio.{h,cpp}'
+                           'folly/portability/{GFlags,SysUio}.{h,cpp}',
+                           'folly/chrono/Hardware.{h,cpp}'
                           # TODO: Perhaps some of the wildcards above can be further trimmed down with some of these:
                           #
                           #  'folly/executors/{DrivableExecutor,InlineExecutor,QueuedImmediateExecutor,TimedDrivableExecutor}.{h,cpp}',
@@ -116,8 +122,7 @@ Pod::Spec.new do |spec|
                           #  'folly/synchronization/detail/{AtomicUtils,Sleeper,Spin}.{h,cpp}',
                           #  'folly/experimental/{ReadMostlySharedPtr,TLRefCount}.h',
   end
-  # ]TODO(macOS GH#214)
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "9.0", :tvos => "9.2", :osx => "10.13" } # TODO(macOS GH#214)
+  spec.platforms = { :ios => "10.0", :tvos => "10.0", :osx => "10.13" } # TODO(macOS GH#214)
 end

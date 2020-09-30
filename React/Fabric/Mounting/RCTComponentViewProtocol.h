@@ -10,7 +10,6 @@
 #import <React/RCTPrimitives.h>
 #import <react/core/EventEmitter.h>
 #import <react/core/LayoutMetrics.h>
-#import <react/core/LocalData.h>
 #import <react/core/Props.h>
 #import <react/core/State.h>
 #import <react/uimanager/ComponentDescriptorProvider.h>
@@ -24,12 +23,11 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
   RNComponentViewUpdateMaskNone = 0,
   RNComponentViewUpdateMaskProps = 1 << 0,
   RNComponentViewUpdateMaskEventEmitter = 1 << 1,
-  RNComponentViewUpdateMaskLocalData = 1 << 2,
   RNComponentViewUpdateMaskState = 1 << 3,
   RNComponentViewUpdateMaskLayoutMetrics = 1 << 4,
 
   RNComponentViewUpdateMaskAll = RNComponentViewUpdateMaskProps | RNComponentViewUpdateMaskEventEmitter |
-      RNComponentViewUpdateMaskLocalData | RNComponentViewUpdateMaskState | RNComponentViewUpdateMaskLayoutMetrics
+      RNComponentViewUpdateMaskState | RNComponentViewUpdateMaskLayoutMetrics
 };
 
 /*
@@ -72,13 +70,6 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  */
 - (void)updateProps:(facebook::react::Props::Shared const &)props
            oldProps:(facebook::react::Props::Shared const &)oldProps;
-
-/*
- * Called for updating component's local data.
- * Receiver must update native view props accordingly changed local data.
- */
-- (void)updateLocalData:(facebook::react::SharedLocalData)localData
-           oldLocalData:(facebook::react::SharedLocalData)oldLocalData;
 
 /*
  * Called for updating component's state.

@@ -37,7 +37,10 @@ function toSafeJavaString(
   return parts.map(upperCaseFirst).join('');
 }
 
-function getImports(component: ComponentShape): Set<string> {
+function getImports(
+  component: ComponentShape,
+  type: 'interface' | 'delegate',
+): Set<string> {
   const imports: Set<string> = new Set();
 
   component.extendsProps.forEach(extendProps => {
@@ -60,6 +63,9 @@ function getImports(component: ComponentShape): Set<string> {
   function addImportsForNativeName(name) {
     switch (name) {
       case 'ColorPrimitive':
+        if (type === 'delegate') {
+          imports.add('import com.facebook.react.bridge.ColorPropConverter;');
+        }
         return;
       case 'ImageSourcePrimitive':
         imports.add('import com.facebook.react.bridge.ReadableMap;');

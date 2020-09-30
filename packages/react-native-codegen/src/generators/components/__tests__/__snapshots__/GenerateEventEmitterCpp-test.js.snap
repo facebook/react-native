@@ -176,7 +176,7 @@ Map {
 namespace facebook {
 namespace react {
 
-void EventsNestedObjectNativeComponentEventEmitter::onChange(EventsNestedObjectNativeComponentOnChangeStruct event) const {
+void EventsNestedObjectNativeComponentEventEmitter::onChange(OnChange event) const {
   dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     {
@@ -217,7 +217,7 @@ Map {
 namespace facebook {
 namespace react {
 
-void EventsNativeComponentEventEmitter::onChange(EventsNativeComponentOnChangeStruct event) const {
+void EventsNativeComponentEventEmitter::onChange(OnChange event) const {
   dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, \\"value\\", event.value);
@@ -227,14 +227,14 @@ payload.setProperty(runtime, \\"scale\\", event.scale);
     return payload;
   });
 }
-void EventsNativeComponentEventEmitter::onEventDirect(EventsNativeComponentOnEventDirectStruct event) const {
+void EventsNativeComponentEventEmitter::onEventDirect(OnEventDirect event) const {
   dispatchEvent(\\"eventDirect\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, \\"value\\", event.value);
     return payload;
   });
 }
-void EventsNativeComponentEventEmitter::onOrientationChange(EventsNativeComponentOnOrientationChangeStruct event) const {
+void EventsNativeComponentEventEmitter::onOrientationChange(OnOrientationChange event) const {
   dispatchEvent(\\"orientationChange\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, \\"orientation\\", toString(event.orientation));
@@ -266,14 +266,14 @@ Map {
 namespace facebook {
 namespace react {
 
-void InterfaceOnlyComponentEventEmitter::onChange(InterfaceOnlyComponentOnChangeStruct event) const {
+void InterfaceOnlyComponentEventEmitter::onChange(OnChange event) const {
   dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, \\"value\\", event.value);
     return payload;
   });
 }
-void InterfaceOnlyComponentEventEmitter::onDire tChange(InterfaceOnlyComponentOnDire tChangeStruct event) const {
+void InterfaceOnlyComponentEventEmitter::onDire tChange(OnDire tChange event) const {
   dispatchEvent(\\"dire tChange\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, \\"value\\", event.value);
@@ -440,7 +440,7 @@ Map {
 namespace facebook {
 namespace react {
 
-void InterfaceOnlyComponentEventEmitter::onChange(InterfaceOnlyComponentOnChangeStruct event) const {
+void InterfaceOnlyComponentEventEmitter::onChange(OnChange event) const {
   dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, \\"value\\", event.value);

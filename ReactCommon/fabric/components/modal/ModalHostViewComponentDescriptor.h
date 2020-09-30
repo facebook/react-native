@@ -21,16 +21,7 @@ namespace react {
 class ModalHostViewComponentDescriptor final
     : public ConcreteComponentDescriptor<ModalHostViewShadowNode> {
  public:
-#ifdef ANDROID
-  ModalHostViewComponentDescriptor(
-      EventDispatcher::Weak eventDispatcher,
-      ContextContainer::Shared const &contextContainer,
-      ComponentDescriptor::Flavor const &flavor = {})
-      : ConcreteComponentDescriptor(eventDispatcher, contextContainer, flavor) {
-  }
-#else
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
-#endif
 
   void adopt(UnsharedShadowNode shadowNode) const override {
     assert(std::dynamic_pointer_cast<ModalHostViewShadowNode>(shadowNode));

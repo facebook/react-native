@@ -28,15 +28,10 @@ class TurboModuleBinding {
    */
   static void install(
       jsi::Runtime &runtime,
-      std::shared_ptr<TurboModuleBinding> binding);
+      const TurboModuleProviderFunctionType &&moduleProvider);
 
-  TurboModuleBinding(const TurboModuleProviderFunctionType &moduleProvider);
-
-  /*
-   * Invalidates the binding.
-   * Can be called in any thread.
-   */
-  void invalidate() const;
+  TurboModuleBinding(const TurboModuleProviderFunctionType &&moduleProvider);
+  virtual ~TurboModuleBinding();
 
   /**
    * Get an TurboModule instance for the given module name.

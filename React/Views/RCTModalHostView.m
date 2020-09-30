@@ -20,8 +20,7 @@
 #import "RCTTVRemoteHandler.h"
 #endif
 
-@implementation RCTModalHostView
-{
+@implementation RCTModalHostView {
   __weak RCTBridge *_bridge;
   BOOL _isPresented;
   RCTModalHostViewController *_modalViewController;
@@ -32,11 +31,10 @@
 #else
   UIInterfaceOrientation _lastKnownOrientation;
 #endif
-
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
@@ -48,8 +46,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     _modalViewController.view = containerView;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
 #if TARGET_OS_TV
-    _menuButtonGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuButtonPressed:)];
-    _menuButtonGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
+    _menuButtonGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                           action:@selector(menuButtonPressed:)];
+    _menuButtonGestureRecognizer.allowedPressTypes = @[ @(UIPressTypeMenu) ];
     self.tvRemoteHandler = [RCTTVRemoteHandler new];
 #endif
     _isPresented = NO;
@@ -66,9 +65,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 #if TARGET_OS_TV
 - (void)menuButtonPressed:(__unused UIGestureRecognizer *)gestureRecognizer
 {
-    if (_onRequestClose) {
-        _onRequestClose(nil);
-    }
+  if (_onRequestClose) {
+    _onRequestClose(nil);
+  }
 }
 
 - (void)setOnRequestClose:(RCTDirectEventBlock)onRequestClose
@@ -105,11 +104,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   }
   _lastKnownOrientation = currentOrientation;
 
-  BOOL isPortrait = currentOrientation == UIInterfaceOrientationPortrait || currentOrientation == UIInterfaceOrientationPortraitUpsideDown;
-  NSDictionary *eventPayload =
-  @{
-    @"orientation": isPortrait ? @"portrait" : @"landscape",
-    };
+  BOOL isPortrait = currentOrientation == UIInterfaceOrientationPortrait ||
+      currentOrientation == UIInterfaceOrientationPortraitUpsideDown;
+  NSDictionary *eventPayload = @{
+    @"orientation" : isPortrait ? @"portrait" : @"landscape",
+  };
   _onOrientationChange(eventPayload);
 #endif
 }
@@ -168,8 +167,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 {
   [super didMoveToWindow];
 
-  // In the case where there is a LayoutAnimation, we will be reinserted into the view hierarchy but only for aesthetic purposes.
-  // In such a case, we should NOT represent the <Modal>.
+  // In the case where there is a LayoutAnimation, we will be reinserted into the view hierarchy but only for aesthetic
+  // purposes. In such a case, we should NOT represent the <Modal>.
   if (!self.userInteractionEnabled && ![self.superview.reactSubviews containsObject:self]) {
     return;
   }
@@ -225,7 +224,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     return;
   }
 
-  _modalViewController.modalPresentationStyle = transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
+  _modalViewController.modalPresentationStyle =
+      transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
 }
 
 #if !TARGET_OS_TV

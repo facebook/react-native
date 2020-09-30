@@ -6,7 +6,6 @@
  */
 
 #import <React/RCTMultilineTextInputViewManager.h>
-
 #import <React/RCTMultilineTextInputView.h>
 
 @implementation RCTMultilineTextInputViewManager
