@@ -95,7 +95,7 @@ abstract_target 'Shared' do
   end
 
   target 'HelloWorld-iOS' do
-    platform :ios, '9'
+    platform :ios, '10'
     use_native_modules!
 
     # Enables Flipper.
