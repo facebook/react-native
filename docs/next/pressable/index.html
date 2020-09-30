@@ -82,10 +82,10 @@
 <p>After pressing <a href="#onpressin"><code>onPressIn</code></a>, one of two things will happen:</p>
 <ol>
 <li>The person will remove their finger, triggering <a href="#onpressout"><code>onPressOut</code></a> followed by <a href="#onpress"><code>onPress</code></a>.</li>
-<li>If the person leaves their finger longer than 370 milliseconds before removing it, <a href="#onlongpress"><code>onLongPress</code></a> is triggered. (<a href="#onpressout"><code>onPressOut</code></a> will still fire when they remove their finger.)</li>
+<li>If the person leaves their finger longer than 500 milliseconds before removing it, <a href="#onlongpress"><code>onLongPress</code></a> is triggered. (<a href="#onpressout"><code>onPressOut</code></a> will still fire when they remove their finger.)</li>
 </ol>
 <p><img src="/docs/assets/d_pressable_pressing.svg" width="1000" alt="Diagram of the onPress events in sequence." /></p>
-<p>Fingers are not the most precise instruments, and it is common for users to accidentally activate the wrong element or miss the activation area. To help, <code>Pressable</code> has an optional <code>HitRect</code> you can use to define how far a touch can register away from the the wrapped element. Presses can start anywhere within a <code>HitRect</code>.</p>
+<p>Fingers are not the most precise instruments, and it is common for users to accidentally activate the wrong element or miss the activation area. To help, <code>Pressable</code> has an optional <code>HitRect</code> you can use to define how far a touch can register away from the wrapped element. Presses can start anywhere within a <code>HitRect</code>.</p>
 <p><code>PressRect</code> allows presses to move beyond the element and its <code>HitRect</code> while maintaining activation and being eligible for a &quot;press&quot;—think of sliding your finger slowly away from a button you're pressing down on.</p>
 <blockquote>
 <p>The touch area never extends past the parent view bounds and the Z-index of sibling views always takes precedence if a touch hits two overlapping views.</p>
@@ -197,7 +197,7 @@
 <tr><th>Type</th><th>Required</th><th>Default</th></tr>
 </thead>
 <tbody>
-<tr><td>number</td><td>No</td><td>370</td></tr>
+<tr><td>number</td><td>No</td><td><code>500</code></td></tr>
 </tbody>
 </table>
 <h3><a class="anchor" aria-hidden="true" id="disabled"></a><a href="#disabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>disabled</code></h3>
@@ -221,7 +221,7 @@
 </tbody>
 </table>
 <h3><a class="anchor" aria-hidden="true" id="onlongpress"></a><a href="#onlongpress" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onLongPress</code></h3>
-<p>Called if the time after <code>onPressIn</code> lasts longer than 370 milliseconds. This time period can be customized with <a href="#delaylongpress"><code>delayLongPress</code></a>.</p>
+<p>Called if the time after <code>onPressIn</code> lasts longer than 500 milliseconds. This time period can be customized with <a href="#delaylongpress"><code>delayLongPress</code></a>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
