@@ -27,6 +27,7 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "10.0", :tvos => "10.0", :osx => "10.13" } # TODO(macOS GH#214)
   s.source                 = source
   s.source_files           = "**/*.{h,m}"
+  s.ios.exclude_files      = "**/macOS/*" # TODO(macOS ISS#2323203)
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTText"
 
