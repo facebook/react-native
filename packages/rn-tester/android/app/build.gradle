@@ -184,6 +184,14 @@ android {
             proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
+    sourceSets.main {
+        java {
+            // SampleTurboModule.
+            srcDirs += [
+                "$rootDir/ReactCommon/react/nativemodule/samples/platform/android",
+            ]
+        }
+    }
 }
 
 configurations {

@@ -196,5 +196,14 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
       0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
 }
 
+std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
+    const std::string moduleName,
+    const JavaTurboModule::InitParams &params) {
+  if (moduleName == "SampleTurboModule") {
+    return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
+  }
+  return nullptr;
+}
+
 } // namespace react
 } // namespace facebook

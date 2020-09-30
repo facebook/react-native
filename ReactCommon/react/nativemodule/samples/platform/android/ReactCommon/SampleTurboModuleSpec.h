@@ -19,11 +19,14 @@ namespace react {
 /**
  * C++ class for module 'SampleTurboModule'
  */
-
 class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public JavaTurboModule {
  public:
   NativeSampleTurboModuleSpecJSI(const JavaTurboModule::InitParams &params);
 };
+
+std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
+    const std::string moduleName,
+    const JavaTurboModule::InitParams &params);
 
 } // namespace react
 } // namespace facebook

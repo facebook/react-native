@@ -10,16 +10,19 @@ package com.facebook.react.uiapp;
 import android.app.Application;
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.fbreact.specs.SampleTurboModule;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.JSIModuleSpec;
 import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.config.ReactFeatureFlags;
@@ -27,6 +30,8 @@ import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.turbomodule.core.TurboModuleManager;
 import com.facebook.react.views.text.ReactFontManager;
@@ -34,7 +39,9 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RNTesterApplication extends Application implements ReactApplication {
 
@@ -57,7 +64,47 @@ public class RNTesterApplication extends Application implements ReactApplication
 
         @Override
         public List<ReactPackage> getPackages() {
-          return Arrays.<ReactPackage>asList(new MainReactPackage());
+          return Arrays.<ReactPackage>asList(
+              new MainReactPackage(),
+              new TurboReactPackage() {
+                public NativeModule getModule(
+                    final String name, final ReactApplicationContext reactContext) {
+                  if (!ReactFeatureFlags.useTurboModules) {
+                    return null;
+                  }
+
+                  if (SampleTurboModule.NAME.equals(name)) {
+                    return new SampleTurboModule(reactContext);
+                  }
+
+                  return null;
+                }
+
+                // Note: Specialized annotation processor for @ReactModule isn't configured in OSS
+                // yet. For now, hardcode this information, though it's not necessary for most
+                // modules.
+                public ReactModuleInfoProvider getReactModuleInfoProvider() {
+                  return new ReactModuleInfoProvider() {
+                    public Map<String, ReactModuleInfo> getReactModuleInfos() {
+                      final Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
+                      if (ReactFeatureFlags.useTurboModules) {
+                        moduleInfos.put(
+                            SampleTurboModule.NAME,
+                            new ReactModuleInfo(
+                                SampleTurboModule.NAME,
+                                "SampleTurboModule",
+                                false, // canOverrideExistingModule
+                                false, // needsEagerInit
+                                true, // hasConstants
+                                false, // isCxxModule
+                                true // isTurboModule
+                                ));
+                      }
+                      return moduleInfos;
+                    }
+                  };
+                }
+              });
         }
 
         @Nullable
@@ -72,7 +119,7 @@ public class RNTesterApplication extends Application implements ReactApplication
             public List<JSIModuleSpec> getJSIModules(
                 final ReactApplicationContext reactApplicationContext,
                 final JavaScriptContextHolder jsContext) {
-              List<JSIModuleSpec> specs = new ArrayList<>();
+              final List<JSIModuleSpec> specs = new ArrayList<>();
 
               // Install the new native module system.
               if (ReactFeatureFlags.useTurboModules) {
@@ -88,8 +135,9 @@ public class RNTesterApplication extends Application implements ReactApplication
                         return new JSIModuleProvider() {
                           @Override
                           public JSIModule get() {
-                            ReactInstanceManager reactInstanceManager = getReactInstanceManager();
-                            List<ReactPackage> packages = reactInstanceManager.getPackages();
+                            final ReactInstanceManager reactInstanceManager =
+                                getReactInstanceManager();
+                            final List<ReactPackage> packages = reactInstanceManager.getPackages();
 
                             return new TurboModuleManager(
                                 jsContext,
@@ -118,7 +166,7 @@ public class RNTesterApplication extends Application implements ReactApplication
 
                       @Override
                       public JSIModuleProvider<UIManager> getJSIModuleProvider() {
-                        ComponentFactory ComponentFactory = new ComponentFactory();
+                        final ComponentFactory ComponentFactory = new ComponentFactory();
                         CoreComponentsRegistry.register(ComponentFactory);
                         return new FabricJSIModuleProvider(
                             reactApplicationContext,
@@ -126,22 +174,22 @@ public class RNTesterApplication extends Application implements ReactApplication
                             // TODO: T71362667 add ReactNativeConfig's support in RNTester
                             new ReactNativeConfig() {
                               @Override
-                              public boolean getBool(String s) {
+                              public boolean getBool(final String s) {
                                 return false;
                               }
 
                               @Override
-                              public int getInt64(String s) {
+                              public int getInt64(final String s) {
                                 return 0;
                               }
 
                               @Override
-                              public String getString(String s) {
+                              public String getString(final String s) {
                                 return "";
                               }
 
                               @Override
-                              public double getDouble(String s) {
+                              public double getDouble(final String s) {
                                 return 0;
                               }
                             });
@@ -178,24 +226,24 @@ public class RNTesterApplication extends Application implements ReactApplication
    * @param reactInstanceManager
    */
   private static void initializeFlipper(
-      Context context, ReactInstanceManager reactInstanceManager) {
+      final Context context, final ReactInstanceManager reactInstanceManager) {
     if (BuildConfig.DEBUG) {
       try {
         /*
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-        Class<?> aClass = Class.forName("com.facebook.react.uiapp.ReactNativeFlipper");
+        final Class<?> aClass = Class.forName("com.facebook.react.uiapp.ReactNativeFlipper");
         aClass
             .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
             .invoke(null, context, reactInstanceManager);
-      } catch (ClassNotFoundException e) {
+      } catch (final ClassNotFoundException e) {
         e.printStackTrace();
-      } catch (NoSuchMethodException e) {
+      } catch (final NoSuchMethodException e) {
         e.printStackTrace();
-      } catch (IllegalAccessException e) {
+      } catch (final IllegalAccessException e) {
         e.printStackTrace();
-      } catch (InvocationTargetException e) {
+      } catch (final InvocationTargetException e) {
         e.printStackTrace();
       }
     }
