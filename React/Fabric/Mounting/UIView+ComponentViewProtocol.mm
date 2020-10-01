@@ -132,4 +132,9 @@ using namespace facebook::react;
   return nullptr;
 }
 
+- (void)setPropKeysManagedByAnimated:(nullable NSSet<NSString *> *)propKeys
+{
+  // Default implementation does nothing.
+}
+
 @end
