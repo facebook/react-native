@@ -1,8 +1,8 @@
-<h1 align="center">
+<h2 align="center">
   <a href="https://reactnative.dev/">
     React Native
   </a>
-</h1>
+</h2>
 
 <p align="center">
   <strong>Learn once, write anywhere:</strong><br>
