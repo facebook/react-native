@@ -93,7 +93,8 @@ static BOOL RCTIsIPhoneX()
 static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 {
   RCTAssertMainQueue();
-  RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
+  RCTAssert(bridge, @"Bridge must not be `nil`.");
+  RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier ?: 1.0);
   __typeof(dimensions.window) window = dimensions.window;
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
     @"width" : @(window.width),
