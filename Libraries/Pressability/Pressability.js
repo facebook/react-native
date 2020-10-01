@@ -276,8 +276,7 @@ const isPressInSignal = signal =>
 const isTerminalSignal = signal =>
   signal === 'RESPONDER_TERMINATED' || signal === 'RESPONDER_RELEASE';
 
-const DEFAULT_LONG_PRESS_DELAY_MS = 370; // 500 - 130
-const DEFAULT_PRESS_DELAY_MS = 130;
+const DEFAULT_LONG_PRESS_DELAY_MS = 500;
 const DEFAULT_PRESS_RECT_OFFSETS = {
   bottom: 30,
   left: 20,
@@ -468,12 +467,7 @@ export default class Pressability {
         this._touchState = 'NOT_RESPONDER';
         this._receiveSignal('RESPONDER_GRANT', event);
 
-        const delayPressIn = normalizeDelay(
-          this._config.delayPressIn,
-          0,
-          DEFAULT_PRESS_DELAY_MS,
-        );
-
+        const delayPressIn = normalizeDelay(this._config.delayPressIn);
         if (delayPressIn > 0) {
           this._pressDelayTimeout = setTimeout(() => {
             this._receiveSignal('DELAY', event);
@@ -485,7 +479,7 @@ export default class Pressability {
         const delayLongPress = normalizeDelay(
           this._config.delayLongPress,
           10,
-          DEFAULT_LONG_PRESS_DELAY_MS,
+          DEFAULT_LONG_PRESS_DELAY_MS - delayPressIn,
         );
         this._longPressDelayTimeout = setTimeout(() => {
           this._handleLongPress(event);

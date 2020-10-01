@@ -88,16 +88,17 @@ RCT_EXPORT_METHOD(prefetchImage:(NSURLRequest *)request
     reject(@"E_INVALID_URI", @"Cannot prefetch an image for an empty URI", nil);
     return;
   }
-
-  [[self.bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
-   loadImageWithURLRequest:request
-   callback:^(NSError *error, UIImage *image) {
-     if (error) {
-       reject(@"E_PREFETCH_FAILURE", nil, error);
-       return;
-     }
-     resolve(@YES);
-   }];
+    id<RCTImageLoaderProtocol> imageLoader = (id<RCTImageLoaderProtocol>)[self.bridge
+                                                                          moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES];
+    [imageLoader loadImageWithURLRequest:request
+                                priority:RCTImageLoaderPriorityPrefetch
+                                callback:^(NSError *error, UIImage *image) {
+        if (error) {
+            reject(@"E_PREFETCH_FAILURE", nil, error);
+            return;
+        }
+        resolve(@YES);
+    }];
 }
 
 RCT_EXPORT_METHOD(queryCache:(NSArray *)requests
