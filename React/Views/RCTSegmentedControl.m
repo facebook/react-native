@@ -105,18 +105,12 @@
 
 - (void)setMomentary:(BOOL)momentary
 {
-  if (@available(macOS 10.10.3, *)) {
-    self.trackingMode = momentary ? NSSegmentSwitchTrackingMomentary : NSSegmentSwitchTrackingSelectOne;
-  }
+  self.trackingMode = momentary ? NSSegmentSwitchTrackingMomentary : NSSegmentSwitchTrackingSelectOne;
 }
 
 - (BOOL)isMomentary
 {
-  if (@available(macOS 10.10.3, *)) {
-    return self.trackingMode == NSSegmentSwitchTrackingMomentary;
-  } else {
-    return NO;
-  }
+  return self.trackingMode == NSSegmentSwitchTrackingMomentary;
 }
 
 - (void)setSelectedSegmentIndex:(NSInteger)selectedSegmentIndex

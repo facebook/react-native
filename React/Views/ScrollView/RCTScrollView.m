@@ -65,9 +65,7 @@
       // We intentionally force `UIScrollView`s `semanticContentAttribute` to `LTR` here
       // because this attribute affects a position of vertical scrollbar; we don't want this
       // scrollbar flip because we also flip it with whole `UIScrollView` flip.
-      if (@available(iOS 9.0, *)) { // TODO(OSS Candidate ISS#2710739)
-        self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
-      }
+      self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
     }
 #endif
 

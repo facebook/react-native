@@ -558,12 +558,8 @@ BOOL RCTForceTouchAvailable(void)
         [UITraitCollection class] && [UITraitCollection instancesRespondToSelector:@selector(forceTouchCapability)];
   });
 
-  if (@available(iOS 9.0, *)) { // TODO(OSS Candidate ISS#2710739)
-    return forceSupported &&
+  return forceSupported &&
       (RCTKeyWindow() ?: [UIView new]).traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable;
-  } else { // [TODO(OSS Candidate ISS#2710739)
-    return NO;
-  } // ]TODO(OSS Candidate ISS#2710739)
 }
 #endif // TODO(macOS ISS#2323203)
 

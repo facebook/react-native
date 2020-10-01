@@ -242,9 +242,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
 	id (^textFieldDefaults)(NSTextField *, BOOL) = ^id(NSTextField *textField, BOOL isPassword) {
 		textField.cell.scrollable = YES;
 		textField.cell.wraps = YES;
-		if (@available(macOS 10.11, *)) {
-			textField.maximumNumberOfLines = 1;
-		}
+    textField.maximumNumberOfLines = 1;
 		textField.stringValue = (isPassword ? defaultInputs.lastObject[@"default"] : defaultInputs.firstObject[@"default"]) ?: @"";
 		textField.placeholderString = isPassword ? defaultInputs.lastObject[@"placeholder"] : defaultInputs.firstObject[@"placeholder"];
 		return textField;

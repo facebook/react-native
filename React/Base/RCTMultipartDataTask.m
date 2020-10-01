@@ -90,9 +90,7 @@ static BOOL isStreamTaskSupported() {
                                                       range:NSMakeRange(0, contentType.length)];
     if (match) {
       _boundary = [contentType substringWithRange:[match rangeAtIndex:1]];
-      if (@available(macOS 10.11, iOS 9.0, *)) { // TODO(OSS Candidate ISS#2710739)
-        completionHandler(NSURLSessionResponseBecomeStream);
-      }
+      completionHandler(NSURLSessionResponseBecomeStream);
       return;
     }
   }

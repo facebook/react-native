@@ -233,11 +233,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   // should we expose a `normalTouchForce` constant somewhere (which would
   // have a value of `1.0 / nativeTouch.maximumPossibleForce`)?
   if (RCTForceTouchAvailable()) {
-    if (@available(iOS 9.0, *)) { // TODO(OSS Candidate ISS#2710739)
-      reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
-    } else {
-      reactTouch[@"force"] = @(0);
-    }
+    reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
   }
 #else // [TODO(macOS ISS#2323203)
   NSEventModifierFlags modifierFlags = nativeTouch.modifierFlags;
