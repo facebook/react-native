@@ -15,9 +15,14 @@ const mkdirp = require('mkdirp');
 const os = require('os');
 const path = require('path');
 
-function generateSpec(schemaPath, outputDirectory) {
-  const libraryName = 'FBReactNativeSpec';
-  const moduleSpecName = 'FBReactNativeSpec';
+function generateSpec(
+  platform,
+  schemaPath,
+  outputDirectory,
+  libraryName,
+  javaPackageName,
+) {
+  const moduleSpecName = libraryName;
   const schemaText = fs.readFileSync(schemaPath, 'utf-8');
 
   if (schemaText == null) {
@@ -38,14 +43,7 @@ function generateSpec(schemaPath, outputDirectory) {
   RNCodegen.generate(
     {libraryName, schema, outputDirectory: tempOutputDirectory, moduleSpecName},
     {
-      generators: [
-        'descriptors',
-        'events',
-        'props',
-        'tests',
-        'shadow-nodes',
-        'modules',
-      ],
+      generators: platform === 'android' ? ['modulesAndroid'] : ['modules'],
     },
   );
 
@@ -60,19 +58,59 @@ function generateSpec(schemaPath, outputDirectory) {
   }
   mkdirp.sync(outputDirectory);
 
-  const fileNames = [`${moduleSpecName}.h`, `${moduleSpecName}-generated.mm`];
-  fileNames.forEach(fileName => {
-    const newOutput = `${tempOutputDirectory}/${fileName}`;
-    const prevOutput = `${outputDirectory}/${fileName}`;
-    fs.copyFileSync(newOutput, prevOutput);
-  });
+  if (platform === 'ios') {
+    const fileNames = [`${moduleSpecName}.h`, `${moduleSpecName}-generated.mm`];
+    fileNames.forEach(fileName => {
+      const newOutput = `${tempOutputDirectory}/${fileName}`;
+      const prevOutput = `${outputDirectory}/${fileName}`;
+      fs.copyFileSync(newOutput, prevOutput);
+    });
+  } else if (platform === 'android') {
+    // Copy all .java files for now.
+    // TODO: Build sufficient support for producing Java package directories based
+    // on preferred package name.
+    const files = fs.readdirSync(tempOutputDirectory);
+    const javaOutputDirectory = `${outputDirectory}/java/${javaPackageName.replace(
+      /\./g,
+      '/',
+    )}`;
+    mkdirp.sync(javaOutputDirectory);
+    files
+      .filter(f => f.endsWith('.java'))
+      .forEach(f => {
+        fs.copyFileSync(
+          `${tempOutputDirectory}/${f}`,
+          `${javaOutputDirectory}/${f}`,
+        );
+      });
+
+    // And all C++ files for JNI.
+    const jniOutputDirectory = `${outputDirectory}/jni`;
+    mkdirp.sync(jniOutputDirectory);
+    files
+      .filter(
+        f =>
+          f === 'Android.mk' ||
+          (f.startsWith(moduleSpecName) &&
+            (f.endsWith('.h') || f.endsWith('.cpp'))),
+      )
+      .forEach(f => {
+        fs.copyFileSync(
+          `${tempOutputDirectory}/${f}`,
+          `${jniOutputDirectory}/${f}`,
+        );
+      });
+  }
 }
 
 function main() {
   const args = process.argv.slice(2);
-  const schemaPath = args[0];
-  const outputDir = args[1];
-  generateSpec(schemaPath, outputDir);
+  const platform = args[0];
+  const schemaPath = args[1];
+  const outputDir = args[2];
+  const libraryName = args[3] || 'FBReactNativeSpec';
+  const javaPackageName = args[4] || 'com.facebook.fbreact.specs';
+  generateSpec(platform, schemaPath, outputDir, libraryName, javaPackageName);
 }
 
 main();

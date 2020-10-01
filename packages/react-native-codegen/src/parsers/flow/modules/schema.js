@@ -5,22 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
+ * @flow strict
  */
 
 'use strict';
 
-import type {
-  SchemaType,
-  NativeModuleMethodTypeShape,
-} from '../../../CodegenSchema.js';
+import type {SchemaType, NativeModuleSchema} from '../../../CodegenSchema.js';
 
-export type NativeModuleSchemaBuilderConfig = $ReadOnly<{|
-  properties: $ReadOnlyArray<NativeModuleMethodTypeShape>,
-|}>;
-
-function buildModuleSchema(
-  {properties}: NativeModuleSchemaBuilderConfig,
+function wrapModuleSchema(
+  {aliases, properties}: NativeModuleSchema,
   moduleName: string,
 ): SchemaType {
   return {
@@ -28,6 +21,7 @@ function buildModuleSchema(
       [`Native${moduleName}`]: {
         nativeModules: {
           [moduleName]: {
+            aliases,
             properties,
           },
         },
@@ -37,5 +31,5 @@ function buildModuleSchema(
 }
 
 module.exports = {
-  buildModuleSchema,
+  wrapModuleSchema,
 };

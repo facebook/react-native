@@ -90,6 +90,20 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
+     * C++ class for module 'AnimatedTurboModule'
+     */
+
+    class JSI_EXPORT NativeAnimatedTurboModuleSpecJSI : public JavaTurboModule {
+    public:
+      NativeAnimatedTurboModuleSpecJSI(const JavaTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    /**
      * C++ class for module 'AnimationsDebugModule'
      */
 
@@ -174,20 +188,6 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * C++ class for module 'CameraRollManager'
-     */
-
-    class JSI_EXPORT NativeCameraRollManagerSpecJSI : public JavaTurboModule {
-    public:
-      NativeCameraRollManagerSpecJSI(const JavaTurboModule::InitParams &params);
-
-    };
-  } // namespace react
-} // namespace facebook
-
-namespace facebook {
-  namespace react {
-    /**
      * C++ class for module 'Clipboard'
      */
 
@@ -250,6 +250,20 @@ namespace facebook {
     class JSI_EXPORT NativeDevSettingsSpecJSI : public JavaTurboModule {
     public:
       NativeDevSettingsSpecJSI(const JavaTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    /**
+     * C++ class for module 'DevSplitBundleLoader'
+     */
+
+    class JSI_EXPORT NativeDevSplitBundleLoaderSpecJSI : public JavaTurboModule {
+    public:
+      NativeDevSplitBundleLoaderSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -426,12 +440,26 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * C++ class for module 'ImageStore'
+     * C++ class for module 'ImageStoreAndroid'
      */
 
-    class JSI_EXPORT NativeImageStoreSpecJSI : public JavaTurboModule {
+    class JSI_EXPORT NativeImageStoreAndroidSpecJSI : public JavaTurboModule {
     public:
-      NativeImageStoreSpecJSI(const JavaTurboModule::InitParams &params);
+      NativeImageStoreAndroidSpecJSI(const JavaTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    /**
+     * C++ class for module 'ImageStoreIOS'
+     */
+
+    class JSI_EXPORT NativeImageStoreIOSSpecJSI : public JavaTurboModule {
+    public:
+      NativeImageStoreIOSSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react

@@ -12,10 +12,14 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('../Libraries/polyfills/Object.es7.js');
-jest.requireActual('../Libraries/polyfills/error-guard');
+jest.requireActual('@react-native/polyfills/Object.es7');
+jest.requireActual('@react-native/polyfills/error-guard');
 
 global.__DEV__ = true;
+
+global.performance = {
+  now: jest.fn(Date.now),
+};
 
 global.Promise = jest.requireActual('promise');
 global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
@@ -210,6 +214,10 @@ jest
           },
         };
       },
+    },
+    DevSettings: {
+      addMenuItem: jest.fn(),
+      reload: jest.fn(),
     },
     ImageLoader: {
       getSize: jest.fn(url => Promise.resolve({width: 320, height: 240})),

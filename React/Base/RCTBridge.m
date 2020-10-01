@@ -15,6 +15,7 @@
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
+#import "RCTDevLoadingViewProtocol.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
@@ -22,10 +23,10 @@
 #import "RCTReloadCommand.h"
 #import "RCTUtils.h"
 
-NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
-NSString *const RCTJavaScriptWillStartExecutingNotification = @"RCTJavaScriptWillStartExecutingNotification";
-NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
+NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
+NSString *const RCTJavaScriptWillStartExecutingNotification = @"RCTJavaScriptWillStartExecutingNotification";
+NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
 NSString *const RCTDidSetupModuleNotification = @"RCTDidSetupModuleNotification";
 NSString *const RCTDidSetupModuleNotificationModuleNameKey = @"moduleName";
@@ -113,6 +114,28 @@ void RCTEnableTurboModule(BOOL enabled)
   turboModuleEnabled = enabled;
 }
 
+static BOOL turboModuleEagerInitEnabled = NO;
+BOOL RCTTurboModuleEagerInitEnabled(void)
+{
+  return turboModuleEagerInitEnabled;
+}
+
+void RCTEnableTurboModuleEagerInit(BOOL enabled)
+{
+  turboModuleEagerInitEnabled = enabled;
+}
+
+static BOOL turboModuleSharedMutexInitEnabled = NO;
+BOOL RCTTurboModuleSharedMutexInitEnabled(void)
+{
+  return turboModuleSharedMutexInitEnabled;
+}
+
+void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
+{
+  turboModuleSharedMutexInitEnabled = enabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 
@@ -188,14 +211,31 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self invalidate];
 }
 
-- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate
+- (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
 {
-  [self.batchedBridge setRCTTurboModuleLookupDelegate:turboModuleLookupDelegate];
+  [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
 }
 
 - (void)didReceiveReloadCommand
 {
-  [self reloadWithReason:@"Command"];
+#if RCT_ENABLE_INSPECTOR
+  // Disable debugger to resume the JsVM & avoid thread locks while reloading
+  [RCTInspectorDevServerHelper disableDebugger];
+#endif
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification object:self userInfo:nil];
+
+  /**
+   * Any thread
+   */
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // WARNING: Invalidation is async, so it may not finish before re-setting up the bridge,
+    // causing some issues. TODO: revisit this post-Fabric/TurboModule.
+    [self invalidate];
+    // Reload is a special case, do not preserve launchOptions and treat reload as a fresh start
+    self->_launchOptions = nil;
+    [self setUp];
+  });
 }
 
 - (NSArray<Class> *)moduleClasses
@@ -246,7 +286,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
  */
 - (void)reload
 {
-  [self reloadWithReason:@"Unknown from bridge"];
+  RCTTriggerReloadCommandListeners(@"Unknown from bridge");
 }
 
 /**
@@ -254,24 +294,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
  */
 - (void)reloadWithReason:(NSString *)reason
 {
-#if RCT_ENABLE_INSPECTOR
-  // Disable debugger to resume the JsVM & avoid thread locks while reloading
-  [RCTInspectorDevServerHelper disableDebugger];
-#endif
-
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification object:self userInfo:nil];
-
-  /**
-   * Any thread
-   */
-  dispatch_async(dispatch_get_main_queue(), ^{
-    // WARNING: Invalidation is async, so it may not finish before re-setting up the bridge,
-    // causing some issues. TODO: revisit this post-Fabric/TurboModule.
-    [self invalidate];
-    // Reload is a special case, do not preserve launchOptions and treat reload as a fresh start
-    self->_launchOptions = nil;
-    [self setUp];
-  });
+  RCTTriggerReloadCommandListeners(reason);
 }
 
 - (void)onFastRefresh
@@ -386,6 +409,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
   [self.batchedBridge registerSegmentWithId:segmentId path:path];
+}
+
+- (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
+                             onError:(RCTLoadAndExecuteErrorBlock)onError
+                          onComplete:(dispatch_block_t)onComplete
+{
+  [self.batchedBridge loadAndExecuteSplitBundleURL:bundleURL onError:onError onComplete:onComplete];
 }
 
 @end

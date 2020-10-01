@@ -26,7 +26,7 @@ public abstract class NativeAsyncStorageSpec extends ReactContextBaseJavaModule 
   }
 
   @ReactMethod
-  public abstract void multiSet(ReadableArray kvPairs, Callback callback);
+  public abstract void clear(Callback callback);
 
   @ReactMethod
   public abstract void getAllKeys(Callback callback);
@@ -35,11 +35,11 @@ public abstract class NativeAsyncStorageSpec extends ReactContextBaseJavaModule 
   public abstract void multiGet(ReadableArray keys, Callback callback);
 
   @ReactMethod
-  public abstract void clear(Callback callback);
-
-  @ReactMethod
   public abstract void multiMerge(ReadableArray kvPairs, Callback callback);
 
   @ReactMethod
   public abstract void multiRemove(ReadableArray keys, Callback callback);
+
+  @ReactMethod
+  public abstract void multiSet(ReadableArray kvPairs, Callback callback);
 }

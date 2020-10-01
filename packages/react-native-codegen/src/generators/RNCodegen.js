@@ -25,8 +25,10 @@ const generatePropsCpp = require('./components/GeneratePropsCpp.js');
 const generatePropsH = require('./components/GeneratePropsH.js');
 const generateModuleH = require('./modules/GenerateModuleH.js');
 const generateModuleCpp = require('./modules/GenerateModuleCpp.js');
-const generateModuleHObjCpp = require('./modules/GenerateModuleHObjCpp.js');
-const generateModuleMm = require('./modules/GenerateModuleMm.js');
+const generateModuleObjCpp = require('./modules/GenerateModuleObjCpp');
+const generateModuleJavaSpec = require('./modules/GenerateModuleJavaSpec.js');
+const GenerateModuleJniCpp = require('./modules/GenerateModuleJniCpp.js');
+const GenerateModuleJniH = require('./modules/GenerateModuleJniH.js');
 const generatePropsJavaInterface = require('./components/GeneratePropsJavaInterface.js');
 const generatePropsJavaDelegate = require('./components/GeneratePropsJavaDelegate.js');
 const generateTests = require('./components/GenerateTests.js');
@@ -60,12 +62,7 @@ type Config = $ReadOnly<{|
 
 const GENERATORS = {
   descriptors: [generateComponentDescriptorH.generate],
-  events: [
-    generateEventEmitterCpp.generate,
-    generateEventEmitterH.generate,
-    generateModuleHObjCpp.generate,
-    generateModuleMm.generate,
-  ],
+  events: [generateEventEmitterCpp.generate, generateEventEmitterH.generate],
   props: [
     generateComponentHObjCpp.generate,
     generatePropsCpp.generate,
@@ -73,7 +70,17 @@ const GENERATORS = {
     generatePropsJavaInterface.generate,
     generatePropsJavaDelegate.generate,
   ],
-  modules: [generateModuleCpp.generate, generateModuleH.generate],
+  modules: [
+    generateModuleCpp.generate,
+    generateModuleH.generate,
+    generateModuleObjCpp.generate,
+  ],
+  // TODO: Refactor this to consolidate various C++ output variation instead of forking Android.
+  modulesAndroid: [
+    GenerateModuleJniCpp.generate,
+    GenerateModuleJniH.generate,
+    generateModuleJavaSpec.generate,
+  ],
   tests: [generateTests.generate],
   'shadow-nodes': [
     generateShadowNodeCpp.generate,

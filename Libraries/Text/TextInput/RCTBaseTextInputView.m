@@ -245,7 +245,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                           };
 
       #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-        if (@available(iOS 11.0, tvOS 11.0, *)) {
+        if (@available(iOS 11.0, *)) {
           NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
                                                                   @"password": UITextContentTypePassword};
 
@@ -257,7 +257,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       #endif
 
       #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
-        if (@available(iOS 12.0, tvOS 12.0, *)) {
+        if (@available(iOS 12.0, *)) {
           NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
                                                                   @"oneTimeCode": UITextContentTypeOneTimeCode};
 
@@ -333,7 +333,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
-                                     text:self.backedTextInputView.attributedText.string
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 }
@@ -347,13 +347,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
                                  reactTag:self.reactTag
-                                     text:self.backedTextInputView.attributedText.string
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
                                  reactTag:self.reactTag
-                                     text:self.backedTextInputView.attributedText.string
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 }
@@ -365,11 +365,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // `onSubmitEditing` is called when "Submit" button
   // (the blue key on onscreen keyboard) did pressed
   // (no connection to any specific "submitting" process).
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
-                                 reactTag:self.reactTag
-                                     text:self.backedTextInputView.attributedText.string
-                                      key:nil
-                               eventCount:_nativeEventCount];
+  if (_blurOnSubmit) {
+    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
+                                   reactTag:self.reactTag
+                                       text:[self.backedTextInputView.attributedText.string copy]
+                                        key:nil
+                                 eventCount:_nativeEventCount];
+  }
 
   return _blurOnSubmit;
 }
@@ -422,7 +424,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     }
   }
 
-  NSString *previousText = backedTextInputView.attributedText.string ?: @"";
+  NSString *previousText = [backedTextInputView.attributedText.string copy] ?: @"";
 
   if (range.location + range.length > backedTextInputView.attributedText.string.length) {
     _predictedText = backedTextInputView.attributedText.string;
@@ -468,7 +470,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   if (_onChange) {
     _onChange(@{
-       @"text": self.attributedText.string,
+       @"text": [self.attributedText.string copy],
        @"target": self.reactTag,
        @"eventCount": @(_nativeEventCount),
     });
@@ -572,7 +574,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)setCustomInputAccessoryViewWithNativeID:(NSString *)nativeID
 {
-  #if !TARGET_OS_TV
   __weak RCTBaseTextInputView *weakSelf = self;
   [_bridge.uiManager rootViewForReactTag:self.reactTag withCompletion:^(UIView *rootView) {
     RCTBaseTextInputView *strongSelf = weakSelf;
@@ -585,20 +586,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       }
     }
   }];
-  #endif /* !TARGET_OS_TV */
 }
 
 - (void)setDefaultInputAccessoryView
 {
-  #if !TARGET_OS_TV
   UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
   UIKeyboardType keyboardType = textInputView.keyboardType;
 
   // These keyboard types (all are number pads) don't have a "Done" button by default,
   // so we create an `inputAccessoryView` with this button for them.
-  BOOL shouldHaveInputAccesoryView;
-  if (@available(iOS 10.0, *)) {
-      shouldHaveInputAccesoryView =
+  BOOL shouldHaveInputAccesoryView =
       (
        keyboardType == UIKeyboardTypeNumberPad ||
        keyboardType == UIKeyboardTypePhonePad ||
@@ -606,15 +603,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
        keyboardType == UIKeyboardTypeASCIICapableNumberPad
       ) &&
       textInputView.returnKeyType == UIReturnKeyDone;
-  } else {
-      shouldHaveInputAccesoryView =
-      (
-       keyboardType == UIKeyboardTypeNumberPad ||
-       keyboardType == UIKeyboardTypePhonePad ||
-       keyboardType == UIKeyboardTypeDecimalPad
-      ) &&
-      textInputView.returnKeyType == UIReturnKeyDone;
-  }
 
   if (_hasInputAccesoryView == shouldHaveInputAccesoryView) {
     return;
@@ -640,7 +628,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     textInputView.inputAccessoryView = nil;
   }
   [self reloadInputViewsIfNecessary];
-  #endif /* !TARGET_OS_TV */
 }
 
 - (void)reloadInputViewsIfNecessary

@@ -38,10 +38,10 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"DevSettings", RCTDevSettingsCls},
     {"RedBox", RCTRedBoxCls},
     {"LogBox", RCTLogBoxCls},
-    {"TVNavigationEventEmitter", RCTTVNavigationEventEmitterCls},
     {"WebSocketExecutor", RCTWebSocketExecutorCls},
     {"WebSocketModule", RCTWebSocketModuleCls},
     {"DevLoadingView", RCTDevLoadingViewCls},
+    {"DevSplitBundleLoader", RCTDevSplitBundleLoaderCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);

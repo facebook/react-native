@@ -77,7 +77,6 @@ export type ScrollViewNativeProps = $ReadOnly<{
   snapToOffsets?: ?$ReadOnlyArray<number>,
   snapToStart?: ?boolean,
   zoomScale?: ?number,
-  DEPRECATED_sendUpdatedChildFrames?: ?boolean,
   // Overrides
   style?: {...ViewStyleProp, ...} | DangerouslyImpreciseStyle,
   onResponderGrant?: ?(e: any) => void | boolean,
