@@ -6,6 +6,7 @@
  */
 
 #import <React/RCTImageURLLoader.h>
+#import <React/RCTImageLoaderProtocol.h>
 
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
@@ -51,6 +52,7 @@ struct ImageURLLoaderAttribution {
                                         scale:(CGFloat)scale
                                    resizeMode:(RCTResizeMode)resizeMode
                                     requestId:(NSString *)requestId
+                                    priority: (RCTImageLoaderPriority)priority
                                   attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
                               progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                            partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
