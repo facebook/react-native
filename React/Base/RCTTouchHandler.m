@@ -160,7 +160,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
     // Get new, unique touch identifier for the react touch
     const NSUInteger RCTMaxTouches = 11; // This is the maximum supported by iDevices
     NSInteger touchID = ([_reactTouches.lastObject[@"identifier"] integerValue] + 1) % RCTMaxTouches;
-    touchID = [self _eventWithNumber:touchID]; // TODO(macOS ISS#2323203)
+    for (NSDictionary *reactTouch in _reactTouches) {
+      NSInteger usedID = [reactTouch[@"identifier"] integerValue];
+      if (usedID == touchID) {
+        // ID has already been used, try next value
+        touchID++;
+      } else if (usedID > touchID) {
+        // If usedID > touchID, touchID must be unique, so we can stop looking
+        break;
+      }
+    }
 
     // Create touch
     NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:RCTMaxTouches];
@@ -173,23 +182,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
     [_reactTouches addObject:reactTouch];
   }
 }
-
-// [TODO(macOS ISS#2323203)
-- (NSInteger)_eventWithNumber:(NSInteger)touchID
-{
-  for (NSDictionary *reactTouch in _reactTouches) {
-    NSInteger usedID = [reactTouch[@"identifier"] integerValue];
-    if (usedID == touchID) {
-      // ID has already been used, try next value
-      touchID++;
-    } else if (usedID > touchID) {
-      // If usedID > touchID, touchID must be unique, so we can stop looking
-      break;
-    }
-  }
-  return touchID;
-}
-// ]TODO(macOS ISS#2323203)
 
 - (void)_recordRemovedTouches:(NSSet *)touches
 {
