@@ -83,7 +83,6 @@ using namespace facebook::react;
   }
 
   [_surfacePresenter unregisterSurface:self];
-  [_touchHandler detachFromView:_view];
   return YES;
 }
 
