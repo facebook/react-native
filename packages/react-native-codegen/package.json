@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "yarn clean && node scripts/build.js --verbose",
-    "clean": "rm -rf lib",
+    "clean": "rimraf lib",
     "prepublish": "yarn run build"
   },
   "license": "MIT",
@@ -36,6 +36,7 @@
     "glob": "^7.1.1",
     "micromatch": "^4.0.2",
     "mkdirp": "^0.5.1",
-    "prettier": "1.19.1"
+    "prettier": "1.19.1",
+    "rimraf": "^3.0.2"
   }
 }
