@@ -21,10 +21,15 @@ type FlowId = {
  * API for tracking reliability of your user interactions
  *
  * Example:
- * var flowId = UserFlow.newFlowId(QuickLogItentifiersExample.EXAMPLE_EVENT);
+ * const flowId = UserFlow.newFlowId(QuickLogItentifiersExample.EXAMPLE_EVENT);
+ * ...
  * UserFlow.start(flowId, "user_click");
  * ...
- * UserFlow.completeWithSuccess(flowId);
+ * UserFlow.addAnnotation(flowId, "cached", "true");
+ * ...
+ * UserFlow.addPoint(flowId, "reload");
+ * ...
+ * UserFlow.endSuccess(flowId);
  */
 const UserFlow = {
   /**
@@ -59,13 +64,13 @@ const UserFlow = {
     }
   },
 
-  annotate(
+  addAnnotation(
     flowId: FlowId,
     annotationName: string,
     annotationValue: string,
   ): void {
-    if (global.nativeUserFlowAnnotate) {
-      global.nativeUserFlowAnnotate(
+    if (global.nativeUserFlowAddAnnotation) {
+      global.nativeUserFlowAddAnnotation(
         flowId.markerId,
         flowId.instanceKey,
         annotationName,
@@ -74,9 +79,9 @@ const UserFlow = {
     }
   },
 
-  markPoint(flowId: FlowId, pointName: string): void {
-    if (global.nativeUserFlowMarkPoint) {
-      global.nativeUserFlowMarkPoint(
+  addPoint(flowId: FlowId, pointName: string): void {
+    if (global.nativeUserFlowAddPoint) {
+      global.nativeUserFlowAddPoint(
         flowId.markerId,
         flowId.instanceKey,
         pointName,
@@ -84,22 +89,19 @@ const UserFlow = {
     }
   },
 
-  completeWithSuccess(flowId: FlowId): void {
-    if (global.nativeUserFlowCompleteWithSuccess) {
-      global.nativeUserFlowCompleteWithSuccess(
-        flowId.markerId,
-        flowId.instanceKey,
-      );
+  endSuccess(flowId: FlowId): void {
+    if (global.nativeUserFlowEndSuccess) {
+      global.nativeUserFlowEndSuccess(flowId.markerId, flowId.instanceKey);
     }
   },
 
-  completeWithFail(
+  endFailure(
     flowId: FlowId,
     errorName: string,
     debugInfo: ?string = null,
   ): void {
-    if (global.nativeUserFlowCompleteWithFail) {
-      global.nativeUserFlowCompleteWithFail(
+    if (global.nativeUserFlowEndFail) {
+      global.nativeUserFlowEndFail(
         flowId.markerId,
         flowId.instanceKey,
         errorName,
@@ -108,9 +110,9 @@ const UserFlow = {
     }
   },
 
-  cancel(flowId: FlowId, cancelReason: string): void {
-    if (global.nativeUserFlowCancel) {
-      global.nativeUserFlowCancel(
+  endCancel(flowId: FlowId, cancelReason: string): void {
+    if (global.nativeUserFlowEndCancel) {
+      global.nativeUserFlowEndCancel(
         flowId.markerId,
         flowId.instanceKey,
         cancelReason,
