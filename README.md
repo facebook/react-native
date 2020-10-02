@@ -137,7 +137,7 @@ Larger discussions and proposals are discussed in [**@react-native-community/dis
 
 [repo-meta]: https://github.com/react-native-community/discussions-and-proposals
 
-## 📄 License
+### 📄 License
 
 React Native is MIT licensed, as found in the [LICENSE][l] file.
 
