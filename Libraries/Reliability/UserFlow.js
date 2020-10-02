@@ -93,32 +93,17 @@ const UserFlow = {
     }
   },
 
-  completeWithUnexpectedFail(
+  completeWithFail(
     flowId: FlowId,
-    reason: string,
-    failureLocation: string,
+    errorName: string,
+    debugInfo: ?string = null,
   ): void {
-    if (global.nativeUserFlowCompleteWithUnexpectedFail) {
-      global.nativeUserFlowCompleteWithUnexpectedFail(
+    if (global.nativeUserFlowCompleteWithFail) {
+      global.nativeUserFlowCompleteWithFail(
         flowId.markerId,
         flowId.instanceKey,
-        reason,
-        failureLocation,
-      );
-    }
-  },
-
-  completeWithExpectedFail(
-    flowId: FlowId,
-    reason: string,
-    failureLocation: string,
-  ): void {
-    if (global.nativeUserFlowCompleteWithExpectedFail) {
-      global.nativeUserFlowCompleteWithExpectedFail(
-        flowId.markerId,
-        flowId.instanceKey,
-        reason,
-        failureLocation,
+        errorName,
+        debugInfo,
       );
     }
   },
