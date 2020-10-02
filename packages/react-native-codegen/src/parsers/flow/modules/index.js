@@ -16,10 +16,14 @@ import type {
   NativeModuleAliasMap,
   NativeModuleSchema,
   NativeModuleFunctionTypeAnnotation,
+  NativeModuleArrayTypeAnnotation,
+  NativeModuleBaseTypeAnnotation,
+  Nullable,
 } from '../../../CodegenSchema.js';
 
 import type {TypeDeclarationMap} from '../utils.js';
 const {resolveTypeAnnotation} = require('../utils.js');
+const {unwrapNullable, wrapNullable} = require('./utils');
 const {
   FlowGenericNotTypeParameterizedParserError,
   FlowGenericTypeParameterCountMismatchParserError,
@@ -39,7 +43,7 @@ function translateTypeAnnotation(
   flowTypeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
-): NativeModuleTypeAnnotation {
+): Nullable<NativeModuleTypeAnnotation> {
   const {
     nullable,
     typeAnnotation,
@@ -49,21 +53,21 @@ function translateTypeAnnotation(
   switch (typeAnnotation.type) {
     case 'GenericTypeAnnotation': {
       switch (typeAnnotation.id.name) {
-        case 'RootTag':
-          return {
-            nullable,
+        case 'RootTag': {
+          return wrapNullable(nullable, {
             type: 'ReservedFunctionValueTypeAnnotation',
             name: 'RootTag',
-          };
+          });
+        }
         case 'Promise': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
             moduleName,
             typeAnnotation,
           );
-          return {
-            nullable,
+
+          return wrapNullable(nullable, {
             type: 'PromiseTypeAnnotation',
-          };
+          });
         }
         case 'Array':
         case '$ReadOnlyArray': {
@@ -78,11 +82,14 @@ function translateTypeAnnotation(
              * invalid Array ElementTypes. Then, make the elementType a required
              * parameter.
              */
-            const elementType = translateTypeAnnotation(
-              moduleName,
-              typeAnnotation.typeParameters.params[0],
-              types,
-              aliasMap,
+
+            const [elementType, isElementTypeNullable] = unwrapNullable(
+              translateTypeAnnotation(
+                moduleName,
+                typeAnnotation.typeParameters.params[0],
+                types,
+                aliasMap,
+              ),
             );
 
             invariant(
@@ -99,16 +106,18 @@ function translateTypeAnnotation(
               `${typeAnnotation.id.name} element type cannot be a function.`,
             );
 
-            return {
-              nullable,
+            const finalTypeAnnotation: NativeModuleArrayTypeAnnotation<
+              Nullable<NativeModuleBaseTypeAnnotation>,
+            > = {
               type: 'ArrayTypeAnnotation',
-              elementType: elementType,
+              elementType: wrapNullable(isElementTypeNullable, elementType),
             };
+
+            return wrapNullable(nullable, finalTypeAnnotation);
           } catch (ex) {
-            return {
-              nullable,
+            return wrapNullable(nullable, {
               type: 'ArrayTypeAnnotation',
-            };
+            });
           }
         }
         case '$ReadOnly': {
@@ -124,34 +133,29 @@ function translateTypeAnnotation(
           );
         }
         case 'Stringish': {
-          return {
-            nullable,
+          return wrapNullable(nullable, {
             type: 'StringTypeAnnotation',
-          };
+          });
         }
         case 'Int32': {
-          return {
-            nullable,
+          return wrapNullable(nullable, {
             type: 'Int32TypeAnnotation',
-          };
+          });
         }
         case 'Double': {
-          return {
-            nullable,
+          return wrapNullable(nullable, {
             type: 'DoubleTypeAnnotation',
-          };
+          });
         }
         case 'Float': {
-          return {
-            nullable,
+          return wrapNullable(nullable, {
             type: 'FloatTypeAnnotation',
-          };
+          });
         }
         case 'Object': {
-          return {
-            nullable,
+          return wrapNullable(nullable, {
             type: 'GenericObjectTypeAnnotation',
-          };
+          });
         }
         default: {
           throw new UnrecognizedFlowGenericParserError(
@@ -162,7 +166,7 @@ function translateTypeAnnotation(
       }
     }
     case 'ObjectTypeAnnotation': {
-      const objectTypeAnnotationPartial = {
+      const objectTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
         properties: typeAnnotation.properties.map(property => {
           const {optional} = property;
@@ -180,19 +184,13 @@ function translateTypeAnnotation(
       };
 
       if (!typeAliasResolutionStatus.successful) {
-        return {
-          nullable,
-          ...objectTypeAnnotationPartial,
-        };
+        return wrapNullable(nullable, objectTypeAnnotation);
       }
 
       /**
        * All aliases RHS are required.
        */
-      aliasMap[typeAliasResolutionStatus.aliasName] = {
-        nullable: false,
-        ...objectTypeAnnotationPartial,
-      };
+      aliasMap[typeAliasResolutionStatus.aliasName] = objectTypeAnnotation;
 
       /**
        * Nullability of type aliases is transitive.
@@ -223,43 +221,40 @@ function translateTypeAnnotation(
        *     Hence, it's better to manage nullability within the actual TypeAliasTypeAnnotation nodes, and not the
        *     associated ObjectTypeAnnotations.
        */
-      return {
-        nullable: nullable,
+      return wrapNullable(nullable, {
         type: 'TypeAliasTypeAnnotation',
         name: typeAliasResolutionStatus.aliasName,
-      };
+      });
     }
     case 'BooleanTypeAnnotation': {
-      return {
-        nullable,
+      return wrapNullable(nullable, {
         type: 'BooleanTypeAnnotation',
-      };
+      });
     }
     case 'NumberTypeAnnotation': {
-      return {
-        nullable,
+      return wrapNullable(nullable, {
         type: 'NumberTypeAnnotation',
-      };
+      });
     }
     case 'VoidTypeAnnotation': {
-      return {
-        nullable,
+      return wrapNullable(nullable, {
         type: 'VoidTypeAnnotation',
-      };
+      });
     }
     case 'StringTypeAnnotation': {
-      return {
-        nullable,
+      return wrapNullable(nullable, {
         type: 'StringTypeAnnotation',
-      };
+      });
     }
     case 'FunctionTypeAnnotation': {
-      return translateFunctionTypeAnnotation(
-        moduleName,
-        typeAnnotation,
-        types,
+      return wrapNullable(
         nullable,
-        aliasMap,
+        translateFunctionTypeAnnotation(
+          moduleName,
+          typeAnnotation,
+          types,
+          aliasMap,
+        ),
       );
     }
     default: {
@@ -305,7 +300,6 @@ function translateFunctionTypeAnnotation(
   // TODO(T71778680): This is a FunctionTypeAnnotation. Type this.
   flowFunctionTypeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
-  nullable: boolean,
   aliasMap: {...NativeModuleAliasMap},
 ): NativeModuleFunctionTypeAnnotation {
   const params: Array<NativeModuleMethodParamSchema> = [];
@@ -315,11 +309,13 @@ function translateFunctionTypeAnnotation(
     }
 
     const paramName = flowParam.name.name;
-    const paramTypeAnnotation = translateTypeAnnotation(
-      moduleName,
-      flowParam.typeAnnotation,
-      types,
-      aliasMap,
+    const [paramTypeAnnotation, isParamTypeAnnotationNullable] = unwrapNullable(
+      translateTypeAnnotation(
+        moduleName,
+        flowParam.typeAnnotation,
+        types,
+        aliasMap,
+      ),
     );
 
     invariant(
@@ -335,15 +331,20 @@ function translateFunctionTypeAnnotation(
     params.push({
       name: flowParam.name.name,
       optional: flowParam.optional,
-      typeAnnotation: paramTypeAnnotation,
+      typeAnnotation: wrapNullable(
+        isParamTypeAnnotationNullable,
+        paramTypeAnnotation,
+      ),
     });
   }
 
-  const returnTypeAnnotation = translateTypeAnnotation(
-    moduleName,
-    flowFunctionTypeAnnotation.returnType,
-    types,
-    aliasMap,
+  const [returnTypeAnnotation, isReturnTypeAnnotationNullable] = unwrapNullable(
+    translateTypeAnnotation(
+      moduleName,
+      flowFunctionTypeAnnotation.returnType,
+      types,
+      aliasMap,
+    ),
   );
 
   invariant(
@@ -353,9 +354,11 @@ function translateFunctionTypeAnnotation(
 
   return {
     type: 'FunctionTypeAnnotation',
-    returnTypeAnnotation,
+    returnTypeAnnotation: wrapNullable(
+      isReturnTypeAnnotationNullable,
+      returnTypeAnnotation,
+    ),
     params,
-    nullable,
   };
 }
 
@@ -385,12 +388,9 @@ function buildPropertySchema(
   return {
     name: methodName,
     optional: property.optional,
-    typeAnnotation: translateFunctionTypeAnnotation(
-      moduleName,
-      value,
-      types,
+    typeAnnotation: wrapNullable(
       nullable,
-      aliasMap,
+      translateFunctionTypeAnnotation(moduleName, value, types, aliasMap),
     ),
   };
 }

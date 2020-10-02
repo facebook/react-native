@@ -34,28 +34,27 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
         SampleTurboModule: {
           aliases: {
             ObjectAlias: {
-              nullable: false,
               type: 'ObjectTypeAnnotation',
               properties: [
                 {
                   name: 'x',
                   optional: false,
-                  typeAnnotation: { nullable: false, type: 'NumberTypeAnnotation' }
+                  typeAnnotation: { type: 'NumberTypeAnnotation' }
                 },
                 {
                   name: 'y',
                   optional: false,
-                  typeAnnotation: { nullable: false, type: 'NumberTypeAnnotation' }
+                  typeAnnotation: { type: 'NumberTypeAnnotation' }
                 },
                 {
                   name: 'label',
                   optional: false,
-                  typeAnnotation: { nullable: false, type: 'StringTypeAnnotation' }
+                  typeAnnotation: { type: 'StringTypeAnnotation' }
                 },
                 {
                   name: 'truthy',
                   optional: false,
-                  typeAnnotation: { nullable: false, type: 'BooleanTypeAnnotation' }
+                  typeAnnotation: { type: 'BooleanTypeAnnotation' }
                 }
               ]
             }
@@ -66,15 +65,14 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'VoidTypeAnnotation' },
+                returnTypeAnnotation: { type: 'VoidTypeAnnotation' },
                 params: [
                   {
                     name: 'arg',
                     optional: false,
-                    typeAnnotation: { nullable: false, type: 'NumberTypeAnnotation' }
+                    typeAnnotation: { type: 'NumberTypeAnnotation' }
                   }
-                ],
-                nullable: false
+                ]
               }
             },
             {
@@ -82,9 +80,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'VoidTypeAnnotation' },
-                params: [],
-                nullable: false
+                returnTypeAnnotation: { type: 'VoidTypeAnnotation' },
+                params: []
               }
             },
             {
@@ -93,13 +90,12 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
                       name: 'a',
                       optional: false,
-                      typeAnnotation: { nullable: false, type: 'NumberTypeAnnotation' }
+                      typeAnnotation: { type: 'NumberTypeAnnotation' }
                     }
                   ]
                 },
@@ -108,13 +104,11 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
                     name: 'a',
                     optional: false,
                     typeAnnotation: {
-                      nullable: false,
                       type: 'ArrayTypeAnnotation',
-                      elementType: { nullable: false, type: 'NumberTypeAnnotation' }
+                      elementType: { type: 'NumberTypeAnnotation' }
                     }
                   }
-                ],
-                nullable: false
+                ]
               }
             },
             {
@@ -122,19 +116,17 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'StringTypeAnnotation' },
+                returnTypeAnnotation: { type: 'StringTypeAnnotation' },
                 params: [
                   {
                     name: 'a',
                     optional: false,
                     typeAnnotation: {
-                      nullable: false,
                       type: 'TypeAliasTypeAnnotation',
                       name: 'ObjectAlias'
                     }
                   }
-                ],
-                nullable: false
+                ]
               }
             }
           ]
@@ -159,22 +151,19 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ArrayTypeAnnotation',
-                  elementType: { nullable: false, type: 'StringTypeAnnotation' }
+                  elementType: { type: 'StringTypeAnnotation' }
                 },
                 params: [
                   {
                     name: 'arg',
                     optional: false,
                     typeAnnotation: {
-                      nullable: false,
                       type: 'ArrayTypeAnnotation',
-                      elementType: { nullable: false, type: 'StringTypeAnnotation' }
+                      elementType: { type: 'StringTypeAnnotation' }
                     }
                   }
-                ],
-                nullable: false
+                ]
               }
             }
           ]
@@ -198,15 +187,14 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'ArrayTypeAnnotation' },
+                returnTypeAnnotation: { type: 'ArrayTypeAnnotation' },
                 params: [
                   {
                     name: 'arg',
                     optional: false,
-                    typeAnnotation: { nullable: false, type: 'ArrayTypeAnnotation' }
+                    typeAnnotation: { type: 'ArrayTypeAnnotation' }
                   }
-                ],
-                nullable: false
+                ]
               }
             }
           ]
@@ -231,22 +219,19 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_AR
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ArrayTypeAnnotation',
-                  elementType: { nullable: false, type: 'StringTypeAnnotation' }
+                  elementType: { type: 'StringTypeAnnotation' }
                 },
                 params: [
                   {
                     name: 'arg',
                     optional: false,
                     typeAnnotation: {
-                      nullable: false,
                       type: 'ArrayTypeAnnotation',
-                      elementType: { nullable: false, type: 'StringTypeAnnotation' }
+                      elementType: { type: 'StringTypeAnnotation' }
                     }
                   }
-                ],
-                nullable: false
+                ]
               }
             },
             {
@@ -255,22 +240,19 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_AR
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ArrayTypeAnnotation',
-                  elementType: { nullable: false, type: 'StringTypeAnnotation' }
+                  elementType: { type: 'StringTypeAnnotation' }
                 },
                 params: [
                   {
                     name: 'arg',
                     optional: false,
                     typeAnnotation: {
-                      nullable: false,
                       type: 'ArrayTypeAnnotation',
-                      elementType: { nullable: false, type: 'StringTypeAnnotation' }
+                      elementType: { type: 'StringTypeAnnotation' }
                     }
                   }
-                ],
-                nullable: false
+                ]
               }
             }
           ]
@@ -294,15 +276,14 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
               optional: true,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'VoidTypeAnnotation' },
+                returnTypeAnnotation: { type: 'VoidTypeAnnotation' },
                 params: [
                   {
                     name: 'arg',
                     optional: false,
-                    typeAnnotation: { nullable: false, type: 'BooleanTypeAnnotation' }
+                    typeAnnotation: { type: 'BooleanTypeAnnotation' }
                   }
-                ],
-                nullable: false
+                ]
               }
             },
             {
@@ -310,15 +291,14 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'VoidTypeAnnotation' },
+                returnTypeAnnotation: { type: 'VoidTypeAnnotation' },
                 params: [
                   {
                     name: 'arg',
                     optional: false,
-                    typeAnnotation: { nullable: false, type: 'NumberTypeAnnotation' }
+                    typeAnnotation: { type: 'NumberTypeAnnotation' }
                   }
-                ],
-                nullable: false
+                ]
               }
             },
             {
@@ -326,15 +306,14 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'VoidTypeAnnotation' },
+                returnTypeAnnotation: { type: 'VoidTypeAnnotation' },
                 params: [
                   {
                     name: 'arg',
                     optional: false,
-                    typeAnnotation: { nullable: false, type: 'StringTypeAnnotation' }
+                    typeAnnotation: { type: 'StringTypeAnnotation' }
                   }
-                ],
-                nullable: false
+                ]
               }
             },
             {
@@ -342,15 +321,14 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'VoidTypeAnnotation' },
+                returnTypeAnnotation: { type: 'VoidTypeAnnotation' },
                 params: [
                   {
                     name: 'arg',
                     optional: false,
-                    typeAnnotation: { nullable: false, type: 'StringTypeAnnotation' }
+                    typeAnnotation: { type: 'StringTypeAnnotation' }
                   }
-                ],
-                nullable: false
+                ]
               }
             }
           ]
@@ -374,45 +352,35 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_CALLBACK
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'VoidTypeAnnotation' },
+                returnTypeAnnotation: { type: 'VoidTypeAnnotation' },
                 params: [
                   {
                     name: 'callback',
                     optional: false,
                     typeAnnotation: {
                       type: 'FunctionTypeAnnotation',
-                      returnTypeAnnotation: { nullable: false, type: 'VoidTypeAnnotation' },
+                      returnTypeAnnotation: { type: 'VoidTypeAnnotation' },
                       params: [
                         {
                           name: 'value',
                           optional: false,
-                          typeAnnotation: {
-                            nullable: false,
-                            type: 'StringTypeAnnotation'
-                          }
+                          typeAnnotation: { type: 'StringTypeAnnotation' }
                         },
                         {
                           name: 'arr',
                           optional: false,
                           typeAnnotation: {
-                            nullable: false,
                             type: 'ArrayTypeAnnotation',
                             elementType: {
-                              nullable: false,
                               type: 'ArrayTypeAnnotation',
-                              elementType: {
-                                nullable: false,
-                                type: 'StringTypeAnnotation'
-                              }
+                              elementType: { type: 'StringTypeAnnotation' }
                             }
                           }
                         }
-                      ],
-                      nullable: false
+                      ]
                     }
                   }
-                ],
-                nullable: false
+                ]
               }
             }
           ]
@@ -437,15 +405,12 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ArrayTypeAnnotation',
                   elementType: {
-                    nullable: false,
                     type: 'ArrayTypeAnnotation',
                     elementType: {
-                      nullable: false,
                       type: 'ArrayTypeAnnotation',
-                      elementType: { nullable: false, type: 'StringTypeAnnotation' }
+                      elementType: { type: 'StringTypeAnnotation' }
                     }
                   }
                 },
@@ -454,32 +419,23 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
                     name: 'arg',
                     optional: false,
                     typeAnnotation: {
-                      nullable: false,
                       type: 'ArrayTypeAnnotation',
                       elementType: {
-                        nullable: false,
                         type: 'ArrayTypeAnnotation',
                         elementType: {
-                          nullable: false,
                           type: 'ArrayTypeAnnotation',
                           elementType: {
-                            nullable: false,
                             type: 'ArrayTypeAnnotation',
                             elementType: {
-                              nullable: false,
                               type: 'ArrayTypeAnnotation',
-                              elementType: {
-                                nullable: false,
-                                type: 'StringTypeAnnotation'
-                              }
+                              elementType: { type: 'StringTypeAnnotation' }
                             }
                           }
                         }
                       }
                     }
                   }
-                ],
-                nullable: false
+                ]
               }
             }
           ]
@@ -504,23 +460,18 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
                       name: 'const1',
                       optional: false,
                       typeAnnotation: {
-                        nullable: false,
                         type: 'ObjectTypeAnnotation',
                         properties: [
                           {
                             name: 'const1',
                             optional: false,
-                            typeAnnotation: {
-                              nullable: false,
-                              type: 'BooleanTypeAnnotation'
-                            }
+                            typeAnnotation: { type: 'BooleanTypeAnnotation' }
                           }
                         ]
                       }
@@ -532,23 +483,18 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
                     name: 'arg',
                     optional: false,
                     typeAnnotation: {
-                      nullable: false,
                       type: 'ObjectTypeAnnotation',
                       properties: [
                         {
                           name: 'const1',
                           optional: false,
                           typeAnnotation: {
-                            nullable: false,
                             type: 'ObjectTypeAnnotation',
                             properties: [
                               {
                                 name: 'const1',
                                 optional: false,
-                                typeAnnotation: {
-                                  nullable: false,
-                                  type: 'BooleanTypeAnnotation'
-                                }
+                                typeAnnotation: { type: 'BooleanTypeAnnotation' }
                               }
                             ]
                           }
@@ -556,8 +502,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
                       ]
                     }
                   }
-                ],
-                nullable: false
+                ]
               }
             },
             {
@@ -566,23 +511,18 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
                       name: 'const1',
                       optional: false,
                       typeAnnotation: {
-                        nullable: false,
                         type: 'ObjectTypeAnnotation',
                         properties: [
                           {
                             name: 'const1',
                             optional: false,
-                            typeAnnotation: {
-                              nullable: false,
-                              type: 'BooleanTypeAnnotation'
-                            }
+                            typeAnnotation: { type: 'BooleanTypeAnnotation' }
                           }
                         ]
                       }
@@ -594,23 +534,18 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
                     name: 'arg',
                     optional: false,
                     typeAnnotation: {
-                      nullable: false,
                       type: 'ObjectTypeAnnotation',
                       properties: [
                         {
                           name: 'const1',
                           optional: false,
                           typeAnnotation: {
-                            nullable: false,
                             type: 'ObjectTypeAnnotation',
                             properties: [
                               {
                                 name: 'const1',
                                 optional: false,
-                                typeAnnotation: {
-                                  nullable: false,
-                                  type: 'BooleanTypeAnnotation'
-                                }
+                                typeAnnotation: { type: 'BooleanTypeAnnotation' }
                               }
                             ]
                           }
@@ -618,8 +553,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
                       ]
                     }
                   }
-                ],
-                nullable: false
+                ]
               }
             },
             {
@@ -627,31 +561,23 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'GenericObjectTypeAnnotation'
-                },
+                returnTypeAnnotation: { type: 'GenericObjectTypeAnnotation' },
                 params: [
                   {
                     name: 'arg',
                     optional: false,
                     typeAnnotation: {
-                      nullable: false,
                       type: 'ObjectTypeAnnotation',
                       properties: [
                         {
                           name: 'a',
                           optional: false,
-                          typeAnnotation: {
-                            nullable: false,
-                            type: 'StringTypeAnnotation'
-                          }
+                          typeAnnotation: { type: 'StringTypeAnnotation' }
                         }
                       ]
                     }
                   }
-                ],
-                nullable: false
+                ]
               }
             },
             {
@@ -660,26 +586,20 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ArrayTypeAnnotation',
                   elementType: {
-                    nullable: false,
                     type: 'ObjectTypeAnnotation',
                     properties: [
                       {
                         name: 'const1',
                         optional: false,
                         typeAnnotation: {
-                          nullable: false,
                           type: 'ObjectTypeAnnotation',
                           properties: [
                             {
                               name: 'const1',
                               optional: false,
-                              typeAnnotation: {
-                                nullable: false,
-                                type: 'BooleanTypeAnnotation'
-                              }
+                              typeAnnotation: { type: 'BooleanTypeAnnotation' }
                             }
                           ]
                         }
@@ -692,23 +612,18 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
                     name: 'arg',
                     optional: false,
                     typeAnnotation: {
-                      nullable: false,
                       type: 'ObjectTypeAnnotation',
                       properties: [
                         {
                           name: 'const1',
                           optional: false,
                           typeAnnotation: {
-                            nullable: false,
                             type: 'ObjectTypeAnnotation',
                             properties: [
                               {
                                 name: 'const1',
                                 optional: false,
-                                typeAnnotation: {
-                                  nullable: false,
-                                  type: 'BooleanTypeAnnotation'
-                                }
+                                typeAnnotation: { type: 'BooleanTypeAnnotation' }
                               }
                             ]
                           }
@@ -716,8 +631,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
                       ]
                     }
                   }
-                ],
-                nullable: false
+                ]
               }
             }
           ]
@@ -742,54 +656,40 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
                       name: 'isTesting',
                       optional: false,
-                      typeAnnotation: {
-                        nullable: false,
-                        type: 'BooleanTypeAnnotation'
-                      }
+                      typeAnnotation: { type: 'BooleanTypeAnnotation' }
                     },
                     {
                       name: 'reactNativeVersion',
                       optional: false,
                       typeAnnotation: {
-                        nullable: false,
                         type: 'ObjectTypeAnnotation',
                         properties: [
                           {
                             name: 'major',
                             optional: false,
-                            typeAnnotation: {
-                              nullable: false,
-                              type: 'NumberTypeAnnotation'
-                            }
+                            typeAnnotation: { type: 'NumberTypeAnnotation' }
                           },
                           {
                             name: 'minor',
                             optional: false,
-                            typeAnnotation: {
-                              nullable: false,
-                              type: 'NumberTypeAnnotation'
-                            }
+                            typeAnnotation: { type: 'NumberTypeAnnotation' }
                           },
                           {
                             name: 'patch',
                             optional: true,
-                            typeAnnotation: {
-                              nullable: false,
-                              type: 'NumberTypeAnnotation'
-                            }
+                            typeAnnotation: { type: 'NumberTypeAnnotation' }
                           },
                           {
                             name: 'prerelease',
                             optional: false,
                             typeAnnotation: {
-                              nullable: true,
-                              type: 'NumberTypeAnnotation'
+                              type: 'NullableTypeAnnotation',
+                              typeAnnotation: { type: 'NumberTypeAnnotation' }
                             }
                           }
                         ]
@@ -798,30 +698,26 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
                     {
                       name: 'forceTouchAvailable',
                       optional: false,
-                      typeAnnotation: {
-                        nullable: false,
-                        type: 'BooleanTypeAnnotation'
-                      }
+                      typeAnnotation: { type: 'BooleanTypeAnnotation' }
                     },
                     {
                       name: 'osVersion',
                       optional: false,
-                      typeAnnotation: { nullable: false, type: 'StringTypeAnnotation' }
+                      typeAnnotation: { type: 'StringTypeAnnotation' }
                     },
                     {
                       name: 'systemName',
                       optional: false,
-                      typeAnnotation: { nullable: false, type: 'StringTypeAnnotation' }
+                      typeAnnotation: { type: 'StringTypeAnnotation' }
                     },
                     {
                       name: 'interfaceIdiom',
                       optional: false,
-                      typeAnnotation: { nullable: false, type: 'StringTypeAnnotation' }
+                      typeAnnotation: { type: 'StringTypeAnnotation' }
                     }
                   ]
                 },
-                params: [],
-                nullable: false
+                params: []
               }
             }
           ]
@@ -845,15 +741,14 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_FLOAT_AN
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'Int32TypeAnnotation' },
+                returnTypeAnnotation: { type: 'Int32TypeAnnotation' },
                 params: [
                   {
                     name: 'arg',
                     optional: false,
-                    typeAnnotation: { nullable: false, type: 'Int32TypeAnnotation' }
+                    typeAnnotation: { type: 'Int32TypeAnnotation' }
                   }
-                ],
-                nullable: false
+                ]
               }
             },
             {
@@ -861,15 +756,14 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_FLOAT_AN
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'FloatTypeAnnotation' },
+                returnTypeAnnotation: { type: 'FloatTypeAnnotation' },
                 params: [
                   {
                     name: 'arg',
                     optional: false,
-                    typeAnnotation: { nullable: false, type: 'FloatTypeAnnotation' }
+                    typeAnnotation: { type: 'FloatTypeAnnotation' }
                   }
-                ],
-                nullable: false
+                ]
               }
             }
           ]
@@ -888,37 +782,27 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NESTED_A
         SampleTurboModule: {
           aliases: {
             Bar: {
-              nullable: false,
               type: 'ObjectTypeAnnotation',
               properties: [
                 {
                   name: 'z',
                   optional: false,
-                  typeAnnotation: { nullable: false, type: 'NumberTypeAnnotation' }
+                  typeAnnotation: { type: 'NumberTypeAnnotation' }
                 }
               ]
             },
             Foo: {
-              nullable: false,
               type: 'ObjectTypeAnnotation',
               properties: [
                 {
                   name: 'bar1',
                   optional: false,
-                  typeAnnotation: {
-                    nullable: false,
-                    type: 'TypeAliasTypeAnnotation',
-                    name: 'Bar'
-                  }
+                  typeAnnotation: { type: 'TypeAliasTypeAnnotation', name: 'Bar' }
                 },
                 {
                   name: 'bar2',
                   optional: false,
-                  typeAnnotation: {
-                    nullable: false,
-                    type: 'TypeAliasTypeAnnotation',
-                    name: 'Bar'
-                  }
+                  typeAnnotation: { type: 'TypeAliasTypeAnnotation', name: 'Bar' }
                 }
               ]
             }
@@ -929,23 +813,14 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NESTED_A
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'TypeAliasTypeAnnotation',
-                  name: 'Foo'
-                },
+                returnTypeAnnotation: { type: 'TypeAliasTypeAnnotation', name: 'Foo' },
                 params: [
                   {
                     name: 'x',
                     optional: false,
-                    typeAnnotation: {
-                      nullable: false,
-                      type: 'TypeAliasTypeAnnotation',
-                      name: 'Foo'
-                    }
+                    typeAnnotation: { type: 'TypeAliasTypeAnnotation', name: 'Foo' }
                   }
-                ],
-                nullable: false
+                ]
               }
             },
             {
@@ -953,19 +828,14 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NESTED_A
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'VoidTypeAnnotation' },
+                returnTypeAnnotation: { type: 'VoidTypeAnnotation' },
                 params: [
                   {
                     name: 'x',
                     optional: false,
-                    typeAnnotation: {
-                      nullable: false,
-                      type: 'TypeAliasTypeAnnotation',
-                      name: 'Foo'
-                    }
+                    typeAnnotation: { type: 'TypeAliasTypeAnnotation', name: 'Foo' }
                   }
-                ],
-                nullable: false
+                ]
               }
             }
           ]
@@ -989,15 +859,17 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NULLABLE
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'VoidTypeAnnotation' },
+                returnTypeAnnotation: { type: 'VoidTypeAnnotation' },
                 params: [
                   {
                     name: 'arg',
                     optional: false,
-                    typeAnnotation: { nullable: true, type: 'StringTypeAnnotation' }
+                    typeAnnotation: {
+                      type: 'NullableTypeAnnotation',
+                      typeAnnotation: { type: 'StringTypeAnnotation' }
+                    }
                   }
-                ],
-                nullable: false
+                ]
               }
             }
           ]
@@ -1016,13 +888,12 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_W
         SampleTurboModule: {
           aliases: {
             DisplayMetricsAndroid: {
-              nullable: false,
               type: 'ObjectTypeAnnotation',
               properties: [
                 {
                   name: 'width',
                   optional: false,
-                  typeAnnotation: { nullable: false, type: 'NumberTypeAnnotation' }
+                  typeAnnotation: { type: 'NumberTypeAnnotation' }
                 }
               ]
             }
@@ -1034,21 +905,18 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_W
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
                       name: 'Dimensions',
                       optional: false,
                       typeAnnotation: {
-                        nullable: false,
                         type: 'ObjectTypeAnnotation',
                         properties: [
                           {
                             name: 'windowPhysicalPixels',
                             optional: false,
                             typeAnnotation: {
-                              nullable: false,
                               type: 'TypeAliasTypeAnnotation',
                               name: 'DisplayMetricsAndroid'
                             }
@@ -1058,8 +926,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_W
                     }
                   ]
                 },
-                params: [],
-                nullable: false
+                params: []
               }
             },
             {
@@ -1068,21 +935,18 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_W
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
                       name: 'Dimensions',
                       optional: false,
                       typeAnnotation: {
-                        nullable: false,
                         type: 'ObjectTypeAnnotation',
                         properties: [
                           {
                             name: 'windowPhysicalPixels',
                             optional: false,
                             typeAnnotation: {
-                              nullable: false,
                               type: 'TypeAliasTypeAnnotation',
                               name: 'DisplayMetricsAndroid'
                             }
@@ -1092,8 +956,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_W
                     }
                   ]
                 },
-                params: [],
-                nullable: false
+                params: []
               }
             }
           ]
@@ -1117,9 +980,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'PromiseTypeAnnotation' },
-                params: [],
-                nullable: false
+                returnTypeAnnotation: { type: 'PromiseTypeAnnotation' },
+                params: []
               }
             },
             {
@@ -1127,9 +989,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'PromiseTypeAnnotation' },
-                params: [],
-                nullable: false
+                returnTypeAnnotation: { type: 'PromiseTypeAnnotation' },
+                params: []
               }
             },
             {
@@ -1137,9 +998,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: { nullable: false, type: 'PromiseTypeAnnotation' },
-                params: [],
-                nullable: false
+                returnTypeAnnotation: { type: 'PromiseTypeAnnotation' },
+                params: []
               }
             }
           ]
@@ -1164,7 +1024,6 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ROOT_TAG
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ReservedFunctionValueTypeAnnotation',
                   name: 'RootTag'
                 },
@@ -1173,13 +1032,11 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ROOT_TAG
                     name: 'rootTag',
                     optional: false,
                     typeAnnotation: {
-                      nullable: false,
                       type: 'ReservedFunctionValueTypeAnnotation',
                       name: 'RootTag'
                     }
                   }
-                ],
-                nullable: false
+                ]
               }
             }
           ]
@@ -1203,21 +1060,14 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_O
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'GenericObjectTypeAnnotation'
-                },
+                returnTypeAnnotation: { type: 'GenericObjectTypeAnnotation' },
                 params: [
                   {
                     name: 'o',
                     optional: false,
-                    typeAnnotation: {
-                      nullable: false,
-                      type: 'GenericObjectTypeAnnotation'
-                    }
+                    typeAnnotation: { type: 'GenericObjectTypeAnnotation' }
                   }
-                ],
-                nullable: false
+                ]
               }
             }
           ]
