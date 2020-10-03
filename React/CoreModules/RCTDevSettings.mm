@@ -17,6 +17,7 @@
 #import <React/RCTProfile.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
+#import <React/RCTBundleURLProvider.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTDevMenu.h>
 
@@ -439,13 +440,14 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
     NSString *const path = [bundleURL.path substringFromIndex:1]; // Strip initial slash.
     NSString *const host = bundleURL.host;
     NSNumber *const port = bundleURL.port;
+    // TODO(macOS ISS#2323203) - we could perhaps infer the platform from the bundleURL's query parameters, instead of hardcoding
     if (self.bridge) {
       [self.bridge enqueueJSCall:@"HMRClient"
                           method:@"setup"
-                            args:@[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]
+                            args:@[ kRCTPlatformName, path, host, RCTNullIfNil(port), @(YES) ] // TODO(macOS ISS#2323203)
                       completion:NULL];
     } else {
-      self.invokeJS(@"HMRClient", @"setup", @[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]);
+      self.invokeJS(@"HMRClient", @"setup", @[ kRCTPlatformName, path, host, RCTNullIfNil(port), @(YES) ]); // TODO(macOS ISS#2323203)
     }
   }
 }
