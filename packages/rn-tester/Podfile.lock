@@ -181,15 +181,6 @@ PODS:
     - React-jsiexecutor (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
     - Yoga
-  - React-Core/RCTPushNotificationHeaders (1000.0.0):
-    - glog
-    - RCT-Folly (= 2020.01.13.00)
-    - React-Core/Default
-    - React-cxxreact (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-    - React-jsiexecutor (= 1000.0.0)
-    - React-perflogger (= 1000.0.0)
-    - Yoga
   - React-Core/RCTSettingsHeaders (1000.0.0):
     - glog
     - RCT-Folly (= 2020.01.13.00)
@@ -397,7 +388,6 @@ DEPENDENCIES:
   - React-RCTImage (from `../../Libraries/Image`)
   - React-RCTLinking (from `../../Libraries/LinkingIOS`)
   - React-RCTNetwork (from `../../Libraries/Network`)
-  - React-RCTPushNotification (from `../../Libraries/PushNotificationIOS`)
   - React-RCTSettings (from `../../Libraries/Settings`)
   - React-RCTTest (from `./RCTTest`)
   - React-RCTText (from `../../Libraries/Text`)
@@ -467,8 +457,6 @@ EXTERNAL SOURCES:
     :path: "../../Libraries/LinkingIOS"
   React-RCTNetwork:
     :path: "../../Libraries/Network"
-  React-RCTPushNotification:
-    :path: "../../Libraries/PushNotificationIOS"
   React-RCTSettings:
     :path: "../../Libraries/Settings"
   React-RCTTest:
@@ -518,7 +506,6 @@ SPEC CHECKSUMS:
   React-RCTImage: f3a98834281555ce1bbbe1af0306aaf40ac70fc7
   React-RCTLinking: 801d05ad5e6d1636e977f4dfeab21f87358a02a5
   React-RCTNetwork: b5e2f27a098ca52d98426328640314a499da6d00
-  React-RCTPushNotification: ce60993f816f917a6495227e16978b5fd550d73b
   React-RCTSettings: 3cb638230af06ba769edc0bc4ed4123040b1b4e2
   React-RCTTest: 090e9816044220c39462be109dab6d473d94b1c9
   React-RCTText: 51a41bf9d18a91b2437b833ed4246754baf830d0
