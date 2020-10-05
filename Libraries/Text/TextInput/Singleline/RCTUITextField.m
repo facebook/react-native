@@ -374,16 +374,6 @@ static RCTUIColor *defaultPlaceholderTextColor()
   
 #pragma mark - NSTextViewDelegate methods
 
-- (void)setScrollEnabled:(BOOL)enabled
-{
-  // Do noting, compatible with multiline textinput
-}
-
-- (BOOL)scrollEnabled
-{
-  return NO;
-}
-
 - (void)textDidChange:(NSNotification *)notification
 {
   [super textDidChange:notification];
