@@ -48,6 +48,7 @@ import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
