@@ -393,9 +393,24 @@ public class ReactEditText extends AppCompatEditText {
     // ScrollView, a prompt will be triggered but the system fail to locate it properly.
     // Here is an example post discussing about this issue:
     // https://github.com/facebook/react-native/issues/27204
+    String[] xiaomiManufacturers = new String[]{
+      "M2002J9G",
+      "M2002J9G",
+      "M2004J19C",
+      "M2007J20CG",
+      "Mi",
+      "Mi",
+      "MIX",
+      "POCO",
+      "POCOPHONE",
+      "Redmi",
+      "Xiaomi"
+    };
+    boolean isXiaomi = Arrays.asList(xiaomiManufacturers).contains(Build.MANUFACTURER);
+    
     if (inputType == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
         && Build.VERSION.SDK_INT == Build.VERSION_CODES.Q
-        && Build.MANUFACTURER.startsWith("Xiaomi")) {
+        && isXiaomi) {
       inputType = InputType.TYPE_CLASS_TEXT;
     }
 
