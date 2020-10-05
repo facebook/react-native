@@ -400,7 +400,7 @@ public class ReactEditText extends AppCompatEditText {
       "M2004J19C",
       "M2007J20CG",
       "Mi",
-      "Mi",
+      "MI",
       "MIX",
       "POCO",
       "POCOPHONE",
