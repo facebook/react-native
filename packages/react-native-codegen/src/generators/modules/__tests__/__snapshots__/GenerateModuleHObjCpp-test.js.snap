@@ -309,7 +309,7 @@ inline folly::Optional<facebook::react::LazyVector<NSString *>> JS::NativeSample
 inline facebook::react::LazyVector<JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjectsElement> JS::NativeSampleTurboModule::SpecGetArraysOptions::arrayOfObjects() const
 {
   id const p = _v[@\\"arrayOfObjects\\"];
-  return RCTBridgingToVec(p, ^JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjectsElement(id itemValue_0) { return JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjectsElement(p); });
+  return RCTBridgingToVec(p, ^JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjectsElement(id itemValue_0) { return JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjectsElement(itemValue_0); });
 }
 
 ",
@@ -890,7 +890,7 @@ inline NSString *JS::NativeExceptionsManager::ExceptionData::componentStack() co
 inline facebook::react::LazyVector<JS::NativeExceptionsManager::StackFrame> JS::NativeExceptionsManager::ExceptionData::stack() const
 {
   id const p = _v[@\\"stack\\"];
-  return RCTBridgingToVec(p, ^JS::NativeExceptionsManager::StackFrame(id itemValue_0) { return JS::NativeExceptionsManager::StackFrame(p); });
+  return RCTBridgingToVec(p, ^JS::NativeExceptionsManager::StackFrame(id itemValue_0) { return JS::NativeExceptionsManager::StackFrame(itemValue_0); });
 }
 
 

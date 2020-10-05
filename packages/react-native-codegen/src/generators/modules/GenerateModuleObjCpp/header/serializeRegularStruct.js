@@ -195,8 +195,8 @@ function toObjCValue(
       );
 
       return !isRequired
-        ? `(p == nil ? folly::none : folly::make_optional(${namespacedStructName}(p)))`
-        : `${namespacedStructName}(p)`;
+        ? `(${value} == nil ? folly::none : folly::make_optional(${namespacedStructName}(${value})))`
+        : `${namespacedStructName}(${value})`;
     default:
       (typeAnnotation.type: empty);
       throw new Error(
