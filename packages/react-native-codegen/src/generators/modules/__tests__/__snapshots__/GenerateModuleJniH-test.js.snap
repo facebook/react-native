@@ -2,7 +2,8 @@
 
 exports[`GenerateModuleJniH can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "SampleSpec.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -67,7 +68,8 @@ include $(BUILD_SHARED_LIBRARY)
 
 exports[`GenerateModuleJniH can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "SampleSpec.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -132,7 +134,8 @@ include $(BUILD_SHARED_LIBRARY)
 
 exports[`GenerateModuleJniH can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "SampleSpec.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -197,7 +200,8 @@ include $(BUILD_SHARED_LIBRARY)
 
 exports[`GenerateModuleJniH can generate fixture REAL_MODULE_EXAMPLE 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "SampleSpec.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -224,19 +228,19 @@ public:
 };
 
 /**
- * JNI C++ class for module 'ExceptionsManager'
- */
-class JSI_EXPORT NativeExceptionsManagerSpecJSI : public JavaTurboModule {
-public:
-  NativeExceptionsManagerSpecJSI(const JavaTurboModule::InitParams &params);
-};
-
-/**
  * JNI C++ class for module 'ImagePickerIOS'
  */
 class JSI_EXPORT NativeImagePickerIOSSpecJSI : public JavaTurboModule {
 public:
   NativeImagePickerIOSSpecJSI(const JavaTurboModule::InitParams &params);
+};
+
+/**
+ * JNI C++ class for module 'ExceptionsManager'
+ */
+class JSI_EXPORT NativeExceptionsManagerSpecJSI : public JavaTurboModule {
+public:
+  NativeExceptionsManagerSpecJSI(const JavaTurboModule::InitParams &params);
 };
 
 
@@ -278,7 +282,8 @@ include $(BUILD_SHARED_LIBRARY)
 
 exports[`GenerateModuleJniH can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "SampleSpec.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -343,7 +348,8 @@ include $(BUILD_SHARED_LIBRARY)
 
 exports[`GenerateModuleJniH can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "SampleSpec.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -416,7 +422,8 @@ include $(BUILD_SHARED_LIBRARY)
 
 exports[`GenerateModuleJniH can generate fixture TWO_MODULES_SAME_FILE 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "SampleSpec.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the

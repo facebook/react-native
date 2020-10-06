@@ -24,7 +24,7 @@ ImageRequest ImageManager::requestImage(
     const ImageSource &imageSource,
     SurfaceId surfaceId) const {
   // Not implemented.
-  return ImageRequest(imageSource, nullptr, nullptr);
+  return ImageRequest(imageSource, nullptr);
 }
 
 } // namespace react

@@ -2,7 +2,8 @@
 
 exports[`GenerateModuleJavaSpec can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "NativeSampleTurboModuleSpec.java" => "/**
+  "NativeSampleTurboModuleSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -48,7 +49,8 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
 exports[`GenerateModuleJavaSpec can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "NativeSampleTurboModuleSpec.java" => "/**
+  "NativeSampleTurboModuleSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -80,7 +82,8 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
 exports[`GenerateModuleJavaSpec can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
 Map {
-  "NativeAliasTurboModuleSpec.java" => "/**
+  "NativeAliasTurboModuleSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -114,7 +117,8 @@ public abstract class NativeAliasTurboModuleSpec extends ReactContextBaseJavaMod
 
 exports[`GenerateModuleJavaSpec can generate fixture REAL_MODULE_EXAMPLE 1`] = `
 Map {
-  "NativeCameraRollManagerSpec.java" => "/**
+  "NativeCameraRollManagerSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -151,7 +155,8 @@ public abstract class NativeCameraRollManagerSpec extends ReactContextBaseJavaMo
   public abstract void deletePhotos(ReadableArray assets, Promise promise);
 }
 ",
-  "NativeImagePickerIOSSpec.java" => "/**
+  "NativeImagePickerIOSSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -181,7 +186,8 @@ public abstract class NativeImagePickerIOSSpec extends ReactContextBaseJavaModul
   public abstract void openCameraDialog(ReadableMap config, Callback successCallback, Callback cancelCallback);
 }
 ",
-  "NativeExceptionsManagerSpec.java" => "/**
+  "NativeExceptionsManagerSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -228,7 +234,8 @@ public abstract class NativeExceptionsManagerSpec extends ReactContextBaseJavaMo
 
 exports[`GenerateModuleJavaSpec can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "NativeSampleTurboModuleSpec.java" => "/**
+  "NativeSampleTurboModuleSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -327,7 +334,8 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
 exports[`GenerateModuleJavaSpec can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "NativeSampleTurboModuleSpec.java" => "/**
+  "NativeSampleTurboModuleSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -355,7 +363,8 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   public abstract void voidFunc();
 }
 ",
-  "NativeSample2TurboModuleSpec.java" => "/**
+  "NativeSample2TurboModuleSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -388,7 +397,8 @@ public abstract class NativeSample2TurboModuleSpec extends ReactContextBaseJavaM
 
 exports[`GenerateModuleJavaSpec can generate fixture TWO_MODULES_SAME_FILE 1`] = `
 Map {
-  "NativeSampleTurboModuleSpec.java" => "/**
+  "NativeSampleTurboModuleSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -416,7 +426,8 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   public abstract void voidFunc();
 }
 ",
-  "NativeSample2TurboModuleSpec.java" => "/**
+  "NativeSample2TurboModuleSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root

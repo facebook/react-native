@@ -34,10 +34,10 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
           properties: [
             {
               name: 'getConstants',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
@@ -64,139 +64,133 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
                   ],
                 },
                 params: [],
-                optional: false,
               },
             },
             {
               name: 'voidFunc',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [],
-                optional: false,
               },
             },
             {
               name: 'getBool',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'BooleanTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'arg',
                     typeAnnotation: {
                       type: 'BooleanTypeAnnotation',
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'getNumber',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'NumberTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'arg',
                     typeAnnotation: {
                       type: 'NumberTypeAnnotation',
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'getString',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'StringTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'arg',
                     typeAnnotation: {
                       type: 'StringTypeAnnotation',
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'getArray',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ArrayTypeAnnotation',
                   elementType: {
-                    type: 'AnyTypeAnnotation',
+                    type: 'GenericObjectTypeAnnotation',
                   },
                 },
                 params: [
                   {
                     name: 'arg',
-                    nullable: false,
+                    optional: false,
                     typeAnnotation: {
                       type: 'ArrayTypeAnnotation',
+
                       elementType: {
-                        type: 'AnyTypeAnnotation',
+                        type: 'GenericObjectTypeAnnotation',
                       },
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'getObject',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'GenericObjectTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'arg',
                     typeAnnotation: {
                       type: 'GenericObjectTypeAnnotation',
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'getRootTag',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ReservedFunctionValueTypeAnnotation',
                   name: 'RootTag',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'arg',
                     typeAnnotation: {
                       type: 'ReservedFunctionValueTypeAnnotation',
@@ -204,81 +198,81 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'getValue',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'GenericObjectTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'x',
                     typeAnnotation: {
                       type: 'NumberTypeAnnotation',
                     },
                   },
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'y',
                     typeAnnotation: {
                       type: 'StringTypeAnnotation',
                     },
                   },
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'z',
                     typeAnnotation: {
                       type: 'GenericObjectTypeAnnotation',
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'getValueWithCallback',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [
                   {
                     name: 'callback',
-                    nullable: false,
+                    optional: false,
                     typeAnnotation: {
                       type: 'FunctionTypeAnnotation',
+                      params: [],
+                      returnTypeAnnotation: {
+                        type: 'VoidTypeAnnotation',
+                      },
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'getValueWithPromise',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'GenericPromiseTypeAnnotation',
+                  type: 'PromiseTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'error',
                     typeAnnotation: {
                       type: 'BooleanTypeAnnotation',
                     },
                   },
                 ],
-                optional: false,
               },
             },
           ],
@@ -297,14 +291,13 @@ const TWO_MODULES_SAME_FILE: SchemaType = {
           properties: [
             {
               name: 'voidFunc',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [],
-                optional: false,
               },
             },
           ],
@@ -314,14 +307,13 @@ const TWO_MODULES_SAME_FILE: SchemaType = {
           properties: [
             {
               name: 'voidFunc',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [],
-                optional: false,
               },
             },
           ],
@@ -340,14 +332,13 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
           properties: [
             {
               name: 'voidFunc',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [],
-                optional: false,
               },
             },
           ],
@@ -361,27 +352,25 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
           properties: [
             {
               name: 'getConstants',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ObjectTypeAnnotation',
                   properties: [],
                 },
                 params: [],
-                optional: false,
               },
             },
             {
               name: 'voidFunc',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [],
-                optional: false,
               },
             },
           ],
@@ -400,10 +389,10 @@ const COMPLEX_OBJECTS: SchemaType = {
           properties: [
             {
               name: 'difficult',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
@@ -431,10 +420,11 @@ const COMPLEX_OBJECTS: SchemaType = {
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'A',
                     typeAnnotation: {
                       type: 'ObjectTypeAnnotation',
+
                       properties: [
                         {
                           optional: false,
@@ -448,6 +438,7 @@ const COMPLEX_OBJECTS: SchemaType = {
                           name: 'E',
                           typeAnnotation: {
                             type: 'ObjectTypeAnnotation',
+
                             properties: [
                               {
                                 optional: false,
@@ -491,23 +482,23 @@ const COMPLEX_OBJECTS: SchemaType = {
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'optionals',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'A',
                     typeAnnotation: {
                       type: 'ObjectTypeAnnotation',
+
                       properties: [
                         {
                           optional: true,
@@ -521,6 +512,7 @@ const COMPLEX_OBJECTS: SchemaType = {
                           name: 'optionalArrayProperty',
                           typeAnnotation: {
                             type: 'ArrayTypeAnnotation',
+
                             elementType: {
                               type: 'NumberTypeAnnotation',
                             },
@@ -531,6 +523,7 @@ const COMPLEX_OBJECTS: SchemaType = {
                           name: 'optionalObjectProperty',
                           typeAnnotation: {
                             type: 'ObjectTypeAnnotation',
+
                             properties: [
                               {
                                 optional: false,
@@ -567,79 +560,91 @@ const COMPLEX_OBJECTS: SchemaType = {
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'optionalMethod',
+              optional: true,
               typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
-                },
-                params: [
-                  {
-                    nullable: false,
-                    name: 'options',
-                    typeAnnotation: {
-                      type: 'GenericObjectTypeAnnotation',
-                    },
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'FunctionTypeAnnotation',
+                  returnTypeAnnotation: {
+                    type: 'VoidTypeAnnotation',
                   },
-                  {
-                    name: 'callback',
-                    nullable: false,
-                    typeAnnotation: {
-                      type: 'FunctionTypeAnnotation',
-                    },
-                  },
-                  {
-                    name: 'extras',
-                    nullable: true,
-                    typeAnnotation: {
-                      type: 'ArrayTypeAnnotation',
-                      elementType: {
-                        type: 'ObjectTypeAnnotation',
-                        properties: [
-                          {
-                            optional: false,
-                            name: 'key',
-                            typeAnnotation: {
-                              type: 'StringTypeAnnotation',
-                            },
-                          },
-                          {
-                            optional: false,
-                            name: 'value',
-                          },
-                        ],
+                  params: [
+                    {
+                      optional: false,
+                      name: 'options',
+                      typeAnnotation: {
+                        type: 'GenericObjectTypeAnnotation',
                       },
                     },
-                  },
-                ],
-                optional: true,
+                    {
+                      name: 'callback',
+                      optional: false,
+                      typeAnnotation: {
+                        type: 'FunctionTypeAnnotation',
+                        params: [],
+                        returnTypeAnnotation: {
+                          type: 'VoidTypeAnnotation',
+                        },
+                      },
+                    },
+                    {
+                      name: 'extras',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+
+                        elementType: {
+                          type: 'ObjectTypeAnnotation',
+
+                          properties: [
+                            {
+                              optional: false,
+                              name: 'key',
+                              typeAnnotation: {
+                                type: 'StringTypeAnnotation',
+                              },
+                            },
+                            {
+                              optional: false,
+                              name: 'value',
+                              typeAnnotation: {
+                                type: 'GenericObjectTypeAnnotation',
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  ],
+                },
               },
             },
             {
               name: 'getArrays',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'options',
                     typeAnnotation: {
                       type: 'ObjectTypeAnnotation',
+
                       properties: [
                         {
                           optional: false,
                           name: 'arrayOfNumbers',
                           typeAnnotation: {
                             type: 'ArrayTypeAnnotation',
+
                             elementType: {
                               type: 'NumberTypeAnnotation',
                             },
@@ -650,6 +655,7 @@ const COMPLEX_OBJECTS: SchemaType = {
                           name: 'optionalArrayOfNumbers',
                           typeAnnotation: {
                             type: 'ArrayTypeAnnotation',
+
                             elementType: {
                               type: 'NumberTypeAnnotation',
                             },
@@ -660,6 +666,7 @@ const COMPLEX_OBJECTS: SchemaType = {
                           name: 'arrayOfStrings',
                           typeAnnotation: {
                             type: 'ArrayTypeAnnotation',
+
                             elementType: {
                               type: 'StringTypeAnnotation',
                             },
@@ -670,6 +677,7 @@ const COMPLEX_OBJECTS: SchemaType = {
                           name: 'optionalArrayOfStrings',
                           typeAnnotation: {
                             type: 'ArrayTypeAnnotation',
+
                             elementType: {
                               type: 'StringTypeAnnotation',
                             },
@@ -680,8 +688,10 @@ const COMPLEX_OBJECTS: SchemaType = {
                           name: 'arrayOfObjects',
                           typeAnnotation: {
                             type: 'ArrayTypeAnnotation',
+
                             elementType: {
                               type: 'ObjectTypeAnnotation',
+
                               properties: [
                                 {
                                   optional: false,
@@ -698,7 +708,6 @@ const COMPLEX_OBJECTS: SchemaType = {
                     },
                   },
                 ],
-                optional: false,
               },
             },
           ],
@@ -715,12 +724,15 @@ const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
         AliasTurboModule: {
           aliases: {
             Options: {
+              type: 'ObjectTypeAnnotation',
+
               properties: [
                 {
                   optional: false,
                   name: 'offset',
                   typeAnnotation: {
                     type: 'ObjectTypeAnnotation',
+
                     properties: [
                       {
                         optional: false,
@@ -744,6 +756,7 @@ const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
                   name: 'size',
                   typeAnnotation: {
                     type: 'ObjectTypeAnnotation',
+
                     properties: [
                       {
                         optional: false,
@@ -767,6 +780,7 @@ const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
                   name: 'displaySize',
                   typeAnnotation: {
                     type: 'ObjectTypeAnnotation',
+
                     properties: [
                       {
                         optional: false,
@@ -800,34 +814,32 @@ const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
                   },
                 },
               ],
-              type: 'ObjectTypeAnnotation',
             },
           },
           properties: [
             {
               name: 'getConstants',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ObjectTypeAnnotation',
                   properties: [],
                 },
                 params: [],
-                optional: false,
               },
             },
             {
               name: 'cropImage',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'cropData',
                     typeAnnotation: {
                       type: 'TypeAliasTypeAnnotation',
@@ -835,7 +847,6 @@ const NATIVE_MODULES_WITH_TYPE_ALIASES: SchemaType = {
                     },
                   },
                 ],
-                optional: false,
               },
             },
           ],
@@ -853,6 +864,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
           aliases: {
             PhotoIdentifierImage: {
               type: 'ObjectTypeAnnotation',
+
               properties: [
                 {
                   optional: false,
@@ -900,12 +912,14 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
             },
             PhotoIdentifier: {
               type: 'ObjectTypeAnnotation',
+
               properties: [
                 {
                   optional: false,
                   name: 'node',
                   typeAnnotation: {
                     type: 'ObjectTypeAnnotation',
+
                     properties: [
                       {
                         optional: false,
@@ -941,6 +955,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                         name: 'location',
                         typeAnnotation: {
                           type: 'ObjectTypeAnnotation',
+
                           properties: [
                             {
                               optional: false,
@@ -987,12 +1002,14 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
             },
             PhotoIdentifiersPage: {
               type: 'ObjectTypeAnnotation',
+
               properties: [
                 {
                   optional: false,
                   name: 'edges',
                   typeAnnotation: {
                     type: 'ArrayTypeAnnotation',
+
                     elementType: {
                       type: 'TypeAliasTypeAnnotation',
                       name: 'PhotoIdentifier',
@@ -1004,6 +1021,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                   name: 'page_info',
                   typeAnnotation: {
                     type: 'ObjectTypeAnnotation',
+
                     properties: [
                       {
                         optional: false,
@@ -1033,6 +1051,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
             },
             GetPhotosParams: {
               type: 'ObjectTypeAnnotation',
+
               properties: [
                 {
                   optional: false,
@@ -1081,6 +1100,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                   name: 'mimeTypes',
                   typeAnnotation: {
                     type: 'ArrayTypeAnnotation',
+
                     elementType: {
                       type: 'StringTypeAnnotation',
                     },
@@ -1092,28 +1112,27 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
           properties: [
             {
               name: 'getConstants',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'ObjectTypeAnnotation',
                   properties: [],
                 },
                 params: [],
-                optional: false,
               },
             },
             {
               name: 'getPhotos',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  type: 'GenericPromiseTypeAnnotation',
-                  nullable: false,
+                  type: 'PromiseTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'params',
                     typeAnnotation: {
                       type: 'TypeAliasTypeAnnotation',
@@ -1121,57 +1140,55 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'saveToCameraRoll',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  type: 'GenericPromiseTypeAnnotation',
-                  nullable: false,
+                  type: 'PromiseTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'uri',
                     typeAnnotation: {
                       type: 'StringTypeAnnotation',
                     },
                   },
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'type',
                     typeAnnotation: {
                       type: 'StringTypeAnnotation',
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'deletePhotos',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  type: 'GenericPromiseTypeAnnotation',
-                  nullable: false,
+                  type: 'PromiseTypeAnnotation',
                 },
                 params: [
                   {
                     name: 'assets',
-                    nullable: false,
+                    optional: false,
                     typeAnnotation: {
                       type: 'ArrayTypeAnnotation',
+
                       elementType: {
                         type: 'StringTypeAnnotation',
                       },
                     },
                   },
                 ],
-                optional: false,
               },
             },
           ],
@@ -1185,18 +1202,19 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
           properties: [
             {
               name: 'openCameraDialog',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'config',
                     typeAnnotation: {
                       type: 'ObjectTypeAnnotation',
+
                       properties: [
                         {
                           optional: false,
@@ -1217,20 +1235,27 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                   },
                   {
                     name: 'successCallback',
-                    nullable: false,
+                    optional: false,
                     typeAnnotation: {
                       type: 'FunctionTypeAnnotation',
+                      params: [],
+                      returnTypeAnnotation: {
+                        type: 'VoidTypeAnnotation',
+                      },
                     },
                   },
                   {
                     name: 'cancelCallback',
-                    nullable: false,
+                    optional: false,
                     typeAnnotation: {
                       type: 'FunctionTypeAnnotation',
+                      params: [],
+                      returnTypeAnnotation: {
+                        type: 'VoidTypeAnnotation',
+                      },
                     },
                   },
                 ],
-                optional: false,
               },
             },
           ],
@@ -1316,6 +1341,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                   name: 'stack',
                   typeAnnotation: {
                     type: 'ArrayTypeAnnotation',
+
                     elementType: {
                       type: 'TypeAliasTypeAnnotation',
                       name: 'StackFrame',
@@ -1350,15 +1376,15 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
           properties: [
             {
               name: 'reportFatalException',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'message',
                     typeAnnotation: {
                       type: 'StringTypeAnnotation',
@@ -1366,9 +1392,10 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                   },
                   {
                     name: 'stack',
-                    nullable: false,
+                    optional: false,
                     typeAnnotation: {
                       type: 'ArrayTypeAnnotation',
+
                       elementType: {
                         type: 'TypeAliasTypeAnnotation',
                         name: 'StackFrame',
@@ -1376,27 +1403,26 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                     },
                   },
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'exceptionId',
                     typeAnnotation: {
                       type: 'NumberTypeAnnotation',
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'reportSoftException',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'message',
                     typeAnnotation: {
                       type: 'StringTypeAnnotation',
@@ -1404,9 +1430,10 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                   },
                   {
                     name: 'stack',
-                    nullable: false,
+                    optional: false,
                     typeAnnotation: {
                       type: 'ArrayTypeAnnotation',
+
                       elementType: {
                         type: 'TypeAliasTypeAnnotation',
                         name: 'StackFrame',
@@ -1414,48 +1441,49 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                     },
                   },
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'exceptionId',
                     typeAnnotation: {
                       type: 'NumberTypeAnnotation',
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'reportException',
+              optional: true,
               typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
-                },
-                params: [
-                  {
-                    nullable: false,
-                    name: 'data',
-                    typeAnnotation: {
-                      type: 'TypeAliasTypeAnnotation',
-                      name: 'ExceptionData',
-                    },
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'FunctionTypeAnnotation',
+                  returnTypeAnnotation: {
+                    type: 'VoidTypeAnnotation',
                   },
-                ],
-                optional: true,
+                  params: [
+                    {
+                      optional: false,
+                      name: 'data',
+                      typeAnnotation: {
+                        type: 'TypeAliasTypeAnnotation',
+                        name: 'ExceptionData',
+                      },
+                    },
+                  ],
+                },
               },
             },
             {
               name: 'updateExceptionMessage',
+              optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
-                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'message',
                     typeAnnotation: {
                       type: 'StringTypeAnnotation',
@@ -1463,9 +1491,10 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                   },
                   {
                     name: 'stack',
-                    nullable: false,
+                    optional: false,
                     typeAnnotation: {
                       type: 'ArrayTypeAnnotation',
+
                       elementType: {
                         type: 'TypeAliasTypeAnnotation',
                         name: 'StackFrame',
@@ -1473,26 +1502,27 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
                     },
                   },
                   {
-                    nullable: false,
+                    optional: false,
                     name: 'exceptionId',
                     typeAnnotation: {
                       type: 'NumberTypeAnnotation',
                     },
                   },
                 ],
-                optional: false,
               },
             },
             {
               name: 'dismissRedbox',
+              optional: true,
               typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                returnTypeAnnotation: {
-                  nullable: false,
-                  type: 'VoidTypeAnnotation',
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'FunctionTypeAnnotation',
+                  returnTypeAnnotation: {
+                    type: 'VoidTypeAnnotation',
+                  },
+                  params: [],
                 },
-                params: [],
-                optional: true,
               },
             },
           ],

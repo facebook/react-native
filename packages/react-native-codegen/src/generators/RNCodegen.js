@@ -25,11 +25,10 @@ const generatePropsCpp = require('./components/GeneratePropsCpp.js');
 const generatePropsH = require('./components/GeneratePropsH.js');
 const generateModuleH = require('./modules/GenerateModuleH.js');
 const generateModuleCpp = require('./modules/GenerateModuleCpp.js');
-const generateModuleHObjCpp = require('./modules/GenerateModuleHObjCpp.js');
+const generateModuleObjCpp = require('./modules/GenerateModuleObjCpp');
 const generateModuleJavaSpec = require('./modules/GenerateModuleJavaSpec.js');
 const GenerateModuleJniCpp = require('./modules/GenerateModuleJniCpp.js');
 const GenerateModuleJniH = require('./modules/GenerateModuleJniH.js');
-const generateModuleMm = require('./modules/GenerateModuleMm.js');
 const generatePropsJavaInterface = require('./components/GeneratePropsJavaInterface.js');
 const generatePropsJavaDelegate = require('./components/GeneratePropsJavaDelegate.js');
 const generateTests = require('./components/GenerateTests.js');
@@ -74,8 +73,7 @@ const GENERATORS = {
   modules: [
     generateModuleCpp.generate,
     generateModuleH.generate,
-    generateModuleHObjCpp.generate,
-    generateModuleMm.generate,
+    generateModuleObjCpp.generate,
   ],
   // TODO: Refactor this to consolidate various C++ output variation instead of forking Android.
   modulesAndroid: [

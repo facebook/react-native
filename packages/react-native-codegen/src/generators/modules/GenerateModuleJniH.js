@@ -14,6 +14,8 @@ import type {SchemaType} from '../../CodegenSchema';
 
 type FilesOutput = Map<string, string>;
 
+const {getModules} = require('./Utils');
+
 const moduleTemplate = `/**
  * JNI C++ class for module '::_MODULE_NAME_::'
  */
@@ -23,8 +25,9 @@ public:
 };
 `;
 
-const template = `/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+const template = `
+/**
+ * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -84,19 +87,7 @@ module.exports = {
     schema: SchemaType,
     moduleSpecName: string,
   ): FilesOutput {
-    const nativeModules = Object.keys(schema.modules)
-      .sort()
-      .map(moduleName => {
-        const modules = schema.modules[moduleName].nativeModules;
-        if (modules == null) {
-          return null;
-        }
-
-        return modules;
-      })
-      .filter(Boolean)
-      .reduce((acc, components) => Object.assign(acc, components), {});
-
+    const nativeModules = getModules(schema);
     const modules = Object.keys(nativeModules)
       .map(name => moduleTemplate.replace(/::_MODULE_NAME_::/g, name))
       .join('\n');

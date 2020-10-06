@@ -56,20 +56,6 @@
   return [RCTSharedApplication() isStatusBarHidden];
 }
 
-- (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)())completion
-{
-  UIView *snapshot = [self.view snapshotViewAfterScreenUpdates:NO];
-  [self.view addSubview:snapshot];
-
-  [super dismissViewControllerAnimated:flag
-                            completion:^{
-                              [snapshot removeFromSuperview];
-                              if (completion) {
-                                completion();
-                              }
-                            }];
-}
-
 #if RCT_DEV
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {

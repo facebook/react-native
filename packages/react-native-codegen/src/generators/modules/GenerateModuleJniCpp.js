@@ -11,14 +11,16 @@
 'use strict';
 
 import type {
-  FunctionTypeAnnotationParam,
-  FunctionTypeAnnotationReturn,
-  NativeModuleShape,
-  ObjectTypeAliasTypeShape,
+  Nullable,
   SchemaType,
+  NativeModulePropertySchema,
+  NativeModuleMethodParamSchema,
+  NativeModuleReturnTypeAnnotation,
 } from '../../CodegenSchema';
 
-const {getTypeAliasTypeAnnotation} = require('./Utils');
+import type {AliasResolver} from './Utils';
+const {createAliasResolver, getModules} = require('./Utils');
+const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -50,7 +52,7 @@ const oneModuleLookupTemplate = `  if (moduleName == "::_MODULE_NAME_::") {
 
 const template = `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -75,17 +77,24 @@ std::shared_ptr<TurboModule> ::_LIBRARY_NAME_::_ModuleProvider(const std::string
 `;
 
 function translateReturnTypeToKind(
-  typeAnnotation: FunctionTypeAnnotationReturn,
+  nullableTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
+  resolveAlias: AliasResolver,
 ): string {
-  switch (typeAnnotation.type) {
+  const [typeAnnotation] = unwrapNullable(nullableTypeAnnotation);
+  let realTypeAnnotation = typeAnnotation;
+  if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
+    realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
+  }
+
+  switch (realTypeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
-      switch (typeAnnotation.name) {
+      switch (realTypeAnnotation.name) {
         case 'RootTag':
           return 'NumberKind';
         default:
-          (typeAnnotation.name: empty);
+          (realTypeAnnotation.name: empty);
           throw new Error(
-            `Invalid ReservedFunctionValueTypeName name, got ${typeAnnotation.name}`,
+            `Invalid ReservedFunctionValueTypeName name, got ${realTypeAnnotation.name}`,
           );
       }
     case 'VoidTypeAnnotation':
@@ -95,42 +104,97 @@ function translateReturnTypeToKind(
     case 'BooleanTypeAnnotation':
       return 'BooleanKind';
     case 'NumberTypeAnnotation':
+      return 'NumberKind';
     case 'DoubleTypeAnnotation':
+      return 'NumberKind';
     case 'FloatTypeAnnotation':
+      return 'NumberKind';
     case 'Int32TypeAnnotation':
       return 'NumberKind';
-    case 'GenericPromiseTypeAnnotation':
+    case 'PromiseTypeAnnotation':
       return 'PromiseKind';
     case 'GenericObjectTypeAnnotation':
+      return 'ObjectKind';
     case 'ObjectTypeAnnotation':
       return 'ObjectKind';
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
     default:
-      // TODO (T65847278): Figure out why this does not work.
-      // (typeAnnotation.type: empty);
+      (realTypeAnnotation.type: empty);
       throw new Error(
-        `Unknown prop type for returning value, found: ${typeAnnotation.type}"`,
+        `Unknown prop type for returning value, found: ${realTypeAnnotation.type}"`,
       );
   }
 }
 
 function translateParamTypeToJniType(
-  param: FunctionTypeAnnotationParam,
-  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
+  param: NativeModuleMethodParamSchema,
+  resolveAlias: AliasResolver,
 ): string {
-  const {nullable, typeAnnotation} = param;
+  const {optional, typeAnnotation: nullableTypeAnnotation} = param;
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+  const isRequired = !optional && !nullable;
 
-  const realTypeAnnotation =
-    typeAnnotation.type === 'TypeAliasTypeAnnotation'
-      ? getTypeAliasTypeAnnotation(typeAnnotation.name, aliases)
-      : typeAnnotation;
+  let realTypeAnnotation = typeAnnotation;
+  if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
+    realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
+  }
 
   switch (realTypeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
-          return 'D';
+          return !isRequired ? 'Ljava/lang/Double;' : 'D';
+        default:
+          (realTypeAnnotation.name: empty);
+          throw new Error(
+            `Invalid ReservedFunctionValueTypeName name, got ${realTypeAnnotation.name}`,
+          );
+      }
+    case 'StringTypeAnnotation':
+      return 'Ljava/lang/String;';
+    case 'BooleanTypeAnnotation':
+      return !isRequired ? 'Ljava/lang/Boolean' : 'Z';
+    case 'NumberTypeAnnotation':
+      return !isRequired ? 'Ljava/lang/Double;' : 'D';
+    case 'DoubleTypeAnnotation':
+      return !isRequired ? 'Ljava/lang/Double;' : 'D';
+    case 'FloatTypeAnnotation':
+      return !isRequired ? 'Ljava/lang/Double;' : 'D';
+    case 'Int32TypeAnnotation':
+      return !isRequired ? 'Ljava/lang/Double;' : 'D';
+    case 'GenericObjectTypeAnnotation':
+      return 'Lcom/facebook/react/bridge/ReadableMap;';
+    case 'ObjectTypeAnnotation':
+      return 'Lcom/facebook/react/bridge/ReadableMap;';
+    case 'ArrayTypeAnnotation':
+      return 'Lcom/facebook/react/bridge/ReadableArray;';
+    case 'FunctionTypeAnnotation':
+      return 'Lcom/facebook/react/bridge/Callback;';
+    default:
+      (realTypeAnnotation.type: empty);
+      throw new Error(
+        `Unknown prop type for method arg, found: ${realTypeAnnotation.type}"`,
+      );
+  }
+}
+
+function translateReturnTypeToJniType(
+  nullableTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
+  resolveAlias: AliasResolver,
+): string {
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+
+  let realTypeAnnotation = typeAnnotation;
+  if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
+    realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
+  }
+
+  switch (realTypeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (realTypeAnnotation.name) {
+        case 'RootTag':
+          return nullable ? 'Ljava/lang/Double;' : 'D';
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(
@@ -144,116 +208,80 @@ function translateParamTypeToJniType(
     case 'BooleanTypeAnnotation':
       return nullable ? 'Ljava/lang/Boolean' : 'Z';
     case 'NumberTypeAnnotation':
+      return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'DoubleTypeAnnotation':
+      return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'FloatTypeAnnotation':
+      return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'Int32TypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
-    case 'GenericPromiseTypeAnnotation':
+    case 'PromiseTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Promise;';
     case 'GenericObjectTypeAnnotation':
-    case 'ObjectTypeAnnotation':
-      return 'Lcom/facebook/react/bridge/ReadableMap;';
-    case 'ArrayTypeAnnotation':
-      return 'Lcom/facebook/react/bridge/ReadableArray;';
-    case 'FunctionTypeAnnotation':
-      return 'Lcom/facebook/react/bridge/Callback;';
-    default:
-      throw new Error(
-        `Unknown prop type for method arg, found: ${realTypeAnnotation.type}"`,
-      );
-  }
-}
-
-function translateReturnTypeToJniType(
-  typeAnnotation: FunctionTypeAnnotationReturn,
-): string {
-  const {nullable} = typeAnnotation;
-
-  switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
-      switch (typeAnnotation.name) {
-        case 'RootTag':
-          return 'D';
-        default:
-          (typeAnnotation.name: empty);
-          throw new Error(
-            `Invalid ReservedFunctionValueTypeName name, got ${typeAnnotation.name}`,
-          );
-      }
-    case 'VoidTypeAnnotation':
-      return 'V';
-    case 'StringTypeAnnotation':
-      return 'Ljava/lang/String;';
-    case 'BooleanTypeAnnotation':
-      return nullable ? 'Ljava/lang/Boolean' : 'Z';
-    case 'NumberTypeAnnotation':
-    case 'DoubleTypeAnnotation':
-    case 'FloatTypeAnnotation':
-    case 'Int32TypeAnnotation':
-      return nullable ? 'Ljava/lang/Double;' : 'D';
-    case 'GenericPromiseTypeAnnotation':
-      return 'Lcom/facebook/react/bridge/Promise;';
-    case 'GenericObjectTypeAnnotation':
+      return 'Lcom/facebook/react/bridge/WritableMap;';
     case 'ObjectTypeAnnotation':
       return 'Lcom/facebook/react/bridge/WritableMap;';
     case 'ArrayTypeAnnotation':
       return 'Lcom/facebook/react/bridge/WritableArray;';
     default:
+      (realTypeAnnotation.type: empty);
       throw new Error(
-        `Unknown prop type for method return type, found: ${typeAnnotation.type}"`,
+        `Unknown prop type for method return type, found: ${realTypeAnnotation.type}"`,
       );
   }
 }
 
 function translateMethodTypeToJniSignature(
-  property,
-  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
+  property: NativeModulePropertySchema,
+  resolveAlias: AliasResolver,
 ): string {
   const {name, typeAnnotation} = property;
-  const {returnTypeAnnotation} = typeAnnotation;
+  let [{returnTypeAnnotation, params}] = unwrapNullable(typeAnnotation);
 
-  const params = [...typeAnnotation.params];
+  params = [...params];
   let processedReturnTypeAnnotation = returnTypeAnnotation;
-  const isPromiseReturn =
-    returnTypeAnnotation.type === 'GenericPromiseTypeAnnotation';
+  const isPromiseReturn = returnTypeAnnotation.type === 'PromiseTypeAnnotation';
   if (isPromiseReturn) {
     processedReturnTypeAnnotation = {
-      nullable: false,
       type: 'VoidTypeAnnotation',
     };
   }
 
   const argsSignatureParts = params.map(t => {
-    return translateParamTypeToJniType(t, aliases);
+    return translateParamTypeToJniType(t, resolveAlias);
   });
   if (isPromiseReturn) {
     // Additional promise arg for this case.
-    argsSignatureParts.push(translateReturnTypeToJniType(returnTypeAnnotation));
+    argsSignatureParts.push(
+      translateReturnTypeToJniType(returnTypeAnnotation, resolveAlias),
+    );
   }
   const argsSignature = argsSignatureParts.join('');
   const returnSignature =
     name === 'getConstants'
       ? 'Ljava/util/Map;'
-      : translateReturnTypeToJniType(processedReturnTypeAnnotation);
+      : translateReturnTypeToJniType(
+          processedReturnTypeAnnotation,
+          resolveAlias,
+        );
 
   return `(${argsSignature})${returnSignature}`;
 }
 
 function translateMethodForImplementation(
-  property,
-  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
+  property: NativeModulePropertySchema,
+  resolveAlias: AliasResolver,
 ): string {
-  const {returnTypeAnnotation} = property.typeAnnotation;
+  const [propertyTypeAnnotation] = unwrapNullable(property.typeAnnotation);
+  const {returnTypeAnnotation} = propertyTypeAnnotation;
 
   const numberOfParams =
-    property.typeAnnotation.params.length +
-    (returnTypeAnnotation.type === 'GenericPromiseTypeAnnotation' ? 1 : 0);
-  const translatedArguments = property.typeAnnotation.params
+    propertyTypeAnnotation.params.length +
+    (returnTypeAnnotation.type === 'PromiseTypeAnnotation' ? 1 : 0);
+  const translatedArguments = propertyTypeAnnotation.params
     .map(param => param.name)
     .concat(
-      returnTypeAnnotation.type === 'GenericPromiseTypeAnnotation'
-        ? ['promise']
-        : [],
+      returnTypeAnnotation.type === 'PromiseTypeAnnotation' ? ['promise'] : [],
     )
     .slice(1)
     .join(':')
@@ -267,7 +295,10 @@ function translateMethodForImplementation(
     return '';
   }
   return propertyTemplate
-    .replace(/::_KIND_::/g, translateReturnTypeToKind(returnTypeAnnotation))
+    .replace(
+      /::_KIND_::/g,
+      translateReturnTypeToKind(returnTypeAnnotation, resolveAlias),
+    )
     .replace(/::_PROPERTY_NAME_::/g, property.name)
     .replace(
       /::_ARGS_::/g,
@@ -277,7 +308,7 @@ function translateMethodForImplementation(
     )
     .replace(
       /::_SIGNATURE_::/g,
-      translateMethodTypeToJniSignature(property, aliases),
+      translateMethodTypeToJniSignature(property, resolveAlias),
     );
 }
 
@@ -287,45 +318,37 @@ module.exports = {
     schema: SchemaType,
     moduleSpecName: string,
   ): FilesOutput {
-    const nativeModules: {[name: string]: NativeModuleShape, ...} = Object.keys(
-      schema.modules,
-    )
-      .map(moduleName => {
-        const modules = schema.modules[moduleName].nativeModules;
-        if (modules == null) {
-          return null;
-        }
-
-        return modules;
-      })
-      .filter(Boolean)
-      .reduce((acc, modules) => Object.assign(acc, modules), {});
+    const nativeModules = getModules(schema);
 
     const modules = Object.keys(nativeModules)
       .map(name => {
         const {aliases, properties} = nativeModules[name];
+        const resolveAlias = createAliasResolver(aliases);
+
         const translatedMethods = properties
-          .map(property => translateMethodForImplementation(property, aliases))
+          .map(property =>
+            translateMethodForImplementation(property, resolveAlias),
+          )
           .join('\n');
         return moduleTemplate
           .replace(/::_TURBOMODULE_METHOD_INVOKERS_::/g, translatedMethods)
           .replace(
             '::_PROPERTIES_MAP_::',
             properties
-              .map(
-                ({
-                  name: propertyName,
-                  typeAnnotation: {params, returnTypeAnnotation},
-                }) =>
-                  propertyName === 'getConstants' &&
+              .map(({name: propertyName, typeAnnotation}) => {
+                const [{returnTypeAnnotation, params}] = unwrapNullable(
+                  typeAnnotation,
+                );
+
+                return propertyName === 'getConstants' &&
                   returnTypeAnnotation.type === 'ObjectTypeAnnotation' &&
                   returnTypeAnnotation.properties &&
                   returnTypeAnnotation.properties.length === 0
-                    ? ''
-                    : propertyDefTemplate
-                        .replace(/::_PROPERTY_NAME_::/g, propertyName)
-                        .replace(/::_ARGS_COUNT_::/g, params.length.toString()),
-              )
+                  ? ''
+                  : propertyDefTemplate
+                      .replace(/::_PROPERTY_NAME_::/g, propertyName)
+                      .replace(/::_ARGS_COUNT_::/g, params.length.toString());
+              })
               .join('\n'),
           )
           .replace(/::_MODULE_NAME_::/g, name);

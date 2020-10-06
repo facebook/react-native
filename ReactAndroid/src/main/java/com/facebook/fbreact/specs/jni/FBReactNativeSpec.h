@@ -440,12 +440,26 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * C++ class for module 'ImageStore'
+     * C++ class for module 'ImageStoreAndroid'
      */
 
-    class JSI_EXPORT NativeImageStoreSpecJSI : public JavaTurboModule {
+    class JSI_EXPORT NativeImageStoreAndroidSpecJSI : public JavaTurboModule {
     public:
-      NativeImageStoreSpecJSI(const JavaTurboModule::InitParams &params);
+      NativeImageStoreAndroidSpecJSI(const JavaTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    /**
+     * C++ class for module 'ImageStoreIOS'
+     */
+
+    class JSI_EXPORT NativeImageStoreIOSSpecJSI : public JavaTurboModule {
+    public:
+      NativeImageStoreIOSSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
