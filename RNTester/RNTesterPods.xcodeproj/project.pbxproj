@@ -74,16 +74,6 @@
 		9F153461233AB2C7006DFE44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F153460233AB2C7006DFE44 /* Assets.xcassets */; };
 		9F153467233AB2C7006DFE44 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F153466233AB2C7006DFE44 /* main.m */; };
 		A13DC98BDCE5EE508FFA7BE7 /* libPods-RNTester-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A355204268D03CF69ABC11D /* libPods-RNTester-macOS.a */; };
-		B20EF9FC250D22480039DCD8 /* JSValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B20EF9FA250D22480039DCD8 /* JSValue.cpp */; };
-		B21F0FC3250D35A8004A26F2 /* JSValueTreeReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B21F0FC1250D35A8004A26F2 /* JSValueTreeReader.cpp */; };
-		B21F0FC4250D35A8004A26F2 /* JSValueTreeWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B21F0FC2250D35A8004A26F2 /* JSValueTreeWriter.cpp */; };
-		B21F0FCA250D4195004A26F2 /* ModuleRegistration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B21F0FC8250D4195004A26F2 /* ModuleRegistration.cpp */; };
-		B234FCC72512574800B788C9 /* JsiReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B234FCC32512574700B788C9 /* JsiReader.cpp */; };
-		B234FCC82512574800B788C9 /* JsiWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B234FCC62512574800B788C9 /* JsiWriter.cpp */; };
-		B234FCCB25125D6800B788C9 /* TurboModulesProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B234FCC925125D6800B788C9 /* TurboModulesProvider.cpp */; };
-		B28A6FB0251929EB00825165 /* Microsoft.ReactNative.Static.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B28A6FAF251929EB00825165 /* Microsoft.ReactNative.Static.cpp */; };
-		B28A6FB425192DEA00825165 /* Microsoft.ReactNative.MacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = B28A6FB325192DEA00825165 /* Microsoft.ReactNative.MacOS.mm */; };
-		B2CEBEB8250D898600D92658 /* ReactPromise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2CEBEB7250D898600D92658 /* ReactPromise.cpp */; };
 		B2F2040A24E76D7600863BE1 /* ScreenshotMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2F2040924E76D7600863BE1 /* ScreenshotMacOS.mm */; };
 		CDFF3988A89A5269C488653F /* libPods-iosDeviceBuild.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 287A4762E82517B7FACCE7D3 /* libPods-iosDeviceBuild.a */; };
 		E59A0FBD0170A092274A6207 /* libPods-RNTesterUnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 72247071A1BF06D54F0FECC7 /* libPods-RNTesterUnitTests.a */; };
@@ -247,40 +237,6 @@
 		9F15347C233AB2C7006DFE44 /* RNTesterIntegrationTests_macOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNTesterIntegrationTests_macOS.m; sourceTree = "<group>"; };
 		9F15347E233AB2C7006DFE44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A112BDF7485AEF790F6D3E26 /* Pods-iosDeviceBuild.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosDeviceBuild.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iosDeviceBuild/Pods-iosDeviceBuild.debug.xcconfig"; sourceTree = "<group>"; };
-		B20EF9F9250D22470039DCD8 /* JSValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSValue.h; path = TurboModuleCxx/JSValue.h; sourceTree = "<group>"; };
-		B20EF9FA250D22480039DCD8 /* JSValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSValue.cpp; path = TurboModuleCxx/JSValue.cpp; sourceTree = "<group>"; };
-		B20EF9FB250D22480039DCD8 /* pch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pch.h; path = TurboModuleCxx/pch.h; sourceTree = "<group>"; };
-		B20EF9FF250D226F0039DCD8 /* Microsoft.ReactNative.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Microsoft.ReactNative.h; path = TurboModuleCxx/winrt/Microsoft.ReactNative.h; sourceTree = "<group>"; };
-		B20EFA00250D236D0039DCD8 /* Crash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Crash.h; path = TurboModuleCxx/Crash.h; sourceTree = "<group>"; };
-		B21F0FBF250D35A8004A26F2 /* JSValueTreeWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSValueTreeWriter.h; path = TurboModuleCxx/JSValueTreeWriter.h; sourceTree = "<group>"; };
-		B21F0FC0250D35A8004A26F2 /* JSValueTreeReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSValueTreeReader.h; path = TurboModuleCxx/JSValueTreeReader.h; sourceTree = "<group>"; };
-		B21F0FC1250D35A8004A26F2 /* JSValueTreeReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSValueTreeReader.cpp; path = TurboModuleCxx/JSValueTreeReader.cpp; sourceTree = "<group>"; };
-		B21F0FC2250D35A8004A26F2 /* JSValueTreeWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSValueTreeWriter.cpp; path = TurboModuleCxx/JSValueTreeWriter.cpp; sourceTree = "<group>"; };
-		B21F0FC5250D39EE004A26F2 /* JSValueWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSValueWriter.h; path = TurboModuleCxx/JSValueWriter.h; sourceTree = "<group>"; };
-		B21F0FC6250D39EE004A26F2 /* JSValueReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSValueReader.h; path = TurboModuleCxx/JSValueReader.h; sourceTree = "<group>"; };
-		B21F0FC7250D39FB004A26F2 /* StructInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StructInfo.h; path = TurboModuleCxx/StructInfo.h; sourceTree = "<group>"; };
-		B21F0FC8250D4195004A26F2 /* ModuleRegistration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModuleRegistration.cpp; path = TurboModuleCxx/ModuleRegistration.cpp; sourceTree = "<group>"; };
-		B21F0FC9250D4195004A26F2 /* ModuleRegistration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModuleRegistration.h; path = TurboModuleCxx/ModuleRegistration.h; sourceTree = "<group>"; };
-		B21F0FCB250D6D85004A26F2 /* ReactHandleHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReactHandleHelper.h; path = TurboModuleCxx/ReactHandleHelper.h; sourceTree = "<group>"; };
-		B21F0FCC250D6D85004A26F2 /* ReactDispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReactDispatcher.h; path = TurboModuleCxx/ReactDispatcher.h; sourceTree = "<group>"; };
-		B21F0FCD250D6D85004A26F2 /* ReactPropertyBag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReactPropertyBag.h; path = TurboModuleCxx/ReactPropertyBag.h; sourceTree = "<group>"; };
-		B21F0FCE250D6D85004A26F2 /* ReactNonAbiValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReactNonAbiValue.h; path = TurboModuleCxx/ReactNonAbiValue.h; sourceTree = "<group>"; };
-		B21F0FCF250D6D85004A26F2 /* ReactNotificationService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReactNotificationService.h; path = TurboModuleCxx/ReactNotificationService.h; sourceTree = "<group>"; };
-		B21F0FD0250D6D85004A26F2 /* ReactContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReactContext.h; path = TurboModuleCxx/ReactContext.h; sourceTree = "<group>"; };
-		B234FCC32512574700B788C9 /* JsiReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JsiReader.cpp; path = TurboModuleCxx/JsiReader.cpp; sourceTree = "<group>"; };
-		B234FCC42512574700B788C9 /* JsiReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsiReader.h; path = TurboModuleCxx/JsiReader.h; sourceTree = "<group>"; };
-		B234FCC52512574800B788C9 /* JsiWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsiWriter.h; path = TurboModuleCxx/JsiWriter.h; sourceTree = "<group>"; };
-		B234FCC62512574800B788C9 /* JsiWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JsiWriter.cpp; path = TurboModuleCxx/JsiWriter.cpp; sourceTree = "<group>"; };
-		B234FCC925125D6800B788C9 /* TurboModulesProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TurboModulesProvider.cpp; path = TurboModuleCxx/TurboModulesProvider.cpp; sourceTree = "<group>"; };
-		B234FCCA25125D6800B788C9 /* TurboModulesProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TurboModulesProvider.h; path = TurboModuleCxx/TurboModulesProvider.h; sourceTree = "<group>"; };
-		B234FCCC25125F4000B788C9 /* TurboModuleRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TurboModuleRegistry.h; path = TurboModuleCxx/TurboModuleRegistry.h; sourceTree = "<group>"; };
-		B28A6FAF251929EB00825165 /* Microsoft.ReactNative.Static.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Microsoft.ReactNative.Static.cpp; path = TurboModuleCxx/winrt/Microsoft.ReactNative.Static.cpp; sourceTree = "<group>"; };
-		B28A6FB325192DEA00825165 /* Microsoft.ReactNative.MacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Microsoft.ReactNative.MacOS.mm; path = TurboModuleCxx/winrt/Microsoft.ReactNative.MacOS.mm; sourceTree = "<group>"; };
-		B2CEBEB5250D898600D92658 /* ReactPromise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReactPromise.h; path = TurboModuleCxx/ReactPromise.h; sourceTree = "<group>"; };
-		B2CEBEB6250D898600D92658 /* ReactError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReactError.h; path = TurboModuleCxx/ReactError.h; sourceTree = "<group>"; };
-		B2CEBEB7250D898600D92658 /* ReactPromise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReactPromise.cpp; path = TurboModuleCxx/ReactPromise.cpp; sourceTree = "<group>"; };
-		B2CEBEB9250D8C8C00D92658 /* NativeModules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeModules.h; path = TurboModuleCxx/NativeModules.h; sourceTree = "<group>"; };
-		B2CEBEBA250D8D3200D92658 /* Windows.Foundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Windows.Foundation.h; path = TurboModuleCxx/winrt/Windows.Foundation.h; sourceTree = "<group>"; };
 		B2F2040824E76D7600863BE1 /* ScreenshotMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScreenshotMacOS.h; path = NativeModuleExample/ScreenshotMacOS.h; sourceTree = SOURCE_ROOT; };
 		B2F2040924E76D7600863BE1 /* ScreenshotMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ScreenshotMacOS.mm; path = NativeModuleExample/ScreenshotMacOS.mm; sourceTree = SOURCE_ROOT; };
 		B5C8E567A4E6281113811CB1 /* libPods-RNTester.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -591,7 +547,6 @@
 		9F15345C233AB2C4006DFE44 /* RNTester-macOS */ = {
 			isa = PBXGroup;
 			children = (
-				B20EF9F6250D22000039DCD8 /* TurboModuleCxx */,
 				B2F2040824E76D7600863BE1 /* ScreenshotMacOS.h */,
 				B2F2040924E76D7600863BE1 /* ScreenshotMacOS.mm */,
 				5101985523AD9EE600118BF1 /* Main.storyboard */,
@@ -623,55 +578,6 @@
 				9F15347E233AB2C7006DFE44 /* Info.plist */,
 			);
 			path = "RNTester-macOSIntegrationTests";
-			sourceTree = "<group>";
-		};
-		B20EF9F6250D22000039DCD8 /* TurboModuleCxx */ = {
-			isa = PBXGroup;
-			children = (
-				B234FCCC25125F4000B788C9 /* TurboModuleRegistry.h */,
-				B234FCC925125D6800B788C9 /* TurboModulesProvider.cpp */,
-				B234FCCA25125D6800B788C9 /* TurboModulesProvider.h */,
-				B234FCC32512574700B788C9 /* JsiReader.cpp */,
-				B234FCC42512574700B788C9 /* JsiReader.h */,
-				B234FCC62512574800B788C9 /* JsiWriter.cpp */,
-				B234FCC52512574800B788C9 /* JsiWriter.h */,
-				B2CEBEB9250D8C8C00D92658 /* NativeModules.h */,
-				B2CEBEB6250D898600D92658 /* ReactError.h */,
-				B2CEBEB7250D898600D92658 /* ReactPromise.cpp */,
-				B2CEBEB5250D898600D92658 /* ReactPromise.h */,
-				B21F0FD0250D6D85004A26F2 /* ReactContext.h */,
-				B21F0FCC250D6D85004A26F2 /* ReactDispatcher.h */,
-				B21F0FCB250D6D85004A26F2 /* ReactHandleHelper.h */,
-				B21F0FCE250D6D85004A26F2 /* ReactNonAbiValue.h */,
-				B21F0FCF250D6D85004A26F2 /* ReactNotificationService.h */,
-				B21F0FCD250D6D85004A26F2 /* ReactPropertyBag.h */,
-				B21F0FC8250D4195004A26F2 /* ModuleRegistration.cpp */,
-				B21F0FC9250D4195004A26F2 /* ModuleRegistration.h */,
-				B21F0FC7250D39FB004A26F2 /* StructInfo.h */,
-				B21F0FC6250D39EE004A26F2 /* JSValueReader.h */,
-				B21F0FC5250D39EE004A26F2 /* JSValueWriter.h */,
-				B21F0FC1250D35A8004A26F2 /* JSValueTreeReader.cpp */,
-				B21F0FC0250D35A8004A26F2 /* JSValueTreeReader.h */,
-				B21F0FC2250D35A8004A26F2 /* JSValueTreeWriter.cpp */,
-				B21F0FBF250D35A8004A26F2 /* JSValueTreeWriter.h */,
-				B20EFA00250D236D0039DCD8 /* Crash.h */,
-				B20EF9FA250D22480039DCD8 /* JSValue.cpp */,
-				B20EF9F9250D22470039DCD8 /* JSValue.h */,
-				B20EF9FB250D22480039DCD8 /* pch.h */,
-				B20EF9FE250D225A0039DCD8 /* winrt */,
-			);
-			name = TurboModuleCxx;
-			sourceTree = "<group>";
-		};
-		B20EF9FE250D225A0039DCD8 /* winrt */ = {
-			isa = PBXGroup;
-			children = (
-				B28A6FB325192DEA00825165 /* Microsoft.ReactNative.MacOS.mm */,
-				B28A6FAF251929EB00825165 /* Microsoft.ReactNative.Static.cpp */,
-				B2CEBEBA250D8D3200D92658 /* Windows.Foundation.h */,
-				B20EF9FF250D226F0039DCD8 /* Microsoft.ReactNative.h */,
-			);
-			name = winrt;
 			sourceTree = "<group>";
 		};
 		E7DB20A022B2BA84005AC45F /* RNTesterUnitTests */ = {
@@ -1482,20 +1388,10 @@
 			files = (
 				B2F2040A24E76D7600863BE1 /* ScreenshotMacOS.mm in Sources */,
 				5101985A23AD9F5B00118BF1 /* ViewController.m in Sources */,
-				B28A6FB0251929EB00825165 /* Microsoft.ReactNative.Static.cpp in Sources */,
 				9F153467233AB2C7006DFE44 /* main.m in Sources */,
-				B2CEBEB8250D898600D92658 /* ReactPromise.cpp in Sources */,
-				B234FCC72512574800B788C9 /* JsiReader.cpp in Sources */,
-				B21F0FCA250D4195004A26F2 /* ModuleRegistration.cpp in Sources */,
 				38CB64352445042D009035CC /* RNTesterTurboModuleProvider.mm in Sources */,
-				B21F0FC3250D35A8004A26F2 /* JSValueTreeReader.cpp in Sources */,
-				B21F0FC4250D35A8004A26F2 /* JSValueTreeWriter.cpp in Sources */,
 				9F15345F233AB2C4006DFE44 /* AppDelegate.mm in Sources */,
-				B234FCCB25125D6800B788C9 /* TurboModulesProvider.cpp in Sources */,
 				38B2630C2444F628006AB4D5 /* FlexibleSizeExampleView.m in Sources */,
-				B28A6FB425192DEA00825165 /* Microsoft.ReactNative.MacOS.mm in Sources */,
-				B234FCC82512574800B788C9 /* JsiWriter.cpp in Sources */,
-				B20EF9FC250D22480039DCD8 /* JSValue.cpp in Sources */,
 				38B2630B2444F5EB006AB4D5 /* UpdatePropertiesExampleView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1652,7 +1548,11 @@
 					"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
 				);
-				"LIBRARY_SEARCH_PATHS[arch=*]" = "$(inherited)";
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
+				);
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
@@ -2024,27 +1924,6 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"${PODS_ROOT}/Headers/Public\"",
-					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
-					"\"${PODS_ROOT}/Headers/Public/FBLazyVector\"",
-					"\"${PODS_ROOT}/Headers/Public/FBReactNativeSpec\"",
-					"\"${PODS_ROOT}/Headers/Public/RCT-Folly\"",
-					"\"${PODS_ROOT}/Headers/Public/RCTRequired\"",
-					"\"${PODS_ROOT}/Headers/Public/RCTTypeSafety\"",
-					"\"${PODS_ROOT}/Headers/Public/React-Core\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTTest\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTText\"",
-					"\"${PODS_ROOT}/Headers/Public/React-cxxreact\"",
-					"\"${PODS_ROOT}/Headers/Public/React-jsi\"",
-					"\"${PODS_ROOT}/Headers/Public/React-jsiexecutor\"",
-					"\"${PODS_ROOT}/Headers/Public/React-jsinspector\"",
-					"\"${PODS_ROOT}/Headers/Public/ReactCommon\"",
-					"\"${PODS_ROOT}/Headers/Public/Yoga\"",
-					"\"${PODS_ROOT}/Headers/Public/glog\"",
-					"\"${PODS_ROOT}/Headers/Public/hermes\"",
-					"\"${PODS_ROOT}/Headers/Public/libevent\"",
-					"\"$(PODS_ROOT)/boost-for-react-native\"",
-					"\"$(PODS_ROOT)/Headers/Private/React-Core\"",
 					"\"$(SOURCE_ROOT)/RNTester-macOS/TurboModuleCxx\"",
 				);
 				INFOPLIST_FILE = "RNTester-macOS/Info.plist";
@@ -2085,27 +1964,6 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"${PODS_ROOT}/Headers/Public\"",
-					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
-					"\"${PODS_ROOT}/Headers/Public/FBLazyVector\"",
-					"\"${PODS_ROOT}/Headers/Public/FBReactNativeSpec\"",
-					"\"${PODS_ROOT}/Headers/Public/RCT-Folly\"",
-					"\"${PODS_ROOT}/Headers/Public/RCTRequired\"",
-					"\"${PODS_ROOT}/Headers/Public/RCTTypeSafety\"",
-					"\"${PODS_ROOT}/Headers/Public/React-Core\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTTest\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTText\"",
-					"\"${PODS_ROOT}/Headers/Public/React-cxxreact\"",
-					"\"${PODS_ROOT}/Headers/Public/React-jsi\"",
-					"\"${PODS_ROOT}/Headers/Public/React-jsiexecutor\"",
-					"\"${PODS_ROOT}/Headers/Public/React-jsinspector\"",
-					"\"${PODS_ROOT}/Headers/Public/ReactCommon\"",
-					"\"${PODS_ROOT}/Headers/Public/Yoga\"",
-					"\"${PODS_ROOT}/Headers/Public/glog\"",
-					"\"${PODS_ROOT}/Headers/Public/hermes\"",
-					"\"${PODS_ROOT}/Headers/Public/libevent\"",
-					"\"$(PODS_ROOT)/boost-for-react-native\"",
-					"\"$(PODS_ROOT)/Headers/Private/React-Core\"",
 					"\"$(SOURCE_ROOT)/RNTester-macOS/TurboModuleCxx\"",
 				);
 				INFOPLIST_FILE = "RNTester-macOS/Info.plist";

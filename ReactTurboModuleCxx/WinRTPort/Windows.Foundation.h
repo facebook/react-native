@@ -12,7 +12,7 @@
 #include <cmath>
 #include <functional>
 #include <optional>
-#include "../Crash.h"
+#include "Crash.h"
 
 inline int64_t _wcstoi64(const wchar_t* str, wchar_t** str_end, int base)
 {
