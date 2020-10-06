@@ -19,6 +19,7 @@
     "!template/yarn.lock",
     "cli.js",
     "flow",
+    "flow-typed",
     "index.js",
     "interface.js",
     "jest-preset.js",
