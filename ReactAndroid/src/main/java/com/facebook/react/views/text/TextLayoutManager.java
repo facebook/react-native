@@ -28,6 +28,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
@@ -44,9 +45,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TextLayoutManager {
 
   // TODO T67606397: Refactor configuration of fabric logs
-  private static final boolean ENABLE_MEASURE_LOGGING = false;
+  private static final boolean ENABLE_MEASURE_LOGGING = ReactBuildConfig.DEBUG && false;
 
-  private static final String TAG = "TextLayoutManager";
+  private static final String TAG = TextLayoutManager.class.getSimpleName();
 
   // It's important to pass the ANTI_ALIAS_FLAG flag to the constructor rather than setting it
   // later by calling setFlags. This is because the latter approach triggers a bug on Android 4.4.2.
@@ -82,10 +83,16 @@ public class TextLayoutManager {
   }
 
   public static void setCachedSpannabledForTag(int reactTag, @NonNull Spannable sp) {
+    if (ENABLE_MEASURE_LOGGING) {
+      FLog.e(TAG, "Set cached spannable for tag[" + reactTag + "]: " + sp.toString());
+    }
     sTagToSpannableCache.put(reactTag, sp);
   }
 
   public static void deleteCachedSpannableForTag(int reactTag) {
+    if (ENABLE_MEASURE_LOGGING) {
+      FLog.e(TAG, "Delete cached spannable for tag[" + reactTag + "]");
+    }
     sTagToSpannableCache.remove(reactTag);
   }
 
@@ -360,9 +367,18 @@ public class TextLayoutManager {
     Spannable text;
     if (attributedString.hasKey("cacheId")) {
       int cacheId = attributedString.getInt("cacheId");
+      if (ENABLE_MEASURE_LOGGING) {
+        FLog.e(TAG, "Get cached spannable for cacheId[" + cacheId + "]");
+      }
       if (sTagToSpannableCache.containsKey(cacheId)) {
         text = sTagToSpannableCache.get(cacheId);
+        if (ENABLE_MEASURE_LOGGING) {
+          FLog.e(TAG, "Text for spannable found for cacheId[" + cacheId + "]: " + text.toString());
+        }
       } else {
+        if (ENABLE_MEASURE_LOGGING) {
+          FLog.e(TAG, "No cached spannable found for cacheId[" + cacheId + "]");
+        }
         return 0;
       }
     } else {
