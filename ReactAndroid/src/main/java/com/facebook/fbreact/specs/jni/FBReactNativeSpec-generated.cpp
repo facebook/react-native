@@ -1416,36 +1416,56 @@ namespace facebook {
   namespace react {
 
     
-    static facebook::jsi::Value __hostFunction_NativeImageStoreSpecJSI_getBase64ForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeImageStoreAndroidSpecJSI_getBase64ForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "getBase64ForTag", "(Ljava/lang/String;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeImageStoreSpecJSI_hasImageForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+
+    NativeImageStoreAndroidSpecJSI::NativeImageStoreAndroidSpecJSI(const JavaTurboModule::InitParams &params)
+      : JavaTurboModule(params) {
+        
+        methodMap_["getBase64ForTag"] = MethodMetadata {3, __hostFunction_NativeImageStoreAndroidSpecJSI_getBase64ForTag};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeImageStoreIOSSpecJSI_getBase64ForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "getBase64ForTag", "(Ljava/lang/String;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeImageStoreIOSSpecJSI_hasImageForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "hasImageForTag", "(Ljava/lang/String;Lcom/facebook/react/bridge/Callback;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeImageStoreSpecJSI_removeImageForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeImageStoreIOSSpecJSI_removeImageForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "removeImageForTag", "(Ljava/lang/String;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeImageStoreSpecJSI_addImageFromBase64(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeImageStoreIOSSpecJSI_addImageFromBase64(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "addImageFromBase64", "(Ljava/lang/String;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V", args, count);
     }
 
 
-    NativeImageStoreSpecJSI::NativeImageStoreSpecJSI(const JavaTurboModule::InitParams &params)
+    NativeImageStoreIOSSpecJSI::NativeImageStoreIOSSpecJSI(const JavaTurboModule::InitParams &params)
       : JavaTurboModule(params) {
         
-        methodMap_["getBase64ForTag"] = MethodMetadata {3, __hostFunction_NativeImageStoreSpecJSI_getBase64ForTag};
+        methodMap_["getBase64ForTag"] = MethodMetadata {3, __hostFunction_NativeImageStoreIOSSpecJSI_getBase64ForTag};
         
         
-        methodMap_["hasImageForTag"] = MethodMetadata {2, __hostFunction_NativeImageStoreSpecJSI_hasImageForTag};
+        methodMap_["hasImageForTag"] = MethodMetadata {2, __hostFunction_NativeImageStoreIOSSpecJSI_hasImageForTag};
         
         
-        methodMap_["removeImageForTag"] = MethodMetadata {1, __hostFunction_NativeImageStoreSpecJSI_removeImageForTag};
+        methodMap_["removeImageForTag"] = MethodMetadata {1, __hostFunction_NativeImageStoreIOSSpecJSI_removeImageForTag};
         
         
-        methodMap_["addImageFromBase64"] = MethodMetadata {3, __hostFunction_NativeImageStoreSpecJSI_addImageFromBase64};
+        methodMap_["addImageFromBase64"] = MethodMetadata {3, __hostFunction_NativeImageStoreIOSSpecJSI_addImageFromBase64};
         
         
 

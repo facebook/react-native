@@ -44,13 +44,13 @@ class SliderShadowNode final : public ConcreteViewShadowNode<
       ComponentDescriptor const &componentDescriptor) {
     auto imageSource = ImageSource{ImageSource::Type::Invalid};
     return {imageSource,
-            {imageSource, nullptr, nullptr},
+            {imageSource, nullptr},
             imageSource,
-            {imageSource, nullptr, nullptr},
+            {imageSource, nullptr},
             imageSource,
-            {imageSource, nullptr, nullptr},
+            {imageSource, nullptr},
             imageSource,
-            {imageSource, nullptr, nullptr}};
+            {imageSource, nullptr}};
   }
 
 #pragma mark - LayoutableShadowNode

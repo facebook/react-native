@@ -11,18 +11,22 @@
 'use strict';
 
 import type {
-  FunctionTypeAnnotationParam,
-  FunctionTypeAnnotationReturn,
-  NativeModuleMethodTypeShape,
-  ObjectTypeAliasTypeShape,
+  Nullable,
   SchemaType,
+  NativeModulePropertySchema,
+  NativeModuleMethodParamSchema,
+  NativeModuleReturnTypeAnnotation,
 } from '../../CodegenSchema';
-const {getTypeAliasTypeAnnotation} = require('./Utils');
+
+import type {AliasResolver} from './Utils';
+const {createAliasResolver, getModules} = require('./Utils');
+const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
-const moduleTemplate = `/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+const moduleTemplate = `
+/**
+ * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
  * directory of this source tree.
@@ -46,30 +50,33 @@ public abstract class ::_CLASSNAME_:: extends ReactContextBaseJavaModule impleme
 `;
 
 function translateFunctionParamToJavaType(
-  param: FunctionTypeAnnotationParam,
+  param: NativeModuleMethodParamSchema,
   createErrorMessage: (typeName: string) => string,
-  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
+  resolveAlias: AliasResolver,
   imports: Set<string>,
 ): string {
-  const {nullable, typeAnnotation} = param;
+  const {optional, typeAnnotation: nullableTypeAnnotation} = param;
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+  const isRequired = !optional && !nullable;
 
   function wrapIntoNullableIfNeeded(generatedType: string) {
-    if (nullable) {
+    if (!isRequired) {
       imports.add('javax.annotation.Nullable');
       return `@Nullable ${generatedType}`;
     }
     return generatedType;
   }
 
-  const realTypeAnnotation =
-    typeAnnotation.type === 'TypeAliasTypeAnnotation'
-      ? getTypeAliasTypeAnnotation(typeAnnotation.name, aliases)
-      : typeAnnotation;
+  let realTypeAnnotation = typeAnnotation;
+  if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
+    realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
+  }
+
   switch (realTypeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
-          return nullable ? 'Double' : 'double';
+          return !isRequired ? 'Double' : 'double';
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));
@@ -77,11 +84,15 @@ function translateFunctionParamToJavaType(
     case 'StringTypeAnnotation':
       return wrapIntoNullableIfNeeded('String');
     case 'NumberTypeAnnotation':
+      return !isRequired ? 'Double' : 'double';
     case 'FloatTypeAnnotation':
+      return !isRequired ? 'Double' : 'double';
+    case 'DoubleTypeAnnotation':
+      return !isRequired ? 'Double' : 'double';
     case 'Int32TypeAnnotation':
-      return nullable ? 'Double' : 'double';
+      return !isRequired ? 'Double' : 'double';
     case 'BooleanTypeAnnotation':
-      return nullable ? 'Boolean' : 'boolean';
+      return !isRequired ? 'Boolean' : 'boolean';
     case 'ObjectTypeAnnotation':
       imports.add('com.facebook.react.bridge.ReadableMap');
       if (typeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -100,16 +111,20 @@ function translateFunctionParamToJavaType(
       imports.add('com.facebook.react.bridge.Callback');
       return 'Callback';
     default:
+      (realTypeAnnotation.type: empty);
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
 
 function translateFunctionReturnTypeToJavaType(
-  returnTypeAnnotation: FunctionTypeAnnotationReturn,
+  nullableReturnTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
   createErrorMessage: (typeName: string) => string,
+  resolveAlias: AliasResolver,
   imports: Set<string>,
 ): string {
-  const {nullable} = returnTypeAnnotation;
+  const [returnTypeAnnotation, nullable] = unwrapNullable(
+    nullableReturnTypeAnnotation,
+  );
 
   function wrapIntoNullableIfNeeded(generatedType: string) {
     if (nullable) {
@@ -119,23 +134,32 @@ function translateFunctionReturnTypeToJavaType(
     return generatedType;
   }
 
-  // TODO: Support aliased return type. This doesn't exist in React Native Android yet.
-  switch (returnTypeAnnotation.type) {
+  let realTypeAnnotation = returnTypeAnnotation;
+  if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
+    realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
+  }
+
+  switch (realTypeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
-      switch (returnTypeAnnotation.name) {
+      switch (realTypeAnnotation.name) {
         case 'RootTag':
           return nullable ? 'Double' : 'double';
         default:
-          (returnTypeAnnotation.name: empty);
-          throw new Error(createErrorMessage(returnTypeAnnotation.name));
+          (realTypeAnnotation.name: empty);
+          throw new Error(createErrorMessage(realTypeAnnotation.name));
       }
     case 'VoidTypeAnnotation':
-    case 'GenericPromiseTypeAnnotation':
+      return 'void';
+    case 'PromiseTypeAnnotation':
       return 'void';
     case 'StringTypeAnnotation':
       return wrapIntoNullableIfNeeded('String');
     case 'NumberTypeAnnotation':
+      return nullable ? 'Double' : 'double';
     case 'FloatTypeAnnotation':
+      return nullable ? 'Double' : 'double';
+    case 'DoubleTypeAnnotation':
+      return nullable ? 'Double' : 'double';
     case 'Int32TypeAnnotation':
       return nullable ? 'Double' : 'double';
     case 'BooleanTypeAnnotation':
@@ -150,23 +174,26 @@ function translateFunctionReturnTypeToJavaType(
       imports.add('com.facebook.react.bridge.WritableArray');
       return 'WritableArray';
     default:
-      throw new Error(createErrorMessage(returnTypeAnnotation.type));
+      (realTypeAnnotation.type: empty);
+      throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
 
 // Build special-cased runtime check for getConstants().
 function buildGetConstantsMethod(
-  method: NativeModuleMethodTypeShape,
+  method: NativeModulePropertySchema,
   imports: Set<string>,
 ): string {
+  const [methodTypeAnnotation] = unwrapNullable(method.typeAnnotation);
   if (
-    method.typeAnnotation.returnTypeAnnotation.type === 'ObjectTypeAnnotation'
+    methodTypeAnnotation.returnTypeAnnotation.type === 'ObjectTypeAnnotation'
   ) {
     const requiredProps = [];
     const optionalProps = [];
     const rawProperties =
-      method.typeAnnotation.returnTypeAnnotation.properties || [];
+      methodTypeAnnotation.returnTypeAnnotation.properties || [];
     rawProperties.forEach(p => {
+      // TODO(T76712813): Should we push to optionalProps if the constant is nullable?
       if (p.optional) {
         optionalProps.push(p.name);
       } else {
@@ -240,20 +267,11 @@ module.exports = {
     const files = new Map();
     // TODO: Allow package configuration.
     const packageName = 'com.facebook.fbreact.specs.beta';
-    const nativeModules = Object.keys(schema.modules)
-      .map(moduleName => {
-        const modules = schema.modules[moduleName].nativeModules;
-        if (modules == null) {
-          return null;
-        }
-
-        return modules;
-      })
-      .filter(Boolean)
-      .reduce((acc, components) => Object.assign(acc, components), {});
+    const nativeModules = getModules(schema);
 
     Object.keys(nativeModules).forEach(name => {
       const {aliases, properties} = nativeModules[name];
+      const resolveAlias = createAliasResolver(aliases);
       const className = `Native${name}Spec`;
 
       const imports: Set<string> = new Set([
@@ -270,27 +288,30 @@ module.exports = {
           return buildGetConstantsMethod(method, imports);
         }
 
+        const [methodTypeAnnotation] = unwrapNullable(method.typeAnnotation);
+
         // Handle return type
         const translatedReturnType = translateFunctionReturnTypeToJavaType(
-          method.typeAnnotation.returnTypeAnnotation,
+          methodTypeAnnotation.returnTypeAnnotation,
           typeName =>
             `Unsupported return type for method ${method.name}. Found: ${typeName}`,
+          resolveAlias,
           imports,
         );
         const returningPromise =
-          method.typeAnnotation.returnTypeAnnotation.type ===
-          'GenericPromiseTypeAnnotation';
+          methodTypeAnnotation.returnTypeAnnotation.type ===
+          'PromiseTypeAnnotation';
         const isSyncMethod =
-          method.typeAnnotation.returnTypeAnnotation.type !==
+          methodTypeAnnotation.returnTypeAnnotation.type !==
             'VoidTypeAnnotation' && !returningPromise;
 
         // Handle method args
-        const traversedArgs = method.typeAnnotation.params.map(param => {
+        const traversedArgs = methodTypeAnnotation.params.map(param => {
           const translatedParam = translateFunctionParamToJavaType(
             param,
             typeName =>
               `Unsupported type for param "${param.name}" in ${method.name}. Found: ${typeName}`,
-            aliases,
+            resolveAlias,
             imports,
           );
           return `${translatedParam} ${param.name}`;

@@ -308,12 +308,30 @@ static inline bool shouldFirstComeBeforeSecondMutation(
       return true;
     }
 
+    // Update comes last, before deletes
+    if (rhs.type == ShadowViewMutation::Type::Update) {
+      return true;
+    }
+    if (lhs.type == ShadowViewMutation::Type::Update) {
+      return false;
+    }
+
     // Remove comes before insert
     if (lhs.type == ShadowViewMutation::Type::Remove &&
         rhs.type == ShadowViewMutation::Type::Insert) {
       return true;
     }
     if (rhs.type == ShadowViewMutation::Type::Remove &&
+        lhs.type == ShadowViewMutation::Type::Insert) {
+      return false;
+    }
+
+    // Create comes before insert
+    if (lhs.type == ShadowViewMutation::Type::Create &&
+        rhs.type == ShadowViewMutation::Type::Insert) {
+      return true;
+    }
+    if (rhs.type == ShadowViewMutation::Type::Create &&
         lhs.type == ShadowViewMutation::Type::Insert) {
       return false;
     }

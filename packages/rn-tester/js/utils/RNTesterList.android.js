@@ -264,6 +264,14 @@ const APIExamples: Array<RNTesterExample> = [
   },
 ];
 
+if (global.__turboModuleProxy) {
+  APIExamples.push({
+    key: 'TurboModuleExample',
+    category: 'Basic',
+    module: require('../examples/TurboModule/TurboModuleExample'),
+  });
+}
+
 const Modules: any = {};
 
 APIExamples.concat(ComponentExamples).forEach(Example => {

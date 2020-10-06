@@ -63,9 +63,9 @@ public class MountingManager {
     mViewManagerRegistry = viewManagerRegistry;
   }
 
-  private static void logViewHierarchy(ViewGroup parent) {
+  private static void logViewHierarchy(ViewGroup parent, boolean recurse) {
     int parentTag = parent.getId();
-    FLog.e(TAG, "  <ViewGroup tag=" + parentTag + ">");
+    FLog.e(TAG, "  <ViewGroup tag=" + parentTag + " class=" + parent.getClass().toString() + ">");
     for (int i = 0; i < parent.getChildCount(); i++) {
       FLog.e(
           TAG,
@@ -73,11 +73,24 @@ public class MountingManager {
               + i
               + " tag="
               + parent.getChildAt(i).getId()
-              + " toString="
-              + parent.getChildAt(i).toString()
+              + " class="
+              + parent.getChildAt(i).getClass().toString()
               + ">");
     }
     FLog.e(TAG, "  </ViewGroup tag=" + parentTag + ">");
+
+    if (recurse) {
+      FLog.e(TAG, "Displaying Ancestors:");
+      ViewParent ancestor = parent.getParent();
+      while (ancestor != null) {
+        ViewGroup ancestorViewGroup = (ancestor instanceof ViewGroup ? (ViewGroup) ancestor : null);
+        int ancestorId = ancestorViewGroup == null ? View.NO_ID : ancestorViewGroup.getId();
+        FLog.e(
+            TAG,
+            "<ViewParent tag=" + ancestorId + " class=" + ancestor.getClass().toString() + ">");
+        ancestor = ancestor.getParent();
+      }
+    }
   }
 
   /**
@@ -218,7 +231,7 @@ public class MountingManager {
     // Display children before inserting
     if (SHOW_CHANGED_VIEW_HIERARCHIES) {
       FLog.e(TAG, "addViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " BEFORE");
-      logViewHierarchy(parentView);
+      logViewHierarchy(parentView, false);
     }
 
     try {
@@ -243,7 +256,7 @@ public class MountingManager {
             public void run() {
               FLog.e(
                   TAG, "addViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " AFTER");
-              logViewHierarchy(parentView);
+              logViewHierarchy(parentView, false);
             }
           });
     }
@@ -338,7 +351,7 @@ public class MountingManager {
   }
 
   @UiThread
-  public void removeViewAt(final int tag, final int parentTag, final int index) {
+  public void removeViewAt(final int tag, final int parentTag, int index) {
     UiThreadUtil.assertOnUiThread();
     ViewState viewState = getNullableViewState(parentTag);
 
@@ -359,7 +372,7 @@ public class MountingManager {
     if (SHOW_CHANGED_VIEW_HIERARCHIES) {
       // Display children before deleting any
       FLog.e(TAG, "removeViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " BEFORE");
-      logViewHierarchy(parentView);
+      logViewHierarchy(parentView, false);
     }
 
     ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(viewState);
@@ -398,17 +411,30 @@ public class MountingManager {
         return;
       }
 
-      throw new IllegalStateException(
-          "Tried to remove view ["
-              + tag
-              + "] of parent ["
-              + parentTag
-              + "] at index "
-              + index
-              + ", but got view tag "
-              + actualTag
-              + " - actual index of view: "
-              + tagActualIndex);
+      // Here we are guaranteed that the view is still in the View hierarchy, just
+      // at a different index. In debug mode we'll crash here; in production, we'll remove
+      // the child from the parent and move on.
+      // This is an issue that is safely recoverable 95% of the time. If this allows corruption
+      // of the view hierarchy and causes bugs or a crash after this point, there will be logs
+      // indicating that this happened.
+      // This is likely *only* necessary because of Fabric's LayoutAnimations implementation.
+      // If we can fix the bug there, or remove the need for LayoutAnimation index adjustment
+      // entirely, we can just throw this exception without regression user experience.
+      logViewHierarchy(parentView, true);
+      ReactSoftException.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "Tried to remove view ["
+                  + tag
+                  + "] of parent ["
+                  + parentTag
+                  + "] at index "
+                  + index
+                  + ", but got view tag "
+                  + actualTag
+                  + " - actual index of view: "
+                  + tagActualIndex));
+      index = tagActualIndex;
     }
 
     try {
@@ -431,6 +457,8 @@ public class MountingManager {
       // enough that we shouldn't try to change this invariant, without a lot of thought.
       int childCount = viewGroupManager.getChildCount(parentView);
 
+      logViewHierarchy(parentView, true);
+
       throw new IllegalStateException(
           "Cannot remove child at index "
               + index
@@ -444,14 +472,21 @@ public class MountingManager {
 
     // Display children after deleting any
     if (SHOW_CHANGED_VIEW_HIERARCHIES) {
+      final int finalIndex = index;
       UiThreadUtil.runOnUiThread(
           new Runnable() {
             @Override
             public void run() {
               FLog.e(
                   TAG,
-                  "removeViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " AFTER");
-              logViewHierarchy(parentView);
+                  "removeViewAt: ["
+                      + tag
+                      + "] -> ["
+                      + parentTag
+                      + "] idx: "
+                      + finalIndex
+                      + " AFTER");
+              logViewHierarchy(parentView, false);
             }
           });
     }
