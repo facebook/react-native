@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C49AA40252E529E004CE48B /* RNAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C49AA3F252E529E004CE48B /* RNAssets.xcassets */; };
 		1317FC3A10A7E894D970D9F2 /* libPods-RNTester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C2F0C3405B1D6741F52D4F6 /* libPods-RNTester.a */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; };
@@ -70,6 +71,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0C49AA3F252E529E004CE48B /* RNAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = RNAssets.xcassets; path = RNTester/RNAssets.xcassets; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* RNTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = RNTester/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RNTester/Info.plist; sourceTree = "<group>"; };
@@ -164,7 +166,7 @@
 		E7DB215F22B2F3EC005AC45F /* RCTUIManagerScenarioTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerScenarioTests.m; sourceTree = "<group>"; };
 		E7DB216022B2F3EC005AC45F /* RNTesterSnapshotTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNTesterSnapshotTests.m; sourceTree = "<group>"; };
 		E7DB216122B2F3EC005AC45F /* RCTRootViewIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootViewIntegrationTests.m; sourceTree = "<group>"; };
-		E7DB218B22B41FCD005AC45F /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		E7DB218B22B41FCD005AC45F /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		E9618482EC8608D4872A6E28 /* Pods-RNTesterUnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterUnitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -219,6 +221,7 @@
 				5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */,
+				0C49AA3F252E529E004CE48B /* RNAssets.xcassets */,
 				8145AE05241172D900A3F8DA /* LaunchScreen.storyboard */,
 				680759612239798500290469 /* Fabric */,
 				272E6B3A1BEA846C001FCF37 /* NativeExampleViews */,
@@ -395,8 +398,8 @@
 				F9CB97B0D9633939D43E75E0 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
-				13B07F8E1A680F5B00A75B9A /* Resources */,
 				68CD48B71D2BCB2C007E06A9 /* Build JS Bundle */,
+				13B07F8E1A680F5B00A75B9A /* Resources */,
 				5CF0FD27207FC6EC00C13D65 /* Start Metro */,
 				C1C7A9D58CE1D09515F20577 /* [CP] Copy Pods Resources */,
 			);
@@ -491,6 +494,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C49AA40252E529E004CE48B /* RNAssets.xcassets in Resources */,
 				2DDEF0101F84BF7B00DBDF73 /* Images.xcassets in Resources */,
 				8145AE06241172D900A3F8DA /* LaunchScreen.storyboard in Resources */,
 				3D2AFAF51D646CF80089D1A3 /* legacy_image@2x.png in Resources */,
@@ -947,6 +951,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
