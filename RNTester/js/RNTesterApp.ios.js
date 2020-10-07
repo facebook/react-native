@@ -29,6 +29,7 @@ const {
   Platform, // TODO(OSS Candidate ISS#2710739)
   PlatformColor, // TODO(OSS Candidate ISS#2710739)
   DynamicColorIOS, // TODO(OSS Candidate ISS#2710739)
+  DynamicColorMacOS, // TODO(macOS ISS#2323203)
   SafeAreaView,
   StyleSheet,
   Text,
@@ -249,7 +250,12 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: '600',
     textAlign: 'center',
-    color: DynamicColorIOS({light: 'black', dark: 'white'}), // TODO(OSS Candidate ISS#2710739)
+    color:
+      // [TODO(macOS ISS#2323203)
+      Platform.OS === 'macos'
+        ? DynamicColorMacOS({light: 'black', dark: 'white'})
+        : DynamicColorIOS({light: 'black', dark: 'white'}), // TODO(OSS Candidate ISS#2710739)
+    // ]TODO(macOS ISS#2323203)
   },
   exampleContainer: {
     flex: 1,

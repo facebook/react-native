@@ -25,13 +25,13 @@ export const PlatformColor = (...names: Array<string>): ColorValue => {
   return {semantic: names};
 };
 
-export type DynamicColorIOSTuplePrivate = {
+export type DynamicColorMacOSTuplePrivate = {
   light: ColorValue,
   dark: ColorValue,
 };
 
-export const DynamicColorIOSPrivate = (
-  tuple: DynamicColorIOSTuplePrivate,
+export const DynamicColorMacOSPrivate = (
+  tuple: DynamicColorMacOSTuplePrivate,
 ): ColorValue => {
   return {dynamic: {light: tuple.light, dark: tuple.dark}};
 };
@@ -40,7 +40,7 @@ export const normalizeColorObject = (
   color: NativeColorValue,
 ): ?ProcessedColorValue => {
   if ('semantic' in color) {
-    // an ios semantic color
+    // a macOS semantic color
     return color;
   } else if ('dynamic' in color && color.dynamic !== undefined) {
     const normalizeColor = require('./normalizeColor');

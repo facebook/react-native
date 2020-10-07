@@ -11,14 +11,15 @@
 'use strict';
 
 import type {ColorValue} from './StyleSheetTypes';
-import {DynamicColorIOSPrivate} from './PlatformColorValueTypes';
 
-export type DynamicColorIOSTuple = {
+export type DynamicColorMacOSTuple = {
   light: ColorValue,
   dark: ColorValue,
 };
 
-export const DynamicColorIOS = (tuple: DynamicColorIOSTuple): ColorValue => {
-  return DynamicColorIOSPrivate({light: tuple.light, dark: tuple.dark});
+export const DynamicColorMacOS = (
+  tuple: DynamicColorMacOSTuple,
+): ColorValue => {
+  throw new Error('DynamicColorMacOS is not available on this platform.');
 };
 // ]TODO(macOS ISS#2323203)
