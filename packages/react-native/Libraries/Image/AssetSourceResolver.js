@@ -71,6 +71,15 @@ class AssetSourceResolver {
     return !!(this.jsbundleUrl && this.jsbundleUrl.startsWith('file://'));
   }
 
+  isCatalogAsset(): boolean {
+    return (
+      this.asset.__packager_asset &&
+      (this.asset.type === 'png' ||
+        this.asset.type === 'jpg' ||
+        this.asset.type === 'jpeg')
+    );
+  }
+
   defaultAsset(): ResolvedAssetSource {
     if (this.isLoadedFromServer()) {
       return this.assetServerURL();
@@ -81,7 +90,9 @@ class AssetSourceResolver {
         ? this.drawableFolderInBundle()
         : this.resourceIdentifierWithoutScale();
     } else {
-      return this.scaledAssetURLNearBundle();
+      return this.isCatalogAsset()
+        ? this.assetFromCatalog()
+        : this.scaledAssetURLNearBundle();
     }
   }
 
@@ -121,6 +132,10 @@ class AssetSourceResolver {
       // don't end up outside of the expected assets directory.
       path + getScaledAssetPath(this.asset).replace(/\.\.\//g, '_'),
     );
+  }
+
+  assetFromCatalog(): ResolvedAssetSource {
+    return this.fromSource(getAndroidResourceIdentifier(this.asset));
   }
 
   /**

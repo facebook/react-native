@@ -730,8 +730,11 @@ NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL)
 
 static BOOL RCTIsImageAssetsPath(NSString *path)
 {
+  if (path == nil) {
+    return NO;
+  }
   NSString *extension = [path pathExtension];
-  return [extension isEqualToString:@"png"] || [extension isEqualToString:@"jpg"];
+  return extension.length == 0 || [extension isEqualToString:@"png"] || [extension isEqualToString:@"jpg"];
 }
 
 BOOL RCTIsBundleAssetURL(NSURL *__nullable imageURL)
