@@ -223,4 +223,78 @@ describe('PerformanceLogger', () => {
     expect(Object.keys(perfLogger.getPointExtras())).toEqual([POINT]);
     expect(perfLogger.getPointExtras()[POINT]).toEqual(POINT_ANNOTATION_1);
   });
+
+  it('should allow extended logger to stopTimespan', () => {
+    const loggerA = createPerformanceLogger();
+    loggerA.startTimespan('loggerA_timespan');
+    const loggerB = createPerformanceLogger();
+    loggerB.append(loggerA);
+    loggerB.stopTimespan('loggerA_timespan');
+    const timespan = loggerB.getTimespans().loggerA_timespan;
+    expect(timespan?.startTime).not.toBeUndefined();
+    expect(timespan?.endTime).not.toBeUndefined();
+    expect(timespan?.totalTime).not.toBeUndefined();
+    expect(loggerA.isClosed()).toBe(false);
+  });
+
+  it('should append logger', () => {
+    const loggerA = createPerformanceLogger();
+    loggerA.addTimespan('loggerA_timespan1', 0, 10);
+    loggerA.addTimespan(
+      'loggerA_timespan2',
+      2,
+      8,
+      {loggerA_timespan2_start: 100},
+      {loggerA_timespan2_end: 200},
+    );
+    loggerA.markPoint('loggerA_point', 5, {loggerA_pointExtra: true});
+    loggerA.setExtra('loggerA_extra', true);
+
+    const loggerB = createPerformanceLogger();
+    loggerB.append(loggerA);
+    loggerB.addTimespan('loggerB_timespan', 0, 10);
+    loggerB.markPoint('loggerB_point', 3);
+
+    expect(loggerA.isClosed()).toBe(false);
+
+    expect(loggerB.getTimespans()).toEqual({
+      loggerA_timespan1: {
+        endExtras: undefined,
+        endTime: 10,
+        startExtras: undefined,
+        startTime: 0,
+        totalTime: 10,
+      },
+      loggerA_timespan2: {
+        endExtras: {
+          loggerA_timespan2_end: 200,
+        },
+        endTime: 8,
+        startExtras: {
+          loggerA_timespan2_start: 100,
+        },
+        startTime: 2,
+        totalTime: 6,
+      },
+      loggerB_timespan: {
+        endExtras: undefined,
+        endTime: 10,
+        startExtras: undefined,
+        startTime: 0,
+        totalTime: 10,
+      },
+    });
+    expect(loggerB.getPoints()).toEqual({
+      loggerA_point: 5,
+      loggerB_point: 3,
+    });
+    expect(loggerB.getPointExtras()).toEqual({
+      loggerA_point: {
+        loggerA_pointExtra: true,
+      },
+    });
+    expect(loggerB.getExtras()).toEqual({
+      loggerA_extra: true,
+    });
+  });
 });

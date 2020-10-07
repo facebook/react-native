@@ -28,13 +28,11 @@ const propertyHeaderTemplate =
 const propertyCastTemplate =
   'static_cast<Native::_MODULE_NAME_::CxxSpecJSI *>(&turboModule)->::_PROPERTY_NAME_::(rt::_ARGS_::);';
 
-const nonvoidPropertyTemplate = `
-${propertyHeaderTemplate}
+const nonvoidPropertyTemplate = `${propertyHeaderTemplate}
   return ${propertyCastTemplate}
 }`.trim();
 
-const voidPropertyTemplate = `
-${propertyHeaderTemplate}
+const voidPropertyTemplate = `${propertyHeaderTemplate}
   ${propertyCastTemplate}
   return jsi::Value::undefined();
 }`;
@@ -42,16 +40,14 @@ ${propertyHeaderTemplate}
 const proprertyDefTemplate =
   '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_Native::_MODULE_NAME_::CxxSpecJSI_::_PROPERTY_NAME_::};';
 
-const moduleTemplate = `
-::_MODULE_PROPERTIES_::
+const moduleTemplate = `::_MODULE_PROPERTIES_::
 
 Native::_MODULE_NAME_::CxxSpecJSI::Native::_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule("::_MODULE_NAME_::", jsInvoker) {
 ::_PROPERTIES_MAP_::
 }`.trim();
 
-const template = `
-/**
+const template = `/**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
