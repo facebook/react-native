@@ -20,12 +20,22 @@ Pod::Spec.new do |s|
   s.author                 = "Microsoft Corporation"
   s.platforms              = { :ios => "10.0", :tvos => "10.0", :osx => "10.13" }
   s.source                 = source
-  s.source_files           = "WinRTPort/*.{h,cpp,mm}"
-  s.library                = "stdc++"
-  s.pod_target_xcconfig    = { "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
-  s.header_dir             = "winrt"
 
-  s.dependency "React-callinvoker", version
-  s.dependency "React-TurboModuleCxx-WinRTShared", version
+  s.subspec 'Shared' do |ss|
+    ss.source_files        = "Shared/*.{h,cpp,mm}"
+    ss.library             = "stdc++"
+    ss.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
+                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
+  end
+
+  s.subspec 'WinRT' do |ss|
+    ss.source_files        = "WinRT/*.{h,cpp,mm}"
+    ss.library             = "stdc++"
+    ss.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
+                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
+    ss.header_dir          = "winrt"
+
+    ss.dependency "React-callinvoker", version
+    ss.dependency "React-TurboModuleCxx-WinRTPort/Shared", version
+  end
 end
