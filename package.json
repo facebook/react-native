@@ -84,6 +84,7 @@
     "react": "16.13.1"
   },
   "dependencies": {
+    "@jest/create-cache-key-function": "^26.5.0",
     "@react-native-community/cli": "^4.13.0",
     "@react-native-community/cli-platform-android": "^4.13.0",
     "@react-native-community/cli-platform-ios": "^4.13.0",
@@ -94,7 +95,6 @@
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
     "event-target-shim": "^5.0.1",
-    "fbjs-scripts": "^1.1.0",
     "hermes-engine": "~0.7.0",
     "invariant": "^2.2.4",
     "jsc-android": "^245459.0.0",
