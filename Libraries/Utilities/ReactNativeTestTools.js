@@ -57,13 +57,7 @@ function byClickable(): Predicate {
       // HACK: Find components that use `Pressability`.
       node.instance?.state?.pressability != null ||
       // TODO: Remove this after deleting `Touchable`.
-      /* $FlowFixMe(>=0.125.1 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.125.1 was deployed. To see the error, delete
-       * this comment and run Flow. */
       (node.instance &&
-        /* $FlowFixMe(>=0.125.1 site=react_native_fb) This comment suppresses
-         * an error found when Flow v0.125.1 was deployed. To see the error,
-         * delete this comment and run Flow. */
         typeof node.instance.touchableHandlePress === 'function'),
     'is clickable',
   );
@@ -78,9 +72,6 @@ function byTestID(testID: string): Predicate {
 
 function byTextMatching(regex: RegExp): Predicate {
   return withMessage(
-    /* $FlowFixMe(>=0.125.1 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.125.1 was deployed. To see the error, delete
-     * this comment and run Flow. */
     node => node.props && regex.exec(node.props.children),
     `text content matches ${regex.toString()}`,
   );
