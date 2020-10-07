@@ -161,6 +161,10 @@ RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
 RCT_EXTERN BOOL RCTTurboModuleSharedMutexInitEnabled(void);
 RCT_EXTERN void RCTEnableTurboModuleSharedMutexInit(BOOL enabled);
 
+// Turn on TurboModule block copy
+RCT_EXTERN BOOL RCTTurboModuleBlockCopyEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleBlockCopy(BOOL enabled);
+
 /**
  * Async batched bridge used to communicate with the JavaScript application.
  */
