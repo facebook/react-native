@@ -123,6 +123,5 @@ Pod::Spec.new do |spec|
                           #  'folly/experimental/{ReadMostlySharedPtr,TLRefCount}.h',
   end
 
-  # Pinning to the same version as React.podspec.
   spec.platforms = { :ios => "9.0", :tvos => "9.0" }
 end
