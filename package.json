@@ -103,7 +103,7 @@
     "metro-runtime": "0.63.0",
     "metro-source-map": "0.63.0",
     "nullthrows": "^1.1.1",
-    "pretty-format": "^26.4.2",
+    "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
     "prop-types": "^15.7.2",
     "qs": "^6.5.1",
