@@ -69,13 +69,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   if (![self ignoresTextAttributes]) { // TODO(OSS Candidate ISS#2710739)
     id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-
-    NSDictionary<NSAttributedStringKey,id> *textAttributes = [[_textAttributes effectiveTextAttributes] mutableCopy];
-    if ([textAttributes valueForKey:NSForegroundColorAttributeName] == nil) {
-        [textAttributes setValue:[RCTUIColor blackColor] forKey:NSForegroundColorAttributeName]; // TODO(macOS ISS#2323203)
-    }
-
-    backedTextInputView.defaultTextAttributes = textAttributes;
+    backedTextInputView.defaultTextAttributes = [_textAttributes effectiveTextAttributes];
   } // TODO(OSS Candidate ISS#2710739)
 }
 

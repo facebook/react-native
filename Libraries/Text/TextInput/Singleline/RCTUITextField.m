@@ -91,12 +91,6 @@
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 @dynamic delegate;
-
-static RCTUIColor *defaultPlaceholderTextColor()
-{
-  return [NSColor placeholderTextColor];
-}
-
 #endif // ]TODO(macOS ISS#2323203)
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -321,15 +315,8 @@ static RCTUIColor *defaultPlaceholderTextColor()
 {
   NSMutableDictionary<NSAttributedStringKey, id> *textAttributes = [_defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
 
-  if (self.placeholderColor) {
-    [textAttributes setValue:self.placeholderColor forKey:NSForegroundColorAttributeName];
-  } else {
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-    [textAttributes setValue:defaultPlaceholderTextColor() forKey:NSForegroundColorAttributeName];
-#else
-    [textAttributes removeObjectForKey:NSForegroundColorAttributeName];
-#endif // ]TODO(macOS ISS#2323203)
-  }
+  [textAttributes setValue:self.placeholderColor ?: [RCTUIColor placeholderTextColor]
+                    forKey:NSForegroundColorAttributeName]; // TODO(macOS ISS#2323203)
 
   return textAttributes;
 }

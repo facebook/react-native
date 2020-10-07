@@ -313,10 +313,8 @@ const styles = StyleSheet.create({
   labelCell: {
     flex: 1,
     alignItems: 'stretch',
-    ...Platform.select({
-      ios: {color: PlatformColor('labelColor')},
-      default: {color: 'black'},
-    }),
+    // TODO(macOS ISS#2323203)
+    // Remove need to specify label color
   },
   colorCell: {flex: 0.25, alignItems: 'stretch'},
 });
