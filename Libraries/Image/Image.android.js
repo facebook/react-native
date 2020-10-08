@@ -50,6 +50,8 @@ const ImageProps = {
     }),
     // Opaque type returned by require('./image.jpg')
     PropTypes.number,
+    // Multiple require('./image.jpg') statements
+    PropTypes.arrayOf(PropTypes.number),
     // Multiple sources
     PropTypes.arrayOf(
       PropTypes.shape({
@@ -59,8 +61,6 @@ const ImageProps = {
         headers: PropTypes.objectOf(PropTypes.string),
       }),
     ),
-    // Multiple require('./image.jpg') statements
-    PropTypes.arrayOf(PropTypes.number),
   ]): React$PropType$Primitive<
     | {
         headers?: {[string]: string, ...},
@@ -68,6 +68,7 @@ const ImageProps = {
         ...
       }
     | number
+    | Array<number>
     | Array<{
         headers?: {[string]: string, ...},
         height?: number,
