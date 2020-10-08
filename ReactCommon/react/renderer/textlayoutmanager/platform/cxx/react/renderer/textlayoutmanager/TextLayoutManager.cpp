@@ -23,5 +23,12 @@ TextMeasurement TextLayoutManager::measure(
   return TextMeasurement{{0, 0}, {}};
 }
 
+LinesMeasurements TextLayoutManager::measureLines(
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    Size size) const {
+  return LinesMeasurements{};
+}
+
 } // namespace react
 } // namespace facebook
