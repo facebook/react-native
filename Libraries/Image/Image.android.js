@@ -59,6 +59,8 @@ const ImageProps = {
         headers: PropTypes.objectOf(PropTypes.string),
       }),
     ),
+    // Multiple require('./image.jpg') statements
+    PropTypes.arrayOf(PropTypes.number),
   ]): React$PropType$Primitive<
     | {
         headers?: {[string]: string, ...},
