@@ -84,19 +84,16 @@ end
 post_install do |installer|
   flipper_post_install(installer)
   installer.pods_project.targets.each do |target|
-    puts target.name
     # [TODO(macOS ISS#2323203): the internal Microsoft build pipeline needs iOS arm64e slices
     if target.platform_name == :ios
       target.build_configurations.each do |config|
         (config.build_settings['ARCHS'] ||= ['$(ARCHS_STANDARD)']) << 'arm64e'
-        puts '  adding arm64e to ' + config.name
       end
     end
     # TODO(macOS ISS#2323203): the internal Microsoft build pipeline needs macOS arm64 slices
     if target.platform_name == :osx
       target.build_configurations.each do |config|
         (config.build_settings['ARCHS'] ||= ['$(ARCHS_STANDARD)']) << ' arm64'
-        puts '  adding arm64 to ' + config.name
       end
     end
     # ]TODO(macOS ISS#2323203)
