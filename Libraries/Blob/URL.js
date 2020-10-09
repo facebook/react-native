@@ -67,27 +67,27 @@ export class URLSearchParams {
   }
 
   delete(name) {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URLSearchParams.delete" is not implemented');
   }
 
   get(name) {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URLSearchParams.get" is not implemented');
   }
 
   getAll(name) {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URLSearchParams.getAll" is not implemented');
   }
 
   has(name) {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URLSearchParams.has" is not implemented');
   }
 
   set(name, value) {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URLSearchParams.set" is not implemented');
   }
 
   sort() {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URLSearchParams.sort" is not implemented');
   }
 
   [Symbol.iterator]() {
@@ -156,15 +156,15 @@ export class URL {
   }
 
   get hash() {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URL.hash" is not implemented');
   }
 
   get host() {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URL.host" is not implemented');
   }
 
   get hostname() {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URL.hostname" is not implemented');
   }
 
   get href(): string {
@@ -172,27 +172,27 @@ export class URL {
   }
 
   get origin() {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URL.origin" is not implemented');
   }
 
   get password() {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URL.password" is not implemented');
   }
 
   get pathname() {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URL.pathname" is not implemented');
   }
 
   get port() {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URL.port" is not implemented');
   }
 
   get protocol() {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URL.protocol" is not implemented');
   }
 
   get search() {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URL.search" is not implemented');
   }
 
   get searchParams(): URLSearchParams {
@@ -215,6 +215,6 @@ export class URL {
   }
 
   get username() {
-    throw new Error('not implemented');
+    throw new Error('react-native URL.js polyfill: "URL.username" is not implemented');
   }
 }
