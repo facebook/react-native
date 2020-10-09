@@ -154,7 +154,6 @@ export type Props<ItemT> = {
     },
   >,
   ...FlatListProps<ItemT>,
-  ...
 };
 
 const defaultProps = {
@@ -615,7 +614,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
     return (
       <VirtualizedList
-        // $FlowFixMe Props spread breaks props validation
         {...restProps}
         getItem={this._getItem}
         getItemCount={this._getItemCount}
