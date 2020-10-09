@@ -39,11 +39,8 @@ const TESTS = [
   require('./GlobalEvalWithSourceUrlTest'),
 ];
 
-TESTS.forEach(
-  /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
-   * suppresses an error found when Flow v0.54 was deployed. To see the error
-   * delete this comment and run Flow. */
-  test => AppRegistry.registerComponent(test.displayName, () => test),
+TESTS.forEach(test =>
+  AppRegistry.registerComponent(test.displayName || 'unknown', () => test),
 );
 
 // Modules required for integration tests
@@ -58,12 +55,10 @@ class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
 
   render() {
     if (this.state.test) {
+      const TestComponent = this.state.test;
       return (
         <ScrollView>
-          {/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-           * comment suppresses an error when upgrading Flow's support for
-           * React. To see the error delete this comment and run Flow. */}
-          <this.state.test />
+          <TestComponent />
         </ScrollView>
       );
     }
