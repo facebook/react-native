@@ -22,8 +22,7 @@ namespace facebook {
 namespace react {
 
 static ::hermes::vm::RuntimeConfig makeRuntimeConfig(
-    jlong heapSizeMB,
-    bool es6Proxy) {
+    jlong heapSizeMB) {
   namespace vm = ::hermes::vm;
   auto gcConfigBuilder =
       vm::GCConfig::Builder()
@@ -40,7 +39,6 @@ static ::hermes::vm::RuntimeConfig makeRuntimeConfig(
 
   return vm::RuntimeConfig::Builder()
       .withGCConfig(gcConfigBuilder.build())
-      .withES6Proxy(es6Proxy)
       .build();
 }
 
@@ -70,9 +68,9 @@ class HermesExecutorHolder
   }
 
   static jni::local_ref<jhybriddata>
-  initHybrid(jni::alias_ref<jclass>, jlong heapSizeMB, bool es6Proxy) {
+  initHybrid(jni::alias_ref<jclass>, jlong heapSizeMB) {
     JReactMarker::setLogPerfMarkerIfNeeded();
-    auto runtimeConfig = makeRuntimeConfig(heapSizeMB, es6Proxy);
+    auto runtimeConfig = makeRuntimeConfig(heapSizeMB);
     return makeCxxInstance(std::make_unique<HermesExecutorFactory>(
         installBindings, JSIExecutor::defaultTimeoutInvoker, runtimeConfig));
   }
