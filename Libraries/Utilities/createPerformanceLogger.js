@@ -16,7 +16,7 @@ const infoLog = require('./infoLog');
 const performanceNow: () => number =
   global.nativeQPLTimestamp ?? global.performance.now.bind(global.performance);
 
-type Timespan = {
+export type Timespan = {
   startTime: number,
   endTime?: number,
   totalTime?: number,
@@ -25,9 +25,9 @@ type Timespan = {
 };
 
 // Extra values should be serializable primitives
-type ExtraValue = number | string | boolean;
+export type ExtraValue = number | string | boolean;
 
-type Extras = {[key: string]: ExtraValue};
+export type Extras = {[key: string]: ExtraValue};
 
 export interface IPerformanceLogger {
   addTimespan(
