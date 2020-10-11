@@ -35,6 +35,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
@@ -490,7 +491,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
             UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
         if (uiManager != null) {
           FLog.e(TAG, "stopSurface for surfaceId: " + this.getId());
-          uiManager.stopSurface(this.getId());
+          if (getId() == NO_ID) {
+            ReactSoftException.logSoftException(
+                TAG,
+                new RuntimeException(
+                    "unmountReactApplication called on ReactRootView with invalid id"));
+          } else {
+            uiManager.stopSurface(this.getId());
+          }
         }
       }
     }
