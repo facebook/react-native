@@ -11,7 +11,6 @@
 'use strict';
 
 const View = require('../Components/View/View');
-const Platform = require('../Utilities/Platform');
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('react');
