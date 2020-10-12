@@ -722,6 +722,11 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
         // iOS 13.0
         RCTFallbackARGB : @(0xFFf2f2f7)
       },
+      // Transparent Color
+      @"clearColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0x00000000)
+      },
     } mutableCopy];
     // The color names are the Objective-C UIColor selector names,
     // but Swift selector names are valid as well, so make aliases.
