@@ -146,8 +146,7 @@ using namespace facebook::react;
                                                     }}];
   }
   label.font = _font;
-  // TODO (T75217510) - This should be something like RCTUIColorFromSharedColor(_items[row].textColor) ?: _textColor;
-  label.textColor = [UIColor blackColor];
+  label.textColor = RCTUIColorFromSharedColor(_items[row].textColor) ?: _textColor;
   label.textAlignment = _textAlignment;
   label.text = [self pickerView:pickerView titleForRow:row forComponent:component];
   return label;

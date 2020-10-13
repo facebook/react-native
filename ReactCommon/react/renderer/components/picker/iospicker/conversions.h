@@ -17,12 +17,28 @@ namespace react {
 inline void fromRawValue(
     const RawValue &value,
     std::vector<PickerItemsStruct> &items) {
-  auto array = (folly::dynamic)value;
-  for (auto itr = array.begin(); itr != array.end(); ++itr) {
-    // TODO (T75217510) - Use the itr to create the item instead of using these
-    // dummy values.
-    struct PickerItemsStruct item = {
-        .label = "LOL", .value = "LOL2", .textColor = 0};
+  assert(value.hasType<std::vector<RawValue>>());
+  auto array = (std::vector<RawValue>)value;
+  items.reserve(array.size());
+
+  for (auto const &val : array) {
+    bool check = val.hasType<better::map<std::string, RawValue>>();
+    assert(check);
+    auto map = (better::map<std::string, RawValue>)val;
+    PickerItemsStruct item;
+
+    if (map.find("label") != map.end()) {
+      assert(map.at("label").hasType<std::string>());
+      item.label = (std::string)map.at("label");
+    }
+    if (map.find("value") != map.end()) {
+      assert(map.at("value").hasType<std::string>());
+      item.value = (std::string)map.at("value");
+    }
+    if (map.find("textColor") != map.end()) {
+      assert(map.at("textColor").hasType<int>());
+      item.textColor = (int)map.at("textColor");
+    }
     items.push_back(item);
   }
 }
