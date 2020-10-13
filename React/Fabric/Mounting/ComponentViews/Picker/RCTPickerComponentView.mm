@@ -12,6 +12,7 @@
 #import <react/renderer/components/iospicker/PickerComponentDescriptor.h>
 #import <react/renderer/components/iospicker/PickerEventEmitter.h>
 #import <react/renderer/components/iospicker/PickerProps.h>
+#import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
 
 #import "FBRCTFabricComponentsPlugins.h"
 #import "RCTConversions.h"
@@ -24,12 +25,10 @@ using namespace facebook::react;
 
 @implementation RCTPickerComponentView {
   UIPickerView *_pickerView;
-  UIColor *_textColor;
-  UIFont *_font;
-  NSTextAlignment _textAlignment;
   std::vector<PickerItemsStruct> _items;
   NSInteger _selectedIndex;
   NSString *_accessibilityLabel;
+  NSDictionary<NSAttributedStringKey, id> *_textAttributes;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -47,13 +46,16 @@ using namespace facebook::react;
 {
   static const auto defaultProps = std::make_shared<const PickerProps>();
   _props = defaultProps;
-
   _pickerView.delegate = self;
   _pickerView.dataSource = self;
-  _textColor = [UIColor blackColor];
-  _font = [UIFont systemFontOfSize:21];
-  _textAlignment = NSTextAlignmentCenter;
   _selectedIndex = NSNotFound;
+  NSMutableParagraphStyle *const paragraphStyle = [NSMutableParagraphStyle new];
+  paragraphStyle.alignment = NSTextAlignmentCenter;
+  _textAttributes = @{
+    NSForegroundColorAttributeName : [UIColor blackColor],
+    NSFontAttributeName : [UIFont systemFontOfSize:21],
+    NSParagraphStyleAttributeName : paragraphStyle
+  };
 }
 
 - (void)prepareForRecycle
@@ -82,8 +84,8 @@ using namespace facebook::react;
     _selectedIndex = newPickerProps.selectedIndex;
   }
 
-  // TODO (T75217510) - Figure out how to forward styling.
-  if (oldPickerProps.style != newPickerProps.style) {
+  if (oldPickerProps.textAttributes != newPickerProps.textAttributes) {
+    _textAttributes = RCTNSTextAttributesFromTextAttributes(newPickerProps.getEffectiveTextAttributes());
   }
 
   // TODO (T75217510) - Figure out testID.
@@ -123,7 +125,7 @@ using namespace facebook::react;
 
 - (CGFloat)pickerView:(__unused UIPickerView *)pickerView rowHeightForComponent:(NSInteger)__unused component
 {
-  return _font.pointSize + 19;
+  return ((UIFont *)_textAttributes[NSFontAttributeName]).pointSize + 19;
 }
 
 - (UIView *)pickerView:(UIPickerView *)pickerView
@@ -138,10 +140,16 @@ using namespace facebook::react;
                                                         [pickerView rowSizeForComponent:component].height,
                                                     }}];
   }
-  label.font = _font;
-  label.textColor = RCTUIColorFromSharedColor(_items[row].textColor) ?: _textColor;
-  label.textAlignment = _textAlignment;
-  label.text = [self pickerView:pickerView titleForRow:row forComponent:component];
+  NSMutableDictionary<NSAttributedStringKey, id> *attributes = [_textAttributes mutableCopy];
+  // Color can be passed in from <Picker style={}/> or from <Picker.Item color={}/>
+  // If Picker.Item color is set, use that. Else fall back to Picker style (with black as default).
+  if (RCTUIColorFromSharedColor(_items[row].textColor)) {
+    attributes[NSForegroundColorAttributeName] = RCTUIColorFromSharedColor(_items[row].textColor);
+  }
+  label.attributedText = [[NSAttributedString alloc] initWithString:[self pickerView:pickerView
+                                                                         titleForRow:row
+                                                                        forComponent:component]
+                                                         attributes:attributes];
   return label;
 }
 

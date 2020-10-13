@@ -18,15 +18,13 @@ PickerProps::PickerProps(
     PickerProps const &sourceProps,
     RawProps const &rawProps)
     : ViewProps(sourceProps, rawProps),
+      BaseTextProps(sourceProps, rawProps),
       items(convertRawProp(rawProps, "items", sourceProps.items, {})),
       selectedIndex(convertRawProp(
           rawProps,
           "selectedIndex",
           sourceProps.selectedIndex,
           {0})),
-      // TODO (T75217510) - This doesn't build, need to inherit from
-      // BaseTextProps? style(convertRawProp(rawProps, "style",
-      // sourceProps.style, {})),
       testID(convertRawProp(rawProps, "testID", sourceProps.testID, {})),
       accessibilityLabel(convertRawProp(
           rawProps,
@@ -35,6 +33,14 @@ PickerProps::PickerProps(
           {})){
 
       };
+
+TextAttributes PickerProps::getEffectiveTextAttributes() const {
+  auto result = TextAttributes::defaultTextAttributes();
+  // Default is left aligned, but Picker wants default to be center aligned.
+  result.alignment = TextAlignment::Center;
+  result.apply(textAttributes);
+  return result;
+}
 
 } // namespace react
 } // namespace facebook

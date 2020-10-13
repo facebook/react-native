@@ -16,7 +16,7 @@
 namespace facebook {
 namespace react {
 
-class PickerProps final : public ViewProps {
+class PickerProps final : public ViewProps, public BaseTextProps {
  public:
   PickerProps() = default;
   PickerProps(PickerProps const &sourceProps, RawProps const &rawProps);
@@ -25,9 +25,11 @@ class PickerProps final : public ViewProps {
 
   std::vector<PickerItemsStruct> items{};
   int selectedIndex{0};
-  TextAttributes style{};
   std::string const testID{};
   std::string const accessibilityLabel{};
+
+#pragma mark - Accessors
+  TextAttributes getEffectiveTextAttributes() const;
 };
 
 } // namespace react
