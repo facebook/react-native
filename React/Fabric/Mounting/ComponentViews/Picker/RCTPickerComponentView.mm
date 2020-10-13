@@ -10,6 +10,7 @@
 #import <React/RCTConvert.h>
 #import <UIKit/UIKit.h>
 #import <react/renderer/components/iospicker/PickerComponentDescriptor.h>
+#import <react/renderer/components/iospicker/PickerEventEmitter.h>
 #import <react/renderer/components/iospicker/PickerProps.h>
 
 #import "FBRCTFabricComponentsPlugins.h"
@@ -35,8 +36,6 @@ using namespace facebook::react;
 {
   if (self = [super initWithFrame:frame]) {
     _pickerView = [[UIPickerView alloc] initWithFrame:self.bounds];
-    // TODO (T75217510) - Handle and test onChange, something like:
-    // [_pickerView addTarget:self action:@selector(onChange:) forControlEvents:UIControlEventValueChanged];
     self.contentView = _pickerView;
     [self setPropsToDefault];
   }
@@ -98,11 +97,6 @@ using namespace facebook::react;
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)onChange:(UISwitch *)sender
-{
-  // TODO (T75217510) - Handle and test onChange
-}
-
 // TODO (T75217510) - Handle Native Commands
 #pragma mark - Native Commands
 
@@ -125,7 +119,6 @@ using namespace facebook::react;
             forComponent:(__unused NSInteger)component
 {
   return [NSString stringWithUTF8String:_items[row].label.c_str()];
-  ;
 }
 
 - (CGFloat)pickerView:(__unused UIPickerView *)pickerView rowHeightForComponent:(NSInteger)__unused component
@@ -157,7 +150,10 @@ using namespace facebook::react;
        inComponent:(__unused NSInteger)component
 {
   _selectedIndex = row;
-  // TODO (T75217510) - Handle and test onChange
+  PickerEventEmitter::PickerIOSChangeEvent event = {.newValue = _items[row].value, .newIndex = (int)row};
+  if (_eventEmitter) {
+    std::static_pointer_cast<PickerEventEmitter const>(_eventEmitter)->onChange(event);
+  }
 }
 
 #pragma mark - UIPickerViewAccessibilityDelegate protocol

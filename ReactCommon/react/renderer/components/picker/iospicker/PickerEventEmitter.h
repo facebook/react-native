@@ -15,6 +15,13 @@ namespace react {
 class PickerEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
+
+  struct PickerIOSChangeEvent {
+    std::string newValue;
+    int newIndex;
+  };
+
+  void onChange(PickerIOSChangeEvent event) const;
 };
 
 } // namespace react
