@@ -13,7 +13,7 @@ def pods()
 
   # Enable TurboModule
   prefix_path = "../.."
-  use_react_native!(path: prefix_path, hermes_enabled: true, hermes_path: "#{prefix_path}/../hermes")
+  use_react_native!(path: prefix_path, hermes_enabled: true)
   pod 'ReactCommon/turbomodule/samples', :path => "#{prefix_path}/ReactCommon"
 
   # Additional Pods which aren't included in the default Podfile

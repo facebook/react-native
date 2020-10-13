@@ -77,7 +77,7 @@ Pod::Spec.new do |s|
                       "ReactCommon/hermes/inspector/detail/*.{cpp,h}"
     ss.pod_target_xcconfig = { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" }
     ss.dependency "RCT-Folly/Futures"
-    ss.dependency "hermes"
+    ss.dependency "hermes-engine"
   end
 
   s.subspec "DevSupport" do |ss|
