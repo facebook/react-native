@@ -8,6 +8,7 @@
 #import "RCTPickerComponentView.h"
 
 #import <React/RCTConvert.h>
+#import <React/RCTLog.h>
 #import <UIKit/UIKit.h>
 #import <react/renderer/components/iospicker/PickerComponentDescriptor.h>
 #import <react/renderer/components/iospicker/PickerEventEmitter.h>
@@ -75,17 +76,21 @@ using namespace facebook::react;
 {
   const auto &oldPickerProps = *std::static_pointer_cast<const PickerProps>(_props);
   const auto &newPickerProps = *std::static_pointer_cast<const PickerProps>(props);
+  bool needsToReload = false;
 
   if (oldPickerProps.items != newPickerProps.items) {
     _items = newPickerProps.items;
+    needsToReload = true;
   }
 
   if (oldPickerProps.selectedIndex != newPickerProps.selectedIndex) {
     _selectedIndex = newPickerProps.selectedIndex;
+    [self setSelectedIndex];
   }
 
   if (oldPickerProps.textAttributes != newPickerProps.textAttributes) {
     _textAttributes = RCTNSTextAttributesFromTextAttributes(newPickerProps.getEffectiveTextAttributes());
+    needsToReload = true;
   }
 
   // TODO (T75217510) - Figure out testID.
@@ -96,11 +101,32 @@ using namespace facebook::react;
     _accessibilityLabel = [NSString stringWithUTF8String:newPickerProps.accessibilityLabel.c_str()];
   }
 
+  if (needsToReload) {
+    [_pickerView reloadAllComponents];
+  }
+
   [super updateProps:props oldProps:oldProps];
 }
 
-// TODO (T75217510) - Handle Native Commands
 #pragma mark - Native Commands
+
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+  if ([commandName isEqualToString:@"setNativeSelectedIndex"] && [args objectAtIndex:0]) {
+    NSNumber *selectedIndex = [args objectAtIndex:0];
+    if (_selectedIndex != selectedIndex.integerValue) {
+      [self setSelectedIndex];
+    }
+  } else {
+    RCTLogWarn(@"Attempting to send unknown command to Picker component: %@", commandName);
+  }
+}
+
+- (void)setSelectedIndex
+{
+  BOOL animated = _selectedIndex != NSNotFound; // Don't animate the initial value.
+  [_pickerView selectRow:_selectedIndex inComponent:0 animated:animated];
+}
 
 #pragma mark - UIPickerViewDataSource protocol
 
