@@ -102,17 +102,20 @@ static void UpdateActiveTouchWithUITouch(
 
 static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView, CGPoint rootViewOriginOffset)
 {
-  UIView *componentView = uiTouch.view;
-
   ActiveTouch activeTouch = {};
 
-  if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
-    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView
-        touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
-    activeTouch.touch.target = (Tag)componentView.tag;
+  // Find closest Fabric-managed touchable view
+  UIView *componentView = uiTouch.view;
+  while (componentView) {
+    if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+      activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView
+          touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
+      activeTouch.touch.target = (Tag)componentView.tag;
+      activeTouch.componentView = componentView;
+      break;
+    }
+    componentView = componentView.superview;
   }
-
-  activeTouch.componentView = componentView;
 
   UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView, rootViewOriginOffset);
   return activeTouch;

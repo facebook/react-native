@@ -110,12 +110,6 @@ struct AnimationKeyFrame {
   bool invalidated{false};
 };
 
-struct ConsecutiveAdjustmentMetadata {
-  Tag lastAdjustedParent{-1};
-  int lastAdjustedDelta{0};
-  int lastIndexOriginal{0};
-};
-
 class LayoutAnimationCallbackWrapper {
  public:
   LayoutAnimationCallbackWrapper(jsi::Function &&callback)
@@ -218,7 +212,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   void adjustImmediateMutationIndicesForDelayedMutations(
       SurfaceId surfaceId,
       ShadowViewMutation &mutation,
-      ConsecutiveAdjustmentMetadata &consecutiveAdjustmentMetadata,
       bool skipLastAnimation = false,
       bool lastAnimationOnly = false) const;
 

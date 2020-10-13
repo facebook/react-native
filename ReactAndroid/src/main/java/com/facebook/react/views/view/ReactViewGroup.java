@@ -23,6 +23,7 @@ import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewStructure;
 import android.view.animation.Animation;
 import androidx.annotation.Nullable;
@@ -674,9 +675,40 @@ public class ReactViewGroup extends ViewGroup
     try {
       dispatchOverflowDraw(canvas);
       super.dispatchDraw(canvas);
-    } catch (NullPointerException e) {
-      FLog.e(TAG, "NullPointerException when executing ViewGroup.dispatchDraw method", e);
-    } catch (StackOverflowError e) {
+    } catch (NullPointerException | StackOverflowError e) {
+      // Catch errors and log additional diagnostics to logcat for debugging
+      FLog.e(
+          TAG,
+          "Exception thrown when executing ReactViewGroup.dispatchDraw method on ReactViewGroup["
+              + getId()
+              + "]",
+          e);
+
+      // Log all children of view, if any
+      FLog.e(TAG, "Child List:");
+      for (int i = 0; i < getChildCount(); i++) {
+        View child = getChildAt(i);
+        FLog.e(
+            TAG,
+            "Child #"
+                + i
+                + ": "
+                + (child != null ? child.getId() : -1337)
+                + " - "
+                + (child != null ? child.toString() : "<null>"));
+      }
+
+      // Log all ancestors of view
+      ViewParent viewParent = getParent();
+      FLog.e(TAG, "Ancestor List:");
+      while (viewParent != null) {
+        ViewGroup parentViewGroup =
+            (viewParent instanceof ViewGroup ? (ViewGroup) viewParent : null);
+        int parentViewGroupId = (parentViewGroup != null ? parentViewGroup.getId() : -1337);
+        FLog.e(TAG, "Ancestor[" + parentViewGroupId + "]: " + viewParent.toString());
+        viewParent = viewParent.getParent();
+      }
+
       // Adding special exception management for StackOverflowError for logging purposes.
       // This will be removed in the future.
       RootView rootView = RootViewUtil.getRootView(ReactViewGroup.this);
