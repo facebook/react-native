@@ -28,7 +28,7 @@ type PickerIOSChangeEvent = SyntheticEvent<
 
 type RCTPickerIOSItemType = $ReadOnly<{|
   label: ?Label,
-  value: ?(number | string),
+  value: ?string,
   textColor: ?ProcessedColorValue,
 |}>;
 
