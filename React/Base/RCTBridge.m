@@ -11,7 +11,6 @@
 #import <objc/runtime.h>
 
 #import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif

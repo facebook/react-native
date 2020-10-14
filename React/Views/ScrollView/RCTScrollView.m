@@ -261,7 +261,7 @@
 @end
 
 @implementation RCTScrollView {
-  RCTEventDispatcher *_eventDispatcher;
+  id<RCTEventDispatcherProtocol> _eventDispatcher;
   CGRect _prevFirstVisibleFrame;
   __weak UIView *_firstVisibleView;
   RCTCustomScrollView *_scrollView;
@@ -275,7 +275,7 @@
   NSHashTable *_scrollListeners;
 }
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
 {
   RCTAssertParam(eventDispatcher);
 
@@ -1022,9 +1022,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
 
 @end
 
-@implementation RCTEventDispatcher (RCTScrollView)
-
-- (void)sendFakeScrollEvent:(NSNumber *)reactTag
+void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNumber *reactTag)
 {
   // Use the selector here in case the onScroll block property is ever renamed
   NSString *eventName = NSStringFromSelector(@selector(onScroll));
@@ -1037,7 +1035,5 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
                                                           scrollViewZoomScale:0
                                                                      userData:nil
                                                                 coalescingKey:0];
-  [self sendEvent:fakeScrollEvent];
+  [eventDispatcher sendEvent:fakeScrollEvent];
 }
-
-@end

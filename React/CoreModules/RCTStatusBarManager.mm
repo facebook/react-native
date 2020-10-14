@@ -8,7 +8,7 @@
 #import "RCTStatusBarManager.h"
 #import "CoreModulesPlugins.h"
 
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 

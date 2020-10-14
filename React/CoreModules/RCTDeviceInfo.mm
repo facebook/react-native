@@ -11,7 +11,7 @@
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTAssert.h>
 #import <React/RCTConstants.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
 
