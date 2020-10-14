@@ -18,7 +18,7 @@
     "clang-format": "^1.2.4",
     "connect": "^3.6.5",
     "coveralls": "^3.0.2",
-    "detox": "15.4.4",
+    "detox": "16.7.2",
     "eslint": "6.8.0",
     "eslint-config-fb-strict": "^24.9.0",
     "eslint-config-fbjs": "2.1.0",
