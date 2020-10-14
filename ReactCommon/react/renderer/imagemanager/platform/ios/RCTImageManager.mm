@@ -49,6 +49,13 @@ using namespace facebook::react;
   auto sharedCancelationFunction = SharedFunction<>();
   imageRequest.setCancelationFunction(sharedCancelationFunction);
 
+  NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
+  BOOL hasModuleName = [self->_imageLoader respondsToSelector:@selector(loaderModuleNameForRequestUrl:)];
+  NSString *moduleName = hasModuleName ? [self->_imageLoader loaderModuleNameForRequestUrl:request.URL] : nil;
+  std::string moduleCString =
+      std::string([moduleName UTF8String], [moduleName lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+  telemetry->setLoaderModuleName(moduleCString);
+
   /*
    * Even if an image is being loaded asynchronously on some other background thread, some other preparation
    * work (such as creating an `NSURLRequest` object and some obscure logic inside `RCTImageLoader`) can take a couple
@@ -60,14 +67,6 @@ using namespace facebook::react;
    * T46024425 for more details.
    */
   dispatch_async(_backgroundSerialQueue, ^{
-    NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
-
-    BOOL hasModuleName = [self->_imageLoader respondsToSelector:@selector(loaderModuleNameForRequestUrl:)];
-    NSString *moduleName = hasModuleName ? [self->_imageLoader loaderModuleNameForRequestUrl:request.URL] : nil;
-    std::string moduleCString =
-        std::string([moduleName UTF8String], [moduleName lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
-    telemetry->setLoaderModuleName(moduleCString);
-
     auto completionBlock = ^(NSError *error, UIImage *image, id metadata) {
       auto observerCoordinator = weakObserverCoordinator.lock();
       if (!observerCoordinator) {
