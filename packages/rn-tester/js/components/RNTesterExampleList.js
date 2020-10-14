@@ -152,6 +152,7 @@ const RNTesterExampleList: React$AbstractComponent<any, void> = React.memo(
           page="components_page"
           sections={sections}
           filter={filter}
+          hideFilterPills={true}
           render={({filteredSections}) => (
             <SectionList
               sections={filteredSections}
