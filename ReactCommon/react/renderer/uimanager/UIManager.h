@@ -102,9 +102,6 @@ class UIManager final : public ShadowTreeDelegate {
       SurfaceId surfaceId,
       const SharedShadowNodeUnsharedList &rootChildren) const;
 
-  void setNativeProps(ShadowNode const &shadowNode, RawProps const &rawProps)
-      const;
-
   void setJSResponder(
       const ShadowNode::Shared &shadowNode,
       const bool blockNativeResponder) const;
