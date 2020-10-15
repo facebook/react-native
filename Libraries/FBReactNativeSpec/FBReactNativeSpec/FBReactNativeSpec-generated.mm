@@ -612,49 +612,100 @@ namespace facebook {
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_multiGet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_multiGet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "multiGet", @selector(multiGet:callback:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_multiSet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_multiSet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "multiSet", @selector(multiSet:callback:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_multiMerge(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_multiMerge(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "multiMerge", @selector(multiMerge:callback:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_multiRemove(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_multiRemove(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "multiRemove", @selector(multiRemove:callback:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_clear(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_clear(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "clear", @selector(clear:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_getAllKeys(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_getAllKeys(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getAllKeys", @selector(getAllKeys:), args, count);
     }
 
-    NativeAsyncStorageSpecJSI::NativeAsyncStorageSpecJSI(const ObjCTurboModule::InitParams &params)
+    NativeAsyncLocalStorageSpecJSI::NativeAsyncLocalStorageSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_["multiGet"] = MethodMetadata {2, __hostFunction_NativeAsyncStorageSpecJSI_multiGet};
+        methodMap_["multiGet"] = MethodMetadata {2, __hostFunction_NativeAsyncLocalStorageSpecJSI_multiGet};
         
         
-        methodMap_["multiSet"] = MethodMetadata {2, __hostFunction_NativeAsyncStorageSpecJSI_multiSet};
+        methodMap_["multiSet"] = MethodMetadata {2, __hostFunction_NativeAsyncLocalStorageSpecJSI_multiSet};
         
         
-        methodMap_["multiMerge"] = MethodMetadata {2, __hostFunction_NativeAsyncStorageSpecJSI_multiMerge};
+        methodMap_["multiMerge"] = MethodMetadata {2, __hostFunction_NativeAsyncLocalStorageSpecJSI_multiMerge};
         
         
-        methodMap_["multiRemove"] = MethodMetadata {2, __hostFunction_NativeAsyncStorageSpecJSI_multiRemove};
+        methodMap_["multiRemove"] = MethodMetadata {2, __hostFunction_NativeAsyncLocalStorageSpecJSI_multiRemove};
         
         
-        methodMap_["clear"] = MethodMetadata {1, __hostFunction_NativeAsyncStorageSpecJSI_clear};
+        methodMap_["clear"] = MethodMetadata {1, __hostFunction_NativeAsyncLocalStorageSpecJSI_clear};
         
         
-        methodMap_["getAllKeys"] = MethodMetadata {1, __hostFunction_NativeAsyncStorageSpecJSI_getAllKeys};
+        methodMap_["getAllKeys"] = MethodMetadata {1, __hostFunction_NativeAsyncLocalStorageSpecJSI_getAllKeys};
+        
+    }
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    
+    static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiGet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "multiGet", @selector(multiGet:callback:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiSet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "multiSet", @selector(multiSet:callback:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiMerge(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "multiMerge", @selector(multiMerge:callback:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiRemove(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "multiRemove", @selector(multiRemove:callback:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_clear(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "clear", @selector(clear:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_getAllKeys(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getAllKeys", @selector(getAllKeys:), args, count);
+    }
+
+    NativeAsyncSQLiteDBStorageSpecJSI::NativeAsyncSQLiteDBStorageSpecJSI(const ObjCTurboModule::InitParams &params)
+      : ObjCTurboModule(params) {
+        
+        methodMap_["multiGet"] = MethodMetadata {2, __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiGet};
+        
+        
+        methodMap_["multiSet"] = MethodMetadata {2, __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiSet};
+        
+        
+        methodMap_["multiMerge"] = MethodMetadata {2, __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiMerge};
+        
+        
+        methodMap_["multiRemove"] = MethodMetadata {2, __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiRemove};
+        
+        
+        methodMap_["clear"] = MethodMetadata {1, __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_clear};
+        
+        
+        methodMap_["getAllKeys"] = MethodMetadata {1, __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_getAllKeys};
         
     }
   } // namespace react

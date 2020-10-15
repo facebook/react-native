@@ -146,12 +146,26 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * C++ class for module 'AsyncStorage'
+     * C++ class for module 'AsyncLocalStorage'
      */
 
-    class JSI_EXPORT NativeAsyncStorageSpecJSI : public JavaTurboModule {
+    class JSI_EXPORT NativeAsyncLocalStorageSpecJSI : public JavaTurboModule {
     public:
-      NativeAsyncStorageSpecJSI(const JavaTurboModule::InitParams &params);
+      NativeAsyncLocalStorageSpecJSI(const JavaTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    /**
+     * C++ class for module 'AsyncSQLiteDBStorage'
+     */
+
+    class JSI_EXPORT NativeAsyncSQLiteDBStorageSpecJSI : public JavaTurboModule {
+    public:
+      NativeAsyncSQLiteDBStorageSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react

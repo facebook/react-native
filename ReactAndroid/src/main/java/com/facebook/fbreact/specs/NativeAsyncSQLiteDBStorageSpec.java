@@ -20,8 +20,8 @@ import com.facebook.react.bridge.ReactModuleWithSpec;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 
-public abstract class NativeAsyncStorageSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
-  public NativeAsyncStorageSpec(ReactApplicationContext reactContext) {
+public abstract class NativeAsyncSQLiteDBStorageSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public NativeAsyncSQLiteDBStorageSpec(ReactApplicationContext reactContext) {
     super(reactContext);
   }
 

@@ -425,7 +425,7 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 
-@protocol NativeAsyncStorageSpec <RCTBridgeModule, RCTTurboModule>
+@protocol NativeAsyncLocalStorageSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)multiGet:(NSArray *)keys
         callback:(RCTResponseSenderBlock)callback;
@@ -442,11 +442,37 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'AsyncStorage'
+     * ObjC++ class for module 'AsyncLocalStorage'
      */
-    class JSI_EXPORT NativeAsyncStorageSpecJSI : public ObjCTurboModule {
+    class JSI_EXPORT NativeAsyncLocalStorageSpecJSI : public ObjCTurboModule {
     public:
-      NativeAsyncStorageSpecJSI(const ObjCTurboModule::InitParams &params);
+      NativeAsyncLocalStorageSpecJSI(const ObjCTurboModule::InitParams &params);
+    };
+  } // namespace react
+} // namespace facebook
+
+@protocol NativeAsyncSQLiteDBStorageSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)multiGet:(NSArray *)keys
+        callback:(RCTResponseSenderBlock)callback;
+- (void)multiSet:(NSArray *)kvPairs
+        callback:(RCTResponseSenderBlock)callback;
+- (void)multiMerge:(NSArray *)kvPairs
+          callback:(RCTResponseSenderBlock)callback;
+- (void)multiRemove:(NSArray *)keys
+           callback:(RCTResponseSenderBlock)callback;
+- (void)clear:(RCTResponseSenderBlock)callback;
+- (void)getAllKeys:(RCTResponseSenderBlock)callback;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'AsyncSQLiteDBStorage'
+     */
+    class JSI_EXPORT NativeAsyncSQLiteDBStorageSpecJSI : public ObjCTurboModule {
+    public:
+      NativeAsyncSQLiteDBStorageSpecJSI(const ObjCTurboModule::InitParams &params);
     };
   } // namespace react
 } // namespace facebook
@@ -2486,6 +2512,7 @@ inline JS::NativeAppState::Constants::Builder::Builder(const Input i) : _factory
 inline JS::NativeAppState::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+
 
 
 inline JS::NativeBlobModule::Constants::Builder::Builder(const Input i) : _factory(^{
