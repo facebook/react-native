@@ -13,7 +13,8 @@
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import InteractionManager from '../Interaction/InteractionManager';
 import Platform from '../Utilities/Platform';
-import NativeLinking from './NativeLinking';
+import NativeLinkingManager from './NativeLinkingManager';
+import NativeIntentAndroid from './NativeIntentAndroid';
 import invariant from 'invariant';
 
 /**
@@ -24,7 +25,7 @@ import invariant from 'invariant';
  */
 class Linking extends NativeEventEmitter {
   constructor() {
-    super(NativeLinking);
+    super(Platform.OS === 'ios' ? NativeLinkingManager : undefined);
   }
 
   /**
@@ -53,7 +54,11 @@ class Linking extends NativeEventEmitter {
    */
   openURL(url: string): Promise<void> {
     this._validateURL(url);
-    return NativeLinking.openURL(url);
+    if (Platform.OS === 'android') {
+      return NativeIntentAndroid.openURL(url);
+    } else {
+      return NativeLinkingManager.openURL(url);
+    }
   }
 
   /**
@@ -63,7 +68,11 @@ class Linking extends NativeEventEmitter {
    */
   canOpenURL(url: string): Promise<boolean> {
     this._validateURL(url);
-    return NativeLinking.canOpenURL(url);
+    if (Platform.OS === 'android') {
+      return NativeIntentAndroid.canOpenURL(url);
+    } else {
+      return NativeLinkingManager.canOpenURL(url);
+    }
   }
 
   /**
@@ -72,7 +81,11 @@ class Linking extends NativeEventEmitter {
    * See https://reactnative.dev/docs/linking.html#opensettings
    */
   openSettings(): Promise<void> {
-    return NativeLinking.openSettings();
+    if (Platform.OS === 'android') {
+      return NativeIntentAndroid.openSettings();
+    } else {
+      return NativeLinkingManager.openSettings();
+    }
   }
 
   /**
@@ -84,9 +97,9 @@ class Linking extends NativeEventEmitter {
   getInitialURL(): Promise<?string> {
     return Platform.OS === 'android'
       ? InteractionManager.runAfterInteractions().then(() =>
-          NativeLinking.getInitialURL(),
+          NativeIntentAndroid.getInitialURL(),
         )
-      : NativeLinking.getInitialURL();
+      : NativeLinkingManager.getInitialURL();
   }
 
   /*
@@ -105,7 +118,7 @@ class Linking extends NativeEventEmitter {
     }>,
   ): Promise<void> {
     if (Platform.OS === 'android') {
-      return NativeLinking.sendIntent(action, extras);
+      return NativeIntentAndroid.sendIntent(action, extras);
     } else {
       return new Promise((resolve, reject) => reject(new Error('Unsupported')));
     }

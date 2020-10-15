@@ -1477,6 +1477,54 @@ namespace facebook {
   namespace react {
 
     
+    static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_getInitialURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "getInitialURL", "(Lcom/facebook/react/bridge/Promise;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_canOpenURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "canOpenURL", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_openURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "openURL", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_openSettings(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "openSettings", "(Lcom/facebook/react/bridge/Promise;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_sendIntent(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "sendIntent", "(Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Promise;)V", args, count);
+    }
+
+
+    NativeIntentAndroidSpecJSI::NativeIntentAndroidSpecJSI(const JavaTurboModule::InitParams &params)
+      : JavaTurboModule(params) {
+        
+        methodMap_["getInitialURL"] = MethodMetadata {0, __hostFunction_NativeIntentAndroidSpecJSI_getInitialURL};
+        
+        
+        methodMap_["canOpenURL"] = MethodMetadata {1, __hostFunction_NativeIntentAndroidSpecJSI_canOpenURL};
+        
+        
+        methodMap_["openURL"] = MethodMetadata {1, __hostFunction_NativeIntentAndroidSpecJSI_openURL};
+        
+        
+        methodMap_["openSettings"] = MethodMetadata {0, __hostFunction_NativeIntentAndroidSpecJSI_openSettings};
+        
+        
+        methodMap_["sendIntent"] = MethodMetadata {2, __hostFunction_NativeIntentAndroidSpecJSI_sendIntent};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
     static facebook::jsi::Value __hostFunction_NativeJSCHeapCaptureSpecJSI_captureComplete(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "captureComplete", "(Ljava/lang/String;Ljava/lang/String;)V", args, count);
     }
@@ -1578,57 +1626,50 @@ namespace facebook {
   namespace react {
 
     
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_getInitialURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_getInitialURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "getInitialURL", "(Lcom/facebook/react/bridge/Promise;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_canOpenURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_canOpenURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "canOpenURL", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_openURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_openURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "openURL", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_openSettings(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_openSettings(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "openSettings", "(Lcom/facebook/react/bridge/Promise;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_sendIntent(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "sendIntent", "(Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Promise;)V", args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "addListener", "(Ljava/lang/String;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_removeListeners(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_removeListeners(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "removeListeners", "(D)V", args, count);
     }
 
 
-    NativeLinkingSpecJSI::NativeLinkingSpecJSI(const JavaTurboModule::InitParams &params)
+    NativeLinkingManagerSpecJSI::NativeLinkingManagerSpecJSI(const JavaTurboModule::InitParams &params)
       : JavaTurboModule(params) {
         
-        methodMap_["getInitialURL"] = MethodMetadata {0, __hostFunction_NativeLinkingSpecJSI_getInitialURL};
+        methodMap_["getInitialURL"] = MethodMetadata {0, __hostFunction_NativeLinkingManagerSpecJSI_getInitialURL};
         
         
-        methodMap_["canOpenURL"] = MethodMetadata {1, __hostFunction_NativeLinkingSpecJSI_canOpenURL};
+        methodMap_["canOpenURL"] = MethodMetadata {1, __hostFunction_NativeLinkingManagerSpecJSI_canOpenURL};
         
         
-        methodMap_["openURL"] = MethodMetadata {1, __hostFunction_NativeLinkingSpecJSI_openURL};
+        methodMap_["openURL"] = MethodMetadata {1, __hostFunction_NativeLinkingManagerSpecJSI_openURL};
         
         
-        methodMap_["openSettings"] = MethodMetadata {0, __hostFunction_NativeLinkingSpecJSI_openSettings};
+        methodMap_["openSettings"] = MethodMetadata {0, __hostFunction_NativeLinkingManagerSpecJSI_openSettings};
         
         
-        methodMap_["sendIntent"] = MethodMetadata {2, __hostFunction_NativeLinkingSpecJSI_sendIntent};
+        methodMap_["addListener"] = MethodMetadata {1, __hostFunction_NativeLinkingManagerSpecJSI_addListener};
         
         
-        methodMap_["addListener"] = MethodMetadata {1, __hostFunction_NativeLinkingSpecJSI_addListener};
-        
-        
-        methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeLinkingSpecJSI_removeListeners};
+        methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeLinkingManagerSpecJSI_removeListeners};
         
         
 

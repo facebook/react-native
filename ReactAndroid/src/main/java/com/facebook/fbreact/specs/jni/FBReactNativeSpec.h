@@ -468,6 +468,20 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
+     * C++ class for module 'IntentAndroid'
+     */
+
+    class JSI_EXPORT NativeIntentAndroidSpecJSI : public JavaTurboModule {
+    public:
+      NativeIntentAndroidSpecJSI(const JavaTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    /**
      * C++ class for module 'JSCHeapCapture'
      */
 
@@ -524,12 +538,12 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * C++ class for module 'Linking'
+     * C++ class for module 'LinkingManager'
      */
 
-    class JSI_EXPORT NativeLinkingSpecJSI : public JavaTurboModule {
+    class JSI_EXPORT NativeLinkingManagerSpecJSI : public JavaTurboModule {
     public:
-      NativeLinkingSpecJSI(const JavaTurboModule::InitParams &params);
+      NativeLinkingManagerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react

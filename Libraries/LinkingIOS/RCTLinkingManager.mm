@@ -24,7 +24,7 @@ static void postNotificationWithURL(NSURL *URL, id sender)
                                                     userInfo:payload];
 }
 
-@interface RCTLinkingManager() <NativeLinkingSpec>
+@interface RCTLinkingManager() <NativeLinkingManagerSpec>
 @end
 
 @implementation RCTLinkingManager
@@ -187,7 +187,7 @@ RCT_EXPORT_METHOD(sendIntent:(NSString *)action
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeLinkingSpecJSI>(params);
+  return std::make_shared<facebook::react::NativeLinkingManagerSpecJSI>(params);
 }
 
 @end

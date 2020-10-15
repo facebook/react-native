@@ -1314,6 +1314,36 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 
+@protocol NativeIntentAndroidSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)getInitialURL:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject;
+- (void)canOpenURL:(NSString *)url
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
+- (void)openURL:(NSString *)url
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject;
+- (void)openSettings:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject;
+- (void)sendIntent:(NSString *)action
+            extras:(NSArray * _Nullable)extras
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'IntentAndroid'
+     */
+    class JSI_EXPORT NativeIntentAndroidSpecJSI : public ObjCTurboModule {
+    public:
+      NativeIntentAndroidSpecJSI(const ObjCTurboModule::InitParams &params);
+    };
+  } // namespace react
+} // namespace facebook
+
 @protocol NativeJSCHeapCaptureSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)captureComplete:(NSString *)path
@@ -1417,7 +1447,7 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 
-@protocol NativeLinkingSpec <RCTBridgeModule, RCTTurboModule>
+@protocol NativeLinkingManagerSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getInitialURL:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject;
@@ -1429,10 +1459,6 @@ namespace facebook {
          reject:(RCTPromiseRejectBlock)reject;
 - (void)openSettings:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject;
-- (void)sendIntent:(NSString *)action
-            extras:(NSArray * _Nullable)extras
-           resolve:(RCTPromiseResolveBlock)resolve
-            reject:(RCTPromiseRejectBlock)reject;
 - (void)addListener:(NSString *)eventName;
 - (void)removeListeners:(double)count;
 
@@ -1440,11 +1466,11 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'Linking'
+     * ObjC++ class for module 'LinkingManager'
      */
-    class JSI_EXPORT NativeLinkingSpecJSI : public ObjCTurboModule {
+    class JSI_EXPORT NativeLinkingManagerSpecJSI : public ObjCTurboModule {
     public:
-      NativeLinkingSpecJSI(const ObjCTurboModule::InitParams &params);
+      NativeLinkingManagerSpecJSI(const ObjCTurboModule::InitParams &params);
     };
   } // namespace react
 } // namespace facebook
@@ -2756,6 +2782,7 @@ inline bool JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig::showVideos() c
   id const p = _v[@"showVideos"];
   return RCTBridgingToBool(p);
 }
+
 
 
 
