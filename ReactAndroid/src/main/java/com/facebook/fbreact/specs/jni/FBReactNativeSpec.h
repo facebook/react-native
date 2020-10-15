@@ -146,12 +146,26 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * C++ class for module 'AsyncStorage'
+     * C++ class for module 'AsyncLocalStorage'
      */
 
-    class JSI_EXPORT NativeAsyncStorageSpecJSI : public JavaTurboModule {
+    class JSI_EXPORT NativeAsyncLocalStorageSpecJSI : public JavaTurboModule {
     public:
-      NativeAsyncStorageSpecJSI(const JavaTurboModule::InitParams &params);
+      NativeAsyncLocalStorageSpecJSI(const JavaTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    /**
+     * C++ class for module 'AsyncSQLiteDBStorage'
+     */
+
+    class JSI_EXPORT NativeAsyncSQLiteDBStorageSpecJSI : public JavaTurboModule {
+    public:
+      NativeAsyncSQLiteDBStorageSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -468,6 +482,20 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
+     * C++ class for module 'IntentAndroid'
+     */
+
+    class JSI_EXPORT NativeIntentAndroidSpecJSI : public JavaTurboModule {
+    public:
+      NativeIntentAndroidSpecJSI(const JavaTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    /**
      * C++ class for module 'JSCHeapCapture'
      */
 
@@ -524,12 +552,12 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * C++ class for module 'Linking'
+     * C++ class for module 'LinkingManager'
      */
 
-    class JSI_EXPORT NativeLinkingSpecJSI : public JavaTurboModule {
+    class JSI_EXPORT NativeLinkingManagerSpecJSI : public JavaTurboModule {
     public:
-      NativeLinkingSpecJSI(const JavaTurboModule::InitParams &params);
+      NativeLinkingManagerSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -754,20 +782,6 @@ namespace facebook {
     class JSI_EXPORT NativeStatusBarManagerIOSSpecJSI : public JavaTurboModule {
     public:
       NativeStatusBarManagerIOSSpecJSI(const JavaTurboModule::InitParams &params);
-
-    };
-  } // namespace react
-} // namespace facebook
-
-namespace facebook {
-  namespace react {
-    /**
-     * C++ class for module 'TVNavigationEventEmitter'
-     */
-
-    class JSI_EXPORT NativeTVNavigationEventEmitterSpecJSI : public JavaTurboModule {
-    public:
-      NativeTVNavigationEventEmitterSpecJSI(const JavaTurboModule::InitParams &params);
 
     };
   } // namespace react

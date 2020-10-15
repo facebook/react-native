@@ -425,7 +425,7 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 
-@protocol NativeAsyncStorageSpec <RCTBridgeModule, RCTTurboModule>
+@protocol NativeAsyncLocalStorageSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)multiGet:(NSArray *)keys
         callback:(RCTResponseSenderBlock)callback;
@@ -442,11 +442,37 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'AsyncStorage'
+     * ObjC++ class for module 'AsyncLocalStorage'
      */
-    class JSI_EXPORT NativeAsyncStorageSpecJSI : public ObjCTurboModule {
+    class JSI_EXPORT NativeAsyncLocalStorageSpecJSI : public ObjCTurboModule {
     public:
-      NativeAsyncStorageSpecJSI(const ObjCTurboModule::InitParams &params);
+      NativeAsyncLocalStorageSpecJSI(const ObjCTurboModule::InitParams &params);
+    };
+  } // namespace react
+} // namespace facebook
+
+@protocol NativeAsyncSQLiteDBStorageSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)multiGet:(NSArray *)keys
+        callback:(RCTResponseSenderBlock)callback;
+- (void)multiSet:(NSArray *)kvPairs
+        callback:(RCTResponseSenderBlock)callback;
+- (void)multiMerge:(NSArray *)kvPairs
+          callback:(RCTResponseSenderBlock)callback;
+- (void)multiRemove:(NSArray *)keys
+           callback:(RCTResponseSenderBlock)callback;
+- (void)clear:(RCTResponseSenderBlock)callback;
+- (void)getAllKeys:(RCTResponseSenderBlock)callback;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'AsyncSQLiteDBStorage'
+     */
+    class JSI_EXPORT NativeAsyncSQLiteDBStorageSpecJSI : public ObjCTurboModule {
+    public:
+      NativeAsyncSQLiteDBStorageSpecJSI(const ObjCTurboModule::InitParams &params);
     };
   } // namespace react
 } // namespace facebook
@@ -1314,6 +1340,36 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 
+@protocol NativeIntentAndroidSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)getInitialURL:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject;
+- (void)canOpenURL:(NSString *)url
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
+- (void)openURL:(NSString *)url
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject;
+- (void)openSettings:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject;
+- (void)sendIntent:(NSString *)action
+            extras:(NSArray * _Nullable)extras
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'IntentAndroid'
+     */
+    class JSI_EXPORT NativeIntentAndroidSpecJSI : public ObjCTurboModule {
+    public:
+      NativeIntentAndroidSpecJSI(const ObjCTurboModule::InitParams &params);
+    };
+  } // namespace react
+} // namespace facebook
+
 @protocol NativeJSCHeapCaptureSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)captureComplete:(NSString *)path
@@ -1417,7 +1473,7 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 
-@protocol NativeLinkingSpec <RCTBridgeModule, RCTTurboModule>
+@protocol NativeLinkingManagerSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getInitialURL:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject;
@@ -1429,10 +1485,6 @@ namespace facebook {
          reject:(RCTPromiseRejectBlock)reject;
 - (void)openSettings:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject;
-- (void)sendIntent:(NSString *)action
-            extras:(NSArray * _Nullable)extras
-           resolve:(RCTPromiseResolveBlock)resolve
-            reject:(RCTPromiseRejectBlock)reject;
 - (void)addListener:(NSString *)eventName;
 - (void)removeListeners:(double)count;
 
@@ -1440,11 +1492,11 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'Linking'
+     * ObjC++ class for module 'LinkingManager'
      */
-    class JSI_EXPORT NativeLinkingSpecJSI : public ObjCTurboModule {
+    class JSI_EXPORT NativeLinkingManagerSpecJSI : public ObjCTurboModule {
     public:
-      NativeLinkingSpecJSI(const ObjCTurboModule::InitParams &params);
+      NativeLinkingManagerSpecJSI(const ObjCTurboModule::InitParams &params);
     };
   } // namespace react
 } // namespace facebook
@@ -2111,24 +2163,6 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 
-@protocol NativeTVNavigationEventEmitterSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)addListener:(NSString *)eventName;
-- (void)removeListeners:(double)count;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'TVNavigationEventEmitter'
-     */
-    class JSI_EXPORT NativeTVNavigationEventEmitterSpecJSI : public ObjCTurboModule {
-    public:
-      NativeTVNavigationEventEmitterSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
-
 @protocol NativeTimingSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)createTimer:(double)callbackID
@@ -2480,6 +2514,7 @@ inline JS::NativeAppState::Constants::Builder::Builder(Constants i) : _factory(^
 }) {}
 
 
+
 inline JS::NativeBlobModule::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto BLOB_URI_SCHEME = i.BLOB_URI_SCHEME.get();
@@ -2778,6 +2813,7 @@ inline bool JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig::showVideos() c
 
 
 
+
 inline JS::NativeJSDevSupport::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto ERROR_CODE_EXCEPTION = i.ERROR_CODE_EXCEPTION.get();
@@ -3026,7 +3062,6 @@ inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(const Input i)
 inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-
 
 inline JS::NativeToastAndroid::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
