@@ -12,7 +12,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTErrorInfo.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTJSStackFrame.h>
 #import <React/RCTRedBoxExtraDataViewController.h>
 #import <React/RCTRedBoxSetEnabled.h>

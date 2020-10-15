@@ -16,8 +16,11 @@ const {
   getNamespacedStructName,
 } = require('../Utils');
 
+import type {Nullable} from '../../../../CodegenSchema';
 import type {StructTypeAnnotation, RegularStruct} from '../StructCollector';
 import type {StructSerilizationOutput} from './serializeStruct';
+
+const {unwrapNullable} = require('../../../../parsers/flow/modules/utils');
 
 const StructTemplate = ({
   moduleName,
@@ -27,8 +30,7 @@ const StructTemplate = ({
   moduleName: string,
   structName: string,
   structProperties: string,
-|}>) => `
-namespace JS {
+|}>) => `namespace JS {
   namespace Native${moduleName} {
     struct ${structName} {
       ${structProperties}
@@ -42,8 +44,7 @@ namespace JS {
 
 @interface RCTCxxConvert (Native${moduleName}_${structName})
 + (RCTManagedPointer *)JS_Native${moduleName}_${structName}:(id)json;
-@end
-`;
+@end`;
 
 const MethodTemplate = ({
   returnType,
@@ -57,20 +58,19 @@ const MethodTemplate = ({
   moduleName: string,
   structName: string,
   propertyName: string,
-|}>) => `
-inline ${returnType}JS::Native${moduleName}::${structName}::${propertyName}() const
+|}>) => `inline ${returnType}JS::Native${moduleName}::${structName}::${propertyName}() const
 {
   id const p = _v[@"${propertyName}"];
   return ${returnValue};
-}
-`;
+}`;
 
 function toObjCType(
   moduleName: string,
-  typeAnnotation: StructTypeAnnotation,
+  nullableTypeAnnotation: Nullable<StructTypeAnnotation>,
   isOptional: boolean = false,
 ): string {
-  const isRequired = !typeAnnotation.nullable && !isOptional;
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+  const isRequired = !nullable && !isOptional;
   const wrapFollyOptional = (type: string) => {
     return isRequired ? type : `folly::Optional<${type}>`;
   };
@@ -125,12 +125,13 @@ function toObjCType(
 
 function toObjCValue(
   moduleName: string,
-  typeAnnotation: StructTypeAnnotation,
+  nullableTypeAnnotation: Nullable<StructTypeAnnotation>,
   value: string,
   depth: number,
   isOptional: boolean = false,
 ): string {
-  const isRequired = !typeAnnotation.nullable && !isOptional;
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+  const isRequired = !nullable && !isOptional;
   const RCTBridgingTo = (type: string, arg?: string) => {
     const args = [value, arg].filter(Boolean).join(', ');
     return isRequired
@@ -190,8 +191,8 @@ function toObjCValue(
       );
 
       return !isRequired
-        ? `(p == nil ? folly::none : folly::make_optional(${namespacedStructName}(p)))`
-        : `${namespacedStructName}(p)`;
+        ? `(${value} == nil ? folly::none : folly::make_optional(${namespacedStructName}(${value})))`
+        : `${namespacedStructName}(${value})`;
     default:
       (typeAnnotation.type: empty);
       throw new Error(

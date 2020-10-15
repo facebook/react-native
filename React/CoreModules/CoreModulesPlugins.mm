@@ -42,6 +42,7 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"WebSocketModule", RCTWebSocketModuleCls},
     {"DevLoadingView", RCTDevLoadingViewCls},
     {"DevSplitBundleLoader", RCTDevSplitBundleLoaderCls},
+    {"EventDispatcher", RCTEventDispatcherCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);

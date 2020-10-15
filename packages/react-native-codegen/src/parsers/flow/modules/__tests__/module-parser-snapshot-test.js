@@ -23,7 +23,13 @@ describe('RN Codegen Flow Parser', () => {
     .sort()
     .forEach(fixtureName => {
       it(`can generate fixture ${fixtureName}`, () => {
-        expect(FlowParser.parseModuleFixture(fixtureName)).toMatchSnapshot();
+        const schema = FlowParser.parseModuleFixture(fixtureName);
+        const serializedSchema = JSON.stringify(schema, null, 2).replace(
+          /"/g,
+          "'",
+        );
+
+        expect(serializedSchema).toMatchSnapshot();
       });
     });
 

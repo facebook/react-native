@@ -13,7 +13,7 @@
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
 
-const infoLog = require('../../../../../Libraries/Utilities/infoLog');
+const infoLog = require('react-native/Libraries/Utilities/infoLog');
 
 const {
   FooterComponent,

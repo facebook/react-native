@@ -17,6 +17,10 @@ void enableLogging(std::unique_ptr<NativeModulePerfLogger> &&newPerfLogger) {
   g_perfLogger = std::move(newPerfLogger);
 }
 
+void disableLogging() {
+  g_perfLogger = nullptr;
+}
+
 void moduleDataCreateStart(const char *moduleName, int32_t id) {
   NativeModulePerfLogger *logger = g_perfLogger.get();
   if (logger != nullptr) {

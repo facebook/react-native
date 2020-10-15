@@ -11,6 +11,7 @@
 'use strict';
 
 import type {
+  Nullable,
   SchemaType,
   NativeModulePropertySchema,
   NativeModuleMethodParamSchema,
@@ -19,6 +20,7 @@ import type {
 
 import type {AliasResolver} from './Utils';
 const {createAliasResolver, getModules} = require('./Utils');
+const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -75,9 +77,10 @@ std::shared_ptr<TurboModule> ::_LIBRARY_NAME_::_ModuleProvider(const std::string
 `;
 
 function translateReturnTypeToKind(
-  typeAnnotation: NativeModuleReturnTypeAnnotation,
+  nullableTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
   resolveAlias: AliasResolver,
 ): string {
+  const [typeAnnotation] = unwrapNullable(nullableTypeAnnotation);
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
@@ -128,8 +131,9 @@ function translateParamTypeToJniType(
   param: NativeModuleMethodParamSchema,
   resolveAlias: AliasResolver,
 ): string {
-  const {optional, typeAnnotation} = param;
-  const isRequired = !optional && !typeAnnotation.nullable;
+  const {optional, typeAnnotation: nullableTypeAnnotation} = param;
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+  const isRequired = !optional && !nullable;
 
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -176,10 +180,10 @@ function translateParamTypeToJniType(
 }
 
 function translateReturnTypeToJniType(
-  typeAnnotation: NativeModuleReturnTypeAnnotation,
+  nullableTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
   resolveAlias: AliasResolver,
 ): string {
-  const {nullable} = typeAnnotation;
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
 
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -232,14 +236,13 @@ function translateMethodTypeToJniSignature(
   resolveAlias: AliasResolver,
 ): string {
   const {name, typeAnnotation} = property;
-  const {returnTypeAnnotation} = typeAnnotation;
+  let [{returnTypeAnnotation, params}] = unwrapNullable(typeAnnotation);
 
-  const params = [...typeAnnotation.params];
+  params = [...params];
   let processedReturnTypeAnnotation = returnTypeAnnotation;
   const isPromiseReturn = returnTypeAnnotation.type === 'PromiseTypeAnnotation';
   if (isPromiseReturn) {
     processedReturnTypeAnnotation = {
-      nullable: false,
       type: 'VoidTypeAnnotation',
     };
   }
@@ -269,12 +272,13 @@ function translateMethodForImplementation(
   property: NativeModulePropertySchema,
   resolveAlias: AliasResolver,
 ): string {
-  const {returnTypeAnnotation} = property.typeAnnotation;
+  const [propertyTypeAnnotation] = unwrapNullable(property.typeAnnotation);
+  const {returnTypeAnnotation} = propertyTypeAnnotation;
 
   const numberOfParams =
-    property.typeAnnotation.params.length +
+    propertyTypeAnnotation.params.length +
     (returnTypeAnnotation.type === 'PromiseTypeAnnotation' ? 1 : 0);
-  const translatedArguments = property.typeAnnotation.params
+  const translatedArguments = propertyTypeAnnotation.params
     .map(param => param.name)
     .concat(
       returnTypeAnnotation.type === 'PromiseTypeAnnotation' ? ['promise'] : [],
@@ -331,20 +335,20 @@ module.exports = {
           .replace(
             '::_PROPERTIES_MAP_::',
             properties
-              .map(
-                ({
-                  name: propertyName,
-                  typeAnnotation: {params, returnTypeAnnotation},
-                }) =>
-                  propertyName === 'getConstants' &&
+              .map(({name: propertyName, typeAnnotation}) => {
+                const [{returnTypeAnnotation, params}] = unwrapNullable(
+                  typeAnnotation,
+                );
+
+                return propertyName === 'getConstants' &&
                   returnTypeAnnotation.type === 'ObjectTypeAnnotation' &&
                   returnTypeAnnotation.properties &&
                   returnTypeAnnotation.properties.length === 0
-                    ? ''
-                    : propertyDefTemplate
-                        .replace(/::_PROPERTY_NAME_::/g, propertyName)
-                        .replace(/::_ARGS_COUNT_::/g, params.length.toString()),
-              )
+                  ? ''
+                  : propertyDefTemplate
+                      .replace(/::_PROPERTY_NAME_::/g, propertyName)
+                      .replace(/::_ARGS_COUNT_::/g, params.length.toString());
+              })
               .join('\n'),
           )
           .replace(/::_MODULE_NAME_::/g, name);

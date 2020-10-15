@@ -12,7 +12,7 @@
 
 package com.facebook.fbreact.specs;
 
-import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -20,29 +20,26 @@ import com.facebook.react.bridge.ReactModuleWithSpec;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 
-public abstract class NativeLinkingSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
-  public NativeLinkingSpec(ReactApplicationContext reactContext) {
+public abstract class NativeAsyncSQLiteDBStorageSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public NativeAsyncSQLiteDBStorageSpec(ReactApplicationContext reactContext) {
     super(reactContext);
   }
 
   @ReactMethod
-  public abstract void addListener(String eventName);
+  public abstract void clear(Callback callback);
 
   @ReactMethod
-  public abstract void canOpenURL(String url, Promise promise);
+  public abstract void getAllKeys(Callback callback);
 
   @ReactMethod
-  public abstract void getInitialURL(Promise promise);
+  public abstract void multiGet(ReadableArray keys, Callback callback);
 
   @ReactMethod
-  public abstract void openSettings(Promise promise);
+  public abstract void multiMerge(ReadableArray kvPairs, Callback callback);
 
   @ReactMethod
-  public abstract void openURL(String url, Promise promise);
+  public abstract void multiRemove(ReadableArray keys, Callback callback);
 
   @ReactMethod
-  public abstract void removeListeners(double count);
-
-  @ReactMethod
-  public abstract void sendIntent(String action, ReadableArray extras, Promise promise);
+  public abstract void multiSet(ReadableArray kvPairs, Callback callback);
 }

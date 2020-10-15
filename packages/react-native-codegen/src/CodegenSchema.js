@@ -258,13 +258,7 @@ export type SchemaType = $ReadOnly<{|
 
 /**
  * NativeModule Types
- *
- * TODO(T71923114): Remove nullable from NativeModule type annotations.
- * This is necessary for us to start unifying the notion of a "type
- * annotation" across the codegen schema as a whole.
  */
-export type Required<T> = $ReadOnly<{...T, nullable: false}>;
-
 export type NativeModuleSchema = $ReadOnly<{|
   // We only support aliases to Objects
   aliases: NativeModuleAliasMap,
@@ -272,26 +266,36 @@ export type NativeModuleSchema = $ReadOnly<{|
 |}>;
 
 export type NativeModuleAliasMap = $ReadOnly<{|
-  [aliasName: string]: Required<NativeModuleObjectTypeAnnotation>,
+  [aliasName: string]: NativeModuleObjectTypeAnnotation,
 |}>;
 
 export type NativeModulePropertySchema = $ReadOnly<{|
   name: string,
   optional: boolean,
-  typeAnnotation: NativeModuleFunctionTypeAnnotation,
+  typeAnnotation: Nullable<NativeModuleFunctionTypeAnnotation>,
+|}>;
+
+export type Nullable<+T: NativeModuleTypeAnnotation> =
+  | NullableTypeAnnotation<T>
+  | T;
+
+export type NullableTypeAnnotation<
+  +T: NativeModuleTypeAnnotation,
+> = $ReadOnly<{|
+  type: 'NullableTypeAnnotation',
+  typeAnnotation: T,
 |}>;
 
 export type NativeModuleFunctionTypeAnnotation = $ReadOnly<{|
   type: 'FunctionTypeAnnotation',
   params: $ReadOnlyArray<NativeModuleMethodParamSchema>,
-  returnTypeAnnotation: NativeModuleReturnTypeAnnotation,
-  nullable: boolean,
+  returnTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
 |}>;
 
 export type NativeModuleMethodParamSchema = $ReadOnly<{|
   name: string,
   optional: boolean,
-  typeAnnotation: NativeModuleParamTypeAnnotation,
+  typeAnnotation: Nullable<NativeModuleParamTypeAnnotation>,
 |}>;
 
 export type NativeModuleObjectTypeAnnotation = $ReadOnly<{|
@@ -300,14 +304,13 @@ export type NativeModuleObjectTypeAnnotation = $ReadOnly<{|
     $ReadOnly<{|
       name: string,
       optional: boolean,
-      typeAnnotation: NativeModuleBaseTypeAnnotation,
+      typeAnnotation: Nullable<NativeModuleBaseTypeAnnotation>,
     |}>,
   >,
-  nullable: boolean,
 |}>;
 
 export type NativeModuleArrayTypeAnnotation<
-  T = NativeModuleBaseTypeAnnotation,
+  +T: Nullable<NativeModuleBaseTypeAnnotation>,
 > = $ReadOnly<{|
   type: 'ArrayTypeAnnotation',
   /**
@@ -315,64 +318,52 @@ export type NativeModuleArrayTypeAnnotation<
    * invalid Array ElementTypes. Then, make the elementType required.
    */
   elementType?: T,
-  nullable: boolean,
 |}>;
 
 export type NativeModuleStringTypeAnnotation = $ReadOnly<{|
   type: 'StringTypeAnnotation',
-  nullable: boolean,
 |}>;
 
 export type NativeModuleNumberTypeAnnotation = $ReadOnly<{|
   type: 'NumberTypeAnnotation',
-  nullable: boolean,
 |}>;
 
 export type NativeModuleInt32TypeAnnotation = $ReadOnly<{|
   type: 'Int32TypeAnnotation',
-  nullable: boolean,
 |}>;
 
 export type NativeModuleDoubleTypeAnnotation = $ReadOnly<{|
   type: 'DoubleTypeAnnotation',
-  nullable: boolean,
 |}>;
 
 export type NativeModuleFloatTypeAnnotation = $ReadOnly<{|
   type: 'FloatTypeAnnotation',
-  nullable: boolean,
 |}>;
 
 export type NativeModuleBooleanTypeAnnotation = $ReadOnly<{|
   type: 'BooleanTypeAnnotation',
-  nullable: boolean,
 |}>;
 
 export type NativeModuleGenericObjectTypeAnnotation = $ReadOnly<{|
   type: 'GenericObjectTypeAnnotation',
-  nullable: boolean,
 |}>;
 
 export type NativeModuleReservedFunctionValueTypeAnnotation = $ReadOnly<{|
   type: 'ReservedFunctionValueTypeAnnotation',
   name: ReservedFunctionValueTypeName,
-  nullable: boolean,
 |}>;
 
 export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{|
   type: 'TypeAliasTypeAnnotation',
   name: string,
-  nullable: boolean,
 |}>;
 
 export type NativeModulePromiseTypeAnnotation = $ReadOnly<{|
   type: 'PromiseTypeAnnotation',
-  nullable: boolean,
 |}>;
 
 export type NativeModuleVoidTypeAnnotation = $ReadOnly<{|
   type: 'VoidTypeAnnotation',
-  nullable: boolean,
 |}>;
 
 export type NativeModuleBaseTypeAnnotation =
@@ -385,7 +376,7 @@ export type NativeModuleBaseTypeAnnotation =
   | NativeModuleGenericObjectTypeAnnotation
   | NativeModuleReservedFunctionValueTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
-  | NativeModuleArrayTypeAnnotation<>
+  | NativeModuleArrayTypeAnnotation<Nullable<NativeModuleBaseTypeAnnotation>>
   | NativeModuleObjectTypeAnnotation;
 
 export type NativeModuleParamTypeAnnotation =

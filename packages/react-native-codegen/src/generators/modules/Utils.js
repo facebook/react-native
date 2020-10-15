@@ -13,7 +13,6 @@
 import type {
   SchemaType,
   NativeModuleAliasMap,
-  Required,
   NativeModuleObjectTypeAnnotation,
   NativeModuleSchema,
 } from '../../CodegenSchema';
@@ -22,7 +21,7 @@ const invariant = require('invariant');
 
 export type AliasResolver = (
   aliasName: string,
-) => Required<NativeModuleObjectTypeAnnotation>;
+) => NativeModuleObjectTypeAnnotation;
 
 function createAliasResolver(aliasMap: NativeModuleAliasMap): AliasResolver {
   return (aliasName: string) => {

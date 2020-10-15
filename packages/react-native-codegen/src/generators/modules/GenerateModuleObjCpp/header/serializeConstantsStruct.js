@@ -16,8 +16,11 @@ const {
   getNamespacedStructName,
 } = require('../Utils');
 
+import type {Nullable} from '../../../../CodegenSchema';
 import type {StructTypeAnnotation, ConstantsStruct} from '../StructCollector';
 import type {StructSerilizationOutput} from './serializeStruct';
+
+const {unwrapNullable} = require('../../../../parsers/flow/modules/utils');
 
 const StructTemplate = ({
   moduleName,
@@ -27,8 +30,7 @@ const StructTemplate = ({
   moduleName: string,
   structName: string,
   builderInputProps: string,
-|}>) => `
-namespace JS {
+|}>) => `namespace JS {
   namespace Native${moduleName} {
     struct ${structName} {
 
@@ -64,8 +66,7 @@ const MethodTemplate = ({
   moduleName: string,
   structName: string,
   properties: string,
-|}>) => `
-inline JS::Native${moduleName}::${structName}::Builder::Builder(const Input i) : _factory(^{
+|}>) => `inline JS::Native${moduleName}::${structName}::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
 ${properties}
   return d;
@@ -76,10 +77,11 @@ inline JS::Native${moduleName}::${structName}::Builder::Builder(${structName} i)
 
 function toObjCType(
   moduleName: string,
-  typeAnnotation: StructTypeAnnotation,
+  nullableTypeAnnotation: Nullable<StructTypeAnnotation>,
   isOptional: boolean = false,
 ): string {
-  const isRequired = !typeAnnotation.nullable && !isOptional;
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+  const isRequired = !nullable && !isOptional;
   const wrapFollyOptional = (type: string) => {
     return isRequired ? type : `folly::Optional<${type}>`;
   };
@@ -132,12 +134,13 @@ function toObjCType(
 
 function toObjCValue(
   moduleName: string,
-  typeAnnotation: StructTypeAnnotation,
+  nullableTypeAnnotation: Nullable<StructTypeAnnotation>,
   value: string,
   depth: number,
   isOptional: boolean = false,
 ): string {
-  const isRequired = !isOptional && !typeAnnotation.nullable;
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+  const isRequired = !nullable && !isOptional;
 
   function wrapPrimitive(type: string) {
     return !isRequired

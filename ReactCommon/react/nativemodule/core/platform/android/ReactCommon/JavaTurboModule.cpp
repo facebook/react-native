@@ -733,7 +733,6 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
            &jargs,
            &globalRefs,
            argCount,
-           instance_ = instance_,
            methodID,
            moduleNameStr = name_,
            methodNameStr,

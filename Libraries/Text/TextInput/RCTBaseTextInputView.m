@@ -9,7 +9,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
@@ -21,7 +21,7 @@
 
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
-  __weak RCTEventDispatcher *_eventDispatcher;
+  __weak id<RCTEventDispatcherProtocol> _eventDispatcher;
   BOOL _hasInputAccesoryView;
   NSString *_Nullable _predictedText;
   BOOL _didMoveToWindow;
@@ -365,13 +365,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // `onSubmitEditing` is called when "Submit" button
   // (the blue key on onscreen keyboard) did pressed
   // (no connection to any specific "submitting" process).
-  if (_blurOnSubmit) {
-    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
-                                   reactTag:self.reactTag
-                                       text:[self.backedTextInputView.attributedText.string copy]
-                                        key:nil
-                                 eventCount:_nativeEventCount];
-  }
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
+                                 reactTag:self.reactTag
+                                     text:[self.backedTextInputView.attributedText.string copy]
+                                      key:nil
+                               eventCount:_nativeEventCount];
 
   return _blurOnSubmit;
 }

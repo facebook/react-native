@@ -38,7 +38,6 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
   while (baseModuleName) {
     const baseModule = UIManager.getViewManagerConfig(baseModuleName);
     if (!baseModule) {
-      console.warn('Base module "%s" does not exist', baseModuleName);
       baseModuleName = null;
     } else {
       bubblingEventTypes = {
