@@ -8,6 +8,7 @@
  */
 
 const Blob = require('./Blob');
+const warnOnce = require('../Utilities/warnOnce');
 
 import NativeBlobModule from './NativeBlobModule';
 
@@ -55,6 +56,13 @@ export class URLSearchParams {
   _searchParams = [];
 
   constructor(params: any) {
+    warnOnce(
+      'urlsearchparams-deprecated',
+      'URLSearchParams from React Native has been deprecated and will be removed in a future release. ' +
+        "It can now be installed from 'react-native-url-polyfill'. " +
+        'See https://github.com/charpeni/react-native-url-polyfill',
+    );
+
     if (typeof params === 'object') {
       Object.keys(params).forEach(key => this.append(key, params[key]));
     }
@@ -114,6 +122,13 @@ export class URL {
   _searchParamsInstance = null;
 
   static createObjectURL(blob: Blob) {
+    warnOnce(
+      'url-deprecated',
+      'URL from React Native has been deprecated and will be removed in a future release. ' +
+        "It can now be installed from 'react-native-url-polyfill'. " +
+        'See https://github.com/charpeni/react-native-url-polyfill',
+    );
+
     if (BLOB_URL_PREFIX === null) {
       throw new Error('Cannot create URL for blob!');
     }
@@ -125,6 +140,13 @@ export class URL {
   }
 
   constructor(url: string, base: string) {
+    warnOnce(
+      'url-deprecated',
+      'URL from React Native has been deprecated and will be removed in a future release. ' +
+        "It can now be installed from 'react-native-url-polyfill'. " +
+        'See https://github.com/charpeni/react-native-url-polyfill',
+    );
+
     let baseUrl = null;
     if (!base || validateBaseUrl(url)) {
       this._url = url;
