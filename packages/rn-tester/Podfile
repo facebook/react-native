@@ -1,0 +1,70 @@
+require_relative '../../scripts/react_native_pods'
+
+source 'https://cdn.cocoapods.org/'
+platform :ios, '10.0'
+
+if ENV['USE_FRAMEWORKS'] == '1'
+  puts "Installing pods with use_frameworks!"
+  use_frameworks!
+end
+
+def pods()
+  project 'RNTesterPods.xcodeproj'
+
+  # Enable TurboModule
+  prefix_path = "../.."
+  use_react_native!(path:prefix_path)
+  pod 'ReactCommon/turbomodule/samples', :path => "#{prefix_path}/ReactCommon"
+
+  # Additional Pods which aren't included in the default Podfile
+  pod 'React-RCTPushNotification', :path => "#{prefix_path}/Libraries/PushNotificationIOS"
+  pod 'Yoga',:path => "#{prefix_path}/ReactCommon/yoga", :modular_headers => true
+  # Additional Pods which are classed as unstable
+  #
+  # To use fabric: add `fabric_enabled` option to the use_react_native method above, like below
+  # use_react_native!(path: "..", fabric_enabled: true)
+end
+
+target 'RNTester' do
+  pods()
+  use_flipper!
+end
+
+target 'RNTesterUnitTests' do
+  pods()
+  pod 'React-RCTTest', :path => "./RCTTest"
+end
+
+target 'RNTesterIntegrationTests' do
+  pods()
+  pod 'React-RCTTest', :path => "./RCTTest"
+end
+
+def frameworks_pre_install(installer)
+  static_frameworks = ['FlipperKit', 'Flipper', 'Flipper-Folly',
+      'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
+      'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket',
+      'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
+
+  Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
+  installer.pod_targets.each do |pod|
+    if static_frameworks.include?(pod.name)
+      def pod.build_type
+        Pod::BuildType.static_library
+      end
+    end
+  end
+end
+
+def codegen_pre_install(installer)
+  system("../../scripts/generate-native-modules-specs.sh")
+end
+
+pre_install do |installer|
+  frameworks_pre_install(installer) if ENV['USE_FRAMEWORKS'] == '1'
+  codegen_pre_install(installer) if ENV['USE_CODEGEN'] == '1'
+end
+
+post_install do |installer|
+  flipper_post_install(installer)
+end

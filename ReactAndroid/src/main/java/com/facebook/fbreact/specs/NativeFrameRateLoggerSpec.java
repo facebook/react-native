@@ -25,10 +25,10 @@ public abstract class NativeFrameRateLoggerSpec extends ReactContextBaseJavaModu
   }
 
   @ReactMethod
-  public abstract void endScroll();
+  public abstract void beginScroll();
 
   @ReactMethod
-  public abstract void beginScroll();
+  public abstract void endScroll();
 
   @ReactMethod
   public abstract void setContext(String context);

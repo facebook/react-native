@@ -32,23 +32,35 @@ inline NSString *_Nullable RCTNSStringFromStringNilIfEmpty(
 
 inline std::string RCTStringFromNSString(NSString *string)
 {
-  return std::string([string UTF8String]);
+  return std::string{string.UTF8String ?: ""};
 }
 
-inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)
+inline UIColor *_Nullable RCTUIColorFromSharedColor(facebook::react::SharedColor const &sharedColor)
 {
-  return sharedColor ? [UIColor colorWithCGColor:sharedColor.get()] : nil;
+  if (!sharedColor) {
+    return nil;
+  }
+
+  if (*facebook::react::clearColor() == *sharedColor) {
+    return [UIColor clearColor];
+  }
+
+  if (*facebook::react::blackColor() == *sharedColor) {
+    return [UIColor blackColor];
+  }
+
+  if (*facebook::react::whiteColor() == *sharedColor) {
+    return [UIColor whiteColor];
+  }
+
+  auto components = facebook::react::colorComponentsFromColor(sharedColor);
+  return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
 }
 
-inline CF_RETURNS_NOT_RETAINED CGColorRef
-RCTCGColorRefUnretainedFromSharedColor(const facebook::react::SharedColor &sharedColor)
+inline CF_RETURNS_RETAINED CGColorRef
+RCTCreateCGColorRefFromSharedColor(const facebook::react::SharedColor &sharedColor)
 {
-  return sharedColor ? sharedColor.get() : nil;
-}
-
-inline CF_RETURNS_RETAINED CGColorRef RCTCGColorRefFromSharedColor(const facebook::react::SharedColor &sharedColor)
-{
-  return sharedColor ? CGColorCreateCopy(sharedColor.get()) : nil;
+  return CGColorRetain(RCTUIColorFromSharedColor(sharedColor).CGColor);
 }
 
 inline CGPoint RCTCGPointFromPoint(const facebook::react::Point &point)

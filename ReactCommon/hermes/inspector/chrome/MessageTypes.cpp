@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<addf39d6b92b8dc857e6e5ffe2a441d4>>
+// @generated SignedSource<<80b4da5580a1fe18b9551723bdf7cab0>>
 
 #include "MessageTypes.h"
 
@@ -1119,6 +1119,52 @@ heapProfiler::AddHeapSnapshotChunkNotification::
 dynamic heapProfiler::AddHeapSnapshotChunkNotification::toDynamic() const {
   dynamic params = dynamic::object;
   put(params, "chunk", chunk);
+
+  dynamic obj = dynamic::object;
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+heapProfiler::HeapStatsUpdateNotification::HeapStatsUpdateNotification()
+    : Notification("HeapProfiler.heapStatsUpdate") {}
+
+heapProfiler::HeapStatsUpdateNotification::HeapStatsUpdateNotification(
+    const dynamic &obj)
+    : Notification("HeapProfiler.heapStatsUpdate") {
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(statsUpdate, params, "statsUpdate");
+}
+
+dynamic heapProfiler::HeapStatsUpdateNotification::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "statsUpdate", statsUpdate);
+
+  dynamic obj = dynamic::object;
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+heapProfiler::LastSeenObjectIdNotification::LastSeenObjectIdNotification()
+    : Notification("HeapProfiler.lastSeenObjectId") {}
+
+heapProfiler::LastSeenObjectIdNotification::LastSeenObjectIdNotification(
+    const dynamic &obj)
+    : Notification("HeapProfiler.lastSeenObjectId") {
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(lastSeenObjectId, params, "lastSeenObjectId");
+  assign(timestamp, params, "timestamp");
+}
+
+dynamic heapProfiler::LastSeenObjectIdNotification::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "lastSeenObjectId", lastSeenObjectId);
+  put(params, "timestamp", timestamp);
 
   dynamic obj = dynamic::object;
   put(obj, "method", method);

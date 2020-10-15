@@ -19,18 +19,18 @@ APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 rn_xplat_cxx_library(
     name = "androidpicker",
     srcs = glob(
-        ["**/*.cpp"],
+        ["androidpicker/**/*.cpp"],
         exclude = glob(["tests/**/*.cpp"]),
     ),
     headers = glob(
-        ["**/*.h"],
+        ["androidpicker/**/*.h"],
         exclude = glob(["tests/**/*.h"]),
     ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
             ("", "*.h"),
-            ("androidpicker", "*.h"),
+            ("androidpicker/react/renderer/components/androidpicker", "*.h"),
         ],
         prefix = "react/renderer/components/androidpicker",
     ),

@@ -98,7 +98,12 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
       currentFrame.origin = {0, 0};
     }
 
-    if (policy.includeTransform) {
+    auto isRootNode = currentShadowNode->getTraits().check(
+        ShadowNodeTraits::Trait::RootNodeKind);
+    auto shouldApplyTransformation = (policy.includeTransform && !isRootNode) ||
+        (policy.includeViewportOffset && isRootNode);
+
+    if (shouldApplyTransformation) {
       resultFrame.size = resultFrame.size * currentShadowNode->getTransform();
       currentFrame = currentFrame * currentShadowNode->getTransform();
     }
@@ -233,7 +238,17 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
 
   auto newPoint = point - transformedFrame.origin -
       layoutableShadowNode->getContentOriginOffset();
-  for (const auto &childShadowNode : node->getChildren()) {
+
+  auto sortedChildren = node->getChildren();
+  std::stable_sort(
+      sortedChildren.begin(),
+      sortedChildren.end(),
+      [](auto const &lhs, auto const &rhs) -> bool {
+        return lhs->getOrderIndex() < rhs->getOrderIndex();
+      });
+
+  for (auto it = sortedChildren.rbegin(); it != sortedChildren.rend(); it++) {
+    auto const &childShadowNode = *it;
     auto hitView = findNodeAtPoint(childShadowNode, newPoint);
     if (hitView) {
       return hitView;

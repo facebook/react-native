@@ -23,6 +23,7 @@ public class ComponentFactory {
   @DoNotStrip
   private static native HybridData initHybrid();
 
+  @DoNotStrip
   public ComponentFactory() {
     mHybridData = initHybrid();
   }

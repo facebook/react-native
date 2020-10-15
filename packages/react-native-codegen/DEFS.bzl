@@ -50,7 +50,7 @@ def rn_codegen_modules(
 
     rn_xplat_cxx_library(
         name = "generated_objcpp_modules-{}".format(name),
-        header_namespace = native_module_spec_name,
+        header_namespace = "",
         apple_sdks = (IOS),
         compiler_flags = [
             "-fexceptions",
@@ -61,8 +61,7 @@ def rn_codegen_modules(
         fbobjc_compiler_flags = get_apple_compiler_flags(),
         fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
         ios_exported_headers = {
-            "{}.h".format(native_module_spec_name): ":{}".format(generate_module_hobjcpp_name),
-            "{}-generated.mm".format(native_module_spec_name): ":{}".format(generate_module_mm_name),
+            "{}/{}.h".format(native_module_spec_name, native_module_spec_name): ":{}".format(generate_module_hobjcpp_name),
         },
         ios_headers = [
             ":{}".format(generate_module_hobjcpp_name),
@@ -96,7 +95,9 @@ def rn_codegen_components(
     generate_shadow_node_cpp_name = "generated_shadow_node_cpp-{}".format(name)
     generate_shadow_node_h_name = "generated_shadow_node_h-{}".format(name)
     copy_generated_java_files = "copy_generated_java_files-{}".format(name)
+    copy_generated_cxx_files = "copy_generated_cxx_files-{}".format(name)
     zip_generated_java_files = "zip_generated_java_files-{}".format(name)
+    zip_generated_cxx_files = "zip_generated_cxx_files-{}".format(name)
 
     fb_native.genrule(
         name = generate_fixtures_rule_name,
@@ -159,6 +160,22 @@ def rn_codegen_components(
         name = copy_generated_java_files,
         cmd = "mkdir $OUT && find $(location :{}) -name '*.java' -exec cp {{}} $OUT \\;".format(generate_fixtures_rule_name),
         out = "java",
+        labels = ["codegen_rule"],
+    )
+
+    fb_native.genrule(
+        name = copy_generated_cxx_files,
+        # The command below is filtering C++ iOS files, this will be refactored when C++ codegen is finished.
+        cmd = "mkdir -p $OUT && find $(location :{}) -not -path '*/rncore*' -not -path '*Tests*' -not -path '*NativeModules*' -not -path '*RCTComponentViewHelpers*' -type f \\( -iname \\*.h -o -iname \\*.cpp \\) -print0 -exec cp {{}} $OUT \\;".format(generate_fixtures_rule_name),
+        out = "cxx",
+        labels = ["codegen_rule"],
+    )
+
+    fb_native.zip_file(
+        name = zip_generated_cxx_files,
+        srcs = [":{}".format(copy_generated_cxx_files)],
+        out = "{}.src.zip".format(zip_generated_cxx_files),
+        visibility = ["PUBLIC"],
         labels = ["codegen_rule"],
     )
 
@@ -266,6 +283,22 @@ def rn_codegen_components(
             ],
         )
 
+        rn_android_library(
+            name = "generated_components_cxx-{}".format(name),
+            srcs = [
+                ":{}".format(zip_generated_cxx_files),
+            ],
+            labels = ["codegen_rule"],
+            visibility = ["PUBLIC"],
+            deps = [
+                react_native_dep("third-party/android/androidx:annotation"),
+                react_native_target("java/com/facebook/react/bridge:bridge"),
+                react_native_target("java/com/facebook/react/common:common"),
+                react_native_target("java/com/facebook/react/turbomodule/core:core"),
+                react_native_target("java/com/facebook/react/uimanager:uimanager"),
+            ],
+        )
+
     # Tests
     fb_xplat_cxx_test(
         name = "generated_tests-{}".format(name),
@@ -349,7 +382,7 @@ def rn_codegen_cxx_modules(
             ],
             visibility = ["PUBLIC"],
             exported_deps = [
-                react_native_xplat_target("turbomodule/core:core"),
+                react_native_xplat_target("react/nativemodule/core:core"),
             ],
         )
 

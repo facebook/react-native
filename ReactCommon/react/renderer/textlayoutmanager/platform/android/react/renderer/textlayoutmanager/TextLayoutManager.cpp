@@ -36,6 +36,125 @@ TextMeasurement TextLayoutManager::measure(
       });
 }
 
+TextMeasurement TextLayoutManager::measureCachedSpannableById(
+    int64_t cacheId,
+    ParagraphAttributes paragraphAttributes,
+    LayoutConstraints layoutConstraints) const {
+  const jni::global_ref<jobject> &fabricUIManager =
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+
+  auto env = Environment::current();
+  auto attachmentPositions = env->NewFloatArray(0);
+
+  static auto measure =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jlong(
+              jint,
+              jstring,
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloatArray)>("measure");
+
+  auto minimumSize = layoutConstraints.minimumSize;
+  auto maximumSize = layoutConstraints.maximumSize;
+
+  local_ref<JString> componentName = make_jstring("RCTText");
+  folly::dynamic cacheIdMap = folly::dynamic::object;
+  cacheIdMap["cacheId"] = cacheId;
+  local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
+      ReadableNativeMap::newObjectCxxArgs(cacheIdMap);
+  local_ref<ReadableNativeMap::javaobject> paragraphAttributesRNM =
+      ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes));
+
+  local_ref<ReadableMap::javaobject> attributedStringRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(attributedStringRNM.get()));
+  local_ref<ReadableMap::javaobject> paragraphAttributesRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
+  auto size = yogaMeassureToSize(measure(
+      fabricUIManager,
+      -1, // TODO: we should pass rootTag in
+      componentName.get(),
+      attributedStringRM.get(),
+      paragraphAttributesRM.get(),
+      nullptr,
+      minimumSize.width,
+      maximumSize.width,
+      minimumSize.height,
+      maximumSize.height,
+      attachmentPositions));
+
+  // Clean up allocated ref - it still takes up space in the JNI ref table even
+  // though it's 0 length
+  env->DeleteLocalRef(attachmentPositions);
+
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  componentName.reset();
+  attributedStringRM.reset();
+  attributedStringRNM.reset();
+  paragraphAttributesRM.reset();
+  paragraphAttributesRNM.reset();
+
+  // TODO: currently we do not support attachments for cached IDs - should we?
+  auto attachments = TextMeasurement::Attachments{};
+
+  return TextMeasurement{size, attachments};
+}
+
+LinesMeasurements TextLayoutManager::measureLines(
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    Size size) const {
+  const jni::global_ref<jobject> &fabricUIManager =
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+  static auto measureLines =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<NativeArray::javaobject(
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              jfloat,
+              jfloat)>("measureLines");
+
+  auto serializedAttributedString = toDynamic(attributedString);
+
+  local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
+      ReadableNativeMap::newObjectCxxArgs(serializedAttributedString);
+  local_ref<ReadableNativeMap::javaobject> paragraphAttributesRNM =
+      ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes));
+
+  local_ref<ReadableMap::javaobject> attributedStringRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(attributedStringRNM.get()));
+  local_ref<ReadableMap::javaobject> paragraphAttributesRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
+
+  auto array = measureLines(
+      fabricUIManager,
+      attributedStringRM.get(),
+      paragraphAttributesRM.get(),
+      size.width,
+      size.height);
+
+  auto dynamicArray = cthis(array)->consume();
+  LinesMeasurements lineMeasurements;
+  lineMeasurements.reserve(dynamicArray.size());
+
+  for (auto const &data : dynamicArray) {
+    lineMeasurements.push_back(LineMeasurement(data));
+  }
+
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  attributedStringRM.reset();
+  attributedStringRNM.reset();
+  paragraphAttributesRM.reset();
+  paragraphAttributesRNM.reset();
+
+  return lineMeasurements;
+}
+
 TextMeasurement TextLayoutManager::doMeasure(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
@@ -82,7 +201,7 @@ TextMeasurement TextLayoutManager::doMeasure(
       reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
   auto size = yogaMeassureToSize(measure(
       fabricUIManager,
-      -1,
+      -1, // TODO: we should pass rootTag in
       componentName.get(),
       attributedStringRM.get(),
       paragraphAttributesRM.get(),
@@ -114,8 +233,19 @@ TextMeasurement TextLayoutManager::doMeasure(
       }
     }
   }
-  // DELETE REF
+
+  // Clean up allocated ref
+  env->ReleaseFloatArrayElements(
+      attachmentPositions, attachmentData, JNI_ABORT);
   env->DeleteLocalRef(attachmentPositions);
+
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  componentName.reset();
+  attributedStringRM.reset();
+  attributedStringRNM.reset();
+  paragraphAttributesRM.reset();
+  paragraphAttributesRNM.reset();
+
   return TextMeasurement{size, attachments};
 }
 

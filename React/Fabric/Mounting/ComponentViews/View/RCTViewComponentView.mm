@@ -7,15 +7,15 @@
 
 #import "RCTViewComponentView.h"
 
+#import <CoreGraphics/CoreGraphics.h>
+#import <objc/runtime.h>
+
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
-#import <objc/runtime.h>
+#import <React/RCTConversions.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
-
-#import "RCTConversions.h"
-#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -23,6 +23,7 @@ using namespace facebook::react;
   UIColor *_backgroundColor;
   CALayer *_borderLayer;
   BOOL _needsInvalidateLayer;
+  NSSet<NSString *> *_propKeysManagedByAnimated;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -30,6 +31,7 @@ using namespace facebook::react;
   if (self = [super initWithFrame:frame]) {
     static auto const defaultProps = std::make_shared<ViewProps const>();
     _props = defaultProps;
+    self.multipleTouchEnabled = YES;
   }
   return self;
 }
@@ -83,6 +85,11 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<ViewComponentDescriptor>();
 }
 
+- (void)setPropKeysManagedByAnimated:(nullable NSSet<NSString *> *)propKeys
+{
+  _propKeysManagedByAnimated = propKeys;
+}
+
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
 #ifndef NS_BLOCK_ASSERTIONS
@@ -102,7 +109,7 @@ using namespace facebook::react;
   BOOL needsInvalidateLayer = NO;
 
   // `opacity`
-  if (oldViewProps.opacity != newViewProps.opacity) {
+  if (oldViewProps.opacity != newViewProps.opacity && ![_propKeysManagedByAnimated containsObject:@"opacity"]) {
     self.layer.opacity = (CGFloat)newViewProps.opacity;
     needsInvalidateLayer = YES;
   }
@@ -120,7 +127,7 @@ using namespace facebook::react;
 
   // `shadowColor`
   if (oldViewProps.shadowColor != newViewProps.shadowColor) {
-    CGColorRef shadowColor = RCTCGColorRefFromSharedColor(newViewProps.shadowColor);
+    CGColorRef shadowColor = RCTCreateCGColorRefFromSharedColor(newViewProps.shadowColor);
     self.layer.shadowColor = shadowColor;
     CGColorRelease(shadowColor);
     needsInvalidateLayer = YES;
@@ -161,7 +168,7 @@ using namespace facebook::react;
   }
 
   // `transform`
-  if (oldViewProps.transform != newViewProps.transform) {
+  if (oldViewProps.transform != newViewProps.transform && ![_propKeysManagedByAnimated containsObject:@"transform"]) {
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newViewProps.transform);
     self.layer.allowsEdgeAntialiasing = newViewProps.transform != Transform::Identity();
   }
@@ -286,6 +293,17 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
+
+  // If view was managed by animated, its props need to align with UIView's properties.
+  auto const &props = *std::static_pointer_cast<ViewProps const>(_props);
+  if ([_propKeysManagedByAnimated containsObject:@"transform"]) {
+    self.layer.transform = RCTCATransform3DFromTransformMatrix(props.transform);
+  }
+  if ([_propKeysManagedByAnimated containsObject:@"opacity"]) {
+    self.layer.opacity = (CGFloat)props.opacity;
+  }
+
+  _propKeysManagedByAnimated = nil;
   _eventEmitter.reset();
 }
 
@@ -303,7 +321,13 @@ using namespace facebook::react;
 
   BOOL isPointInside = [self pointInside:point withEvent:event];
 
-  if (self.clipsToBounds && !isPointInside) {
+  BOOL clipsToBounds = self.clipsToBounds;
+
+  if (RCTExperimentGetOptimizedHitTesting()) {
+    clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
+  }
+
+  if (clipsToBounds && !isPointInside) {
     return nil;
   }
 
@@ -340,12 +364,20 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
                         .bottomRight = (CGFloat)borderRadii.bottomRight};
 }
 
-static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors)
+static RCTBorderColors RCTCreateRCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
-  return RCTBorderColors{.left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
-                         .top = RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
-                         .bottom = RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
-                         .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)};
+  return RCTBorderColors{.top = RCTCreateCGColorRefFromSharedColor(borderColors.top),
+                         .left = RCTCreateCGColorRefFromSharedColor(borderColors.left),
+                         .bottom = RCTCreateCGColorRefFromSharedColor(borderColors.bottom),
+                         .right = RCTCreateCGColorRefFromSharedColor(borderColors.right)};
+}
+
+static void RCTReleaseRCTBorderColors(RCTBorderColors borderColors)
+{
+  CGColorRelease(borderColors.top);
+  CGColorRelease(borderColors.left);
+  CGColorRelease(borderColors.bottom);
+  CGColorRelease(borderColors.right);
 }
 
 static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
@@ -408,7 +440,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     }
 
     layer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
-    CGColorRef borderColor = RCTCGColorRefFromSharedColor(borderMetrics.borderColors.left);
+    CGColorRef borderColor = RCTCreateCGColorRefFromSharedColor(borderMetrics.borderColors.left);
     layer.borderColor = borderColor;
     CGColorRelease(borderColor);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
@@ -427,14 +459,18 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.borderColor = nil;
     layer.cornerRadius = 0;
 
+    RCTBorderColors borderColors = RCTCreateRCTBorderColorsFromBorderColors(borderMetrics.borderColors);
+
     UIImage *image = RCTGetBorderImage(
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
         layer.bounds.size,
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
-        RCTBorderColorsFromBorderColors(borderMetrics.borderColors),
+        borderColors,
         _backgroundColor.CGColor,
         self.clipsToBounds);
+
+    RCTReleaseRCTBorderColors(borderColors);
 
     if (image == nil) {
       _borderLayer.contents = nil;
@@ -551,6 +587,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 #pragma mark - Accessibility Events
 
+- (BOOL)shouldGroupAccessibilityChildren
+{
+  return YES;
+}
+
 - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
   auto const &accessibilityActions = _props->accessibilityActions;
@@ -621,6 +662,17 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 }
 
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Can't the import generated Plugin.h because plugins are not in this BUCK target
+Class<RCTComponentViewProtocol> RCTViewCls(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 Class<RCTComponentViewProtocol> RCTViewCls(void)
 {

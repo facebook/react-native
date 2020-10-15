@@ -141,16 +141,21 @@ using namespace facebook::react;
 
 - (NSArray *)accessibilityElements
 {
-  if (![_accessibilityProvider isUpToDate:_state->getData().attributedString]) {
+  if (!_state) {
+    return [NSArray new];
+  }
+
+  auto &data = _state->getData();
+
+  if (![_accessibilityProvider isUpToDate:data.attributedString]) {
     RCTTextLayoutManager *textLayoutManager =
-        (RCTTextLayoutManager *)unwrapManagedObject(_state->getData().layoutManager->getNativeTextLayoutManager());
+        (RCTTextLayoutManager *)unwrapManagedObject(data.layoutManager->getNativeTextLayoutManager());
     CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
-    _accessibilityProvider =
-        [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:_state->getData().attributedString
-                                                             layoutManager:textLayoutManager
-                                                       paragraphAttributes:_state->getData().paragraphAttributes
-                                                                     frame:frame
-                                                                      view:self];
+    _accessibilityProvider = [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:data.attributedString
+                                                                                  layoutManager:textLayoutManager
+                                                                            paragraphAttributes:data.paragraphAttributes
+                                                                                          frame:frame
+                                                                                           view:self];
   }
 
   self.isAccessibilityElement = NO;

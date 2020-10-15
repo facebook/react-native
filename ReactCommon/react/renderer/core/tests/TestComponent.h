@@ -33,7 +33,7 @@ static const char TestComponentName[] = "Test";
 
 class TestProps : public ViewProps {
  public:
-  using ViewProps::ViewProps;
+  TestProps() = default;
 
   TestProps(const TestProps &sourceProps, const RawProps &rawProps)
       : ViewProps(sourceProps, rawProps) {}

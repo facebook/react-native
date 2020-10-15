@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTPrimitives.h>
 #import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #import <react/renderer/core/EventEmitter.h>
 #import <react/renderer/core/LayoutMetrics.h>
@@ -116,6 +115,8 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  * Read the last props used to update the view.
  */
 - (facebook::react::SharedProps)props;
+
+- (void)setPropKeysManagedByAnimated:(nullable NSSet<NSString *> *)propKeys;
 
 @end
 
