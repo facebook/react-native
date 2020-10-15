@@ -2268,33 +2268,6 @@ namespace facebook {
   namespace react {
 
     
-    static facebook::jsi::Value __hostFunction_NativeTVNavigationEventEmitterSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "addListener", "(Ljava/lang/String;)V", args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeTVNavigationEventEmitterSpecJSI_removeListeners(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "removeListeners", "(D)V", args, count);
-    }
-
-
-    NativeTVNavigationEventEmitterSpecJSI::NativeTVNavigationEventEmitterSpecJSI(const JavaTurboModule::InitParams &params)
-      : JavaTurboModule(params) {
-        
-        methodMap_["addListener"] = MethodMetadata {1, __hostFunction_NativeTVNavigationEventEmitterSpecJSI_addListener};
-        
-        
-        methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeTVNavigationEventEmitterSpecJSI_removeListeners};
-        
-        
-
-    }
-
-  } // namespace react
-} // namespace facebook
-namespace facebook {
-  namespace react {
-
-    
     static facebook::jsi::Value __hostFunction_NativeTimingSpecJSI_createTimer(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "createTimer", "(DDDZ)V", args, count);
     }
