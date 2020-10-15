@@ -75,7 +75,7 @@ public class JavaModuleWrapper {
       // module.
       classForMethods = superClass;
     }
-    Method[] targetMethods = classForMethods.getDeclaredMethods();
+    Method[] targetMethods = classForMethods.getMethods();
 
     for (Method targetMethod : targetMethods) {
       ReactMethod annotation = targetMethod.getAnnotation(ReactMethod.class);
