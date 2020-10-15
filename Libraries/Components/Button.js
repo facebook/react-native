@@ -26,10 +26,10 @@ import type {ColorValue} from '../StyleSheet/StyleSheet';
 
 type ButtonProps = $ReadOnly<{|
   /**
-    Text to display inside the button. On Android the given title will be
+    Text to display inside the button. On Android the given label will be
     converted to the uppercased form.
    */
-  title: string,
+  label: string,
 
   /**
     Handler to be called when the user taps the button. The first function
@@ -156,7 +156,7 @@ type ButtonProps = $ReadOnly<{|
   ```jsx
   <Button
     onPress={onPressLearnMore}
-    title="Learn More"
+    label="Learn More"
     color="#841584"
     accessibilityLabel="Learn more about this purple button"
   />
@@ -173,48 +173,48 @@ type ButtonProps = $ReadOnly<{|
   const App = () => (
     <SafeAreaView style={styles.container}>
       <View>
-        <Text style={styles.title}>
-          The title and onPress handler are required. It is recommended to set accessibilityLabel to help make your app usable by everyone.
+        <Text style={styles.label}>
+          The label and onPress handler are required. It is recommended to set accessibilityLabel to help make your app usable by everyone.
         </Text>
         <Button
-          title="Press me"
+          label="Press me"
           onPress={() => Alert.alert('Simple Button pressed')}
         />
       </View>
       <Separator />
       <View>
-        <Text style={styles.title}>
-          Adjust the color in a way that looks standard on each platform. On  iOS, the color prop controls the color of the text. On Android, the color adjusts the background color of the button.
+        <Text style={styles.label}>
+          Adjust the color in a way that looks standard on each platform. On  iOS, the color prop controls the color of the button label. On Android, the color adjusts the background color of the button.
         </Text>
         <Button
-          title="Press me"
+          label="Press me"
           color="#f194ff"
           onPress={() => Alert.alert('Button with adjusted color pressed')}
         />
       </View>
       <Separator />
       <View>
-        <Text style={styles.title}>
+        <Text style={styles.label}>
           All interaction for the component are disabled.
         </Text>
         <Button
-          title="Press me"
+          label="Press me"
           disabled
           onPress={() => Alert.alert('Cannot press this one')}
         />
       </View>
       <Separator />
       <View>
-        <Text style={styles.title}>
-          This layout strategy lets the title define the width of the button.
+        <Text style={styles.label}>
+          This layout strategy lets the label text define the width of the button.
         </Text>
         <View style={styles.fixToText}>
           <Button
-            title="Left button"
+            label="Left button"
             onPress={() => Alert.alert('Left button pressed')}
           />
           <Button
-            title="Right button"
+            label="Right button"
             onPress={() => Alert.alert('Right button pressed')}
           />
         </View>
@@ -228,7 +228,7 @@ type ButtonProps = $ReadOnly<{|
       justifyContent: 'center',
       marginHorizontal: 16,
     },
-    title: {
+    label: {
       textAlign: 'center',
       marginVertical: 8,
     },
@@ -254,7 +254,7 @@ class Button extends React.Component<ButtonProps> {
       color,
       onPress,
       touchSoundDisabled,
-      title,
+      label,
       hasTVPreferredFocus,
       nextFocusDown,
       nextFocusForward,
@@ -280,11 +280,11 @@ class Button extends React.Component<ButtonProps> {
       accessibilityState.disabled = true;
     }
     invariant(
-      typeof title === 'string',
-      'The title prop of a Button must be a string',
+      typeof label === 'string',
+      'The label prop of a Button must be a string',
     );
-    const formattedTitle =
-      Platform.OS === 'android' ? title.toUpperCase() : title;
+    const formattedLabel =
+      Platform.OS === 'android' ? label.toUpperCase() : label;
     const Touchable =
       Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
     return (
@@ -304,7 +304,7 @@ class Button extends React.Component<ButtonProps> {
         touchSoundDisabled={touchSoundDisabled}>
         <View style={buttonStyles}>
           <Text style={textStyles} disabled={disabled}>
-            {formattedTitle}
+            {formattedLabel}
           </Text>
         </View>
       </Touchable>
