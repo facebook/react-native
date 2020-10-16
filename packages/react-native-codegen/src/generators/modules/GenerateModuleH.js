@@ -14,6 +14,7 @@ import type {
   Nullable,
   SchemaType,
   NativeModuleTypeAnnotation,
+  NativeModuleFunctionTypeAnnotation,
 } from '../../CodegenSchema';
 
 import type {AliasResolver} from './Utils';
@@ -22,9 +23,9 @@ const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
-const moduleTemplate = `class JSI_EXPORT Native::_MODULE_NAME_::CxxSpecJSI : public TurboModule {
+const moduleTemplate = `class JSI_EXPORT ::_CODEGEN_MODULE_NAME_::CxxSpecJSI : public TurboModule {
 protected:
-  Native::_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
+  ::_CODEGEN_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
 ::_MODULE_PROPERTIES_::
@@ -57,7 +58,9 @@ function translatePrimitiveJSTypeToCpp(
   createErrorMessage: (typeName: string) => string,
   resolveAlias: AliasResolver,
 ) {
-  const [typeAnnotation] = unwrapNullable(nullableTypeAnnotation);
+  const [typeAnnotation] = unwrapNullable<NativeModuleTypeAnnotation>(
+    nullableTypeAnnotation,
+  );
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
@@ -114,13 +117,20 @@ module.exports = {
     const nativeModules = getModules(schema);
 
     const modules = Object.keys(nativeModules)
-      .map(name => {
-        const {aliases, properties} = nativeModules[name];
+      .map(codegenModuleName => {
+        const {
+          aliases,
+          spec: {properties},
+        } = nativeModules[codegenModuleName];
         const resolveAlias = createAliasResolver(aliases);
 
         const traversedProperties = properties
           .map(prop => {
-            const [propTypeAnnotation] = unwrapNullable(prop.typeAnnotation);
+            const [
+              propTypeAnnotation,
+            ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+              prop.typeAnnotation,
+            );
             const traversedArgs = propTypeAnnotation.params
               .map(param => {
                 const translatedParam = translatePrimitiveJSTypeToCpp(
@@ -156,7 +166,7 @@ module.exports = {
           .join('\n');
         return moduleTemplate
           .replace(/::_MODULE_PROPERTIES_::/g, traversedProperties)
-          .replace(/::_MODULE_NAME_::/g, name)
+          .replace(/::_CODEGEN_MODULE_NAME_::/g, codegenModuleName)
           .replace('::_PROPERTIES_MAP_::', '');
       })
       .join('\n');

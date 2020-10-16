@@ -14,6 +14,8 @@ import type {
   SchemaType,
   NativeModulePropertySchema,
   NativeModuleMethodParamSchema,
+  NativeModuleFunctionTypeAnnotation,
+  NativeModuleParamTypeAnnotation,
 } from '../../CodegenSchema';
 
 import type {AliasResolver} from './Utils';
@@ -23,10 +25,10 @@ const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 type FilesOutput = Map<string, string>;
 
 const propertyHeaderTemplate =
-  'static jsi::Value __hostFunction_Native::_MODULE_NAME_::CxxSpecJSI_::_PROPERTY_NAME_::(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {';
+  'static jsi::Value __hostFunction_::_CODEGEN_MODULE_NAME_::CxxSpecJSI_::_PROPERTY_NAME_::(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {';
 
 const propertyCastTemplate =
-  'static_cast<Native::_MODULE_NAME_::CxxSpecJSI *>(&turboModule)->::_PROPERTY_NAME_::(rt::_ARGS_::);';
+  'static_cast<::_CODEGEN_MODULE_NAME_::CxxSpecJSI *>(&turboModule)->::_PROPERTY_NAME_::(rt::_ARGS_::);';
 
 const nonvoidPropertyTemplate = `${propertyHeaderTemplate}
   return ${propertyCastTemplate}
@@ -38,12 +40,12 @@ const voidPropertyTemplate = `${propertyHeaderTemplate}
 }`;
 
 const proprertyDefTemplate =
-  '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_Native::_MODULE_NAME_::CxxSpecJSI_::_PROPERTY_NAME_::};';
+  '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_::_CODEGEN_MODULE_NAME_::CxxSpecJSI_::_PROPERTY_NAME_::};';
 
 const moduleTemplate = `::_MODULE_PROPERTIES_::
 
-Native::_MODULE_NAME_::CxxSpecJSI::Native::_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
-  : TurboModule("::_MODULE_NAME_::", jsInvoker) {
+::_CODEGEN_MODULE_NAME_::CxxSpecJSI::::_CODEGEN_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
+  : TurboModule("::_NATIVE_MODULE_NAME_::", jsInvoker) {
 ::_PROPERTIES_MAP_::
 }`.trim();
 
@@ -77,7 +79,9 @@ function traverseArg(
     return `args[${index}]${suffix}`;
   }
   const {typeAnnotation: nullableTypeAnnotation} = arg;
-  const [typeAnnotation] = unwrapNullable(nullableTypeAnnotation);
+  const [typeAnnotation] = unwrapNullable<NativeModuleParamTypeAnnotation>(
+    nullableTypeAnnotation,
+  );
 
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -127,7 +131,11 @@ function traverseProperty(
   property: NativeModulePropertySchema,
   resolveAlias: AliasResolver,
 ): string {
-  const [propertyTypeAnnotation] = unwrapNullable(property.typeAnnotation);
+  const [
+    propertyTypeAnnotation,
+  ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+    property.typeAnnotation,
+  );
   const propertyTemplate =
     propertyTypeAnnotation.returnTypeAnnotation.type === 'VoidTypeAnnotation'
       ? voidPropertyTemplate
@@ -149,31 +157,40 @@ module.exports = {
     const nativeModules = getModules(schema);
 
     const modules = Object.keys(nativeModules)
-      .map(name => {
-        const {aliases, properties} = nativeModules[name];
+      .map(codegenModuleName => {
+        const nativeModule = nativeModules[codegenModuleName];
+        const {
+          aliases,
+          spec: {properties},
+          moduleNames,
+        } = nativeModule;
         const resolveAlias = createAliasResolver(aliases);
         const traversedProperties = properties
           .map(property => traverseProperty(property, resolveAlias))
           .join('\n');
-        return moduleTemplate
-          .replace(/::_MODULE_PROPERTIES_::/g, traversedProperties)
-          .replace(
-            '::_PROPERTIES_MAP_::',
-            properties
-              .map(
-                ({
-                  name: propertyName,
-                  typeAnnotation: nullableTypeAnnotation,
-                }) => {
-                  const [{params}] = unwrapNullable(nullableTypeAnnotation);
-                  return proprertyDefTemplate
-                    .replace(/::_PROPERTY_NAME_::/g, propertyName)
-                    .replace(/::_ARGS_COUNT_::/g, params.length.toString());
-                },
-              )
-              .join('\n'),
-          )
-          .replace(/::_MODULE_NAME_::/g, name);
+        return (
+          moduleTemplate
+            .replace(/::_MODULE_PROPERTIES_::/g, traversedProperties)
+            // TODO: What happens when there are more than one NativeModule requires?
+            .replace('::_NATIVE_MODULE_NAME_::', moduleNames[0])
+            .replace(
+              '::_PROPERTIES_MAP_::',
+              properties
+                .map(
+                  ({
+                    name: propertyName,
+                    typeAnnotation: nullableTypeAnnotation,
+                  }) => {
+                    const [{params}] = unwrapNullable(nullableTypeAnnotation);
+                    return proprertyDefTemplate
+                      .replace(/::_PROPERTY_NAME_::/g, propertyName)
+                      .replace(/::_ARGS_COUNT_::/g, params.length.toString());
+                  },
+                )
+                .join('\n'),
+            )
+            .replace(/::_CODEGEN_MODULE_NAME_::/g, codegenModuleName)
+        );
       })
       .join('\n');
 
