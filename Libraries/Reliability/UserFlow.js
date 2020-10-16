@@ -78,7 +78,7 @@ const UserFlow = {
   addAnnotation(
     flowId: FlowId,
     annotationName: string,
-    annotationValue: string,
+    annotationValue: string | boolean,
   ): void {
     if (global.nativeUserFlowAddAnnotation) {
       global.nativeUserFlowAddAnnotation(
