@@ -244,24 +244,29 @@ export type ComponentShape = $ReadOnly<{|
 |}>;
 
 export type SchemaType = $ReadOnly<{|
-  modules: $ReadOnly<{
-    [module: string]: $ReadOnly<{|
-      components?: $ReadOnly<{[component: string]: ComponentShape, ...}>,
-      nativeModules?: $ReadOnly<{
-        [nativeModule: string]: NativeModuleSchema,
-        ...,
-      }>,
-    |}>,
-    ...,
-  }>,
+  modules: $ReadOnly<{|
+    [moduleName: string]: ComponentSchema | NativeModuleSchema,
+  |}>,
+|}>;
+
+export type ComponentSchema = $ReadOnly<{|
+  type: 'Component',
+  components: $ReadOnly<{|
+    [componentName: string]: ComponentShape,
+  |}>,
 |}>;
 
 /**
  * NativeModule Types
  */
 export type NativeModuleSchema = $ReadOnly<{|
-  // We only support aliases to Objects
+  type: 'NativeModule',
   aliases: NativeModuleAliasMap,
+  spec: NativeModuleSpec,
+  moduleNames: $ReadOnlyArray<string>,
+|}>;
+
+type NativeModuleSpec = $ReadOnly<{|
   properties: $ReadOnlyArray<NativeModulePropertySchema>,
 |}>;
 
