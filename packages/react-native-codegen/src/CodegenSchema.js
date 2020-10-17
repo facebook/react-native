@@ -264,6 +264,10 @@ export type NativeModuleSchema = $ReadOnly<{|
   aliases: NativeModuleAliasMap,
   spec: NativeModuleSpec,
   moduleNames: $ReadOnlyArray<string>,
+  // Use for modules that are not used on other platforms.
+  // TODO: It's clearer to define `restrictedToPlatforms` instead, but
+  // `excludedPlatforms` is used here to be consistent with ComponentSchema.
+  excludedPlatforms?: $ReadOnlyArray<PlatformType>,
 |}>;
 
 type NativeModuleSpec = $ReadOnly<{|

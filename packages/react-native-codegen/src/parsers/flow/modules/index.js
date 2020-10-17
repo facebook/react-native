@@ -363,7 +363,7 @@ function translateFunctionTypeAnnotation(
 }
 
 function buildPropertySchema(
-  moduleName: string,
+  hasteModuleName: string,
   // TODO(T71778680): This is an ObjectTypeProperty containing either:
   // - a FunctionTypeAnnotation or GenericTypeAnnotation
   // - a NullableTypeAnnoation containing a FunctionTypeAnnotation or GenericTypeAnnotation
@@ -390,13 +390,13 @@ function buildPropertySchema(
     optional: property.optional,
     typeAnnotation: wrapNullable(
       nullable,
-      translateFunctionTypeAnnotation(moduleName, value, types, aliasMap),
+      translateFunctionTypeAnnotation(hasteModuleName, value, types, aliasMap),
     ),
   };
 }
 
 function buildModuleSchema(
-  moduleName: string,
+  hasteModuleName: string,
   moduleNames: $ReadOnlyArray<string>,
   types: TypeDeclarationMap,
 ): NativeModuleSchema {
@@ -424,6 +424,20 @@ function buildModuleSchema(
     "Nativemodule interface must be called 'Spec'",
   );
 
+  // Some module names use platform suffix to indicate platform-exclusive modules.
+  // Eventually this should be made explicit in the Flow type itself.
+  // Also check the hasteModuleName for platform suffix.
+  // Note: this shape is consistent with ComponentSchema.
+  const excludedPlatforms = [];
+  const namesToValidate = [...moduleNames, hasteModuleName];
+  namesToValidate.forEach(name => {
+    if (name.endsWith('Android')) {
+      excludedPlatforms.push('iOS');
+    } else if (name.endsWith('IOS')) {
+      excludedPlatforms.push('android');
+    }
+  });
+
   const declaration = types[moduleInterfaceName];
   return (declaration.body.properties: $ReadOnlyArray<$FlowFixMe>)
     .filter(property => property.type === 'ObjectTypeProperty')
@@ -432,7 +446,7 @@ function buildModuleSchema(
       return {
         aliasMap: aliasMap,
         propertySchema: buildPropertySchema(
-          moduleName,
+          hasteModuleName,
           property,
           types,
           aliasMap,
@@ -448,6 +462,7 @@ function buildModuleSchema(
             properties: [...moduleSchema.spec.properties, propertySchema],
           },
           moduleNames: moduleSchema.moduleNames,
+          excludedPlatforms: moduleSchema.excludedPlatforms,
         };
       },
       {
@@ -455,6 +470,8 @@ function buildModuleSchema(
         aliases: {},
         spec: {properties: []},
         moduleNames: moduleNames,
+        excludedPlatforms:
+          excludedPlatforms.length !== 0 ? [...excludedPlatforms] : undefined,
       },
     );
 }

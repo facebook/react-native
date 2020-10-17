@@ -152,12 +152,12 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
     if (filename === undefined || filename === null) {
       throw new Error('Filepath expected while parasing a module');
     }
-    const moduleName = path.basename(filename).replace(/\.js$/, '');
+    const hasteModuleName = path.basename(filename).replace(/\.js$/, '');
 
     const regex = new RegExp(TURBO_MODULE_REGISTRY_REQUIRE_REGEX_STRING, 'g');
     let match = regex.exec(contents);
 
-    const errorHeader = `Error while parsing Module '${moduleName}'`;
+    const errorHeader = `Error while parsing Module '${hasteModuleName}'`;
 
     if (match == null) {
       throw new Error(
@@ -165,23 +165,23 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
       );
     }
 
-    const moduleRequires = [];
+    const moduleNames = [];
     while (match != null) {
       const resultGroups = match.groups;
       invariant(
         resultGroups != null,
-        `Couldn't parse TurboModuleRegistry.(get|getEnforcing)<Spec> call in module '${moduleName}'.`,
+        `Couldn't parse TurboModuleRegistry.(get|getEnforcing)<Spec> call in module '${hasteModuleName}'.`,
       );
 
-      if (!moduleRequires.includes(resultGroups.nativeModuleName)) {
-        moduleRequires.push(resultGroups.nativeModuleName);
+      if (!moduleNames.includes(resultGroups.nativeModuleName)) {
+        moduleNames.push(resultGroups.nativeModuleName);
       }
       match = regex.exec(contents);
     }
 
     return wrapModuleSchema(
-      buildModuleSchema(moduleName, moduleRequires, types),
-      moduleName,
+      buildModuleSchema(hasteModuleName, moduleNames, types),
+      hasteModuleName,
     );
   }
 }
