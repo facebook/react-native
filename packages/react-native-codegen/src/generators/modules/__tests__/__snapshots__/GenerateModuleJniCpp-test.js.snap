@@ -173,15 +173,6 @@ NativeCameraRollManagerSpecJSI::NativeCameraRollManagerSpecJSI(const JavaTurboMo
   methodMap_[\\"deletePhotos\\"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerSpecJSI_deletePhotos};
 }
 
-static facebook::jsi::Value __hostFunction_NativeImagePickerIOSSpecJSI_openCameraDialog(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, \\"openCameraDialog\\", \\"(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V\\", args, count);
-}
-
-NativeImagePickerIOSSpecJSI::NativeImagePickerIOSSpecJSI(const JavaTurboModule::InitParams &params)
-  : JavaTurboModule(params) {
-  methodMap_[\\"openCameraDialog\\"] = MethodMetadata {3, __hostFunction_NativeImagePickerIOSSpecJSI_openCameraDialog};
-}
-
 static facebook::jsi::Value __hostFunction_NativeExceptionsManagerSpecJSI_reportFatalException(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, \\"reportFatalException\\", \\"(Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;D)V\\", args, count);
 }
@@ -214,9 +205,6 @@ NativeExceptionsManagerSpecJSI::NativeExceptionsManagerSpecJSI(const JavaTurboMo
 std::shared_ptr<TurboModule> REAL_MODULE_EXAMPLE_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
   if (moduleName == \\"CameraRollManager\\") {
     return std::make_shared<NativeCameraRollManagerSpecJSI>(params);
-  }
-  if (moduleName == \\"ImagePickerIOS\\") {
-    return std::make_shared<NativeImagePickerIOSSpecJSI>(params);
   }
   if (moduleName == \\"ExceptionsManager\\") {
     return std::make_shared<NativeExceptionsManagerSpecJSI>(params);

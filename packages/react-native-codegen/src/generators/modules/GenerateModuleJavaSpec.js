@@ -282,8 +282,12 @@ module.exports = {
     Object.keys(nativeModules).forEach(codegenModuleName => {
       const {
         aliases,
+        excludedPlatforms,
         spec: {properties},
       } = nativeModules[codegenModuleName];
+      if (excludedPlatforms != null && excludedPlatforms.includes('android')) {
+        return;
+      }
       const resolveAlias = createAliasResolver(aliases);
       const className = `${codegenModuleName}Spec`;
 

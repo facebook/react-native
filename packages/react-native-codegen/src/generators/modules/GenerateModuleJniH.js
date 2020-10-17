@@ -89,6 +89,14 @@ module.exports = {
   ): FilesOutput {
     const nativeModules = getModules(schema);
     const modules = Object.keys(nativeModules)
+      .filter(codegenModuleName => {
+        const module = nativeModules[codegenModuleName];
+        return !(
+          module.excludedPlatforms != null &&
+          module.excludedPlatforms.includes('android')
+        );
+      })
+      .sort()
       .map(codegenModuleName =>
         moduleSpecTemplate.replace(
           /::_CODEGEN_MODULE_NAME_::/g,

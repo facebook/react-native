@@ -125,8 +125,12 @@ module.exports = {
     for (const codegenModuleName of codegenModuleNames) {
       const {
         aliases,
+        excludedPlatforms,
         spec: {properties},
       } = nativeModules[codegenModuleName];
+      if (excludedPlatforms != null && excludedPlatforms.includes('iOS')) {
+        continue;
+      }
       const resolveAlias = createAliasResolver(aliases);
       const structCollector = new StructCollector();
 

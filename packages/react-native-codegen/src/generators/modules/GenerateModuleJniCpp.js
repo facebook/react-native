@@ -334,6 +334,14 @@ module.exports = {
     const nativeModules = getModules(schema);
 
     const modules = Object.keys(nativeModules)
+      .filter(codegenModuleName => {
+        const module = nativeModules[codegenModuleName];
+        return !(
+          module.excludedPlatforms != null &&
+          module.excludedPlatforms.includes('android')
+        );
+      })
+      .sort()
       .map(codegenModuleName => {
         const {
           aliases,
@@ -374,6 +382,25 @@ module.exports = {
       .join('\n');
 
     const moduleLookup = Object.keys(nativeModules)
+      .filter(codegenModuleName => {
+        const module = nativeModules[codegenModuleName];
+        return !(
+          module.excludedPlatforms != null &&
+          module.excludedPlatforms.includes('android')
+        );
+      })
+      .sort((a, b) => {
+        const moduleA = nativeModules[a];
+        const moduleB = nativeModules[b];
+        const nameA = moduleA.moduleNames[0];
+        const nameB = moduleB.moduleNames[0];
+        if (nameA < nameB) {
+          return -1;
+        } else if (nameA > nameB) {
+          return 1;
+        }
+        return 0;
+      })
       .map(codegenModuleName => {
         const {moduleNames} = nativeModules[codegenModuleName];
         return moduleNames
