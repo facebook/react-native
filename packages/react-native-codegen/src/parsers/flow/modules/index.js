@@ -36,7 +36,7 @@ const invariant = require('invariant');
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 
 function translateTypeAnnotation(
-  moduleName: string,
+  hasteModuleName: string,
   /**
    * TODO(T71778680): Flow-type this node.
    */
@@ -61,7 +61,7 @@ function translateTypeAnnotation(
         }
         case 'Promise': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
-            moduleName,
+            hasteModuleName,
             typeAnnotation,
           );
 
@@ -72,7 +72,7 @@ function translateTypeAnnotation(
         case 'Array':
         case '$ReadOnlyArray': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
-            moduleName,
+            hasteModuleName,
             typeAnnotation,
           );
 
@@ -85,7 +85,7 @@ function translateTypeAnnotation(
 
             const [elementType, isElementTypeNullable] = unwrapNullable(
               translateTypeAnnotation(
-                moduleName,
+                hasteModuleName,
                 typeAnnotation.typeParameters.params[0],
                 types,
                 aliasMap,
@@ -122,11 +122,11 @@ function translateTypeAnnotation(
         }
         case '$ReadOnly': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
-            moduleName,
+            hasteModuleName,
             typeAnnotation,
           );
           return translateTypeAnnotation(
-            moduleName,
+            hasteModuleName,
             typeAnnotation.typeParameters.params[0],
             types,
             aliasMap,
@@ -159,7 +159,7 @@ function translateTypeAnnotation(
         }
         default: {
           throw new UnrecognizedFlowGenericParserError(
-            moduleName,
+            hasteModuleName,
             typeAnnotation.id.name,
           );
         }
@@ -174,7 +174,7 @@ function translateTypeAnnotation(
             name: property.key.name,
             optional,
             typeAnnotation: translateTypeAnnotation(
-              moduleName,
+              hasteModuleName,
               property.value,
               types,
               aliasMap,
@@ -250,7 +250,7 @@ function translateTypeAnnotation(
       return wrapNullable(
         nullable,
         translateFunctionTypeAnnotation(
-          moduleName,
+          hasteModuleName,
           typeAnnotation,
           types,
           aliasMap,
@@ -259,7 +259,7 @@ function translateTypeAnnotation(
     }
     default: {
       throw new UnrecognizedFlowTypeAnnotationParserError(
-        moduleName,
+        hasteModuleName,
         typeAnnotation.type,
       );
     }
@@ -296,7 +296,7 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
 }
 
 function translateFunctionTypeAnnotation(
-  moduleName: string,
+  hasteModuleName: string,
   // TODO(T71778680): This is a FunctionTypeAnnotation. Type this.
   flowFunctionTypeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
@@ -305,13 +305,13 @@ function translateFunctionTypeAnnotation(
   const params: Array<NativeModuleMethodParamSchema> = [];
   for (const flowParam of (flowFunctionTypeAnnotation.params: $ReadOnlyArray<$FlowFixMe>)) {
     if (flowParam.name == null) {
-      throw new UnnamedFunctionTypeAnnotationParamError(moduleName);
+      throw new UnnamedFunctionTypeAnnotationParamError(hasteModuleName);
     }
 
     const paramName = flowParam.name.name;
     const [paramTypeAnnotation, isParamTypeAnnotationNullable] = unwrapNullable(
       translateTypeAnnotation(
-        moduleName,
+        hasteModuleName,
         flowParam.typeAnnotation,
         types,
         aliasMap,
@@ -340,7 +340,7 @@ function translateFunctionTypeAnnotation(
 
   const [returnTypeAnnotation, isReturnTypeAnnotationNullable] = unwrapNullable(
     translateTypeAnnotation(
-      moduleName,
+      hasteModuleName,
       flowFunctionTypeAnnotation.returnType,
       types,
       aliasMap,

@@ -14,11 +14,11 @@ import type {SchemaType, NativeModuleSchema} from '../../../CodegenSchema.js';
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
-  moduleName: string,
+  hasteModuleName: string,
 ): SchemaType {
   return {
     modules: {
-      [moduleName]: nativeModuleSchema,
+      [hasteModuleName]: nativeModuleSchema,
     },
   };
 }

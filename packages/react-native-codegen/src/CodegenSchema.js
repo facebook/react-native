@@ -245,7 +245,7 @@ export type ComponentShape = $ReadOnly<{|
 
 export type SchemaType = $ReadOnly<{|
   modules: $ReadOnly<{|
-    [moduleName: string]: ComponentSchema | NativeModuleSchema,
+    [hasteModuleName: string]: ComponentSchema | NativeModuleSchema,
   |}>,
 |}>;
 

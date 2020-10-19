@@ -14,9 +14,9 @@ const invariant = require('invariant');
 
 class UnrecognizedFlowTypeAnnotationParserError extends Error {
   +typeAnnotationType: string;
-  constructor(moduleName: string, typeAnnotationType: string) {
+  constructor(hasteModuleName: string, typeAnnotationType: string) {
     super(
-      `Module ${moduleName}: Detected unsupported type annotation of type '${typeAnnotationType}'`,
+      `Module ${hasteModuleName}: Detected unsupported type annotation of type '${typeAnnotationType}'`,
     );
 
     // assign the error class name in your custom error (as a shortcut)
@@ -30,9 +30,9 @@ class UnrecognizedFlowTypeAnnotationParserError extends Error {
 
 class UnrecognizedFlowGenericParserError extends Error {
   +genericName: string;
-  constructor(moduleName: string, genericName: string) {
+  constructor(hasteModuleName: string, genericName: string) {
     super(
-      `Module ${moduleName}: Detected unsupported generic type '${genericName}'`,
+      `Module ${hasteModuleName}: Detected unsupported generic type '${genericName}'`,
     );
 
     // assign the error class name in your custom error (as a shortcut)
@@ -46,9 +46,9 @@ class UnrecognizedFlowGenericParserError extends Error {
 
 class FlowGenericNotTypeParameterizedParserError extends Error {
   +genericName: string;
-  constructor(moduleName: string, genericName: string) {
+  constructor(hasteModuleName: string, genericName: string) {
     super(
-      `Module ${moduleName}: Detected a type of ${genericName}, without type parameters.`,
+      `Module ${hasteModuleName}: Detected a type of ${genericName}, without type parameters.`,
     );
 
     // assign the error class name in your custom error (as a shortcut)
@@ -65,7 +65,7 @@ class FlowGenericTypeParameterCountMismatchParserError extends Error {
   +numTypeParameters: number;
 
   constructor(
-    moduleName: string,
+    hasteModuleName: string,
     genericName: string,
     numTypeParameters: number,
     expectedNumTypeParameters: number,
@@ -76,7 +76,7 @@ class FlowGenericTypeParameterCountMismatchParserError extends Error {
     );
 
     super(
-      `Module ${moduleName}: Detected a type of ${genericName}, with ${numTypeParameters} type parameters specified. Expected exactly ${expectedNumTypeParameters}.`,
+      `Module ${hasteModuleName}: Detected a type of ${genericName}, with ${numTypeParameters} type parameters specified. Expected exactly ${expectedNumTypeParameters}.`,
     );
 
     // assign the error class name in your custom error (as a shortcut)
@@ -90,9 +90,9 @@ class FlowGenericTypeParameterCountMismatchParserError extends Error {
 }
 
 class UnnamedFunctionTypeAnnotationParamError extends Error {
-  constructor(moduleName: string) {
+  constructor(hasteModuleName: string) {
     super(
-      `Module ${moduleName}: Detected a FunctionTypeAnnotation with an unnamed param. Please name all params.`,
+      `Module ${hasteModuleName}: Detected a FunctionTypeAnnotation with an unnamed param. Please name all params.`,
     );
 
     // assign the error class name in your custom error (as a shortcut)
