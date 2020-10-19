@@ -203,8 +203,7 @@ function buildGetConstantsMethod(
     const rawProperties =
       methodTypeAnnotation.returnTypeAnnotation.properties || [];
     rawProperties.forEach(p => {
-      // TODO(T76712813): Should we push to optionalProps if the constant is nullable?
-      if (p.optional) {
+      if (p.optional || p.typeAnnotation.type === 'NullableTypeAnnotation') {
         optionalProps.push(p.name);
       } else {
         requiredProps.push(p.name);
