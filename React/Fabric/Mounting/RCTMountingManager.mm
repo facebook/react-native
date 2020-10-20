@@ -222,9 +222,12 @@ static void RCTPerformMountInstructions(
   UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
   SharedProps oldProps = [componentView props];
   SharedProps newProps = componentDescriptor.cloneProps(oldProps, RawProps(convertIdToFollyDynamic(props)));
-  [componentView setPropKeysManagedByAnimated:nil];
+
+  NSSet<NSString *> *propKeys = componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN ?: [NSSet new];
+  propKeys = [propKeys setByAddingObjectsFromArray:props.allKeys];
+  componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   [componentView updateProps:newProps oldProps:oldProps];
-  [componentView setPropKeysManagedByAnimated:[NSSet setWithArray:props.allKeys]];
+  componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = propKeys;
 }
 
 - (void)synchronouslyDispatchCommandOnUIThread:(ReactTag)reactTag
