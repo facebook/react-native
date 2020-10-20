@@ -115,7 +115,7 @@ module.exports = {
     const fileName = `${moduleSpecName}.h`;
     const replacedTemplate = HeaderFileTemplate({
       modules: modules,
-      libraryName: libraryName,
+      libraryName: libraryName.replace(/-/g, '_'),
     });
     return new Map([
       [`jni/${fileName}`, replacedTemplate],

@@ -25,6 +25,10 @@ def rn_codegen_modules(
     generate_fixtures_rule_name = "generate_fixtures_modules-{}".format(name)
     generate_module_hobjcpp_name = "generate_module_hobjcpp-{}".format(name)
     generate_module_mm_name = "generate_module_mm-{}".format(name)
+    generate_module_java_name = "generate_module_java-{}".format(name)
+    generate_module_java_zip_name = "generate_module_java_zip-{}".format(name)
+    generate_module_jni_h_name = "generate_module_jni_h-{}".format(name)
+    generate_module_jni_cpp_name = "generate_module_jni_cpp-{}".format(name)
 
     fb_native.genrule(
         name = generate_fixtures_rule_name,
@@ -34,6 +38,92 @@ def rn_codegen_modules(
         labels = ["codegen_rule"],
     )
 
+    ##################
+    # Android handling
+    ##################
+    fb_native.genrule(
+        name = generate_module_java_name,
+        cmd = "cp -r $(location :{})/java $OUT/".format(generate_fixtures_rule_name),
+        out = "src",
+        labels = ["codegen_rule"],
+    )
+
+    fb_native.zip_file(
+        name = generate_module_java_zip_name,
+        srcs = [":{}".format(generate_module_java_name)],
+        out = "{}.src.zip".format(generate_module_java_zip_name),
+        labels = ["codegen_rule"],
+    )
+
+    fb_native.genrule(
+        name = generate_module_jni_h_name,
+        cmd = "cp $(location :{})/jni/{}.h $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
+        out = "{}.h".format(native_module_spec_name),
+        labels = ["codegen_rule"],
+    )
+
+    fb_native.genrule(
+        name = generate_module_jni_cpp_name,
+        cmd = "cp $(location :{})/jni/{}-generated.cpp $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
+        out = "{}-generated.cpp".format(native_module_spec_name),
+        labels = ["codegen_rule"],
+    )
+
+    rn_android_library(
+        name = "generated_modules-{}".format(name),
+        srcs = [
+            ":{}".format(generate_module_java_zip_name),
+        ],
+        labels = ["codegen_rule"],
+        visibility = ["PUBLIC"],
+        deps = [
+            "//fbandroid/third-party/java/jsr-305:jsr-305",
+            "//fbandroid/third-party/java/jsr-330:jsr-330",
+            react_native_target("java/com/facebook/react/bridge:bridge"),
+            react_native_target("java/com/facebook/react/common:common"),
+        ],
+        exported_deps = [
+            react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
+        ],
+    )
+
+    rn_xplat_cxx_library(
+        name = "generated_modules-{}-jni".format(name),
+        srcs = [
+            ":{}".format(generate_module_jni_cpp_name),
+        ],
+        header_namespace = "",
+        headers = [
+            ":{}".format(generate_module_jni_h_name),
+        ],
+        exported_headers = {
+            "{}/{}.h".format(native_module_spec_name, native_module_spec_name): ":{}".format(generate_module_jni_h_name),
+        },
+        compiler_flags = [
+            "-fexceptions",
+            "-frtti",
+            "-std=c++14",
+            "-Wall",
+        ],
+        preprocessor_flags = [
+            "-DLOG_TAG=\"ReactNative\"",
+            "-DWITH_FBSYSTRACE=1",
+        ],
+        visibility = [
+            "PUBLIC",
+        ],
+        deps = [],
+        exported_deps = [
+            "//xplat/jsi:jsi",
+            react_native_xplat_target("react/nativemodule/core:core"),
+        ],
+        platforms = (ANDROID,),
+        labels = ["codegen_rule"],
+    )
+
+    ##############
+    # iOS handling
+    ##############
     fb_native.genrule(
         name = generate_module_hobjcpp_name,
         cmd = "cp $(location :{})/{}.h $OUT".format(generate_fixtures_rule_name, native_module_spec_name),

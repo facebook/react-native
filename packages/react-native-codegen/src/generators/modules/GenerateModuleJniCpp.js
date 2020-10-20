@@ -452,7 +452,7 @@ module.exports = {
     const fileName = `${moduleSpecName}-generated.cpp`;
     const replacedTemplate = FileTemplate({
       modules: modules,
-      libraryName,
+      libraryName: libraryName.replace(/-/g, '_'),
       moduleLookups,
       include: `"${moduleSpecName}.h"`,
     });
