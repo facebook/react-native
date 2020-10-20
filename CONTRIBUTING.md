@@ -66,7 +66,7 @@ If you are adding new functionality or introducing a change in behavior, we will
 
 The React Native blog is generated [from the Markdown sources for the blog](https://github.com/facebook/react-native-website/tree/master/website/blog).
 
-Please open an issue in the https://github.com/facebook/react-native-website repository or tag us on [@ReactNative on Twitter](http://twitter.com/reactnative) and get the go-ahead from a maintainer before writing an article intended for the React Native blog. In most cases, you might want to share your article on your own blog or writing medium instead. It's worth asking, though, in case we find your article is a good fit for the blog.
+Please open an issue in the https://github.com/facebook/react-native-website repository or tag us on [@ReactNative](http://twitter.com/reactnative) on Twitter and get the go-ahead from a maintainer before writing an article intended for the React Native blog. In most cases, you might want to share your article on your own blog or writing medium instead. It's worth asking, though, in case we find your article is a good fit for the blog.
 
 We recommend referring to the [CONTRIBUTING](https://github.com/facebook/react-native-website/blob/master/CONTRIBUTING.md) document for the `react-native-website` repository to learn more about contributing to the website in general.
 
