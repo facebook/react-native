@@ -11,7 +11,6 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAssert.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
 #import <React/RCTNetworkTask.h>
 #import <React/RCTNetworking.h>
@@ -160,7 +159,7 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)initWithHandlersProvider:(NSArray<id<RCTURLRequestHandler>> * (^)(void))getHandlers
 {
-  if (self = [super init]) {
+  if (self = [super initWithDisabledObservation]) {
     _handlersProvider = getHandlers;
   }
   return self;

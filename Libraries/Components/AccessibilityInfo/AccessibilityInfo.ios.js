@@ -217,6 +217,7 @@ const AccessibilityInfo = {
       listener = RCTDeviceEventEmitter.addListener(eventName, handler);
     }
 
+    // $FlowFixMe[escaped-generic]
     _subscriptions.set(handler, listener);
     return {
       remove: AccessibilityInfo.removeEventListener.bind(
@@ -258,11 +259,13 @@ const AccessibilityInfo = {
     eventName: ChangeEventName,
     handler: T,
   ): void {
+    // $FlowFixMe[escaped-generic]
     const listener = _subscriptions.get(handler);
     if (!listener) {
       return;
     }
     listener.remove();
+    // $FlowFixMe[escaped-generic]
     _subscriptions.delete(handler);
   },
 };
