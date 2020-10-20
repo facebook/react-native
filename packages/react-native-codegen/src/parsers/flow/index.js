@@ -19,6 +19,7 @@ const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
 const {wrapModuleSchema} = require('./modules/schema');
+const {createParserErrorCapturer} = require('./utils');
 const invariant = require('invariant');
 
 function isComponent(ast) {
@@ -171,10 +172,30 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
       match = regex.exec(contents);
     }
 
-    return wrapModuleSchema(
-      buildModuleSchema(hasteModuleName, moduleNames, ast),
-      hasteModuleName,
+    const [parsingErrors, guard] = createParserErrorCapturer();
+
+    const schema = guard(() =>
+      buildModuleSchema(hasteModuleName, moduleNames, ast, guard),
     );
+
+    if (parsingErrors.length > 0) {
+      /**
+       * TODO(T77968131): We have two options:
+       *  - Throw the first error, but indicate there are more then one errors.
+       *  - Display all errors, nicely formatted.
+       *
+       * For the time being, we're just throw the first error.
+       **/
+
+      throw parsingErrors[0];
+    }
+
+    invariant(
+      schema != null,
+      'When there are no parsing errors, the schema should not be null',
+    );
+
+    return wrapModuleSchema(schema, hasteModuleName);
   }
 }
 

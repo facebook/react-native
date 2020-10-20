@@ -10,6 +10,8 @@
 
 'use strict';
 
+const {ParserError} = require('./errors');
+
 /**
  * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
  * declaration type. Unfortunately, we don't have those types, because flow-parser
@@ -91,6 +93,7 @@ function resolveTypeAnnotation(
         resolvedTypeAnnotation.type === 'TypeAlias',
         `GenericTypeAnnotation '${node.id.name}' must resolve to a TypeAlias. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`,
       );
+
       node = resolvedTypeAnnotation.right;
     } else {
       break;
@@ -111,8 +114,32 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
   return value;
 }
 
+export type ParserErrorCapturer = <T>(fn: () => T) => ?T;
+
+function createParserErrorCapturer(): [
+  Array<ParserError>,
+  ParserErrorCapturer,
+] {
+  const errors = [];
+  function guard<T>(fn: () => T): ?T {
+    try {
+      return fn();
+    } catch (error) {
+      if (!(error instanceof ParserError)) {
+        throw error;
+      }
+      errors.push(error);
+
+      return null;
+    }
+  }
+
+  return [errors, guard];
+}
+
 module.exports = {
   getValueFromTypes,
   resolveTypeAnnotation,
+  createParserErrorCapturer,
   getTypes,
 };

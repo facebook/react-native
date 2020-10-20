@@ -259,6 +259,17 @@ export type ComponentSchema = $ReadOnly<{|
 /**
  * NativeModule Types
  */
+export type Nullable<+T: NativeModuleTypeAnnotation> =
+  | NullableTypeAnnotation<T>
+  | T;
+
+export type NullableTypeAnnotation<
+  +T: NativeModuleTypeAnnotation,
+> = $ReadOnly<{|
+  type: 'NullableTypeAnnotation',
+  typeAnnotation: T,
+|}>;
+
 export type NativeModuleSchema = $ReadOnly<{|
   type: 'NativeModule',
   aliases: NativeModuleAliasMap,
@@ -274,25 +285,14 @@ type NativeModuleSpec = $ReadOnly<{|
   properties: $ReadOnlyArray<NativeModulePropertySchema>,
 |}>;
 
-export type NativeModuleAliasMap = $ReadOnly<{|
-  [aliasName: string]: NativeModuleObjectTypeAnnotation,
-|}>;
-
 export type NativeModulePropertySchema = $ReadOnly<{|
   name: string,
   optional: boolean,
   typeAnnotation: Nullable<NativeModuleFunctionTypeAnnotation>,
 |}>;
 
-export type Nullable<+T: NativeModuleTypeAnnotation> =
-  | NullableTypeAnnotation<T>
-  | T;
-
-export type NullableTypeAnnotation<
-  +T: NativeModuleTypeAnnotation,
-> = $ReadOnly<{|
-  type: 'NullableTypeAnnotation',
-  typeAnnotation: T,
+export type NativeModuleAliasMap = $ReadOnly<{|
+  [aliasName: string]: NativeModuleObjectTypeAnnotation,
 |}>;
 
 export type NativeModuleFunctionTypeAnnotation = $ReadOnly<{|
@@ -309,13 +309,13 @@ export type NativeModuleMethodParamSchema = $ReadOnly<{|
 
 export type NativeModuleObjectTypeAnnotation = $ReadOnly<{|
   type: 'ObjectTypeAnnotation',
-  properties: $ReadOnlyArray<
-    $ReadOnly<{|
-      name: string,
-      optional: boolean,
-      typeAnnotation: Nullable<NativeModuleBaseTypeAnnotation>,
-    |}>,
-  >,
+  properties: $ReadOnlyArray<NativeModuleObjectTypeAnnotationPropertySchema>,
+|}>;
+
+export type NativeModuleObjectTypeAnnotationPropertySchema = $ReadOnly<{|
+  name: string,
+  optional: boolean,
+  typeAnnotation: Nullable<NativeModuleBaseTypeAnnotation>,
 |}>;
 
 export type NativeModuleArrayTypeAnnotation<
