@@ -17,6 +17,17 @@ export type FlowId = {
   instanceKey: number,
 };
 
+export type PointData = $Shape<{
+  string: ?{[string]: string, ...},
+  int: ?{[string]: number, ...},
+  double: ?{[string]: number, ...},
+  bool: ?{[string]: boolean, ...},
+  string_array: ?{[string]: $ReadOnlyArray<string>, ...},
+  int_array: ?{[string]: $ReadOnlyArray<number>, ...},
+  double_array: ?{[string]: $ReadOnlyArray<number>, ...},
+  bool_array: ?{[string]: $ReadOnlyArray<boolean>, ...},
+}>;
+
 /**
  * API for tracking reliability of your user interactions
  *
@@ -67,7 +78,7 @@ const UserFlow = {
   addAnnotation(
     flowId: FlowId,
     annotationName: string,
-    annotationValue: string,
+    annotationValue: string | boolean,
   ): void {
     if (global.nativeUserFlowAddAnnotation) {
       global.nativeUserFlowAddAnnotation(
@@ -79,12 +90,13 @@ const UserFlow = {
     }
   },
 
-  addPoint(flowId: FlowId, pointName: string): void {
+  addPoint(flowId: FlowId, pointName: string, data: ?PointData = null): void {
     if (global.nativeUserFlowAddPoint) {
       global.nativeUserFlowAddPoint(
         flowId.markerId,
         flowId.instanceKey,
         pointName,
+        data,
       );
     }
   },
