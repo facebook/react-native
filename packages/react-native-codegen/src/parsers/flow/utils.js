@@ -20,6 +20,25 @@
  */
 export type TypeDeclarationMap = {|[declarationName: string]: $FlowFixMe|};
 
+function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
+  return ast.body.reduce((types, node) => {
+    if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
+      if (
+        node.declaration.type === 'TypeAlias' ||
+        node.declaration.type === 'InterfaceDeclaration'
+      ) {
+        types[node.declaration.id.name] = node.declaration;
+      }
+    } else if (
+      node.type === 'TypeAlias' ||
+      node.type === 'InterfaceDeclaration'
+    ) {
+      types[node.id.name] = node;
+    }
+    return types;
+  }, {});
+}
+
 // $FlowFixMe there's no flowtype for ASTs
 export type ASTNode = Object;
 
@@ -95,4 +114,5 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
 module.exports = {
   getValueFromTypes,
   resolveTypeAnnotation,
+  getTypes,
 };

@@ -22,7 +22,7 @@ import type {
 } from '../../../CodegenSchema.js';
 
 import type {TypeDeclarationMap} from '../utils.js';
-const {resolveTypeAnnotation} = require('../utils.js');
+const {resolveTypeAnnotation, getTypes} = require('../utils.js');
 const {unwrapNullable, wrapNullable} = require('./utils');
 const {
   FlowGenericNotTypeParameterizedParserError,
@@ -398,8 +398,12 @@ function buildPropertySchema(
 function buildModuleSchema(
   hasteModuleName: string,
   moduleNames: $ReadOnlyArray<string>,
-  types: TypeDeclarationMap,
+  /**
+   * TODO(T71778680): Flow-type this node.
+   */
+  ast: $FlowFixMe,
 ): NativeModuleSchema {
+  const types = getTypes(ast);
   const moduleInterfaceNames = (Object.keys(
     types,
   ): $ReadOnlyArray<string>).filter((typeName: string) => {

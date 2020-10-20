@@ -21,27 +21,6 @@ const {buildModuleSchema} = require('./modules');
 const {wrapModuleSchema} = require('./modules/schema');
 const invariant = require('invariant');
 
-import type {TypeDeclarationMap} from './utils';
-
-function getTypes(ast): TypeDeclarationMap {
-  return ast.body.reduce((types, node) => {
-    if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
-      if (
-        node.declaration.type === 'TypeAlias' ||
-        node.declaration.type === 'InterfaceDeclaration'
-      ) {
-        types[node.declaration.id.name] = node.declaration;
-      }
-    } else if (
-      node.type === 'TypeAlias' ||
-      node.type === 'InterfaceDeclaration'
-    ) {
-      types[node.id.name] = node;
-    }
-    return types;
-  }, {});
-}
-
 function isComponent(ast) {
   const defaultExports = ast.body.filter(
     node => node.type === 'ExportDefaultDeclaration',
@@ -68,27 +47,39 @@ function isComponent(ast) {
   );
 }
 
-function isModule(types: TypeDeclarationMap) {
-  const declaredModuleNames: Array<string> = Object.keys(types).filter(
-    (typeName: string) => {
-      const declaration = types[typeName];
+function isModule(
+  // TODO(T71778680): Flow-type this node.
+  ast: $FlowFixMe,
+) {
+  const moduleInterfaces = ast.body
+    .map(node => {
+      if (
+        node.type === 'ExportNamedDeclaration' &&
+        node.exportKind === 'type' &&
+        node.declaration.type === 'InterfaceDeclaration'
+      ) {
+        return node.declaration;
+      }
+      return node;
+    })
+    .filter(declaration => {
       return (
         declaration.type === 'InterfaceDeclaration' &&
         declaration.extends.length === 1 &&
         declaration.extends[0].type === 'InterfaceExtends' &&
         declaration.extends[0].id.name === 'TurboModule'
       );
-    },
-  );
+    })
+    .map(declaration => declaration.id.name);
 
-  if (declaredModuleNames.length === 0) {
+  if (moduleInterfaces.length === 0) {
     return false;
   }
 
-  if (declaredModuleNames.length > 1) {
+  if (moduleInterfaces.length > 1) {
     throw new Error(
       'File contains declarations of more than one module: ' +
-        declaredModuleNames.join(', ') +
+        moduleInterfaces.join(', ') +
         '. Please declare exactly one module in this file.',
     );
   }
@@ -96,9 +87,12 @@ function isModule(types: TypeDeclarationMap) {
   return true;
 }
 
-function getConfigType(ast, types: TypeDeclarationMap): 'module' | 'component' {
+function getConfigType(
+  // TODO(T71778680): Flow-type this node.
+  ast: $FlowFixMe,
+): 'module' | 'component' {
   const isConfigAComponent = isComponent(ast);
-  const isConfigAModule = isModule(types);
+  const isConfigAModule = isModule(ast);
 
   if (isConfigAModule && isConfigAComponent) {
     throw new Error(
@@ -142,12 +136,10 @@ const TURBO_MODULE_REGISTRY_REQUIRE_REGEX_STRING = withSpace(
 function buildSchema(contents: string, filename: ?string): SchemaType {
   const ast = flowParser.parse(contents);
 
-  const types = getTypes(ast);
-
-  const configType = getConfigType(ast, types);
+  const configType = getConfigType(ast);
 
   if (configType === 'component') {
-    return wrapComponentSchema(buildComponentSchema(ast, types));
+    return wrapComponentSchema(buildComponentSchema(ast));
   } else {
     if (filename === undefined || filename === null) {
       throw new Error('Filepath expected while parasing a module');
@@ -180,7 +172,7 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
     }
 
     return wrapModuleSchema(
-      buildModuleSchema(hasteModuleName, moduleNames, types),
+      buildModuleSchema(hasteModuleName, moduleNames, ast),
       hasteModuleName,
     );
   }
