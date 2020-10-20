@@ -23,16 +23,26 @@ const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
-const moduleTemplate = `class JSI_EXPORT ::_HASTE_MODULE_NAME_::CxxSpecJSI : public TurboModule {
+const ModuleClassDeclarationTemplate = ({
+  hasteModuleName,
+  moduleProperties,
+}: $ReadOnly<{|hasteModuleName: string, moduleProperties: string|}>) => {
+  return `class JSI_EXPORT ${hasteModuleName}CxxSpecJSI : public TurboModule {
 protected:
-  ::_HASTE_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
+  ${hasteModuleName}CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
-::_MODULE_PROPERTIES_::
+${moduleProperties}
 
 };`;
+};
 
-const template = `/**
+const FileTemplate = ({
+  modules,
+}: $ReadOnly<{|
+  modules: string,
+|}>) => {
+  return `/**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -47,11 +57,12 @@ const template = `/**
 
 namespace facebook {
 namespace react {
-::_MODULES_::
+${modules}
 
 } // namespace react
 } // namespace facebook
 `;
+};
 
 function translatePrimitiveJSTypeToCpp(
   nullableTypeAnnotation: Nullable<NativeModuleTypeAnnotation>,
@@ -164,15 +175,16 @@ module.exports = {
               );
           })
           .join('\n');
-        return moduleTemplate
-          .replace(/::_MODULE_PROPERTIES_::/g, traversedProperties)
-          .replace(/::_HASTE_MODULE_NAME_::/g, hasteModuleName)
-          .replace('::_PROPERTIES_MAP_::', '');
+
+        return ModuleClassDeclarationTemplate({
+          hasteModuleName,
+          moduleProperties: traversedProperties,
+        });
       })
       .join('\n');
 
     const fileName = 'NativeModules.h';
-    const replacedTemplate = template.replace(/::_MODULES_::/g, modules);
+    const replacedTemplate = FileTemplate({modules});
 
     return new Map([[fileName, replacedTemplate]]);
   },
