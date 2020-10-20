@@ -60,7 +60,7 @@ export type MethodSerializationOutput = $ReadOnly<{|
 |}>;
 
 function serializeMethod(
-  codegenModuleName: string,
+  hasteModuleName: string,
   property: NativeModulePropertySchema,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
@@ -71,7 +71,7 @@ function serializeMethod(
 
   if (methodName === 'getConstants') {
     return serializeConstantsProtocolMethods(
-      codegenModuleName,
+      hasteModuleName,
       property,
       structCollector,
       resolveAlias,
@@ -84,7 +84,7 @@ function serializeMethod(
   params.forEach((param, index) => {
     const structName = getParamStructName(methodName, param);
     const {objCType, isStruct} = getParamObjCType(
-      codegenModuleName,
+      hasteModuleName,
       methodName,
       param,
       structName,
@@ -177,7 +177,7 @@ function getParamStructName(
 }
 
 function getParamObjCType(
-  codegenModuleName: string,
+  hasteModuleName: string,
   methodName: string,
   param: NativeModuleMethodParamSchema,
   structName: string,
@@ -242,7 +242,7 @@ function getParamObjCType(
        * TODO(T73943261): Support nullable object literals and aliases?
        */
       return isStruct(
-        getNamespacedStructName(codegenModuleName, structTypeAnnotation.name) +
+        getNamespacedStructName(hasteModuleName, structTypeAnnotation.name) +
           ' &',
       );
     }
@@ -383,7 +383,7 @@ function getReturnJSType(
 }
 
 function serializeConstantsProtocolMethods(
-  codegenModuleName: string,
+  hasteModuleName: string,
   property: NativeModulePropertySchema,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
@@ -391,14 +391,14 @@ function serializeConstantsProtocolMethods(
   const [propertyTypeAnnotation] = unwrapNullable(property.typeAnnotation);
   if (propertyTypeAnnotation.params.length !== 0) {
     throw new Error(
-      `${codegenModuleName}.getConstants() may only accept 0 arguments.`,
+      `${hasteModuleName}.getConstants() may only accept 0 arguments.`,
     );
   }
 
   const {returnTypeAnnotation} = propertyTypeAnnotation;
   if (returnTypeAnnotation.type !== 'ObjectTypeAnnotation') {
     throw new Error(
-      `${codegenModuleName}.getConstants() may only return an object literal: {|...|}.`,
+      `${hasteModuleName}.getConstants() may only return an object literal: {|...|}.`,
     );
   }
 
@@ -418,7 +418,7 @@ function serializeConstantsProtocolMethods(
     "Unable to generate C++ struct from module's getConstants() method return type.",
   );
 
-  const returnObjCType = `facebook::react::ModuleConstants<JS::${codegenModuleName}::Constants::Builder>`;
+  const returnObjCType = `facebook::react::ModuleConstants<JS::${hasteModuleName}::Constants::Builder>`;
 
   return ['constantsToExport', 'getConstants'].map<MethodSerializationOutput>(
     methodName => {

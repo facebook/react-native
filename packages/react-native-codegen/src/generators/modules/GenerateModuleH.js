@@ -23,9 +23,9 @@ const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
-const moduleTemplate = `class JSI_EXPORT ::_CODEGEN_MODULE_NAME_::CxxSpecJSI : public TurboModule {
+const moduleTemplate = `class JSI_EXPORT ::_HASTE_MODULE_NAME_::CxxSpecJSI : public TurboModule {
 protected:
-  ::_CODEGEN_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
+  ::_HASTE_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
 ::_MODULE_PROPERTIES_::
@@ -117,11 +117,11 @@ module.exports = {
     const nativeModules = getModules(schema);
 
     const modules = Object.keys(nativeModules)
-      .map(codegenModuleName => {
+      .map(hasteModuleName => {
         const {
           aliases,
           spec: {properties},
-        } = nativeModules[codegenModuleName];
+        } = nativeModules[hasteModuleName];
         const resolveAlias = createAliasResolver(aliases);
 
         const traversedProperties = properties
@@ -166,7 +166,7 @@ module.exports = {
           .join('\n');
         return moduleTemplate
           .replace(/::_MODULE_PROPERTIES_::/g, traversedProperties)
-          .replace(/::_CODEGEN_MODULE_NAME_::/g, codegenModuleName)
+          .replace(/::_HASTE_MODULE_NAME_::/g, hasteModuleName)
           .replace('::_PROPERTIES_MAP_::', '');
       })
       .join('\n');

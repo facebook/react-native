@@ -27,7 +27,7 @@ const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 type FilesOutput = Map<string, string>;
 
 const propertyHeaderTemplate =
-  'static facebook::jsi::Value __hostFunction_::_CODEGEN_MODULE_NAME_::SpecJSI_::_PROPERTY_NAME_::(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {';
+  'static facebook::jsi::Value __hostFunction_::_HASTE_MODULE_NAME_::SpecJSI_::_PROPERTY_NAME_::(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {';
 
 const propertyCastTemplate =
   'static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, ::_KIND_::, "::_PROPERTY_NAME_::", "::_SIGNATURE_::", args, count);';
@@ -38,18 +38,18 @@ ${propertyHeaderTemplate}
 }`;
 
 const propertyDefTemplate =
-  '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_::_CODEGEN_MODULE_NAME_::SpecJSI_::_PROPERTY_NAME_::};';
+  '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_::_HASTE_MODULE_NAME_::SpecJSI_::_PROPERTY_NAME_::};';
 
 const moduleTemplate = `
 ::_TURBOMODULE_METHOD_INVOKERS_::
 
-::_CODEGEN_MODULE_NAME_::SpecJSI::::_CODEGEN_MODULE_NAME_::SpecJSI(const JavaTurboModule::InitParams &params)
+::_HASTE_MODULE_NAME_::SpecJSI::::_HASTE_MODULE_NAME_::SpecJSI(const JavaTurboModule::InitParams &params)
   : JavaTurboModule(params) {
 ::_PROPERTIES_MAP_::
 }`.trim();
 
 const oneModuleLookupTemplate = `  if (moduleName == "::_NATIVE_MODULE_NAME_::") {
-    return std::make_shared<::_CODEGEN_MODULE_NAME_::SpecJSI>(params);
+    return std::make_shared<::_HASTE_MODULE_NAME_::SpecJSI>(params);
   }`;
 
 const template = `
@@ -334,19 +334,19 @@ module.exports = {
     const nativeModules = getModules(schema);
 
     const modules = Object.keys(nativeModules)
-      .filter(codegenModuleName => {
-        const module = nativeModules[codegenModuleName];
+      .filter(hasteModuleName => {
+        const module = nativeModules[hasteModuleName];
         return !(
           module.excludedPlatforms != null &&
           module.excludedPlatforms.includes('android')
         );
       })
       .sort()
-      .map(codegenModuleName => {
+      .map(hasteModuleName => {
         const {
           aliases,
           spec: {properties},
-        } = nativeModules[codegenModuleName];
+        } = nativeModules[hasteModuleName];
         const resolveAlias = createAliasResolver(aliases);
 
         const translatedMethods = properties
@@ -377,13 +377,13 @@ module.exports = {
               })
               .join('\n'),
           )
-          .replace(/::_CODEGEN_MODULE_NAME_::/g, codegenModuleName);
+          .replace(/::_HASTE_MODULE_NAME_::/g, hasteModuleName);
       })
       .join('\n');
 
     const moduleLookup = Object.keys(nativeModules)
-      .filter(codegenModuleName => {
-        const module = nativeModules[codegenModuleName];
+      .filter(hasteModuleName => {
+        const module = nativeModules[hasteModuleName];
         return !(
           module.excludedPlatforms != null &&
           module.excludedPlatforms.includes('android')
@@ -401,13 +401,13 @@ module.exports = {
         }
         return 0;
       })
-      .map(codegenModuleName => {
-        const {moduleNames} = nativeModules[codegenModuleName];
+      .map(hasteModuleName => {
+        const {moduleNames} = nativeModules[hasteModuleName];
         return moduleNames
           .map(nativeModuleName =>
             oneModuleLookupTemplate
               .replace(/::_NATIVE_MODULE_NAME_::/g, nativeModuleName)
-              .replace(/::_CODEGEN_MODULE_NAME_::/g, codegenModuleName),
+              .replace(/::_HASTE_MODULE_NAME_::/g, hasteModuleName),
           )
           .join('\n');
       })

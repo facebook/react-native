@@ -25,10 +25,10 @@ const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 type FilesOutput = Map<string, string>;
 
 const propertyHeaderTemplate =
-  'static jsi::Value __hostFunction_::_CODEGEN_MODULE_NAME_::CxxSpecJSI_::_PROPERTY_NAME_::(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {';
+  'static jsi::Value __hostFunction_::_HASTE_MODULE_NAME_::CxxSpecJSI_::_PROPERTY_NAME_::(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {';
 
 const propertyCastTemplate =
-  'static_cast<::_CODEGEN_MODULE_NAME_::CxxSpecJSI *>(&turboModule)->::_PROPERTY_NAME_::(rt::_ARGS_::);';
+  'static_cast<::_HASTE_MODULE_NAME_::CxxSpecJSI *>(&turboModule)->::_PROPERTY_NAME_::(rt::_ARGS_::);';
 
 const nonvoidPropertyTemplate = `${propertyHeaderTemplate}
   return ${propertyCastTemplate}
@@ -40,11 +40,11 @@ const voidPropertyTemplate = `${propertyHeaderTemplate}
 }`;
 
 const proprertyDefTemplate =
-  '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_::_CODEGEN_MODULE_NAME_::CxxSpecJSI_::_PROPERTY_NAME_::};';
+  '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_::_HASTE_MODULE_NAME_::CxxSpecJSI_::_PROPERTY_NAME_::};';
 
 const moduleTemplate = `::_MODULE_PROPERTIES_::
 
-::_CODEGEN_MODULE_NAME_::CxxSpecJSI::::_CODEGEN_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
+::_HASTE_MODULE_NAME_::CxxSpecJSI::::_HASTE_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule("::_NATIVE_MODULE_NAME_::", jsInvoker) {
 ::_PROPERTIES_MAP_::
 }`.trim();
@@ -157,8 +157,8 @@ module.exports = {
     const nativeModules = getModules(schema);
 
     const modules = Object.keys(nativeModules)
-      .map(codegenModuleName => {
-        const nativeModule = nativeModules[codegenModuleName];
+      .map(hasteModuleName => {
+        const nativeModule = nativeModules[hasteModuleName];
         const {
           aliases,
           spec: {properties},
@@ -189,7 +189,7 @@ module.exports = {
                 )
                 .join('\n'),
             )
-            .replace(/::_CODEGEN_MODULE_NAME_::/g, codegenModuleName)
+            .replace(/::_HASTE_MODULE_NAME_::/g, hasteModuleName)
         );
       })
       .join('\n');

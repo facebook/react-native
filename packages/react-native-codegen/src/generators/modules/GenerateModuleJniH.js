@@ -17,11 +17,11 @@ type FilesOutput = Map<string, string>;
 const {getModules} = require('./Utils');
 
 const moduleSpecTemplate = `/**
- * JNI C++ class for module '::_CODEGEN_MODULE_NAME_::'
+ * JNI C++ class for module '::_HASTE_MODULE_NAME_::'
  */
-class JSI_EXPORT ::_CODEGEN_MODULE_NAME_::SpecJSI : public JavaTurboModule {
+class JSI_EXPORT ::_HASTE_MODULE_NAME_::SpecJSI : public JavaTurboModule {
 public:
-  ::_CODEGEN_MODULE_NAME_::SpecJSI(const JavaTurboModule::InitParams &params);
+  ::_HASTE_MODULE_NAME_::SpecJSI(const JavaTurboModule::InitParams &params);
 };
 `;
 
@@ -89,19 +89,16 @@ module.exports = {
   ): FilesOutput {
     const nativeModules = getModules(schema);
     const modules = Object.keys(nativeModules)
-      .filter(codegenModuleName => {
-        const module = nativeModules[codegenModuleName];
+      .filter(hasteModuleName => {
+        const module = nativeModules[hasteModuleName];
         return !(
           module.excludedPlatforms != null &&
           module.excludedPlatforms.includes('android')
         );
       })
       .sort()
-      .map(codegenModuleName =>
-        moduleSpecTemplate.replace(
-          /::_CODEGEN_MODULE_NAME_::/g,
-          codegenModuleName,
-        ),
+      .map(hasteModuleName =>
+        moduleSpecTemplate.replace(/::_HASTE_MODULE_NAME_::/g, hasteModuleName),
       )
       .join('\n');
 

@@ -278,17 +278,17 @@ module.exports = {
     const packageName = 'com.facebook.fbreact.specs.beta';
     const nativeModules = getModules(schema);
 
-    Object.keys(nativeModules).forEach(codegenModuleName => {
+    Object.keys(nativeModules).forEach(hasteModuleName => {
       const {
         aliases,
         excludedPlatforms,
         spec: {properties},
-      } = nativeModules[codegenModuleName];
+      } = nativeModules[hasteModuleName];
       if (excludedPlatforms != null && excludedPlatforms.includes('android')) {
         return;
       }
       const resolveAlias = createAliasResolver(aliases);
-      const className = `${codegenModuleName}Spec`;
+      const className = `${hasteModuleName}Spec`;
 
       const imports: Set<string> = new Set([
         // Always required.
