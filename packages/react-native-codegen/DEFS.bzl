@@ -1,16 +1,17 @@
-load("@fbsource//tools/build_defs:buckconfig.bzl", "read_bool")
-load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
-load("@fbsource//tools/build_defs:platform_defs.bzl", "IOS", "MACOSX")
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_preprocessor_flags_for_build_mode")
+load("//tools/build_defs:buckconfig.bzl", "read_bool")
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
     "CXX",
+    "IOS",
+    "MACOSX",
     "YOGA_CXX_TARGET",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
+    "get_preprocessor_flags_for_build_mode",
     "react_native_dep",
     "react_native_target",
     "react_native_xplat_target",
