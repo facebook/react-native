@@ -2,7 +2,7 @@
 
 exports[`GenerateModuleJniCpp can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "SampleSpec-generated.cpp" => "
+  "jni/SampleSpec-generated.cpp" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -56,7 +56,7 @@ std::shared_ptr<TurboModule> COMPLEX_OBJECTS_ModuleProvider(const std::string mo
 
 exports[`GenerateModuleJniCpp can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec-generated.cpp" => "
+  "jni/SampleSpec-generated.cpp" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -93,7 +93,7 @@ std::shared_ptr<TurboModule> EMPTY_NATIVE_MODULES_ModuleProvider(const std::stri
 
 exports[`GenerateModuleJniCpp can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
 Map {
-  "SampleSpec-generated.cpp" => "
+  "jni/SampleSpec-generated.cpp" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -134,7 +134,7 @@ std::shared_ptr<TurboModule> NATIVE_MODULES_WITH_TYPE_ALIASES_ModuleProvider(con
 
 exports[`GenerateModuleJniCpp can generate fixture REAL_MODULE_EXAMPLE 1`] = `
 Map {
-  "SampleSpec-generated.cpp" => "
+  "jni/SampleSpec-generated.cpp" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -216,7 +216,7 @@ std::shared_ptr<TurboModule> REAL_MODULE_EXAMPLE_ModuleProvider(const std::strin
 
 exports[`GenerateModuleJniCpp can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec-generated.cpp" => "
+  "jni/SampleSpec-generated.cpp" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -305,7 +305,7 @@ std::shared_ptr<TurboModule> SIMPLE_NATIVE_MODULES_ModuleProvider(const std::str
 
 exports[`GenerateModuleJniCpp can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "SampleSpec-generated.cpp" => "
+  "jni/SampleSpec-generated.cpp" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
