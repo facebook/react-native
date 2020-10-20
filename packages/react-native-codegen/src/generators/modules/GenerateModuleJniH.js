@@ -16,16 +16,24 @@ type FilesOutput = Map<string, string>;
 
 const {getModules} = require('./Utils');
 
-const moduleSpecTemplate = `/**
- * JNI C++ class for module '::_HASTE_MODULE_NAME_::'
+const ModuleClassDeclarationTemplate = ({
+  hasteModuleName,
+}: $ReadOnly<{|hasteModuleName: string|}>) => {
+  return `/**
+ * JNI C++ class for module '${hasteModuleName}'
  */
-class JSI_EXPORT ::_HASTE_MODULE_NAME_::SpecJSI : public JavaTurboModule {
+class JSI_EXPORT ${hasteModuleName}SpecJSI : public JavaTurboModule {
 public:
-  ::_HASTE_MODULE_NAME_::SpecJSI(const JavaTurboModule::InitParams &params);
+  ${hasteModuleName}SpecJSI(const JavaTurboModule::InitParams &params);
 };
 `;
+};
 
-const template = `
+const HeaderFileTemplate = ({
+  modules,
+  libraryName,
+}: $ReadOnly<{|modules: string, libraryName: string|}>) => {
+  return `
 /**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
@@ -44,15 +52,17 @@ const template = `
 namespace facebook {
 namespace react {
 
-::_MODULES_::
+${modules}
 
-std::shared_ptr<TurboModule> ::_LIBRARY_NAME_::_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
+std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
 
 } // namespace react
 } // namespace facebook
 `;
+};
 
-const androidMkTemplate = `# Copyright (c) Facebook, Inc. and its affiliates.
+const AndroidMkTemplate = ({libraryName}: $ReadOnly<{libraryName: string}>) => {
+  return `# Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -61,7 +71,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := ::_LIBRARY_NAME_::
+LOCAL_MODULE := ${libraryName}
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 
@@ -80,6 +90,7 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 `;
+};
 
 module.exports = {
   generate(
@@ -97,23 +108,21 @@ module.exports = {
         );
       })
       .sort()
-      .map(hasteModuleName =>
-        moduleSpecTemplate.replace(/::_HASTE_MODULE_NAME_::/g, hasteModuleName),
-      )
+      .map(hasteModuleName => ModuleClassDeclarationTemplate({hasteModuleName}))
       .join('\n');
 
     const fileName = `${moduleSpecName}.h`;
-    const replacedTemplate = template
-      .replace(/::_MODULES_::/g, modules)
-      .replace(/::_LIBRARY_NAME_::/g, libraryName);
+    const replacedTemplate = HeaderFileTemplate({
+      modules: modules,
+      libraryName: libraryName,
+    });
     return new Map([
       [fileName, replacedTemplate],
       [
         'Android.mk',
-        androidMkTemplate.replace(
-          /::_LIBRARY_NAME_::/g,
-          `react_codegen_${libraryName.toLowerCase()}`,
-        ),
+        AndroidMkTemplate({
+          libraryName: `react_codegen_${libraryName.toLowerCase()}`,
+        }),
       ],
     ]);
   },
