@@ -66,7 +66,7 @@ If you are adding new functionality or introducing a change in behavior, we will
 
 The React Native blog is generated [from the Markdown sources for the blog](https://github.com/facebook/react-native-website/tree/master/website/blog).
 
-Please open an issue in the https://github.com/facebook/react-native-website repository or tag us on [@ReactNative on Twitter](http://twitter.com/reactnative) and get the go-ahead from a maintainer before writing an article intended for the React Native blog. In most cases, you might want to share your article on your own blog or writing medium instead. It's worth asking, though, in case we find your article is a good fit for the blog.
+Please open an issue in the https://github.com/facebook/react-native-website repository or tag us on [Twitter](http://twitter.com/reactnative) and get the go-ahead from a maintainer before writing an article intended for the React Native blog. In most cases, you might want to share your article on your own blog or writing medium instead. It's worth asking, though, in case we find your article is a good fit for the blog.
 
 We recommend referring to the [CONTRIBUTING](https://github.com/facebook/react-native-website/blob/master/CONTRIBUTING.md) document for the `react-native-website` repository to learn more about contributing to the website in general.
 
@@ -106,6 +106,6 @@ Contributions to React Native are not limited to GitHub. You can help others by 
 
 As you work on React Native, it is natural that sooner or later you may require help. In addition to the resources listed in [SUPPORT](.github/SUPPORT.md), people interested in contributing may take advantage of the following:
 
-* **Twitter**. The React Native team at Facebook has its own account at [@reactnative](https://twitter.com/reactnative), and the React Native Community uses [@reactnativecomm](https://twitter.com/reactnativecomm). If you feel stuck, or need help contributing, please do not hesitate to reach out.
+* **Twitter**. The React Native team at Facebook has its own account at [@ReactNative](https://twitter.com/reactnative), and the React Native Community uses [@reactnativecomm](https://twitter.com/reactnativecomm). If you feel stuck, or need help contributing, please do not hesitate to reach out.
 * **Proposals Repository**. If you are considering working on a feature large in scope, consider [creating a proposal first](https://github.com/react-native-community/discussions-and-proposals). The community can help you figure out the right approach, and we'd be happy to help.
 * **React Native Community Discord**. While we try to hold most discussions in public, sometimes it can be beneficial to have conversations in real time with other contributors. People who have demonstrated a commitment to moving React Native forward through sustained contributions to the project may eventually be invited to join the React Native Community Discord.
