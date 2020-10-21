@@ -52,22 +52,19 @@ export function PressabilityDebugView({color, hitSlop}: Props): React.Node {
       const baseColor =
         '#' + (normalizedColor ?? 0).toString(16).padStart(8, '0');
 
-      return (
-        <View
-          pointerEvents="none"
-          style={{
-            backgroundColor: baseColor.slice(0, -2) + '0F', // 15%
-            borderColor: baseColor.slice(0, -2) + '55', // 85%
-            borderStyle: 'dashed',
-            borderWidth: 1,
-            bottom: -(hitSlop?.bottom ?? 0),
-            left: -(hitSlop?.left ?? 0),
-            position: 'absolute',
-            right: -(hitSlop?.right ?? 0),
-            top: -(hitSlop?.top ?? 0),
-          }}
-        />
-      );
+      const pressibilityViewStyle = {
+        backgroundColor: baseColor.slice(0, -2) + '0F', // 15%
+        borderColor: baseColor.slice(0, -2) + '55', // 85%
+        borderStyle: 'dashed',
+        borderWidth: 1,
+        bottom: -(hitSlop?.bottom ?? 0),
+        left: -(hitSlop?.left ?? 0),
+        position: 'absolute',
+        right: -(hitSlop?.right ?? 0),
+        top: -(hitSlop?.top ?? 0),
+      };
+
+      return <View pointerEvents="none" style={pressibilityViewStyle} />;
     }
   }
   return null;
