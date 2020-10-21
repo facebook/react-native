@@ -36,7 +36,8 @@ async function updateComment(octokit, issueParams, body, replacePattern) {
   const authedUserId = authenticatedUser.data.id;
   const pattern = new RegExp(replacePattern, 'g');
   const comment = comments.data.find(
-    ({user, body}) => user.id === authedUserId && pattern.test(body),
+    ({user, commentBody}) =>
+      user.id === authedUserId && pattern.test(commentBody),
   );
   if (!comment) {
     return false;
