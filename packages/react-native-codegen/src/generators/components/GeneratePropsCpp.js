@@ -86,6 +86,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     moduleSpecName: string,
+    packageName?: string,
   ): FilesOutput {
     const fileName = 'Props.cpp';
     const allImports: Set<string> = new Set([

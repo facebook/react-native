@@ -756,6 +756,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     moduleSpecName: string,
+    packageName?: string,
   ): FilesOutput {
     const fileName = 'Props.h';
 
