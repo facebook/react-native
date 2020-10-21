@@ -1450,6 +1450,7 @@ namespace JS {
           RCTRequired<NSString *> osVersion;
           RCTRequired<NSString *> systemName;
           RCTRequired<NSString *> interfaceIdiom;
+          RCTRequired<bool> isCatalyst;
         };
 
         /** Initialize with a set of values */
@@ -2421,6 +2422,8 @@ inline JS::NativePlatformConstantsIOS::Constants::Builder::Builder(const Input i
   d[@"systemName"] = systemName;
   auto interfaceIdiom = i.interfaceIdiom.get();
   d[@"interfaceIdiom"] = interfaceIdiom;
+  auto isCatalyst = i.isCatalyst.get();
+  d[@"isCatalyst"] = @(isCatalyst);
   return d;
 }) {}
 inline JS::NativePlatformConstantsIOS::Constants::Builder::Builder(Constants i) : _factory(^{

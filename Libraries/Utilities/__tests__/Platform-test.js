@@ -40,4 +40,10 @@ describe('Platform', () => {
       expect(PlatformAndroid.select(obj)).toEqual(obj.default);
     });
   });
+
+  describe('isCatalyst', () => {
+    it('should return false for android', () => {
+      expect(PlatformAndroid.isCatalyst).toBe(false);
+    });
+  });
 });
