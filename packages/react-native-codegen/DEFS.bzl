@@ -8,6 +8,7 @@ load(
     "IOS",
     "MACOSX",
     "YOGA_CXX_TARGET",
+    "fb_apple_library",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
@@ -15,6 +16,7 @@ load(
     "react_native_dep",
     "react_native_target",
     "react_native_xplat_target",
+    "react_native_xplat_target_apple",
     "rn_android_library",
     "rn_xplat_cxx_library",
 )
@@ -139,36 +141,29 @@ def rn_codegen_modules(
         labels = ["codegen_rule"],
     )
 
-    rn_xplat_cxx_library(
-        name = "generated_objcpp_modules-{}".format(name),
+    fb_apple_library(
+        name = "generated_objcpp_modules-{}Apple".format(name),
+        extension_api_only = True,
         header_namespace = "",
-        apple_sdks = (IOS),
+        sdks = (IOS),
         compiler_flags = [
-            "-fexceptions",
-            "-frtti",
-            "-std=c++14",
-            "-Wall",
+            "-Wno-unused-private-field",
         ],
-        fbobjc_compiler_flags = get_apple_compiler_flags(),
-        fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
-        ios_exported_headers = {
+        exported_headers = {
             "{}/{}.h".format(native_module_spec_name, native_module_spec_name): ":{}".format(generate_module_hobjcpp_name),
         },
-        ios_headers = [
+        headers = [
             ":{}".format(generate_module_hobjcpp_name),
         ],
-        ios_srcs = [
+        srcs = [
             ":{}".format(generate_module_mm_name),
         ],
         labels = ["codegen_rule"],
-        platforms = (APPLE),
-        preprocessor_flags = [
-            "-DLOG_TAG=\"ReactNative\"",
-            "-DWITH_FBSYSTRACE=1",
-        ],
         visibility = ["PUBLIC"],
-        deps = [
-            "//xplat/js:React",
+        exported_deps = [
+            "//xplat/js/react-native-github:RCTTypeSafety",
+            "//xplat/js/react-native-github/Libraries/RCTRequired:RCTRequired",
+            react_native_xplat_target_apple("react/nativemodule/core:core"),
         ],
     )
 
