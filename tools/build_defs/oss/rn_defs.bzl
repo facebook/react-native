@@ -15,11 +15,20 @@ _DEBUG_PREPROCESSOR_FLAGS = []
 
 _APPLE_COMPILER_FLAGS = []
 
+def get_apple_compiler_flags():
+    return _APPLE_COMPILER_FLAGS
+
 def get_preprocessor_flags_for_build_mode():
     return _DEBUG_PREPROCESSOR_FLAGS
 
-def get_apple_compiler_flags():
+def get_static_library_ios_flags():
     return _APPLE_COMPILER_FLAGS
+
+OBJC_ARC_PREPROCESSOR_FLAGS = [
+    "-fobjc-arc",
+    "-fno-objc-arc-exceptions",
+    "-Qunused-arguments",
+]
 
 IS_OSS_BUILD = True
 
@@ -81,6 +90,12 @@ def react_native_xplat_target(path):
 
 def react_native_xplat_target_apple(path):
     return react_native_xplat_target(path) + "Apple"
+
+def react_native_root_target(path):
+    return "//" + path
+
+def react_native_xplat_shared_library_target(path):
+    return react_native_xplat_target(path)
 
 # Example: react_native_tests_target('java/com/facebook/react/modules:modules')
 def react_native_tests_target(path):

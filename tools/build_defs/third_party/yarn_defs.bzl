@@ -5,4 +5,9 @@
 
 def yarn_workspace(name, srcs = [], transform_ignore = None, visibility = None):
     # Noop for OSS vs FB build compatibility for now
-    unused = True
+    native.genrule(
+        name = name,
+        cmd = "echo {} > $OUT".format(name),
+        out = "{}.txt".format(name),
+        visibility = visibility,
+    )

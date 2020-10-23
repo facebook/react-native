@@ -14,7 +14,9 @@ load(
     "get_apple_inspector_flags",
     "get_preprocessor_flags_for_build_mode",
     "react_native_dep",
+    "react_native_root_target",
     "react_native_target",
+    "react_native_xplat_shared_library_target",
     "react_native_xplat_target",
     "react_native_xplat_target_apple",
     "rn_android_library",
@@ -36,7 +38,7 @@ def rn_codegen_modules(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe //xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT {}".format(schema_target, name, native_module_spec_name),
+        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:rn_codegen"), schema_target, name, native_module_spec_name),
         out = "codegenfiles-{}".format(name),
         labels = ["codegen_rule"],
     )
@@ -80,8 +82,8 @@ def rn_codegen_modules(
         labels = ["codegen_rule"],
         visibility = ["PUBLIC"],
         deps = [
-            "//fbandroid/third-party/java/jsr-305:jsr-305",
-            "//fbandroid/third-party/java/jsr-330:jsr-330",
+            react_native_dep("third-party/java/jsr-305:jsr-305"),
+            react_native_dep("third-party/java/jsr-330:jsr-330"),
             react_native_target("java/com/facebook/react/bridge:bridge"),
             react_native_target("java/com/facebook/react/common:common"),
         ],
@@ -117,7 +119,7 @@ def rn_codegen_modules(
         ],
         deps = [],
         exported_deps = [
-            "//xplat/jsi:jsi",
+            react_native_xplat_shared_library_target("jsi:jsi"),
             react_native_xplat_target("react/nativemodule/core:core"),
         ],
         platforms = (ANDROID,),
@@ -188,7 +190,7 @@ def rn_codegen_components(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe //xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT {}".format(schema_target, name, name),
+        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:rn_codegen"), schema_target, name, name),
         out = "codegenfiles-{}".format(name),
         labels = ["codegen_rule"],
     )
@@ -417,7 +419,7 @@ def rn_codegen_cxx_modules(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe //xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT {}".format(schema_target, name, name),
+        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:rn_codegen"), schema_target, name, name),
         out = "codegenfiles-{}".format(name),
         labels = ["codegen_rule"],
     )
