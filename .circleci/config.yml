@@ -589,7 +589,7 @@ jobs:
             source ~/.bashrc
             nvm i node
             npm i -g yarn
-            npx envinfo@latest
+            echo y | npx envinfo@latest
             yarn run docker-setup-android
             yarn run docker-build-android
 
