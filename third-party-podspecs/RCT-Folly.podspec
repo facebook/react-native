@@ -123,5 +123,7 @@ Pod::Spec.new do |spec|
                           #  'folly/experimental/{ReadMostlySharedPtr,TLRefCount}.h',
   end
 
+  # Folly has issues when compiled with iOS 10 set as deployment target
+  # See https://github.com/facebook/folly/issues/1470 for details
   spec.platforms = { :ios => "9.0", :tvos => "9.0" }
 end
