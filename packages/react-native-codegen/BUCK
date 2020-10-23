@@ -1,7 +1,9 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "IOS", "IS_OSS_BUILD", "react_native_root_target", "react_native_target", "rn_android_library", "rn_xplat_cxx_library")
 load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
-load(":DEFS.bzl", "rn_codegen_components", "rn_codegen_modules")
+load(":DEFS.bzl", "rn_codegen_cli", "rn_codegen_components", "rn_codegen_modules")
+
+rn_codegen_cli()
 
 SETUP_ENV_DEPS = [] if IS_OSS_BUILD else [
     "//xplat/js:setup_env",
@@ -20,32 +22,6 @@ fb_native.sh_binary(
 fb_native.sh_test(
     name = "verify_all_modules_with_old_codegen",
     test = "src/cli/verify_all_modules_with_old_codegen.sh",
-    visibility = ["PUBLIC"],
-)
-
-fb_native.sh_binary(
-    name = "write_to_json",
-    main = "src/cli/combine/combine_js_to_schema.sh",
-    resources = [
-        "src/cli/combine/combine-js-to-schema.js",
-        "src/cli/combine/combine_js_to_schema.sh",
-        ":yarn-workspace",
-    ] + SETUP_ENV_DEPS,
-    visibility = ["PUBLIC"],
-)
-
-fb_native.sh_binary(
-    name = "rn_codegen",
-    main = "buck_tests/generate-tests.sh",
-    resources = glob(
-        [
-            "buck_tests/**/*.js",
-            "src/**/*.js",
-        ],
-    ) + [
-        "buck_tests/generate-tests.js",
-        "package.json",
-    ] + SETUP_ENV_DEPS,
     visibility = ["PUBLIC"],
 )
 

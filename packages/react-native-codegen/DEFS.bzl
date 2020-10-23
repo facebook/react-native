@@ -6,6 +6,7 @@ load(
     "APPLE",
     "CXX",
     "IOS",
+    "IS_OSS_BUILD",
     "MACOSX",
     "YOGA_CXX_TARGET",
     "fb_apple_library",
@@ -22,6 +23,87 @@ load(
     "rn_android_library",
     "rn_xplat_cxx_library",
 )
+
+# Call this in the react-native-codegen/BUCK file
+def rn_codegen_cli():
+    if not IS_OSS_BUILD:
+        # FB Internal Setup
+        fb_native.sh_binary(
+            name = "write_to_json",
+            main = "src/cli/combine/combine_js_to_schema.sh",
+            resources = [
+                "src/cli/combine/combine-js-to-schema.js",
+                "src/cli/combine/combine_js_to_schema.sh",
+                ":yarn-workspace",
+                "//xplat/js:setup_env",
+            ],
+            visibility = ["PUBLIC"],
+        )
+
+        fb_native.sh_binary(
+            name = "rn_codegen",
+            main = "buck_tests/generate-tests.sh",
+            resources = native.glob(
+                [
+                    "buck_tests/**/*.js",
+                    "src/**/*.js",
+                ],
+            ) + [
+                "buck_tests/generate-tests.js",
+                "package.json",
+                "//xplat/js:setup_env",
+            ],
+            visibility = ["PUBLIC"],
+        )
+    else:
+        # OSS setup, assumes yarn and node (v12.0.0+) are installed.
+        fb_native.genrule(
+            name = "setup_cli",
+            srcs = native.glob([
+                "scripts/**/*",
+                "src/**/*",
+            ], exclude = [
+                "__tests__/**/*",
+            ]) + [
+                ".babelrc",
+                ".prettierrc",
+                "package.json",
+            ],
+            out = "build",
+            bash = r"""
+                set -euo pipefail
+                mkdir -p "$OUT"
+                cp -r "$SRCDIR/" "$OUT/"
+                cd "$OUT"
+                yarn install 2> >(grep -v '^warning' 1>&2)
+                yarn run build
+            """,
+        )
+
+        fb_native.sh_binary(
+            name = "write_to_json",
+            main = "scripts/buck-oss/combine_js_to_schema.sh",
+            resources = [
+                ":setup_cli",
+            ],
+            visibility = ["PUBLIC"],
+        )
+
+        # TODO: This doesn't work yet...
+        fb_native.sh_binary(
+            name = "rn_codegen",
+            main = "buck_tests/generate-tests.sh",
+            resources = native.glob(
+                [
+                    "buck_tests/**/*.js",
+                    "src/**/*.js",
+                ],
+            ) + [
+                "buck_tests/generate-tests.js",
+                "package.json",
+            ],
+            visibility = ["PUBLIC"],
+        )
 
 def rn_codegen_modules(
         native_module_spec_name,
