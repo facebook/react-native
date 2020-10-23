@@ -107,16 +107,11 @@ fi
 # shellcheck source=/dev/null
 source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
-[ -z "$HERMES_PATH" ] && export HERMES_PATH="$REACT_NATIVE_DIR/../hermes-engine"
+[ -z "$HERMES_CLI_PATH" ] && HERMES_CLI_PATH="$PODS_ROOT/hermes-engine/destroot/bin/hermesc"
 
-export HERMES_CLI="$HERMES_PATH/osx-bin/hermesc"
-
-if [[ $USE_HERMES == true && ! -d "$HERMES_PATH" ]]; then
-  echo "error: Can't find Hermes executable - directory $HERMES_PATH doesn't exist. " \
-       "If you have a non-standard project structure, locate the 'Bundle React Native code and images' " \
-       "build phase in your Xcode project and set the `$HERMES_PATH` variable to the location of the " \
-       "hermes-engine package. For example: `$SRCROOT/../../node_modules/hermes-engine` " >&2
-  exit 2
+if [[ -z "$USE_HERMES" && -f "$HERMES_CLI_PATH" ]]; then
+  echo "Enabling Hermes byte-code compilation. Disable with USE_HERMES=false if needed."
+  USE_HERMES=true
 fi
 
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""
@@ -185,7 +180,7 @@ else
   if [[ $EMIT_SOURCEMAP == true ]]; then
     EXTRA_COMPILER_ARGS="$EXTRA_COMPILER_ARGS -output-source-map"
   fi
-  "$HERMES_CLI" -emit-binary $EXTRA_COMPILER_ARGS -out "$DEST/main.jsbundle" "$BUNDLE_FILE" 
+  "$HERMES_CLI_PATH" -emit-binary $EXTRA_COMPILER_ARGS -out "$DEST/main.jsbundle" "$BUNDLE_FILE" 
   if [[ $EMIT_SOURCEMAP == true ]]; then
     HBC_SOURCEMAP_FILE="$BUNDLE_FILE.map"
     "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$SOURCEMAP_FILE"
