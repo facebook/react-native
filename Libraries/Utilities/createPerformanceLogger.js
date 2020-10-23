@@ -50,8 +50,8 @@ export interface IPerformanceLogger {
   markPoint(key: string, timestamp?: number, extras?: Extras): void;
   removeExtra(key: string): ?ExtraValue;
   setExtra(key: string, value: ExtraValue): void;
-  startTimespan(key: string, extras?: Extras): void;
-  stopTimespan(key: string, extras?: Extras): void;
+  startTimespan(key: string, timestamp?: number, extras?: Extras): void;
+  stopTimespan(key: string, timestamp?: number, extras?: Extras): void;
 }
 
 const _cookies: {[key: string]: number, ...} = {};
@@ -188,7 +188,11 @@ class PerformanceLogger implements IPerformanceLogger {
     }
   }
 
-  markPoint(key: string, timestamp?: number, extras?: Extras) {
+  markPoint(
+    key: string,
+    timestamp?: number = getCurrentTimestamp(),
+    extras?: Extras,
+  ) {
     if (this._closed) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog('PerformanceLogger: markPoint - has closed ignoring: ', key);
@@ -204,7 +208,7 @@ class PerformanceLogger implements IPerformanceLogger {
       }
       return;
     }
-    this._points[key] = timestamp ?? getCurrentTimestamp();
+    this._points[key] = timestamp;
     if (extras) {
       this._pointExtras[key] = extras;
     }
@@ -236,7 +240,11 @@ class PerformanceLogger implements IPerformanceLogger {
     this._extras[key] = value;
   }
 
-  startTimespan(key: string, extras?: Extras) {
+  startTimespan(
+    key: string,
+    timestamp?: number = getCurrentTimestamp(),
+    extras?: Extras,
+  ) {
     if (this._closed) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
@@ -258,7 +266,7 @@ class PerformanceLogger implements IPerformanceLogger {
     }
 
     this._timespans[key] = {
-      startTime: getCurrentTimestamp(),
+      startTime: timestamp,
       startExtras: extras,
     };
     _cookies[key] = Systrace.beginAsyncEvent(key);
@@ -267,7 +275,11 @@ class PerformanceLogger implements IPerformanceLogger {
     }
   }
 
-  stopTimespan(key: string, extras?: Extras) {
+  stopTimespan(
+    key: string,
+    timestamp?: number = getCurrentTimestamp(),
+    extras?: Extras,
+  ) {
     if (this._closed) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog('PerformanceLogger: stopTimespan - has closed ignoring: ', key);
@@ -296,7 +308,7 @@ class PerformanceLogger implements IPerformanceLogger {
     }
 
     timespan.endExtras = extras;
-    timespan.endTime = getCurrentTimestamp();
+    timespan.endTime = timestamp;
     timespan.totalTime = timespan.endTime - (timespan.startTime || 0);
     if (PRINT_TO_CONSOLE) {
       infoLog('PerformanceLogger.js', 'end: ' + key);
