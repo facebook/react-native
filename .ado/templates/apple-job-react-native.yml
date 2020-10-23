@@ -14,10 +14,6 @@ steps:
       rm -rf $(Build.Repository.LocalPath)/DerivedData
     displayName: 'Clean DerivedData'
 
-  # Install the required components specified in the Brewfile file.
-  - script: 'brew update'
-    displayName: 'brew update'
-
   - script: 'brew bundle'
     displayName: 'brew bundle'
 

@@ -47,7 +47,9 @@ static NSImage *RCTFillImagePreservingAspectRatio(NSImage *originalImage, NSSize
   }
 
   NSSize originalImageSize = originalImage.size;
-  if (NSEqualSizes(originalImageSize, NSZeroSize) || [[originalImage representations] count] == 0) {
+  if (NSEqualSizes(originalImageSize, NSZeroSize) ||
+      NSEqualSizes(originalImageSize, targetSize) ||
+      [[originalImage representations] count] == 0) {
     return originalImage;
   }
 
@@ -146,11 +148,11 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
     self.wantsLayer = YES;
 #endif
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
     _imageView = [[RCTUIImageViewAnimated alloc] init];
     _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addSubview:_imageView];
 
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self
                selector:@selector(clearImageIfDetached)
