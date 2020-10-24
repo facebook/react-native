@@ -9,7 +9,6 @@ load(
     "IS_OSS_BUILD",
     "MACOSX",
     "YOGA_CXX_TARGET",
-    "fb_apple_library",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
@@ -21,6 +20,7 @@ load(
     "react_native_xplat_target",
     "react_native_xplat_target_apple",
     "rn_android_library",
+    "rn_apple_library",
     "rn_xplat_cxx_library",
 )
 
@@ -41,15 +41,14 @@ def rn_codegen_cli():
         )
 
         fb_native.sh_binary(
-            name = "rn_codegen",
-            main = "buck_tests/generate-tests.sh",
+            name = "generate_all_from_schema",
+            main = "src/cli/generators/generate-all.sh",
             resources = native.glob(
                 [
                     "buck_tests/**/*.js",
                     "src/**/*.js",
                 ],
             ) + [
-                "buck_tests/generate-tests.js",
                 "package.json",
                 "//xplat/js:setup_env",
             ],
@@ -89,18 +88,11 @@ def rn_codegen_cli():
             visibility = ["PUBLIC"],
         )
 
-        # TODO: This doesn't work yet...
         fb_native.sh_binary(
-            name = "rn_codegen",
-            main = "buck_tests/generate-tests.sh",
-            resources = native.glob(
-                [
-                    "buck_tests/**/*.js",
-                    "src/**/*.js",
-                ],
-            ) + [
-                "buck_tests/generate-tests.js",
-                "package.json",
+            name = "generate_all_from_schema",
+            main = "scripts/buck-oss/generate-all.sh",
+            resources = [
+                ":setup_cli",
             ],
             visibility = ["PUBLIC"],
         )
@@ -120,7 +112,7 @@ def rn_codegen_modules(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:rn_codegen"), schema_target, name, native_module_spec_name),
+        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name, native_module_spec_name),
         out = "codegenfiles-{}".format(name),
         labels = ["codegen_rule"],
     )
@@ -211,45 +203,47 @@ def rn_codegen_modules(
     ##############
     # iOS handling
     ##############
-    fb_native.genrule(
-        name = generate_module_hobjcpp_name,
-        cmd = "cp $(location :{})/{}.h $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
-        out = "{}.h".format(native_module_spec_name),
-        labels = ["codegen_rule"],
-    )
+    if not IS_OSS_BUILD:
+        # iOS Buck build isn't fully working in OSS, so let's skip it for OSS for now.
+        fb_native.genrule(
+            name = generate_module_hobjcpp_name,
+            cmd = "cp $(location :{})/{}.h $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
+            out = "{}.h".format(native_module_spec_name),
+            labels = ["codegen_rule"],
+        )
 
-    fb_native.genrule(
-        name = generate_module_mm_name,
-        cmd = "cp $(location :{})/{}-generated.mm $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
-        out = "{}-generated.mm".format(native_module_spec_name),
-        labels = ["codegen_rule"],
-    )
+        fb_native.genrule(
+            name = generate_module_mm_name,
+            cmd = "cp $(location :{})/{}-generated.mm $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
+            out = "{}-generated.mm".format(native_module_spec_name),
+            labels = ["codegen_rule"],
+        )
 
-    fb_apple_library(
-        name = "generated_objcpp_modules-{}Apple".format(name),
-        extension_api_only = True,
-        header_namespace = "",
-        sdks = (IOS),
-        compiler_flags = [
-            "-Wno-unused-private-field",
-        ],
-        exported_headers = {
-            "{}/{}.h".format(native_module_spec_name, native_module_spec_name): ":{}".format(generate_module_hobjcpp_name),
-        },
-        headers = [
-            ":{}".format(generate_module_hobjcpp_name),
-        ],
-        srcs = [
-            ":{}".format(generate_module_mm_name),
-        ],
-        labels = ["codegen_rule"],
-        visibility = ["PUBLIC"],
-        exported_deps = [
-            "//xplat/js/react-native-github:RCTTypeSafety",
-            "//xplat/js/react-native-github/Libraries/RCTRequired:RCTRequired",
-            react_native_xplat_target_apple("react/nativemodule/core:core"),
-        ],
-    )
+        rn_apple_library(
+            name = "generated_objcpp_modules-{}Apple".format(name),
+            extension_api_only = True,
+            header_namespace = "",
+            sdks = (IOS),
+            compiler_flags = [
+                "-Wno-unused-private-field",
+            ],
+            exported_headers = {
+                "{}/{}.h".format(native_module_spec_name, native_module_spec_name): ":{}".format(generate_module_hobjcpp_name),
+            },
+            headers = [
+                ":{}".format(generate_module_hobjcpp_name),
+            ],
+            srcs = [
+                ":{}".format(generate_module_mm_name),
+            ],
+            labels = ["codegen_rule"],
+            visibility = ["PUBLIC"],
+            exported_deps = [
+                "//xplat/js/react-native-github:RCTTypeSafety",
+                "//xplat/js/react-native-github/Libraries/RCTRequired:RCTRequired",
+                react_native_xplat_target_apple("react/nativemodule/core:core"),
+            ],
+        )
 
 def rn_codegen_components(
         name = "",
@@ -272,7 +266,7 @@ def rn_codegen_components(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:rn_codegen"), schema_target, name, name),
+        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name, name),
         out = "codegenfiles-{}".format(name),
         labels = ["codegen_rule"],
     )
@@ -501,7 +495,7 @@ def rn_codegen_cxx_modules(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:rn_codegen"), schema_target, name, name),
+        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name, name),
         out = "codegenfiles-{}".format(name),
         labels = ["codegen_rule"],
     )

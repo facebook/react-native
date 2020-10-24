@@ -185,7 +185,13 @@ def rn_apple_library(*args, **kwargs):
     kwargs.setdefault("link_whole", True)
     kwargs.setdefault("enable_exceptions", True)
     kwargs.setdefault("target_sdk_version", "10.0")
+
+    # Unsupported kwargs
     _ = kwargs.pop("plugins_only", False)
+    _ = kwargs.pop("enable_exceptions", False)
+    _ = kwargs.pop("extension_api_only", False)
+    _ = kwargs.pop("sdks", [])
+
     native.apple_library(*args, **kwargs)
 
 def rn_java_library(*args, **kwargs):
