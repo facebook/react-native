@@ -14,13 +14,16 @@ const path = require('path');
 
 const ERRORS = {
   misnamedHasteModule(hasteModuleName) {
-    return `Module ${hasteModuleName}: All files using TurboModuleRegistry must start with Native`;
+    return `Module ${hasteModuleName}: All files using TurboModuleRegistry must start with Native.`;
   },
   untypedModuleRequire(hasteModuleName, requireMethodName) {
-    return `Module ${hasteModuleName}: Please type parameterize the Module require: TurboModuleRegistry.${requireMethodName}<Spec>(...)`;
+    return `Module ${hasteModuleName}: Please type parameterize the Module require: TurboModuleRegistry.${requireMethodName}<Spec>(...).`;
   },
   incorrectlyTypedModuleRequire(hasteModuleName, requireMethodName) {
-    return `Module ${hasteModuleName}: Type parameter of Module require must be 'Spec': TurboModuleRegistry.${requireMethodName}<Spec>(...)`;
+    return `Module ${hasteModuleName}: Type parameter of Module require must be 'Spec': TurboModuleRegistry.${requireMethodName}<Spec>(...).`;
+  },
+  multipleModuleRequires(hasteModuleName, numCalls) {
+    return `Module ${hasteModuleName}: Module spec must contain exactly one call into TurboModuleRegistry, detected ${numCalls}.`;
   },
 };
 
@@ -79,10 +82,23 @@ function rule(context) {
     return {};
   }
 
-  let isModule = false;
+  let moduleRequires = [];
   return {
     'Program:exit': function(node) {
-      if (!isModule) {
+      if (moduleRequires.length === 0) {
+        return;
+      }
+
+      if (moduleRequires.length > 1) {
+        moduleRequires.forEach(callExpressionNode => {
+          context.report({
+            node: callExpressionNode,
+            message: ERRORS.multipleModuleRequires(
+              hasteModuleName,
+              moduleRequires.length,
+            ),
+          });
+        });
         return;
       }
 
@@ -130,7 +146,7 @@ function rule(context) {
         return;
       }
 
-      isModule = true;
+      moduleRequires.push(node);
 
       /**
        * Validate that NativeModule requires are typed
