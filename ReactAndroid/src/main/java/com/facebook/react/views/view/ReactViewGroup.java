@@ -672,6 +672,9 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   protected void dispatchDraw(Canvas canvas) {
+    // TODO T78035906: delete this if we find the root-cause
+    int initialChildCount = getChildCount();
+
     try {
       dispatchOverflowDraw(canvas);
       super.dispatchDraw(canvas);
@@ -685,8 +688,10 @@ public class ReactViewGroup extends ViewGroup
           e);
 
       // Log all children of view, if any
+      int childCount = getChildCount();
+      FLog.e(TAG, "Initial Child Count: %d / final: %d", initialChildCount, childCount);
       FLog.e(TAG, "Child List:");
-      for (int i = 0; i < getChildCount(); i++) {
+      for (int i = 0; i < childCount; i++) {
         View child = getChildAt(i);
         FLog.e(
             TAG,
