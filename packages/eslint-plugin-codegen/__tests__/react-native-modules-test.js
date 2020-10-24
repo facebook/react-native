@@ -110,6 +110,28 @@ export default NativeModule1 || NativeModule2;
       },
     ],
   },
+
+  // Called TurboModuleRegistry.getEnforcing with a variable
+  {
+    code: `
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
+export interface Spec extends TurboModule {
+  func1(a: string): {||},
+}
+const moduleName = 'foo';
+export default TurboModuleRegistry.get<Spec>(moduleName);
+      `,
+    filename: `${NATIVE_MODULES_DIR}/NativeXYZ.js`,
+    errors: [
+      {
+        message: rule.errors.calledModuleRequireWithWrongType(
+          'NativeXYZ',
+          'get',
+          'Identifier',
+        ),
+      },
+    ],
+  },
 ];
 
 eslintTester.run('../react-native-modules', rule, {

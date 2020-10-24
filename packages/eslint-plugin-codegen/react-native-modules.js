@@ -17,13 +17,24 @@ const ERRORS = {
     return `Module ${hasteModuleName}: All files using TurboModuleRegistry must start with Native.`;
   },
   untypedModuleRequire(hasteModuleName, requireMethodName) {
-    return `Module ${hasteModuleName}: Please type parameterize the Module require: TurboModuleRegistry.${requireMethodName}<Spec>(...).`;
+    return `Module ${hasteModuleName}: Please type parameterize the Module require: TurboModuleRegistry.${requireMethodName}<Spec>().`;
   },
   incorrectlyTypedModuleRequire(hasteModuleName, requireMethodName) {
-    return `Module ${hasteModuleName}: Type parameter of Module require must be 'Spec': TurboModuleRegistry.${requireMethodName}<Spec>(...).`;
+    return `Module ${hasteModuleName}: Type parameter of Module require must be 'Spec': TurboModuleRegistry.${requireMethodName}<Spec>().`;
   },
   multipleModuleRequires(hasteModuleName, numCalls) {
     return `Module ${hasteModuleName}: Module spec must contain exactly one call into TurboModuleRegistry, detected ${numCalls}.`;
+  },
+  calledModuleRequireWithWrongType(hasteModuleName, requireMethodName, type) {
+    const a = /[aeiouy]/.test(type.toLowerCase()) ? 'an' : 'a';
+    return `Module ${hasteModuleName}: TurboModuleRegistry.${requireMethodName}<Spec>() must be called with a string literal, detected ${a} '${type}'.`;
+  },
+  calledModuleRequireWithWrongLiteral(
+    hasteModuleName,
+    requireMethodName,
+    literal,
+  ) {
+    return `Module ${hasteModuleName}: TurboModuleRegistry.${requireMethodName}<Spec>() must be called with a string literal, detected ${literal}`;
   },
 };
 
@@ -187,6 +198,38 @@ function rule(context) {
           ),
         });
         return;
+      }
+
+      /**
+       * Validate the TurboModuleRegistry.get<Spec>(...) argument
+       */
+
+      if (node.arguments.length === 1) {
+        const methodName = node.callee.property.name;
+
+        if (node.arguments[0].type !== 'Literal') {
+          context.report({
+            node: node.arguments[0],
+            message: ERRORS.calledModuleRequireWithWrongType(
+              hasteModuleName,
+              methodName,
+              node.arguments[0].type,
+            ),
+          });
+          return;
+        }
+
+        if (typeof node.arguments[0].value !== 'string') {
+          context.report({
+            node: node.arguments[0],
+            message: ERRORS.calledModuleRequireWithWrongLiteral(
+              hasteModuleName,
+              methodName,
+              node.arguments[0].value,
+            ),
+          });
+          return;
+        }
       }
 
       return true;
