@@ -48,6 +48,8 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.yoga.YogaConstants;
 
 /**
@@ -433,12 +435,28 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
+  private boolean customDrawOrderDisabled() {
+    if (getId() == NO_ID) {
+      return false;
+    }
+    if (ViewUtil.getUIManagerType(getId()) != UIManagerType.FABRIC) {
+      return false;
+    }
+
+    return ReactFeatureFlags.disableCustomDrawOrderFabric;
+  }
+
   @Override
   public void addView(View child, int index, ViewGroup.LayoutParams params) {
     // This will get called for every overload of addView so there is not need to override every
     // method.
-    mDrawingOrderHelper.handleAddView(child);
-    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+
+    if (!customDrawOrderDisabled()) {
+      mDrawingOrderHelper.handleAddView(child);
+      setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+    } else {
+      setChildrenDrawingOrderEnabled(false);
+    }
 
     super.addView(child, index, params);
   }
@@ -447,8 +465,12 @@ public class ReactViewGroup extends ViewGroup
   public void removeView(View view) {
     UiThreadUtil.assertOnUiThread();
 
-    mDrawingOrderHelper.handleRemoveView(view);
-    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+    if (!customDrawOrderDisabled()) {
+      mDrawingOrderHelper.handleRemoveView(view);
+      setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+    } else {
+      setChildrenDrawingOrderEnabled(false);
+    }
 
     super.removeView(view);
   }
@@ -457,8 +479,12 @@ public class ReactViewGroup extends ViewGroup
   public void removeViewAt(int index) {
     UiThreadUtil.assertOnUiThread();
 
-    mDrawingOrderHelper.handleRemoveView(getChildAt(index));
-    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+    if (!customDrawOrderDisabled()) {
+      mDrawingOrderHelper.handleRemoveView(getChildAt(index));
+      setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+    } else {
+      setChildrenDrawingOrderEnabled(false);
+    }
 
     super.removeViewAt(index);
   }
@@ -479,6 +505,10 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void updateDrawingOrder() {
+    if (customDrawOrderDisabled()) {
+      return;
+    }
+
     mDrawingOrderHelper.update();
     setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
     invalidate();
