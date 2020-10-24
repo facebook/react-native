@@ -28,11 +28,11 @@ executors:
   nodelts:
     <<: *defaults
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:14
   nodeprevlts:
     <<: *defaults
     docker:
-      - image: circleci/node:10
+      - image: circleci/node:12
   reactnativeandroid:
     <<: *defaults
     docker:
