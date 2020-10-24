@@ -54,7 +54,7 @@ import com.facebook.yoga.YogaConstants;
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
  * initializes most of the storage needed for them.
  */
-@TargetApi(Build.VERSION_CODES.KITKAT)
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class ReactViewGroup extends ViewGroup
     implements ReactInterceptingViewGroup,
         ReactClippingViewGroup,
