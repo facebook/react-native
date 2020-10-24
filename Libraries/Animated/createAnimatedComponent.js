@@ -56,7 +56,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _eventDetachers: Array<Function> = [];
 
     // Only to be used in this file, and only in Fabric.
-    _animatedComponentId: number = -1;
+    _animatedComponentId: number = animatedComponentNextId++;
 
     _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement
@@ -113,9 +113,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
 
     _waitForUpdate = (): void => {
       if (this._isFabric()) {
-        if (this._animatedComponentId === -1) {
-          this._animatedComponentId = animatedComponentNextId++;
-        }
         NativeAnimatedHelper.API.setWaitingForIdentifier(
           this._animatedComponentId,
         );
