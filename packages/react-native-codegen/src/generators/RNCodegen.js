@@ -27,10 +27,13 @@ const generateModuleH = require('./modules/GenerateModuleH.js');
 const generateModuleCpp = require('./modules/GenerateModuleCpp.js');
 const generateModuleObjCpp = require('./modules/GenerateModuleObjCpp');
 const generateModuleJavaSpec = require('./modules/GenerateModuleJavaSpec.js');
+const generateModuleKotlinSpec = require('./modules/GenerateModuleKotlinSpec.js');
 const GenerateModuleJniCpp = require('./modules/GenerateModuleJniCpp.js');
 const GenerateModuleJniH = require('./modules/GenerateModuleJniH.js');
 const generatePropsJavaInterface = require('./components/GeneratePropsJavaInterface.js');
 const generatePropsJavaDelegate = require('./components/GeneratePropsJavaDelegate.js');
+const generatePropsKotlinInterface = require('./components/GeneratePropsKotlinInterface.js');
+const generatePropsKotlinDelegate = require('./components/GeneratePropsKotlinDelegate.js');
 const generateTests = require('./components/GenerateTests.js');
 const generateShadowNodeCpp = require('./components/GenerateShadowNodeCpp.js');
 const generateShadowNodeH = require('./components/GenerateShadowNodeH.js');
@@ -52,9 +55,11 @@ type Generators =
   | 'descriptors'
   | 'events'
   | 'props'
+  | 'propsKotlin'
   | 'tests'
   | 'shadow-nodes'
   | 'modulesAndroid'
+  | 'modulesAndroidKotlin'
   | 'modulesCxx'
   | 'modulesIOS';
 
@@ -73,11 +78,20 @@ const GENERATORS = {
     generatePropsJavaInterface.generate,
     generatePropsJavaDelegate.generate,
   ],
+  propsKotlin:[
+    generatePropsKotlinInterface.generate,
+    generatePropsKotlinDelegate.generate,
+  ],
   // TODO: Refactor this to consolidate various C++ output variation instead of forking per platform.
   modulesAndroid: [
     GenerateModuleJniCpp.generate,
     GenerateModuleJniH.generate,
     generateModuleJavaSpec.generate,
+  ],
+  modulesAndroidKotlin: [
+    GenerateModuleJniCpp.generate,
+    GenerateModuleJniH.generate,
+    generateModuleKotlinSpec.generate,
   ],
   modulesCxx: [generateModuleCpp.generate, generateModuleH.generate],
   modulesIOS: [generateModuleObjCpp.generate],
