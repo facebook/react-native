@@ -302,6 +302,11 @@ afterEvaluate {
             enabled(currentBundleTask.enabled)
         }
 
+        // mergeResources task runs before the bundle file is copied to the intermediate asset directory from Android plugin 4.1+.
+        // This ensures to copy the bundle file before mergeResources task starts
+        def mergeResourcesTask = tasks.findByName("merge${targetName}Resources")
+        mergeResourcesTask.dependsOn(currentAssetsCopyTask)
+
         packageTask.dependsOn(currentAssetsCopyTask)
         if (buildPreBundleTask != null) {
             buildPreBundleTask.dependsOn(currentAssetsCopyTask)
