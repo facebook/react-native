@@ -490,7 +490,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         UIManager uiManager =
             UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
         if (uiManager != null) {
-          FLog.e(TAG, "stopSurface for surfaceId: " + this.getId());
+          // TODO T48186892: remove when resolved
+          FLog.e(
+              TAG,
+              "stopSurface for surfaceId: " + this.getId(),
+              new RuntimeException("unmountReactApplication"));
           if (getId() == NO_ID) {
             ReactSoftException.logSoftException(
                 TAG,
