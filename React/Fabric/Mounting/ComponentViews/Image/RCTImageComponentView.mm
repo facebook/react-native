@@ -13,9 +13,7 @@
 #import <react/renderer/components/image/ImageComponentDescriptor.h>
 #import <react/renderer/components/image/ImageEventEmitter.h>
 #import <react/renderer/components/image/ImageProps.h>
-#import <react/renderer/imagemanager/ImageInstrumentation.h>
 #import <react/renderer/imagemanager/ImageRequest.h>
-#import <react/renderer/imagemanager/RCTImageInstrumentationProxy.h>
 #import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
 
 using namespace facebook::react;
@@ -74,7 +72,7 @@ using namespace facebook::react;
 
   // `tintColor`
   if (oldImageProps.tintColor != newImageProps.tintColor) {
-    _imageView.tintColor = [UIColor colorWithCGColor:newImageProps.tintColor.get()];
+    _imageView.tintColor = RCTUIColorFromSharedColor(newImageProps.tintColor);
   }
 
   [super updateProps:props oldProps:oldProps];
@@ -155,30 +153,17 @@ using namespace facebook::react;
                                   resizingMode:UIImageResizingModeStretch];
   }
 
-  void (^didSetImage)() = ^() {
-    auto data = self->_stateTeller.getData();
-    if (!data.hasValue()) {
-      return;
-    }
-    auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
-        data.value().getImageRequest().getSharedImageInstrumentation());
-    if (instrumentation) {
-      instrumentation->didSetImage();
-    }
-  };
-
   if (imageProps.blurRadius > __FLT_EPSILON__) {
     // Blur on a background thread to avoid blocking interaction.
+    CGFloat blurRadius = imageProps.blurRadius;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      UIImage *blurredImage = RCTBlurredImageWithRadius(image, imageProps.blurRadius);
+      UIImage *blurredImage = RCTBlurredImageWithRadius(image, blurRadius);
       RCTExecuteOnMainQueue(^{
         self->_imageView.image = blurredImage;
-        didSetImage();
       });
     });
   } else {
     self->_imageView.image = image;
-    didSetImage();
   }
 }
 

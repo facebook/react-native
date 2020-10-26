@@ -22,3 +22,15 @@ RCT_EXTERN void RCTExperimentSetOnDemandViewMounting(BOOL value);
  */
 RCT_EXTERN BOOL RCTExperimentGetSyncPerformanceFlag(void);
 RCT_EXTERN void RCTExperimentSetSyncPerformanceFlag(BOOL value);
+
+/*
+ * It's an experimental feature that improves performance of hit-testing.
+ */
+RCT_EXTERN BOOL RCTExperimentGetOptimizedHitTesting(void);
+RCT_EXTERN void RCTExperimentSetOptimizedHitTesting(BOOL value);
+
+/*
+ * Preemptive View Allocation
+ */
+RCT_EXTERN BOOL RCTExperimentGetPreemptiveViewAllocationDisabled(void);
+RCT_EXTERN void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value);

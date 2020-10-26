@@ -8,17 +8,12 @@
 package com.facebook.react.uimanager;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.common.ReactConstants;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,32 +60,7 @@ public class DisplayMetricsHolder {
     //
     // See:
     // http://developer.android.com/reference/android/view/Display.html#getRealMetrics(android.util.DisplayMetrics)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      display.getRealMetrics(screenDisplayMetrics);
-    } else {
-      // For 14 <= API level <= 16, we need to invoke getRawHeight and getRawWidth to get the real
-      // dimensions.
-      // Since react-native only supports API level 16+ we don't have to worry about other cases.
-      //
-      // Reflection exceptions are rethrown at runtime.
-      //
-      // See:
-      // http://stackoverflow.com/questions/14341041/how-to-get-real-screen-height-and-width/23861333#23861333
-      try {
-        Method mGetRawH = Display.class.getMethod("getRawHeight");
-        Method mGetRawW = Display.class.getMethod("getRawWidth");
-        screenDisplayMetrics.widthPixels = (Integer) mGetRawW.invoke(display);
-        screenDisplayMetrics.heightPixels = (Integer) mGetRawH.invoke(display);
-      } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-        // this may not be 100% accurate, but it's all we've got
-        screenDisplayMetrics.widthPixels = display.getWidth();
-        screenDisplayMetrics.heightPixels = display.getHeight();
-        FLog.e(
-            ReactConstants.TAG,
-            "Unable to access getRawHeight and getRawWidth to get real dimensions.",
-            e);
-      }
-    }
+    display.getRealMetrics(screenDisplayMetrics);
     DisplayMetricsHolder.setScreenDisplayMetrics(screenDisplayMetrics);
   }
 

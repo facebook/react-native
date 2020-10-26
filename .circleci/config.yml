@@ -28,11 +28,11 @@ executors:
   nodelts:
     <<: *defaults
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:14
   nodeprevlts:
     <<: *defaults
     docker:
-      - image: circleci/node:10
+      - image: circleci/node:12
   reactnativeandroid:
     <<: *defaults
     docker:
@@ -589,7 +589,7 @@ jobs:
             source ~/.bashrc
             nvm i node
             npm i -g yarn
-            npx envinfo@latest
+            echo y | npx envinfo@latest
             yarn run docker-setup-android
             yarn run docker-build-android
 
@@ -642,7 +642,7 @@ jobs:
           name: Setup Android SDKs
           command: |
             sdkmanager --licenses
-            sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
+            sdkmanager "system-images;android-21;google_apis;armeabi-v7a"
             sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
             sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
             sdkmanager "add-ons;addon-google_apis-google-23"

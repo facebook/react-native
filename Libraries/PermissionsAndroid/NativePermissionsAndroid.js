@@ -47,6 +47,7 @@ export type PermissionType =
 */
 
 export interface Spec extends TurboModule {
+  // eslint-disable-next-line @react-native/codegen/react-native-modules
   +checkPermission: (permission: PermissionType) => Promise<boolean>;
   +requestPermission: (permission: PermissionType) => Promise<PermissionStatus>;
   +shouldShowRequestPermissionRationale: (

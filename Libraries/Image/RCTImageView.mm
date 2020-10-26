@@ -9,7 +9,6 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
 #import <React/RCTImageBlurUtils.h>
 #import <React/RCTImageSource.h>
 #import <React/RCTImageUtils.h>

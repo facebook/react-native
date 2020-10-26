@@ -11,7 +11,6 @@
 #import <objc/runtime.h>
 
 #import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
@@ -134,6 +133,17 @@ BOOL RCTTurboModuleSharedMutexInitEnabled(void)
 void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
 {
   turboModuleSharedMutexInitEnabled = enabled;
+}
+
+static BOOL turboModuleBlockCopyEnabled = NO;
+BOOL RCTTurboModuleBlockCopyEnabled(void)
+{
+  return turboModuleBlockCopyEnabled;
+}
+
+void RCTEnableTurboModuleBlockCopy(BOOL enabled)
+{
+  turboModuleBlockCopyEnabled = enabled;
 }
 
 @interface RCTBridge () <RCTReloadListener>

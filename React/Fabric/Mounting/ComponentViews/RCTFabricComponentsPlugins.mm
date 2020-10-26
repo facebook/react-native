@@ -24,6 +24,7 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name) {
     {"ActivityIndicatorView", RCTActivityIndicatorViewCls},
     {"Slider", RCTSliderCls},
     {"Switch", RCTSwitchCls},
+    {"Picker", RCTPickerCls},
     {"UnimplementedNativeView", RCTUnimplementedNativeViewCls},
     {"Paragraph", RCTParagraphCls},
     {"TextInput", RCTTextInputCls},

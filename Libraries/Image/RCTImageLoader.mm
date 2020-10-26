@@ -38,6 +38,18 @@ void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled)
   imagePerfInstrumentationEnabled = enabled;
 }
 
+static BOOL (^getImagePerfInstrumentationForFabricEnabled)() = (^BOOL () {
+  return NO;
+});
+
+BOOL RCTGetImageLoadingPerfInstrumentationForFabricEnabled() {
+  return getImagePerfInstrumentationForFabricEnabled();
+}
+
+void RCTSetImageLoadingPerfInstrumentationForFabricEnabledBlock(BOOL (^getMobileConfigEnabled)()) {
+  getImagePerfInstrumentationForFabricEnabled = getMobileConfigEnabled;
+}
+
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
   NSInteger singleImageBytes = image.size.width * image.size.height * image.scale * image.scale * 4;
@@ -92,6 +104,7 @@ static uint64_t monotonicTimeGetCurrentNanoseconds(void)
   NSMutableArray *_pendingDecodes;
   NSInteger _scheduledDecodes;
   NSUInteger _activeBytes;
+  std::mutex _loadersMutex;
   __weak id<RCTImageRedirectProtocol> _redirectDelegate;
 }
 
@@ -172,26 +185,29 @@ RCT_EXPORT_MODULE()
   }
 
   if (!_loaders) {
-    // Get loaders, sorted in reverse priority order (highest priority first)
-
-    if (_loadersProvider) {
-      _loaders = _loadersProvider();
-    } else {
-      RCTAssert(_bridge, @"Trying to find RCTImageURLLoaders and bridge not set.");
-      _loaders = [_bridge modulesConformingToProtocol:@protocol(RCTImageURLLoader)];
-    }
-
-    _loaders = [_loaders sortedArrayUsingComparator:^NSComparisonResult(id<RCTImageURLLoader> a, id<RCTImageURLLoader> b) {
-      float priorityA = [a respondsToSelector:@selector(loaderPriority)] ? [a loaderPriority] : 0;
-      float priorityB = [b respondsToSelector:@selector(loaderPriority)] ? [b loaderPriority] : 0;
-      if (priorityA > priorityB) {
-        return NSOrderedAscending;
-      } else if (priorityA < priorityB) {
-        return NSOrderedDescending;
+    std::unique_lock<std::mutex> guard(_loadersMutex);
+    if (!_loaders) {
+      
+      // Get loaders, sorted in reverse priority order (highest priority first)
+      if (_loadersProvider) {
+        _loaders = _loadersProvider();
       } else {
-        return NSOrderedSame;
+        RCTAssert(_bridge, @"Trying to find RCTImageURLLoaders and bridge not set.");
+        _loaders = [_bridge modulesConformingToProtocol:@protocol(RCTImageURLLoader)];
       }
-    }];
+
+      _loaders = [_loaders sortedArrayUsingComparator:^NSComparisonResult(id<RCTImageURLLoader> a, id<RCTImageURLLoader> b) {
+        float priorityA = [a respondsToSelector:@selector(loaderPriority)] ? [a loaderPriority] : 0;
+        float priorityB = [b respondsToSelector:@selector(loaderPriority)] ? [b loaderPriority] : 0;
+        if (priorityA > priorityB) {
+          return NSOrderedAscending;
+        } else if (priorityA < priorityB) {
+          return NSOrderedDescending;
+        } else {
+          return NSOrderedSame;
+        }
+      }];
+    }
   }
 
   if (RCT_DEBUG) {
@@ -247,7 +263,7 @@ RCT_EXPORT_MODULE()
       _decoders = [_bridge modulesConformingToProtocol:@protocol(RCTImageDataDecoder)];
     }
 
-    _decoders = [[_bridge modulesConformingToProtocol:@protocol(RCTImageDataDecoder)] sortedArrayUsingComparator:^NSComparisonResult(id<RCTImageDataDecoder> a, id<RCTImageDataDecoder> b) {
+    _decoders = [_decoders sortedArrayUsingComparator:^NSComparisonResult(id<RCTImageDataDecoder> a, id<RCTImageDataDecoder> b) {
       float priorityA = [a respondsToSelector:@selector(decoderPriority)] ? [a decoderPriority] : 0;
       float priorityB = [b respondsToSelector:@selector(decoderPriority)] ? [b decoderPriority] : 0;
       if (priorityA > priorityB) {
@@ -829,19 +845,6 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     return [(id<RCTImageURLLoaderWithAttribution>)loadHandler loaderModuleNameForRequestUrl:url];
   }
   return nil;
-}
-
-- (void)trackURLImageContentDidSetForRequest:(RCTImageURLLoaderRequest *)loaderRequest
-{
-  if (!loaderRequest) {
-    return;
-  }
-
-  // This delegate method is Fabric-only
-  id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:loaderRequest.imageURL];
-  if ([loadHandler respondsToSelector:@selector(trackURLImageContentDidSetForRequest:)]) {
-    [(id<RCTImageURLLoaderWithAttribution>)loadHandler trackURLImageContentDidSetForRequest:loaderRequest];
-  }
 }
 
 - (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(UIView *)imageView

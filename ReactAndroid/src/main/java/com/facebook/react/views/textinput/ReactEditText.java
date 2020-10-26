@@ -38,8 +38,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.text.CustomLetterSpacingSpan;
@@ -70,8 +73,10 @@ import java.util.List;
  */
 public class ReactEditText extends AppCompatEditText
     implements FabricViewStateManager.HasFabricViewStateManager {
-
   private final InputMethodManager mInputMethodManager;
+  private final String TAG = ReactEditText.class.getSimpleName();
+  public static final boolean DEBUG_MODE = ReactBuildConfig.DEBUG && false;
+
   // This flag is set to true when we set the text of the EditText explicitly. In that case, no
   // *TextChanged events should be triggered. This is less expensive than removing the text
   // listeners and adding them back again after the text change is completed.
@@ -169,6 +174,9 @@ public class ReactEditText extends AppCompatEditText
 
   @Override
   protected void finalize() {
+    if (DEBUG_MODE) {
+      FLog.e(TAG, "finalize[" + getId() + "] delete cached spannable");
+    }
     TextLayoutManager.deleteCachedSpannableForTag(getId());
   }
 
@@ -326,11 +334,18 @@ public class ReactEditText extends AppCompatEditText
 
   @Override
   public void setSelection(int start, int end) {
+    if (DEBUG_MODE) {
+      FLog.e(TAG, "setSelection[" + getId() + "]: " + start + " " + end);
+    }
     super.setSelection(start, end);
   }
 
   @Override
   protected void onSelectionChanged(int selStart, int selEnd) {
+    if (DEBUG_MODE) {
+      FLog.e(TAG, "onSelectionChanged[" + getId() + "]: " + selStart + " " + selEnd);
+    }
+
     super.onSelectionChanged(selStart, selEnd);
     if (!mIsSettingTextFromCacheUpdate && mSelectionWatcher != null && hasFocus()) {
       mSelectionWatcher.onSelectionChanged(selStart, selEnd);
@@ -500,6 +515,17 @@ public class ReactEditText extends AppCompatEditText
     // Only set the text if it is up to date.
     if (!canUpdateWithEventCount(reactTextUpdate.getJsEventCounter())) {
       return;
+    }
+
+    if (DEBUG_MODE) {
+      FLog.e(
+          TAG,
+          "maybeSetText["
+              + getId()
+              + "]: current text: "
+              + getText()
+              + " update: "
+              + reactTextUpdate.getText());
     }
 
     // The current text gets replaced with the text received from JS. However, the spans on the
@@ -827,6 +853,13 @@ public class ReactEditText extends AppCompatEditText
   @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
+
+    // Used to ensure that text is selectable inside of removeClippedSubviews
+    // See https://github.com/facebook/react-native/issues/6805 for original
+    // fix that was ported to here.
+
+    super.setTextIsSelectable(true);
+
     if (mContainsImages) {
       Spanned text = getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
@@ -936,7 +969,7 @@ public class ReactEditText extends AppCompatEditText
    */
   private void updateCachedSpannable(boolean resetStyles) {
     // Noops in non-Fabric
-    if (getFabricViewStateManager() == null) {
+    if (!mFabricViewStateManager.hasStateWrapper()) {
       return;
     }
     // If this view doesn't have an ID yet, we don't have a cache key, so bail here
@@ -960,7 +993,41 @@ public class ReactEditText extends AppCompatEditText
     // can modify the spans of sb/currentText, impact the text or spans visible on screen, and
     // also call the TextChangeWatcher methods.
     if (haveText) {
-      sb.append(currentText);
+      // This is here as a workaround for T76236115, which looks like this:
+      // Hopefully we can delete all this stuff if we can get rid of the soft errors.
+      // - android.text.SpannableStringBuilder.charAt (SpannableStringBuilder.java:123)
+      // - android.text.CharSequenceCharacterIterator.current
+      // (CharSequenceCharacterIterator.java:58)
+      // - android.text.CharSequenceCharacterIterator.setIndex
+      // (CharSequenceCharacterIterator.java:83)
+      // - android.icu.text.RuleBasedBreakIterator.CISetIndex32 (RuleBasedBreakIterator.java:1126)
+      // - android.icu.text.RuleBasedBreakIterator.isBoundary (RuleBasedBreakIterator.java:503)
+      // - android.text.method.WordIterator.isBoundary (WordIterator.java:95)
+      // - android.widget.Editor$SelectionHandleView.positionAtCursorOffset (Editor.java:6666)
+      // - android.widget.Editor$HandleView.invalidate (Editor.java:5241)
+      // - android.widget.Editor$SelectionModifierCursorController.invalidateHandles
+      // (Editor.java:7442)
+      // - android.widget.Editor.invalidateHandlesAndActionMode (Editor.java:2112)
+      // - android.widget.TextView.spanChange (TextView.java:11189)
+      // - android.widget.TextView$ChangeWatcher.onSpanAdded (TextView.java:14189)
+      // - android.text.SpannableStringBuilder.sendSpanAdded (SpannableStringBuilder.java:1283)
+      // - android.text.SpannableStringBuilder.sendToSpanWatchers (SpannableStringBuilder.java:663)
+      // - android.text.SpannableStringBuilder.replace (SpannableStringBuilder.java:579)
+      // - android.text.SpannableStringBuilder.append (SpannableStringBuilder.java:269)
+      // - ReactEditText.updateCachedSpannable (ReactEditText.java:995)
+      // - ReactEditText$TextWatcherDelegator.onTextChanged (ReactEditText.java:1044)
+      // - android.widget.TextView.sendOnTextChanged (TextView.java:10972)
+      // ...
+      // - android.text.method.BaseKeyListener.onKeyDown (BaseKeyListener.java:479)
+      // - android.text.method.QwertyKeyListener.onKeyDown (QwertyKeyListener.java:362)
+      // - ReactEditText$InternalKeyListener.onKeyDown (ReactEditText.java:1094)
+      // ...
+      // - android.app.Activity.dispatchKeyEvent (Activity.java:3447)
+      try {
+        sb.append(currentText.subSequence(0, currentText.length()));
+      } catch (IndexOutOfBoundsException e) {
+        ReactSoftException.logSoftException(TAG, e);
+      }
     }
 
     // If we don't have text, make sure we have *something* to measure.
@@ -997,6 +1064,11 @@ public class ReactEditText extends AppCompatEditText
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
+      if (DEBUG_MODE) {
+        FLog.e(
+            TAG, "onTextChanged[" + getId() + "]: " + s + " " + start + " " + before + " " + count);
+      }
+
       if (!mIsSettingTextFromCacheUpdate) {
         if (!mIsSettingTextFromJS && mListeners != null) {
           for (TextWatcher listener : mListeners) {

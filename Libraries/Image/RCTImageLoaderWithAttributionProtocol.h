@@ -16,6 +16,9 @@ RCT_EXTERN BOOL RCTImageLoadingPerfInstrumentationEnabled(void);
 RCT_EXTERN void RCTEnableImageLoadingInstrumentation(BOOL enabled);
 RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
 
+RCT_EXTERN BOOL RCTGetImageLoadingPerfInstrumentationForFabricEnabled();
+RCT_EXTERN void RCTSetImageLoadingPerfInstrumentationForFabricEnabledBlock(BOOL (^getEnabled)());
+
 @protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol, RCTImageLoaderInstrumentableProtocol>
 
 // TODO (T61325135): Remove C++ checks
@@ -35,11 +38,6 @@ RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
                                      partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
                                       completionBlock:(RCTImageLoaderCompletionBlockWithMetadata)completionBlock;
 #endif
-
-/**
- * Image instrumentation - notify that the image content (UIImage) has been set on the native view.
- */
-- (void)trackURLImageContentDidSetForRequest:(RCTImageURLLoaderRequest *)loaderRequest;
 
 /**
  * Image instrumentation - start tracking the on-screen visibility of the native image view.

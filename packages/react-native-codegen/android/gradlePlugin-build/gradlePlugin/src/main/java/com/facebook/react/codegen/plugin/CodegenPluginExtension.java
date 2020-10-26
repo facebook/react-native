@@ -15,7 +15,6 @@ import org.gradle.api.Project;
 public class CodegenPluginExtension {
   // TODO: Remove beta.
   public String codegenJavaPackageName = "com.facebook.fbreact.specs.beta";
-  public boolean enableCodegen = false;
   public File jsRootDir;
   public String libraryName;
   public String[] nodeExecutableAndArgs = {"node"};

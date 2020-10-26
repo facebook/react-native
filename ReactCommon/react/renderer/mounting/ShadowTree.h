@@ -24,7 +24,7 @@ namespace facebook {
 namespace react {
 
 using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
-    RootShadowNode::Shared const &oldRootShadowNode)>;
+    RootShadowNode const &oldRootShadowNode)>;
 
 /*
  * Represents the shadow tree and its lifecycle.
@@ -73,6 +73,12 @@ class ShadowTree final {
       bool enableStateReconciliation = false) const;
 
   /*
+   * Returns a `ShadowTreeRevision` representing the momentary state of
+   * the `ShadowTree`.
+   */
+  ShadowTreeRevision getCurrentRevision() const;
+
+  /*
    * Commit an empty tree (a new `RootShadowNode` with no children).
    */
   void commitEmptyTree() const;
@@ -101,10 +107,7 @@ class ShadowTree final {
   SurfaceId const surfaceId_;
   ShadowTreeDelegate const &delegate_;
   mutable better::shared_mutex commitMutex_;
-  mutable RootShadowNode::Shared
-      rootShadowNode_; // Protected by `commitMutex_`.
-  mutable ShadowTreeRevision::Number revisionNumber_{
-      0}; // Protected by `commitMutex_`.
+  mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
   bool enableReparentingDetection_{false};
 };
