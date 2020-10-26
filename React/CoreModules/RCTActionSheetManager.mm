@@ -23,11 +23,7 @@ using namespace facebook::react;
 @interface RCTActionSheetManager () <UIActionSheetDelegate, NativeActionSheetManagerSpec>
 @end
 
-@implementation RCTActionSheetManager {
-  // Use NSMapTable, as UIAlertViews do not implement <NSCopying>
-  // which is required for NSDictionary keys
-  NSMapTable *_callbacks;
-}
+@implementation RCTActionSheetManager
 
 RCT_EXPORT_MODULE()
 
@@ -62,10 +58,6 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"Unable to show action sheet from app extension");
     return;
-  }
-
-  if (!_callbacks) {
-    _callbacks = [NSMapTable strongToStrongObjectsMapTable];
   }
 
   NSString *title = options.title();
@@ -113,6 +105,12 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
                                                                            message:message
                                                                     preferredStyle:UIAlertControllerStyleActionSheet];
 
+  /*
+   * UIAlertAction's handler can be invoked multiple times by the system. 
+   * Prevent invoking the callback more than once by mainting and nulling 
+   * out a ref to it after it's been invoked once. 
+  */
+  __block RCTResponseSenderBlock callbackRef = callback;
   NSInteger index = 0;
   for (NSString *option in buttons) {
     UIAlertActionStyle style = UIAlertActionStyleDefault;
@@ -126,7 +124,10 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     [alertController addAction:[UIAlertAction actionWithTitle:option
                                                         style:style
                                                       handler:^(__unused UIAlertAction *action) {
-                                                        callback(@[ @(localIndex) ]);
+                                                        if (callbackRef) {
+                                                          callbackRef(@[@(localIndex)]);
+                                                        }
+                                                        callbackRef = nil;
                                                       }]];
 
     index++;
