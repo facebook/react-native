@@ -102,7 +102,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState1);
       },
-      true);
+      {true});
 
   EXPECT_EQ(state1->getMostRecentState(), state1);
 
@@ -126,7 +126,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
-      true);
+      {true});
 
   EXPECT_EQ(state1->getMostRecentState(), state2);
   EXPECT_EQ(state2->getMostRecentState(), state2);
@@ -148,7 +148,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState3);
       },
-      true);
+      {true});
 
   EXPECT_EQ(findDescendantNode(shadowTree, family)->getState(), state3);
 
@@ -163,7 +163,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
-      true);
+      {true});
 
   EXPECT_EQ(findDescendantNode(shadowTree, family)->getState(), state3);
 }

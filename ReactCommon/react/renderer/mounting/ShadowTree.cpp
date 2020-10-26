@@ -266,7 +266,7 @@ MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
 
 CommitStatus ShadowTree::commit(
     ShadowTreeCommitTransaction transaction,
-    bool enableStateReconciliation) const {
+    CommitOptions commitOptions) const {
   SystraceSection s("ShadowTree::commit");
 
   int attempts = 0;
@@ -274,7 +274,7 @@ CommitStatus ShadowTree::commit(
   while (true) {
     attempts++;
 
-    auto status = tryCommit(transaction, enableStateReconciliation);
+    auto status = tryCommit(transaction, commitOptions);
     if (status != CommitStatus::Failed) {
       return status;
     }
@@ -287,7 +287,7 @@ CommitStatus ShadowTree::commit(
 
 CommitStatus ShadowTree::tryCommit(
     ShadowTreeCommitTransaction transaction,
-    bool enableStateReconciliation) const {
+    CommitOptions commitOptions) const {
   SystraceSection s("ShadowTree::tryCommit");
 
   auto telemetry = TransactionTelemetry{};
@@ -304,11 +304,12 @@ CommitStatus ShadowTree::tryCommit(
 
   auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
 
-  if (!newRootShadowNode) {
+  if (!newRootShadowNode ||
+      (commitOptions.shouldCancel && commitOptions.shouldCancel())) {
     return CommitStatus::Cancelled;
   }
 
-  if (enableStateReconciliation) {
+  if (commitOptions.enableStateReconciliation) {
     auto updatedNewRootShadowNode =
         progressState(*newRootShadowNode, *oldRevision.rootShadowNode);
     if (updatedNewRootShadowNode) {
@@ -355,6 +356,10 @@ CommitStatus ShadowTree::tryCommit(
         ShadowTreeRevision{newRootShadowNode, newRevisionNumber, telemetry};
 
     currentRevision_ = newRevision;
+  }
+
+  if (commitOptions.shouldCancel && commitOptions.shouldCancel()) {
+    return CommitStatus::Cancelled;
   }
 
   emitLayoutEvents(affectedLayoutableNodes);
