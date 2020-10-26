@@ -16,7 +16,6 @@
 #import <react/renderer/imagemanager/ImageResponse.h>
 #import <react/renderer/imagemanager/ImageResponseObserver.h>
 
-#import "RCTImageInstrumentationProxy.h"
 #import "RCTImagePrimitivesConversions.h"
 
 using namespace facebook::react;
@@ -41,13 +40,21 @@ using namespace facebook::react;
 {
   SystraceSection s("RCTImageManager::requestImage");
 
-  auto imageInstrumentation = std::make_shared<RCTImageInstrumentationProxy>(_imageLoader);
-  auto imageRequest = ImageRequest(imageSource, imageInstrumentation);
+  auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
+  telemetry->willRequestUrl();
+  auto imageRequest = ImageRequest(imageSource, telemetry);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 
   auto sharedCancelationFunction = SharedFunction<>();
   imageRequest.setCancelationFunction(sharedCancelationFunction);
+
+  NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
+  BOOL hasModuleName = [self->_imageLoader respondsToSelector:@selector(loaderModuleNameForRequestUrl:)];
+  NSString *moduleName = hasModuleName ? [self->_imageLoader loaderModuleNameForRequestUrl:request.URL] : nil;
+  std::string moduleCString =
+      std::string([moduleName UTF8String], [moduleName lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+  telemetry->setLoaderModuleName(moduleCString);
 
   /*
    * Even if an image is being loaded asynchronously on some other background thread, some other preparation
@@ -60,16 +67,15 @@ using namespace facebook::react;
    * T46024425 for more details.
    */
   dispatch_async(_backgroundSerialQueue, ^{
-    NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
-
-    auto completionBlock = ^(NSError *error, UIImage *image) {
+    auto completionBlock = ^(NSError *error, UIImage *image, id metadata) {
       auto observerCoordinator = weakObserverCoordinator.lock();
       if (!observerCoordinator) {
         return;
       }
 
       if (image && !error) {
-        observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image)));
+        auto wrappedMetadata = metadata ? wrapManagedObject(metadata) : nullptr;
+        observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image), wrappedMetadata));
       } else {
         observerCoordinator->nativeImageResponseFailed();
       }
@@ -99,10 +105,6 @@ using namespace facebook::react;
                                     completionBlock:completionBlock];
     RCTImageLoaderCancellationBlock cancelationBlock = loaderRequest.cancellationBlock;
     sharedCancelationFunction.assign([cancelationBlock]() { cancelationBlock(); });
-
-    if (imageInstrumentation) {
-      imageInstrumentation->setImageURLLoaderRequest(loaderRequest);
-    }
   });
 
   return imageRequest;

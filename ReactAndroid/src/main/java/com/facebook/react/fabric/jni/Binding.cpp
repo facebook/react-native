@@ -101,6 +101,8 @@ void Binding::startSurfaceWithConstraints(
     jfloat maxWidth,
     jfloat minHeight,
     jfloat maxHeight,
+    jfloat offsetX,
+    jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
@@ -123,6 +125,8 @@ void Binding::startSurfaceWithConstraints(
       Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
 
   LayoutContext context;
+  context.viewportOffset =
+      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};
@@ -178,6 +182,8 @@ void Binding::setConstraints(
     jfloat maxWidth,
     jfloat minHeight,
     jfloat maxHeight,
+    jfloat offsetX,
+    jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::setConstraints");
@@ -194,6 +200,8 @@ void Binding::setConstraints(
       Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
 
   LayoutContext context;
+  context.viewportOffset =
+      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};
@@ -420,11 +428,12 @@ local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
   auto newChildShadowView = mutation.newChildShadowView;
 
   if (oldChildShadowView.layoutMetrics.contentInsets ==
-      newChildShadowView.layoutMetrics.contentInsets) {
+          newChildShadowView.layoutMetrics.contentInsets &&
+      mutation.type != ShadowViewMutation::Type::Insert) {
     return nullptr;
   }
 
-  static auto updateLayoutInstruction =
+  static auto updatePaddingInstruction =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint)>(
               "updatePaddingMountItem");
@@ -433,12 +442,12 @@ local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
   auto pointScaleFactor = layoutMetrics.pointScaleFactor;
   auto contentInsets = layoutMetrics.contentInsets;
 
-  int left = round(contentInsets.left * pointScaleFactor);
-  int top = round(contentInsets.top * pointScaleFactor);
-  int right = round(contentInsets.right * pointScaleFactor);
-  int bottom = round(contentInsets.bottom * pointScaleFactor);
+  int left = floor(contentInsets.left * pointScaleFactor);
+  int top = floor(contentInsets.top * pointScaleFactor);
+  int right = floor(contentInsets.right * pointScaleFactor);
+  int bottom = floor(contentInsets.bottom * pointScaleFactor);
 
-  return updateLayoutInstruction(
+  return updatePaddingInstruction(
       javaUIManager, newChildShadowView.tag, left, top, right, bottom);
 }
 

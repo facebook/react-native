@@ -30,16 +30,29 @@ using namespace facebook::react;
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  RCTAssert(childComponentView.superview == nil, @"Attempt to mount already mounted component view.");
+  RCTAssert(
+      childComponentView.superview == nil,
+      @"Attempt to mount already mounted component view. (parent: %@, child: %@, index: %@)",
+      self,
+      childComponentView,
+      @(index));
   [self insertSubview:childComponentView atIndex:index];
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  RCTAssert(childComponentView.superview == self, @"Attempt to unmount improperly mounted component view.");
   RCTAssert(
-      [self.subviews objectAtIndex:index] == childComponentView,
-      @"Attempt to unmount improperly mounted component view.");
+      childComponentView.superview == self,
+      @"Attempt to unmount a view which is mounted inside different view. (parent: %@, child: %@, index: %@)",
+      self,
+      childComponentView,
+      @(index));
+  RCTAssert(
+      (self.subviews.count > index) && [self.subviews objectAtIndex:index] == childComponentView,
+      @"Attempt to unmount a view which has a different index. (parent: %@, child: %@, index: %@)",
+      self,
+      childComponentView,
+      @(index));
 
   [childComponentView removeFromSuperview];
 }
@@ -117,6 +130,16 @@ using namespace facebook::react;
 {
   RCTAssert(NO, @"props access should be implemented by RCTViewComponentView.");
   return nullptr;
+}
+
+- (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)propKeys
+{
+  // Default implementation does nothing.
+}
+
+- (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN
+{
+  return nil;
 }
 
 @end

@@ -57,16 +57,22 @@ class Animation {
     onEnd && onEnd(result);
   }
   __startNativeAnimation(animatedValue: AnimatedValue): void {
-    NativeAnimatedHelper.API.enableQueue();
-    animatedValue.__makeNative();
-    NativeAnimatedHelper.API.disableQueue();
-    this.__nativeId = NativeAnimatedHelper.generateNewAnimationId();
-    NativeAnimatedHelper.API.startAnimatingNode(
-      this.__nativeId,
-      animatedValue.__getNativeTag(),
-      this.__getNativeAnimationConfig(),
-      this.__debouncedOnEnd.bind(this),
-    );
+    const arbitraryValue = Math.random();
+    NativeAnimatedHelper.API.setWaitingForIdentifier(arbitraryValue);
+    try {
+      animatedValue.__makeNative();
+      this.__nativeId = NativeAnimatedHelper.generateNewAnimationId();
+      NativeAnimatedHelper.API.startAnimatingNode(
+        this.__nativeId,
+        animatedValue.__getNativeTag(),
+        this.__getNativeAnimationConfig(),
+        this.__debouncedOnEnd.bind(this),
+      );
+    } catch (e) {
+      throw e;
+    } finally {
+      NativeAnimatedHelper.API.unsetWaitingForIdentifier(arbitraryValue);
+    }
   }
 }
 

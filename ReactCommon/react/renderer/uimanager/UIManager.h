@@ -73,6 +73,11 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override;
 
+  /*
+   * Temporary flags.
+   */
+  bool experimentEnableStateUpdateWithAutorepeat{false};
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
@@ -96,9 +101,6 @@ class UIManager final : public ShadowTreeDelegate {
   void completeSurface(
       SurfaceId surfaceId,
       const SharedShadowNodeUnsharedList &rootChildren) const;
-
-  void setNativeProps(ShadowNode const &shadowNode, RawProps const &rawProps)
-      const;
 
   void setJSResponder(
       const ShadowNode::Shared &shadowNode,
@@ -128,6 +130,7 @@ class UIManager final : public ShadowTreeDelegate {
    * and performs a commit.
    */
   void updateState(StateUpdate const &stateUpdate) const;
+  void updateStateWithAutorepeat(StateUpdate const &stateUpdate) const;
 
   void dispatchCommand(
       const ShadowNode::Shared &shadowNode,
@@ -141,8 +144,8 @@ class UIManager final : public ShadowTreeDelegate {
   void configureNextLayoutAnimation(
       jsi::Runtime &runtime,
       RawValue const &config,
-      const jsi::Value &successCallback,
-      const jsi::Value &failureCallback) const;
+      jsi::Value const &successCallback,
+      jsi::Value const &failureCallback) const;
 
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 

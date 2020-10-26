@@ -26,7 +26,11 @@ const ArrayPropsNativeComponentViewConfig = {
     disableds: true,
     progress: true,
     radii: true,
-    colors: { process: require('processColorArray') },
+
+    colors: {
+      process: require('processColorArray'),
+    },
+
     srcs: true,
     points: true,
     sizes: true,
@@ -143,7 +147,9 @@ const ColorPropNativeComponentViewConfig = {
   uiViewClassName: 'ColorPropNativeComponent',
 
   validAttributes: {
-    tintColor: { process: require('processColor') },
+    tintColor: {
+      process: require('processColor'),
+    },
   },
 };
 
@@ -603,7 +609,9 @@ const ImagePropNativeComponentViewConfig = {
   uiViewClassName: 'ImagePropNativeComponent',
 
   validAttributes: {
-    thumbImage: { process: require('resolveAssetSource') },
+    thumbImage: {
+      process: require('resolveAssetSource'),
+    },
   },
 };
 
@@ -640,7 +648,9 @@ const InsetsPropNativeComponentViewConfig = {
   uiViewClassName: 'InsetsPropNativeComponent',
 
   validAttributes: {
-    contentInset: { diff: require('insetsDiffer') },
+    contentInset: {
+      diff: require('insetsDiffer'),
+    },
   },
 };
 
@@ -800,10 +810,21 @@ const ImageColorPropNativeComponentViewConfig = {
   uiViewClassName: 'ImageColorPropNativeComponent',
 
   validAttributes: {
-    thumbImage: { process: require('resolveAssetSource') },
-    color: { process: require('processColor') },
-    thumbTintColor: { process: require('processColor') },
-    point: { diff: require('pointsDiffer') },
+    thumbImage: {
+      process: require('resolveAssetSource'),
+    },
+
+    color: {
+      process: require('processColor'),
+    },
+
+    thumbTintColor: {
+      process: require('processColor'),
+    },
+
+    point: {
+      diff: require('pointsDiffer'),
+    },
   },
 };
 
@@ -911,7 +932,9 @@ const PointPropNativeComponentViewConfig = {
   uiViewClassName: 'PointPropNativeComponent',
 
   validAttributes: {
-    startPoint: { diff: require('pointsDiffer') },
+    startPoint: {
+      diff: require('pointsDiffer'),
+    },
   },
 };
 

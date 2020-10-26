@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<0563169b47d73a70d7540528f28d1d13>>
+// @generated SignedSource<<e3e5526b8e266b560b9dc9e42cc0d6c5>>
 
 #pragma once
 
@@ -71,6 +71,9 @@ using UnserializableValue = std::string;
 
 namespace heapProfiler {
 struct AddHeapSnapshotChunkNotification;
+struct CollectGarbageRequest;
+struct HeapStatsUpdateNotification;
+struct LastSeenObjectIdNotification;
 struct ReportHeapSnapshotProgressNotification;
 struct StartTrackingHeapObjectsRequest;
 struct StopTrackingHeapObjectsRequest;
@@ -97,6 +100,7 @@ struct RequestHandler {
   virtual void handle(const debugger::StepIntoRequest &req) = 0;
   virtual void handle(const debugger::StepOutRequest &req) = 0;
   virtual void handle(const debugger::StepOverRequest &req) = 0;
+  virtual void handle(const heapProfiler::CollectGarbageRequest &req) = 0;
   virtual void handle(
       const heapProfiler::StartTrackingHeapObjectsRequest &req) = 0;
   virtual void handle(
@@ -125,6 +129,7 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const debugger::StepIntoRequest &req) override {}
   void handle(const debugger::StepOutRequest &req) override {}
   void handle(const debugger::StepOverRequest &req) override {}
+  void handle(const heapProfiler::CollectGarbageRequest &req) override {}
   void handle(
       const heapProfiler::StartTrackingHeapObjectsRequest &req) override {}
   void handle(
@@ -411,6 +416,14 @@ struct debugger::StepOverRequest : public Request {
   void accept(RequestHandler &handler) const override;
 };
 
+struct heapProfiler::CollectGarbageRequest : public Request {
+  CollectGarbageRequest();
+  explicit CollectGarbageRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+};
+
 struct heapProfiler::StartTrackingHeapObjectsRequest : public Request {
   StartTrackingHeapObjectsRequest();
   explicit StartTrackingHeapObjectsRequest(const folly::dynamic &obj);
@@ -605,6 +618,23 @@ struct heapProfiler::AddHeapSnapshotChunkNotification : public Notification {
   folly::dynamic toDynamic() const override;
 
   std::string chunk;
+};
+
+struct heapProfiler::HeapStatsUpdateNotification : public Notification {
+  HeapStatsUpdateNotification();
+  explicit HeapStatsUpdateNotification(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  std::vector<int> statsUpdate;
+};
+
+struct heapProfiler::LastSeenObjectIdNotification : public Notification {
+  LastSeenObjectIdNotification();
+  explicit LastSeenObjectIdNotification(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  int lastSeenObjectId{};
+  double timestamp{};
 };
 
 struct heapProfiler::ReportHeapSnapshotProgressNotification

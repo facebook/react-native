@@ -392,6 +392,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
   [self _forceDispatchNextScrollEvent];
+  [self scrollViewDidScroll:scrollView];
 
   if (!_eventEmitter) {
     return;
@@ -445,7 +446,30 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)scrollTo:(double)x y:(double)y animated:(BOOL)animated
 {
-  [_scrollView setContentOffset:CGPointMake(x, y) animated:animated];
+  CGPoint offset = CGPointMake(x, y);
+  if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
+    CGRect maxRect = CGRectMake(
+        fmin(-_scrollView.contentInset.left, 0),
+        fmin(-_scrollView.contentInset.top, 0),
+        fmax(
+            _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right +
+                fmax(_scrollView.contentInset.left, 0),
+            0.01),
+        fmax(
+            _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom +
+                fmax(_scrollView.contentInset.top, 0),
+            0.01)); // Make width and height greater than 0
+
+    [self _forceDispatchNextScrollEvent];
+    if (!CGRectContainsPoint(maxRect, offset)) {
+      CGFloat localX = fmax(offset.x, CGRectGetMinX(maxRect));
+      localX = fmin(localX, CGRectGetMaxX(maxRect));
+      CGFloat localY = fmax(offset.y, CGRectGetMinY(maxRect));
+      localY = fmin(localY, CGRectGetMaxY(maxRect));
+      offset = CGPointMake(localX, localY);
+    }
+    [_scrollView setContentOffset:offset animated:animated];
+  }
 }
 
 - (void)scrollToEnd:(BOOL)animated
@@ -498,15 +522,14 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   visibleFrame.size.width *= scale;
   visibleFrame.size.height *= scale;
 
+#ifndef NDEBUG
+  NSMutableArray<UIView<RCTComponentViewProtocol> *> *expectedSubviews = [NSMutableArray new];
+#endif
+
   NSInteger mountedIndex = 0;
   for (UIView *componentView in _childComponentViews) {
     BOOL shouldBeMounted = YES;
     BOOL isMounted = componentView.superview != nil;
-
-    // If a view is mounted, it must be mounted exactly at `mountedIndex` position.
-    RCTAssert(
-        !isMounted || [_containerView.subviews objectAtIndex:mountedIndex] == componentView,
-        @"Attempt to unmount improperly mounted component view.");
 
     // It's simpler and faster to not mess with views that are not `RCTViewComponentView` subclasses.
     if ([componentView isKindOfClass:[RCTViewComponentView class]]) {
@@ -529,7 +552,24 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     if (shouldBeMounted) {
       mountedIndex++;
     }
+
+#ifndef NDEBUG
+    if (shouldBeMounted) {
+      [expectedSubviews addObject:componentView];
+    }
+#endif
   }
+
+#ifndef NDEBUG
+  RCTAssert(
+      _containerView.subviews.count == expectedSubviews.count,
+      @"-[RCTScrollViewComponentView _remountChildren]: Inconsistency detected.");
+  for (NSInteger i = 0; i < expectedSubviews.count; i++) {
+    RCTAssert(
+        [_containerView.subviews objectAtIndex:i] == [expectedSubviews objectAtIndex:i],
+        @"-[RCTScrollViewComponentView _remountChildren]: Inconsistency detected.");
+  }
+#endif
 }
 
 #pragma mark - RCTScrollableProtocol

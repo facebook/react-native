@@ -48,6 +48,8 @@ class Binding : public jni::HybridClass<Binding>,
       jfloat maxWidth,
       jfloat minHeight,
       jfloat maxHeight,
+      jfloat offsetX,
+      jfloat offsetY,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
 
@@ -74,6 +76,8 @@ class Binding : public jni::HybridClass<Binding>,
       jfloat maxWidth,
       jfloat minHeight,
       jfloat maxHeight,
+      jfloat offsetX,
+      jfloat offsetY,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
 

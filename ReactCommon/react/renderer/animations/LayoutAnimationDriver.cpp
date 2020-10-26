@@ -191,8 +191,10 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
       // Queue up "final" mutations for all keyframes in the completed animation
       for (auto const &keyframe : animation.keyFrames) {
-        if (!keyframe.invalidated &&
-            keyframe.finalMutationForKeyFrame.hasValue()) {
+        if (keyframe.invalidated) {
+          continue;
+        }
+        if (keyframe.finalMutationForKeyFrame.hasValue()) {
           auto const &finalMutationForKeyFrame =
               *keyframe.finalMutationForKeyFrame;
           PrintMutationInstruction(
@@ -201,12 +203,28 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
           // Copy so that if something else mutates the inflight animations, it
           // won't change this mutation after this point.
+          ShadowView oldShadowView{};
+          if (finalMutationForKeyFrame.type !=
+              ShadowViewMutation::Type::Update) {
+            oldShadowView = finalMutationForKeyFrame.oldChildShadowView;
+          }
           mutationsList.push_back(
               ShadowViewMutation{finalMutationForKeyFrame.type,
                                  finalMutationForKeyFrame.parentShadowView,
-                                 finalMutationForKeyFrame.oldChildShadowView,
+                                 oldShadowView,
                                  finalMutationForKeyFrame.newChildShadowView,
                                  finalMutationForKeyFrame.index});
+        } else {
+          // Issue a final UPDATE so that the final props object sent to the
+          // mounting layer is the same as the one on the ShadowTree. This is
+          // mostly to make the MountingCoordinator StubViewTree assertions
+          // pass.
+          mutationsList.push_back(
+              ShadowViewMutation{ShadowViewMutation::Type::Update,
+                                 keyframe.parentView,
+                                 {},
+                                 keyframe.viewEnd,
+                                 -1});
         }
       }
 
