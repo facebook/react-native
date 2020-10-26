@@ -399,7 +399,6 @@
 				68CD48B71D2BCB2C007E06A9 /* Build JS Bundle */,
 				5CF0FD27207FC6EC00C13D65 /* Start Metro */,
 				C1C7A9D58CE1D09515F20577 /* [CP] Copy Pods Resources */,
-				8CE34A8AABFD09C8B3A00B1D /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -419,7 +418,6 @@
 				E7DB209C22B2BA84005AC45F /* Frameworks */,
 				E7DB209D22B2BA84005AC45F /* Resources */,
 				D45F7C4830D42738CAAC9684 /* [CP] Copy Pods Resources */,
-				7A5E3C3F59BF3EA884A39149 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -439,7 +437,6 @@
 				E7DB215022B2F332005AC45F /* Frameworks */,
 				E7DB215122B2F332005AC45F /* Resources */,
 				CD1D70F24AD74F4E13B7435D /* [CP] Copy Pods Resources */,
-				A934FCF321A9F192FD849C8A /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
