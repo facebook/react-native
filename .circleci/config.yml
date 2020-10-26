@@ -50,7 +50,7 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: &_XCODE_VERSION "11.6.0"
+      xcode: &_XCODE_VERSION "12.1.0"
 
 # -------------------------
 #        COMMANDS
@@ -419,11 +419,11 @@ jobs:
           steps:
             - run:
                 name: Generate RNTesterPods Workspace
-                command: cd packages/rn-tester && pod install --verbose
+                command: cd packages/rn-tester && bundle exec pod install --verbose
 
       - run:
           name: Generate RNTesterPods Xcode Workspace
-          command: pushd packages/rn-tester && pod install --verbose && popd
+          command: pushd packages/rn-tester && bundle exec pod install --verbose && popd
 
       # -------------------------
       # Runs iOS unit tests
