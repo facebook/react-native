@@ -589,7 +589,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\nexport SOURCEMAP_FILE=../sourcemap.ios.map\nexport PROJECT_ROOT=\"$SRCROOT/../../\"\n\"$SRCROOT/../../scripts/react-native-xcode.sh\" $SRCROOT/../../packages/rn-tester/js/RNTesterApp.ios.js\n";
+			shellScript = "export NODE_BINARY=node\nexport PROJECT_ROOT=\"$SRCROOT/../../\"\nexport SOURCEMAP_FILE=../sourcemap.ios.map\nexport FORCE_BUNDLING=true\n\"$SRCROOT/../../scripts/react-native-xcode.sh\" $SRCROOT/../../packages/rn-tester/js/RNTesterApp.ios.js\n";
 		};
 		7A5E3C3F59BF3EA884A39149 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -793,6 +793,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				DEVELOPMENT_TEAM = "";
+				EXCLUDED_ARCHS = arm64;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
@@ -835,6 +836,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				DEVELOPMENT_TEAM = "";
+				EXCLUDED_ARCHS = arm64;
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
