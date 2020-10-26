@@ -151,13 +151,13 @@ commands:
           command: cp packages/rn-tester/Podfile.lock packages/rn-tester/Podfile.lock.bak
       - restore_cache:
           keys:
-            - v2-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
-            - v2-pods-{{ .Environment.CIRCLE_JOB }}-
+            - v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
+            - v3-pods-{{ .Environment.CIRCLE_JOB }}-
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - packages/rn-tester/Pods
-          key: v2-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
+          key: v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
 
   download_gradle_dependencies:
     steps:
