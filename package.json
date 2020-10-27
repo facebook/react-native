@@ -37,6 +37,7 @@
     "README.md",
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
+    "scripts/generate-native-modules-specs-cli.js",
     "scripts/ios-configure-glog.sh",
     "scripts/launchPackager.bat",
     "scripts/launchPackager.command",
@@ -116,7 +117,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.135.0",
+    "flow-bin": "^0.136.0",
     "react": "16.13.1"
   },
   "detox": {

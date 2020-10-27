@@ -8,5 +8,9 @@
     "url": "git@github.com:facebook/react-native.git",
     "directory": "packages/eslint-plugin-codegen"
   },
+  "dependencies": {
+    "flow-parser": "^0.121.0",
+    "react-native-codegen": "*"
+  },
   "license": "MIT"
 }

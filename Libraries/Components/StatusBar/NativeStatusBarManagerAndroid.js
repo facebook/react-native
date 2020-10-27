@@ -26,7 +26,6 @@ export interface Spec extends TurboModule {
    *    - 'default'
    *    - 'dark-content'
    */
-  // eslint-disable-next-line @react-native/codegen/react-native-modules
   +setStyle: (statusBarStyle?: ?string) => void;
   +setHidden: (hidden: boolean) => void;
 }

@@ -8,9 +8,13 @@
  * @format
  */
 
+/**
+ * This generates all possible outputs by executing all available generators.
+ */
+
 'use strict';
 
-const RNCodegen = require('../src/generators/RNCodegen.js');
+const RNCodegen = require('../../generators/RNCodegen.js');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 
@@ -27,6 +31,7 @@ const schemaPath = args[0];
 const libraryName = args[1];
 const outputDirectory = args[2];
 const moduleSpecName = args[3];
+const packageName = args[4];
 
 const schemaText = fs.readFileSync(schemaPath, 'utf-8');
 
@@ -44,7 +49,7 @@ try {
 }
 
 RNCodegen.generate(
-  {libraryName, schema, outputDirectory, moduleSpecName},
+  {libraryName, schema, outputDirectory, moduleSpecName, packageName},
   {
     generators: [
       'descriptors',
@@ -52,7 +57,9 @@ RNCodegen.generate(
       'props',
       'tests',
       'shadow-nodes',
-      'modules',
+      'modulesAndroid',
+      'modulesCxx',
+      'modulesIOS',
     ],
   },
 );

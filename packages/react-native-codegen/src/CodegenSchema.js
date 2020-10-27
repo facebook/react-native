@@ -245,7 +245,7 @@ export type ComponentShape = $ReadOnly<{|
 
 export type SchemaType = $ReadOnly<{|
   modules: $ReadOnly<{|
-    [moduleName: string]: ComponentSchema | NativeModuleSchema,
+    [hasteModuleName: string]: ComponentSchema | NativeModuleSchema,
   |}>,
 |}>;
 
@@ -259,27 +259,6 @@ export type ComponentSchema = $ReadOnly<{|
 /**
  * NativeModule Types
  */
-export type NativeModuleSchema = $ReadOnly<{|
-  type: 'NativeModule',
-  aliases: NativeModuleAliasMap,
-  spec: NativeModuleSpec,
-  moduleNames: $ReadOnlyArray<string>,
-|}>;
-
-type NativeModuleSpec = $ReadOnly<{|
-  properties: $ReadOnlyArray<NativeModulePropertySchema>,
-|}>;
-
-export type NativeModuleAliasMap = $ReadOnly<{|
-  [aliasName: string]: NativeModuleObjectTypeAnnotation,
-|}>;
-
-export type NativeModulePropertySchema = $ReadOnly<{|
-  name: string,
-  optional: boolean,
-  typeAnnotation: Nullable<NativeModuleFunctionTypeAnnotation>,
-|}>;
-
 export type Nullable<+T: NativeModuleTypeAnnotation> =
   | NullableTypeAnnotation<T>
   | T;
@@ -289,6 +268,31 @@ export type NullableTypeAnnotation<
 > = $ReadOnly<{|
   type: 'NullableTypeAnnotation',
   typeAnnotation: T,
+|}>;
+
+export type NativeModuleSchema = $ReadOnly<{|
+  type: 'NativeModule',
+  aliases: NativeModuleAliasMap,
+  spec: NativeModuleSpec,
+  moduleNames: $ReadOnlyArray<string>,
+  // Use for modules that are not used on other platforms.
+  // TODO: It's clearer to define `restrictedToPlatforms` instead, but
+  // `excludedPlatforms` is used here to be consistent with ComponentSchema.
+  excludedPlatforms?: $ReadOnlyArray<PlatformType>,
+|}>;
+
+type NativeModuleSpec = $ReadOnly<{|
+  properties: $ReadOnlyArray<NativeModulePropertySchema>,
+|}>;
+
+export type NativeModulePropertySchema = $ReadOnly<{|
+  name: string,
+  optional: boolean,
+  typeAnnotation: Nullable<NativeModuleFunctionTypeAnnotation>,
+|}>;
+
+export type NativeModuleAliasMap = $ReadOnly<{|
+  [aliasName: string]: NativeModuleObjectTypeAnnotation,
 |}>;
 
 export type NativeModuleFunctionTypeAnnotation = $ReadOnly<{|
@@ -305,13 +309,13 @@ export type NativeModuleMethodParamSchema = $ReadOnly<{|
 
 export type NativeModuleObjectTypeAnnotation = $ReadOnly<{|
   type: 'ObjectTypeAnnotation',
-  properties: $ReadOnlyArray<
-    $ReadOnly<{|
-      name: string,
-      optional: boolean,
-      typeAnnotation: Nullable<NativeModuleBaseTypeAnnotation>,
-    |}>,
-  >,
+  properties: $ReadOnlyArray<NativeModuleObjectTypeAnnotationPropertySchema>,
+|}>;
+
+export type NativeModuleObjectTypeAnnotationPropertySchema = $ReadOnly<{|
+  name: string,
+  optional: boolean,
+  typeAnnotation: Nullable<NativeModuleBaseTypeAnnotation>,
 |}>;
 
 export type NativeModuleArrayTypeAnnotation<

@@ -28,7 +28,6 @@ import type {
   LayoutEvent,
   PressEvent,
 } from '../../Types/CoreEventTypes';
-import Platform from '../../Utilities/Platform';
 import View from '../../Components/View/View';
 import * as React from 'react';
 

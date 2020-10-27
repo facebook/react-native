@@ -122,19 +122,6 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
             this.setState({
               translateY: value,
             });
-            // This fixes jank on iOS, especially around paging,
-            // but causes jank on Android.
-            // It seems that Native Animated Driver on iOS has
-            // more conflicts with values passed through the ShadowTree
-            // especially when connecting new Animated nodes + disconnecting
-            // old ones, compared to Android where that process seems fine.
-            if (Platform.OS === 'ios') {
-              setTimeout(() => {
-                this.setState({
-                  translateY: null,
-                });
-              }, 0);
-            }
           }
         }, this._debounceTimeout);
       };

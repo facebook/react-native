@@ -435,12 +435,26 @@ jsi::Value UIManagerBinding::get(
                 shadowNodeListFromValue(runtime, arguments[1]);
 
             if (sharedUIManager->backgroundExecutor_) {
+              sharedUIManager->completeRootEventCounter_ += 1;
               sharedUIManager->backgroundExecutor_(
-                  [sharedUIManager, surfaceId, shadowNodeList] {
-                    sharedUIManager->completeSurface(surfaceId, shadowNodeList);
+                  [sharedUIManager,
+                   surfaceId,
+                   shadowNodeList,
+                   eventCount =
+                       sharedUIManager->completeRootEventCounter_.load()] {
+                    auto shouldCancel = [eventCount,
+                                         sharedUIManager]() -> bool {
+                      // If `eventCounter_` was incremented, another
+                      // `completeSurface` call has been scheduled and current
+                      // `completeSurface` should be cancelled.
+                      return sharedUIManager->completeRootEventCounter_ >
+                          eventCount;
+                    };
+                    sharedUIManager->completeSurface(
+                        surfaceId, shadowNodeList, {true, shouldCancel});
                   });
             } else {
-              uiManager->completeSurface(surfaceId, shadowNodeList);
+              uiManager->completeSurface(surfaceId, shadowNodeList, {true, {}});
             }
 
             return jsi::Value::undefined();
@@ -459,7 +473,8 @@ jsi::Value UIManagerBinding::get(
               size_t count) noexcept->jsi::Value {
             uiManager->completeSurface(
                 surfaceIdFromValue(runtime, arguments[0]),
-                shadowNodeListFromValue(runtime, arguments[1]));
+                shadowNodeListFromValue(runtime, arguments[1]),
+                {true, {}});
 
             return jsi::Value::undefined();
           });

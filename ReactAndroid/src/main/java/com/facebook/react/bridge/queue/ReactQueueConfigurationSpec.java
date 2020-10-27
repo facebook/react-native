@@ -19,8 +19,6 @@ import com.facebook.infer.annotation.Assertions;
  */
 public class ReactQueueConfigurationSpec {
 
-  private static final long LEGACY_STACK_SIZE_BYTES = 2000000;
-
   private final MessageQueueThreadSpec mNativeModulesQueueThreadSpec;
   private final MessageQueueThreadSpec mJSQueueThreadSpec;
 
@@ -44,11 +42,7 @@ public class ReactQueueConfigurationSpec {
   }
 
   public static ReactQueueConfigurationSpec createDefault() {
-    MessageQueueThreadSpec spec =
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
-            ? MessageQueueThreadSpec.newBackgroundThreadSpec(
-                "native_modules", LEGACY_STACK_SIZE_BYTES)
-            : MessageQueueThreadSpec.newBackgroundThreadSpec("native_modules");
+    MessageQueueThreadSpec spec = MessageQueueThreadSpec.newBackgroundThreadSpec("native_modules");
     return builder()
         .setJSQueueThreadSpec(MessageQueueThreadSpec.newBackgroundThreadSpec("js"))
         .setNativeModulesQueueThreadSpec(spec)
