@@ -474,6 +474,6 @@ apply(from: "release.gradle")
 
 react {
     jsRootDir = file("../Libraries")
-    reactNativeRootDir = file("$rootDir")
+    reactNativeRootDir = file("$projectDir/..")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }
