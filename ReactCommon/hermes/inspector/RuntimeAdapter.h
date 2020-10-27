@@ -11,6 +11,18 @@
 
 #include <hermes/hermes.h>
 
+#ifndef INSPECTOR_EXPORT
+#ifdef _MSC_VER
+#ifdef CREATE_SHARED_LIBRARY
+#define INSPECTOR_EXPORT __declspec(dllexport)
+#else
+#define INSPECTOR_EXPORT
+#endif // CREATE_SHARED_LIBRARY
+#else // _MSC_VER
+#define INSPECTOR_EXPORT __attribute__((visibility("default")))
+#endif // _MSC_VER
+#endif // !defined(INSPECTOR_EXPORT)
+
 namespace facebook {
 namespace hermes {
 namespace inspector {
@@ -20,7 +32,7 @@ namespace inspector {
  * runtime object should stay alive for at least as long as the RuntimeAdapter
  * is alive.
  */
-class RuntimeAdapter {
+class INSPECTOR_EXPORT RuntimeAdapter {
  public:
   virtual ~RuntimeAdapter() = 0;
 
@@ -49,7 +61,7 @@ class RuntimeAdapter {
  * uses shared_ptr to hold on to the runtime. It's generally only used in tests,
  * since it does not implement tickleJs.
  */
-class SharedRuntimeAdapter : public RuntimeAdapter {
+class INSPECTOR_EXPORT SharedRuntimeAdapter : public RuntimeAdapter {
  public:
   SharedRuntimeAdapter(
       std::shared_ptr<jsi::Runtime> runtime,

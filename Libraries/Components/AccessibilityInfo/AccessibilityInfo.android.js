@@ -5,14 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
-const UIManager = require('../../ReactNative/UIManager');
-
+import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
+import UIManager from '../../ReactNative/UIManager';
 import NativeAccessibilityInfo from './NativeAccessibilityInfo';
 
 const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
@@ -91,6 +90,7 @@ const AccessibilityInfo = {
    *
    * Same as `isScreenReaderEnabled`
    */
+  // $FlowFixMe[unsafe-getters-setters]
   get fetch(): () => Promise<boolean> {
     console.warn(
       'AccessibilityInfo.fetch is deprecated, call AccessibilityInfo.isScreenReaderEnabled instead',
@@ -98,40 +98,36 @@ const AccessibilityInfo = {
     return this.isScreenReaderEnabled;
   },
 
-  addEventListener: function(
-    eventName: ChangeEventName,
-    handler: Function,
-  ): void {
+  addEventListener: function<T>(eventName: ChangeEventName, handler: T): void {
     let listener;
 
     if (eventName === 'change' || eventName === 'screenReaderChanged') {
       listener = RCTDeviceEventEmitter.addListener(
         TOUCH_EXPLORATION_EVENT,
-        enabled => {
-          handler(enabled);
-        },
+        handler,
       );
     } else if (eventName === 'reduceMotionChanged') {
       listener = RCTDeviceEventEmitter.addListener(
         REDUCE_MOTION_EVENT,
-        enabled => {
-          handler(enabled);
-        },
+        handler,
       );
     }
 
+    // $FlowFixMe[escaped-generic]
     _subscriptions.set(handler, listener);
   },
 
-  removeEventListener: function(
+  removeEventListener: function<T>(
     eventName: ChangeEventName,
-    handler: Function,
+    handler: T,
   ): void {
+    // $FlowFixMe[escaped-generic]
     const listener = _subscriptions.get(handler);
     if (!listener) {
       return;
     }
     listener.remove();
+    // $FlowFixMe[escaped-generic]
     _subscriptions.delete(handler);
   },
 

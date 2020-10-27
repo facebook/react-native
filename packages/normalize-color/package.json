@@ -1,0 +1,11 @@
+{
+  "name": "@react-native/normalize-color",
+  "version": "1.0.0",
+  "description": "Color normalization code for React Native.",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/normalize-color"
+  },
+  "license": "MIT"
+}

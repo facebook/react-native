@@ -24,7 +24,9 @@ static NSString *getServerHost(NSURL *bundleURL)
   if (portStr && [portStr length] > 0) {
     port = [NSNumber numberWithInt:[portStr intValue]];
   }
-
+  if ([bundleURL port]) {
+    port = [bundleURL port];
+  }
   NSString *host = [bundleURL host];
   if (!host) {
     host = @"localhost";

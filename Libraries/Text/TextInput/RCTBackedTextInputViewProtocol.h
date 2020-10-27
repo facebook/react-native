@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL enablesReturnKeyAutomatically;
 @property (nonatomic, assign) UITextFieldViewMode clearButtonMode;
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
+@property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
 
 // This protocol disallows direct access to `selectedTextRange` property because
 // unwise usage of it can break the `delegate` behavior. So, we always have to

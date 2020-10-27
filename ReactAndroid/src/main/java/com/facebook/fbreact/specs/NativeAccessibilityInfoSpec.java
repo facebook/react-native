@@ -25,14 +25,14 @@ public abstract class NativeAccessibilityInfoSpec extends ReactContextBaseJavaMo
   }
 
   @ReactMethod
-  public abstract void isTouchExplorationEnabled(Callback onSuccess);
-
-  @ReactMethod
-  public abstract void setAccessibilityFocus(double reactTag);
+  public abstract void announceForAccessibility(String announcement);
 
   @ReactMethod
   public abstract void isReduceMotionEnabled(Callback onSuccess);
 
   @ReactMethod
-  public abstract void announceForAccessibility(String announcement);
+  public abstract void isTouchExplorationEnabled(Callback onSuccess);
+
+  @ReactMethod
+  public abstract void setAccessibilityFocus(double reactTag);
 }

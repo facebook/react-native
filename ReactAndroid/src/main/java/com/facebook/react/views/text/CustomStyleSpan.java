@@ -10,7 +10,6 @@ package com.facebook.react.views.text;
 import android.content.res.AssetManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
 import androidx.annotation.NonNull;
@@ -83,9 +82,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       AssetManager assetManager) {
     Typeface typeface =
         ReactTypefaceUtils.applyStyles(paint.getTypeface(), style, weight, family, assetManager);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      paint.setFontFeatureSettings(fontFeatureSettings);
-    }
+    paint.setFontFeatureSettings(fontFeatureSettings);
     paint.setTypeface(typeface);
     paint.setSubpixelText(true);
   }

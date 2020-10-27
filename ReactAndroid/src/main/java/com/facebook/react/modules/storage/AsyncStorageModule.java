@@ -15,7 +15,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.os.AsyncTask;
 import com.facebook.common.logging.FLog;
-import com.facebook.fbreact.specs.NativeAsyncStorageSpec;
+import com.facebook.fbreact.specs.NativeAsyncSQLiteDBStorageSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
@@ -32,7 +32,7 @@ import java.util.HashSet;
 import java.util.concurrent.Executor;
 
 @ReactModule(name = AsyncStorageModule.NAME)
-public final class AsyncStorageModule extends NativeAsyncStorageSpec
+public final class AsyncStorageModule extends NativeAsyncSQLiteDBStorageSpec
     implements ModuleDataCleaner.Cleanable {
 
   public static final String NAME = "AsyncSQLiteDBStorage";

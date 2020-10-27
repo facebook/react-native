@@ -97,4 +97,4 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
 @end
 
 RCT_EXTERN void RCTSetIsMainQueueExecutionOfConstantsToExportDisabled(BOOL val);
-RCT_EXTERN BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled();
+RCT_EXTERN BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled(void);

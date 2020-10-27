@@ -6,6 +6,7 @@
  */
 
 #include "Utils.h"
+#include <stdexcept>
 
 using namespace facebook;
 

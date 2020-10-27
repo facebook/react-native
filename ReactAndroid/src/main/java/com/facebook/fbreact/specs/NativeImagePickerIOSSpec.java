@@ -26,21 +26,21 @@ public abstract class NativeImagePickerIOSSpec extends ReactContextBaseJavaModul
   }
 
   @ReactMethod
+  public abstract void canRecordVideos(Callback callback);
+
+  @ReactMethod
+  public abstract void canUseCamera(Callback callback);
+
+  @ReactMethod
+  public abstract void clearAllPendingVideos();
+
+  @ReactMethod
   public abstract void openCameraDialog(ReadableMap config, Callback successCallback,
       Callback cancelCallback);
 
   @ReactMethod
   public abstract void openSelectDialog(ReadableMap config, Callback successCallback,
       Callback cancelCallback);
-
-  @ReactMethod
-  public abstract void canUseCamera(Callback callback);
-
-  @ReactMethod
-  public abstract void canRecordVideos(Callback callback);
-
-  @ReactMethod
-  public abstract void clearAllPendingVideos();
 
   @ReactMethod
   public abstract void removePendingVideo(String url);

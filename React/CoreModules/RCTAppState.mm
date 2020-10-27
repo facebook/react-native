@@ -10,7 +10,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
@@ -97,11 +97,6 @@ RCT_EXPORT_MODULE()
 - (void)stopObserving
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)invalidate
-{
-  [self stopObserving];
 }
 
 #pragma mark - App Notification Methods

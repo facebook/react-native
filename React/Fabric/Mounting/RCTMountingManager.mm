@@ -11,180 +11,113 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTFollyConvert.h>
+#import <React/RCTLog.h>
 #import <React/RCTUtils.h>
-#import <react/core/LayoutableShadowNode.h>
-#import <react/core/RawProps.h>
-#import <react/debug/SystraceSection.h>
+#import <react/renderer/core/LayoutableShadowNode.h>
+#import <react/renderer/core/RawProps.h>
+#import <react/renderer/debug/SystraceSection.h>
+#import <react/renderer/mounting/TelemetryController.h>
 
 #import "RCTComponentViewProtocol.h"
 #import "RCTComponentViewRegistry.h"
 #import "RCTConversions.h"
 #import "RCTMountingTransactionObserverCoordinator.h"
 
-using namespace facebook;
 using namespace facebook::react;
 
-// `Create` instruction
-static void RNCreateMountInstruction(
-    ShadowViewMutation const &mutation,
-    RCTComponentViewRegistry *registry,
-    RCTMountingTransactionObserverCoordinator &observerCoordinator,
-    SurfaceId surfaceId)
-{
-  auto componentViewDescriptor =
-      [registry dequeueComponentViewWithComponentHandle:mutation.newChildShadowView.componentHandle
-                                                    tag:mutation.newChildShadowView.tag];
-
-  observerCoordinator.registerViewComponentDescriptor(componentViewDescriptor, surfaceId);
-}
-
-// `Delete` instruction
-static void RNDeleteMountInstruction(
-    ShadowViewMutation const &mutation,
-    RCTComponentViewRegistry *registry,
-    RCTMountingTransactionObserverCoordinator &observerCoordinator,
-    SurfaceId surfaceId)
-{
-  auto const &oldChildShadowView = mutation.oldChildShadowView;
-  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:oldChildShadowView.tag];
-  observerCoordinator.unregisterViewComponentDescriptor(componentViewDescriptor, surfaceId);
-  [registry enqueueComponentViewWithComponentHandle:oldChildShadowView.componentHandle
-                                                tag:oldChildShadowView.tag
-                            componentViewDescriptor:componentViewDescriptor];
-}
-
-// `Insert` instruction
-static void RNInsertMountInstruction(ShadowViewMutation const &mutation, RCTComponentViewRegistry *registry)
-{
-  auto const &newShadowView = mutation.newChildShadowView;
-  auto const &parentShadowView = mutation.parentShadowView;
-
-  auto const &childComponentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
-  auto const &parentComponentViewDescriptor = [registry componentViewDescriptorWithTag:parentShadowView.tag];
-
-  [parentComponentViewDescriptor.view mountChildComponentView:childComponentViewDescriptor.view index:mutation.index];
-}
-
-// `Remove` instruction
-static void RNRemoveMountInstruction(ShadowViewMutation const &mutation, RCTComponentViewRegistry *registry)
-{
-  auto const &oldShadowView = mutation.oldChildShadowView;
-  auto const &parentShadowView = mutation.parentShadowView;
-
-  auto const &childComponentViewDescriptor = [registry componentViewDescriptorWithTag:oldShadowView.tag];
-  auto const &parentComponentViewDescriptor = [registry componentViewDescriptorWithTag:parentShadowView.tag];
-
-  [parentComponentViewDescriptor.view unmountChildComponentView:childComponentViewDescriptor.view index:mutation.index];
-}
-
-// `Update Props` instruction
-static void RNUpdatePropsMountInstruction(ShadowViewMutation const &mutation, RCTComponentViewRegistry *registry)
-{
-  auto const &oldShadowView = mutation.oldChildShadowView;
-  auto const &newShadowView = mutation.newChildShadowView;
-  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
-  [componentViewDescriptor.view updateProps:newShadowView.props oldProps:oldShadowView.props];
-}
-
-// `Update EventEmitter` instruction
-static void RNUpdateEventEmitterMountInstruction(ShadowViewMutation const &mutation, RCTComponentViewRegistry *registry)
-{
-  auto const &newShadowView = mutation.newChildShadowView;
-  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
-  [componentViewDescriptor.view updateEventEmitter:newShadowView.eventEmitter];
-}
-
-// `Update LayoutMetrics` instruction
-static void RNUpdateLayoutMetricsMountInstruction(
-    ShadowViewMutation const &mutation,
-    RCTComponentViewRegistry *registry)
-{
-  auto const &oldShadowView = mutation.oldChildShadowView;
-  auto const &newShadowView = mutation.newChildShadowView;
-  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
-  [componentViewDescriptor.view updateLayoutMetrics:newShadowView.layoutMetrics
-                                   oldLayoutMetrics:oldShadowView.layoutMetrics];
-}
-
-// `Update State` instruction
-static void RNUpdateStateMountInstruction(ShadowViewMutation const &mutation, RCTComponentViewRegistry *registry)
-{
-  auto const &oldShadowView = mutation.oldChildShadowView;
-  auto const &newShadowView = mutation.newChildShadowView;
-  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
-  [componentViewDescriptor.view updateState:newShadowView.state oldState:oldShadowView.state];
-}
-
-// `Finalize Updates` instruction
-static void RNFinalizeUpdatesMountInstruction(
-    ShadowViewMutation const &mutation,
-    RNComponentViewUpdateMask mask,
-    RCTComponentViewRegistry *registry)
-{
-  auto const &newShadowView = mutation.newChildShadowView;
-  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
-  [componentViewDescriptor.view finalizeUpdates:mask];
-}
-
-// `Update` instruction
-static void RNPerformMountInstructions(
+static void RCTPerformMountInstructions(
     ShadowViewMutationList const &mutations,
     RCTComponentViewRegistry *registry,
     RCTMountingTransactionObserverCoordinator &observerCoordinator,
     SurfaceId surfaceId)
 {
-  SystraceSection s("RNPerformMountInstructions");
+  SystraceSection s("RCTPerformMountInstructions");
 
   [CATransaction begin];
   [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
   for (auto const &mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
-        RNCreateMountInstruction(mutation, registry, observerCoordinator, surfaceId);
+        auto &newChildShadowView = mutation.newChildShadowView;
+        auto &newChildViewDescriptor =
+            [registry dequeueComponentViewWithComponentHandle:newChildShadowView.componentHandle
+                                                          tag:newChildShadowView.tag];
+        observerCoordinator.registerViewComponentDescriptor(newChildViewDescriptor, surfaceId);
         break;
       }
+
       case ShadowViewMutation::Delete: {
-        RNDeleteMountInstruction(mutation, registry, observerCoordinator, surfaceId);
+        auto &oldChildShadowView = mutation.oldChildShadowView;
+        auto &oldChildViewDescriptor = [registry componentViewDescriptorWithTag:oldChildShadowView.tag];
+
+        observerCoordinator.unregisterViewComponentDescriptor(oldChildViewDescriptor, surfaceId);
+
+        [registry enqueueComponentViewWithComponentHandle:oldChildShadowView.componentHandle
+                                                      tag:oldChildShadowView.tag
+                                  componentViewDescriptor:oldChildViewDescriptor];
         break;
       }
+
       case ShadowViewMutation::Insert: {
-        RNUpdatePropsMountInstruction(mutation, registry);
-        RNUpdateEventEmitterMountInstruction(mutation, registry);
-        RNUpdateStateMountInstruction(mutation, registry);
-        RNUpdateLayoutMetricsMountInstruction(mutation, registry);
-        RNFinalizeUpdatesMountInstruction(mutation, RNComponentViewUpdateMaskAll, registry);
-        RNInsertMountInstruction(mutation, registry);
+        auto &oldChildShadowView = mutation.oldChildShadowView;
+        auto &newChildShadowView = mutation.newChildShadowView;
+        auto &parentShadowView = mutation.parentShadowView;
+        auto &newChildViewDescriptor = [registry componentViewDescriptorWithTag:newChildShadowView.tag];
+        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:parentShadowView.tag];
+
+        UIView<RCTComponentViewProtocol> *newChildComponentView = newChildViewDescriptor.view;
+
+        [newChildComponentView updateProps:newChildShadowView.props oldProps:oldChildShadowView.props];
+        [newChildComponentView updateEventEmitter:newChildShadowView.eventEmitter];
+        [newChildComponentView updateState:newChildShadowView.state oldState:oldChildShadowView.state];
+        [newChildComponentView updateLayoutMetrics:newChildShadowView.layoutMetrics
+                                  oldLayoutMetrics:oldChildShadowView.layoutMetrics];
+        [newChildComponentView finalizeUpdates:RNComponentViewUpdateMaskAll];
+
+        [parentViewDescriptor.view mountChildComponentView:newChildComponentView index:mutation.index];
         break;
       }
+
       case ShadowViewMutation::Remove: {
-        RNRemoveMountInstruction(mutation, registry);
+        auto &oldChildShadowView = mutation.oldChildShadowView;
+        auto &parentShadowView = mutation.parentShadowView;
+        auto &oldChildViewDescriptor = [registry componentViewDescriptorWithTag:oldChildShadowView.tag];
+        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:parentShadowView.tag];
+        [parentViewDescriptor.view unmountChildComponentView:oldChildViewDescriptor.view index:mutation.index];
         break;
       }
+
       case ShadowViewMutation::Update: {
-        auto const &oldChildShadowView = mutation.oldChildShadowView;
-        auto const &newChildShadowView = mutation.newChildShadowView;
+        auto &oldChildShadowView = mutation.oldChildShadowView;
+        auto &newChildShadowView = mutation.newChildShadowView;
+        auto &newChildViewDescriptor = [registry componentViewDescriptorWithTag:newChildShadowView.tag];
+        UIView<RCTComponentViewProtocol> *newChildComponentView = newChildViewDescriptor.view;
 
         auto mask = RNComponentViewUpdateMask{};
 
         if (oldChildShadowView.props != newChildShadowView.props) {
-          RNUpdatePropsMountInstruction(mutation, registry);
+          [newChildComponentView updateProps:newChildShadowView.props oldProps:oldChildShadowView.props];
           mask |= RNComponentViewUpdateMaskProps;
         }
+
         if (oldChildShadowView.eventEmitter != newChildShadowView.eventEmitter) {
-          RNUpdateEventEmitterMountInstruction(mutation, registry);
+          [newChildComponentView updateEventEmitter:newChildShadowView.eventEmitter];
           mask |= RNComponentViewUpdateMaskEventEmitter;
         }
+
         if (oldChildShadowView.state != newChildShadowView.state) {
-          RNUpdateStateMountInstruction(mutation, registry);
+          [newChildComponentView updateState:newChildShadowView.state oldState:oldChildShadowView.state];
           mask |= RNComponentViewUpdateMaskState;
         }
+
         if (oldChildShadowView.layoutMetrics != newChildShadowView.layoutMetrics) {
-          RNUpdateLayoutMetricsMountInstruction(mutation, registry);
+          [newChildComponentView updateLayoutMetrics:newChildShadowView.layoutMetrics
+                                    oldLayoutMetrics:oldChildShadowView.layoutMetrics];
           mask |= RNComponentViewUpdateMaskLayoutMetrics;
         }
 
         if (mask != RNComponentViewUpdateMaskNone) {
-          RNFinalizeUpdatesMountInstruction(mutation, mask, registry);
+          [newChildComponentView finalizeUpdates:mask];
         }
 
         break;
@@ -266,28 +199,20 @@ static void RNPerformMountInstructions(
   SystraceSection s("-[RCTMountingManager performTransaction:]");
   RCTAssertMainQueue();
 
-  auto transaction = mountingCoordinator->pullTransaction();
-  if (!transaction.has_value()) {
-    return;
-  }
+  auto surfaceId = mountingCoordinator->getSurfaceId();
 
-  auto surfaceId = transaction->getSurfaceId();
-  auto &mutations = transaction->getMutations();
-
-  if (mutations.empty()) {
-    return;
-  }
-
-  auto telemetry = transaction->getTelemetry();
-  auto number = transaction->getNumber();
-
-  [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
-  _observerCoordinator.notifyObserversMountingTransactionWillMount({surfaceId, number, telemetry});
-  telemetry.willMount();
-  RNPerformMountInstructions(mutations, self.componentViewRegistry, _observerCoordinator, surfaceId);
-  telemetry.didMount();
-  _observerCoordinator.notifyObserversMountingTransactionDidMount({surfaceId, number, telemetry});
-  [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
+  mountingCoordinator->getTelemetryController().pullTransaction(
+      [&](MountingTransactionMetadata metadata) {
+        [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
+        _observerCoordinator.notifyObserversMountingTransactionWillMount(metadata);
+      },
+      [&](ShadowViewMutationList const &mutations) {
+        RCTPerformMountInstructions(mutations, _componentViewRegistry, _observerCoordinator, surfaceId);
+      },
+      [&](MountingTransactionMetadata metadata) {
+        _observerCoordinator.notifyObserversMountingTransactionDidMount(metadata);
+        [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
+      });
 }
 
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
@@ -298,7 +223,25 @@ static void RNPerformMountInstructions(
   UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
   SharedProps oldProps = [componentView props];
   SharedProps newProps = componentDescriptor.cloneProps(oldProps, RawProps(convertIdToFollyDynamic(props)));
+
+  NSSet<NSString *> *propKeys = componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN ?: [NSSet new];
+  propKeys = [propKeys setByAddingObjectsFromArray:props.allKeys];
+  componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   [componentView updateProps:newProps oldProps:oldProps];
+  componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = propKeys;
+
+  const auto &newViewProps = *std::static_pointer_cast<const ViewProps>(newProps);
+
+  if (props[@"transform"] &&
+      !CATransform3DEqualToTransform(
+          RCTCATransform3DFromTransformMatrix(newViewProps.transform), componentView.layer.transform)) {
+    RCTLogWarn(@"transform was not applied during [RCTViewComponentView updateProps:oldProps:]");
+    componentView.layer.transform = RCTCATransform3DFromTransformMatrix(newViewProps.transform);
+  }
+  if (props[@"opacity"] && componentView.layer.opacity != (float)newViewProps.opacity) {
+    RCTLogWarn(@"opacity was not applied during [RCTViewComponentView updateProps:oldProps:]");
+    componentView.layer.opacity = newViewProps.opacity;
+  }
 }
 
 - (void)synchronouslyDispatchCommandOnUIThread:(ReactTag)reactTag

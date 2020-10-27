@@ -36,26 +36,30 @@ export type Props = $ReadOnly<{|
   ...ViewProps,
 
   /**
-   * Whether the switch is disabled. Defaults to false.
+    If true the user won't be able to toggle the switch.
+
+    @default false
    */
   disabled?: ?boolean,
 
   /**
-   * Boolean value of the switch. Defaults to false.
+    The value of the switch. If true the switch will be turned on.
+
+    @default false
    */
   value?: ?boolean,
 
   /**
-   * Custom color for the switch thumb.
+    Color of the foreground switch grip. If this is set on iOS, the switch grip will lose its drop shadow.
    */
   thumbColor?: ?ColorValue,
 
   /**
-   * Custom colors for the switch track.
-   *
-   * NOTE: On iOS when the switch value is false, the track shrinks into the
-   * border. If you want to change the color of the background exposed by the
-   * shrunken track, use `ios_backgroundColor`.
+    Custom colors for the switch track.
+
+    _iOS_: When the switch value is false, the track shrinks into the border. If you want to change the
+    color of the background exposed by the shrunken track, use
+     [`ios_backgroundColor`](https://reactnative.dev/docs/switch#ios_backgroundColor).
    */
   trackColor?: ?$ReadOnly<{|
     false?: ?ColorValue,
@@ -63,36 +67,67 @@ export type Props = $ReadOnly<{|
   |}>,
 
   /**
-   * On iOS, custom color for the background. This background color can be seen
-   * either when the switch value is false or when the switch is disabled (and
-   * the switch is translucent).
+    On iOS, custom color for the background. This background color can be
+    seen either when the switch value is false or when the switch is
+    disabled (and the switch is translucent).
    */
   ios_backgroundColor?: ?ColorValue,
 
   /**
-   * Called when the user tries to change the value of the switch.
-   *
-   * Receives the change event as an argument. If you want to only receive the
-   * new value, use `onValueChange` instead.
+    Invoked when the user tries to change the value of the switch. Receives
+    the change event as an argument. If you want to only receive the new
+    value, use `onValueChange` instead.
    */
   onChange?: ?(event: SwitchChangeEvent) => Promise<void> | void,
 
   /**
-   * Called when the user tries to change the value of the switch.
-   *
-   * Receives the new value as an argument. If you want to instead receive an
-   * event, use `onChange`.
+    Invoked when the user tries to change the value of the switch. Receives
+    the new value as an argument. If you want to instead receive an event,
+    use `onChange`.
    */
   onValueChange?: ?(value: boolean) => Promise<void> | void,
 |}>;
 
 /**
- * A visual toggle between two mutually exclusive states.
- *
- * This is a controlled component that requires an `onValueChange` callback that
- * updates the `value` prop in order for the component to reflect user actions.
- * If the `value` prop is not updated, the component will continue to render the
- * supplied `value` prop instead of the expected result of any user actions.
+  Renders a boolean input.
+
+  This is a controlled component that requires an `onValueChange`
+  callback that updates the `value` prop in order for the component to
+  reflect user actions. If the `value` prop is not updated, the
+  component will continue to render the supplied `value` prop instead of
+  the expected result of any user actions.
+
+  ```SnackPlayer name=Switch
+  import React, { useState } from "react";
+  import { View, Switch, StyleSheet } from "react-native";
+
+  const App = () => {
+    const [isEnabled, setIsEnabled] = useState(false);
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+
+    return (
+      <View style={styles.container}>
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleSwitch}
+          value={isEnabled}
+        />
+      </View>
+    );
+  }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  });
+
+  export default App;
+  ```
  */
 class Switch extends React.Component<Props> {
   _nativeSwitchRef: ?React.ElementRef<
@@ -138,39 +173,39 @@ class Switch extends React.Component<Props> {
           ref={this._handleSwitchNativeComponentRef}
         />
       );
-    }
-
-    const platformProps = {
-      disabled,
-      onTintColor: trackColorForTrue,
-      style: StyleSheet.compose(
-        {height: 31, width: 51},
-        StyleSheet.compose(
-          style,
-          ios_backgroundColor == null
-            ? null
-            : {
-                backgroundColor: ios_backgroundColor,
-                borderRadius: 16,
-              },
+    } else {
+      const platformProps = {
+        disabled,
+        onTintColor: trackColorForTrue,
+        style: StyleSheet.compose(
+          {height: 31, width: 51},
+          StyleSheet.compose(
+            style,
+            ios_backgroundColor == null
+              ? null
+              : {
+                  backgroundColor: ios_backgroundColor,
+                  borderRadius: 16,
+                },
+          ),
         ),
-      ),
-      thumbTintColor: thumbColor,
-      tintColor: trackColorForFalse,
-      value: value === true,
-    };
+        thumbTintColor: thumbColor,
+        tintColor: trackColorForFalse,
+        value: value === true,
+      };
 
-    return (
-      <SwitchNativeComponent
-        {...props}
-        {...platformProps}
-        accessibilityRole={props.accessibilityRole ?? 'switch'}
-        onChange={this._handleChange}
-        onResponderTerminationRequest={returnsFalse}
-        onStartShouldSetResponder={returnsTrue}
-        ref={this._handleSwitchNativeComponentRef}
-      />
-    );
+      return (
+        <SwitchNativeComponent
+          {...props}
+          {...platformProps}
+          accessibilityRole={props.accessibilityRole ?? 'switch'}
+          onChange={this._handleChange}
+          onResponderTerminationRequest={returnsFalse}
+          onStartShouldSetResponder={returnsTrue}
+          ref={this._handleSwitchNativeComponentRef}
+        />
+      );
+    }
   }
 
   componentDidUpdate() {

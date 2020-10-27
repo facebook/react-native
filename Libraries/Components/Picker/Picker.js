@@ -30,9 +30,9 @@ type PickerItemProps = $ReadOnly<{|
 
   /**
    * The value to be passed to picker's `onValueChange` callback when
-   * this item is selected. Can be a string or an integer.
+   * this item is selected.
    */
-  value?: ?(number | string),
+  value?: ?string,
 
   /**
    * Color of this item's text.
@@ -62,9 +62,9 @@ type PickerProps = $ReadOnly<{|
   style?: ?TextStyleProp,
 
   /**
-   * Value matching value of one of the items. Can be a string or an integer.
+   * Value matching value of one of the items.
    */
-  selectedValue?: ?(number | string),
+  selectedValue?: ?string,
 
   /**
    * Callback for when an item is selected. This is called with the following parameters:

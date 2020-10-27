@@ -29,7 +29,7 @@ export type ComponentSchemaBuilderConfig = $ReadOnly<{|
   options?: ?OptionsShape,
 |}>;
 
-function buildComponentSchema({
+function wrapComponentSchema({
   filename,
   componentName,
   extendsProps,
@@ -41,6 +41,7 @@ function buildComponentSchema({
   return {
     modules: {
       [filename]: {
+        type: 'Component',
         components: {
           [componentName]: {
             ...(options || {}),
@@ -56,5 +57,5 @@ function buildComponentSchema({
 }
 
 module.exports = {
-  buildComponentSchema,
+  wrapComponentSchema,
 };

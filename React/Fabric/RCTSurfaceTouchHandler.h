@@ -11,8 +11,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTSurfaceTouchHandler : UIGestureRecognizer
 
+/*
+ * Attaches (and detaches) a view to the touch handler.
+ * The receiver does not retain the provided view.
+ */
 - (void)attachToView:(UIView *)view;
 - (void)detachFromView:(UIView *)view;
+
+/*
+ * Offset of the attached view relative to the root component in points.
+ */
+@property (nonatomic, assign) CGPoint viewOriginOffset;
 
 @end
 

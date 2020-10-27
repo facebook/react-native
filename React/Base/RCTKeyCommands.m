@@ -113,7 +113,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (void)handleKeyUIEventSwizzle:(UIEvent *)event
 {
   NSString *modifiedInput = nil;
-  UIKeyModifierFlags *modifierFlags = nil;
+  UIKeyModifierFlags modifierFlags = 0;
   BOOL isKeyDown = NO;
 
   if ([event respondsToSelector:@selector(_modifiedInput)]) {

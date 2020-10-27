@@ -128,7 +128,11 @@ YG_ENUM_SEQ_DECL(
     YGOverflowHidden,
     YGOverflowScroll)
 
-YG_ENUM_SEQ_DECL(YGPositionType, YGPositionTypeRelative, YGPositionTypeAbsolute)
+YG_ENUM_SEQ_DECL(
+    YGPositionType,
+    YGPositionTypeStatic,
+    YGPositionTypeRelative,
+    YGPositionTypeAbsolute)
 
 YG_ENUM_DECL(
     YGPrintOptions,

@@ -269,6 +269,10 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     return null;
   }
 
+  /**
+   * Returns a {@link Map<String, String>} representing the native props of the view manager. The
+   * Map contains the names (key) and types (value) of the ViewManager's props.
+   */
   public Map<String, String> getNativeProps() {
     return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
   }

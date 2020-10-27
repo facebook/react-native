@@ -266,7 +266,7 @@ public class ReactAppTestActivity extends FragmentActivity
                             FabricUIManagerFactory factory = spec.getFabricUIManagerFactory();
                             return factory != null
                                 ? factory.getFabricUIManager(
-                                    reactApplicationContext, viewManagerRegistry, jsContext)
+                                    reactApplicationContext, viewManagerRegistry)
                                 : null;
                           }
                         };

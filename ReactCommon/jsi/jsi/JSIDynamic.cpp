@@ -17,72 +17,163 @@ using namespace facebook::jsi;
 namespace facebook {
 namespace jsi {
 
-Value valueFromDynamic(Runtime& runtime, const folly::dynamic& dyn) {
+namespace {
+
+struct FromDynamic {
+  FromDynamic(const folly::dynamic* dynArg, Object objArg)
+      : dyn(dynArg), obj(std::move(objArg)) {}
+
+  const folly::dynamic* dyn;
+  Object obj;
+};
+
+// This converts one element.  If it's a collection, it gets pushed onto
+// the stack for later processing.
+Value valueFromDynamicShallow(
+    Runtime& runtime,
+    std::vector<FromDynamic>& stack,
+    const folly::dynamic& dyn) {
   switch (dyn.type()) {
     case folly::dynamic::NULLT:
       return Value::null();
     case folly::dynamic::ARRAY: {
-      Array ret = Array(runtime, dyn.size());
-      for (size_t i = 0; i < dyn.size(); ++i) {
-        ret.setValueAtIndex(runtime, i, valueFromDynamic(runtime, dyn[i]));
-      }
-      return std::move(ret);
+      Object arr = Array(runtime, dyn.size());
+      Value ret = Value(runtime, arr);
+      stack.emplace_back(&dyn, std::move(arr));
+      return ret;
     }
     case folly::dynamic::BOOL:
-      return dyn.getBool();
+      return Value(dyn.getBool());
     case folly::dynamic::DOUBLE:
       return dyn.getDouble();
     case folly::dynamic::INT64:
-      // Can't use asDouble() here.  If the int64 value is too bit to be
-      // represented precisely as a double, folly will throw an
-      // exception.
-      return (double)dyn.getInt();
+      return Value((double)dyn.getInt());
     case folly::dynamic::OBJECT: {
-      Object ret(runtime);
-      for (const auto& element : dyn.items()) {
-        Value value = valueFromDynamic(runtime, element.second);
-        if (element.first.isNumber() || element.first.isString()) {
-          ret.setProperty(
-              runtime,
-              PropNameID::forUtf8(runtime, element.first.asString()),
-              value);
-        }
-      }
-      return std::move(ret);
+      auto obj = Object(runtime);
+      Value ret = Value(runtime, obj);
+      stack.emplace_back(&dyn, std::move(obj));
+      return ret;
     }
     case folly::dynamic::STRING:
-      return String::createFromUtf8(runtime, dyn.getString());
+      return Value(String::createFromUtf8(runtime, dyn.getString()));
   }
   CHECK(false);
 }
 
-folly::dynamic dynamicFromValue(Runtime& runtime, const Value& value) {
+} // namespace
+
+Value valueFromDynamic(Runtime& runtime, const folly::dynamic& dynInput) {
+  std::vector<FromDynamic> stack;
+
+  Value ret = valueFromDynamicShallow(runtime, stack, dynInput);
+
+  while (!stack.empty()) {
+    auto top = std::move(stack.back());
+    stack.pop_back();
+
+    switch (top.dyn->type()) {
+      case folly::dynamic::ARRAY: {
+        Array arr = std::move(top.obj).getArray(runtime);
+        for (size_t i = 0; i < top.dyn->size(); ++i) {
+          arr.setValueAtIndex(
+              runtime,
+              i,
+              valueFromDynamicShallow(runtime, stack, (*top.dyn)[i]));
+        }
+        break;
+      }
+      case folly::dynamic::OBJECT: {
+        Object obj = std::move(top.obj);
+        for (const auto& element : top.dyn->items()) {
+          if (element.first.isNumber() || element.first.isString()) {
+            obj.setProperty(
+                runtime,
+                PropNameID::forUtf8(runtime, element.first.asString()),
+                valueFromDynamicShallow(runtime, stack, element.second));
+          }
+        }
+        break;
+      }
+      default:
+        CHECK(false);
+    }
+  }
+
+  return ret;
+}
+
+namespace {
+
+struct FromValue {
+  FromValue(folly::dynamic* dynArg, Object objArg)
+      : dyn(dynArg), obj(std::move(objArg)) {}
+
+  folly::dynamic* dyn;
+  Object obj;
+};
+
+// This converts one element.  If it's a collection, it gets pushed
+// onto the stack for later processing.  The output is created by
+// mutating the output argument, because we need its actual pointer to
+// push onto the stack.
+void dynamicFromValueShallow(
+    Runtime& runtime,
+    std::vector<FromValue>& stack,
+    const jsi::Value& value,
+    folly::dynamic& output) {
   if (value.isUndefined() || value.isNull()) {
-    return nullptr;
+    output = nullptr;
   } else if (value.isBool()) {
-    return value.getBool();
+    output = value.getBool();
   } else if (value.isNumber()) {
-    return value.getNumber();
+    output = value.getNumber();
   } else if (value.isString()) {
-    return value.getString(runtime).utf8(runtime);
+    output = value.getString(runtime).utf8(runtime);
   } else {
+    CHECK(value.isObject());
     Object obj = value.getObject(runtime);
     if (obj.isArray(runtime)) {
-      Array array = obj.getArray(runtime);
-      folly::dynamic ret = folly::dynamic::array();
-      for (size_t i = 0; i < array.size(runtime); ++i) {
-        ret.push_back(
-            dynamicFromValue(runtime, array.getValueAtIndex(runtime, i)));
-      }
-      return ret;
+      output = folly::dynamic::array();
     } else if (obj.isFunction(runtime)) {
       throw JSError(runtime, "JS Functions are not convertible to dynamic");
     } else {
-      folly::dynamic ret = folly::dynamic::object();
-      Array names = obj.getPropertyNames(runtime);
+      output = folly::dynamic::object();
+    }
+    stack.emplace_back(&output, std::move(obj));
+  }
+}
+
+} // namespace
+
+folly::dynamic dynamicFromValue(Runtime& runtime, const Value& valueInput) {
+  std::vector<FromValue> stack;
+  folly::dynamic ret;
+
+  dynamicFromValueShallow(runtime, stack, valueInput, ret);
+
+  while (!stack.empty()) {
+    auto top = std::move(stack.back());
+    stack.pop_back();
+
+    if (top.obj.isArray(runtime)) {
+      // Inserting into a dyn can invalidate references into it, so we
+      // need to insert new elements up front, then push stuff onto
+      // the stack.
+      Array array = top.obj.getArray(runtime);
+      size_t arraySize = array.size(runtime);
+      for (size_t i = 0; i < arraySize; ++i) {
+        top.dyn->push_back(nullptr);
+      }
+      for (size_t i = 0; i < arraySize; ++i) {
+        dynamicFromValueShallow(
+            runtime, stack, array.getValueAtIndex(runtime, i), top.dyn->at(i));
+      }
+    } else {
+      Array names = top.obj.getPropertyNames(runtime);
+      std::vector<std::pair<std::string, jsi::Value>> props;
       for (size_t i = 0; i < names.size(runtime); ++i) {
         String name = names.getValueAtIndex(runtime, i).getString(runtime);
-        Value prop = obj.getProperty(runtime, name);
+        Value prop = top.obj.getProperty(runtime, name);
         if (prop.isUndefined()) {
           continue;
         }
@@ -92,12 +183,17 @@ folly::dynamic dynamicFromValue(Runtime& runtime, const Value& value) {
         if (prop.isObject() && prop.getObject(runtime).isFunction(runtime)) {
           prop = Value::null();
         }
-        ret.insert(
-            name.utf8(runtime), dynamicFromValue(runtime, std::move(prop)));
+        props.emplace_back(name.utf8(runtime), std::move(prop));
+        top.dyn->insert(props.back().first, nullptr);
       }
-      return ret;
+      for (const auto& prop : props) {
+        dynamicFromValueShallow(
+            runtime, stack, prop.second, (*top.dyn)[prop.first]);
+      }
     }
   }
+
+  return ret;
 }
 
 } // namespace jsi

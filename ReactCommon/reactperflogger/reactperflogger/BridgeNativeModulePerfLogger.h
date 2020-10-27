@@ -14,6 +14,7 @@ namespace react {
 
 namespace BridgeNativeModulePerfLogger {
 void enableLogging(std::unique_ptr<NativeModulePerfLogger> &&logger);
+void disableLogging();
 
 void moduleDataCreateStart(const char *moduleName, int32_t id);
 void moduleDataCreateEnd(const char *moduleName, int32_t id);
@@ -76,6 +77,7 @@ void asyncMethodCallArgConversionEnd(
     const char *methodName);
 void asyncMethodCallDispatch(const char *moduleName, const char *methodName);
 void asyncMethodCallEnd(const char *moduleName, const char *methodName);
+void asyncMethodCallFail(const char *moduleName, const char *methodName);
 
 /**
  * Pre-processing async method call batch

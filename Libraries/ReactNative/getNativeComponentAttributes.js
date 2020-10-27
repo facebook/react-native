@@ -21,7 +21,6 @@ const processColor = require('../StyleSheet/processColor');
 const processColorArray = require('../StyleSheet/processColorArray');
 const resolveAssetSource = require('../Image/resolveAssetSource');
 const sizesDiffer = require('../Utilities/differ/sizesDiffer');
-const warning = require('fbjs/lib/warning');
 
 function getNativeComponentAttributes(uiViewClassName: string): any {
   const viewConfig = UIManager.getViewManagerConfig(uiViewClassName);
@@ -39,7 +38,6 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
   while (baseModuleName) {
     const baseModule = UIManager.getViewManagerConfig(baseModuleName);
     if (!baseModule) {
-      warning(false, 'Base module "%s" does not exist', baseModuleName);
       baseModuleName = null;
     } else {
       bubblingEventTypes = {

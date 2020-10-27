@@ -7,8 +7,6 @@
 
 #import <React/RCTRootView.h>
 
-@class RCTTVRemoteHandler;
-
 /**
  * The interface provides a set of functions that allow other internal framework
  * classes to change the RCTRootViews's internal state.
@@ -20,14 +18,6 @@
  * intrinsic content size update.
  */
 @property (readwrite, nonatomic, assign) CGSize intrinsicContentSize;
-
-/**
- * TV remote gesture recognizers
- */
-#if TARGET_OS_TV
-@property (nonatomic, strong) RCTTVRemoteHandler *tvRemoteHandler;
-@property (nonatomic, strong) UIView *reactPreferredFocusedView;
-#endif
 
 - (void)contentViewInvalidated;
 

@@ -14,7 +14,7 @@
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const generator = require('../GenerateModuleH.js');
 
-describe('GenerateModuleCpp', () => {
+describe('GenerateModuleH', () => {
   Object.keys(fixtures)
     .sort()
     .forEach(fixtureName => {

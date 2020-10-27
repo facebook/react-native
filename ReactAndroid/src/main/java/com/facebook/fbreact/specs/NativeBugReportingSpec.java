@@ -25,11 +25,11 @@ public abstract class NativeBugReportingSpec extends ReactContextBaseJavaModule 
   }
 
   @ReactMethod
-  public abstract void startReportAProblemFlow();
-
-  @ReactMethod
   public abstract void setCategoryID(String categoryID);
 
   @ReactMethod
   public abstract void setExtraData(ReadableMap extraData, ReadableMap extraFiles);
+
+  @ReactMethod
+  public abstract void startReportAProblemFlow();
 }

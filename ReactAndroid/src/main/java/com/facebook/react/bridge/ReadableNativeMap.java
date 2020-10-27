@@ -120,7 +120,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     if (hasKey(name)) {
       return getLocalMap().get(name);
     }
-    throw new NoSuchKeyException(name);
+    return null;
   }
 
   private @Nullable <T> T getNullableValue(String name, Class<T> type) {

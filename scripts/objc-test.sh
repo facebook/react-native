@@ -59,7 +59,7 @@ runTests() {
   # shellcheck disable=SC1091
   source "./scripts/.tests.env"
   xcodebuild build test \
-    -workspace RNTester/RNTesterPods.xcworkspace \
+    -workspace packages/rn-tester/RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator \
     -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
@@ -68,7 +68,7 @@ runTests() {
 
 buildProject() {
   xcodebuild build \
-    -workspace RNTester/RNTesterPods.xcworkspace \
+    -workspace packages/rn-tester/RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator
 }
@@ -89,8 +89,8 @@ xcprettyFormat() {
 
 preloadBundles() {
   # Preload the RNTesterApp bundle for better performance in integration tests
-  curl -s 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o /dev/null
-  curl -s 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o /dev/null
+  curl -s 'http://localhost:8081/packages/rn-tester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o /dev/null
+  curl -s 'http://localhost:8081/packages/rn-tester/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o /dev/null
   curl -s 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' -o /dev/null
   curl -s 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o /dev/null
 }

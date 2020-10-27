@@ -20,28 +20,38 @@
 
 set -e
 
+THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
+RN_DIR=$(cd "$THIS_DIR/.." && pwd)
+CODEGEN_DIR=$(cd "$RN_DIR/packages/react-native-codegen" && pwd)
+OUTPUT_DIR="${1:-$RN_DIR/Libraries/FBReactNativeSpec/FBReactNativeSpec}"
+SCHEMA_FILE="$RN_DIR/schema-native-modules.json"
+YARN_BINARY="${YARN_BINARY:-yarn}"
+
 describe () {
   printf "\\n\\n>>>>> %s\\n\\n\\n" "$1"
 }
 
-THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
-RN_DIR=$(cd "$THIS_DIR/.." && pwd)
+step_build_codegen () {
+  describe "Building react-native-codegen package"
+  pushd "$CODEGEN_DIR" >/dev/null || exit
+    "$YARN_BINARY"
+    "$YARN_BINARY" build
+  popd >/dev/null || exit
+}
 
-SRCS_DIR=$(cd "$RN_DIR/Libraries" && pwd)
-SCHEMA_FILE="$RN_DIR/schema-native-modules.json"
+step_gen_schema () {
+  describe "Generating schema from flow types"
+  SRCS_DIR=$(cd "$RN_DIR/Libraries" && pwd)
+  "$YARN_BINARY" node "$CODEGEN_DIR/lib/cli/combine/combine-js-to-schema-cli.js" "$SCHEMA_FILE" "$SRCS_DIR"
+}
 
-if [ -n "$1" ]; then
-  OUTPUT_DIR="$1"
-fi
+step_gen_specs () {
+  describe "Generating native code from schema (iOS)"
+  pushd "$RN_DIR" >/dev/null || exit
+    "$YARN_BINARY" --silent node scripts/generate-native-modules-specs-cli.js ios "$SCHEMA_FILE" "$OUTPUT_DIR"
+  popd >/dev/null || exit
+}
 
-pushd "$RN_DIR/packages/react-native-codegen" >/dev/null
-  yarn
-  yarn build
-popd >/dev/null
-
-describe "Generating schema from flow types"
-grep --exclude NativeUIManager.js --include=Native\*.js -rnwl "$SRCS_DIR" -e 'export interface Spec extends TurboModule' -e "export default \(TurboModuleRegistry.get(Enforcing)?<Spec>\('.*\): Spec\);/" \
-  | xargs yarn node packages/react-native-codegen/lib/cli/combine/combine-js-to-schema-cli.js "$SCHEMA_FILE"
-
-describe "Generating native code from schema"
-yarn node scripts/generate-native-modules-specs-cli.js "$SCHEMA_FILE" "$OUTPUT_DIR"
+step_build_codegen
+step_gen_schema
+step_gen_specs

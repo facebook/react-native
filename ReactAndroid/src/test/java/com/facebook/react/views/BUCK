@@ -5,7 +5,6 @@ rn_robolectric_test(
     # TODO Disabled temporarily until Yoga linking is fixed t14964130
     # srcs = glob(['**/*.java']),
     srcs = glob(["image/*.java"]),
-    # Please change the contact to the oncall of your team
     contacts = ["oncall+fbandroid_sheriff@xmail.facebook.com"],
     deps = [
         YOGA_TARGET,

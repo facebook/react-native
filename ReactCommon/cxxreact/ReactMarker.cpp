@@ -17,6 +17,7 @@ namespace ReactMarker {
 #endif
 
 LogTaggedMarker logTaggedMarker = nullptr;
+LogTaggedMarkerWithInstanceKey logTaggedMarkerWithInstanceKey = nullptr;
 
 #if __clang__
 #pragma clang diagnostic pop

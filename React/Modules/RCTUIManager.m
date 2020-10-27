@@ -8,6 +8,7 @@
 #import "RCTUIManager.h"
 
 #import <AVFoundation/AVFoundation.h>
+#import <React/RCTSurfacePresenterStub.h>
 
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
@@ -16,7 +17,7 @@
 #import "RCTComponentData.h"
 #import "RCTConvert.h"
 #import "RCTDefines.h"
-#import "RCTEventDispatcher.h"
+#import "RCTEventDispatcherProtocol.h"
 #import "RCTLayoutAnimation.h"
 #import "RCTLayoutAnimationGroup.h"
 #import "RCTLog.h"
@@ -178,12 +179,10 @@ RCT_EXPORT_MODULE()
                                                object:[self->_bridge moduleForName:@"AccessibilityManager"
                                                              lazilyLoadIfNecessary:YES]];
   });
-#if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(namedOrientationDidChange)
                                                name:UIDeviceOrientationDidChangeNotification
                                              object:nil];
-#endif
   [RCTLayoutAnimation initializeStatics];
 }
 
@@ -209,7 +208,6 @@ RCT_EXPORT_MODULE()
   });
 }
 
-#if !TARGET_OS_TV
 // Names and coordinate system from html5 spec:
 // https://developer.mozilla.org/en-US/docs/Web/API/Screen.orientation
 // https://developer.mozilla.org/en-US/docs/Web/API/Screen.lockOrientation
@@ -261,7 +259,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   [_bridge.eventDispatcher sendDeviceEventWithName:@"namedOrientationDidChange" body:orientationEvent];
 #pragma clang diagnostic pop
 }
-#endif
 
 - (dispatch_queue_t)methodQueue
 {
@@ -354,7 +351,11 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 - (UIView *)viewForReactTag:(NSNumber *)reactTag
 {
   RCTAssertMainQueue();
-  return _viewRegistry[reactTag];
+  UIView *view = [_bridge.surfacePresenter findComponentViewWithTag_DO_NOT_USE_DEPRECATED:reactTag.integerValue];
+  if (!view) {
+    view = _viewRegistry[reactTag];
+  }
+  return view;
 }
 
 - (RCTShadowView *)shadowViewForReactTag:(NSNumber *)reactTag
@@ -1439,7 +1440,8 @@ RCT_EXPORT_METHOD(setJSResponder
 {
   [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     _jsResponder = viewRegistry[reactTag];
-    if (!_jsResponder) {
+    // Fabric view's are not stored in viewRegistry. We avoid logging a warning in that case.
+    if (!_jsResponder && !RCTUIManagerTypeForTagIsFabric(reactTag)) {
       RCTLogWarn(@"Invalid view set to be the JS responder - tag %@", reactTag);
     }
   }];

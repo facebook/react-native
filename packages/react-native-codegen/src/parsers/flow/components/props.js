@@ -13,9 +13,12 @@
 const {getValueFromTypes} = require('../utils.js');
 
 import type {PropTypeShape} from '../../../CodegenSchema.js';
-import type {TypeMap} from '../utils.js';
+import type {TypeDeclarationMap} from '../utils.js';
 
-function getPropProperties(propsTypeName: string, types: TypeMap): $FlowFixMe {
+function getPropProperties(
+  propsTypeName: string,
+  types: TypeDeclarationMap,
+): $FlowFixMe {
   const typeAlias = types[propsTypeName];
   try {
     return typeAlias.right.typeParameters.params[0].properties;
@@ -321,7 +324,7 @@ function getTypeAnnotation(
   }
 }
 
-function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
+function buildPropSchema(property, types: TypeDeclarationMap): ?PropTypeShape {
   const name = property.key.name;
 
   const value = getValueFromTypes(property.value, types);
@@ -426,7 +429,7 @@ function verifyPropNotAlreadyDefined(
 
 function flattenProperties(
   typeDefinition: $ReadOnlyArray<PropAST>,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ) {
   return typeDefinition
     .map(property => {
@@ -456,7 +459,7 @@ function flattenProperties(
 
 function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ): $ReadOnlyArray<PropTypeShape> {
   return flattenProperties(typeDefinition, types)
     .map(property => buildPropSchema(property, types))

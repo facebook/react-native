@@ -7,6 +7,8 @@
 
 #import "RCTAnimatedNode.h"
 
+#import <React/RCTSurfacePresenterStub.h>
+
 @class RCTBridge;
 @class RCTViewPropertyMapper;
 
@@ -14,7 +16,8 @@
 
 - (void)connectToView:(NSNumber *)viewTag
              viewName:(NSString *)viewName
-               bridge:(RCTBridge *)bridge;
+               bridge:(RCTBridge *)bridge
+     surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
 
 - (void)disconnectFromView:(NSNumber *)viewTag;
 

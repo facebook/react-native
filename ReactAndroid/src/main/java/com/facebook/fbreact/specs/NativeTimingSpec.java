@@ -24,11 +24,11 @@ public abstract class NativeTimingSpec extends ReactContextBaseJavaModule implem
   }
 
   @ReactMethod
-  public abstract void deleteTimer(double timerID);
-
-  @ReactMethod
   public abstract void createTimer(double callbackID, double duration, double jsSchedulingTime,
       boolean repeats);
+
+  @ReactMethod
+  public abstract void deleteTimer(double timerID);
 
   @ReactMethod
   public abstract void setSendIdleEvents(boolean sendIdleEvents);

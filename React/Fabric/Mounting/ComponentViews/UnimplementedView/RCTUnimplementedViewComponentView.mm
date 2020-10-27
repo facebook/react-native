@@ -7,12 +7,12 @@
 
 #import "RCTUnimplementedViewComponentView.h"
 
-#import <react/components/rncore/ComponentDescriptors.h>
-#import <react/components/rncore/EventEmitters.h>
-#import <react/components/rncore/Props.h>
+#import <react/renderer/components/rncore/ComponentDescriptors.h>
+#import <react/renderer/components/rncore/EventEmitters.h>
+#import <react/renderer/components/rncore/Props.h>
 
-#import <react/components/unimplementedview/UnimplementedViewComponentDescriptor.h>
-#import <react/components/unimplementedview/UnimplementedViewShadowNode.h>
+#import <react/renderer/components/unimplementedview/UnimplementedViewComponentDescriptor.h>
+#import <react/renderer/components/unimplementedview/UnimplementedViewShadowNode.h>
 
 #import <React/RCTConversions.h>
 

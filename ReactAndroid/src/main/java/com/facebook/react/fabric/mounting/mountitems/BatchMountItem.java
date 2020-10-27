@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.mounting.mountitems;
 
 import androidx.annotation.NonNull;
+import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -25,6 +26,7 @@ import com.facebook.systrace.Systrace;
  */
 @DoNotStrip
 public class BatchMountItem implements MountItem {
+  static final String TAG = "FabricBatchMountItem";
 
   private final int mRootTag;
   @NonNull private final MountItem[] mMountItems;
@@ -45,27 +47,47 @@ public class BatchMountItem implements MountItem {
     mCommitNumber = commitNumber;
   }
 
-  @Override
-  public void execute(@NonNull MountingManager mountingManager) {
+  private void beginMarkers(String reason) {
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews - " + mSize + " items");
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "FabricUIManager::" + reason + " - " + mSize + " items");
 
     if (mCommitNumber > 0) {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_BATCH_EXECUTION_START, null, mCommitNumber);
     }
+  }
 
-    for (int mountItemIndex = 0; mountItemIndex < mSize; mountItemIndex++) {
-      MountItem mountItem = mMountItems[mountItemIndex];
-      mountItem.execute(mountingManager);
-    }
-
+  private void endMarkers() {
     if (mCommitNumber > 0) {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_BATCH_EXECUTION_END, null, mCommitNumber);
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+  }
+
+  @Override
+  public void execute(@NonNull MountingManager mountingManager) {
+    beginMarkers("mountViews");
+
+    int mountItemIndex = 0;
+    try {
+      for (; mountItemIndex < mSize; mountItemIndex++) {
+        mMountItems[mountItemIndex].execute(mountingManager);
+      }
+    } catch (RuntimeException e) {
+      FLog.e(
+          TAG,
+          "Caught exception executing mountItem @"
+              + mountItemIndex
+              + ": "
+              + mMountItems[mountItemIndex].toString(),
+          e);
+      throw e;
+    }
+
+    endMarkers();
   }
 
   public int getRootTag() {

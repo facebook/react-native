@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 
 /**
  * Represents a touch event, which may be composed of several touches (one for every finger).

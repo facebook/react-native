@@ -10,6 +10,7 @@
 
 'use strict';
 
+// Components
 import typeof AccessibilityInfo from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
 import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/ActivityIndicator';
 import typeof Button from './Libraries/Components/Button';
@@ -27,14 +28,14 @@ import typeof PickerIOS from './Libraries/Components/Picker/PickerIOS';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 import typeof ProgressViewIOS from './Libraries/Components/ProgressViewIOS/ProgressViewIOS';
+import typeof RefreshControl from './Libraries/Components/RefreshControl/RefreshControl';
 import typeof SafeAreaView from './Libraries/Components/SafeAreaView/SafeAreaView';
 import typeof ScrollView from './Libraries/Components/ScrollView/ScrollView';
 import typeof SectionList from './Libraries/Lists/SectionList';
 import typeof SegmentedControlIOS from './Libraries/Components/SegmentedControlIOS/SegmentedControlIOS';
 import typeof Slider from './Libraries/Components/Slider/Slider';
-import typeof Switch from './Libraries/Components/Switch/Switch';
-import typeof RefreshControl from './Libraries/Components/RefreshControl/RefreshControl';
 import typeof StatusBar from './Libraries/Components/StatusBar/StatusBar';
+import typeof Switch from './Libraries/Components/Switch/Switch';
 import typeof Text from './Libraries/Text/Text';
 import typeof TextInput from './Libraries/Components/TextInput/TextInput';
 import typeof Touchable from './Libraries/Components/Touchable/Touchable';
@@ -45,9 +46,11 @@ import typeof TouchableWithoutFeedback from './Libraries/Components/Touchable/To
 import typeof View from './Libraries/Components/View/View';
 import typeof VirtualizedList from './Libraries/Lists/VirtualizedList';
 import typeof VirtualizedSectionList from './Libraries/Lists/VirtualizedSectionList';
+
+// APIs
 import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
 import typeof Alert from './Libraries/Alert/Alert';
-import typeof Animated from './Libraries/Animated/src/Animated';
+import typeof Animated from './Libraries/Animated/Animated';
 import typeof Appearance from './Libraries/Utilities/Appearance';
 import typeof AppRegistry from './Libraries/ReactNative/AppRegistry';
 import typeof AppState from './Libraries/AppState/AppState';
@@ -58,7 +61,7 @@ import typeof DatePickerAndroid from './Libraries/Components/DatePickerAndroid/D
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
 import typeof DevSettings from './Libraries/Utilities/DevSettings';
 import typeof Dimensions from './Libraries/Utilities/Dimensions';
-import typeof Easing from './Libraries/Animated/src/Easing';
+import typeof Easing from './Libraries/Animated/Easing';
 import typeof ReactNative from './Libraries/Renderer/shims/ReactNative';
 import typeof I18nManager from './Libraries/ReactNative/I18nManager';
 import typeof ImagePickerIOS from './Libraries/Image/ImagePickerIOS';
@@ -66,6 +69,7 @@ import typeof InteractionManager from './Libraries/Interaction/InteractionManage
 import typeof Keyboard from './Libraries/Components/Keyboard/Keyboard';
 import typeof LayoutAnimation from './Libraries/LayoutAnimation/LayoutAnimation';
 import typeof Linking from './Libraries/Linking/Linking';
+import typeof LogBox from './Libraries/LogBox/LogBox';
 import typeof NativeDialogManagerAndroid from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
 import typeof NativeEventEmitter from './Libraries/EventEmitter/NativeEventEmitter';
 import typeof Networking from './Libraries/Network/RCTNetworking';
@@ -80,22 +84,24 @@ import typeof StyleSheet from './Libraries/StyleSheet/StyleSheet';
 import typeof Systrace from './Libraries/Performance/Systrace';
 import typeof ToastAndroid from './Libraries/Components/ToastAndroid/ToastAndroid';
 import typeof * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
-import typeof TVEventHandler from './Libraries/Components/AppleTV/TVEventHandler';
 import typeof UIManager from './Libraries/ReactNative/UIManager';
 import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
 import typeof UTFSequence from './Libraries/UTFSequence';
 import typeof Vibration from './Libraries/Vibration/Vibration';
 import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
-import typeof LogBox from './Libraries/LogBox/LogBox';
-import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEventEmitter';
-import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
+
+// Plugins
+import typeof {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
 import typeof NativeModules from './Libraries/BatchedBridge/NativeModules';
 import typeof Platform from './Libraries/Utilities/Platform';
-import typeof processColor from './Libraries/StyleSheet/processColor';
 import typeof {PlatformColor} from './Libraries/StyleSheet/PlatformColorValueTypes';
-import typeof {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
+import typeof processColor from './Libraries/StyleSheet/processColor';
+import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEventEmitter';
+import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
 import typeof {RootTagContext} from './Libraries/ReactNative/RootTag';
+
+// Prop Types
 import typeof DeprecatedColorPropType from './Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
 import typeof DeprecatedEdgeInsetsPropType from './Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType';
 import typeof DeprecatedPointPropType from './Libraries/DeprecatedPropTypes/DeprecatedPointPropType';
@@ -119,6 +125,7 @@ module.exports = {
   get Button(): Button {
     return require('./Libraries/Components/Button');
   },
+  // $FlowFixMe[value-as-type]
   get DatePickerIOS(): DatePickerIOS {
     warnOnce(
       'DatePickerIOS-merged',
@@ -128,6 +135,7 @@ module.exports = {
     );
     return require('./Libraries/Components/DatePicker/DatePickerIOS');
   },
+  // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
     return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid');
   },
@@ -167,6 +175,7 @@ module.exports = {
     );
     return require('./Libraries/Components/Picker/Picker');
   },
+  // $FlowFixMe[value-as-type]
   get PickerIOS(): PickerIOS {
     warnOnce(
       'pickerios-moved',
@@ -179,6 +188,7 @@ module.exports = {
   get Pressable(): Pressable {
     return require('./Libraries/Components/Pressable/Pressable').default;
   },
+  // $FlowFixMe[value-as-type]
   get ProgressBarAndroid(): ProgressBarAndroid {
     warnOnce(
       'progress-bar-android-moved',
@@ -188,6 +198,7 @@ module.exports = {
     );
     return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid');
   },
+  // $FlowFixMe[value-as-type]
   get ProgressViewIOS(): ProgressViewIOS {
     warnOnce(
       'progress-view-ios-moved',
@@ -196,6 +207,9 @@ module.exports = {
         'See https://github.com/react-native-community/progress-view',
     );
     return require('./Libraries/Components/ProgressViewIOS/ProgressViewIOS');
+  },
+  get RefreshControl(): RefreshControl {
+    return require('./Libraries/Components/RefreshControl/RefreshControl');
   },
   get SafeAreaView(): SafeAreaView {
     return require('./Libraries/Components/SafeAreaView/SafeAreaView');
@@ -206,6 +220,7 @@ module.exports = {
   get SectionList(): SectionList {
     return require('./Libraries/Lists/SectionList');
   },
+  // $FlowFixMe[value-as-type]
   get SegmentedControlIOS(): SegmentedControlIOS {
     warnOnce(
       'segmented-control-ios-moved',
@@ -224,14 +239,11 @@ module.exports = {
     );
     return require('./Libraries/Components/Slider/Slider');
   },
-  get Switch(): Switch {
-    return require('./Libraries/Components/Switch/Switch');
-  },
-  get RefreshControl(): RefreshControl {
-    return require('./Libraries/Components/RefreshControl/RefreshControl');
-  },
   get StatusBar(): StatusBar {
     return require('./Libraries/Components/StatusBar/StatusBar');
+  },
+  get Switch(): Switch {
+    return require('./Libraries/Components/Switch/Switch');
   },
   get Text(): Text {
     return require('./Libraries/Text/Text');
@@ -272,7 +284,7 @@ module.exports = {
     return require('./Libraries/Alert/Alert');
   },
   get Animated(): Animated {
-    return require('./Libraries/Animated/src/Animated');
+    return require('./Libraries/Animated/Animated');
   },
   get Appearance(): Appearance {
     return require('./Libraries/Utilities/Appearance');
@@ -283,6 +295,7 @@ module.exports = {
   get AppState(): AppState {
     return require('./Libraries/AppState/AppState');
   },
+  // $FlowFixMe[value-as-type]
   get AsyncStorage(): AsyncStorage {
     warnOnce(
       'async-storage-moved',
@@ -323,7 +336,7 @@ module.exports = {
     return require('./Libraries/Utilities/Dimensions');
   },
   get Easing(): Easing {
-    return require('./Libraries/Animated/src/Easing');
+    return require('./Libraries/Animated/Easing');
   },
   get findNodeHandle(): $PropertyType<ReactNative, 'findNodeHandle'> {
     return require('./Libraries/Renderer/shims/ReactNative').findNodeHandle;
@@ -361,7 +374,7 @@ module.exports = {
       .default;
   },
   get NativeEventEmitter(): NativeEventEmitter {
-    return require('./Libraries/EventEmitter/NativeEventEmitter');
+    return require('./Libraries/EventEmitter/NativeEventEmitter').default;
   },
   get Networking(): Networking {
     return require('./Libraries/Network/RCTNetworking');
@@ -403,14 +416,12 @@ module.exports = {
   get Systrace(): Systrace {
     return require('./Libraries/Performance/Systrace');
   },
+  // $FlowFixMe[value-as-type]
   get ToastAndroid(): ToastAndroid {
     return require('./Libraries/Components/ToastAndroid/ToastAndroid');
   },
   get TurboModuleRegistry(): TurboModuleRegistry {
     return require('./Libraries/TurboModule/TurboModuleRegistry');
-  },
-  get TVEventHandler(): TVEventHandler {
-    return require('./Libraries/Components/AppleTV/TVEventHandler');
   },
   get UIManager(): UIManager {
     return require('./Libraries/ReactNative/UIManager');
@@ -440,7 +451,11 @@ module.exports = {
 
   // Plugins
   get DeviceEventEmitter(): RCTDeviceEventEmitter {
-    return require('./Libraries/EventEmitter/RCTDeviceEventEmitter');
+    return require('./Libraries/EventEmitter/RCTDeviceEventEmitter').default;
+  },
+  get DynamicColorIOS(): DynamicColorIOS {
+    return require('./Libraries/StyleSheet/PlatformColorValueTypesIOS')
+      .DynamicColorIOS;
   },
   get NativeAppEventEmitter(): RCTNativeAppEventEmitter {
     return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter');
@@ -451,16 +466,12 @@ module.exports = {
   get Platform(): Platform {
     return require('./Libraries/Utilities/Platform');
   },
-  get processColor(): processColor {
-    return require('./Libraries/StyleSheet/processColor');
-  },
   get PlatformColor(): PlatformColor {
     return require('./Libraries/StyleSheet/PlatformColorValueTypes')
       .PlatformColor;
   },
-  get DynamicColorIOS(): DynamicColorIOS {
-    return require('./Libraries/StyleSheet/PlatformColorValueTypesIOS')
-      .DynamicColorIOS;
+  get processColor(): processColor {
+    return require('./Libraries/StyleSheet/processColor');
   },
   get requireNativeComponent(): <T>(
     uiViewClassName: string,
@@ -477,6 +488,7 @@ module.exports = {
       );
   },
   // Prop Types
+  // $FlowFixMe[value-as-type]
   get ColorPropType(): DeprecatedColorPropType {
     return require('./Libraries/DeprecatedPropTypes/DeprecatedColorPropType');
   },

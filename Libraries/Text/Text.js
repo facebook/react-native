@@ -10,24 +10,23 @@
 
 'use strict';
 
+import TextInjection from './TextInjection';
+import {NativeText, NativeVirtualText} from './TextNativeComponent';
+
 const DeprecatedTextPropTypes = require('../DeprecatedPropTypes/DeprecatedTextPropTypes');
 const React = require('react');
-const ReactNativeViewAttributes = require('../Components/View/ReactNativeViewAttributes');
 const TextAncestor = require('./TextAncestor');
 const Touchable = require('../Components/Touchable/Touchable');
-const UIManager = require('../ReactNative/UIManager');
 
-const createReactNativeComponentClass = require('../Renderer/shims/createReactNativeComponentClass');
 const nullthrows = require('nullthrows');
 const processColor = require('../StyleSheet/processColor');
 
 import type {PressEvent} from '../Types/CoreEventTypes';
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {PressRetentionOffset, TextProps} from './TextProps';
 
 type ResponseHandlers = $ReadOnly<{|
   onStartShouldSetResponder: () => boolean,
-  onResponderGrant: (event: PressEvent, dispatchID: string) => void,
+  onResponderGrant: (event: PressEvent) => void,
   onResponderMove: (event: PressEvent) => void,
   onResponderRelease: (event: PressEvent) => void,
   onResponderTerminate: (event: PressEvent) => void,
@@ -36,7 +35,7 @@ type ResponseHandlers = $ReadOnly<{|
 
 type Props = $ReadOnly<{|
   ...TextProps,
-  forwardedRef: ?React.Ref<'RCTText' | 'RCTVirtualText'>,
+  forwardedRef: ?React.Ref<typeof NativeText | typeof NativeVirtualText>,
 |}>;
 
 type State = {|
@@ -50,35 +49,6 @@ type State = {|
 |};
 
 const PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
-
-const viewConfig = {
-  validAttributes: {
-    ...ReactNativeViewAttributes.UIView,
-    isHighlighted: true,
-    numberOfLines: true,
-    ellipsizeMode: true,
-    allowFontScaling: true,
-    maxFontSizeMultiplier: true,
-    disabled: true,
-    selectable: true,
-    selectionColor: true,
-    adjustsFontSizeToFit: true,
-    minimumFontScale: true,
-    textBreakStrategy: true,
-    onTextLayout: true,
-    onInlineViewLayout: true,
-    dataDetectorType: true,
-  },
-  directEventTypes: {
-    topTextLayout: {
-      registrationName: 'onTextLayout',
-    },
-    topInlineViewLayout: {
-      registrationName: 'onInlineViewLayout',
-    },
-  },
-  uiViewClassName: 'RCTText',
-};
 
 /**
  * A React component for displaying text.
@@ -97,10 +67,7 @@ class TouchableText extends React.Component<Props, State> {
   touchableHandleActivePressOut: ?() => void;
   touchableHandleLongPress: ?(event: PressEvent) => void;
   touchableHandlePress: ?(event: PressEvent) => void;
-  touchableHandleResponderGrant: ?(
-    event: PressEvent,
-    dispatchID: string,
-  ) => void;
+  touchableHandleResponderGrant: ?(event: PressEvent) => void;
   touchableHandleResponderMove: ?(event: PressEvent) => void;
   touchableHandleResponderRelease: ?(event: PressEvent) => void;
   touchableHandleResponderTerminate: ?(event: PressEvent) => void;
@@ -124,21 +91,19 @@ class TouchableText extends React.Component<Props, State> {
       : null;
   }
 
-  static viewConfig = viewConfig;
-
   render(): React.Node {
-    let props = this.props;
-    if (isTouchable(props)) {
+    let {forwardedRef, selectionColor, ...props} = this.props;
+    if (isTouchable(this.props)) {
       props = {
         ...props,
         ...this.state.responseHandlers,
         isHighlighted: this.state.isHighlighted,
       };
     }
-    if (props.selectionColor != null) {
+    if (selectionColor != null) {
       props = {
         ...props,
-        selectionColor: processColor(props.selectionColor),
+        selectionColor: processColor(selectionColor),
       };
     }
     if (__DEV__) {
@@ -153,10 +118,17 @@ class TouchableText extends React.Component<Props, State> {
       <TextAncestor.Consumer>
         {hasTextAncestor =>
           hasTextAncestor ? (
-            <RCTVirtualText {...props} ref={props.forwardedRef} />
+            // $FlowFixMe[prop-missing] For the `onClick` workaround.
+            <NativeVirtualText
+              {...props}
+              // This is used on Android to call a nested Text component's press handler from the context menu.
+              // TODO T75145059 Clean this up once Text is migrated off of Touchable
+              onClick={props.onPress}
+              ref={forwardedRef}
+            />
           ) : (
             <TextAncestor.Provider value={true}>
-              <RCTText {...props} ref={props.forwardedRef} />
+              <NativeText {...props} ref={forwardedRef} />
             </TextAncestor.Provider>
           )
         }
@@ -178,10 +150,10 @@ class TouchableText extends React.Component<Props, State> {
         }
         return shouldSetResponder;
       },
-      onResponderGrant: (event: PressEvent, dispatchID: string): void => {
-        nullthrows(this.touchableHandleResponderGrant)(event, dispatchID);
+      onResponderGrant: (event: PressEvent): void => {
+        nullthrows(this.touchableHandleResponderGrant)(event);
         if (this.props.onResponderGrant != null) {
-          this.props.onResponderGrant.call(this, event, dispatchID);
+          this.props.onResponderGrant.call(this, event);
         }
       },
       onResponderMove: (event: PressEvent): void => {
@@ -259,44 +231,30 @@ const isTouchable = (props: Props): boolean =>
   props.onLongPress != null ||
   props.onStartShouldSetResponder != null;
 
-const RCTText = createReactNativeComponentClass(
-  viewConfig.uiViewClassName,
-  () => viewConfig,
+const Text: React.AbstractComponent<
+  TextProps,
+  React.ElementRef<typeof NativeText | typeof NativeVirtualText>,
+> = React.forwardRef(
+  (
+    props: TextProps,
+    forwardedRef: ?React.Ref<typeof NativeText | typeof NativeVirtualText>,
+  ) => {
+    return <TouchableText {...props} forwardedRef={forwardedRef} />;
+  },
 );
-
-const RCTVirtualText =
-  UIManager.getViewManagerConfig('RCTVirtualText') == null
-    ? RCTText
-    : createReactNativeComponentClass('RCTVirtualText', () => ({
-        validAttributes: {
-          ...ReactNativeViewAttributes.UIView,
-          isHighlighted: true,
-          maxFontSizeMultiplier: true,
-        },
-        uiViewClassName: 'RCTVirtualText',
-      }));
-
-const Text = (
-  props: TextProps,
-  forwardedRef: ?React.Ref<'RCTText' | 'RCTVirtualText'>,
-) => {
-  return <TouchableText {...props} forwardedRef={forwardedRef} />;
-};
-const TextToExport = React.forwardRef(Text);
-TextToExport.displayName = 'Text';
+Text.displayName = 'Text';
 
 // TODO: Deprecate this.
 /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
  * found when Flow v0.89 was deployed. To see the error, delete this comment
  * and run Flow. */
-TextToExport.propTypes = DeprecatedTextPropTypes;
+Text.propTypes = DeprecatedTextPropTypes;
 
-type TextStatics = $ReadOnly<{|
-  propTypes: typeof DeprecatedTextPropTypes,
-|}>;
+const TextToExport: typeof Text &
+  $ReadOnly<{|
+    propTypes: typeof DeprecatedTextPropTypes,
+  |}> =
+  // $FlowFixMe[incompatible-type] - No good way to type a React.AbstractComponent with statics.
+  TextInjection.unstable_Text == null ? Text : TextInjection.unstable_Text;
 
-module.exports = ((TextToExport: any): React.AbstractComponent<
-  TextProps,
-  React.ElementRef<HostComponent<TextProps>>,
-> &
-  TextStatics);
+module.exports = TextToExport;

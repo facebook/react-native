@@ -70,6 +70,8 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
     constants.put("Serial", Build.SERIAL);
     constants.put("Fingerprint", Build.FINGERPRINT);
     constants.put("Model", Build.MODEL);
+    constants.put("Manufacturer", Build.MANUFACTURER);
+    constants.put("Brand", Build.BRAND);
     if (ReactBuildConfig.DEBUG) {
       constants.put(
           "ServerHost",

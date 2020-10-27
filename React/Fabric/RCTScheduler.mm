@@ -7,11 +7,11 @@
 
 #import "RCTScheduler.h"
 
-#import <react/animations/LayoutAnimationDriver.h>
-#import <react/componentregistry/ComponentDescriptorFactory.h>
-#import <react/debug/SystraceSection.h>
-#import <react/scheduler/Scheduler.h>
-#import <react/scheduler/SchedulerDelegate.h>
+#import <react/renderer/animations/LayoutAnimationDriver.h>
+#import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#import <react/renderer/debug/SystraceSection.h>
+#import <react/renderer/scheduler/Scheduler.h>
+#import <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/utils/RunLoopObserver.h>
 
 #import <React/RCTFollyConvert.h>
@@ -114,7 +114,8 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 
     if (_layoutAnimationsEnabled) {
       _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
-      _animationDriver = std::make_shared<LayoutAnimationDriver>(_layoutAnimationDelegateProxy.get());
+      _animationDriver =
+          std::make_shared<LayoutAnimationDriver>(toolbox.runtimeExecutor, _layoutAnimationDelegateProxy.get());
       _uiRunLoopObserver =
           toolbox.mainRunLoopObserverFactory(RunLoopObserver::Activity::BeforeWaiting, _layoutAnimationDelegateProxy);
       _uiRunLoopObserver->setDelegate(_layoutAnimationDelegateProxy.get());

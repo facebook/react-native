@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Native module to allow JS to create and update native Views.
@@ -119,7 +120,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
   private final List<UIManagerModuleListener> mListeners = new ArrayList<>();
-  private final List<UIManagerListener> mUIManagerListeners = new ArrayList<>();
+  private final CopyOnWriteArrayList<UIManagerListener> mUIManagerListeners =
+      new CopyOnWriteArrayList<>();
   private @Nullable Map<String, WritableMap> mViewManagerConstantsCache;
   private volatile int mViewManagerConstantsCacheSize;
 
@@ -196,7 +198,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   /**
    * This method gives an access to the {@link UIImplementation} object that can be used to execute
    * operations on the view hierarchy.
+   *
+   * @deprecated This method will not be supported by the new architecture of react native.
    */
+  @Deprecated
   public UIImplementation getUIImplementation() {
     return mUIImplementation;
   }
@@ -355,18 +360,28 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   /** Resolves Direct Event name exposed to JS from the one known to the Native side. */
+  @Deprecated
   public CustomEventNamesResolver getDirectEventNamesResolver() {
     return new CustomEventNamesResolver() {
       @Override
-      public @Nullable String resolveCustomEventName(String eventName) {
-        Map<String, String> customEventType =
-            (Map<String, String>) mCustomDirectEvents.get(eventName);
-        if (customEventType != null) {
-          return customEventType.get("registrationName");
-        }
-        return eventName;
+      public @Nullable String resolveCustomEventName(@Nullable String eventName) {
+        return resolveCustomDirectEventName(eventName);
       }
     };
+  }
+
+  @Override
+  @Deprecated
+  @Nullable
+  public String resolveCustomDirectEventName(@Nullable String eventName) {
+    if (eventName != null) {
+      Map<String, String> customEventType =
+          (Map<String, String>) mCustomDirectEvents.get(eventName);
+      if (customEventType != null) {
+        return customEventType.get("registrationName");
+      }
+    }
+    return eventName;
   }
 
   @Override
@@ -911,10 +926,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   /**
    * Updates the styles of the {@link ReactShadowNode} based on the Measure specs received by
-   * parameters.
+   * parameters. offsetX and offsetY aren't used in non-Fabric, so they're ignored here.
    */
   public void updateRootLayoutSpecs(
-      final int rootViewTag, final int widthMeasureSpec, final int heightMeasureSpec) {
+      final int rootViewTag,
+      final int widthMeasureSpec,
+      final int heightMeasureSpec,
+      int offsetX,
+      int offsetY) {
     ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     reactApplicationContext.runOnNativeModulesQueueThread(
         new GuardedRunnable(reactApplicationContext) {

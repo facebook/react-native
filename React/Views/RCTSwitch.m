@@ -7,7 +7,6 @@
 
 #import "RCTSwitch.h"
 
-#import "RCTEventDispatcher.h"
 #import "UIView+React.h"
 
 @implementation RCTSwitch

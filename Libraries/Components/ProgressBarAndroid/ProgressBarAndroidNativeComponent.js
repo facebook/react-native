@@ -30,6 +30,6 @@ type NativeProps = $ReadOnly<{|
   testID?: WithDefault<string, ''>,
 |}>;
 
-export default (codegenNativeComponent<NativeProps>(
-  'AndroidProgressBar',
-): HostComponent<NativeProps>);
+export default (codegenNativeComponent<NativeProps>('AndroidProgressBar', {
+  interfaceOnly: true,
+}): HostComponent<NativeProps>);

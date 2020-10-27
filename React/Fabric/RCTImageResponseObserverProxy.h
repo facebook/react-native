@@ -9,7 +9,7 @@
 
 #import "RCTImageResponseDelegate.h"
 
-#include <react/imagemanager/ImageResponseObserver.h>
+#include <react/renderer/imagemanager/ImageResponseObserver.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

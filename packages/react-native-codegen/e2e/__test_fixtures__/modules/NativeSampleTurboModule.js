@@ -10,8 +10,15 @@
 
 'use strict';
 
-import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import type {
+  RootTag,
+  TurboModule,
+} from 'react-native/Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+type Animal = {|
+  name: string,
+|};
 
 export interface Spec extends TurboModule {
   // Exported methods.
@@ -26,7 +33,14 @@ export interface Spec extends TurboModule {
   +getString: (arg: string) => string;
   +getArray: (arg: Array<any>) => Array<any>;
   +getObject: (arg: Object) => Object;
-  +getValue: (x: number, y: string, z: Object) => Object;
+  +getObjectShape: (arg: {|prop: number|}) => {|prop: number|};
+  +getAlias: (arg: Animal) => Animal;
+  +getRootTag: (arg: RootTag) => RootTag;
+  +getValue: (
+    x: number,
+    getValuegetValuegetValuegetValuegetValuey: string,
+    z: Object,
+  ) => Object;
   +getValueWithCallback: (callback: (value: string) => void) => void;
   +getValueWithPromise: (error: boolean) => Promise<string>;
 }

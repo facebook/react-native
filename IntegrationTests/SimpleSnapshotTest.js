@@ -13,8 +13,6 @@
 const React = require('react');
 const ReactNative = require('react-native');
 
-const requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
-
 const {StyleSheet, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 

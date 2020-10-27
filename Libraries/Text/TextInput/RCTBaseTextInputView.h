@@ -13,7 +13,6 @@
 #import "RCTBackedTextInputViewProtocol.h"
 
 @class RCTBridge;
-@class RCTEventDispatcher;
 @class RCTTextAttributes;
 @class RCTTextSelection;
 

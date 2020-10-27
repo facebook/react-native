@@ -6,7 +6,7 @@
  */
 
 #import <React/RCTBridgeModule.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTEventEmitter.h>
 #import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTUIManager.h>
@@ -15,6 +15,9 @@
 
 #import "RCTValueAnimatedNode.h"
 
+// TODO T69437152 @petetheheat - Delete this fork when Fabric ships to 100%.
+// NOTE: This module is temporarily forked (see RCTNativeAnimatedTurboModule).
+// When making any changes, be sure to apply them to the fork as well.
 @interface RCTNativeAnimatedModule : RCTEventEmitter <RCTBridgeModule, RCTValueAnimatedNodeObserver, RCTEventDispatcherObserver, RCTUIManagerObserver, RCTSurfacePresenterObserver>
 
 @end

@@ -37,7 +37,16 @@
 #import <jsireact/JSIExecutor.h>
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
+#if TARGET_OS_OSX && __has_include(<hermes/hermes.h>)
+#define RCT_USE_HERMES 1
+#endif
+#if RCT_USE_HERMES
+#import "HermesExecutorFactory.h"
+#else
 #import "JSCExecutorFactory.h"
+#endif
+#import "RCTJSIExecutorRuntimeInstaller.h"
+
 #import "NSDataBigString.h"
 #import "RCTMessageThread.h"
 #import "RCTObjcExecutor.h"
@@ -152,6 +161,10 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
         break;
     }
   };
+
+  // TODO T76726108 Hook this up to the performance logger
+  ReactMarker::logTaggedMarkerWithInstanceKey =
+      [](const ReactMarker::ReactMarkerId markerId, const char *__unused tag, const __unused int) {};
 }
 
 @interface RCTCxxBridge ()
@@ -198,8 +211,8 @@ struct RCTInstanceCallback : public InstanceCallback {
   // This is uniquely owned, but weak_ptr is used.
   std::shared_ptr<Instance> _reactInstance;
 
-  // Necessary for searching in TurboModuleRegistry
-  id<RCTTurboModuleLookupDelegate> _turboModuleLookupDelegate;
+  // Necessary for searching in TurboModules in TurboModuleManager
+  id<RCTTurboModuleRegistry> _turboModuleRegistry;
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
@@ -207,9 +220,9 @@ struct RCTInstanceCallback : public InstanceCallback {
 @synthesize performanceLogger = _performanceLogger;
 @synthesize valid = _valid;
 
-- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate
+- (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
 {
-  _turboModuleLookupDelegate = turboModuleLookupDelegate;
+  _turboModuleRegistry = turboModuleRegistry;
 }
 
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread
@@ -370,7 +383,12 @@ struct RCTInstanceCallback : public InstanceCallback {
       executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
     }
     if (!executorFactory) {
-      executorFactory = std::make_shared<JSCExecutorFactory>(nullptr);
+      auto installBindings = RCTJSIExecutorRuntimeInstaller(nullptr);
+#if RCT_USE_HERMES
+      executorFactory = std::make_shared<HermesExecutorFactory>(installBindings);
+#else
+      executorFactory = std::make_shared<JSCExecutorFactory>(installBindings);
+#endif
     }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
@@ -379,6 +397,27 @@ struct RCTInstanceCallback : public InstanceCallback {
         [weakSelf handleError:error];
       }
     }));
+  }
+
+  /**
+   * id<RCTCxxBridgeDelegate> jsExecutorFactory may create and assign an id<RCTTurboModuleRegistry> object to
+   * RCTCxxBridge If id<RCTTurboModuleRegistry> is assigned by this time, eagerly initialize all TurboModules
+   */
+  if (_turboModuleRegistry && RCTTurboModuleEagerInitEnabled()) {
+    for (NSString *moduleName in [_turboModuleRegistry eagerInitModuleNames]) {
+      [_turboModuleRegistry moduleForName:[moduleName UTF8String]];
+    }
+
+    for (NSString *moduleName in [_turboModuleRegistry eagerInitMainQueueModuleNames]) {
+      if (RCTIsMainQueue()) {
+        [_turboModuleRegistry moduleForName:[moduleName UTF8String]];
+      } else {
+        id<RCTTurboModuleRegistry> turboModuleRegistry = _turboModuleRegistry;
+        dispatch_group_async(prepareBridge, dispatch_get_main_queue(), ^{
+          [turboModuleRegistry moduleForName:[moduleName UTF8String]];
+        });
+      }
+    }
   }
 
   // Dispatch the instance initialization as soon as the initial module metadata has
@@ -493,10 +532,10 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
 {
-  if (RCTTurboModuleEnabled() && _turboModuleLookupDelegate) {
+  if (RCTTurboModuleEnabled() && _turboModuleRegistry) {
     const char *moduleNameCStr = [moduleName UTF8String];
-    if (lazilyLoad || [_turboModuleLookupDelegate moduleIsInitialized:moduleNameCStr]) {
-      id<RCTTurboModule> module = [_turboModuleLookupDelegate moduleForName:moduleNameCStr warnOnLookupFailure:NO];
+    if (lazilyLoad || [_turboModuleRegistry moduleIsInitialized:moduleNameCStr]) {
+      id<RCTTurboModule> module = [_turboModuleRegistry moduleForName:moduleNameCStr warnOnLookupFailure:NO];
       if (module != nil) {
         return module;
       }
@@ -550,8 +589,8 @@ struct RCTInstanceCallback : public InstanceCallback {
     return YES;
   }
 
-  if (_turboModuleLookupDelegate) {
-    return [_turboModuleLookupDelegate moduleIsInitialized:[moduleName UTF8String]];
+  if (_turboModuleRegistry) {
+    return [_turboModuleRegistry moduleIsInitialized:[moduleName UTF8String]];
   }
 
   return NO;
@@ -992,10 +1031,6 @@ struct RCTInstanceCallback : public InstanceCallback {
         [self enqueueApplicationScript:source.data
                                    url:source.url
                             onComplete:^{
-                              [[NSNotificationCenter defaultCenter]
-                                  postNotificationName:RCTAdditionalJavaScriptDidLoadNotification
-                                                object:self->_parentBridge
-                                              userInfo:@{@"bridge" : self}];
                               [self.devSettings setupHMRClientWithAdditionalBundleURL:source.url];
                               onComplete();
                             }];
@@ -1086,26 +1121,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
  */
 - (void)setUp
 {
-}
-
-- (void)reload
-{
-  if (!_valid) {
-    RCTLogWarn(
-        @"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.",
-        self);
-  }
-  RCTTriggerReloadCommandListeners(@"Unknown from cxx bridge");
-}
-
-- (void)reloadWithReason:(NSString *)reason
-{
-  if (!_valid) {
-    RCTLogWarn(
-        @"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.",
-        self);
-  }
-  RCTTriggerReloadCommandListeners(reason);
 }
 
 - (Class)executorClass

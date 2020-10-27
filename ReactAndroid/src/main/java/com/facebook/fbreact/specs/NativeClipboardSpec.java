@@ -25,8 +25,8 @@ public abstract class NativeClipboardSpec extends ReactContextBaseJavaModule imp
   }
 
   @ReactMethod
-  public abstract void setString(String content);
+  public abstract void getString(Promise promise);
 
   @ReactMethod
-  public abstract void getString(Promise promise);
+  public abstract void setString(String content);
 }

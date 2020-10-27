@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
   s.documentation_url      = "https://reactnative.dev/docs/image"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "10.0", :tvos => "10.0" }
+  s.platforms              = { :ios => "10.0" }
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "*.{m,mm}"
@@ -36,10 +36,10 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Folly\""
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\""
                              }
 
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "FBReactNativeSpec", version
   s.dependency "RCTTypeSafety", version
   s.dependency "ReactCommon/turbomodule/core", version

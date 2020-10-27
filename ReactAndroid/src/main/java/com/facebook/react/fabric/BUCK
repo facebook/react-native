@@ -39,6 +39,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/views/view:view"),
+        react_native_target("java/com/facebook/react/views/text:text"),
         react_native_target("java/com/facebook/react/touch:touch"),
     ],
     exported_deps = [

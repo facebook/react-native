@@ -1,0 +1,121 @@
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_preprocessor_flags_for_build_mode")
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "ANDROID",
+    "APPLE",
+    "CXX",
+    "YOGA_CXX_TARGET",
+    "fb_xplat_cxx_test",
+    "get_apple_compiler_flags",
+    "get_apple_inspector_flags",
+    "react_native_target",
+    "react_native_xplat_target",
+    "rn_xplat_cxx_library",
+    "subdir_glob",
+)
+
+APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
+
+rn_xplat_cxx_library(
+    name = "androidprogressbar",
+    srcs = glob(
+        ["**/*.cpp"],
+        exclude = glob([
+            "tests/**/*.cpp",
+        ]),
+    ),
+    headers = [],
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
+        prefix = "react/renderer/components/progressbar",
+    ),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    cxx_tests = [":tests"],
+    fbandroid_deps = [
+        react_native_target("jni/react/jni:jni"),
+    ],
+    fbandroid_exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+            ("android/react/renderer/components/progressbar", "*.h"),
+        ],
+        prefix = "react/renderer/components/progressbar",
+    ),
+    fbandroid_headers = glob(
+        ["android/react/renderer/components/progressbar/*.h"],
+    ),
+    fbandroid_srcs = glob(
+        ["android/react/renderer/components/progressbar/*.cpp"],
+    ),
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+    force_static = True,
+    ios_exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+            ("platform/ios", "*.h"),
+        ],
+        prefix = "react/renderer/components/progressbar",
+    ),
+    ios_headers = glob(
+        ["platform/ios/*.h"],
+    ),
+    ios_srcs = glob(
+        ["platform/ios/*.cpp"],
+    ),
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    platforms = (ANDROID, APPLE, CXX),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//third-party/glog:glog",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:headers_only",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        YOGA_CXX_TARGET,
+        react_native_xplat_target("react/renderer/debug:debug"),
+        react_native_xplat_target("react/renderer/core:core"),
+        react_native_xplat_target("react/renderer/components/image:image"),
+        react_native_xplat_target("react/renderer/components/view:view"),
+        react_native_xplat_target("react/renderer/graphics:graphics"),
+        react_native_xplat_target("react/renderer/imagemanager:imagemanager"),
+        react_native_xplat_target("react/renderer/uimanager:uimanager"),
+        react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
+        "//xplat/js/react-native-github:generated_components-rncore",
+    ],
+)
+
+fb_xplat_cxx_test(
+    name = "tests",
+    srcs = glob(["tests/**/*.cpp"]),
+    headers = glob(["tests/**/*.h"]),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    platforms = (
+        # `Apple` and `Android` flavors are disabled because the module (built with those flavors) requires Emulator/Simulator (which is expensive and slow). At the same time, we don't really have tests here.
+        # ANDROID,
+        # APPLE,
+        CXX,
+    ),
+    deps = [
+        "//xplat/folly:molly",
+        "//xplat/third-party/gmock:gtest",
+    ],
+)

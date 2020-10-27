@@ -150,4 +150,20 @@ describe('TaskQueue', () => {
     expect(task1).not.toBeCalled();
     expect(taskQueue.hasTasksToProcess()).toBe(false);
   });
+
+  it('should not crash when task is cancelled between being started and resolved', () => {
+    const task1 = jest.fn(() => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve();
+        }, 1);
+      });
+    });
+
+    taskQueue.enqueue({gen: task1, name: 'gen1'});
+    taskQueue.processNext();
+    taskQueue.cancelTasks([task1]);
+
+    jest.runAllTimers();
+  });
 });

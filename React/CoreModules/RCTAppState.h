@@ -7,6 +7,6 @@
 
 #import <React/RCTEventEmitter.h>
 
-@interface RCTAppState : RCTEventEmitter <RCTInvalidating>
+@interface RCTAppState : RCTEventEmitter
 
 @end

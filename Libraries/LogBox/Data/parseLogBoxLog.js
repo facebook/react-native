@@ -14,6 +14,7 @@ import UTFSequence from '../../UTFSequence';
 import stringifySafe from '../../Utilities/stringifySafe';
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {LogBoxLogData} from './LogBoxLog';
+import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 
 const BABEL_TRANSFORM_ERROR_FORMAT = /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
 const BABEL_CODE_FRAME_ERROR_FORMAT = /^(?:TransformError )?(?:.*):? (?:.*?)(\/.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
@@ -32,6 +33,11 @@ export type CodeFrame = $ReadOnly<{|
     ...
   },
   fileName: string,
+
+  // TODO: When React switched to using call stack frames,
+  // we gained the ability to use the collapse flag, but
+  // it is not integrated into the LogBox UI.
+  collapse?: boolean,
 |}>;
 export type Message = $ReadOnly<{|
   content: string,
@@ -124,7 +130,35 @@ export function parseInterpolation(
   };
 }
 
+function isComponentStack(consoleArgument: string) {
+  const isOldComponentStackFormat = / {4}in/.test(consoleArgument);
+  const isNewComponentStackFormat = / {4}at/.test(consoleArgument);
+  const isNewJSCComponentStackFormat = /@.*\n/.test(consoleArgument);
+
+  return (
+    isOldComponentStackFormat ||
+    isNewComponentStackFormat ||
+    isNewJSCComponentStackFormat
+  );
+}
+
 export function parseComponentStack(message: string): ComponentStack {
+  // In newer versions of React, the component stack is formatted as a call stack frame.
+  // First try to parse the component stack as a call stack frame, and if that doesn't
+  // work then we'll fallback to the old custom component stack format parsing.
+  const stack = parseErrorStack(message);
+  if (stack && stack.length > 0) {
+    return stack.map(frame => ({
+      content: frame.methodName,
+      collapse: frame.collapse || false,
+      fileName: frame.file == null ? 'unknown' : frame.file,
+      location: {
+        column: frame.column == null ? -1 : frame.column,
+        row: frame.lineNumber == null ? -1 : frame.lineNumber,
+      },
+    }));
+  }
+
   return message
     .split(/\n {4}in /g)
     .map(s => {
@@ -304,8 +338,7 @@ export function parseLogBoxLog(
     args.length > 0
   ) {
     const lastArg = args[args.length - 1];
-    // Does it look like React component stack? "   in ..."
-    if (typeof lastArg === 'string' && /\s{4}in/.test(lastArg)) {
+    if (typeof lastArg === 'string' && isComponentStack(lastArg)) {
       argsWithoutComponentStack = args.slice(0, -1);
       argsWithoutComponentStack[0] = message.slice(0, -2);
       componentStack = parseComponentStack(lastArg);
@@ -315,9 +348,13 @@ export function parseLogBoxLog(
   if (componentStack.length === 0) {
     // Try finding the component stack elsewhere.
     for (const arg of args) {
-      if (typeof arg === 'string' && /\n {4}in /.exec(arg)) {
+      if (typeof arg === 'string' && isComponentStack(arg)) {
         // Strip out any messages before the component stack.
-        const messageEndIndex = arg.indexOf('\n    in ');
+        let messageEndIndex = arg.search(/\n {4}(in|at) /);
+        if (messageEndIndex < 0) {
+          // Handle JSC component stacks.
+          messageEndIndex = arg.search(/\n/);
+        }
         if (messageEndIndex > 0) {
           argsWithoutComponentStack.push(arg.slice(0, messageEndIndex));
         }

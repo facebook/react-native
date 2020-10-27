@@ -5,7 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#pragma once
+// using include guards instead of #pragma once due to compile issues
+// with MSVC and BUCK
+#ifndef HERMES_INSPECTOR_INSPECTOR_STATE_H
+#define HERMES_INSPECTOR_INSPECTOR_STATE_H
 
 #include <condition_variable>
 #include <iostream>
@@ -405,3 +408,5 @@ class InspectorState::Paused : public InspectorState {
 } // namespace inspector
 } // namespace hermes
 } // namespace facebook
+
+#endif // HERMES_INSPECTOR_INSPECTOR_STATE_H

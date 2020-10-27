@@ -6,16 +6,17 @@
  */
 
 #import "RCTParagraphComponentView.h"
+#import "RCTParagraphComponentAccessibilityProvider.h"
 
-#import <react/components/text/ParagraphComponentDescriptor.h>
-#import <react/components/text/ParagraphProps.h>
-#import <react/components/text/ParagraphState.h>
-#import <react/components/text/RawTextComponentDescriptor.h>
-#import <react/components/text/TextComponentDescriptor.h>
-#import <react/graphics/Geometry.h>
-#import <react/textlayoutmanager/RCTAttributedTextUtils.h>
-#import <react/textlayoutmanager/RCTTextLayoutManager.h>
-#import <react/textlayoutmanager/TextLayoutManager.h>
+#import <react/renderer/components/text/ParagraphComponentDescriptor.h>
+#import <react/renderer/components/text/ParagraphProps.h>
+#import <react/renderer/components/text/ParagraphState.h>
+#import <react/renderer/components/text/RawTextComponentDescriptor.h>
+#import <react/renderer/components/text/TextComponentDescriptor.h>
+#import <react/renderer/graphics/Geometry.h>
+#import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
+#import <react/renderer/textlayoutmanager/RCTTextLayoutManager.h>
+#import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "RCTConversions.h"
@@ -26,6 +27,7 @@ using namespace facebook::react;
 @implementation RCTParagraphComponentView {
   ParagraphShadowNode::ConcreteState::Shared _state;
   ParagraphAttributes _paragraphAttributes;
+  RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -35,7 +37,6 @@ using namespace facebook::react;
     _props = defaultProps;
 
     self.isAccessibilityElement = YES;
-    self.accessibilityTraits |= UIAccessibilityTraitStaticText;
     self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
   }
@@ -136,6 +137,34 @@ using namespace facebook::react;
   }
 
   return RCTNSStringFromString(_state->getData().attributedString.getString());
+}
+
+- (NSArray *)accessibilityElements
+{
+  if (!_state) {
+    return [NSArray new];
+  }
+
+  auto &data = _state->getData();
+
+  if (![_accessibilityProvider isUpToDate:data.attributedString]) {
+    RCTTextLayoutManager *textLayoutManager =
+        (RCTTextLayoutManager *)unwrapManagedObject(data.layoutManager->getNativeTextLayoutManager());
+    CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+    _accessibilityProvider = [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:data.attributedString
+                                                                                  layoutManager:textLayoutManager
+                                                                            paragraphAttributes:data.paragraphAttributes
+                                                                                          frame:frame
+                                                                                           view:self];
+  }
+
+  self.isAccessibilityElement = NO;
+  return _accessibilityProvider.accessibilityElements;
+}
+
+- (UIAccessibilityTraits)accessibilityTraits
+{
+  return [super accessibilityTraits] | UIAccessibilityTraitStaticText;
 }
 
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point

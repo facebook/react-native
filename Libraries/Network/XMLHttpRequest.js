@@ -10,14 +10,15 @@
 
 'use strict';
 
+import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
+
 const BlobManager = require('../Blob/BlobManager');
 const EventTarget = require('event-target-shim');
-const GlobalPerformanceLogger = require('react-native/Libraries/Utilities/GlobalPerformanceLogger');
+const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
 const RCTNetworking = require('./RCTNetworking');
 
 const base64 = require('base64-js');
 const invariant = require('invariant');
-const warning = require('fbjs/lib/warning');
 
 const DEBUG_NETWORK_SEND_DELAY: false = false; // Set to a number of milliseconds when debugging
 
@@ -142,6 +143,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   _timedOut: boolean = false;
   _trackingName: string = 'unknown';
   _incrementalEvents: boolean = false;
+  _performanceLogger: IPerformanceLogger = GlobalPerformanceLogger;
 
   static setInterceptor(interceptor: ?XHRInterceptor) {
     XMLHttpRequest._interceptor = interceptor;
@@ -184,8 +186,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       );
     }
     if (!SUPPORTED_RESPONSE_TYPES.hasOwnProperty(responseType)) {
-      warning(
-        false,
+      console.warn(
         `The provided value '${responseType}' is not a valid 'responseType'.`,
       );
       return;
@@ -304,7 +305,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   ): void {
     if (requestId === this._requestId) {
       this._perfKey != null &&
-        GlobalPerformanceLogger.stopTimespan(this._perfKey);
+        this._performanceLogger.stopTimespan(this._perfKey);
       this.status = status;
       this.setResponseHeaders(responseHeaders);
       this.setReadyState(this.HEADERS_RECEIVED);
@@ -449,6 +450,14 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
     return this;
   }
 
+  /**
+   * Custom extension for setting a custom performance logger
+   */
+  setPerformanceLogger(performanceLogger: IPerformanceLogger): XMLHttpRequest {
+    this._performanceLogger = performanceLogger;
+    return this;
+  }
+
   open(method: string, url: string, async: ?boolean): void {
     /* Other optional arguments are not supported yet */
     if (this.readyState !== this.UNSENT) {
@@ -521,7 +530,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       const friendlyName =
         this._trackingName !== 'unknown' ? this._trackingName : this._url;
       this._perfKey = 'network_XMLHttpRequest_' + String(friendlyName);
-      GlobalPerformanceLogger.startTimespan(this._perfKey);
+      this._performanceLogger.startTimespan(this._perfKey);
       invariant(
         this._method,
         'XMLHttpRequest method needs to be defined (%s).',

@@ -11,6 +11,8 @@
  */
 @protocol RCTJSInvokerModule
 
-@property (nonatomic, copy, nonnull) void (^invokeJS)(NSString *module, NSString *method, NSArray *args);
+@optional
+@property (nonatomic, copy) void (^invokeJS)(NSString *module, NSString *method, NSArray *args);
+@property (nonatomic, copy) void (^invokeJSWithModuleDotMethod)(NSString *moduleDotMethod, NSArray *args);
 
 @end

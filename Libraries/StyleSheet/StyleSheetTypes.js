@@ -10,7 +10,7 @@
 
 'use strict';
 
-const AnimatedNode = require('../Animated/src/nodes/AnimatedNode');
+const AnimatedNode = require('../Animated/nodes/AnimatedNode');
 
 import type {NativeColorValue} from './PlatformColorValueTypes';
 
@@ -522,8 +522,9 @@ type ____TransformStyle_Internal = $ReadOnly<{|
  * Because they are dynamically generated, they may cause performance regressions. Static
  * shadow image asset may be a better way to go for optimal performance.
  *
- * These properties are iOS only - for similar functionality on Android, use the [`elevation`
- * property](docs/viewstyleproptypes.html#elevation).
+ * Shadow-related properties are not fully supported on Android.
+ * To add a drop shadow to a view use the [`elevation` property](docs/viewstyleproptypes.html#elevation) (Android 5.0+).
+ * To customize the color use the [`shadowColor` property](docs/shadow-props.html#shadowColor) (Android 9.0+).
  */
 export type ____ShadowStyle_Internal = $ReadOnly<{|
   /**

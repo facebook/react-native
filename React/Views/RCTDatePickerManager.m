@@ -10,7 +10,6 @@
 #import <React/RCTUIManager.h>
 #import "RCTBridge.h"
 #import "RCTDatePicker.h"
-#import "RCTEventDispatcher.h"
 #import "UIView+React.h"
 
 @implementation RCTConvert (UIDatePicker)
@@ -55,13 +54,13 @@ RCT_EXPORT_METHOD(setNativeDate : (nonnull NSNumber *)viewTag toDate : (NSDate *
       [(RCTDatePicker *)view setDate:date];
     } else {
       // This component is used in Fabric through LegacyInteropLayer.
-      // `RCTPicker` view is subview of `RCTLegacyViewManagerInteropComponentView`.
+      // `RCTDatePicker` view is subview of `RCTLegacyViewManagerInteropComponentView`.
       // `viewTag` passed as parameter to this method is tag of the `RCTLegacyViewManagerInteropComponentView`.
-      UIView *subview = view.subviews.firstObject;
+      UIView *subview = [uiManager viewForReactTag:viewTag].subviews.firstObject;
       if ([subview isKindOfClass:[RCTDatePicker class]]) {
         [(RCTDatePicker *)subview setDate:date];
       } else {
-        RCTLogError(@"view type must be RCTPicker");
+        RCTLogError(@"view type must be RCTDatePicker");
       }
     }
   }];

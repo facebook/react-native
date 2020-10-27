@@ -704,13 +704,13 @@ public class UIImplementation {
   @Deprecated
   public void dispatchViewManagerCommand(
       int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    assertViewExists(reactTag, "dispatchViewManagerCommand");
+    assertViewExists(reactTag, "dispatchViewManagerCommand: " + commandId);
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 
   public void dispatchViewManagerCommand(
       int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
-    assertViewExists(reactTag, "dispatchViewManagerCommand");
+    assertViewExists(reactTag, "dispatchViewManagerCommand: " + commandId);
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 

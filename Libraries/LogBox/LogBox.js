@@ -43,7 +43,7 @@ if (__DEV__) {
     },
 
     ignoreAllLogs: (value?: ?boolean): void => {
-      LogBoxData.setDisabled(!!value);
+      LogBoxData.setDisabled(value == null ? true : value);
     },
 
     uninstall: (): void => {

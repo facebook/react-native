@@ -10,8 +10,8 @@
 
 'use strict';
 
-import Animated from '../../Animated/src/Animated';
-import Easing from '../../Animated/src/Easing';
+import Animated from '../../Animated/Animated';
+import Easing from '../../Animated/Easing';
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';

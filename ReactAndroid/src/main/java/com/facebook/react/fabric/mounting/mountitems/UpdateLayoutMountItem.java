@@ -33,7 +33,7 @@ public class UpdateLayoutMountItem implements MountItem {
   }
 
   // TODO move this from here
-  @TargetApi(Build.VERSION_CODES.KITKAT)
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private static int convertLayoutDirection(int layoutDirection) {
     switch (layoutDirection) {
       case 0:

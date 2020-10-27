@@ -72,12 +72,12 @@ We recommend referring to the [CONTRIBUTING](https://github.com/facebook/react-n
 
 ## Contributing Code
 
-Code-level contributions to React Native generally come in the form of [pull requests](https://help.github.com/en/articles/about-pull-requests). These are done by forking the repo and making changes locally. Directly in the repo, there is the [`RNTester` app](/RNTester) that you can install on your device (or simulators) and use to test the changes you're making to React Native sources.
+Code-level contributions to React Native generally come in the form of [pull requests](https://help.github.com/en/articles/about-pull-requests). These are done by forking the repo and making changes locally. Directly in the repo, there is the [`rn-tester` app](/packages/rn-tester) that you can install on your device (or simulators) and use to test the changes you're making to React Native sources.
 
 The process of proposing a change to React Native can be summarized as follows:
 
 1. Fork the React Native repository and create your branch from `master`.
-2. Make the desired changes to React Native sources. Use the `RNTester` app to test them out.
+2. Make the desired changes to React Native sources. Use the `packages/rn-tester` app to test them out.
 3. If you've added code that should be tested, add tests.
 4. If you've changed APIs, update the documentation, which lives in [another repo](https://github.com/facebook/react-native-website/).
 5. Ensure the test suite passes, either locally or on CI once you opened a pull request.

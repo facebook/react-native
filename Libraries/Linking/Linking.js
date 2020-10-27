@@ -5,18 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-const InteractionManager = require('../Interaction/InteractionManager');
-const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-const Platform = require('../Utilities/Platform');
-
-const invariant = require('invariant');
-
-import NativeLinking from './NativeLinking';
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import InteractionManager from '../Interaction/InteractionManager';
+import Platform from '../Utilities/Platform';
+import NativeLinkingManager from './NativeLinkingManager';
+import NativeIntentAndroid from './NativeIntentAndroid';
+import invariant from 'invariant';
+import nullthrows from 'nullthrows';
 
 /**
  * `Linking` gives you a general interface to interact with both incoming
@@ -26,7 +26,7 @@ import NativeLinking from './NativeLinking';
  */
 class Linking extends NativeEventEmitter {
   constructor() {
-    super(NativeLinking);
+    super(Platform.OS === 'ios' ? nullthrows(NativeLinkingManager) : undefined);
   }
 
   /**
@@ -35,7 +35,7 @@ class Linking extends NativeEventEmitter {
    *
    * See https://reactnative.dev/docs/linking.html#addeventlistener
    */
-  addEventListener(type: string, handler: Function) {
+  addEventListener<T>(type: string, handler: T) {
     this.addListener(type, handler);
   }
 
@@ -44,7 +44,7 @@ class Linking extends NativeEventEmitter {
    *
    * See https://reactnative.dev/docs/linking.html#removeeventlistener
    */
-  removeEventListener(type: string, handler: Function) {
+  removeEventListener<T>(type: string, handler: T) {
     this.removeListener(type, handler);
   }
 
@@ -53,9 +53,13 @@ class Linking extends NativeEventEmitter {
    *
    * See https://reactnative.dev/docs/linking.html#openurl
    */
-  openURL(url: string): Promise<any> {
+  openURL(url: string): Promise<void> {
     this._validateURL(url);
-    return NativeLinking.openURL(url);
+    if (Platform.OS === 'android') {
+      return nullthrows(NativeIntentAndroid).openURL(url);
+    } else {
+      return nullthrows(NativeLinkingManager).openURL(url);
+    }
   }
 
   /**
@@ -65,7 +69,11 @@ class Linking extends NativeEventEmitter {
    */
   canOpenURL(url: string): Promise<boolean> {
     this._validateURL(url);
-    return NativeLinking.canOpenURL(url);
+    if (Platform.OS === 'android') {
+      return nullthrows(NativeIntentAndroid).canOpenURL(url);
+    } else {
+      return nullthrows(NativeLinkingManager).canOpenURL(url);
+    }
   }
 
   /**
@@ -73,8 +81,12 @@ class Linking extends NativeEventEmitter {
    *
    * See https://reactnative.dev/docs/linking.html#opensettings
    */
-  openSettings(): Promise<any> {
-    return NativeLinking.openSettings();
+  openSettings(): Promise<void> {
+    if (Platform.OS === 'android') {
+      return nullthrows(NativeIntentAndroid).openSettings();
+    } else {
+      return nullthrows(NativeLinkingManager).openSettings();
+    }
   }
 
   /**
@@ -86,9 +98,9 @@ class Linking extends NativeEventEmitter {
   getInitialURL(): Promise<?string> {
     return Platform.OS === 'android'
       ? InteractionManager.runAfterInteractions().then(() =>
-          NativeLinking.getInitialURL(),
+          nullthrows(NativeIntentAndroid).getInitialURL(),
         )
-      : NativeLinking.getInitialURL();
+      : nullthrows(NativeLinkingManager).getInitialURL();
   }
 
   /*
@@ -107,9 +119,10 @@ class Linking extends NativeEventEmitter {
     }>,
   ): Promise<void> {
     if (Platform.OS === 'android') {
-      return NativeLinking.sendIntent(action, extras);
+      return nullthrows(NativeIntentAndroid).sendIntent(action, extras);
+    } else {
+      return new Promise((resolve, reject) => reject(new Error('Unsupported')));
     }
-    return new Promise((resolve, reject) => reject(new Error('Unsupported')));
   }
 
   _validateURL(url: string) {

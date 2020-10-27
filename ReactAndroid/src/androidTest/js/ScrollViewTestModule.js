@@ -30,7 +30,7 @@ import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 // Shared by integration tests for ScrollView and HorizontalScrollView
 
-let scrollViewApp;
+let scrollViewApp: ScrollViewTestApp | HorizontalScrollViewTestApp;
 
 type ItemProps = $ReadOnly<{|
   onPress: (event: PressEvent) => void,

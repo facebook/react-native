@@ -15,7 +15,7 @@ import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.provider.Settings;
 import androidx.annotation.Nullable;
-import com.facebook.fbreact.specs.NativeLinkingSpec;
+import com.facebook.fbreact.specs.NativeIntentAndroidSpec;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -26,7 +26,7 @@ import com.facebook.react.module.annotations.ReactModule;
 
 /** Intent module. Launch other activities or open URLs. */
 @ReactModule(name = IntentModule.NAME)
-public class IntentModule extends NativeLinkingSpec {
+public class IntentModule extends NativeIntentAndroidSpec {
 
   public static final String NAME = "IntentAndroid";
 
@@ -236,15 +236,5 @@ public class IntentModule extends NativeLinkingSpec {
     }
 
     getReactApplicationContext().startActivity(intent);
-  }
-
-  @Override
-  public void addListener(String eventName) {
-    // iOS only
-  }
-
-  @Override
-  public void removeListeners(double count) {
-    // iOS only
   }
 }
