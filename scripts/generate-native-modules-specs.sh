@@ -42,13 +42,14 @@ step_build_codegen () {
 step_gen_schema () {
   describe "Generating schema from flow types"
   SRCS_DIR=$(cd "$RN_DIR/Libraries" && pwd)
-  grep --exclude NativeSampleTurboModule.js --exclude NativeUIManager.js --include=Native\*.js -rnwl "$SRCS_DIR" -e 'export interface Spec extends TurboModule' -e "export default \(TurboModuleRegistry.get(Enforcing)?<Spec>\('.*\): Spec\);/" \
-    | xargs "$YARN_BINARY" node "$CODEGEN_DIR/lib/cli/combine/combine-js-to-schema-cli.js" "$SCHEMA_FILE"
+  "$YARN_BINARY" node "$CODEGEN_DIR/lib/cli/combine/combine-js-to-schema-cli.js" "$SCHEMA_FILE" "$SRCS_DIR"
 }
 
 step_gen_specs () {
-  describe "Generating native code from schema"
-  "$YARN_BINARY" --silent node scripts/generate-native-modules-specs-cli.js "$SCHEMA_FILE" "$OUTPUT_DIR"
+  describe "Generating native code from schema (iOS)"
+  pushd "$RN_DIR" >/dev/null || exit
+    "$YARN_BINARY" --silent node scripts/generate-native-modules-specs-cli.js ios "$SCHEMA_FILE" "$OUTPUT_DIR"
+  popd >/dev/null || exit
 }
 
 step_build_codegen

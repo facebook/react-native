@@ -18,6 +18,7 @@ import type EventSubscriptionVendor from './_EventSubscriptionVendor';
  * EmitterSubscription represents a subscription with listener and context data.
  */
 class EmitterSubscription extends EventSubscription {
+  // $FlowFixMe[value-as-type]
   emitter: EventEmitter;
   listener: Function;
   context: ?Object;
@@ -33,6 +34,7 @@ class EmitterSubscription extends EventSubscription {
    *   listener
    */
   constructor(
+    // $FlowFixMe[value-as-type]
     emitter: EventEmitter,
     subscriber: EventSubscriptionVendor,
     listener: Function,

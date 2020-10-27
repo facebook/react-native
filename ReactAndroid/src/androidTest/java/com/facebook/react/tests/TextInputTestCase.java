@@ -199,6 +199,37 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     assertFalse(reactEditText.isFocused());
   }
 
+  public void testAccessibilityFocus_notEmpty_selectionSetAtEnd() throws Throwable {
+    String testId = "textInput1";
+    String text = "Testing";
+
+    final ReactEditText reactEditText = getViewByTestId(testId);
+    reactEditText.setText(text);
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.clearFocus();
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertFalse(reactEditText.isFocused());
+    assertEquals(0, reactEditText.getSelectionStart());
+
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.performAccessibilityAction(
+                AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+            reactEditText.performAccessibilityAction(AccessibilityNodeInfo.ACTION_CLICK, null);
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertTrue(reactEditText.isFocused());
+    assertEquals(text.length(), reactEditText.getSelectionStart());
+  }
+
   private void fireEditorActionAndCheckRecording(
       final ReactEditText reactEditText, final int actionId) throws Throwable {
     fireEditorActionAndCheckRecording(reactEditText, actionId, true);

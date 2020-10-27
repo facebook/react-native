@@ -28,14 +28,15 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
-import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.common.ContextUtils;
@@ -57,7 +58,8 @@ import java.util.ArrayList;
  *       around addition and removal of views to the DialogRootViewGroup.
  * </ol>
  */
-public class ReactModalHostView extends ViewGroup implements LifecycleEventListener {
+public class ReactModalHostView extends ViewGroup
+    implements LifecycleEventListener, FabricViewStateManager.HasFabricViewStateManager {
 
   // This listener is called when the user presses KeyEvent.KEYCODE_BACK
   // An event is then passed to JS which can either close or not close the Modal by setting the
@@ -317,11 +319,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     }
   }
 
-  @UiThread
-  public void updateState(StateWrapper stateWrapper, int width, int height) {
-    mHostView.updateState(stateWrapper, width, height);
-  }
-
   /**
    * Returns the view that will be the root view of the dialog. We are wrapping this in a
    * FrameLayout because this is the system's way of notifying us that the dialog size has changed.
@@ -371,6 +368,15 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     }
   }
 
+  @Override
+  public FabricViewStateManager getFabricViewStateManager() {
+    return mHostView.getFabricViewStateManager();
+  }
+
+  public void updateState(final int width, final int height) {
+    mHostView.updateState(width, height);
+  }
+
   /**
    * DialogRootViewGroup is the ViewGroup which contains all the children of a Modal. It gets all
    * child information forwarded from ReactModalHostView and uses that to create children. It is
@@ -382,12 +388,13 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
    * styleHeight on the LayoutShadowNode to be the window size. This is done through the
    * UIManagerModule, and will then cause the children to layout as if they can fill the window.
    */
-  static class DialogRootViewGroup extends ReactViewGroup implements RootView {
+  static class DialogRootViewGroup extends ReactViewGroup
+      implements RootView, FabricViewStateManager.HasFabricViewStateManager {
     private boolean hasAdjustedSize = false;
     private int viewWidth;
     private int viewHeight;
 
-    private @Nullable StateWrapper mStateWrapper;
+    private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
 
     private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
 
@@ -407,9 +414,9 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       if (getChildCount() > 0) {
         hasAdjustedSize = false;
         final int viewTag = getChildAt(0).getId();
-        if (mStateWrapper != null) {
+        if (mFabricViewStateManager.hasStateWrapper()) {
           // This will only be called under Fabric
-          updateState(mStateWrapper, viewWidth, viewHeight);
+          updateState(viewWidth, viewHeight);
         } else {
           // TODO: T44725185 remove after full migration to Fabric
           ReactContext reactContext = getReactContext();
@@ -434,12 +441,38 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     }
 
     @UiThread
-    public void updateState(StateWrapper stateWrapper, int width, int height) {
-      mStateWrapper = stateWrapper;
-      WritableMap map = new WritableNativeMap();
-      map.putDouble("screenWidth", PixelUtil.toDIPFromPixel(width));
-      map.putDouble("screenHeight", PixelUtil.toDIPFromPixel(height));
-      stateWrapper.updateState(map);
+    public void updateState(final int width, final int height) {
+      final float realWidth = PixelUtil.toDIPFromPixel(width);
+      final float realHeight = PixelUtil.toDIPFromPixel(height);
+
+      // Check incoming state values. If they're already the correct value, return early to prevent
+      // infinite UpdateState/SetState loop.
+      ReadableMap currentState = getFabricViewStateManager().getState();
+      if (currentState != null) {
+        float delta = (float) 0.9;
+        float stateScreenHeight =
+            currentState.hasKey("screenHeight")
+                ? (float) currentState.getDouble("screenHeight")
+                : 0;
+        float stateScreenWidth =
+            currentState.hasKey("screenWidth") ? (float) currentState.getDouble("screenWidth") : 0;
+
+        if (Math.abs(stateScreenWidth - realWidth) < delta
+            && Math.abs(stateScreenHeight - realHeight) < delta) {
+          return;
+        }
+      }
+
+      mFabricViewStateManager.setState(
+          new FabricViewStateManager.StateUpdateCallback() {
+            @Override
+            public WritableMap getStateUpdate() {
+              WritableMap map = new WritableNativeMap();
+              map.putDouble("screenWidth", realWidth);
+              map.putDouble("screenHeight", realHeight);
+              return map;
+            }
+          });
     }
 
     @Override
@@ -488,6 +521,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     private EventDispatcher getEventDispatcher() {
       ReactContext reactContext = getReactContext();
       return reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    }
+
+    @Override
+    public FabricViewStateManager getFabricViewStateManager() {
+      return mFabricViewStateManager;
     }
   }
 }

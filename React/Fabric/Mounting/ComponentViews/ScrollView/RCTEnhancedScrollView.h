@@ -33,6 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL pinchGestureEnabled;
 @property (nonatomic, assign) BOOL centerContent;
+@property (nonatomic, assign) CGFloat snapToInterval;
+@property (nonatomic, copy) NSString *snapToAlignment;
+@property (nonatomic, assign) BOOL disableIntervalMomentum;
+@property (nonatomic, assign) BOOL snapToStart;
+@property (nonatomic, assign) BOOL snapToEnd;
+@property (nonatomic, copy) NSArray<NSNumber *> *snapToOffsets;
 
 @end
 

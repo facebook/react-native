@@ -11,24 +11,24 @@
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
-#import <better/set.h>
+#include <better/set.h>
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
-#include <react/animations/LayoutAnimationDriver.h>
-#include <react/componentregistry/ComponentDescriptorFactory.h>
-#include <react/components/scrollview/ScrollViewProps.h>
-#include <react/core/EventBeat.h>
-#include <react/core/EventEmitter.h>
-#include <react/core/conversions.h>
-#include <react/debug/SystraceSection.h>
-#include <react/scheduler/Scheduler.h>
-#include <react/scheduler/SchedulerDelegate.h>
-#include <react/scheduler/SchedulerToolbox.h>
-#include <react/uimanager/primitives.h>
+#include <react/renderer/animations/LayoutAnimationDriver.h>
+#include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#include <react/renderer/components/scrollview/ScrollViewProps.h>
+#include <react/renderer/core/EventBeat.h>
+#include <react/renderer/core/EventEmitter.h>
+#include <react/renderer/core/conversions.h>
+#include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/scheduler/Scheduler.h>
+#include <react/renderer/scheduler/SchedulerDelegate.h>
+#include <react/renderer/scheduler/SchedulerToolbox.h>
+#include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 
-#include <Glog/logging.h>
+#include <glog/logging.h>
 
 using namespace facebook::jni;
 using namespace facebook::jsi;
@@ -101,6 +101,8 @@ void Binding::startSurfaceWithConstraints(
     jfloat maxWidth,
     jfloat minHeight,
     jfloat maxHeight,
+    jfloat offsetX,
+    jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
@@ -123,6 +125,8 @@ void Binding::startSurfaceWithConstraints(
       Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
 
   LayoutContext context;
+  context.viewportOffset =
+      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};
@@ -178,6 +182,8 @@ void Binding::setConstraints(
     jfloat maxWidth,
     jfloat minHeight,
     jfloat maxHeight,
+    jfloat offsetX,
+    jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::setConstraints");
@@ -194,6 +200,8 @@ void Binding::setConstraints(
       Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
 
   LayoutContext context;
+  context.viewportOffset =
+      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};
@@ -206,12 +214,11 @@ void Binding::setConstraints(
 }
 
 void Binding::installFabricUIManager(
-    jlong jsContextNativePointer,
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
-    ComponentFactoryDelegate *componentsRegistry,
+    ComponentFactory *componentsRegistry,
     jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
@@ -240,24 +247,7 @@ void Binding::installFabricUIManager(
 
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
-
-  bool useRuntimeExecutor =
-      config->getBool("react_fabric:use_shared_runtime_executor_android");
-
-  RuntimeExecutor runtimeExecutor;
-  if (useRuntimeExecutor) {
-    runtimeExecutor = runtimeExecutorHolder->cthis()->get();
-  } else {
-    Runtime *runtime = (Runtime *)jsContextNativePointer;
-    runtimeExecutor =
-        [runtime, sharedJSMessageQueueThread](
-            std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
-          sharedJSMessageQueueThread->runOnQueue(
-              [runtime, callback = std::move(callback)]() {
-                callback(*runtime);
-              });
-        };
-  }
+  auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
 
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
@@ -280,8 +270,13 @@ void Binding::installFabricUIManager(
 
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
-  collapseDeleteCreateMountingInstructions_ = reactNativeConfig_->getBool(
-      "react_fabric:enabled_collapse_delete_create_mounting_instructions");
+  collapseDeleteCreateMountingInstructions_ =
+      reactNativeConfig_->getBool(
+          "react_fabric:enabled_collapse_delete_create_mounting_instructions") &&
+      !reactNativeConfig_->getBool(
+          "react_fabric:enable_reparenting_detection_android") &&
+      !reactNativeConfig_->getBool(
+          "react_fabric:enabled_layout_animations_android");
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
@@ -296,8 +291,15 @@ void Binding::installFabricUIManager(
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
+  if (reactNativeConfig_->getBool(
+          "react_fabric:enable_background_executor_android")) {
+    backgroundExecutor_ = std::make_unique<JBackgroundExecutor>();
+    toolbox.backgroundExecutor = backgroundExecutor_->get();
+  }
+
   if (enableLayoutAnimations) {
-    animationDriver_ = std::make_shared<LayoutAnimationDriver>(this);
+    animationDriver_ =
+        std::make_shared<LayoutAnimationDriver>(runtimeExecutor, this);
   }
   scheduler_ = std::make_shared<Scheduler>(
       toolbox, (animationDriver_ ? animationDriver_.get() : nullptr), this);
@@ -426,11 +428,12 @@ local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
   auto newChildShadowView = mutation.newChildShadowView;
 
   if (oldChildShadowView.layoutMetrics.contentInsets ==
-      newChildShadowView.layoutMetrics.contentInsets) {
+          newChildShadowView.layoutMetrics.contentInsets &&
+      mutation.type != ShadowViewMutation::Type::Insert) {
     return nullptr;
   }
 
-  static auto updateLayoutInstruction =
+  static auto updatePaddingInstruction =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint)>(
               "updatePaddingMountItem");
@@ -439,12 +442,12 @@ local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
   auto pointScaleFactor = layoutMetrics.pointScaleFactor;
   auto contentInsets = layoutMetrics.contentInsets;
 
-  int left = round(contentInsets.left * pointScaleFactor);
-  int top = round(contentInsets.top * pointScaleFactor);
-  int right = round(contentInsets.right * pointScaleFactor);
-  int bottom = round(contentInsets.bottom * pointScaleFactor);
+  int left = floor(contentInsets.left * pointScaleFactor);
+  int top = floor(contentInsets.top * pointScaleFactor);
+  int right = floor(contentInsets.right * pointScaleFactor);
+  int bottom = floor(contentInsets.bottom * pointScaleFactor);
 
-  return updateLayoutInstruction(
+  return updatePaddingInstruction(
       javaUIManager, newChildShadowView.tag, left, top, right, bottom);
 }
 
@@ -617,7 +620,8 @@ void Binding::schedulerDidFinishTransaction(
       }
     }
   }
-  int64_t commitNumber = telemetry.getCommitNumber();
+
+  auto revisionNumber = telemetry.getRevisionNumber();
 
   std::vector<local_ref<jobject>> queue;
   // Upper bound estimation of mount items to be delivered to Java side.
@@ -821,7 +825,7 @@ void Binding::schedulerDidFinishTransaction(
       surfaceId,
       position == 0 ? nullptr : mountItemsArray.get(),
       position,
-      commitNumber);
+      revisionNumber);
 
   static auto scheduleMountItem =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
@@ -841,7 +845,7 @@ void Binding::schedulerDidFinishTransaction(
   scheduleMountItem(
       localJavaUIManager,
       batch.get(),
-      telemetry.getCommitNumber(),
+      telemetry.getRevisionNumber(),
       telemetryTimePointToMilliseconds(telemetry.getCommitStartTime()),
       telemetryTimePointToMilliseconds(telemetry.getDiffStartTime()),
       telemetryTimePointToMilliseconds(telemetry.getDiffEndTime()),

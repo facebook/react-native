@@ -11,10 +11,12 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTFollyConvert.h>
+#import <React/RCTLog.h>
 #import <React/RCTUtils.h>
-#import <react/core/LayoutableShadowNode.h>
-#import <react/core/RawProps.h>
-#import <react/debug/SystraceSection.h>
+#import <react/renderer/core/LayoutableShadowNode.h>
+#import <react/renderer/core/RawProps.h>
+#import <react/renderer/debug/SystraceSection.h>
+#import <react/renderer/mounting/TelemetryController.h>
 
 #import "RCTComponentViewProtocol.h"
 #import "RCTComponentViewRegistry.h"
@@ -197,28 +199,20 @@ static void RCTPerformMountInstructions(
   SystraceSection s("-[RCTMountingManager performTransaction:]");
   RCTAssertMainQueue();
 
-  auto transaction = mountingCoordinator->pullTransaction();
-  if (!transaction.has_value()) {
-    return;
-  }
+  auto surfaceId = mountingCoordinator->getSurfaceId();
 
-  auto surfaceId = transaction->getSurfaceId();
-  auto &mutations = transaction->getMutations();
-
-  if (mutations.empty()) {
-    return;
-  }
-
-  auto telemetry = transaction->getTelemetry();
-  auto number = transaction->getNumber();
-
-  [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
-  _observerCoordinator.notifyObserversMountingTransactionWillMount({surfaceId, number, telemetry});
-  telemetry.willMount();
-  RCTPerformMountInstructions(mutations, self.componentViewRegistry, _observerCoordinator, surfaceId);
-  telemetry.didMount();
-  _observerCoordinator.notifyObserversMountingTransactionDidMount({surfaceId, number, telemetry});
-  [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
+  mountingCoordinator->getTelemetryController().pullTransaction(
+      [&](MountingTransactionMetadata metadata) {
+        [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
+        _observerCoordinator.notifyObserversMountingTransactionWillMount(metadata);
+      },
+      [&](ShadowViewMutationList const &mutations) {
+        RCTPerformMountInstructions(mutations, _componentViewRegistry, _observerCoordinator, surfaceId);
+      },
+      [&](MountingTransactionMetadata metadata) {
+        _observerCoordinator.notifyObserversMountingTransactionDidMount(metadata);
+        [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
+      });
 }
 
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
@@ -229,7 +223,25 @@ static void RCTPerformMountInstructions(
   UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
   SharedProps oldProps = [componentView props];
   SharedProps newProps = componentDescriptor.cloneProps(oldProps, RawProps(convertIdToFollyDynamic(props)));
+
+  NSSet<NSString *> *propKeys = componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN ?: [NSSet new];
+  propKeys = [propKeys setByAddingObjectsFromArray:props.allKeys];
+  componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   [componentView updateProps:newProps oldProps:oldProps];
+  componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = propKeys;
+
+  const auto &newViewProps = *std::static_pointer_cast<const ViewProps>(newProps);
+
+  if (props[@"transform"] &&
+      !CATransform3DEqualToTransform(
+          RCTCATransform3DFromTransformMatrix(newViewProps.transform), componentView.layer.transform)) {
+    RCTLogWarn(@"transform was not applied during [RCTViewComponentView updateProps:oldProps:]");
+    componentView.layer.transform = RCTCATransform3DFromTransformMatrix(newViewProps.transform);
+  }
+  if (props[@"opacity"] && componentView.layer.opacity != (float)newViewProps.opacity) {
+    RCTLogWarn(@"opacity was not applied during [RCTViewComponentView updateProps:oldProps:]");
+    componentView.layer.opacity = newViewProps.opacity;
+  }
 }
 
 - (void)synchronouslyDispatchCommandOnUIThread:(ReactTag)reactTag

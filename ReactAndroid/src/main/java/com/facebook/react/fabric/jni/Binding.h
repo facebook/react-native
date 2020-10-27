@@ -8,17 +8,18 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <react/animations/LayoutAnimationDriver.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/ReadableNativeMap.h>
-#include <react/scheduler/Scheduler.h>
-#include <react/scheduler/SchedulerDelegate.h>
-#include <react/uimanager/LayoutAnimationStatusDelegate.h>
+#include <react/renderer/animations/LayoutAnimationDriver.h>
+#include <react/renderer/scheduler/Scheduler.h>
+#include <react/renderer/scheduler/SchedulerDelegate.h>
+#include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
 #include <memory>
 #include <mutex>
-#include "ComponentFactoryDelegate.h"
+#include "ComponentFactory.h"
 #include "EventBeatManager.h"
+#include "JBackgroundExecutor.h"
 
 namespace facebook {
 namespace react {
@@ -47,18 +48,19 @@ class Binding : public jni::HybridClass<Binding>,
       jfloat maxWidth,
       jfloat minHeight,
       jfloat maxHeight,
+      jfloat offsetX,
+      jfloat offsetY,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
   void installFabricUIManager(
-      jlong jsContextNativePointer,
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
       jni::alias_ref<jobject> javaUIManager,
       EventBeatManager *eventBeatManager,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
-      ComponentFactoryDelegate *componentsRegistry,
+      ComponentFactory *componentsRegistry,
       jni::alias_ref<jobject> reactNativeConfig);
 
   void startSurface(
@@ -74,6 +76,8 @@ class Binding : public jni::HybridClass<Binding>,
       jfloat maxWidth,
       jfloat minHeight,
       jfloat maxHeight,
+      jfloat offsetX,
+      jfloat offsetY,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
 
@@ -116,6 +120,7 @@ class Binding : public jni::HybridClass<Binding>,
   virtual void onAllAnimationsComplete() override;
   LayoutAnimationDriver *getAnimationDriver();
   std::shared_ptr<LayoutAnimationDriver> animationDriver_;
+  std::unique_ptr<JBackgroundExecutor> backgroundExecutor_;
 
   std::shared_ptr<Scheduler> scheduler_;
   std::mutex schedulerMutex_;

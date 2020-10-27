@@ -8,13 +8,14 @@
 #import "RCTParagraphComponentAccessibilityProvider.h"
 
 #import <Foundation/Foundation.h>
-#import <react/components/text/ParagraphProps.h>
-#import <react/textlayoutmanager/RCTAttributedTextUtils.h>
-#import <react/textlayoutmanager/RCTTextLayoutManager.h>
-#import <react/textlayoutmanager/TextLayoutManager.h>
+#import <react/renderer/components/text/ParagraphProps.h>
+#import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
+#import <react/renderer/textlayoutmanager/RCTTextLayoutManager.h>
+#import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
+#import "RCTLocalizationProvider.h"
 
 using namespace facebook::react;
 
@@ -49,7 +50,9 @@ using namespace facebook::react;
     return _accessibilityElements;
   }
 
-  __block NSInteger numOfLink = 0;
+  __block NSInteger numberOfLinks = 0;
+  __block NSInteger numberOfButtons = 0;
+  __block NSString *truncatedText;
   // build an array of the accessibleElements
   NSMutableArray<UIAccessibilityElement *> *elements = [NSMutableArray new];
 
@@ -62,7 +65,10 @@ using namespace facebook::react;
   firstElement.isAccessibilityElement = YES;
   firstElement.accessibilityTraits = UIAccessibilityTraitStaticText;
   firstElement.accessibilityLabel = accessibilityLabel;
-  firstElement.accessibilityFrameInContainerSpace = _view.bounds;
+  firstElement.accessibilityFrame = UIAccessibilityConvertFrameToScreenCoordinates(_view.bounds, _view);
+  [firstElement setAccessibilityActivationPoint:CGPointMake(
+                                                    firstElement.accessibilityFrame.origin.x + 1.0,
+                                                    firstElement.accessibilityFrame.origin.y + 1.0)];
   [elements addObject:firstElement];
 
   // add additional elements for those parts of text with embedded link so VoiceOver could specially recognize links
@@ -72,28 +78,88 @@ using namespace facebook::react;
                            enumerateAttribute:RCTTextAttributesAccessibilityRoleAttributeName
                                         frame:_frame
                                    usingBlock:^(CGRect fragmentRect, NSString *_Nonnull fragmentText, NSString *value) {
+                                     if (![value isEqualToString:@"button"] && ![value isEqualToString:@"link"]) {
+                                       return;
+                                     }
+                                     if ([value isEqualToString:@"button"] &&
+                                         ([fragmentText isEqualToString:@"See Less"] ||
+                                          [fragmentText isEqualToString:@"See More"])) {
+                                       truncatedText = fragmentText;
+                                       return;
+                                     }
                                      UIAccessibilityElement *element =
                                          [[UIAccessibilityElement alloc] initWithAccessibilityContainer:self->_view];
                                      element.isAccessibilityElement = YES;
                                      if ([value isEqualToString:@"link"]) {
                                        element.accessibilityTraits = UIAccessibilityTraitLink;
-                                       numOfLink++;
+                                       numberOfLinks++;
+                                     } else if ([value isEqualToString:@"button"]) {
+                                       element.accessibilityTraits = UIAccessibilityTraitButton;
+                                       numberOfButtons++;
                                      }
                                      element.accessibilityLabel = fragmentText;
-                                     element.accessibilityFrameInContainerSpace = fragmentRect;
+                                     element.accessibilityFrame =
+                                         UIAccessibilityConvertFrameToScreenCoordinates(fragmentRect, self->_view);
                                      [elements addObject:element];
                                    }];
 
-  if (numOfLink > 0) {
+  if (numberOfLinks > 0 || numberOfButtons > 0) {
+    __block NSInteger indexOfLink = 1;
+    __block NSInteger indexOfButton = 1;
     [elements enumerateObjectsUsingBlock:^(UIAccessibilityElement *element, NSUInteger idx, BOOL *_Nonnull stop) {
-      element.accessibilityHint = [NSString stringWithFormat:@"Link %ld of %ld.", (unsigned long)idx, (long)numOfLink];
+      if (idx == 0) {
+        return;
+      }
+      if (element.accessibilityTraits & UIAccessibilityTraitLink) {
+        NSString *test = [RCTLocalizationProvider RCTLocalizedString:@"Link %ld of %ld."
+                                                     withDescription:@"index of the link"];
+        element.accessibilityHint = [NSString stringWithFormat:test, (long)indexOfLink++, (long)numberOfLinks];
+      } else {
+        element.accessibilityHint =
+            [NSString stringWithFormat:[RCTLocalizationProvider RCTLocalizedString:@"Button %ld of %ld."
+                                                                   withDescription:@"index of the button"],
+                                       (long)indexOfButton++,
+                                       (long)numberOfButtons];
+      }
     }];
+  }
 
-    NSString *firstElementHint = (numOfLink == 1)
-        ? @"One link found, swipe right to move to the link."
-        : [NSString stringWithFormat:@"%ld links found, swipe right to move to the first link.", (long)numOfLink];
+  if (numberOfLinks > 0 && numberOfButtons > 0) {
+    firstElement.accessibilityHint =
+        [RCTLocalizationProvider RCTLocalizedString:@"Links and buttons are found, swipe to move to them."
+                                    withDescription:@"accessibility hint for links and buttons inside text"];
 
+  } else if (numberOfLinks > 0) {
+    NSString *firstElementHint = (numberOfLinks == 1)
+        ? [RCTLocalizationProvider RCTLocalizedString:@"One link found, swipe to move to the link."
+                                      withDescription:@"accessibility hint for one link inside text"]
+        : [NSString stringWithFormat:[RCTLocalizationProvider
+                                         RCTLocalizedString:@"%ld links found, swipe to move to the first link."
+                                            withDescription:@"accessibility hint for multiple links inside text"],
+                                     (long)numberOfLinks];
     firstElement.accessibilityHint = firstElementHint;
+
+  } else if (numberOfButtons > 0) {
+    NSString *firstElementHint = (numberOfButtons == 1)
+        ? [RCTLocalizationProvider RCTLocalizedString:@"One button found, swipe to move to the button."
+                                      withDescription:@"accessibility hint for one button inside text"]
+        : [NSString stringWithFormat:[RCTLocalizationProvider
+                                         RCTLocalizedString:@"%ld buttons found, swipe to move to the first button."
+                                            withDescription:@"accessibility hint for multiple buttons inside text"],
+                                     (long)numberOfButtons];
+    firstElement.accessibilityHint = firstElementHint;
+  }
+
+  if (truncatedText && truncatedText.length > 0) {
+    firstElement.accessibilityHint = (numberOfLinks > 0 || numberOfButtons > 0)
+        ? [NSString
+              stringWithFormat:@"%@ %@",
+                               firstElement.accessibilityHint,
+                               [RCTLocalizationProvider
+                                   RCTLocalizedString:[NSString stringWithFormat:@"Double tap to %@.", truncatedText]
+                                      withDescription:@"accessibility hint for truncated text with links or buttons"]]
+        : [RCTLocalizationProvider RCTLocalizedString:[NSString stringWithFormat:@"Double tap to %@.", truncatedText]
+                                      withDescription:@"accessibility hint for truncated text"];
   }
 
   // add accessible element for truncation attributed string for automation purposes only

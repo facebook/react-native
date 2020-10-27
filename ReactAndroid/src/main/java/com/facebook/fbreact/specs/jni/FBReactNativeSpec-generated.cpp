@@ -182,6 +182,14 @@ namespace facebook {
   namespace react {
 
     
+    static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_startOperationBatch(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "startOperationBatch", "()V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_finishOperationBatch(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "finishOperationBatch", "()V", args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_createAnimatedNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "createAnimatedNode", "(DLcom/facebook/react/bridge/ReadableMap;)V", args, count);
     }
@@ -266,6 +274,12 @@ namespace facebook {
     NativeAnimatedModuleSpecJSI::NativeAnimatedModuleSpecJSI(const JavaTurboModule::InitParams &params)
       : JavaTurboModule(params) {
         
+        methodMap_["startOperationBatch"] = MethodMetadata {0, __hostFunction_NativeAnimatedModuleSpecJSI_startOperationBatch};
+        
+        
+        methodMap_["finishOperationBatch"] = MethodMetadata {0, __hostFunction_NativeAnimatedModuleSpecJSI_finishOperationBatch};
+        
+        
         methodMap_["createAnimatedNode"] = MethodMetadata {2, __hostFunction_NativeAnimatedModuleSpecJSI_createAnimatedNode};
         
         
@@ -324,6 +338,173 @@ namespace facebook {
         
         
         methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeAnimatedModuleSpecJSI_removeListeners};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_startOperationBatch(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "startOperationBatch", "()V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_finishOperationBatch(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "finishOperationBatch", "()V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_createAnimatedNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "createAnimatedNode", "(DLcom/facebook/react/bridge/ReadableMap;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "getValue", "(DLcom/facebook/react/bridge/Callback;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_startListeningToAnimatedNodeValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "startListeningToAnimatedNodeValue", "(D)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_stopListeningToAnimatedNodeValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "stopListeningToAnimatedNodeValue", "(D)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_connectAnimatedNodes(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "connectAnimatedNodes", "(DD)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_disconnectAnimatedNodes(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "disconnectAnimatedNodes", "(DD)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_startAnimatingNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "startAnimatingNode", "(DDLcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_stopAnimation(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "stopAnimation", "(D)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_setAnimatedNodeValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "setAnimatedNodeValue", "(DD)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_setAnimatedNodeOffset(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "setAnimatedNodeOffset", "(DD)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_flattenAnimatedNodeOffset(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "flattenAnimatedNodeOffset", "(D)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_extractAnimatedNodeOffset(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "extractAnimatedNodeOffset", "(D)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_connectAnimatedNodeToView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "connectAnimatedNodeToView", "(DD)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_disconnectAnimatedNodeFromView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "disconnectAnimatedNodeFromView", "(DD)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_restoreDefaultValues(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "restoreDefaultValues", "(D)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_dropAnimatedNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "dropAnimatedNode", "(D)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_addAnimatedEventToView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "addAnimatedEventToView", "(DLjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_removeAnimatedEventFromView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "removeAnimatedEventFromView", "(DLjava/lang/String;D)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "addListener", "(Ljava/lang/String;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_removeListeners(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "removeListeners", "(D)V", args, count);
+    }
+
+
+    NativeAnimatedTurboModuleSpecJSI::NativeAnimatedTurboModuleSpecJSI(const JavaTurboModule::InitParams &params)
+      : JavaTurboModule(params) {
+        
+        methodMap_["startOperationBatch"] = MethodMetadata {0, __hostFunction_NativeAnimatedTurboModuleSpecJSI_startOperationBatch};
+        
+        
+        methodMap_["finishOperationBatch"] = MethodMetadata {0, __hostFunction_NativeAnimatedTurboModuleSpecJSI_finishOperationBatch};
+        
+        
+        methodMap_["createAnimatedNode"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_createAnimatedNode};
+        
+        
+        methodMap_["getValue"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_getValue};
+        
+        
+        methodMap_["startListeningToAnimatedNodeValue"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_startListeningToAnimatedNodeValue};
+        
+        
+        methodMap_["stopListeningToAnimatedNodeValue"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_stopListeningToAnimatedNodeValue};
+        
+        
+        methodMap_["connectAnimatedNodes"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_connectAnimatedNodes};
+        
+        
+        methodMap_["disconnectAnimatedNodes"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_disconnectAnimatedNodes};
+        
+        
+        methodMap_["startAnimatingNode"] = MethodMetadata {4, __hostFunction_NativeAnimatedTurboModuleSpecJSI_startAnimatingNode};
+        
+        
+        methodMap_["stopAnimation"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_stopAnimation};
+        
+        
+        methodMap_["setAnimatedNodeValue"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_setAnimatedNodeValue};
+        
+        
+        methodMap_["setAnimatedNodeOffset"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_setAnimatedNodeOffset};
+        
+        
+        methodMap_["flattenAnimatedNodeOffset"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_flattenAnimatedNodeOffset};
+        
+        
+        methodMap_["extractAnimatedNodeOffset"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_extractAnimatedNodeOffset};
+        
+        
+        methodMap_["connectAnimatedNodeToView"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_connectAnimatedNodeToView};
+        
+        
+        methodMap_["disconnectAnimatedNodeFromView"] = MethodMetadata {2, __hostFunction_NativeAnimatedTurboModuleSpecJSI_disconnectAnimatedNodeFromView};
+        
+        
+        methodMap_["restoreDefaultValues"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_restoreDefaultValues};
+        
+        
+        methodMap_["dropAnimatedNode"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_dropAnimatedNode};
+        
+        
+        methodMap_["addAnimatedEventToView"] = MethodMetadata {3, __hostFunction_NativeAnimatedTurboModuleSpecJSI_addAnimatedEventToView};
+        
+        
+        methodMap_["removeAnimatedEventFromView"] = MethodMetadata {3, __hostFunction_NativeAnimatedTurboModuleSpecJSI_removeAnimatedEventFromView};
+        
+        
+        methodMap_["addListener"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_addListener};
+        
+        
+        methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeAnimatedTurboModuleSpecJSI_removeListeners};
         
         
 
@@ -437,50 +618,105 @@ namespace facebook {
   namespace react {
 
     
-    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_multiGet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_multiGet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "multiGet", "(Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Callback;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_multiSet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_multiSet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "multiSet", "(Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Callback;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_multiMerge(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_multiMerge(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "multiMerge", "(Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Callback;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_multiRemove(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_multiRemove(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "multiRemove", "(Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Callback;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_clear(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_clear(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "clear", "(Lcom/facebook/react/bridge/Callback;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_getAllKeys(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_getAllKeys(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "getAllKeys", "(Lcom/facebook/react/bridge/Callback;)V", args, count);
     }
 
 
-    NativeAsyncStorageSpecJSI::NativeAsyncStorageSpecJSI(const JavaTurboModule::InitParams &params)
+    NativeAsyncLocalStorageSpecJSI::NativeAsyncLocalStorageSpecJSI(const JavaTurboModule::InitParams &params)
       : JavaTurboModule(params) {
         
-        methodMap_["multiGet"] = MethodMetadata {2, __hostFunction_NativeAsyncStorageSpecJSI_multiGet};
+        methodMap_["multiGet"] = MethodMetadata {2, __hostFunction_NativeAsyncLocalStorageSpecJSI_multiGet};
         
         
-        methodMap_["multiSet"] = MethodMetadata {2, __hostFunction_NativeAsyncStorageSpecJSI_multiSet};
+        methodMap_["multiSet"] = MethodMetadata {2, __hostFunction_NativeAsyncLocalStorageSpecJSI_multiSet};
         
         
-        methodMap_["multiMerge"] = MethodMetadata {2, __hostFunction_NativeAsyncStorageSpecJSI_multiMerge};
+        methodMap_["multiMerge"] = MethodMetadata {2, __hostFunction_NativeAsyncLocalStorageSpecJSI_multiMerge};
         
         
-        methodMap_["multiRemove"] = MethodMetadata {2, __hostFunction_NativeAsyncStorageSpecJSI_multiRemove};
+        methodMap_["multiRemove"] = MethodMetadata {2, __hostFunction_NativeAsyncLocalStorageSpecJSI_multiRemove};
         
         
-        methodMap_["clear"] = MethodMetadata {1, __hostFunction_NativeAsyncStorageSpecJSI_clear};
+        methodMap_["clear"] = MethodMetadata {1, __hostFunction_NativeAsyncLocalStorageSpecJSI_clear};
         
         
-        methodMap_["getAllKeys"] = MethodMetadata {1, __hostFunction_NativeAsyncStorageSpecJSI_getAllKeys};
+        methodMap_["getAllKeys"] = MethodMetadata {1, __hostFunction_NativeAsyncLocalStorageSpecJSI_getAllKeys};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiGet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "multiGet", "(Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Callback;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiSet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "multiSet", "(Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Callback;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiMerge(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "multiMerge", "(Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Callback;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiRemove(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "multiRemove", "(Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Callback;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_clear(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "clear", "(Lcom/facebook/react/bridge/Callback;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_getAllKeys(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "getAllKeys", "(Lcom/facebook/react/bridge/Callback;)V", args, count);
+    }
+
+
+    NativeAsyncSQLiteDBStorageSpecJSI::NativeAsyncSQLiteDBStorageSpecJSI(const JavaTurboModule::InitParams &params)
+      : JavaTurboModule(params) {
+        
+        methodMap_["multiGet"] = MethodMetadata {2, __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiGet};
+        
+        
+        methodMap_["multiSet"] = MethodMetadata {2, __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiSet};
+        
+        
+        methodMap_["multiMerge"] = MethodMetadata {2, __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiMerge};
+        
+        
+        methodMap_["multiRemove"] = MethodMetadata {2, __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiRemove};
+        
+        
+        methodMap_["clear"] = MethodMetadata {1, __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_clear};
+        
+        
+        methodMap_["getAllKeys"] = MethodMetadata {1, __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_getAllKeys};
         
         
 
@@ -1235,36 +1471,104 @@ namespace facebook {
   namespace react {
 
     
-    static facebook::jsi::Value __hostFunction_NativeImageStoreSpecJSI_getBase64ForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeImageStoreAndroidSpecJSI_getBase64ForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "getBase64ForTag", "(Ljava/lang/String;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeImageStoreSpecJSI_hasImageForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+
+    NativeImageStoreAndroidSpecJSI::NativeImageStoreAndroidSpecJSI(const JavaTurboModule::InitParams &params)
+      : JavaTurboModule(params) {
+        
+        methodMap_["getBase64ForTag"] = MethodMetadata {3, __hostFunction_NativeImageStoreAndroidSpecJSI_getBase64ForTag};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeImageStoreIOSSpecJSI_getBase64ForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "getBase64ForTag", "(Ljava/lang/String;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeImageStoreIOSSpecJSI_hasImageForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "hasImageForTag", "(Ljava/lang/String;Lcom/facebook/react/bridge/Callback;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeImageStoreSpecJSI_removeImageForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeImageStoreIOSSpecJSI_removeImageForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "removeImageForTag", "(Ljava/lang/String;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeImageStoreSpecJSI_addImageFromBase64(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeImageStoreIOSSpecJSI_addImageFromBase64(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "addImageFromBase64", "(Ljava/lang/String;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V", args, count);
     }
 
 
-    NativeImageStoreSpecJSI::NativeImageStoreSpecJSI(const JavaTurboModule::InitParams &params)
+    NativeImageStoreIOSSpecJSI::NativeImageStoreIOSSpecJSI(const JavaTurboModule::InitParams &params)
       : JavaTurboModule(params) {
         
-        methodMap_["getBase64ForTag"] = MethodMetadata {3, __hostFunction_NativeImageStoreSpecJSI_getBase64ForTag};
+        methodMap_["getBase64ForTag"] = MethodMetadata {3, __hostFunction_NativeImageStoreIOSSpecJSI_getBase64ForTag};
         
         
-        methodMap_["hasImageForTag"] = MethodMetadata {2, __hostFunction_NativeImageStoreSpecJSI_hasImageForTag};
+        methodMap_["hasImageForTag"] = MethodMetadata {2, __hostFunction_NativeImageStoreIOSSpecJSI_hasImageForTag};
         
         
-        methodMap_["removeImageForTag"] = MethodMetadata {1, __hostFunction_NativeImageStoreSpecJSI_removeImageForTag};
+        methodMap_["removeImageForTag"] = MethodMetadata {1, __hostFunction_NativeImageStoreIOSSpecJSI_removeImageForTag};
         
         
-        methodMap_["addImageFromBase64"] = MethodMetadata {3, __hostFunction_NativeImageStoreSpecJSI_addImageFromBase64};
+        methodMap_["addImageFromBase64"] = MethodMetadata {3, __hostFunction_NativeImageStoreIOSSpecJSI_addImageFromBase64};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_getInitialURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "getInitialURL", "(Lcom/facebook/react/bridge/Promise;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_canOpenURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "canOpenURL", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_openURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "openURL", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_openSettings(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "openSettings", "(Lcom/facebook/react/bridge/Promise;)V", args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_sendIntent(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "sendIntent", "(Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Promise;)V", args, count);
+    }
+
+
+    NativeIntentAndroidSpecJSI::NativeIntentAndroidSpecJSI(const JavaTurboModule::InitParams &params)
+      : JavaTurboModule(params) {
+        
+        methodMap_["getInitialURL"] = MethodMetadata {0, __hostFunction_NativeIntentAndroidSpecJSI_getInitialURL};
+        
+        
+        methodMap_["canOpenURL"] = MethodMetadata {1, __hostFunction_NativeIntentAndroidSpecJSI_canOpenURL};
+        
+        
+        methodMap_["openURL"] = MethodMetadata {1, __hostFunction_NativeIntentAndroidSpecJSI_openURL};
+        
+        
+        methodMap_["openSettings"] = MethodMetadata {0, __hostFunction_NativeIntentAndroidSpecJSI_openSettings};
+        
+        
+        methodMap_["sendIntent"] = MethodMetadata {2, __hostFunction_NativeIntentAndroidSpecJSI_sendIntent};
         
         
 
@@ -1377,57 +1681,50 @@ namespace facebook {
   namespace react {
 
     
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_getInitialURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_getInitialURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "getInitialURL", "(Lcom/facebook/react/bridge/Promise;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_canOpenURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_canOpenURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "canOpenURL", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_openURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_openURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "openURL", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_openSettings(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_openSettings(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "openSettings", "(Lcom/facebook/react/bridge/Promise;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_sendIntent(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "sendIntent", "(Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Promise;)V", args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "addListener", "(Ljava/lang/String;)V", args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeLinkingSpecJSI_removeListeners(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_removeListeners(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "removeListeners", "(D)V", args, count);
     }
 
 
-    NativeLinkingSpecJSI::NativeLinkingSpecJSI(const JavaTurboModule::InitParams &params)
+    NativeLinkingManagerSpecJSI::NativeLinkingManagerSpecJSI(const JavaTurboModule::InitParams &params)
       : JavaTurboModule(params) {
         
-        methodMap_["getInitialURL"] = MethodMetadata {0, __hostFunction_NativeLinkingSpecJSI_getInitialURL};
+        methodMap_["getInitialURL"] = MethodMetadata {0, __hostFunction_NativeLinkingManagerSpecJSI_getInitialURL};
         
         
-        methodMap_["canOpenURL"] = MethodMetadata {1, __hostFunction_NativeLinkingSpecJSI_canOpenURL};
+        methodMap_["canOpenURL"] = MethodMetadata {1, __hostFunction_NativeLinkingManagerSpecJSI_canOpenURL};
         
         
-        methodMap_["openURL"] = MethodMetadata {1, __hostFunction_NativeLinkingSpecJSI_openURL};
+        methodMap_["openURL"] = MethodMetadata {1, __hostFunction_NativeLinkingManagerSpecJSI_openURL};
         
         
-        methodMap_["openSettings"] = MethodMetadata {0, __hostFunction_NativeLinkingSpecJSI_openSettings};
+        methodMap_["openSettings"] = MethodMetadata {0, __hostFunction_NativeLinkingManagerSpecJSI_openSettings};
         
         
-        methodMap_["sendIntent"] = MethodMetadata {2, __hostFunction_NativeLinkingSpecJSI_sendIntent};
+        methodMap_["addListener"] = MethodMetadata {1, __hostFunction_NativeLinkingManagerSpecJSI_addListener};
         
         
-        methodMap_["addListener"] = MethodMetadata {1, __hostFunction_NativeLinkingSpecJSI_addListener};
-        
-        
-        methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeLinkingSpecJSI_removeListeners};
+        methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeLinkingManagerSpecJSI_removeListeners};
         
         
 
@@ -2056,33 +2353,6 @@ namespace facebook {
         
         
         methodMap_["getConstants"] = MethodMetadata {0, __hostFunction_NativeStatusBarManagerIOSSpecJSI_getConstants};
-        
-        
-
-    }
-
-  } // namespace react
-} // namespace facebook
-namespace facebook {
-  namespace react {
-
-    
-    static facebook::jsi::Value __hostFunction_NativeTVNavigationEventEmitterSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "addListener", "(Ljava/lang/String;)V", args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeTVNavigationEventEmitterSpecJSI_removeListeners(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "removeListeners", "(D)V", args, count);
-    }
-
-
-    NativeTVNavigationEventEmitterSpecJSI::NativeTVNavigationEventEmitterSpecJSI(const JavaTurboModule::InitParams &params)
-      : JavaTurboModule(params) {
-        
-        methodMap_["addListener"] = MethodMetadata {1, __hostFunction_NativeTVNavigationEventEmitterSpecJSI_addListener};
-        
-        
-        methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeTVNavigationEventEmitterSpecJSI_removeListeners};
         
         
 

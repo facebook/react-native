@@ -17,7 +17,7 @@ import android.text.style.LineHeightSpan;
 public class CustomLineHeightSpan implements LineHeightSpan, ReactSpan {
   private final int mHeight;
 
-  CustomLineHeightSpan(float height) {
+  public CustomLineHeightSpan(float height) {
     this.mHeight = (int) Math.ceil(height);
   }
 

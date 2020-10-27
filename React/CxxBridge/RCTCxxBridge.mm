@@ -37,7 +37,16 @@
 #import <jsireact/JSIExecutor.h>
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
+#if TARGET_OS_OSX && __has_include(<hermes/hermes.h>)
+#define RCT_USE_HERMES 1
+#endif
+#if RCT_USE_HERMES
+#import "HermesExecutorFactory.h"
+#else
 #import "JSCExecutorFactory.h"
+#endif
+#import "RCTJSIExecutorRuntimeInstaller.h"
+
 #import "NSDataBigString.h"
 #import "RCTMessageThread.h"
 #import "RCTObjcExecutor.h"
@@ -152,6 +161,10 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
         break;
     }
   };
+
+  // TODO T76726108 Hook this up to the performance logger
+  ReactMarker::logTaggedMarkerWithInstanceKey =
+      [](const ReactMarker::ReactMarkerId markerId, const char *__unused tag, const __unused int) {};
 }
 
 @interface RCTCxxBridge ()
@@ -370,7 +383,12 @@ struct RCTInstanceCallback : public InstanceCallback {
       executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
     }
     if (!executorFactory) {
-      executorFactory = std::make_shared<JSCExecutorFactory>(nullptr);
+      auto installBindings = RCTJSIExecutorRuntimeInstaller(nullptr);
+#if RCT_USE_HERMES
+      executorFactory = std::make_shared<HermesExecutorFactory>(installBindings);
+#else
+      executorFactory = std::make_shared<JSCExecutorFactory>(installBindings);
+#endif
     }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
@@ -1013,10 +1031,6 @@ struct RCTInstanceCallback : public InstanceCallback {
         [self enqueueApplicationScript:source.data
                                    url:source.url
                             onComplete:^{
-                              [[NSNotificationCenter defaultCenter]
-                                  postNotificationName:RCTAdditionalJavaScriptDidLoadNotification
-                                                object:self->_parentBridge
-                                              userInfo:@{@"bridge" : self}];
                               [self.devSettings setupHMRClientWithAdditionalBundleURL:source.url];
                               onComplete();
                             }];
@@ -1107,26 +1121,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
  */
 - (void)setUp
 {
-}
-
-- (void)reload
-{
-  if (!_valid) {
-    RCTLogWarn(
-        @"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.",
-        self);
-  }
-  RCTTriggerReloadCommandListeners(@"Unknown from cxx bridge");
-}
-
-- (void)reloadWithReason:(NSString *)reason
-{
-  if (!_valid) {
-    RCTLogWarn(
-        @"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.",
-        self);
-  }
-  RCTTriggerReloadCommandListeners(reason);
 }
 
 - (Class)executorClass
