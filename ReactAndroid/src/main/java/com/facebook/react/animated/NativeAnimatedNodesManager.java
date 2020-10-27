@@ -718,6 +718,12 @@ import java.util.Queue;
                   + " but toposort visited only "
                   + updatedNodesCount);
       if (mEventListenerInitializedForFabric && cyclesDetected == 0) {
+        // TODO T71377544: investigate these SoftExceptions and see if we can remove entirely
+        // or fix the root cause
+        ReactSoftException.logSoftException(TAG, new ReactNoCrashSoftException(ex));
+      } else if (mEventListenerInitializedForFabric) {
+        // TODO T71377544: investigate these SoftExceptions and see if we can remove entirely
+        // or fix the root cause
         ReactSoftException.logSoftException(TAG, new ReactNoCrashSoftException(ex));
       } else {
         throw ex;

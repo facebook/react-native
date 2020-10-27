@@ -10,23 +10,23 @@
 
 'use strict';
 
-const AnimatedImplementation = require('../../Animated/src/AnimatedImplementation');
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const ReactNative = require('../../Renderer/shims/ReactNative');
+import AnimatedImplementation from '../../Animated/AnimatedImplementation';
+import Platform from '../../Utilities/Platform';
+import * as React from 'react';
+import ReactNative from '../../Renderer/shims/ReactNative';
 require('../../Renderer/shims/ReactNative'); // Force side effects to prevent T55744311
-const ScrollResponder = require('../ScrollResponder');
-const ScrollViewStickyHeader = require('./ScrollViewStickyHeader');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
+import ScrollResponder from '../ScrollResponder';
+import ScrollViewStickyHeader from './ScrollViewStickyHeader';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
 
-const dismissKeyboard = require('../../Utilities/dismissKeyboard');
-const flattenStyle = require('../../StyleSheet/flattenStyle');
-const invariant = require('invariant');
-const processDecelerationRate = require('./processDecelerationRate');
-const resolveAssetSource = require('../../Image/resolveAssetSource');
-const splitLayoutProps = require('../../StyleSheet/splitLayoutProps');
-const setAndForwardRef = require('../../Utilities/setAndForwardRef');
+import dismissKeyboard from '../../Utilities/dismissKeyboard';
+import flattenStyle from '../../StyleSheet/flattenStyle';
+import invariant from 'invariant';
+import processDecelerationRate from './processDecelerationRate';
+import resolveAssetSource from '../../Image/resolveAssetSource';
+import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
+import setAndForwardRef from '../../Utilities/setAndForwardRef';
 
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PointProp} from '../../StyleSheet/PointPropType';
@@ -42,6 +42,7 @@ import type {State as ScrollResponderState} from '../ScrollResponder';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 
+import ScrollViewContext, {HORIZONTAL, VERTICAL} from './ScrollViewContext';
 import ScrollViewNativeComponent from './ScrollViewNativeComponent';
 import ScrollContentViewNativeComponent from './ScrollContentViewNativeComponent';
 import AndroidHorizontalScrollViewNativeComponent from './AndroidHorizontalScrollViewNativeComponent';
@@ -610,14 +611,8 @@ function createScrollResponder(
   return scrollResponder;
 }
 
-type ContextType = {|horizontal: boolean|} | null;
-const Context: React.Context<ContextType> = React.createContext(null);
-const standardHorizontalContext: ContextType = Object.freeze({
-  horizontal: true,
-});
-const standardVerticalContext: ContextType = Object.freeze({horizontal: false});
 type ScrollViewComponentStatics = $ReadOnly<{|
-  Context: typeof Context,
+  Context: typeof ScrollViewContext,
 |}>;
 
 /**
@@ -656,7 +651,7 @@ type ScrollViewComponentStatics = $ReadOnly<{|
  * supports out of the box.
  */
 class ScrollView extends React.Component<Props, State> {
-  static Context: React$Context<ContextType> = Context;
+  static Context: typeof ScrollViewContext = ScrollViewContext;
   /**
    * Part 1: Removing ScrollResponder.Mixin:
    *
@@ -1078,7 +1073,7 @@ class ScrollView extends React.Component<Props, State> {
           return (
             <StickyHeaderComponent
               key={key}
-              nativeID={'StickyHeader-' + key}
+              nativeID={'StickyHeader-' + key} /* TODO: T68258846. */
               ref={ref => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={this._headerLayoutYs.get(
                 this._getKeyForIndex(nextIndex, childArray),
@@ -1096,14 +1091,10 @@ class ScrollView extends React.Component<Props, State> {
       });
     }
     children = (
-      <Context.Provider
-        value={
-          this.props.horizontal === true
-            ? standardHorizontalContext
-            : standardVerticalContext
-        }>
+      <ScrollViewContext.Provider
+        value={this.props.horizontal === true ? HORIZONTAL : VERTICAL}>
         {children}
-      </Context.Provider>
+      </ScrollViewContext.Provider>
     );
 
     const hasStickyHeaders =
@@ -1215,13 +1206,12 @@ class ScrollView extends React.Component<Props, State> {
     if (refreshControl) {
       if (Platform.OS === 'ios') {
         // On iOS the RefreshControl is a child of the ScrollView.
-        // tvOS lacks native support for RefreshControl, so don't include it in that case
         return (
           /* $FlowFixMe(>=0.117.0 site=react_native_fb) This comment suppresses
            * an error found when Flow v0.117 was deployed. To see the error,
            * delete this comment and run Flow. */
           <ScrollViewClass {...props} ref={this._setNativeRef}>
-            {Platform.isTV ? null : refreshControl}
+            {refreshControl}
             {contentContainer}
           </ScrollViewClass>
         );
@@ -1277,7 +1267,7 @@ Wrapper.displayName = 'ScrollView';
 const ForwardedScrollView = React.forwardRef(Wrapper);
 
 // $FlowFixMe Add static context to ForwardedScrollView
-ForwardedScrollView.Context = Context;
+ForwardedScrollView.Context = ScrollViewContext;
 
 ForwardedScrollView.displayName = 'ScrollView';
 

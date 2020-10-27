@@ -14,6 +14,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -34,6 +35,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
@@ -94,6 +96,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mLastWidth = 0;
   private int mLastHeight = 0;
+  private int mLastOffsetX = Integer.MIN_VALUE;
+  private int mLastOffsetY = Integer.MIN_VALUE;
   private @UIManagerType int mUIManagerType = DEFAULT;
 
   public ReactRootView(Context context) {
@@ -161,7 +165,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       if (mReactInstanceManager != null && !mIsAttachedToInstance) {
         attachToReactInstanceManager();
       } else if (measureSpecsUpdated || mLastWidth != width || mLastHeight != height) {
-        updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
+        updateRootLayoutSpecs(true, mWidthMeasureSpec, mHeightMeasureSpec);
       }
       mLastWidth = width;
       mLastHeight = height;
@@ -291,7 +295,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    // No-op since UIManagerModule handles actually laying out children.
+    // No-op in non-Fabric since UIManagerModule handles actually laying out children.
+
+    // In Fabric, update LayoutSpecs just so we update the offsetX and offsetY.
+    if (mWasMeasured && getUIManagerType() == FABRIC) {
+      updateRootLayoutSpecs(false, mWidthMeasureSpec, mHeightMeasureSpec);
+    }
   }
 
   @Override
@@ -376,8 +385,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
       mReactInstanceManager.createReactContextInBackground();
 
-      attachToReactInstanceManager();
-
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
@@ -405,7 +412,31 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return appProperties != null ? appProperties.getString("surfaceID") : null;
   }
 
-  private void updateRootLayoutSpecs(final int widthMeasureSpec, final int heightMeasureSpec) {
+  public static Point getViewportOffset(View v) {
+    int[] locationInWindow = new int[2];
+    v.getLocationInWindow(locationInWindow);
+
+    // we need to subtract visibleWindowCoords - to subtract possible window insets, split
+    // screen or multi window
+    Rect visibleWindowFrame = new Rect();
+    v.getWindowVisibleDisplayFrame(visibleWindowFrame);
+    locationInWindow[0] -= visibleWindowFrame.left;
+    locationInWindow[1] -= visibleWindowFrame.top;
+
+    return new Point(locationInWindow[0], locationInWindow[1]);
+  }
+
+  /**
+   * Call whenever measure specs change, or if you want to force an update of offsetX/offsetY. If
+   * measureSpecsChanged is false and the offsetX/offsetY don't change, updateRootLayoutSpecs will
+   * not be called on the UIManager as a perf optimization.
+   *
+   * @param measureSpecsChanged
+   * @param widthMeasureSpec
+   * @param heightMeasureSpec
+   */
+  private void updateRootLayoutSpecs(
+      boolean measureSpecsChanged, final int widthMeasureSpec, final int heightMeasureSpec) {
     if (mReactInstanceManager == null) {
       FLog.w(TAG, "Unable to update root layout specs for uninitialized ReactInstanceManager");
       return;
@@ -418,7 +449,21 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
       // Ignore calling updateRootLayoutSpecs if UIManager is not properly initialized.
       if (uiManager != null) {
-        uiManager.updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
+        // In Fabric only, get position of view within screen
+        int offsetX = 0;
+        int offsetY = 0;
+        if (getUIManagerType() == FABRIC) {
+          Point viewportOffset = getViewportOffset(this);
+          offsetX = viewportOffset.x;
+          offsetY = viewportOffset.y;
+        }
+
+        if (measureSpecsChanged || offsetX != mLastOffsetX || offsetY != mLastOffsetY) {
+          uiManager.updateRootLayoutSpecs(
+              getRootViewTag(), widthMeasureSpec, heightMeasureSpec, offsetX, offsetY);
+        }
+        mLastOffsetX = offsetX;
+        mLastOffsetY = offsetY;
       }
     }
   }
@@ -445,8 +490,19 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         UIManager uiManager =
             UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
         if (uiManager != null) {
-          FLog.e(TAG, "stopSurface for surfaceId: " + this.getId());
-          uiManager.stopSurface(this.getId());
+          // TODO T48186892: remove when resolved
+          FLog.e(
+              TAG,
+              "stopSurface for surfaceId: " + this.getId(),
+              new RuntimeException("unmountReactApplication"));
+          if (getId() == NO_ID) {
+            ReactSoftException.logSoftException(
+                TAG,
+                new RuntimeException(
+                    "unmountReactApplication called on ReactRootView with invalid id"));
+          } else {
+            uiManager.stopSurface(this.getId());
+          }
         }
       }
     }
@@ -530,7 +586,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       String jsAppModuleName = getJSModuleName();
 
       if (mWasMeasured) {
-        updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
+        updateRootLayoutSpecs(true, mWidthMeasureSpec, mHeightMeasureSpec);
       }
 
       WritableNativeMap appParams = new WritableNativeMap();

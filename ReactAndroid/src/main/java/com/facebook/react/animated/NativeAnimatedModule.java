@@ -17,6 +17,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
@@ -34,6 +35,7 @@ import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Module that exposes interface for creating and managing animated nodes on the "native" side.
@@ -88,6 +90,16 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   private abstract class UIThreadOperation {
     abstract void execute(NativeAnimatedNodesManager animatedNodesManager);
+
+    long mBatchNumber = -1;
+
+    public void setBatchNumber(long batchNumber) {
+      mBatchNumber = batchNumber;
+    }
+
+    public long getBatchNumber() {
+      return mBatchNumber;
+    }
   }
 
   @NonNull private final GuardedFrameCallback mAnimatedFrameCallback;
@@ -101,7 +113,11 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   private final ConcurrentLinkedQueue<UIThreadOperation> mPreOperations =
       new ConcurrentLinkedQueue<>();
 
-  private @Nullable NativeAnimatedNodesManager mNodesManager;
+  private final AtomicReference<NativeAnimatedNodesManager> mNodesManager = new AtomicReference<>();
+
+  private boolean mBatchingControlledByJS = false; // TODO T71377544: delete
+  private volatile long mCurrentFrameNumber; // TODO T71377544: delete
+  private volatile long mCurrentBatchNumber;
 
   private boolean mInitializedForFabric = false;
   private boolean mInitializedForNonFabric = false;
@@ -157,11 +173,24 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   private void addOperation(UIThreadOperation operation) {
+    operation.setBatchNumber(mCurrentBatchNumber);
+    mOperations.add(operation);
+  }
+
+  private void addUnbatchedOperation(UIThreadOperation operation) {
+    operation.setBatchNumber(-1);
     mOperations.add(operation);
   }
 
   private void addPreOperation(UIThreadOperation operation) {
+    operation.setBatchNumber(mCurrentBatchNumber);
     mPreOperations.add(operation);
+  }
+
+  // For FabricUIManager only
+  @Override
+  public void didScheduleMountItems(UIManager uiManager) {
+    mCurrentFrameNumber++;
   }
 
   // For FabricUIManager only
@@ -172,23 +201,56 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       return;
     }
 
-    // This will execute all operations and preOperations queued
-    // since the last time this was run, and will race with anything
-    // being queued from the JS thread. That is, if the JS thread
-    // is still queuing operations, we might execute some of them
-    // at the very end until we exhaust the queue faster than the
-    // JS thread can queue up new items.
-    // The reason we increment in scheduleMountItems and subtract 1 here
-    // is that `scheduleMountItems` happens as close to the JS commit as
-    // possible, whereas execution of those same items might happen sometime
-    // later on the UI thread while the JS thread keeps plugging along.
-    executeAllOperations(mPreOperations);
-    executeAllOperations(mOperations);
+    long batchNumber = mCurrentBatchNumber - 1;
+
+    // TODO T71377544: delete this when the JS method is confirmed safe
+    if (!mBatchingControlledByJS) {
+      // The problem we're trying to solve here: we could be in the middle of queueing
+      // a batch of related animation operations when Fabric flushes a batch of MountItems.
+      // It's visually bad if we execute half of the animation ops and then wait another frame
+      // (or more) to execute the rest.
+      // See mFrameNumber. If the dispatchedFrameNumber drifts too far - that
+      // is, if no MountItems are scheduled for a while, which can happen if a tree
+      // is committed but there are no changes - bring these counts back in sync and
+      // execute any queued operations. This number is arbitrary, but we want it low
+      // enough that the user shouldn't be able to see this delay in most cases.
+      mCurrentFrameNumber++;
+      if ((mCurrentFrameNumber - mCurrentBatchNumber) > 2) {
+        mCurrentBatchNumber = mCurrentFrameNumber;
+        batchNumber = mCurrentBatchNumber;
+      }
+    }
+
+    executeAllOperations(mPreOperations, batchNumber);
+    executeAllOperations(mOperations, batchNumber);
   }
 
-  private void executeAllOperations(Queue<UIThreadOperation> operationQueue) {
+  @UiThread
+  private void executeAllOperations(Queue<UIThreadOperation> operationQueue, long maxBatchNumber) {
     NativeAnimatedNodesManager nodesManager = getNodesManager();
     while (true) {
+      // There is a race condition where `peek` may return a non-null value and isEmpty() is false,
+      // but `poll` returns a null value - it's not clear why since we only peek and poll on the UI
+      // thread, but it might be something that happens during teardown or a crash. Regardless, the
+      // root cause is not currently known so we're extra cautious here.
+      // It happens equally in Fabric and non-Fabric.
+      UIThreadOperation peekedOperation = operationQueue.peek();
+
+      // This is the same as operationQueue.isEmpty()
+      if (peekedOperation == null) {
+        return;
+      }
+      // The rest of the operations are for the next frame.
+      if (peekedOperation.getBatchNumber() > maxBatchNumber) {
+        return;
+      }
+
+      // Since we apparently can't guarantee that there is still an operation on the queue,
+      // much less the same operation, we do a poll and another null check. If this isn't
+      // the same operation as the peeked operation, we can't do anything about it - we still
+      // need to execute it, we have no mechanism to put it at the front of the queue, and it
+      // won't cause any errors to execute it earlier than expected (just a bit of UI jank at worst)
+      // so we just continue happily along.
       UIThreadOperation polledOperation = operationQueue.poll();
       if (polledOperation == null) {
         return;
@@ -208,11 +270,13 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       return;
     }
 
+    final long frameNo = mCurrentBatchNumber++;
+
     UIBlock preOperationsUIBlock =
         new UIBlock() {
           @Override
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-            executeAllOperations(mPreOperations);
+            executeAllOperations(mPreOperations, frameNo);
           }
         };
 
@@ -220,7 +284,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
         new UIBlock() {
           @Override
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-            executeAllOperations(mOperations);
+            executeAllOperations(mOperations, frameNo);
           }
         };
 
@@ -254,15 +318,15 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
    */
   @Nullable
   private NativeAnimatedNodesManager getNodesManager() {
-    if (mNodesManager == null) {
+    if (mNodesManager.get() == null) {
       ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
       if (reactApplicationContext != null) {
-        mNodesManager = new NativeAnimatedNodesManager(reactApplicationContext);
+        mNodesManager.compareAndSet(null, new NativeAnimatedNodesManager(reactApplicationContext));
       }
     }
 
-    return mNodesManager;
+    return mNodesManager.get();
   }
 
   private void clearFrameCallback() {
@@ -279,7 +343,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   @VisibleForTesting
   public void setNodesManager(NativeAnimatedNodesManager nodesManager) {
-    mNodesManager = nodesManager;
+    mNodesManager.set(nodesManager);
   }
 
   /**
@@ -297,8 +361,14 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       mNumNonFabricAnimations++;
     }
 
-    if (mNodesManager != null) {
-      mNodesManager.initializeEventListenerForUIManagerType(mUIManagerType);
+    NativeAnimatedNodesManager nodesManager = getNodesManager();
+    if (nodesManager != null) {
+      nodesManager.initializeEventListenerForUIManagerType(mUIManagerType);
+    } else {
+      ReactSoftException.logSoftException(
+          NAME,
+          new RuntimeException(
+              "initializeLifecycleEventListenersForViewTag could not get NativeAnimatedNodesManager"));
     }
 
     // Subscribe to UIManager (Fabric or non-Fabric) lifecycle events if we haven't yet
@@ -351,6 +421,18 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
         && mUIManagerType != UIManagerType.DEFAULT) {
       mUIManagerType = UIManagerType.DEFAULT;
     }
+  }
+
+  @Override
+  public void startOperationBatch() {
+    mBatchingControlledByJS = true;
+    mCurrentBatchNumber++;
+  }
+
+  @Override
+  public void finishOperationBatch() {
+    mBatchingControlledByJS = true;
+    mCurrentBatchNumber++;
   }
 
   @Override
@@ -540,7 +622,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       FLog.d(NAME, "queue startAnimatingNode: ID: " + animationId + " tag: " + animatedNodeTag);
     }
 
-    addOperation(
+    addUnbatchedOperation(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {

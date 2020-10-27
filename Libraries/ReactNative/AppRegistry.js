@@ -18,9 +18,9 @@ const SceneTracker = require('../Utilities/SceneTracker');
 const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
 const renderApplication = require('./renderApplication');
-const createPerformanceLogger = require('../Utilities/createPerformanceLogger');
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
+import createPerformanceLogger from '../Utilities/createPerformanceLogger';
 import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
 

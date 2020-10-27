@@ -12,7 +12,7 @@
 
 const DevSettings = require('./DevSettings');
 const invariant = require('invariant');
-const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
+const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
 const Platform = require('./Platform');
 const prettyFormat = require('pretty-format');
 

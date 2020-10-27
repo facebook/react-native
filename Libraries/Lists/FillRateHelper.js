@@ -10,8 +10,6 @@
 
 'use strict';
 
-const warning = require('fbjs/lib/warning');
-
 export type FillRateInfo = Info;
 
 class Info {
@@ -59,10 +57,9 @@ class FillRateHelper {
   static addListener(
     callback: FillRateInfo => void,
   ): {remove: () => void, ...} {
-    warning(
-      _sampleRate !== null,
-      'Call `FillRateHelper.setSampleRate` before `addListener`.',
-    );
+    if (_sampleRate === null) {
+      console.warn('Call `FillRateHelper.setSampleRate` before `addListener`.');
+    }
     _listeners.push(callback);
     return {
       remove: () => {

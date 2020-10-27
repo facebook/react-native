@@ -8,8 +8,8 @@
 #import "RCTSafeAreaViewComponentView.h"
 
 #import <React/RCTUtils.h>
-#import <react/components/safeareaview/SafeAreaViewComponentDescriptor.h>
-#import <react/components/safeareaview/SafeAreaViewState.h>
+#import <react/renderer/components/safeareaview/SafeAreaViewComponentDescriptor.h>
+#import <react/renderer/components/safeareaview/SafeAreaViewState.h>
 #import "FBRCTFabricComponentsPlugins.h"
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
@@ -17,7 +17,7 @@
 using namespace facebook::react;
 
 @implementation RCTSafeAreaViewComponentView {
-  SafeAreaViewShadowNode::ConcreteState::Shared _state;
+  SafeAreaViewShadowNode::ConcreteStateTeller _stateTeller;
   EdgeInsets _lastPaddingStateWasUpdatedWith;
 }
 
@@ -34,7 +34,7 @@ using namespace facebook::react;
 
 - (UIEdgeInsets)_safeAreaInsets
 {
-  if (@available(iOS 11.0, tvOS 11.0, *)) {
+  if (@available(iOS 11.0, *)) {
     return self.safeAreaInsets;
   }
 
@@ -50,10 +50,6 @@ using namespace facebook::react;
 
 - (void)_updateStateIfNecessary
 {
-  if (!_state) {
-    return;
-  }
-
   UIEdgeInsets insets = [self _safeAreaInsets];
   insets.left = RCTRoundPixelValue(insets.left);
   insets.top = RCTRoundPixelValue(insets.top);
@@ -70,22 +66,21 @@ using namespace facebook::react;
   }
 
   _lastPaddingStateWasUpdatedWith = newPadding;
-  _state->updateState(SafeAreaViewState{newPadding});
+  _stateTeller.updateState(SafeAreaViewState{newPadding});
 }
 
 #pragma mark - RCTComponentViewProtocol
 
-- (void)updateState:(facebook::react::State::Shared const &)state
-           oldState:(facebook::react::State::Shared const &)oldState
+- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _state = std::static_pointer_cast<SafeAreaViewShadowNode::ConcreteState const>(state);
+  _stateTeller.setConcreteState(state);
   [self _updateStateIfNecessary];
 }
 
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  _state.reset();
+  _stateTeller.invalidate();
   _lastPaddingStateWasUpdatedWith = {};
 }
 

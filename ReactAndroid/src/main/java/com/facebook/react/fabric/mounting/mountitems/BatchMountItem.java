@@ -71,33 +71,20 @@ public class BatchMountItem implements MountItem {
   public void execute(@NonNull MountingManager mountingManager) {
     beginMarkers("mountViews");
 
-    for (int mountItemIndex = 0; mountItemIndex < mSize; mountItemIndex++) {
-      MountItem mountItem = mMountItems[mountItemIndex];
-      mountItem.execute(mountingManager);
-    }
-
-    endMarkers();
-  }
-
-  /**
-   * In the case of teardown/stopSurface, we want to delete all views associated with a SurfaceID.
-   * It can be the case that a single BatchMountItem contains both the create *and* delete
-   * instruction for a view, so this needs to be failsafe.
-   *
-   * @param mountingManager
-   */
-  public void executeDeletes(@NonNull MountingManager mountingManager) {
-    beginMarkers("deleteViews");
-
-    for (int mountItemIndex = 0; mountItemIndex < mSize; mountItemIndex++) {
-      MountItem mountItem = mMountItems[mountItemIndex];
-      if (mountItem instanceof RemoveDeleteMultiMountItem) {
-        try {
-          ((RemoveDeleteMultiMountItem) mountItem).executeDeletes(mountingManager, true);
-        } catch (RuntimeException e) {
-          FLog.e(TAG, "Ignoring deletion exception", e);
-        }
+    int mountItemIndex = 0;
+    try {
+      for (; mountItemIndex < mSize; mountItemIndex++) {
+        mMountItems[mountItemIndex].execute(mountingManager);
       }
+    } catch (RuntimeException e) {
+      FLog.e(
+          TAG,
+          "Caught exception executing mountItem @"
+              + mountItemIndex
+              + ": "
+              + mMountItems[mountItemIndex].toString(),
+          e);
+      throw e;
     }
 
     endMarkers();

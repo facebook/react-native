@@ -22,7 +22,7 @@ module.exports = {
     '/node_modules/',
     '<rootDir>/template',
     'Libraries/Renderer',
-    'RNTester/e2e',
+    'packages/rn-tester/e2e',
   ],
   transformIgnorePatterns: ['node_modules/(?!@react-native/)'],
   haste: {
@@ -36,7 +36,6 @@ module.exports = {
     'source-map',
     'fastpath',
     'denodeify',
-    'fbjs',
   ],
   testEnvironment: 'node',
   collectCoverageFrom: ['Libraries/**/*.js'],
