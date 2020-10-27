@@ -33,9 +33,6 @@ def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 //   - glog-0.3.5
 def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
 
-// The 'USE_CODEGEN' environment variable will use codegen and compile the output.
-def enableCodegen =  (System.getenv('USE_CODEGEN') ?: '0').toBoolean()
-
 // The 'USE_FABRIC' environment variable will build Fabric C++ code into the bundle
 // USE_FABRIC=0 will build RN excluding fabric
 // USE_FABRIC=1 will build RN including fabric
@@ -321,7 +318,6 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
             "REACT_GENERATED_SRC_DIR=$buildDir/generated/source",
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
             "BUILD_FABRIC=$enableFabric",
-            "USE_CODEGEN=$enableCodegen",
             "-C", file("src/main/jni/react/jni").absolutePath,
             "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
     )
