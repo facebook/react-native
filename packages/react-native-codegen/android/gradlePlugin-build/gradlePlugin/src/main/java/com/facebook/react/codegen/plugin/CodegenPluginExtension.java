@@ -13,8 +13,7 @@ import java.util.StringTokenizer;
 import org.gradle.api.Project;
 
 public class CodegenPluginExtension {
-  // TODO: Remove beta.
-  public String codegenJavaPackageName = "com.facebook.fbreact.specs.beta";
+  public String codegenJavaPackageName = "com.facebook.fbreact.specs";
   public File jsRootDir;
   public String libraryName;
   public String[] nodeExecutableAndArgs = {"node"};

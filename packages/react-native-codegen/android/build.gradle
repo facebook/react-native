@@ -23,3 +23,24 @@ allprojects {
         jcenter()
     }
 }
+
+// This task is required when using react-native-codegen from source, instead of npm.
+task('buildCodegenCLI', type: Exec) {
+    def codegenRoot = "$projectDir/.."
+
+    inputs.files(
+        file("$codegenRoot/scripts"),
+        file("$codegenRoot/src"),
+        file("$codegenRoot/package.json"),
+        file("$codegenRoot/.babelrc"),
+        file("$codegenRoot/.prettierrc"),
+    )
+
+    def libDir = file("$codegenRoot/lib")
+    libDir.mkdirs()
+    def nodeModulesDir = file("$codegenRoot/node_modules")
+    nodeModulesDir.mkdirs();
+    outputs.dirs(libDir, nodeModulesDir)
+
+    commandLine("$codegenRoot/scripts/oss/build.sh")
+}

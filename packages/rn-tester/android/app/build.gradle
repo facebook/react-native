@@ -85,7 +85,7 @@ project.ext.react = [
     hermesCommand: "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc",
     enableHermesForVariant: { def v -> v.name.contains("hermes") },
     jsRootDir: "$rootDir/RNTester",
-    enableCodegen: (System.getenv('USE_CODEGEN') ?: '0').toBoolean(),
+    enableCodegen: true, // Keep this here until it's sync'ed to Android template.
     enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean(),
 ]
 

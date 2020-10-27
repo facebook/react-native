@@ -11,7 +11,6 @@
 'use strict';
 
 const View = require('../Components/View/View');
-const Platform = require('../Utilities/Platform');
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('react');
@@ -56,7 +55,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _eventDetachers: Array<Function> = [];
 
     // Only to be used in this file, and only in Fabric.
-    _animatedComponentId: number = animatedComponentNextId++;
+    _animatedComponentId: string = `${animatedComponentNextId++}:animatedComponent`;
 
     _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement

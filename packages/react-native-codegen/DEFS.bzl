@@ -1,3 +1,8 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 load("//tools/build_defs:buckconfig.bzl", "read_bool")
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load(
@@ -100,6 +105,7 @@ def rn_codegen_cli():
 def rn_codegen_modules(
         native_module_spec_name,
         name = "",
+        library_labels = [],
         schema_target = ""):
     generate_fixtures_rule_name = "generate_fixtures_modules-{}".format(name)
     generate_module_hobjcpp_name = "generate_module_hobjcpp-{}".format(name)
@@ -149,11 +155,11 @@ def rn_codegen_modules(
     )
 
     rn_android_library(
-        name = "generated_modules-{}".format(name),
+        name = "generated_java_modules-{}".format(name),
         srcs = [
             ":{}".format(generate_module_java_zip_name),
         ],
-        labels = ["codegen_rule"],
+        labels = library_labels + ["codegen_rule"],
         visibility = ["PUBLIC"],
         deps = [
             react_native_dep("third-party/java/jsr-305:jsr-305"),
@@ -167,7 +173,7 @@ def rn_codegen_modules(
     )
 
     rn_xplat_cxx_library(
-        name = "generated_modules-{}-jni".format(name),
+        name = "generated_java_modules-{}-jni".format(name),
         srcs = [
             ":{}".format(generate_module_jni_cpp_name),
         ],
@@ -197,7 +203,7 @@ def rn_codegen_modules(
             react_native_xplat_target("react/nativemodule/core:core"),
         ],
         platforms = (ANDROID,),
-        labels = ["codegen_rule"],
+        labels = library_labels + ["codegen_rule"],
     )
 
     ##############
@@ -236,7 +242,7 @@ def rn_codegen_modules(
             srcs = [
                 ":{}".format(generate_module_mm_name),
             ],
-            labels = ["codegen_rule"],
+            labels = library_labels + ["codegen_rule"],
             visibility = ["PUBLIC"],
             exported_deps = [
                 "//xplat/js/react-native-github:RCTTypeSafety",
