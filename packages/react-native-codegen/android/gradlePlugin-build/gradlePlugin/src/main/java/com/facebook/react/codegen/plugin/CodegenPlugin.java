@@ -50,6 +50,9 @@ public class CodegenPlugin implements Plugin<Project> {
                 return;
               }
 
+              // This is needed when using codegen from source, not from npm.
+              task.dependsOn(":packages:react-native-codegen:android:buildCodegenCLI");
+
               task.doFirst(
                   s -> {
                     generatedSrcDir.delete();
