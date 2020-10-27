@@ -107,6 +107,7 @@ public final class FunctionResolvedType extends ResolvedType<FunctionType> {
   }
 
   private static @Nullable String getFalsyReturnStatement(TypeName returnType) {
+    // TODO: Handle nullable falsy return.
     if (returnType == TypeName.BOOLEAN) {
       return "return false";
     } else if (returnType == TypeName.DOUBLE) {
