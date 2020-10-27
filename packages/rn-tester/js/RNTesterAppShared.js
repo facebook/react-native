@@ -213,6 +213,7 @@ const RNTesterApp = (): React.Node => {
           <RNTesterExampleContainer module={ExampleModule} />
         </View>
       )}
+
       <ExampleListsContainer
         isVisible={!ExampleModule}
         screen={screen || Screens.COMPONENTS}
