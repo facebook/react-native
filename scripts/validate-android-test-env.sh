@@ -11,6 +11,8 @@
 # the android sdk that is actually installed. Also, we must have the
 # right version of Java.
 
+THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
+
 # Check that Buck is working.
 if [ -z "$(which buck)" ]; then
   echo "You need to install Buck."
@@ -114,4 +116,15 @@ if [ -z "$JAVA_HOME" ]; then
   echo "Try adding export JAVA_HOME=\$(/usr/libexec/java_home) to your .bashrc or equivalent."
   echo "You will also want to add \$JAVA_HOME/bin to your path."
   exit 1
+fi
+
+# Assuming Android SDK/NDK has been set up, set up `local.properties` file
+# to force Gradle to use the provided versions. This is necessary before
+# the side-by-side NDK installation is supported for Circle CI runs.
+LOCAL_PROPERTIES="$THIS_DIR/../local.properties"
+if [ ! -f "$LOCAL_PROPERTIES" ]; then
+  echo "Setting up local.properties for NDK builds."
+  touch "$LOCAL_PROPERTIES"
+  echo "sdk.dir=$ANDROID_HOME" >> "$LOCAL_PROPERTIES"
+  echo "ndk.dir=$ANDROID_NDK" >> "$LOCAL_PROPERTIES"
 fi
