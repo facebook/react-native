@@ -10,6 +10,7 @@
 
 'use strict';
 
+import TextInjection from './TextInjection';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
 
 const DeprecatedTextPropTypes = require('../DeprecatedPropTypes/DeprecatedTextPropTypes');
@@ -254,6 +255,6 @@ const TextToExport: typeof Text &
     propTypes: typeof DeprecatedTextPropTypes,
   |}> =
   // $FlowFixMe[incompatible-type] - No good way to type a React.AbstractComponent with statics.
-  Text;
+  TextInjection.unstable_Text == null ? Text : TextInjection.unstable_Text;
 
 module.exports = TextToExport;

@@ -55,7 +55,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _eventDetachers: Array<Function> = [];
 
     // Only to be used in this file, and only in Fabric.
-    _animatedComponentId: number = animatedComponentNextId++;
+    _animatedComponentId: string = `${animatedComponentNextId++}:animatedComponent`;
 
     _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement
