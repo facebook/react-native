@@ -408,10 +408,6 @@ jobs:
                 command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
 
       - run:
-          name: Fetch CocoaPods Specs
-          command: |
-            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
-      - run:
           name: Setup the CocoaPods environment
           command: pod setup
 
@@ -420,10 +416,6 @@ jobs:
             - run:
                 name: Generate RNTesterPods Workspace
                 command: cd packages/rn-tester && bundle exec pod install --verbose
-
-      - run:
-          name: Generate RNTesterPods Xcode Workspace
-          command: pushd packages/rn-tester && bundle exec pod install --verbose && popd
 
       # -------------------------
       # Runs iOS unit tests
