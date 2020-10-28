@@ -56,7 +56,14 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
     self.backgroundColor = [RCTUIColor clearColor]; // TODO(macOS ISS#2323203)
     self.textColor = [RCTUIColor blackColor]; // TODO(macOS ISS#2323203)
     // This line actually removes 5pt (default value) left and right padding in UITextView.
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     self.textContainer.lineFragmentPadding = 0;
+#else
+    // macOS has a bug where setting this to 0 will cause the scroll view to scroll to top when
+    // inserting a newline at the bottom of a NSTextView when it has more rows than can be displayed
+    // on screen.
+    self.textContainer.lineFragmentPadding = 1;
+#endif
 #if !TARGET_OS_OSX && !TARGET_OS_TV // TODO(macOS ISS#2323203)
     self.scrollsToTop = NO;
 #endif

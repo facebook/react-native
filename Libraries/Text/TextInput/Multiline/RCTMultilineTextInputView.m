@@ -86,7 +86,7 @@
 {
   [super setReactBorderInsets:reactBorderInsets];
   // We apply `borderInsets` as `_scrollView` layout offset on mac.
-  _scrollView.frame = UIEdgeInsetsInsetRect(self.frame, reactBorderInsets);
+  _scrollView.frame = UIEdgeInsetsInsetRect(self.bounds, reactBorderInsets);
   [self setNeedsLayout];
 }
 #endif // ]TODO(macOS ISS#2323203)
