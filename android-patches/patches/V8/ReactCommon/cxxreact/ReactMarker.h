@@ -1,0 +1,14 @@
+--- "E:\\github\\rnm-63-fresh\\ReactCommon\\cxxreact\\ReactMarker.h"	2020-10-27 20:26:17.189168300 -0700
++++ "E:\\github\\rnm-63\\ReactCommon\\cxxreact\\ReactMarker.h"	2020-10-13 21:57:00.685554800 -0700
+@@ -26,7 +26,10 @@
+   NATIVE_MODULE_SETUP_START,
+   NATIVE_MODULE_SETUP_STOP,
+   REGISTER_JS_SEGMENT_START,
+-  REGISTER_JS_SEGMENT_STOP
++  REGISTER_JS_SEGMENT_STOP,
++  BYTECODE_CREATION_FAILED,
++  BYTECODE_READ_FAILED,
++  BYTECODE_WRITE_FAILED
+ };
+ 
+ #ifdef __APPLE__

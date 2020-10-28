@@ -1,5 +1,5 @@
---- /home/hermes/code/react-native-macos-fresh/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewFocusEvent.java	1969-12-31 16:00:00.000000000 -0800
-+++ /home/hermes/code/react-native-macos/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewFocusEvent.java	2020-09-19 11:06:41.574441701 -0700
+--- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\view\\ReactViewFocusEvent.java"	1969-12-31 16:00:00.000000000 -0800
++++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\view\\ReactViewFocusEvent.java"	2020-10-13 21:42:27.709385000 -0700
 @@ -0,0 +1,49 @@
 +/**
 + * Copyright (c) 2015-present, Facebook, Inc.

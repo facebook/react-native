@@ -27,7 +27,7 @@ function doPublish(fakeMode) {
   const onlyTagSource = !!branchVersionSuffix;
   if (!onlyTagSource) {
     // -------- Generating Android Artifacts with JavaDoc
-    const depsEnvPrefix = "REACT_NATIVE_DEPENDENCIES=" + path.join(process.env.BUILD_SOURCESDIRECTORY, "build_deps");
+    const depsEnvPrefix = "REACT_NATIVE_BOOST_PATH=" + path.join(process.env.BUILD_SOURCESDIRECTORY, "build_deps");
     const gradleCommand = path.join(process.env.BUILD_SOURCESDIRECTORY, "gradlew") + " installArchives";
     exec( depsEnvPrefix + " " + gradleCommand );
 

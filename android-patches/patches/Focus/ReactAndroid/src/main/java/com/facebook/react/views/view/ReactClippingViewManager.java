@@ -1,5 +1,5 @@
---- /home/hermes/code/react-native-macos-fresh/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactClippingViewManager.java	2020-09-21 21:41:24.450784558 -0700
-+++ /home/hermes/code/react-native-macos/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactClippingViewManager.java	2020-09-19 11:06:41.574441701 -0700
+--- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\view\\ReactClippingViewManager.java"	2020-10-27 20:26:16.991167000 -0700
++++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\view\\ReactClippingViewManager.java"	2020-10-13 21:41:45.084843900 -0700
 @@ -7,7 +7,10 @@
  
  package com.facebook.react.views.view;
@@ -15,7 +15,7 @@
        }
        parent.removeViewWithSubviewClippingEnabled(child);
      } else {
-+       // Prevent focus leaks due to removal of a focused View
++      // Prevent focus leaks due to removal of a focused View
 +      if (parent.getChildAt(index).hasFocus()) {
 +        giveFocusToAppropriateView(parent, parent.getChildAt(index));
 +      }

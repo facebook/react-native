@@ -1,5 +1,5 @@
---- /home/hermes/code/react-native-macos-fresh/Libraries/Components/View/ReactNativeViewViewConfigAndroid.js	2020-09-21 21:41:24.322788533 -0700
-+++ /home/hermes/code/react-native-macos/Libraries/Components/View/ReactNativeViewViewConfigAndroid.js	2020-09-23 12:20:05.571823280 -0700
+--- "E:\\github\\rnm-63-fresh\\Libraries\\Components\\View\\ReactNativeViewViewConfigAndroid.js"	2020-10-27 20:26:16.000189500 -0700
++++ "E:\\github\\rnm-63\\Libraries\\Components\\View\\ReactNativeViewViewConfigAndroid.js"	2020-10-13 21:21:38.700969000 -0700
 @@ -19,6 +19,12 @@
          captured: 'onSelectCapture',
        },
