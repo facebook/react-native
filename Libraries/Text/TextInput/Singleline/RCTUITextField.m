@@ -315,8 +315,18 @@
 {
   NSMutableDictionary<NSAttributedStringKey, id> *textAttributes = [_defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
 
-  [textAttributes setValue:self.placeholderColor ?: [RCTUIColor placeholderTextColor]
-                    forKey:NSForegroundColorAttributeName]; // TODO(macOS ISS#2323203)
+  // [TODO(OSS Candidate ISS#2710739)
+  if (@available(iOS 13.0, *)) {
+    [textAttributes setValue:self.placeholderColor ?: [RCTUIColor placeholderTextColor]
+                      forKey:NSForegroundColorAttributeName];
+  } else {
+  // ]TODO(OSS Candidate ISS#2710739)
+    if (self.placeholderColor) {
+      [textAttributes setValue:self.placeholderColor forKey:NSForegroundColorAttributeName];
+    } else {
+      [textAttributes removeObjectForKey:NSForegroundColorAttributeName];
+    }
+  }
 
   return textAttributes;
 }
