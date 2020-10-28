@@ -460,14 +460,16 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
                 fmax(_scrollView.contentInset.top, 0),
             0.01)); // Make width and height greater than 0
 
-    [self _forceDispatchNextScrollEvent];
-    if (!CGRectContainsPoint(maxRect, offset)) {
+    const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
+    if (!CGRectContainsPoint(maxRect, offset) && !props.scrollToOverflowEnabled) {
       CGFloat localX = fmax(offset.x, CGRectGetMinX(maxRect));
       localX = fmin(localX, CGRectGetMaxX(maxRect));
       CGFloat localY = fmax(offset.y, CGRectGetMinY(maxRect));
       localY = fmin(localY, CGRectGetMaxY(maxRect));
       offset = CGPointMake(localX, localY);
     }
+
+    [self _forceDispatchNextScrollEvent];
     [_scrollView setContentOffset:offset animated:animated];
   }
 }
