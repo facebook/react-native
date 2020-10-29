@@ -52,13 +52,16 @@ function createAVD {
   AVD_PACKAGES="system-images;android-$ANDROID_SDK_TARGET_API_LEVEL;google_apis;$AVD_ABI"
   echo "Creating AVD with packages $AVD_PACKAGES"
   echo no | avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGES" --tag google_apis --abi "$AVD_ABI"
+  avdmanager list avd
+  emulator -help-datadir
+  "$ANDROID_HOME/emulator/emulator" -list-avds
 }
 
 function launchAVD {
   # The AVD name here should match the one created in createAVD
   if [ "$CI" ]
   then
-    "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME" -no-audio -no-window
+    "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME" -no-audio -no-window -no-snapshot
   else
     "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME"
   fi
