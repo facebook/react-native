@@ -87,6 +87,8 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
+  RCTAssert(props, @"`props` must not be `null`.");
+
 #ifndef NS_BLOCK_ASSERTIONS
   auto propsRawPtr = _props.get();
   RCTAssert(
