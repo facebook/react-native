@@ -493,7 +493,6 @@ jobs:
       - run:
           name: Launch Android Virtual Device in Background
           command: source scripts/android-setup.sh && launchAVD
-          background: true
 
       # Keep configuring Android dependencies while AVD boots up
 
