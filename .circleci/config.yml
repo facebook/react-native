@@ -36,7 +36,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:2019-10-18
+      - image: reactnativecommunity/react-native-android:1.0.5
     resource_class: "large"
     environment:
       - TERM: "dumb"
@@ -381,7 +381,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@10/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@12/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
       - with_brew_cache_span:
@@ -389,7 +389,7 @@ jobs:
             - brew_install:
                 package: watchman
             - brew_install:
-                package: node@10
+                package: node@12
             - run:
                 name: "Brew: Tap wix/brew"
                 command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
