@@ -31,9 +31,13 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     _textShadowRadius = NAN;
     _opacity = NAN;
     _textTransform = RCTTextTransformUndefined;
-#if TARGET_OS_OSX // TODO(macOS ISS#2323203)
-    _foregroundColor = [NSColor labelColor];
-#endif // TODO(macOS ISS#2323203)
+    // [TODO(OSS Candidate ISS#2710739)
+    if (@available(iOS 13.0, *)) {
+      _foregroundColor = [RCTUIColor labelColor];
+    } else {
+      _foregroundColor = [RCTUIColor blackColor];
+    }
+    // ]TODO(OSS Candidate ISS#2710739)
   }
 
   return self;

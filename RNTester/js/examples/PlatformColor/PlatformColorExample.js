@@ -16,6 +16,7 @@ import Platform from '../../../../Libraries/Utilities/Platform';
 const {
   ColorAndroid,
   DynamicColorIOS,
+  DynamicColorMacOS,
   PlatformColor,
   StyleSheet,
   Text,
@@ -228,7 +229,42 @@ function FallbackColorsExample() {
 }
 
 function DynamicColorsExample() {
-  return Platform.OS === 'ios' ? (
+  // [TODO(macOS ISS#2323203)
+  return Platform.OS === 'macos' ? (
+    <View style={styles.column}>
+      <View style={styles.row}>
+        <Text style={styles.labelCell}>
+          DynamicColorMacOS({'{\n'}
+          {'  '}light: 'red', dark: 'blue'{'\n'}
+          {'}'})
+        </Text>
+        <View
+          style={{
+            ...styles.colorCell,
+            backgroundColor: DynamicColorMacOS({light: 'red', dark: 'blue'}),
+          }}
+        />
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.labelCell}>
+          DynamicColorMacOS({'{\n'}
+          {'  '}light: PlatformColor('systemBlueColor'),{'\n'}
+          {'  '}dark: PlatformColor('systemRedColor'),{'\n'}
+          {'}'})
+        </Text>
+        <View
+          style={{
+            ...styles.colorCell,
+            backgroundColor: DynamicColorMacOS({
+              light: PlatformColor('systemBlueColor'),
+              dark: PlatformColor('systemRedColor'),
+            }),
+          }}
+        />
+      </View>
+    </View>
+  ) : // ]TODO(macOS ISS#2323203)
+  Platform.OS === 'ios' ? (
     <View style={styles.column}>
       <View style={styles.row}>
         <Text style={styles.labelCell}>
@@ -289,17 +325,26 @@ function VariantColorsExample() {
     <View style={styles.column}>
       <View style={styles.row}>
         <Text style={styles.labelCell}>
-          {Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS ISS#2323203)
-            ? "DynamicColorIOS({light: 'red', dark: 'blue'})"
-            : "ColorAndroid('?attr/colorAccent')"}
+          {// [TODO(OSS Candidate ISS#2710739)
+          Platform.select({
+            ios: "DynamicColorIOS({light: 'red', dark: 'blue'})",
+            android: "ColorAndroid('?attr/colorAccent')",
+            macos: "DynamicColorMacOS({light: 'red', dark: 'blue'})",
+          })
+          // ]TODO(OSS Candidate ISS#2710739)
+          }
         </Text>
         <View
           style={{
             ...styles.colorCell,
             backgroundColor:
-              Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS ISS#2323203)
+              Platform.OS === 'ios'
                 ? DynamicColorIOS({light: 'red', dark: 'blue'})
-                : ColorAndroid('?attr/colorAccent'),
+                : // [TODO(macOS ISS#2323203)
+                Platform.OS === 'macos'
+                ? DynamicColorMacOS({light: 'red', dark: 'blue'})
+                : // ]TODO(macOS ISS#2323203)
+                  ColorAndroid('?attr/colorAccent'),
           }}
         />
       </View>
@@ -313,10 +358,8 @@ const styles = StyleSheet.create({
   labelCell: {
     flex: 1,
     alignItems: 'stretch',
-    ...Platform.select({
-      ios: {color: PlatformColor('labelColor')},
-      default: {color: 'black'},
-    }),
+    // TODO(macOS ISS#2323203)
+    // Remove need to specify label color
   },
   colorCell: {flex: 0.25, alignItems: 'stretch'},
 });
@@ -338,7 +381,7 @@ exports.examples = [
     },
   },
   {
-    title: 'iOS Dynamic Colors',
+    title: 'Dynamic Colors', // TODO(OSS Candidate ISS#2710739)
     render(): React.Element<any> {
       return <DynamicColorsExample />;
     },

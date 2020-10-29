@@ -69,13 +69,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   if (![self ignoresTextAttributes]) { // TODO(OSS Candidate ISS#2710739)
     id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-
-    NSDictionary<NSAttributedStringKey,id> *textAttributes = [[_textAttributes effectiveTextAttributes] mutableCopy];
-    if ([textAttributes valueForKey:NSForegroundColorAttributeName] == nil) {
-        [textAttributes setValue:[RCTUIColor blackColor] forKey:NSForegroundColorAttributeName]; // TODO(macOS ISS#2323203)
-    }
-
-    backedTextInputView.defaultTextAttributes = textAttributes;
+    backedTextInputView.defaultTextAttributes = [_textAttributes effectiveTextAttributes];
   } // TODO(OSS Candidate ISS#2710739)
 }
 
@@ -241,7 +235,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (void)setSelectionStart:(NSInteger)start
              selectionEnd:(NSInteger)end
 {
-#if !TARGET_OS_OSX // [TODO(macOS v0.63)
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UITextPosition *startPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
                                                                           offset:start];
   UITextPosition *endPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
@@ -250,7 +244,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     UITextRange *range = [self.backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
     [self.backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
   }
-#endif // ]TODO(macOS v0.63)
+#else // [TODO(macOS ISS#2323203)
+  NSInteger startPosition = MIN(start, end);
+  NSInteger endPosition = MAX(start, end);
+  [self.backedTextInputView setSelectedTextRange:NSMakeRange(startPosition, endPosition - startPosition) notifyDelegate:NO];
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 - (void)setTextContentType:(NSString *)type
