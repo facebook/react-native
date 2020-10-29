@@ -1,4 +1,7 @@
-document.addEventListener('DOMContentLoaded', () => {
+if (
+  document.readyState === 'interactive' ||
+  document.readyState === 'complete'
+) {
   const section = document.querySelector('.NativeDevelopment');
   const dissection = document.querySelector('.NativeDevelopment .dissection');
   const images = dissection.children;
@@ -38,4 +41,4 @@ document.addEventListener('DOMContentLoaded', () => {
       images[i].style.left = `${translation}px`;
     }
   });
-});
+}

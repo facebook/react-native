@@ -1,4 +1,7 @@
-document.addEventListener('DOMContentLoaded', () => {
+if (
+  document.readyState === 'interactive' ||
+  document.readyState === 'complete'
+) {
   const steps = ['full', 'mobile', 'desktop', 'laptop', 'mobile2', 'full2'];
   const intervals = [1250, 1500, 1500, 1500, 1500, 1250];
 
@@ -45,4 +48,4 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     false
   );
-});
+}
