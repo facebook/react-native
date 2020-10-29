@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[448],{532:function(e){e.exports=JSON.parse('{"permalink":"/react-native/blog/page/4","page":4,"postsPerPage":10,"totalPages":5,"totalCount":48,"previousPage":"/react-native/blog/page/3","nextPage":"/react-native/blog/page/5","blogDescription":"Blog","blogTitle":"Blog"}')}}]);
