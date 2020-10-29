@@ -85,7 +85,7 @@ project.ext.react = [
     hermesCommand: "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc",
     enableHermesForVariant: { def v -> v.name.contains("hermes") },
     jsRootDir: "$rootDir/RNTester",
-    enableCodegen: (System.getenv('USE_CODEGEN') ?: '0').toBoolean(),
+    enableCodegen: true, // Keep this here until it's sync'ed to Android template.
     enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean(),
 ]
 
@@ -256,7 +256,8 @@ if (enableCodegen) {
                             // The following paths assume building React Native from source.
                             "GENERATED_SRC_DIR=$buildDir/generated/source",
                             "PROJECT_BUILD_DIR=$buildDir",
-                            "REACT_ANDROID_DIR=$reactAndroidProjectDir"
+                            "REACT_ANDROID_DIR=$reactAndroidProjectDir",
+                            "REACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir"
                     cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
                     cppFlags "-std=c++1y"
                     targets "rntester_appmodules"

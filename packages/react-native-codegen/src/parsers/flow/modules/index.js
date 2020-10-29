@@ -40,6 +40,7 @@ const {
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
+  UnsupportedObjectPropertyValueTypeAnnotationParserError,
 } = require('./errors.js');
 
 const invariant = require('invariant');
@@ -207,9 +208,17 @@ function translateTypeAnnotation(
         type: 'ObjectTypeAnnotation',
         properties: (typeAnnotation.properties: Array<$FlowFixMe>)
           .map<?NativeModuleObjectTypeAnnotationPropertySchema>(property => {
-            const {optional, key} = property;
-
             return guard(() => {
+              if (property.type !== 'ObjectTypeProperty') {
+                throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+                  hasteModuleName,
+                  property,
+                  property.type,
+                );
+              }
+
+              const {optional, key} = property;
+
               const [
                 propertyTypeAnnotation,
                 isPropertyNullable,
@@ -224,7 +233,7 @@ function translateTypeAnnotation(
               );
 
               if (propertyTypeAnnotation.type === 'FunctionTypeAnnotation') {
-                throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+                throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
                   hasteModuleName,
                   property.value,
                   property.key,
@@ -233,7 +242,7 @@ function translateTypeAnnotation(
               }
 
               if (propertyTypeAnnotation.type === 'VoidTypeAnnotation') {
-                throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+                throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
                   hasteModuleName,
                   property.value,
                   property.key,
@@ -242,7 +251,7 @@ function translateTypeAnnotation(
               }
 
               if (propertyTypeAnnotation.type === 'PromiseTypeAnnotation') {
-                throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+                throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
                   hasteModuleName,
                   property.value,
                   property.key,
