@@ -20,8 +20,8 @@ function getAndroidPackages {
     sdkmanager "system-images;android-$ANDROID_SDK_MIN_API_LEVEL;google_apis;$AVD_ABI"
     echo "Installing build SDK for Android API level $ANDROID_SDK_BUILD_API_LEVEL..."
     sdkmanager "platforms;android-$ANDROID_SDK_BUILD_API_LEVEL"
-    echo "Installing target SDK for Android API level $ANDROID_SDK_MIN_API_LEVEL..."
-    sdkmanager "platforms;android-$ANDROID_SDK_MIN_API_LEVEL"
+    echo "Installing target SDK for Android API level $ANDROID_SDK_TARGET_API_LEVEL..."
+    sdkmanager "platforms;android-$ANDROID_SDK_TARGET_API_LEVEL"
     echo "Installing SDK build tools, revision $ANDROID_SDK_BUILD_TOOLS_REVISION..."
     sdkmanager "build-tools;$ANDROID_SDK_BUILD_TOOLS_REVISION"
     # These moved to "system-images;android-$ANDROID_SDK_BUILD_API_LEVEL;google_apis;x86" starting with API level 25, but there is no ARM version.
