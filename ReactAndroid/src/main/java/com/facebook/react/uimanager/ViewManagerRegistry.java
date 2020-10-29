@@ -56,7 +56,11 @@ public final class ViewManagerRegistry {
     if (mViewManagerResolver != null) {
       viewManager = getViewManagerFromResolver(className);
       if (viewManager != null) return viewManager;
-      throw new IllegalViewOperationException("ViewManagerResolver returned null for " + className);
+      throw new IllegalViewOperationException(
+          "ViewManagerResolver returned null for "
+              + className
+              + ", existing names are: "
+              + mViewManagerResolver.getViewManagerNames());
     }
     throw new IllegalViewOperationException("No ViewManager found for class " + className);
   }
