@@ -80,7 +80,7 @@ LOCAL_LDLIBS += -landroid
 LOCAL_SHARED_LIBRARIES := libreactnativeutilsjni libfolly_json libfb libfbjni libglog_init libyoga
 
 # The static libraries (.a files) that this module depends on.
-LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder libruntimeexecutor
+LOCAL_STATIC_LIBRARIES := libreactnative libruntimeexecutor libcallinvokerholder
 
 # Name of this module.
 #
@@ -128,8 +128,11 @@ $(call import-module,callinvoker)
 $(call import-module,reactperflogger)
 $(call import-module,hermes)
 $(call import-module,runtimeexecutor)
+$(call import-module,react/nativemodule/core)
 
 include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
+# TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
+# Note: Update this only when ready to minimize breaking changes.
 include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 
 ifeq ($(BUILD_FABRIC),true)
@@ -145,3 +148,7 @@ include $(REACT_SRC_DIR)/jscexecutor/Android.mk
 include $(REACT_SRC_DIR)/../hermes/reactexecutor/Android.mk
 include $(REACT_SRC_DIR)/../hermes/instrumentation/Android.mk
 include $(REACT_SRC_DIR)/modules/blob/jni/Android.mk
+
+ifeq ($(USE_CODEGEN),true)
+  include $(REACT_GENERATED_SRC_DIR)/codegen/jni/Android.mk
+endif

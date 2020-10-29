@@ -266,6 +266,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     int scrollToY =
         pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
     reactScrollTo(scrollToX, scrollToY);
+    ReactScrollViewHelper.emitLayoutEvent(this);
   }
 
   /**
@@ -816,7 +817,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
 
     // get the nearest snap points to the target offset
-    if (mSnapOffsets != null) {
+    if (mSnapOffsets != null && !mSnapOffsets.isEmpty()) {
       firstOffset = mSnapOffsets.get(0);
       lastOffset = mSnapOffsets.get(mSnapOffsets.size() - 1);
 

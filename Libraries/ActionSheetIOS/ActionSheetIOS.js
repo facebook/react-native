@@ -57,7 +57,7 @@ const ActionSheetIOS = {
       'Options must be a valid object',
     );
     invariant(typeof callback === 'function', 'Must provide a valid callback');
-    invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
+    invariant(RCTActionSheetManager, "ActionSheetManager doesn't exist");
 
     const {tintColor, destructiveButtonIndex, ...remainingOptions} = options;
     let destructiveButtonIndices = null;
@@ -123,7 +123,7 @@ const ActionSheetIOS = {
       typeof successCallback === 'function',
       'Must provide a valid successCallback',
     );
-    invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
+    invariant(RCTActionSheetManager, "ActionSheetManager doesn't exist");
     RCTActionSheetManager.showShareActionSheetWithOptions(
       {...options, tintColor: processColor(options.tintColor)},
       failureCallback,

@@ -139,13 +139,22 @@ const RNTesterApp = (): React.Node => {
 
   // Setup hardware back button press listener
   React.useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', () => {
+    const handleHardwareBackPress = () => {
       if (openExample) {
         handleBackPress();
         return true;
       }
       return false;
-    });
+    };
+
+    BackHandler.addEventListener('hardwareBackPress', handleHardwareBackPress);
+
+    return () => {
+      BackHandler.removeEventListener(
+        'hardwareBackPress',
+        handleHardwareBackPress,
+      );
+    };
   }, [openExample, handleBackPress]);
 
   const handleExampleCardPress = React.useCallback(

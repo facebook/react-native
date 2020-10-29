@@ -11,7 +11,6 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAssert.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
 #import <React/RCTNetworkTask.h>
 #import <React/RCTNetworking.h>
@@ -160,7 +159,7 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)initWithHandlersProvider:(NSArray<id<RCTURLRequestHandler>> * (^)(void))getHandlers
 {
-  if (self = [super init]) {
+  if (self = [super initWithDisabledObservation]) {
     _handlersProvider = getHandlers;
   }
   return self;
@@ -168,6 +167,8 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+  [super invalidate];
+
   for (NSNumber *requestID in _tasksByRequestID) {
     [_tasksByRequestID[requestID] cancel];
   }
@@ -680,7 +681,7 @@ RCT_EXPORT_METHOD(sendRequest:(JS::NativeNetworkingIOS::SpecSendRequestQuery &)q
     @"timeout": @(query.timeout()),
     @"withCredentials": @(query.withCredentials()),
   };
-  
+
   // TODO: buildRequest returns a cancellation block, but there's currently
   // no way to invoke it, if, for example the request is cancelled while
   // loading a large file to build the request body

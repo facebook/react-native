@@ -30,40 +30,12 @@ class ShadowTreeRevision final {
    */
   using Number = int64_t;
 
-  /*
-   * Creates the object with given root shadow node, revision number and
-   * telemetry.
-   */
-  ShadowTreeRevision(
-      RootShadowNode::Shared const &rootShadowNode,
-      Number number,
-      TransactionTelemetry telemetry);
-
-  /*
-   * Returns telemetry associated with this revision.
-   */
-  TransactionTelemetry const &getTelemetry() const;
-
-  /*
-   * Methods from this section are meant to be used by
-   * `MountingOverrideDelegate` only.
-   */
- public:
-  RootShadowNode const &getRootShadowNode();
-
-  /*
-   * Methods from this section are meant to be used by `MountingCoordinator`
-   * only.
-   */
- private:
+  friend class ShadowTree;
   friend class MountingCoordinator;
 
-  Number getNumber() const;
-
- private:
-  RootShadowNode::Shared rootShadowNode_;
-  Number number_;
-  TransactionTelemetry telemetry_;
+  RootShadowNode::Shared rootShadowNode;
+  Number number;
+  TransactionTelemetry telemetry;
 };
 
 } // namespace react

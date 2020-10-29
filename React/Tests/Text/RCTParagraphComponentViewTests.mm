@@ -9,24 +9,24 @@
 #import <React/RCTParagraphComponentView.h>
 
 #import <XCTest/XCTest.h>
-#import <react/attributedstring/AttributedString.h>
-#import <react/attributedstring/ParagraphAttributes.h>
-#import <react/attributedstring/TextAttributes.h>
-#import <react/componentregistry/ComponentDescriptorProviderRegistry.h>
-#import <react/components/root/RootComponentDescriptor.h>
-#import <react/components/text/ParagraphComponentDescriptor.h>
-#import <react/components/text/ParagraphShadowNode.h>
-#import <react/components/text/ParagraphState.h>
-#import <react/components/text/RawTextComponentDescriptor.h>
-#import <react/components/text/RawTextShadowNode.h>
-#import <react/components/text/TextComponentDescriptor.h>
-#import <react/components/text/TextShadowNode.h>
-#import <react/components/view/ViewComponentDescriptor.h>
-#import <react/element/ComponentBuilder.h>
-#import <react/element/Element.h>
-#import <react/element/testUtils.h>
-#import <react/textlayoutmanager/RCTTextLayoutManager.h>
-#import <react/textlayoutmanager/TextLayoutManager.h>
+#import <react/renderer/attributedstring/AttributedString.h>
+#import <react/renderer/attributedstring/ParagraphAttributes.h>
+#import <react/renderer/attributedstring/TextAttributes.h>
+#import <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#import <react/renderer/components/root/RootComponentDescriptor.h>
+#import <react/renderer/components/text/ParagraphComponentDescriptor.h>
+#import <react/renderer/components/text/ParagraphShadowNode.h>
+#import <react/renderer/components/text/ParagraphState.h>
+#import <react/renderer/components/text/RawTextComponentDescriptor.h>
+#import <react/renderer/components/text/RawTextShadowNode.h>
+#import <react/renderer/components/text/TextComponentDescriptor.h>
+#import <react/renderer/components/text/TextShadowNode.h>
+#import <react/renderer/components/view/ViewComponentDescriptor.h>
+#import <react/renderer/element/ComponentBuilder.h>
+#import <react/renderer/element/Element.h>
+#import <react/renderer/element/testUtils.h>
+#import <react/renderer/textlayoutmanager/RCTTextLayoutManager.h>
+#import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 @interface RCTParagraphComponentAccessibilityProviderTests : XCTestCase
 

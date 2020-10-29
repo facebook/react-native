@@ -5,10 +5,7 @@
   "bin": "./cli.js",
   "description": "A framework for building native apps using React",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:facebook/react-native.git"
-  },
+  "repository": "github:facebook/react-native",
   "engines": {
     "node": ">=10"
   },
@@ -22,6 +19,7 @@
     "!template/yarn.lock",
     "cli.js",
     "flow",
+    "flow-typed",
     "index.js",
     "interface.js",
     "jest-preset.js",
@@ -39,6 +37,7 @@
     "README.md",
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
+    "scripts/generate-native-modules-specs-cli.js",
     "scripts/ios-configure-glog.sh",
     "scripts/launchPackager.bat",
     "scripts/launchPackager.command",
@@ -64,6 +63,7 @@
     "format": "npm run prettier && npm run clang-format",
     "prettier": "prettier --write \"./**/*.{js,md,yml}\"",
     "format-check": "prettier --list-different \"./**/*.{js,md,yml}\"",
+    "update-lock": "npx yarn-deduplicate",
     "docker-setup-android": "docker pull reactnativecommunity/react-native-android",
     "docker-build-android": "docker build -t reactnativeci/android -f .circleci/Dockerfiles/Dockerfile.android .",
     "test-android-run-instrumentation": "docker run --cap-add=SYS_ADMIN -it reactnativeci/android bash .circleci/Dockerfiles/scripts/run-android-docker-instrumentation-tests.sh",
@@ -85,9 +85,10 @@
     "react": "16.13.1"
   },
   "dependencies": {
-    "@react-native-community/cli": "^4.10.0",
-    "@react-native-community/cli-platform-android": "^4.10.0",
-    "@react-native-community/cli-platform-ios": "^4.10.0",
+    "@jest/create-cache-key-function": "^26.5.0",
+    "@react-native-community/cli": "^4.13.0",
+    "@react-native-community/cli-platform-android": "^4.13.0",
+    "@react-native-community/cli-platform-ios": "^4.13.0",
     "@react-native/assets": "1.0.0",
     "@react-native/normalize-color": "1.0.0",
     "@react-native/polyfills": "1.0.0",
@@ -95,8 +96,7 @@
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
     "event-target-shim": "^5.0.1",
-    "fbjs-scripts": "^1.1.0",
-    "hermes-engine": "~0.6.0",
+    "hermes-engine": "~0.7.0",
     "invariant": "^2.2.4",
     "jsc-android": "^245459.0.0",
     "metro-babel-register": "0.63.0",
@@ -104,10 +104,9 @@
     "metro-runtime": "0.63.0",
     "metro-source-map": "0.63.0",
     "nullthrows": "^1.1.1",
-    "pretty-format": "^26.0.1",
+    "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
     "prop-types": "^15.7.2",
-    "qs": "^6.5.1",
     "react-devtools-core": "^4.6.0",
     "react-refresh": "^0.4.0",
     "regenerator-runtime": "^0.13.2",
@@ -118,7 +117,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.133.0",
+    "flow-bin": "^0.136.0",
     "react": "16.13.1"
   },
   "detox": {

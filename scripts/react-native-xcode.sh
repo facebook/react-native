@@ -114,6 +114,13 @@ if [[ -z "$USE_HERMES" && -f "$HERMES_CLI_PATH" ]]; then
   USE_HERMES=true
 fi
 
+if [[ $USE_HERMES == true && ! -f "$HERMES_CLI_PATH" ]]; then
+  echo "error: USE_HERMES is set to true but the hermesc binary could not be " \
+       "found at ${HERMES_CLI_PATH}. Perhaps you need to run pod install or otherwise " \
+       "point the HERMES_CLI_PATH variable to your custom location." >&2
+  exit 2
+fi
+
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""
 
 [ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/cli.js"
@@ -168,7 +175,7 @@ fi
   $EXTRA_PACKAGER_ARGS
 
 if [[ $USE_HERMES != true ]]; then
-  mv "$BUNDLE_FILE" "$DEST/"
+  cp "$BUNDLE_FILE" "$DEST/"
   BUNDLE_FILE="$DEST/main.jsbundle"
 else
   EXTRA_COMPILER_ARGS=

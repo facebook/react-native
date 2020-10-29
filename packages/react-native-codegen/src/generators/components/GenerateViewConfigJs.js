@@ -337,14 +337,15 @@ module.exports = {
 
       const moduleResults = Object.keys(schema.modules)
         .map(moduleName => {
-          const components = schema.modules[moduleName].components;
-          // No components in this module
-          if (components == null) {
-            return null;
+          const module = schema.modules[moduleName];
+          if (module.type !== 'Component') {
+            return;
           }
 
+          const {components} = module;
+
           return Object.keys(components)
-            .map(componentName => {
+            .map((componentName: string) => {
               const component = components[componentName];
 
               const paperComponentName = component.paperComponentName

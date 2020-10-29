@@ -1,7 +1,6 @@
 # BUILD FILE SYNTAX: SKYLARK
 
-load("@fbsource//tools/build_defs:default_platform_defs.bzl", "APPLE", "IOS", "MACOSX")
-load("//tools/build_defs/oss:rn_defs.bzl", "react_native_xplat_dep", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "APPLE", "IOS", "MACOSX", "react_native_xplat_dep", "rn_xplat_cxx_library")
 
 rn_xplat_cxx_library(
     name = "jsi",

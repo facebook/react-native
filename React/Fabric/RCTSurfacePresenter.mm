@@ -328,6 +328,14 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTExperimentSetOnDemandViewMounting(YES);
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:optimized_hit_testing_ios")) {
+    RCTExperimentSetOptimizedHitTesting(YES);
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:preemptive_view_allocation_disabled_ios")) {
+    RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {

@@ -37,7 +37,6 @@ let nativeEventEmitter;
 
 let waitingForQueuedOperations = new Set();
 let queueOperations = false;
-let queueConnections = false;
 let queue: Array<() => void> = [];
 
 /**
@@ -45,9 +44,6 @@ let queue: Array<() => void> = [];
  * the native module methods
  */
 const API = {
-  enableQueue: function(): void {
-    queueConnections = true;
-  },
   getValue: function(
     tag: number,
     saveValueCallback: (value: number) => void,
@@ -60,7 +56,6 @@ const API = {
   setWaitingForIdentifier: function(id: number): void {
     waitingForQueuedOperations.add(id);
     queueOperations = true;
-    queueConnections = true;
   },
   unsetWaitingForIdentifier: function(id: number): void {
     waitingForQueuedOperations.delete(id);
@@ -72,25 +67,16 @@ const API = {
   },
   disableQueue: function(): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
-    queueConnections = false;
-    if (!queueOperations) {
-      if (Platform.OS === 'android') {
-        NativeAnimatedModule.startOperationBatch();
-      }
-      for (let q = 0, l = queue.length; q < l; q++) {
-        queue[q]();
-      }
-      queue.length = 0;
-      if (Platform.OS === 'android') {
-        NativeAnimatedModule.finishOperationBatch();
-      }
+
+    if (Platform.OS === 'android') {
+      NativeAnimatedModule.startOperationBatch();
     }
-  },
-  queueConnection: (fn: () => void): void => {
-    if (queueConnections) {
-      queue.push(fn);
-    } else {
-      fn();
+    for (let q = 0, l = queue.length; q < l; q++) {
+      queue[q]();
+    }
+    queue.length = 0;
+    if (Platform.OS === 'android') {
+      NativeAnimatedModule.finishOperationBatch();
     }
   },
   queueOperation: (fn: () => void): void => {
@@ -120,7 +106,7 @@ const API = {
   },
   connectAnimatedNodes: function(parentTag: number, childTag: number): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueConnection(() =>
+    API.queueOperation(() =>
       NativeAnimatedModule.connectAnimatedNodes(parentTag, childTag),
     );
   },
