@@ -63,7 +63,7 @@ commands:
         default: node
     steps:
       - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}-<< parameters.checkout_type >>
+          key: v2-repo-{{ .Environment.CIRCLE_SHA1 }}-<< parameters.checkout_type >>
 
   setup_artifacts:
     steps:
