@@ -61,6 +61,7 @@ function launchAVD {
   # The AVD name here should match the one created in createAVD
   if [ "$CI" ]
   then
+    adb kill-server
     "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME" -no-audio -no-window -no-snapshot
   else
     "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME"
