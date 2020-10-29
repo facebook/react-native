@@ -58,21 +58,23 @@ function launchAVD {
   # The AVD name here should match the one created in createAVD
   if [ "$CI" ]
   then
-    "$ANDROID_HOME/emulator/emulator" -verbose -avd "$AVD_NAME" -no-audio -no-window -no-snapshot
+    "$ANDROID_HOME/emulator/emulator" -verbose -avd "$AVD_NAME" -no-audio -no-window -no-snapshot &
+    adb wait-for-device
   else
     "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME"
   fi
 }
 
 function waitForAVD {
-  echo "Waiting for Android Virtual Device to finish booting..."
-  local bootanim=""
-  export PATH=$(dirname $(dirname $(command -v android)))/platform-tools:$PATH
-  until [[ "$bootanim" =~ "stopped" ]]; do
-    sleep 5
-    bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
-    echo "boot animation status=$bootanim"
-  done
+  # echo "Waiting for Android Virtual Device to finish booting..."
+  # local bootanim=""
+  # export PATH=$(dirname $(dirname $(command -v android)))/platform-tools:$PATH
+  # until [[ "$bootanim" =~ "stopped" ]]; do
+  #   sleep 5
+  #   bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
+  #   echo "boot animation status=$bootanim"
+  # done
+  adb wait-for-device
   echo "Android Virtual Device is ready."
 }
 
