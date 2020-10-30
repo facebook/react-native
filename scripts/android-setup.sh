@@ -61,7 +61,8 @@ function launchAVD {
   # The AVD name here should match the one created in createAVD
   if [ "$CI" ]
   then
-    "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME" -no-audio -no-window
+    "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME" -no-audio --no-snapshot -no-window &
+    adb wait-for-device
   else
     "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME"
   fi
