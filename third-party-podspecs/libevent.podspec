@@ -564,7 +564,7 @@ Pod::Spec.new do |spec|
   spec.subspec "core" do |ss|
     ss.dependency "libevent/event2-headers"
     ss.source_files =
-      "include/*.h", "*-{internal,private}.h",
+      "include/{evdns,event,evhttp,evrpc,evutil}.h", "*-{internal,private}.h",
       "buffer.c", "bufferevent.c", "bufferevent_filter.c", "bufferevent_pair.c", "bufferevent_ratelim.c", "bufferevent_sock.c",
       "event.c", "evmap.c", "evthread.c", "evutil.c", "evutil_rand.c", "evutil_time.c",
       "kqueue.c", "listener.c", "log.c", "poll.c", "select.c", "signal.c", "strlcpy.c", "watch.c",
