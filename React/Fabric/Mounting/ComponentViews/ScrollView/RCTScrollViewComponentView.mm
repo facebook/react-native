@@ -28,6 +28,18 @@ using namespace facebook::react;
 
 static CGFloat const kClippingLeeway = 44.0;
 
+static UIScrollViewKeyboardDismissMode RCTUIKeyboardDismissModeFromProps(ScrollViewProps const &props)
+{
+  switch (props.keyboardDismissMode) {
+    case ScrollViewKeyboardDismissMode::None:
+      return UIScrollViewKeyboardDismissModeNone;
+    case ScrollViewKeyboardDismissMode::OnDrag:
+      return UIScrollViewKeyboardDismissModeOnDrag;
+    case ScrollViewKeyboardDismissMode::Interactive:
+      return UIScrollViewKeyboardDismissModeInteractive;
+  }
+}
+
 static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
 {
   static uint16_t coalescingKey = 0;
@@ -150,7 +162,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   MAP_SCROLL_VIEW_PROP(decelerationRate);
   MAP_SCROLL_VIEW_PROP(directionalLockEnabled);
   // MAP_SCROLL_VIEW_PROP(indicatorStyle);
-  // MAP_SCROLL_VIEW_PROP(keyboardDismissMode);
   MAP_SCROLL_VIEW_PROP(maximumZoomScale);
   MAP_SCROLL_VIEW_PROP(minimumZoomScale);
   MAP_SCROLL_VIEW_PROP(scrollEnabled);
@@ -218,6 +229,10 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
   MAP_SCROLL_VIEW_PROP(disableIntervalMomentum);
   MAP_SCROLL_VIEW_PROP(snapToInterval);
+
+  if (oldScrollViewProps.keyboardDismissMode != newScrollViewProps.keyboardDismissMode) {
+    scrollView.keyboardDismissMode = RCTUIKeyboardDismissModeFromProps(newScrollViewProps);
+  }
 
   // MAP_SCROLL_VIEW_PROP(scrollIndicatorInsets);
 
