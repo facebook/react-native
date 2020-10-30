@@ -310,7 +310,9 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (void)handleMemoryWarning
 {
-  if (!_valid || !_loading) {
+  // We only want to run garbage collector when the loading is finished
+  // and the instance is valid.
+  if (!_valid || _loading) {
     return;
   }
 
