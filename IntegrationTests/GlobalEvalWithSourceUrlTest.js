@@ -42,7 +42,8 @@ class GlobalEvalWithSourceUrlTest extends React.Component<{...}> {
         'Expected globalEvalWithSourceUrl to throw on a syntax error',
       );
     }
-    if (!(syntaxError instanceof SyntaxError)) {
+    // Hermes throws an Error, not a SyntaxError
+    if (syntaxError.jsEngine !== 'hermes' && !(syntaxError instanceof SyntaxError)) {
       throw new Error(
         'Expected globalEvalWithSourceUrl to throw SyntaxError on a syntax error',
       );
