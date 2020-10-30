@@ -55,6 +55,9 @@ function createAVD {
 }
 
 function launchAVD {
+  # Force start adb server
+  adb start-server
+
   # The AVD name here should match the one created in createAVD
   if [ "$CI" ]
   then
