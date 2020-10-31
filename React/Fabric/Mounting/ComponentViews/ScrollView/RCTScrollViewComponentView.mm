@@ -55,7 +55,11 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   [[RCTBridge currentBridge].eventDispatcher sendEvent:scrollEvent];
 }
 
-@interface RCTScrollViewComponentView () <UIScrollViewDelegate, RCTScrollViewProtocol, RCTScrollableProtocol>
+@interface RCTScrollViewComponentView () <
+    UIScrollViewDelegate,
+    RCTScrollViewProtocol,
+    RCTScrollableProtocol,
+    RCTEnhancedScrollViewOverridingDelegate>
 
 @end
 
@@ -95,6 +99,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delaysContentTouches = NO;
+    ((RCTEnhancedScrollView *)_scrollView).overridingDelegate = self;
     _isUserTriggeredScrolling = NO;
     [self addSubview:_scrollView];
 
@@ -317,6 +322,13 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 }
 
 #pragma mark - UIScrollViewDelegate
+
+- (BOOL)touchesShouldCancelInContentView:(__unused UIView *)view
+{
+  // Historically, `UIScrollView`s in React Native do not cancel touches
+  // started on `UIControl`-based views (as normal iOS `UIScrollView`s do).
+  return YES;
+}
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
