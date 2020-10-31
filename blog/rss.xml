@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>React Native Blog</title>
+        <link>https://reactnative.dev/blog</link>
+        <description>React Native Blog</description>
+        <lastBuildDate>Thu, 23 Jul 2020 00:00:00 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <copyright>Copyright © 2020 Facebook, Inc.</copyright>
+        <item>
+            <title><![CDATA[React Native Documentation Update]]></title>
+            <link>https://reactnative.dev/blog/2020/07/23/docs-update</link>
+            <guid>React Native Documentation Update</guid>
+            <pubDate>Thu, 23 Jul 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[Last year we conducted user interviews and sent out a survey to learn more about how and when people use the React Native docs. With the data and guidance gleaned from 24 interviews and over 3000 survey responses, we've been able to work to improve React Native's documentation, and we're excited to share that progress today:]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Team Principles]]></title>
+            <link>https://reactnative.dev/blog/2020/07/17/react-native-principles</link>
+            <guid>React Native Team Principles</guid>
+            <pubDate>Fri, 17 Jul 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[The React Native team at Facebook is guided by principles that help determine how we prioritize our work on React Native. These principles represent our team specifically and do not necessarily represent every stakeholder in the React Native community. We are sharing these principles here to be more transparent about what drives us, how we make decisions, and how we focus our efforts.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Announcing React Native 0.63 with LogBox]]></title>
+            <link>https://reactnative.dev/blog/2020/07/06/version-0.63</link>
+            <guid>Announcing React Native 0.63 with LogBox</guid>
+            <pubDate>Mon, 06 Jul 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[Today we’re releasing React Native 0.63 that ships with LogBox turned on by default.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Announcing React Native 0.62 with Flipper]]></title>
+            <link>https://reactnative.dev/blog/2020/03/26/version-0.62</link>
+            <guid>Announcing React Native 0.62 with Flipper</guid>
+            <pubDate>Thu, 26 Mar 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[Today we’re releasing React Native version 0.62 which includes support for Flipper by default.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Meet Doctor, a new React Native command]]></title>
+            <link>https://reactnative.dev/blog/2019/11/18/react-native-doctor</link>
+            <guid>Meet Doctor, a new React Native command</guid>
+            <pubDate>Mon, 18 Nov 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[After over 20 pull requests from 6 contributors in the React Native Community, we're excited to launch react-native doctor, a new command to help you out with getting started, troubleshooting and automatically fixing errors with your development environment. The doctor command is heavily inspired by Expo and Homebrew's own doctor command with a pinch of UI inspired by Jest.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Announcing React Native 0.61 with Fast Refresh]]></title>
+            <link>https://reactnative.dev/blog/2019/09/18/version-0.61</link>
+            <guid>Announcing React Native 0.61 with Fast Refresh</guid>
+            <pubDate>Wed, 18 Sep 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[We’re excited to announce React Native 0.61, which includes a new reloading experience we’re calling Fast Refresh.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Meet Hermes, a new JavaScript Engine optimized for React Native]]></title>
+            <link>https://reactnative.dev/blog/2019/07/17/hermes</link>
+            <guid>Meet Hermes, a new JavaScript Engine optimized for React Native</guid>
+            <pubDate>Wed, 17 Jul 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[Last week at Chain React we announced Hermes, an open source JavaScript engine we’ve been working on at Facebook. It’s a small and lightweight JavaScript engine optimized for running React Native on Android. Check it out!]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Announcing React Native 0.60]]></title>
+            <link>https://reactnative.dev/blog/2019/07/03/version-60</link>
+            <guid>Announcing React Native 0.60</guid>
+            <pubDate>Wed, 03 Jul 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[After months of hard work from hundreds of contributors, the React Native Core team is proud to announce the release of version 0.60. This release handles significant migrations for both Android and iOS platforms, and many issues are resolved too. This blog post covers the highlights of the release. As always though, refer to the changelog for more detailed information. Finally, thank you contributors for helping us to make this milestone!]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Open Source Update June 2019]]></title>
+            <link>https://reactnative.dev/blog/2019/06/12/react-native-open-source-update</link>
+            <guid>React Native Open Source Update June 2019</guid>
+            <pubDate>Wed, 12 Jun 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[Code & Community Health]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native at F8 and Open Source Podcast]]></title>
+            <link>https://reactnative.dev/blog/2019/05/01/react-native-at-f8-and-podcast</link>
+            <guid>React Native at F8 and Open Source Podcast</guid>
+            <pubDate>Wed, 01 May 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[This week, Eli White gave a talk at F8 2019 about React Native in Facebook's Android and iOS applications. We are excited to share what we've been up to for the past two years and what we're doing next.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Releasing React Native 0.59]]></title>
+            <link>https://reactnative.dev/blog/2019/03/12/releasing-react-native-059</link>
+            <guid>Releasing React Native 0.59</guid>
+            <pubDate>Tue, 12 Mar 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[Welcome to the 0.59 release of React Native! This is another big release with 644 commits by 88 contributors. Contributions also come in other forms, so thank you for maintaining issues, fostering communities, and teaching people about React Native. This month brings a number of highly anticipated changes, and we hope you enjoy them.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Open Source Update March 2019]]></title>
+            <link>https://reactnative.dev/blog/2019/03/01/react-native-open-source-update</link>
+            <guid>React Native Open Source Update March 2019</guid>
+            <pubDate>Fri, 01 Mar 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[We announced our React Native Open Source roadmap in Q4 2018 after deciding to invest more in the React Native open source community.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[The State of the React Native Community in 2018]]></title>
+            <link>https://reactnative.dev/blog/2019/01/07/state-of-react-native-community</link>
+            <guid>The State of the React Native Community in 2018</guid>
+            <pubDate>Mon, 07 Jan 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[In 2018 the React Native Community made a number of changes to the way we develop and communicate about React Native. We believe that a few years from now we will look back and see that this shift was a turning point for React Native.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Open Source Roadmap]]></title>
+            <link>https://reactnative.dev/blog/2018/11/01/oss-roadmap</link>
+            <guid>Open Source Roadmap</guid>
+            <pubDate>Thu, 01 Nov 2018 00:00:00 GMT</pubDate>
+            <description><![CDATA[This year, the React Native team has focused on a large scale re-architecture of React Native. As Sophie mentioned in her State of React Native post, we've sketched out a plan to better support the thriving population of React Native users and collaborators outside of Facebook. It's now time to share more details about what we've been working on. Before I do so, I'd like to lay out our long-term vision for React Native in open source.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Introducing new iOS WebViews]]></title>
+            <link>https://reactnative.dev/blog/2018/08/27/wkwebview</link>
+            <guid>Introducing new iOS WebViews</guid>
+            <pubDate>Mon, 27 Aug 2018 00:00:00 GMT</pubDate>
+            <description><![CDATA[For a long time now, Apple has discouraged using UIWebViews in favor of WKWebView. In iOS 12, which will be released in the upcoming months, UIWebViews will be formally deprecated. React Native's iOS WebView implementation relies heavily on the UIWebView class. Therefore, in light of these developments, we've built a new native iOS backend to the WebView React Native component that uses WKWebView.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Accessibility API Updates]]></title>
+            <link>https://reactnative.dev/blog/2018/08/13/react-native-accessibility-updates</link>
+            <guid>Accessibility API Updates</guid>
+            <pubDate>Mon, 13 Aug 2018 00:00:00 GMT</pubDate>
+            <description><![CDATA[Motivation]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Releasing 0.56]]></title>
+            <link>https://reactnative.dev/blog/2018/07/04/releasing-react-native-056</link>
+            <guid>Releasing 0.56</guid>
+            <pubDate>Wed, 04 Jul 2018 00:00:00 GMT</pubDate>
+            <description><![CDATA[The long-awaited 0.56 version of React Native is now available 🎉. This blog post highlights some of the changes introduced in this new release. We also want to take the opportunity to explain what has kept us busy since March.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[State of React Native 2018]]></title>
+            <link>https://reactnative.dev/blog/2018/06/14/state-of-react-native-2018</link>
+            <guid>State of React Native 2018</guid>
+            <pubDate>Thu, 14 Jun 2018 00:00:00 GMT</pubDate>
+            <description><![CDATA[It's been a while since we last published a status update about React Native.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Using TypeScript with React Native]]></title>
+            <link>https://reactnative.dev/blog/2018/05/07/using-typescript-with-react-native</link>
+            <guid>Using TypeScript with React Native</guid>
+            <pubDate>Mon, 07 May 2018 00:00:00 GMT</pubDate>
+            <description><![CDATA[JavaScript! We all love it. But some of us also love types. Luckily, options exist to add stronger types to JavaScript. My favourite is TypeScript, but React Native supports Flow out of the box. Which you prefer is a matter of preference, they each have their own approach on how to add the magic of types to JavaScript. Today, we're going to look at how to use TypeScript in React Native apps.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Built with React Native - The Build.com app]]></title>
+            <link>https://reactnative.dev/blog/2018/04/09/build-com-app</link>
+            <guid>Built with React Native - The Build.com app</guid>
+            <pubDate>Mon, 09 Apr 2018 00:00:00 GMT</pubDate>
+            <description><![CDATA[Build.com, headquartered in Chico, California, is one of the largest online retailers for home improvement items. The team has had a strong web-centric business for 18 years and began thinking about a mobile App in 2015. Building unique Android and iOS apps wasn’t practical due to our small team and limited native experience. Instead, we decided to take a risk on the very new React Native framework. Our initial commit was on August 12, 2015 using React Native v0.8.0! We were live in both App Stores on October 15, 2016. Over the last two years, we’ve continued to upgrade and expand the app. We are currently on React Native version 0.53.0.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Building <InputAccessoryView> For React Native]]></title>
+            <link>https://reactnative.dev/blog/2018/03/22/building-input-accessory-view-for-react-native</link>
+            <guid>Building &lt;InputAccessoryView&gt; For React Native</guid>
+            <pubDate>Thu, 22 Mar 2018 00:00:00 GMT</pubDate>
+            <description><![CDATA[Motivation]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Using AWS with React Native]]></title>
+            <link>https://reactnative.dev/blog/2018/03/05/AWS-app-sync</link>
+            <guid>Using AWS with React Native</guid>
+            <pubDate>Mon, 05 Mar 2018 00:00:00 GMT</pubDate>
+            <description><![CDATA[AWS is well known in the technology industry as a provider of cloud services. These include compute, storage, and database technologies, as well as fully managed serverless offerings. The AWS Mobile team has been working closely with customers and members of the JavaScript ecosystem to make cloud-connected mobile and web applications more secure, scalable, and easier to develop and deploy. We began with a complete starter kit, but have a few more recent developments.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Implementing Twitter’s App Loading Animation in React Native]]></title>
+            <link>https://reactnative.dev/blog/2018/01/18/implementing-twitters-app-loading-animation-in-react-native</link>
+            <guid>Implementing Twitter’s App Loading Animation in React Native</guid>
+            <pubDate>Thu, 18 Jan 2018 00:00:00 GMT</pubDate>
+            <description><![CDATA[Twitter’s iOS app has a loading animation I quite enjoy.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Monthly #6]]></title>
+            <link>https://reactnative.dev/blog/2018/01/09/react-native-monthly-6</link>
+            <guid>React Native Monthly #6</guid>
+            <pubDate>Tue, 09 Jan 2018 00:00:00 GMT</pubDate>
+            <description><![CDATA[The React Native monthly meeting is still going strong! Make sure to check a note on the bottom of this post for the next sessions.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Monthly #5]]></title>
+            <link>https://reactnative.dev/blog/2017/11/06/react-native-monthly-5</link>
+            <guid>React Native Monthly #5</guid>
+            <pubDate>Mon, 06 Nov 2017 00:00:00 GMT</pubDate>
+            <description><![CDATA[The React Native monthly meeting continues! Let's see what our teams are up to.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Monthly #4]]></title>
+            <link>https://reactnative.dev/blog/2017/09/21/react-native-monthly-4</link>
+            <guid>React Native Monthly #4</guid>
+            <pubDate>Thu, 21 Sep 2017 00:00:00 GMT</pubDate>
+            <description><![CDATA[The React Native monthly meeting continues! Here are the notes from each team:]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Monthly #3]]></title>
+            <link>https://reactnative.dev/blog/2017/08/30/react-native-monthly-3</link>
+            <guid>React Native Monthly #3</guid>
+            <pubDate>Wed, 30 Aug 2017 00:00:00 GMT</pubDate>
+            <description><![CDATA[The React Native monthly meeting continues! This month's meeting was a bit shorter as most of our teams were busy shipping. Next month, we are at React Native EU conference in Wroclaw, Poland. Make sure to grab a ticket and see you there in person! Meanwhile, let's see what our teams are up to.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Performance in Marketplace]]></title>
+            <link>https://reactnative.dev/blog/2017/08/07/react-native-performance-in-marketplace</link>
+            <guid>React Native Performance in Marketplace</guid>
+            <pubDate>Mon, 07 Aug 2017 00:00:00 GMT</pubDate>
+            <description><![CDATA[React Native is used in multiple places across multiple apps in the Facebook family including a top level tab in the main Facebook apps. Our focus for this post is a highly visible product, Marketplace. It is available in a dozen or so countries and enables users to discover products and services provided by other users.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Monthly #2]]></title>
+            <link>https://reactnative.dev/blog/2017/07/28/react-native-monthly-2</link>
+            <guid>React Native Monthly #2</guid>
+            <pubDate>Fri, 28 Jul 2017 00:00:00 GMT</pubDate>
+            <description><![CDATA[The React Native monthly meeting continues! On this session, we were joined by Infinite Red, great minds behind Chain React, the React Native Conference. As most of the people here were presenting talks at Chain React, we pushed the meeting to a week later. Talks from the conference have been posted online and I encourage you to check them out. So, let's see what our teams are up to.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Monthly #1]]></title>
+            <link>https://reactnative.dev/blog/2017/06/21/react-native-monthly-1</link>
+            <guid>React Native Monthly #1</guid>
+            <pubDate>Wed, 21 Jun 2017 00:00:00 GMT</pubDate>
+            <description><![CDATA[At Shoutem, we've been fortunate enough to work with React Native from its very beginnings. We decided we wanted to be part of the amazing community from day one. Soon enough, we realized it's almost impossible to keep up with the pace the community was growing and improving. That's why we decided to organize a monthly meeting where all major React Native contributors can briefly present what their efforts and plans are.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Better List Views in React Native]]></title>
+            <link>https://reactnative.dev/blog/2017/03/13/better-list-views</link>
+            <guid>Better List Views in React Native</guid>
+            <pubDate>Mon, 13 Mar 2017 00:00:00 GMT</pubDate>
+            <description><![CDATA[Many of you have started playing with some of our new List components already after our teaser announcement in the community group, but we are officially announcing them today! No more ListViews or DataSources, stale rows, ignored bugs, or excessive memory consumption - with the latest React Native March 2017 release candidate (0.43-rc.1) you can pick from the new suite of components what best fits your use-case, with great perf and feature sets out of the box:]]></description>
+        </item>
+        <item>
+            <title><![CDATA[idx: The Existential Function]]></title>
+            <link>https://reactnative.dev/blog/2017/03/13/idx-the-existential-function</link>
+            <guid>idx: The Existential Function</guid>
+            <pubDate>Mon, 13 Mar 2017 00:00:00 GMT</pubDate>
+            <description><![CDATA[At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be null for a variety of reasons, from failed privacy checks to the mere fact that null happens to be the most flexible way to represent non-fatal errors.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Introducing Create React Native App]]></title>
+            <link>https://reactnative.dev/blog/2017/03/13/introducing-create-react-native-app</link>
+            <guid>Introducing Create React Native App</guid>
+            <pubDate>Mon, 13 Mar 2017 00:00:00 GMT</pubDate>
+            <description><![CDATA[Today we’re announcing Create React Native App: a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of Create React App and is the product of a collaboration between Facebook and Expo (formerly Exponent).]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Using Native Driver for Animated]]></title>
+            <link>https://reactnative.dev/blog/2017/02/14/using-native-driver-for-animated</link>
+            <guid>Using Native Driver for Animated</guid>
+            <pubDate>Tue, 14 Feb 2017 00:00:00 GMT</pubDate>
+            <description><![CDATA[For the past year, we've been working on improving performance of animations that use the Animated library. Animations are very important to create a beautiful user experience but can also be hard to do right. We want to make it easy for developers to create performant animations without having to worry about some of their code causing it to lag.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[A Monthly Release Cadence: Releasing December and January RC]]></title>
+            <link>https://reactnative.dev/blog/2017/01/07/monthly-release-cadence</link>
+            <guid>A Monthly Release Cadence: Releasing December and January RC</guid>
+            <pubDate>Sat, 07 Jan 2017 00:00:00 GMT</pubDate>
+            <description><![CDATA[Shortly after React Native was introduced, we started releasing every two weeks to help the community adopt new features, while keeping versions stable for production use. At Facebook we had to stabilize the codebase every two weeks for the release of our production iOS apps, so we decided to release the open source versions at the same pace. Now, many of the Facebook apps ship once per week, especially on Android. Because we ship from master weekly, we need to keep it quite stable. So the bi-weekly release cadence doesn't even benefit internal contributors anymore.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Easier Upgrades Thanks to Git]]></title>
+            <link>https://reactnative.dev/blog/2016/12/05/easier-upgrades</link>
+            <guid>Easier Upgrades Thanks to Git</guid>
+            <pubDate>Mon, 05 Dec 2016 00:00:00 GMT</pubDate>
+            <description><![CDATA[Upgrading to new versions of React Native has been difficult. You might have seen something like this before:]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Introducing Button, Faster Installs with Yarn, and a Public Roadmap]]></title>
+            <link>https://reactnative.dev/blog/2016/11/08/introducing-button-yarn-and-a-public-roadmap</link>
+            <guid>Introducing Button, Faster Installs with Yarn, and a Public Roadmap</guid>
+            <pubDate>Tue, 08 Nov 2016 00:00:00 GMT</pubDate>
+            <description><![CDATA[We have heard from many people that there is so much work happening with React Native, it can be tough to keep track of what's going on. To help communicate what work is in progress, we are now publishing a roadmap for React Native. At a high level, this work can be broken down into three priorities:]]></description>
+        </item>
+        <item>
+            <title><![CDATA[0.36: Headless JS, the Keyboard API, & more]]></title>
+            <link>https://reactnative.dev/blog/2016/10/25/0.36-headless-js-the-keyboard-api-and-more</link>
+            <guid>0.36: Headless JS, the Keyboard API, &amp; more</guid>
+            <pubDate>Tue, 25 Oct 2016 00:00:00 GMT</pubDate>
+            <description><![CDATA[Today we are releasing React Native 0.36. Read on to learn more about what's new.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Expo Talks: Adam on Unraveling Navigation]]></title>
+            <link>https://reactnative.dev/blog/2016/09/08/exponent-talks-unraveling-navigation</link>
+            <guid>Expo Talks: Adam on Unraveling Navigation</guid>
+            <pubDate>Thu, 08 Sep 2016 00:00:00 GMT</pubDate>
+            <description><![CDATA[Adam Miskiewicz from Expo talks about mobile navigation and the ex-navigation React Native library at Expo's office hours last week.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Right-to-Left Layout Support For React Native Apps]]></title>
+            <link>https://reactnative.dev/blog/2016/08/19/right-to-left-support-for-react-native-apps</link>
+            <guid>Right-to-Left Layout Support For React Native Apps</guid>
+            <pubDate>Fri, 19 Aug 2016 00:00:00 GMT</pubDate>
+            <description><![CDATA[After launching an app to the app stores, internationalization is the next step to further your audience reach. Over 20 countries and numerous people around the world use Right-to-Left (RTL) languages. Thus, making your app support RTL for them is necessary.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[San Francisco Meetup Recap]]></title>
+            <link>https://reactnative.dev/blog/2016/08/12/react-native-meetup-san-francisco</link>
+            <guid>San Francisco Meetup Recap</guid>
+            <pubDate>Fri, 12 Aug 2016 00:00:00 GMT</pubDate>
+            <description><![CDATA[Last week I had the opportunity to attend the React Native Meetup at Zynga’s San Francisco office. With around 200 people in attendance, it served as a great place to meet other developers near me that are also interested in React Native.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Toward Better Documentation]]></title>
+            <link>https://reactnative.dev/blog/2016/07/06/toward-better-documentation</link>
+            <guid>Toward Better Documentation</guid>
+            <pubDate>Wed, 06 Jul 2016 00:00:00 GMT</pubDate>
+            <description><![CDATA[Part of having a great developer experience is having great documentation. A lot goes into creating good docs - the ideal documentation is concise, helpful, accurate, complete, and delightful. Recently we've been working hard to make the docs better based on your feedback, and we wanted to share some of the improvements we've made.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native: A year in review]]></title>
+            <link>https://reactnative.dev/blog/2016/04/13/react-native-a-year-in-review</link>
+            <guid>React Native: A year in review</guid>
+            <pubDate>Wed, 13 Apr 2016 00:00:00 GMT</pubDate>
+            <description><![CDATA[It's been one year since we open-sourced React Native. What started as an idea with a handful of engineers is now a framework being used by product teams across Facebook and beyond. Today at F8 we announced that Microsoft is bringing React Native to the Windows ecosystem, giving developers the potential to build React Native on Windows PC, Phone, and Xbox. It will also provide open source tools and services such as a React Native extension for Visual Studio Code and CodePush to help developers create React Native apps on the Windows platform. In addition, Samsung is building React Native for its hybrid platform, which will empower developers to build apps for millions of SmartTVs and mobile and wearable devices. We also released the Facebook SDK for React Native, which makes it easier for developers to incorporate Facebook social features like Login, Sharing, App Analytics, and Graph APIs into their apps. In one year, React Native has changed the way developers build on every major platform.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Dive into React Native Performance]]></title>
+            <link>https://reactnative.dev/blog/2016/03/28/dive-into-react-native-performance</link>
+            <guid>Dive into React Native Performance</guid>
+            <pubDate>Mon, 28 Mar 2016 00:00:00 GMT</pubDate>
+            <description><![CDATA[React Native allows you to build Android and iOS apps in JavaScript using React and Relay's declarative programming model. This leads to more concise, easier-to-understand code; fast iteration without a compile cycle; and easy sharing of code across multiple platforms. You can ship faster and focus on details that really matter, making your app look and feel fantastic. Optimizing performance is a big part of this. Here is the story of how we made React Native app startup twice as fast.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Introducing Hot Reloading]]></title>
+            <link>https://reactnative.dev/blog/2016/03/24/introducing-hot-reloading</link>
+            <guid>Introducing Hot Reloading</guid>
+            <pubDate>Thu, 24 Mar 2016 00:00:00 GMT</pubDate>
+            <description><![CDATA[React Native's goal is to give you the best possible developer experience. A big part of it is the time it takes between you save a file and be able to see the changes. Our goal is to get this feedback loop to be under 1 second, even as your app grows.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Making React Native apps accessible]]></title>
+            <link>https://reactnative.dev/blog/2015/11/23/making-react-native-apps-accessible</link>
+            <guid>Making React Native apps accessible</guid>
+            <pubDate>Mon, 23 Nov 2015 00:00:00 GMT</pubDate>
+            <description><![CDATA[With the recent launch of React on web and React Native on mobile, we've provided a new front-end framework for developers to build products. One key aspect of building a robust product is ensuring that anyone can use it, including people who have vision loss or other disabilities. The Accessibility API for React and React Native enables you to make any React-powered experience usable by someone who may use assistive technology, like a screen reader for the blind and visually impaired.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native for Android: How we built the first cross-platform React Native app]]></title>
+            <link>https://reactnative.dev/blog/2015/09/14/react-native-for-android</link>
+            <guid>React Native for Android: How we built the first cross-platform React Native app</guid>
+            <pubDate>Mon, 14 Sep 2015 00:00:00 GMT</pubDate>
+            <description><![CDATA[Earlier this year, we introduced React Native for iOS. React Native brings what developers are used to from React on the web — declarative self-contained UI components and fast development cycles — to the mobile platform, while retaining the speed, fidelity, and feel of native applications. Today, we're happy to release React Native for Android.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native: Bringing modern web techniques to mobile]]></title>
+            <link>https://reactnative.dev/blog/2015/03/26/react-native-bringing-modern-web-techniques-to-mobile</link>
+            <guid>React Native: Bringing modern web techniques to mobile</guid>
+            <pubDate>Thu, 26 Mar 2015 00:00:00 GMT</pubDate>
+            <description><![CDATA[We introduced React to the world two years ago, and since then it's seen impressive growth, both inside and outside of Facebook. Today, even though no one is forced to use it, new web projects at Facebook are commonly built using React in one form or another, and it's being broadly adopted across the industry. Engineers are choosing to use React every day because it enables them to spend more time focusing on their products and less time fighting with their framework. It wasn't until we'd been building with React for a while, though, that we started to understand what makes it so powerful.]]></description>
+        </item>
+    </channel>
+</rss>
