@@ -566,37 +566,77 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   @UiThread
   @ThreadConfined(UI)
-  public void synchronouslyUpdateViewOnUIThread(int reactTag, @NonNull ReadableMap props) {
+  public void synchronouslyUpdateViewOnUIThread(
+      final int reactTag, @NonNull final ReadableMap props) {
     UiThreadUtil.assertOnUiThread();
 
     int commitNumber = mCurrentSynchronousCommitNumber++;
 
-    // We are on the UI thread so this is safe to call. We try to flush any existing
-    // mount instructions that are queued.
-    tryDispatchMountItems();
-
-    try {
-      ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
-      if (ENABLE_FABRIC_LOGS) {
-        FLog.d(
-            TAG,
-            "SynchronouslyUpdateViewOnUIThread for tag %d: %s",
-            reactTag,
-            (IS_DEVELOPMENT_ENVIRONMENT ? props.toHashMap().toString() : "<hidden>"));
-      }
-
-      updatePropsMountItem(reactTag, props).execute(mMountingManager);
-    } catch (Exception ex) {
-      // TODO T42943890: Fix animations in Fabric and remove this try/catch
-      ReactSoftException.logSoftException(
-          TAG,
-          new ReactNoCrashSoftException(
-              "Caught exception in synchronouslyUpdateViewOnUIThread", ex));
-    } finally {
-      ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
+    // We are on the UI thread so this would otherwise be safe to call, *BUT* we don't know
+    // where we are on the callstack. Why isn't this safe, and why do we have additional safeguards
+    // here?
+    //
+    // A tangible example where this will cause a crash:
+    // 1. There are queued "delete" mutations
+    // 2. We're called by this stack trace:
+    //    FabricUIManager.synchronouslyUpdateViewOnUIThread(FabricUIManager.java:574)
+    //    PropsAnimatedNode.updateView(PropsAnimatedNode.java:114)
+    //    NativeAnimatedNodesManager.updateNodes(NativeAnimatedNodesManager.java:655)
+    //    NativeAnimatedNodesManager.handleEvent(NativeAnimatedNodesManager.java:521)
+    //    NativeAnimatedNodesManager.onEventDispatch(NativeAnimatedNodesManager.java:483)
+    //    EventDispatcherImpl.dispatchEvent(EventDispatcherImpl.java:116)
+    //    ReactScrollViewHelper.emitScrollEvent(ReactScrollViewHelper.java:85)
+    //    ReactScrollViewHelper.emitScrollEvent(ReactScrollViewHelper.java:46)
+    //    ReactScrollView.onScrollChanged(ReactScrollView.java:285)
+    //    ReactScrollView.onOverScrolled(ReactScrollView.java:808)
+    //    android.view.View.overScrollBy(View.java:26052)
+    //    android.widget.ScrollView.overScrollBy(ScrollView.java:2040)
+    //    android.widget.ScrollView.computeScroll(ScrollView.java:1481)
+    //    android.view.View.updateDisplayListIfDirty(View.java:20466)
+    if (!ReactFeatureFlags.enableDrawMutationFix) {
+      tryDispatchMountItems();
     }
+
+    MountItem synchronousMountItem =
+        new MountItem() {
+          @Override
+          public void execute(@NonNull MountingManager mountingManager) {
+            try {
+              updatePropsMountItem(reactTag, props).execute(mountingManager);
+            } catch (Exception ex) {
+              // TODO T42943890: Fix animations in Fabric and remove this try/catch
+              ReactSoftException.logSoftException(
+                  TAG,
+                  new ReactNoCrashSoftException(
+                      "Caught exception in synchronouslyUpdateViewOnUIThread", ex));
+            }
+          }
+        };
+
+    // If the reactTag exists, we assume that it might at the end of the next
+    // batch of MountItems. Otherwise, we try to execute immediately.
+    if (!mMountingManager.getViewExists(reactTag)) {
+      synchronized (mMountItemsLock) {
+        mMountItems.add(synchronousMountItem);
+      }
+      return;
+    }
+
+    ReactMarker.logFabricMarker(
+        ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
+
+    if (ENABLE_FABRIC_LOGS) {
+      FLog.d(
+          TAG,
+          "SynchronouslyUpdateViewOnUIThread for tag %d: %s",
+          reactTag,
+          (IS_DEVELOPMENT_ENVIRONMENT ? props.toHashMap().toString() : "<hidden>"));
+    }
+
+    synchronousMountItem.execute(mMountingManager);
+
+    ReactMarker.logFabricMarker(
+        ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
   }
 
   public void addUIManagerEventListener(UIManagerListener listener) {
