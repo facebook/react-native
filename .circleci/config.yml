@@ -36,7 +36,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:1.0.5
+      - image: reactnativecommunity/react-native-android:1.0.6
     resource_class: "large"
     environment:
       - TERM: "dumb"
@@ -535,12 +535,13 @@ jobs:
           name: "Run Tests: Android Unit Tests"
           command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
       - run:
-          name: "Run Tests: Android Instrumentation Tests"
+          name: "Build Tests: Android Instrumentation Tests"
+          # Here, just build the instrumentation tests. There is a known issue with installing the APK to android-21+ emulator.
           command: |
             if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
               echo "JavaScript bundle missing, cannot run instrumentation tests. Verify Build JavaScript Bundle step completed successfully."; exit 1;
             fi
-            source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+            source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck build ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
 
       # Optionally, run disabled tests
       - when:
