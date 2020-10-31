@@ -94,8 +94,8 @@ public class BatchMountItem implements MountItem {
     return mRootTag;
   }
 
-  public int getSize() {
-    return mSize;
+  public boolean shouldSchedule() {
+    return mSize != 0;
   }
 
   @Override
