@@ -67,6 +67,10 @@
     } else {
       _backedTextInputView = [[RCTUITextField alloc] initWithFrame:self.bounds];
     }
+    _backedTextInputView.placeholder = previousTextField.placeholder;
+    _backedTextInputView.placeholderColor = previousTextField.placeholderColor;
+    _backedTextInputView.selectionColor = previousTextField.selectionColor;
+    _backedTextInputView.textAlignment = previousTextField.textAlignment;
     _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _backedTextInputView.textInputDelegate = self;
     _backedTextInputView.text = previousTextField.text;
