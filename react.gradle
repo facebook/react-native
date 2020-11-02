@@ -321,8 +321,6 @@ afterEvaluate {
         def isRelease = targetName.toLowerCase().contains("release")
         def libDir = "$buildDir/intermediates/merged_native_libs"
         def vmSelectionAction = {
-            logger.error("$buildDir")
-            logger.error("vmSelectionActionvmSelectionAction")
             fileTree(libDir).matching {
                 if (enableHermes) {
                     // For Hermes, delete all the libjsc* files
