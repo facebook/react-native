@@ -5,7 +5,7 @@ rn_android_library(
     name = "robolectric",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":android-all-4.1.2_r1-robolectric-r1",
+        ":android-all-5.0.2_r3-robolectric-r0",
         ":bouncycastle",
         ":guava",
         ":javax-annotation-api",
@@ -28,8 +28,9 @@ rn_android_library(
     ],
 )
 
+# This is based on the minimum SDK version for tests: 21.
 rn_prebuilt_jar(
-    name = "android-all-4.1.2_r1-robolectric-r1",  # name defines filename used by robolectric in runtime
+    name = "android-all-5.0.2_r3-robolectric-r0",  # name defines filename used by robolectric in runtime
     binary_jar = ":robolectric-android-all-binary.jar",
     visibility = ["//ReactAndroid/..."],
 )
@@ -39,13 +40,13 @@ rn_prebuilt_jar(
 fb_native.export_file(
     name = "robolectric-android-all-binary.jar",
     src = ":robolectric-android-all-binary-remote.jar",
-    out = "../android-all-4.1.2_r1-robolectric-r1.jar",  # name defines filename used by robolectric in runtime
+    out = "../android-all-5.0.2_r3-robolectric-r0.jar",  # name defines filename used by robolectric in runtime
 )
 
 fb_native.remote_file(
     name = "robolectric-android-all-binary-remote.jar",
-    sha1 = "8355a2da59fe0233ca45070ca32f08da98d0b806",
-    url = "mvn:org.robolectric:android-all:jar:4.1.2_r1-robolectric-r1",
+    sha1 = "ae6e8f47f73ffe34054852d9c7f4f4ec489254f1",
+    url = "mvn:org.robolectric:android-all:jar:5.0.2_r3-robolectric-r0",
 )
 
 rn_prebuilt_jar(

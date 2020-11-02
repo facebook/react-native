@@ -64,6 +64,7 @@ import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchIntCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
+import com.facebook.react.fabric.mounting.mountitems.IntBufferBatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
 import com.facebook.react.fabric.mounting.mountitems.RemoveDeleteMultiMountItem;
@@ -448,6 +449,20 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private MountItem createIntBufferBatchMountItem(
+      int rootTag, int[] intBuffer, Object[] objBuffer, int commitNumber) {
+    // This could be null if teardown/navigation away from a surface on the main thread happens
+    // while a commit is being processed in a different thread. By contract we expect this to be
+    // possible at teardown, but this race should *never* happen at startup.
+    @Nullable ThemedReactContext reactContext = mReactContextForRootTag.get(rootTag);
+
+    return new IntBufferBatchMountItem(rootTag, reactContext, intBuffer, objBuffer, commitNumber);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
   private NativeArray measureLines(
       ReadableMap attributedString, ReadableMap paragraphAttributes, float width, float height) {
     return (NativeArray)
@@ -551,37 +566,77 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   @UiThread
   @ThreadConfined(UI)
-  public void synchronouslyUpdateViewOnUIThread(int reactTag, @NonNull ReadableMap props) {
+  public void synchronouslyUpdateViewOnUIThread(
+      final int reactTag, @NonNull final ReadableMap props) {
     UiThreadUtil.assertOnUiThread();
 
     int commitNumber = mCurrentSynchronousCommitNumber++;
 
-    // We are on the UI thread so this is safe to call. We try to flush any existing
-    // mount instructions that are queued.
-    tryDispatchMountItems();
-
-    try {
-      ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
-      if (ENABLE_FABRIC_LOGS) {
-        FLog.d(
-            TAG,
-            "SynchronouslyUpdateViewOnUIThread for tag %d: %s",
-            reactTag,
-            (IS_DEVELOPMENT_ENVIRONMENT ? props.toHashMap().toString() : "<hidden>"));
-      }
-
-      updatePropsMountItem(reactTag, props).execute(mMountingManager);
-    } catch (Exception ex) {
-      // TODO T42943890: Fix animations in Fabric and remove this try/catch
-      ReactSoftException.logSoftException(
-          TAG,
-          new ReactNoCrashSoftException(
-              "Caught exception in synchronouslyUpdateViewOnUIThread", ex));
-    } finally {
-      ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
+    // We are on the UI thread so this would otherwise be safe to call, *BUT* we don't know
+    // where we are on the callstack. Why isn't this safe, and why do we have additional safeguards
+    // here?
+    //
+    // A tangible example where this will cause a crash:
+    // 1. There are queued "delete" mutations
+    // 2. We're called by this stack trace:
+    //    FabricUIManager.synchronouslyUpdateViewOnUIThread(FabricUIManager.java:574)
+    //    PropsAnimatedNode.updateView(PropsAnimatedNode.java:114)
+    //    NativeAnimatedNodesManager.updateNodes(NativeAnimatedNodesManager.java:655)
+    //    NativeAnimatedNodesManager.handleEvent(NativeAnimatedNodesManager.java:521)
+    //    NativeAnimatedNodesManager.onEventDispatch(NativeAnimatedNodesManager.java:483)
+    //    EventDispatcherImpl.dispatchEvent(EventDispatcherImpl.java:116)
+    //    ReactScrollViewHelper.emitScrollEvent(ReactScrollViewHelper.java:85)
+    //    ReactScrollViewHelper.emitScrollEvent(ReactScrollViewHelper.java:46)
+    //    ReactScrollView.onScrollChanged(ReactScrollView.java:285)
+    //    ReactScrollView.onOverScrolled(ReactScrollView.java:808)
+    //    android.view.View.overScrollBy(View.java:26052)
+    //    android.widget.ScrollView.overScrollBy(ScrollView.java:2040)
+    //    android.widget.ScrollView.computeScroll(ScrollView.java:1481)
+    //    android.view.View.updateDisplayListIfDirty(View.java:20466)
+    if (!ReactFeatureFlags.enableDrawMutationFix) {
+      tryDispatchMountItems();
     }
+
+    MountItem synchronousMountItem =
+        new MountItem() {
+          @Override
+          public void execute(@NonNull MountingManager mountingManager) {
+            try {
+              updatePropsMountItem(reactTag, props).execute(mountingManager);
+            } catch (Exception ex) {
+              // TODO T42943890: Fix animations in Fabric and remove this try/catch
+              ReactSoftException.logSoftException(
+                  TAG,
+                  new ReactNoCrashSoftException(
+                      "Caught exception in synchronouslyUpdateViewOnUIThread", ex));
+            }
+          }
+        };
+
+    // If the reactTag exists, we assume that it might at the end of the next
+    // batch of MountItems. Otherwise, we try to execute immediately.
+    if (!mMountingManager.getViewExists(reactTag)) {
+      synchronized (mMountItemsLock) {
+        mMountItems.add(synchronousMountItem);
+      }
+      return;
+    }
+
+    ReactMarker.logFabricMarker(
+        ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
+
+    if (ENABLE_FABRIC_LOGS) {
+      FLog.d(
+          TAG,
+          "SynchronouslyUpdateViewOnUIThread for tag %d: %s",
+          reactTag,
+          (IS_DEVELOPMENT_ENVIRONMENT ? props.toHashMap().toString() : "<hidden>"));
+    }
+
+    synchronousMountItem.execute(mMountingManager);
+
+    ReactMarker.logFabricMarker(
+        ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
   }
 
   public void addUIManagerEventListener(UIManagerListener listener) {
@@ -602,7 +657,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @AnyThread
   @ThreadConfined(ANY)
   private void scheduleMountItem(
-      @NonNull final MountItem mountItem,
+      @Nullable final MountItem mountItem,
       int commitNumber,
       long commitStartTime,
       long diffStartTime,
@@ -614,8 +669,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // When Binding.cpp calls scheduleMountItems during a commit phase, it always calls with
     // a BatchMountItem. No other sites call into this with a BatchMountItem, and Binding.cpp only
     // calls scheduleMountItems with a BatchMountItem.
-    boolean isBatchMountItem = mountItem instanceof BatchMountItem;
-    boolean shouldSchedule = !(isBatchMountItem && ((BatchMountItem) mountItem).getSize() == 0);
+    boolean isClassicBatchMountItem = mountItem instanceof BatchMountItem;
+    boolean isIntBufferMountItem = mountItem instanceof IntBufferBatchMountItem;
+    boolean isBatchMountItem = isClassicBatchMountItem || isIntBufferMountItem;
+    boolean shouldSchedule =
+        (isClassicBatchMountItem && ((BatchMountItem) mountItem).shouldSchedule())
+            || (isIntBufferMountItem && ((IntBufferBatchMountItem) mountItem).shouldSchedule())
+            || (!isBatchMountItem && mountItem != null);
 
     // In case of sync rendering, this could be called on the UI thread. Otherwise,
     // it should ~always be called on the JS thread.
@@ -631,11 +691,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
     }
 
-    if (shouldSchedule) {
+    if (shouldSchedule && mountItem != null) {
       synchronized (mMountItemsLock) {
         mMountItems.add(mountItem);
       }
-
       if (UiThreadUtil.isOnUiThread()) {
         // We only read these flags on the UI thread.
         tryDispatchMountItems();
