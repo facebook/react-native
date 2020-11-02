@@ -8,7 +8,7 @@
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 REACT_NATIVE_ROOT="$THIS_DIR/.."
 # Application root directory - General use case: react-native is a dependency
-PROJECT_ROOT="$THIS_DIR/../../.."
+PROJECT_ROOT=${PROJECT_ROOT:-"$THIS_DIR/../../.."}
 
 # check and assign NODE_BINARY env
 # shellcheck disable=SC1090
