@@ -773,7 +773,6 @@ workflows:
             - setup_android
       - test_ios:
           name: test_ios_unit_jsc
-          run_disabled_tests: false
           run_unit_tests: true
           requires:
             - setup_ios
@@ -786,7 +785,6 @@ workflows:
       - test_ios:
           name: test_ios_unit_hermes
           use_hermes: true
-          run_disabled_tests: false
           run_unit_tests: true
           requires:
             - setup_ios
@@ -797,10 +795,8 @@ workflows:
           run_unit_tests: true
           requires:
             - setup_ios
-      
       # - test_ios:
       #     name: test_ios_detox
-      #     run_disabled_tests: false
       #     run_detox_tests: true
       #     requires:
       #       - setup_ios
