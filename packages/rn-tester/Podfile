@@ -8,12 +8,16 @@ if ENV['USE_FRAMEWORKS'] == '1'
   use_frameworks!
 end
 
+if ENV['USE_HERMES'] == '1'
+  puts "Using Hermes engine"
+end
+
 def pods()
   project 'RNTesterPods.xcodeproj'
 
   # Enable TurboModule
   prefix_path = "../.."
-  use_react_native!(path:prefix_path)
+  use_react_native!(path: prefix_path, hermes_enabled: ENV['USE_HERMES'] == '1')
   pod 'ReactCommon/turbomodule/samples', :path => "#{prefix_path}/ReactCommon"
 
   # Additional Pods which aren't included in the default Podfile

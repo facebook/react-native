@@ -20,7 +20,6 @@ defaults: &defaults
     - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_token_a "78a72af35445ca3f8180"
     - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_token_b "b1a98e0bbd56ff1ccba1"
 
-
 # -------------------------
 #        EXECUTORS
 # -------------------------
@@ -152,13 +151,13 @@ commands:
           command: cp packages/rn-tester/Podfile.lock packages/rn-tester/Podfile.lock.bak
       - restore_cache:
           keys:
-            - v1-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
-            - v1-pods-{{ .Environment.CIRCLE_JOB }}-
+            - v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
+            - v3-pods-{{ .Environment.CIRCLE_JOB }}-
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - packages/rn-tester/Pods
-          key: v1-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
+          key: v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
 
   download_gradle_dependencies:
     steps:
@@ -216,12 +215,12 @@ commands:
 jobs:
   setup:
     parameters:
-        executor:
-          type: executor
-          default: nodelts
-        checkout_type:
-          type: string
-          default: node
+      executor:
+        type: executor
+        default: nodelts
+      checkout_type:
+        type: string
+        default: node
     executor: << parameters.executor >>
     steps:
       - checkout
@@ -260,7 +259,6 @@ jobs:
             cd bots
             DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger ci --use-github-checks
           when: always
-
 
   # -------------------------
   #    JOBS: Analyze Code
@@ -351,6 +349,9 @@ jobs:
       use_frameworks:
         type: boolean
         default: false
+      use_hermes:
+        type: boolean
+        default: false
       run_unit_tests:
         description: Specifies whether unit tests should run.
         type: boolean
@@ -406,6 +407,13 @@ jobs:
             - run:
                 name: Set USE_FRAMEWORKS=1
                 command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
+
+      - when:
+          condition: << parameters.use_hermes >>
+          steps:
+            - run:
+                name: Set USE_HERMES=1
+                command: echo "export USE_HERMES=1" >> $BASH_ENV
 
       - run:
           name: Setup the CocoaPods environment
@@ -765,20 +773,31 @@ workflows:
           requires:
             - setup_android
       - test_ios:
-          name: test_ios_unit
-          run_disabled_tests: false
+          name: test_ios_unit_jsc
           run_unit_tests: true
           requires:
             - setup_ios
       - test_ios:
-          name: test_ios_unit_frameworks
+          name: test_ios_unit_frameworks_jsc
+          use_frameworks: true
+          run_unit_tests: true
+          requires:
+            - setup_ios
+      - test_ios:
+          name: test_ios_unit_hermes
+          use_hermes: true
+          run_unit_tests: true
+          requires:
+            - setup_ios
+      - test_ios:
+          name: test_ios_unit_frameworks_hermes
+          use_hermes: true
           use_frameworks: true
           run_unit_tests: true
           requires:
             - setup_ios
       # - test_ios:
       #     name: test_ios_detox
-      #     run_disabled_tests: false
       #     run_detox_tests: true
       #     requires:
       #       - setup_ios

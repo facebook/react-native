@@ -37,7 +37,7 @@
 #import <jsireact/JSIExecutor.h>
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
-#if TARGET_OS_OSX && __has_include(<hermes/hermes.h>)
+#if __has_include(<hermes/hermes.h>)
 #define RCT_USE_HERMES 1
 #endif
 #if RCT_USE_HERMES
