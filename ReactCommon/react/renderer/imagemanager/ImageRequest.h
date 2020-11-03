@@ -96,11 +96,6 @@ class ImageRequest final {
    * Function we can call to cancel image request (see destructor).
    */
   std::function<void(void)> cancelRequest_;
-
-  /*
-   * Indicates that the object was moved and hence cannot be used anymore.
-   */
-  bool moved_{false};
 };
 
 } // namespace react

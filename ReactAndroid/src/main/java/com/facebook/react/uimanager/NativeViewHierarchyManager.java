@@ -262,7 +262,12 @@ public class NativeViewHierarchyManager {
       String className,
       @Nullable ReactStylesDiffMap initialProps) {
     if (DEBUG_MODE) {
-      FLog.d(TAG, "createView[%d]: %s %s", tag, className, initialProps.toString());
+      FLog.d(
+          TAG,
+          "createView[%d]: %s %s",
+          tag,
+          className,
+          (initialProps != null ? initialProps.toString() : "<null>"));
     }
     UiThreadUtil.assertOnUiThread();
     SystraceMessage.beginSection(

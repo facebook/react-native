@@ -71,4 +71,10 @@ public class ReactFeatureFlags {
 
   /** Enable caching of Spannable objects using equality of ReadableNativeMaps */
   public static boolean enableSpannableCacheByReadableNativeMapEquality = true;
+
+  /** Disable customDrawOrder in ReactViewGroup under Fabric only. */
+  public static boolean disableCustomDrawOrderFabric = false;
+
+  /** Potential bugfix for crashes caused by mutating the view hierarchy during onDraw. */
+  public static boolean enableDrawMutationFix = true;
 }

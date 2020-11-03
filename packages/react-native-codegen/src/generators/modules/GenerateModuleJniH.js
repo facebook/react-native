@@ -97,6 +97,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     moduleSpecName: string,
+    packageName?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
     const modules = Object.keys(nativeModules)
@@ -114,12 +115,12 @@ module.exports = {
     const fileName = `${moduleSpecName}.h`;
     const replacedTemplate = HeaderFileTemplate({
       modules: modules,
-      libraryName: libraryName,
+      libraryName: libraryName.replace(/-/g, '_'),
     });
     return new Map([
-      [fileName, replacedTemplate],
+      [`jni/${fileName}`, replacedTemplate],
       [
-        'Android.mk',
+        'jni/Android.mk',
         AndroidMkTemplate({
           libraryName: `react_codegen_${libraryName.toLowerCase()}`,
         }),

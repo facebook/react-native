@@ -26,21 +26,6 @@ void RCTExperimentSetOnDemandViewMounting(BOOL value)
 }
 
 /*
- * Sync performance flag
- */
-static BOOL RCTExperimentSyncPerformanceFlag = NO;
-
-BOOL RCTExperimentGetSyncPerformanceFlag()
-{
-  return RCTExperimentSyncPerformanceFlag;
-}
-
-void RCTExperimentSetSyncPerformanceFlag(BOOL value)
-{
-  RCTExperimentSyncPerformanceFlag = value;
-}
-
-/*
  * Optimized hit-testing
  */
 static BOOL RCTExperimentOptimizedHitTesting = NO;

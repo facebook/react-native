@@ -356,6 +356,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     moduleSpecName: string,
+    packageName?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 
@@ -451,10 +452,10 @@ module.exports = {
     const fileName = `${moduleSpecName}-generated.cpp`;
     const replacedTemplate = FileTemplate({
       modules: modules,
-      libraryName,
+      libraryName: libraryName.replace(/-/g, '_'),
       moduleLookups,
       include: `"${moduleSpecName}.h"`,
     });
-    return new Map([[fileName, replacedTemplate]]);
+    return new Map([[`jni/${fileName}`, replacedTemplate]]);
   },
 };

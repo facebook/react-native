@@ -8,12 +8,14 @@
 package com.facebook.react.views.picker;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.core.view.ViewCompat;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import java.util.List;
 
@@ -173,6 +175,7 @@ public class ReactPicker extends AppCompatSpinner {
         && adapter != null
         && mStagedPrimaryTextColor != adapter.getPrimaryTextColor()) {
       adapter.setPrimaryTextColor(mStagedPrimaryTextColor);
+      ViewCompat.setBackgroundTintList(this, ColorStateList.valueOf(mStagedPrimaryTextColor));
       mStagedPrimaryTextColor = null;
     }
 

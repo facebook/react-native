@@ -263,6 +263,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     moduleSpecName: string,
+    packageName?: string,
   ): FilesOutput {
     const files = new Map();
     Object.keys(schema.modules).forEach(moduleName => {

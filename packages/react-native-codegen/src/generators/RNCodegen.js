@@ -45,6 +45,7 @@ type Options = $ReadOnly<{|
   schema: SchemaType,
   outputDirectory: string,
   moduleSpecName: string,
+  packageName?: string, // Some platforms have a notion of package, which should be configurable.
 |}>;
 
 type Generators =
@@ -53,7 +54,9 @@ type Generators =
   | 'props'
   | 'tests'
   | 'shadow-nodes'
-  | 'modules';
+  | 'modulesAndroid'
+  | 'modulesCxx'
+  | 'modulesIOS';
 
 type Config = $ReadOnly<{|
   generators: Array<Generators>,
@@ -70,17 +73,14 @@ const GENERATORS = {
     generatePropsJavaInterface.generate,
     generatePropsJavaDelegate.generate,
   ],
-  modules: [
-    generateModuleCpp.generate,
-    generateModuleH.generate,
-    generateModuleObjCpp.generate,
-  ],
-  // TODO: Refactor this to consolidate various C++ output variation instead of forking Android.
+  // TODO: Refactor this to consolidate various C++ output variation instead of forking per platform.
   modulesAndroid: [
     GenerateModuleJniCpp.generate,
     GenerateModuleJniH.generate,
     generateModuleJavaSpec.generate,
   ],
+  modulesCxx: [generateModuleCpp.generate, generateModuleH.generate],
+  modulesIOS: [generateModuleObjCpp.generate],
   tests: [generateTests.generate],
   'shadow-nodes': [
     generateShadowNodeCpp.generate,
@@ -93,6 +93,10 @@ function writeMapToFiles(map: Map<string, string>, outputDir: string) {
   map.forEach((contents: string, fileName: string) => {
     try {
       const location = path.join(outputDir, fileName);
+      const dirName = path.dirname(location);
+      if (!fs.existsSync(dirName)) {
+        fs.mkdirSync(dirName, {recursive: true});
+      }
       fs.writeFileSync(location, contents);
     } catch (error) {
       success = false;
@@ -124,7 +128,13 @@ function checkFilesForChanges(
 
 module.exports = {
   generate(
-    {libraryName, schema, outputDirectory, moduleSpecName}: Options,
+    {
+      libraryName,
+      schema,
+      outputDirectory,
+      moduleSpecName,
+      packageName,
+    }: Options,
     {generators, test}: Config,
   ): boolean {
     schemaValidator.validate(schema);
@@ -132,7 +142,9 @@ module.exports = {
     const generatedFiles = [];
     for (const name of generators) {
       for (const generator of GENERATORS[name]) {
-        generatedFiles.push(...generator(libraryName, schema, moduleSpecName));
+        generatedFiles.push(
+          ...generator(libraryName, schema, moduleSpecName, packageName),
+        );
       }
     }
 

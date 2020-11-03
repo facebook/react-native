@@ -100,7 +100,8 @@ class UIManager final : public ShadowTreeDelegate {
 
   void completeSurface(
       SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildren) const;
+      SharedShadowNodeUnsharedList const &rootChildren,
+      ShadowTree::CommitOptions commitOptions) const;
 
   void setJSResponder(
       const ShadowNode::Shared &shadowNode,
@@ -155,6 +156,12 @@ class UIManager final : public ShadowTreeDelegate {
   UIManagerBinding *uiManagerBinding_;
   ShadowTreeRegistry shadowTreeRegistry_{};
   BackgroundExecutor backgroundExecutor_{};
+
+  // Used only when BackgroundExecutor is enabled.
+  // Property is used to keep count of `completeRoot` events to
+  // determine whether a commit should be cancelled. Only to be used
+  // inside UIManagerBinding.
+  std::atomic_uint_fast8_t completeRootEventCounter_{0};
 };
 
 } // namespace react

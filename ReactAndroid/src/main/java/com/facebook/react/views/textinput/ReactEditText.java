@@ -41,6 +41,7 @@ import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -992,7 +993,41 @@ public class ReactEditText extends AppCompatEditText
     // can modify the spans of sb/currentText, impact the text or spans visible on screen, and
     // also call the TextChangeWatcher methods.
     if (haveText) {
-      sb.append(currentText);
+      // This is here as a workaround for T76236115, which looks like this:
+      // Hopefully we can delete all this stuff if we can get rid of the soft errors.
+      // - android.text.SpannableStringBuilder.charAt (SpannableStringBuilder.java:123)
+      // - android.text.CharSequenceCharacterIterator.current
+      // (CharSequenceCharacterIterator.java:58)
+      // - android.text.CharSequenceCharacterIterator.setIndex
+      // (CharSequenceCharacterIterator.java:83)
+      // - android.icu.text.RuleBasedBreakIterator.CISetIndex32 (RuleBasedBreakIterator.java:1126)
+      // - android.icu.text.RuleBasedBreakIterator.isBoundary (RuleBasedBreakIterator.java:503)
+      // - android.text.method.WordIterator.isBoundary (WordIterator.java:95)
+      // - android.widget.Editor$SelectionHandleView.positionAtCursorOffset (Editor.java:6666)
+      // - android.widget.Editor$HandleView.invalidate (Editor.java:5241)
+      // - android.widget.Editor$SelectionModifierCursorController.invalidateHandles
+      // (Editor.java:7442)
+      // - android.widget.Editor.invalidateHandlesAndActionMode (Editor.java:2112)
+      // - android.widget.TextView.spanChange (TextView.java:11189)
+      // - android.widget.TextView$ChangeWatcher.onSpanAdded (TextView.java:14189)
+      // - android.text.SpannableStringBuilder.sendSpanAdded (SpannableStringBuilder.java:1283)
+      // - android.text.SpannableStringBuilder.sendToSpanWatchers (SpannableStringBuilder.java:663)
+      // - android.text.SpannableStringBuilder.replace (SpannableStringBuilder.java:579)
+      // - android.text.SpannableStringBuilder.append (SpannableStringBuilder.java:269)
+      // - ReactEditText.updateCachedSpannable (ReactEditText.java:995)
+      // - ReactEditText$TextWatcherDelegator.onTextChanged (ReactEditText.java:1044)
+      // - android.widget.TextView.sendOnTextChanged (TextView.java:10972)
+      // ...
+      // - android.text.method.BaseKeyListener.onKeyDown (BaseKeyListener.java:479)
+      // - android.text.method.QwertyKeyListener.onKeyDown (QwertyKeyListener.java:362)
+      // - ReactEditText$InternalKeyListener.onKeyDown (ReactEditText.java:1094)
+      // ...
+      // - android.app.Activity.dispatchKeyEvent (Activity.java:3447)
+      try {
+        sb.append(currentText.subSequence(0, currentText.length()));
+      } catch (IndexOutOfBoundsException e) {
+        ReactSoftException.logSoftException(TAG, e);
+      }
     }
 
     // If we don't have text, make sure we have *something* to measure.

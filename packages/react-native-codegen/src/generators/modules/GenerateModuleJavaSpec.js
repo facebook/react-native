@@ -26,17 +26,15 @@ const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
-const FileTemplate = ({
-  packageName,
-  className,
-  methods,
-  imports,
-}: $ReadOnly<{|
-  packageName: string,
-  className: string,
-  methods: string,
-  imports: string,
-|}>) => {
+function FileTemplate(
+  config: $ReadOnly<{|
+    packageName: string,
+    className: string,
+    methods: string,
+    imports: string,
+  |}>,
+): string {
+  const {packageName, className, methods, imports} = config;
   return `
 /**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
@@ -61,7 +59,37 @@ public abstract class ${className} extends ReactContextBaseJavaModule implements
 ${methods}
 }
 `;
-};
+}
+
+function MethodTemplate(
+  config: $ReadOnly<{|
+    abstract: boolean,
+    methodBody: ?string,
+    methodJavaAnnotation: string,
+    methodName: string,
+    translatedReturnType: string,
+    traversedArgs: Array<string>,
+  |}>,
+): string {
+  const {
+    abstract,
+    methodBody,
+    methodJavaAnnotation,
+    methodName,
+    translatedReturnType,
+    traversedArgs,
+  } = config;
+  const methodQualifier = abstract ? 'abstract ' : '';
+  const methodClosing = abstract
+    ? ';'
+    : methodBody != null && methodBody.length > 0
+    ? ` { ${methodBody} }`
+    : ' {}';
+  return `  ${methodJavaAnnotation}
+  public ${methodQualifier}${translatedReturnType} ${methodName}(${traversedArgs.join(
+    ', ',
+  )})${methodClosing}`;
+}
 
 function translateFunctionParamToJavaType(
   param: NativeModuleMethodParamSchema,
@@ -199,6 +227,60 @@ function translateFunctionReturnTypeToJavaType(
   }
 }
 
+function getFalsyReturnStatementFromReturnType(
+  nullableReturnTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
+  createErrorMessage: (typeName: string) => string,
+  resolveAlias: AliasResolver,
+): string {
+  const [
+    returnTypeAnnotation,
+    nullable,
+  ] = unwrapNullable<NativeModuleReturnTypeAnnotation>(
+    nullableReturnTypeAnnotation,
+  );
+
+  let realTypeAnnotation = returnTypeAnnotation;
+  if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
+    realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
+  }
+
+  switch (realTypeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (realTypeAnnotation.name) {
+        case 'RootTag':
+          return 'return 0.0;';
+        default:
+          (realTypeAnnotation.name: empty);
+          throw new Error(createErrorMessage(realTypeAnnotation.name));
+      }
+    case 'VoidTypeAnnotation':
+      return '';
+    case 'PromiseTypeAnnotation':
+      return '';
+    case 'NumberTypeAnnotation':
+      return nullable ? 'return null;' : 'return 0;';
+    case 'FloatTypeAnnotation':
+      return nullable ? 'return null;' : 'return 0.0;';
+    case 'DoubleTypeAnnotation':
+      return nullable ? 'return null;' : 'return 0.0;';
+    case 'Int32TypeAnnotation':
+      return nullable ? 'return null;' : 'return 0;';
+    case 'BooleanTypeAnnotation':
+      return nullable ? 'return null;' : 'return false;';
+    case 'StringTypeAnnotation':
+      return nullable ? 'return null;' : 'return "";';
+    case 'ObjectTypeAnnotation':
+      return 'return null;';
+    case 'GenericObjectTypeAnnotation':
+      return 'return null;';
+    case 'ArrayTypeAnnotation':
+      return 'return null;';
+    default:
+      (realTypeAnnotation.type: empty);
+      throw new Error(createErrorMessage(realTypeAnnotation.type));
+  }
+}
+
 // Build special-cased runtime check for getConstants().
 function buildGetConstantsMethod(
   method: NativeModulePropertySchema,
@@ -284,10 +366,12 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     moduleSpecName: string,
+    packageName?: string,
   ): FilesOutput {
     const files = new Map();
-    // TODO: Allow package configuration.
-    const packageName = 'com.facebook.fbreact.specs.beta';
+    const normalizedPackageName =
+      packageName != null ? packageName : 'com.facebook.fbreact.specs';
+    const outputDir = `java/${normalizedPackageName.replace(/\./g, '/')}`;
     const nativeModules = getModules(schema);
 
     Object.keys(nativeModules).forEach(hasteModuleName => {
@@ -358,16 +442,28 @@ module.exports = {
         const methodJavaAnnotation = `@ReactMethod${
           isSyncMethod ? '(isBlockingSynchronousMethod = true)' : ''
         }`;
-        return `  ${methodJavaAnnotation}
-  public abstract ${translatedReturnType} ${method.name}(${traversedArgs.join(
-          ', ',
-        )});`;
+        const methodBody = method.optional
+          ? getFalsyReturnStatementFromReturnType(
+              methodTypeAnnotation.returnTypeAnnotation,
+              typeName =>
+                `Cannot build falsy return statement for return type for method ${method.name}. Found: ${typeName}`,
+              resolveAlias,
+            )
+          : null;
+        return MethodTemplate({
+          abstract: !method.optional,
+          methodBody,
+          methodJavaAnnotation,
+          methodName: method.name,
+          translatedReturnType,
+          traversedArgs,
+        });
       });
 
       files.set(
-        `${className}.java`,
+        `${outputDir}/${className}.java`,
         FileTemplate({
-          packageName,
+          packageName: normalizedPackageName,
           className,
           methods: methods.filter(Boolean).join('\n\n'),
           imports: Array.from(imports)

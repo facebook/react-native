@@ -31,14 +31,11 @@ class ImageTelemetry final {
   TelemetryTimePoint getWillRequestUrlTime() const;
 
   SurfaceId getSurfaceId() const;
-  std::string getLoaderModuleName() const;
-  void setLoaderModuleName(std::string const &loaderModuleName);
 
  private:
   TelemetryTimePoint willRequestUrlTime_{kTelemetryUndefinedTimePoint};
 
   const SurfaceId surfaceId_;
-  std::string loaderModuleName_{""};
 };
 
 } // namespace react
