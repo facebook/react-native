@@ -59,7 +59,7 @@ function getSizeWithHeaders(
     );
 }
 
-function prefetch(url: string): any {
+function prefetch(url: string): Promise<boolean> {
   return NativeImageLoaderIOS.prefetchImage(url);
 }
 
