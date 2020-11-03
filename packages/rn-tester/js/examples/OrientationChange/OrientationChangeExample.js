@@ -47,7 +47,7 @@ class OrientationChangeExample extends React.Component<{...}, $FlowFixMeState> {
   render() {
     return (
       <View>
-        <Text>{JSON.stringify(this.state)}</Text>
+        <Text>{this.state.currentOrientation}</Text>
       </View>
     );
   }
