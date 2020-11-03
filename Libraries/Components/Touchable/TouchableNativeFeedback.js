@@ -308,7 +308,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
 }
 
 const getBackgroundProp =
-  Platform.OS === 'android'
+  Platform.OS === 'android' && Platform.Version >= 21
     ? (background, useForeground) =>
         useForeground && TouchableNativeFeedback.canUseNativeForeground()
           ? {nativeForegroundAndroid: background}
