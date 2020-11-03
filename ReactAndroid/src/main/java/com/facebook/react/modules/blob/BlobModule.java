@@ -136,7 +136,7 @@ public class BlobModule extends NativeBlobModuleSpec {
           try {
             data = response.body().bytes();
           } catch (IOException e) {
-            if (response.request().method().equalsIgnoreCase("HEAD")) {
+            if (response.request().method().equalsIgnoreCase("HEAD") || response.code() == 204) {
               // The request is an `HEAD` and the body is empty,
               // the OkHttp will produce an exception.
               // Ignore the exception to not invalidate the request in the
