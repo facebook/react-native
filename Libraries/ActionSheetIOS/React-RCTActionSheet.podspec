@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
-  s.source_files           = "*.{m}"
+  s.source_files           = "Libraries/ActionSheetIOS/*.{m}"
   s.preserve_paths          = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTActionSheet"
 

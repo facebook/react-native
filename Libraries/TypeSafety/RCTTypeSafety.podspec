@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.compiler_flags         = folly_compiler_flags
   s.source                 = source
-  s.source_files           = "**/*.{c,h,m,mm,cpp}"
+  s.source_files           = "Libraries/TypeSafety/**/*.{c,h,m,mm,cpp}"
   s.header_dir             = "RCTTypeSafety"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",

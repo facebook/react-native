@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
-  s.source_files           = "*.{m,mm}"
+  s.source_files           = "Libraries/PushNotificationIOS/*.{h,m,mm}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTPushNotification"
   s.pod_target_xcconfig    = {

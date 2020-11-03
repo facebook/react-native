@@ -52,7 +52,8 @@ push() {
   local SPEC_DIR="$SPEC_REPO_DIR/$POD_NAME/$(version $SPEC_NAME)"
   local SPEC_PATH="$SPEC_DIR/$SPEC_NAME.json"
   mkdir -p $SPEC_DIR
-  env INSTALL_YOGA_WITHOUT_PATH_OPTION=1 INSTALL_YOGA_FROM_LOCATION="$ROOT" pod ipc spec $SPEC_NAME > $SPEC_PATH
+  # env INSTALL_YOGA_WITHOUT_PATH_OPTION=1 INSTALL_YOGA_FROM_LOCATION="$ROOT" pod ipc spec $SPEC_NAME >$SPEC_PATH
+  env INSTALL_YOGA_WITHOUT_PATH_OPTION=1 pod ipc spec $SPEC_NAME >$SPEC_PATH
 }
 
 # Perform linting and publishing of podspec in cwd.
@@ -67,10 +68,44 @@ process() {
 }
 
 # Make third-party deps accessible
-cd "$ROOT/third-party-podspecs"
-push Folly.podspec
-push DoubleConversion.podspec
-push glog.podspec
+#cd "$ROOT/third-party-podspecs"
+#push Folly.podspec
+#push DoubleConversion.podspec
+#push glog.podspec
+#
+#process "$ROOT/ReactCommon/yoga"
+#process "$ROOT" _ignore_me_subspec_for_linting_
 
-process "$ROOT/ReactCommon/yoga"
-process "$ROOT" _ignore_me_subspec_for_linting_
+# export SPEC_REPO=libsforios && export RN_NODE_MODULES_PATH="/Users/krmao/workspace/template/mobile/react_native/node_modules" && ./scripts/process-podspecs.sh
+function pushPodsSpecs() {
+  # shellcheck disable=SC2045
+  for element in $(ls "$1"); do
+    file=$1"/"$element
+    if [ -d "$file" ]; then
+      pushPodsSpecs "$file"
+    elif [ "${file##*.}"x = "podspec"x ]; then
+      podspecName=${file##*/}
+      podspecDir="${file%/*}"
+      # echo "$file" 1>>~/Desktop/podspecs.txt
+      # echo "$podspecName" 1>>~/Desktop/podspecs.txt
+      # echo "$podspecDir" 1>>~/Desktop/podspecs.txt
+      cd "$podspecDir"
+      push "$podspecName" # 只取文件名称, 不包含路径, 包含后缀
+    fi
+  done
+}
+
+function pushPodsSpecs_third() {
+  local node_modules_path="$1"
+  cd "$node_modules_path/react-native-gesture-handler"
+  push RNGestureHandler.podspec
+  cd "$node_modules_path/react-native-reanimated"
+  push RNReanimated.podspec
+  cd "$node_modules_path/react-native-safe-area-context"
+  push react-native-safe-area-context.podspec
+  cd "$node_modules_path/react-native-vector-icons"
+  push RNVectorIcons.podspec
+}
+
+pushPodsSpecs "$ROOT"
+pushPodsSpecs_third "$RN_NODE_MODULES_PATH"

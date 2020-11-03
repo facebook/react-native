@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
 
   s.subspec "callinvoker" do |ss|
-    ss.source_files = "callinvoker/**/*.{cpp,h}"
+    ss.source_files = "ReactCommon/callinvoker/**/*.{cpp,h}"
 
     ss.dependency "React-cxxreact", version
     ss.dependency "DoubleConversion"
@@ -55,13 +55,13 @@ Pod::Spec.new do |s|
     ss.dependency "glog"
 
     ss.subspec "core" do |sss|
-      sss.source_files = "turbomodule/core/*.{cpp,h}",
-                         "turbomodule/core/platform/ios/*.{mm,cpp,h}"
+      sss.source_files = "ReactCommon/turbomodule/core/*.{cpp,h}",
+                         "ReactCommon/turbomodule/core/platform/ios/*.{mm,cpp,h}"
     end
 
     ss.subspec "samples" do |sss|
-      sss.source_files = "turbomodule/samples/*.{cpp,h}",
-                         "turbomodule/samples/platform/ios/*.{mm,cpp,h}"
+      sss.source_files = "ReactCommon/turbomodule/samples/*.{cpp,h}",
+                         "ReactCommon/turbomodule/samples/platform/ios/*.{mm,cpp,h}"
       sss.dependency "ReactCommon/turbomodule/core", version
     end
   end

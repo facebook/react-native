@@ -30,10 +30,10 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.library                = "stdc++"
   s.compiler_flags         = folly_compiler_flags
-  s.source_files           = "**/*.{m,mm,cpp,h}"
-  s.exclude_files          = "**/tests/*",
-                             "**/android/*",
-                             "**/cxx/*"
+  s.source_files           = "ReactCommon/fabric/graphics/**/*.{m,mm,cpp,h}"
+  s.exclude_files          = "ReactCommon/fabric/graphics/**/tests/*",
+                             "ReactCommon/fabric/graphics/**/android/*",
+                             "ReactCommon/fabric/graphics/**/cxx/*"
   s.header_dir             = "react/graphics"
   s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO", "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
 
