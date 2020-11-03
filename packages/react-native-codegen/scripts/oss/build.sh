@@ -14,7 +14,7 @@ set -u
 TMP_DIR=$(mktemp -d)
 CODEGEN_DIR="$THIS_DIR/../.."
 
-rm -rf "$CODEGEN_DIR/lib"
+rm -rf "$CODEGEN_DIR/lib" "$CODEGEN_DIR/node_modules"
 
 cp -R "$CODEGEN_DIR/." "$TMP_DIR"
 
@@ -24,5 +24,5 @@ yarn install 2> >(grep -v '^warning' 1>&2)
 
 popd >/dev/null
 
-mv "$TMP_DIR/lib" "$CODEGEN_DIR"
+mv "$TMP_DIR/lib" "$TMP_DIR/node_modules" "$CODEGEN_DIR"
 rm -rf "$TMP_DIR"
