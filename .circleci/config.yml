@@ -789,13 +789,15 @@ workflows:
           run_unit_tests: true
           requires:
             - setup_ios
-      - test_ios:
-          name: test_ios_unit_frameworks_hermes
-          use_hermes: true
-          use_frameworks: true
-          run_unit_tests: true
-          requires:
-            - setup_ios
+      # Hermes doesn't support dynamic frameworks right now.
+      # The following configuration will fail.
+      # - test_ios:
+      #     name: test_ios_unit_frameworks_hermes
+      #     use_hermes: true
+      #     use_frameworks: true
+      #     run_unit_tests: true
+      #     requires:
+      #       - setup_ios
       # - test_ios:
       #     name: test_ios_detox
       #     run_detox_tests: true
