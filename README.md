@@ -36,7 +36,7 @@
   <span> · </span>
   <a href="https://reactnative.dev/docs/contributing">Contribute</a>
   <span> · </span>
-  <a href="https://reactnative.dev/en/help">Community</a>
+  <a href="https://reactnative.dev/help">Community</a>
   <span> · </span>
   <a href="https://github.com/facebook/react-native/blob/master/.github/SUPPORT.md">Support</a>
 </h3>
