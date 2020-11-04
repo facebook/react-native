@@ -108,8 +108,6 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
  */
 @property (nonatomic, weak) id<RCTTurboModuleRegistry> turboModuleRegistry;
 
-@optional
-// This should be required, after migration is done.
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params;
 
