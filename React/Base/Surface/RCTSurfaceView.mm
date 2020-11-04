@@ -31,6 +31,13 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
   return self;
 }
 
+#if TARGET_OS_OSX
+- (BOOL)isFlipped
+{
+  return YES;
+}
+#endif
+
 #pragma mark - Internal Interface
 
 - (void)setRootView:(RCTSurfaceRootView *)rootView

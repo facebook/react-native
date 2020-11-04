@@ -124,7 +124,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
       continue;
     }
 #else // [TODO(macOS ISS#2323203)
-    CGPoint touchLocation = [self.view convertPoint:touch.locationInWindow fromView:nil];
+    // -[NSView hitTest:] takes coordinates in a view's superview coordinate system.
+    // The assumption here is that a RCTUIView/RCTSurfaceView will always have a superview.
+    CGPoint touchLocation = [self.view.superview convertPoint:touch.locationInWindow fromView:nil];
     NSView *targetView = [self.view hitTest:touchLocation];
     // Pair the mouse down events with mouse up events so our _nativeTouches cache doesn't get stale
     if ([targetView isKindOfClass:[NSControl class]]) {
@@ -134,7 +136,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
     } else {
       _shouldSendMouseUpOnSystemBehalf = NO;
     }
-    touchLocation = [targetView convertPoint:touchLocation fromView:self.view];
+    touchLocation = [targetView convertPoint:touchLocation fromView:self.view.superview];
     
     while (targetView) {
       BOOL isUserInteractionEnabled = NO;

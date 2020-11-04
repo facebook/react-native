@@ -1007,9 +1007,7 @@ RCT_EXPORT_METHOD(createView
     RCTShadowView *rootView = _shadowViewRegistry[rootTag];
     RCTAssert(
         [rootView isKindOfClass:[RCTRootShadowView class]]
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
         || [rootView isKindOfClass:[RCTSurfaceRootShadowView class]]
-#endif // ]TODO(macOS ISS#2323203)
         ,
         @"Given `rootTag` (%@) does not correspond to a valid root shadow view instance.",
         rootTag);

@@ -26,17 +26,17 @@
 
 #if RCT_DEV_MENU
 
-@class RCTLogBoxView;
-
-@interface RCTLogBoxView : UIWindow
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+@interface RCTLogBoxWindow : UIWindow // TODO(OSS Candidate ISS#2710739) Renamed from RCTLogBoxView to RCTLogBoxWindow
 @end
 
-@implementation RCTLogBoxView {
+@implementation RCTLogBoxWindow {
   RCTSurface *_surface;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge
+- (instancetype)initWithBridge:(RCTBridge *)bridge // TODO(OSS Candidate ISS#2710739) Dropped `frame` parameter to make it compatible with NSWindow based version
 {
+  CGRect frame = [UIScreen mainScreen].bounds;
   if ((self = [super initWithFrame:frame])) {
     self.windowLevel = UIWindowLevelStatusBar - 1;
     self.backgroundColor = [UIColor clearColor];
@@ -59,7 +59,7 @@
   return self;
 }
 
-- (void)dealloc
+- (void)hide
 {
   [RCTSharedApplication().delegate.window makeKeyWindow];
 }
@@ -72,11 +72,78 @@
 
 @end
 
+#else // [TODO(macOS ISS#2323203)
+
+@interface RCTLogBoxWindow : NSWindow
+@end
+
+@implementation RCTLogBoxWindow {
+  RCTSurface *_surface;
+}
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+{
+  NSRect bounds = NSMakeRect(0, 0, 600, 800);
+  if ((self = [self initWithContentRect:bounds
+                              styleMask:NSWindowStyleMaskTitled
+                                backing:NSBackingStoreBuffered
+                                  defer:YES])) {
+    _surface = [[RCTSurface alloc] initWithBridge:bridge moduleName:@"LogBox" initialProperties:@{}];
+
+    [_surface start];
+    [_surface setSize:bounds.size];
+
+    if (![_surface synchronouslyWaitForStage:RCTSurfaceStageSurfaceDidInitialMounting timeout:1]) {
+      RCTLogInfo(@"Failed to mount LogBox within 1s");
+    }
+
+    self.contentView = (NSView *)_surface.view;
+    self.contentView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+  }
+  return self;
+}
+
+- (void)hide
+{
+  if (NSApp.modalWindow == self) {
+    [NSApp stopModal];
+  }
+  [self orderOut:nil];
+}
+
+- (void)show
+{
+  if (!RCTRunningInTestEnvironment()) {
+    // Run the modal loop outside of the dispatch queue because it is not reentrant.
+    [self performSelectorOnMainThread:@selector(_showModal) withObject:nil waitUntilDone:NO];
+  }
+  else {
+    [NSApp activateIgnoringOtherApps:YES];
+    [self makeKeyAndOrderFront:nil];
+  }
+}
+
+- (void)_showModal
+{
+  NSModalSession session = [NSApp beginModalSessionForWindow:self];
+
+  while ([NSApp runModalSession:session] == NSModalResponseContinue) {
+    // Spin the runloop so that the main dispatch queue is processed.
+    [[NSRunLoop currentRunLoop] limitDateForMode:NSDefaultRunLoopMode];
+  }
+
+  [NSApp endModalSession:session];
+}
+
+@end
+
+#endif // ]TODO(macOS ISS#2323203)
+
 @interface RCTLogBox () <NativeLogBoxSpec>
 @end
 
 @implementation RCTLogBox {
-  RCTLogBoxView *_view;
+  RCTLogBoxWindow *_window; // TODO(OSS Candidate ISS#2710739) Renamed from _view to _window
 }
 
 @synthesize bridge = _bridge;
@@ -97,10 +164,10 @@ RCT_EXPORT_METHOD(show)
       if (!strongSelf) {
         return;
       }
-      if (!strongSelf->_view) {
-        strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:[UIScreen mainScreen].bounds bridge:self->_bridge];
+      if (!strongSelf->_window) {
+        strongSelf->_window = [[RCTLogBoxWindow alloc] initWithBridge:self->_bridge];
       }
-      [strongSelf->_view show];
+      [strongSelf->_window show];
     });
   }
 }
@@ -114,7 +181,8 @@ RCT_EXPORT_METHOD(hide)
       if (!strongSelf) {
         return;
       }
-      strongSelf->_view = nil;
+      [strongSelf->_window hide];
+      strongSelf->_window = nil;
     });
   }
 }

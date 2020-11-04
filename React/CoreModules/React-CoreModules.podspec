@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
   s.source_files           = "**/*.{c,m,mm,cpp}"
   # [TODO(macOS ISS#2323203)
                              "**/MacOS/*"
-  s.osx.exclude_files     =  "{RCTLogBox,RCTFPSGraph,RCTPerfMonitor,RCTPlatform}.*"
+  s.osx.exclude_files     =  "{RCTFPSGraph,RCTPerfMonitor,RCTPlatform}.*"
   # ]TODO(macOS ISS#2323203)
   s.header_dir             = "CoreModules"
   s.pod_target_xcconfig    = {
