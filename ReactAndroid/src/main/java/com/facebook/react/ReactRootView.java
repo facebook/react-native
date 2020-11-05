@@ -711,7 +711,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         return;
       }
       checkForKeyboardEvents();
-      checkForDeviceOrientationChanges();
+      if (checkForDeviceOrientationChanges()) {
+        DisplayMetricsHolder.initDisplayMetrics(getContext().getApplicationContext());
+      }
       checkForDeviceDimensionsChanges();
     }
 
@@ -747,16 +749,17 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       }
     }
 
-    private void checkForDeviceOrientationChanges() {
+    private boolean checkForDeviceOrientationChanges() {
       final int rotation =
           ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
               .getDefaultDisplay()
               .getRotation();
       if (mDeviceRotation == rotation) {
-        return;
+        return false;
       }
       mDeviceRotation = rotation;
       emitOrientationChanged(rotation);
+      return true;
     }
 
     private void checkForDeviceDimensionsChanges() {
