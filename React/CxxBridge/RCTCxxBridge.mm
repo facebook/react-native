@@ -37,9 +37,14 @@
 #import <jsireact/JSIExecutor.h>
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
+#ifndef RCT_USE_HERMES
 #if __has_include(<hermes/hermes.h>)
 #define RCT_USE_HERMES 1
+#else
+#define RCT_USE_HERMES 0
 #endif
+#endif
+
 #if RCT_USE_HERMES
 #import "HermesExecutorFactory.h"
 #else
