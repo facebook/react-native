@@ -220,6 +220,13 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _jsMessageThread;
 }
 
+// [TODO(OSS Candidate ISS#2710739)
+- (std::weak_ptr<Instance>)reactInstance
+{
+  return _reactInstance;
+}
+// ]TODO(OSS Candidate ISS#2710739)
+
 - (BOOL)isInspectable
 {
   return _reactInstance ? _reactInstance->isInspectable() : NO;
