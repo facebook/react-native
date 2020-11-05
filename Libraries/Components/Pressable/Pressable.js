@@ -57,7 +57,7 @@ type Props = $ReadOnly<{|
    * Either children or a render prop that receives a boolean reflecting whether
    * the component is currently pressed.
    */
-  children: React.Node | ((state: StateCallbackType) => React.Node),
+  children?: ?React.Node | ?((state: StateCallbackType) => React.Node),
 
   /**
    * Duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
