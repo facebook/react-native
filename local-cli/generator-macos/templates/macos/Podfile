@@ -4,17 +4,15 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 target 'HelloWorld-macOS' do
   platform :macos, '10.13'
   use_native_modules!
-  use_react_native!(:path => '../node_modules/react-native-macos')
-
-  # Enables Hermes
-  #
-  # Be sure to first install the `hermes-engine-darwin` npm package, e.g.:
-  #
-  #   $ yarn add 'hermes-engine-darwin@~0.5.0'
-  #
-  # pod 'React-Core/Hermes', :path => '../node_modules/react-native-macos/'
-  # pod 'hermes', :path => '../node_modules/hermes-engine-darwin'
-  # pod 'libevent', :podspec => '../node_modules/react-native-macos/third-party-podspecs/libevent.podspec'
+  use_react_native!(
+    :path => '../node_modules/react-native-macos',
+    
+    # To use Hermes, install the `hermes-engine-darwin` npm package, e.g.:
+    #   $ yarn add 'hermes-engine-darwin@~0.5.3'
+    #
+    # Then enable this option:
+    #   :hermes_enabled => true
+  )
 
   # Pods specifically for macOS target
 end
