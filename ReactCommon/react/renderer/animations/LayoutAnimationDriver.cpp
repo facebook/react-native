@@ -160,10 +160,7 @@ void LayoutAnimationDriver::animationMutationsForFrame(
       double animationInterpolationFactor = progress.second;
 
       auto mutatedShadowView = createInterpolatedShadowView(
-          animationInterpolationFactor,
-          *mutationConfig,
-          baselineShadowView,
-          finalShadowView);
+          animationInterpolationFactor, baselineShadowView, finalShadowView);
 
       // Create the mutation instruction
       auto updateMutation = ShadowViewMutation::UpdateMutation(

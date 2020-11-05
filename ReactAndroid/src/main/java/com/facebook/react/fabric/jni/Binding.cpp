@@ -137,15 +137,16 @@ static inline void updateBufferSizes(
   }
 }
 
-static inline void computeBufferSizes(int& batchMountItemIntsSize, int& batchMountItemObjectsSize,
-    std::vector<CppMountItem>& cppCommonMountItems,
-    std::vector<CppMountItem>& cppDeleteMountItems,
-    std::vector<CppMountItem>& cppUpdatePropsMountItems,
-    std::vector<CppMountItem>& cppUpdateStateMountItems,
-    std::vector<CppMountItem>& cppUpdatePaddingMountItems,
-    std::vector<CppMountItem>& cppUpdateLayoutMountItems,
-    std::vector<CppMountItem>& cppUpdateEventEmitterMountItems) {
-
+static inline void computeBufferSizes(
+    int &batchMountItemIntsSize,
+    int &batchMountItemObjectsSize,
+    std::vector<CppMountItem> &cppCommonMountItems,
+    std::vector<CppMountItem> &cppDeleteMountItems,
+    std::vector<CppMountItem> &cppUpdatePropsMountItems,
+    std::vector<CppMountItem> &cppUpdateStateMountItems,
+    std::vector<CppMountItem> &cppUpdatePaddingMountItems,
+    std::vector<CppMountItem> &cppUpdateLayoutMountItems,
+    std::vector<CppMountItem> &cppUpdateEventEmitterMountItems) {
   CppMountItem::Type lastType = CppMountItem::Type::Undefined;
   int numSameType = 0;
   for (const auto &mountItem : cppCommonMountItems) {
@@ -218,7 +219,6 @@ static inline void writeIntBufferTypePreamble(
     intBufferPosition += 2;
   }
 }
-
 
 jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
     jni::alias_ref<jclass>) {
@@ -891,7 +891,10 @@ void Binding::schedulerDidFinishTransactionIntBuffer(
   // to know exactly how much space must be allocated
   int batchMountItemIntsSize = 0;
   int batchMountItemObjectsSize = 0;
-  computeBufferSizes(batchMountItemIntsSize, batchMountItemObjectsSize, cppCommonMountItems,
+  computeBufferSizes(
+      batchMountItemIntsSize,
+      batchMountItemObjectsSize,
+      cppCommonMountItems,
       cppDeleteMountItems,
       cppUpdatePropsMountItems,
       cppUpdateStateMountItems,
