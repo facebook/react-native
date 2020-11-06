@@ -13,7 +13,7 @@
 import type {
   EventTypeShape,
   NamedShape,
-  CommandsTypeAnnotation,
+  CommandTypeAnnotation,
   PropTypeAnnotation,
   ExtendsPropsShape,
   SchemaType,
@@ -26,7 +26,7 @@ export type ComponentSchemaBuilderConfig = $ReadOnly<{|
   extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
   events: $ReadOnlyArray<EventTypeShape>,
   props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
-  commands: $ReadOnlyArray<NamedShape<CommandsTypeAnnotation>>,
+  commands: $ReadOnlyArray<NamedShape<CommandTypeAnnotation>>,
   options?: ?OptionsShape,
 |}>;
 

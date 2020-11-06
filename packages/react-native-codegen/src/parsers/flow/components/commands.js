@@ -12,7 +12,7 @@
 
 import type {
   NamedShape,
-  CommandsTypeAnnotation,
+  CommandTypeAnnotation,
 } from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../utils.js';
 
@@ -102,7 +102,7 @@ function buildCommandSchema(property, types: TypeDeclarationMap) {
 function getCommands(
   commandTypeAST: $ReadOnlyArray<EventTypeAST>,
   types: TypeDeclarationMap,
-): $ReadOnlyArray<NamedShape<CommandsTypeAnnotation>> {
+): $ReadOnlyArray<NamedShape<CommandTypeAnnotation>> {
   return commandTypeAST
     .filter(property => property.type === 'ObjectTypeProperty')
     .map(property => buildCommandSchema(property, types))

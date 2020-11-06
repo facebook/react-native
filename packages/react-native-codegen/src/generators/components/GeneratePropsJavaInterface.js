@@ -12,7 +12,7 @@
 
 import type {
   NamedShape,
-  CommandsTypeAnnotation,
+  CommandTypeAnnotation,
   ComponentShape,
   PropTypeAnnotation,
   SchemaType,
@@ -157,7 +157,7 @@ function getCommandArgJavaType(param) {
 }
 
 function getCommandArguments(
-  command: NamedShape<CommandsTypeAnnotation>,
+  command: NamedShape<CommandTypeAnnotation>,
   componentName: string,
 ): string {
   return [

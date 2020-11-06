@@ -71,7 +71,7 @@ export type ComponentShape = $ReadOnly<{|
   extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
   events: $ReadOnlyArray<EventTypeShape>,
   props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
-  commands: $ReadOnlyArray<NamedShape<CommandsTypeAnnotation>>,
+  commands: $ReadOnlyArray<NamedShape<CommandTypeAnnotation>>,
 |}>;
 
 export type OptionsShape = $ReadOnly<{|
@@ -188,18 +188,18 @@ export type PropTypeAnnotation =
           |}>,
     |}>;
 
-// TODO: Unify this function type annotation with NativeModule schema
-export type CommandsTypeAnnotation = $ReadOnly<{|
+export type CommandTypeAnnotation = $ReadOnly<{|
   type: 'FunctionTypeAnnotation',
-  params: $ReadOnlyArray<CommandsFunctionTypeParamAnnotation>,
+  params: $ReadOnlyArray<CommandFunctionTypeParamAnnotation>,
 |}>;
 
-export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
+// TODO: Unify this function type annotation with NativeModule schema
+export type CommandFunctionTypeParamAnnotation = $ReadOnly<{|
   name: string,
-  typeAnnotation: CommandsParamTypeAnnotation,
+  typeAnnotation: CommandParamTypeAnnotation,
 |}>;
 
-type CommandsParamTypeAnnotation =
+type CommandParamTypeAnnotation =
   | ReservedTypeAnnotation
   | BooleanTypeAnnotation
   | Int32TypeAnnotation
