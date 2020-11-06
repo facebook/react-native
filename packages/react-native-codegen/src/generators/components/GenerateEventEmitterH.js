@@ -102,7 +102,7 @@ function getNativeTypeFromAnnotation(
   eventProperty: EventObjectPropertyType,
   nameParts: $ReadOnlyArray<string>,
 ): string {
-  const type = eventProperty.type;
+  const {type} = eventProperty.typeAnnotation;
 
   switch (type) {
     case 'BooleanTypeAnnotation':
@@ -163,13 +163,17 @@ function generateStruct(
     })
     .join('\n' + '  ');
 
-  properties.forEach((property: EventObjectPropertyType) => {
-    const name = property.name;
-    switch (property.type) {
+  properties.forEach(property => {
+    const {name, typeAnnotation} = property;
+    switch (typeAnnotation.type) {
       case 'BooleanTypeAnnotation':
+        return;
       case 'StringTypeAnnotation':
+        return;
       case 'Int32TypeAnnotation':
+        return;
       case 'DoubleTypeAnnotation':
+        return;
       case 'FloatTypeAnnotation':
         return;
       case 'ObjectTypeAnnotation':
@@ -177,16 +181,16 @@ function generateStruct(
           structs,
           componentName,
           nameParts.concat([name]),
-          nullthrows(property.properties),
+          nullthrows(typeAnnotation.properties),
         );
         return;
       case 'StringEnumTypeAnnotation':
-        generateEnum(structs, property.options, nameParts.concat([name]));
+        generateEnum(structs, typeAnnotation.options, nameParts.concat([name]));
         return;
       default:
-        (property: empty);
+        (typeAnnotation.type: empty);
         throw new Error(
-          `Received invalid event property type ${property.type}`,
+          `Received invalid event property type ${typeAnnotation.type}`,
         );
     }
   });

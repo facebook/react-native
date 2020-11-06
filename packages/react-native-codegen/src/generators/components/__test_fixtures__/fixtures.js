@@ -58,9 +58,11 @@ const INTERFACE_ONLY: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -110,9 +112,11 @@ const EVENTS_WITH_PAPER_NAME: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -129,9 +133,11 @@ const EVENTS_WITH_PAPER_NAME: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -1134,24 +1140,32 @@ const EVENT_PROPS: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                     {
-                      type: 'StringTypeAnnotation',
                       name: 'source',
                       optional: true,
+                      typeAnnotation: {
+                        type: 'StringTypeAnnotation',
+                      },
                     },
                     {
-                      type: 'Int32TypeAnnotation',
                       name: 'progress',
                       optional: true,
+                      typeAnnotation: {
+                        type: 'Int32TypeAnnotation',
+                      },
                     },
                     {
-                      type: 'FloatTypeAnnotation',
                       name: 'scale',
                       optional: true,
+                      typeAnnotation: {
+                        type: 'FloatTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -1167,9 +1181,11 @@ const EVENT_PROPS: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -1185,17 +1201,19 @@ const EVENT_PROPS: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'StringEnumTypeAnnotation',
                       name: 'orientation',
                       optional: false,
-                      options: [
-                        {
-                          name: 'landscape',
-                        },
-                        {
-                          name: 'portrait',
-                        },
-                      ],
+                      typeAnnotation: {
+                        type: 'StringEnumTypeAnnotation',
+                        options: [
+                          {
+                            name: 'landscape',
+                          },
+                          {
+                            name: 'portrait',
+                          },
+                        ],
+                      },
                     },
                   ],
                 },
@@ -1250,33 +1268,43 @@ const EVENT_NESTED_OBJECT_PROPS: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'ObjectTypeAnnotation',
                       name: 'location',
                       optional: false,
-                      properties: [
-                        {
-                          type: 'ObjectTypeAnnotation',
-                          name: 'source',
-                          optional: false,
-                          properties: [
-                            {
-                              type: 'StringTypeAnnotation',
-                              name: 'url',
-                              optional: false,
+                      typeAnnotation: {
+                        type: 'ObjectTypeAnnotation',
+                        properties: [
+                          {
+                            name: 'source',
+                            optional: false,
+                            typeAnnotation: {
+                              type: 'ObjectTypeAnnotation',
+                              properties: [
+                                {
+                                  name: 'url',
+                                  optional: false,
+                                  typeAnnotation: {
+                                    type: 'StringTypeAnnotation',
+                                  },
+                                },
+                              ],
                             },
-                          ],
-                        },
-                        {
-                          type: 'Int32TypeAnnotation',
-                          name: 'x',
-                          optional: false,
-                        },
-                        {
-                          type: 'Int32TypeAnnotation',
-                          name: 'y',
-                          optional: false,
-                        },
-                      ],
+                          },
+                          {
+                            name: 'x',
+                            optional: false,
+                            typeAnnotation: {
+                              type: 'Int32TypeAnnotation',
+                            },
+                          },
+                          {
+                            name: 'y',
+                            optional: false,
+                            typeAnnotation: {
+                              type: 'Int32TypeAnnotation',
+                            },
+                          },
+                        ],
+                      },
                     },
                   ],
                 },

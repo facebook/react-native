@@ -55,46 +55,28 @@ export type StringTypeAnnotation = $ReadOnly<{|
   type: 'StringTypeAnnotation',
 |}>;
 
-export type EventObjectPropertyType =
-  | $ReadOnly<{|
-      type: 'BooleanTypeAnnotation',
-      name: string,
-      optional: boolean,
-    |}>
-  | $ReadOnly<{|
-      type: 'StringTypeAnnotation',
-      name: string,
-      optional: boolean,
-    |}>
-  | $ReadOnly<{|
-      type: 'DoubleTypeAnnotation',
-      name: string,
-      optional: boolean,
-    |}>
-  | $ReadOnly<{|
-      type: 'FloatTypeAnnotation',
-      name: string,
-      optional: boolean,
-    |}>
-  | $ReadOnly<{|
-      type: 'Int32TypeAnnotation',
-      name: string,
-      optional: boolean,
-    |}>
-  | $ReadOnly<{|
-      type: 'StringEnumTypeAnnotation',
-      name: string,
-      optional: boolean,
-      options: $ReadOnlyArray<{|
-        name: string,
+export type StringEnumTypeAnnotation = $ReadOnly<{|
+  type: 'StringEnumTypeAnnotation',
+  options: $ReadOnlyArray<{|
+    name: string,
+  |}>,
+|}>;
+
+export type EventObjectPropertyType = $ReadOnly<{|
+  name: string,
+  optional: boolean,
+  typeAnnotation:
+    | BooleanTypeAnnotation
+    | StringTypeAnnotation
+    | DoubleTypeAnnotation
+    | FloatTypeAnnotation
+    | Int32TypeAnnotation
+    | StringEnumTypeAnnotation
+    | $ReadOnly<{|
+        type: 'ObjectTypeAnnotation',
+        properties: $ReadOnlyArray<EventObjectPropertyType>,
       |}>,
-    |}>
-  | $ReadOnly<{|
-      type: 'ObjectTypeAnnotation',
-      name: string,
-      optional: boolean,
-      properties: $ReadOnlyArray<EventObjectPropertyType>,
-    |}>;
+|}>;
 
 type PropTypeTypeAnnotation =
   | $ReadOnly<{|
@@ -146,21 +128,11 @@ type PropTypeTypeAnnotation =
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
       elementType:
-        | $ReadOnly<{|
-            type: 'BooleanTypeAnnotation',
-          |}>
-        | $ReadOnly<{|
-            type: 'StringTypeAnnotation',
-          |}>
-        | $ReadOnly<{|
-            type: 'DoubleTypeAnnotation',
-          |}>
-        | $ReadOnly<{|
-            type: 'FloatTypeAnnotation',
-          |}>
-        | $ReadOnly<{|
-            type: 'Int32TypeAnnotation',
-          |}>
+        | BooleanTypeAnnotation
+        | StringTypeAnnotation
+        | DoubleTypeAnnotation
+        | FloatTypeAnnotation
+        | Int32TypeAnnotation
         | $ReadOnly<{|
             type: 'StringEnumTypeAnnotation',
             default: string,
