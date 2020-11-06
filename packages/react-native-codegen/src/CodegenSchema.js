@@ -251,19 +251,11 @@ export type NativeModuleAliasMap = $ReadOnly<{|
 
 export type NativeModuleFunctionTypeAnnotation = $ReadOnly<{|
   type: 'FunctionTypeAnnotation',
-  params: $ReadOnlyArray<NativeModuleMethodParamSchema>,
+  params: $ReadOnlyArray<NamedShape<Nullable<NativeModuleParamTypeAnnotation>>>,
   returnTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
 |}>;
 
-export type NativeModuleMethodParamSchema = NamedShape<
-  Nullable<NativeModuleParamTypeAnnotation>,
->;
-
 export type NativeModuleObjectTypeAnnotation = ObjectTypeAnnotation<
-  Nullable<NativeModuleBaseTypeAnnotation>,
->;
-
-export type NativeModuleObjectTypeAnnotationPropertySchema = NamedShape<
   Nullable<NativeModuleBaseTypeAnnotation>,
 >;
 

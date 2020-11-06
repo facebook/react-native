@@ -12,9 +12,9 @@
 
 import type {
   Nullable,
+  NamedShape,
   SchemaType,
   NativeModulePropertySchema,
-  NativeModuleMethodParamSchema,
   NativeModuleReturnTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
@@ -177,8 +177,10 @@ function translateReturnTypeToKind(
   }
 }
 
+type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+
 function translateParamTypeToJniType(
-  param: NativeModuleMethodParamSchema,
+  param: Param,
   resolveAlias: AliasResolver,
 ): string {
   const {optional, typeAnnotation: nullableTypeAnnotation} = param;

@@ -11,10 +11,11 @@
 'use strict';
 
 import type {
-  NativeModuleMethodParamSchema,
-  NativeModuleReturnTypeAnnotation,
   NativeModulePropertySchema,
   Nullable,
+  NamedShape,
+  NativeModuleParamTypeAnnotation,
+  NativeModuleReturnTypeAnnotation,
 } from '../../../CodegenSchema';
 
 import type {AliasResolver} from '../Utils';
@@ -164,10 +165,9 @@ function serializeMethod(
   ];
 }
 
-function getParamStructName(
-  methodName: string,
-  param: NativeModuleMethodParamSchema,
-): string {
+type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+
+function getParamStructName(methodName: string, param: Param): string {
   const [typeAnnotation] = unwrapNullable(param.typeAnnotation);
   if (typeAnnotation.type === 'TypeAliasTypeAnnotation') {
     return typeAnnotation.name;
@@ -179,7 +179,7 @@ function getParamStructName(
 function getParamObjCType(
   hasteModuleName: string,
   methodName: string,
-  param: NativeModuleMethodParamSchema,
+  param: Param,
   structName: string,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,

@@ -11,13 +11,13 @@
 'use strict';
 
 import type {
+  NamedShape,
   NativeModuleAliasMap,
   NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
-  NativeModuleMethodParamSchema,
-  NativeModuleObjectTypeAnnotationPropertySchema,
   NativeModulePropertySchema,
+  NativeModuleParamTypeAnnotation,
   NativeModuleSchema,
   Nullable,
 } from '../../../CodegenSchema.js';
@@ -207,68 +207,70 @@ function translateTypeAnnotation(
       const objectTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
         properties: (typeAnnotation.properties: Array<$FlowFixMe>)
-          .map<?NativeModuleObjectTypeAnnotationPropertySchema>(property => {
-            return guard(() => {
-              if (property.type !== 'ObjectTypeProperty') {
-                throw new UnsupportedObjectPropertyTypeAnnotationParserError(
-                  hasteModuleName,
-                  property,
-                  property.type,
-                );
-              }
+          .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
+            property => {
+              return guard(() => {
+                if (property.type !== 'ObjectTypeProperty') {
+                  throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+                    hasteModuleName,
+                    property,
+                    property.type,
+                  );
+                }
 
-              const {optional, key} = property;
+                const {optional, key} = property;
 
-              const [
-                propertyTypeAnnotation,
-                isPropertyNullable,
-              ] = unwrapNullable(
-                translateTypeAnnotation(
-                  hasteModuleName,
-                  property.value,
-                  types,
-                  aliasMap,
-                  guard,
-                ),
-              );
-
-              if (propertyTypeAnnotation.type === 'FunctionTypeAnnotation') {
-                throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                  hasteModuleName,
-                  property.value,
-                  property.key,
-                  propertyTypeAnnotation.type,
-                );
-              }
-
-              if (propertyTypeAnnotation.type === 'VoidTypeAnnotation') {
-                throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                  hasteModuleName,
-                  property.value,
-                  property.key,
-                  'void',
-                );
-              }
-
-              if (propertyTypeAnnotation.type === 'PromiseTypeAnnotation') {
-                throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                  hasteModuleName,
-                  property.value,
-                  property.key,
-                  'Promise',
-                );
-              }
-
-              return {
-                name: key.name,
-                optional,
-                typeAnnotation: wrapNullable(
-                  isPropertyNullable,
+                const [
                   propertyTypeAnnotation,
-                ),
-              };
-            });
-          })
+                  isPropertyNullable,
+                ] = unwrapNullable(
+                  translateTypeAnnotation(
+                    hasteModuleName,
+                    property.value,
+                    types,
+                    aliasMap,
+                    guard,
+                  ),
+                );
+
+                if (propertyTypeAnnotation.type === 'FunctionTypeAnnotation') {
+                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+                    hasteModuleName,
+                    property.value,
+                    property.key,
+                    propertyTypeAnnotation.type,
+                  );
+                }
+
+                if (propertyTypeAnnotation.type === 'VoidTypeAnnotation') {
+                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+                    hasteModuleName,
+                    property.value,
+                    property.key,
+                    'void',
+                  );
+                }
+
+                if (propertyTypeAnnotation.type === 'PromiseTypeAnnotation') {
+                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+                    hasteModuleName,
+                    property.value,
+                    property.key,
+                    'Promise',
+                  );
+                }
+
+                return {
+                  name: key.name,
+                  optional,
+                  typeAnnotation: wrapNullable(
+                    isPropertyNullable,
+                    propertyTypeAnnotation,
+                  ),
+                };
+              });
+            },
+          )
           .filter(Boolean),
       };
 
@@ -391,7 +393,8 @@ function translateFunctionTypeAnnotation(
   aliasMap: {...NativeModuleAliasMap},
   guard: ParserErrorCapturer,
 ): NativeModuleFunctionTypeAnnotation {
-  const params: Array<NativeModuleMethodParamSchema> = [];
+  type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+  const params: Array<Param> = [];
 
   for (const flowParam of (flowFunctionTypeAnnotation.params: $ReadOnlyArray<$FlowFixMe>)) {
     const parsedParam = guard(() => {

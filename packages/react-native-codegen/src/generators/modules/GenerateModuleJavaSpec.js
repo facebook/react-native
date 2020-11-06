@@ -12,9 +12,9 @@
 
 import type {
   Nullable,
+  NamedShape,
   SchemaType,
   NativeModulePropertySchema,
-  NativeModuleMethodParamSchema,
   NativeModuleReturnTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
@@ -91,8 +91,10 @@ function MethodTemplate(
   )})${methodClosing}`;
 }
 
+type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+
 function translateFunctionParamToJavaType(
-  param: NativeModuleMethodParamSchema,
+  param: Param,
   createErrorMessage: (typeName: string) => string,
   resolveAlias: AliasResolver,
   imports: Set<string>,

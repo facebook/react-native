@@ -13,7 +13,8 @@
 import type {
   SchemaType,
   NativeModulePropertySchema,
-  NativeModuleMethodParamSchema,
+  Nullable,
+  NamedShape,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
 } from '../../CodegenSchema';
@@ -99,8 +100,10 @@ ${modules}
 `;
 };
 
+type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+
 function serializeArg(
-  arg: NativeModuleMethodParamSchema,
+  arg: Param,
   index: number,
   resolveAlias: AliasResolver,
 ): string {
