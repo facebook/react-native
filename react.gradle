@@ -94,6 +94,25 @@ android {
         resValue "integer", "react_native_dev_server_port", reactNativeDevServerPort()
         resValue "integer", "react_native_inspector_proxy_port", reactNativeInspectorProxyPort()
     }
+
+    packagingOptions {
+        // Delete the VM related libraries that this build doesn't need.
+        // The application can manage this manually by setting 'enableVmCleanup: false'
+        //
+        // This should really be done by packaging all Hermes related libs into
+        // two separate HermesDebug and HermesRelease AARs, but until then we'll just exclude them here
+        if (config.enableHermes && enableVmCleanup) {
+            def taskName = getGradle().getStartParameter().getTaskRequests().toString()
+    
+            exclude "**/libjsc*.so"
+            if (taskName.toLowerCase().contains("release")) {
+                exclude '**/libhermes-inspector.so'
+                exclude '**/libhermes-executor-debug.so'
+            } else {
+                exclude '**/libhermes-executor-release.so'
+            }
+        }
+    }
 }
 
 afterEvaluate {
@@ -310,45 +329,6 @@ afterEvaluate {
         packageTask.dependsOn(currentAssetsCopyTask)
         if (buildPreBundleTask != null) {
             buildPreBundleTask.dependsOn(currentAssetsCopyTask)
-        }
-
-        // Delete the VM related libraries that this build doesn't need.
-        // The application can manage this manually by setting 'enableVmCleanup: false'
-        //
-        // This should really be done by packaging all Hermes releated libs into
-        // two separate HermesDebug and HermesRelease AARs, but until then we'll
-        // kludge it by deleting the .so files out of the /merged_native_libs/ directory.
-        def isRelease = targetName.toLowerCase().contains("release")
-        def libDir = "$buildDir/intermediates/merged_native_libs"
-        def vmSelectionAction = {
-            fileTree(libDir).matching {
-                if (enableHermes) {
-                    // For Hermes, delete all the libjsc* files
-                    include "**/libjsc*.so"
-
-                    if (isRelease) {
-                        // Reduce size by deleting the debugger/inspector
-                        include '**/libhermes-inspector.so'
-                        include '**/libhermes-executor-debug.so'
-                    } else {
-                        // Release libs take precedence and must be removed
-                        // to allow debugging
-                        include '**/libhermes-executor-release.so'
-                    }
-                } else {
-                    // For JSC, delete all the libhermes* files
-                    include "**/libhermes*.so"
-                }
-            }.visit { details ->
-                if (details.file.isFile()) {
-                    details.file.delete()
-                }
-            }
-        }
-
-        if (enableVmCleanup) {
-            def task = tasks.findByName("strip${targetName}DebugSymbols")
-            task.doFirst(vmSelectionAction)
         }
     }
 }
