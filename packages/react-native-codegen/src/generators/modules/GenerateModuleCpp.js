@@ -12,9 +12,9 @@
 
 import type {
   SchemaType,
-  NativeModulePropertySchema,
   Nullable,
   NamedShape,
+  NativeModulePropertyShape,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
 } from '../../CodegenSchema';
@@ -161,7 +161,7 @@ function serializeArg(
 
 function serializePropertyIntoHostFunction(
   hasteModuleName: string,
-  property: NativeModulePropertySchema,
+  property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
 ): string {
   const [

@@ -14,7 +14,7 @@ import type {
   Nullable,
   NamedShape,
   SchemaType,
-  NativeModulePropertySchema,
+  NativeModulePropertyShape,
   NativeModuleReturnTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
@@ -287,7 +287,7 @@ function translateReturnTypeToJniType(
 }
 
 function translateMethodTypeToJniSignature(
-  property: NativeModulePropertySchema,
+  property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
 ): string {
   const {name, typeAnnotation} = property;
@@ -327,7 +327,7 @@ function translateMethodTypeToJniSignature(
 
 function translateMethodForImplementation(
   hasteModuleName: string,
-  property: NativeModulePropertySchema,
+  property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
 ): string {
   const [

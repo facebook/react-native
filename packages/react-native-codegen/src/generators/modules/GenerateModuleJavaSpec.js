@@ -14,7 +14,7 @@ import type {
   Nullable,
   NamedShape,
   SchemaType,
-  NativeModulePropertySchema,
+  NativeModulePropertyShape,
   NativeModuleReturnTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
@@ -285,7 +285,7 @@ function getFalsyReturnStatementFromReturnType(
 
 // Build special-cased runtime check for getConstants().
 function buildGetConstantsMethod(
-  method: NativeModulePropertySchema,
+  method: NativeModulePropertyShape,
   imports: Set<string>,
 ): string {
   const [

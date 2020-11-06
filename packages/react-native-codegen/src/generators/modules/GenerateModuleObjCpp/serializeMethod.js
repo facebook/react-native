@@ -11,11 +11,11 @@
 'use strict';
 
 import type {
-  NativeModulePropertySchema,
   Nullable,
   NamedShape,
   NativeModuleParamTypeAnnotation,
   NativeModuleReturnTypeAnnotation,
+  NativeModulePropertyShape,
 } from '../../../CodegenSchema';
 
 import type {AliasResolver} from '../Utils';
@@ -62,7 +62,7 @@ export type MethodSerializationOutput = $ReadOnly<{|
 
 function serializeMethod(
   hasteModuleName: string,
-  property: NativeModulePropertySchema,
+  property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
 ): $ReadOnlyArray<MethodSerializationOutput> {
@@ -384,7 +384,7 @@ function getReturnJSType(
 
 function serializeConstantsProtocolMethods(
   hasteModuleName: string,
-  property: NativeModulePropertySchema,
+  property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
 ): $ReadOnlyArray<MethodSerializationOutput> {

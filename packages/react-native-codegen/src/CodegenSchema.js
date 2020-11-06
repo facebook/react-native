@@ -238,10 +238,10 @@ export type NativeModuleSchema = $ReadOnly<{|
 |}>;
 
 type NativeModuleSpec = $ReadOnly<{|
-  properties: $ReadOnlyArray<NativeModulePropertySchema>,
+  properties: $ReadOnlyArray<NativeModulePropertyShape>,
 |}>;
 
-export type NativeModulePropertySchema = NamedShape<
+export type NativeModulePropertyShape = NamedShape<
   Nullable<NativeModuleFunctionTypeAnnotation>,
 >;
 

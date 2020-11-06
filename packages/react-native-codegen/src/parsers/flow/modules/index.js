@@ -16,8 +16,8 @@ import type {
   NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
-  NativeModulePropertySchema,
   NativeModuleParamTypeAnnotation,
+  NativeModulePropertyShape,
   NativeModuleSchema,
   Nullable,
 } from '../../../CodegenSchema.js';
@@ -487,7 +487,7 @@ function buildPropertySchema(
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
   guard: ParserErrorCapturer,
-): NativeModulePropertySchema {
+): NativeModulePropertyShape {
   let nullable = false;
   let {key, value} = property;
 
@@ -574,13 +574,13 @@ function buildModuleSchema(
     .filter(property => property.type === 'ObjectTypeProperty')
     .map<?{|
       aliasMap: NativeModuleAliasMap,
-      propertySchema: NativeModulePropertySchema,
+      propertyShape: NativeModulePropertyShape,
     |}>(property => {
       const aliasMap: {...NativeModuleAliasMap} = {};
 
       return guard(() => ({
         aliasMap: aliasMap,
-        propertySchema: buildPropertySchema(
+        propertyShape: buildPropertySchema(
           hasteModuleName,
           property,
           types,
@@ -591,12 +591,12 @@ function buildModuleSchema(
     })
     .filter(Boolean)
     .reduce(
-      (moduleSchema: NativeModuleSchema, {aliasMap, propertySchema}) => {
+      (moduleSchema: NativeModuleSchema, {aliasMap, propertyShape}) => {
         return {
           type: 'NativeModule',
           aliases: {...moduleSchema.aliases, ...aliasMap},
           spec: {
-            properties: [...moduleSchema.spec.properties, propertySchema],
+            properties: [...moduleSchema.spec.properties, propertyShape],
           },
           moduleNames: moduleSchema.moduleNames,
           excludedPlatforms: moduleSchema.excludedPlatforms,
