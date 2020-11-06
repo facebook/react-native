@@ -145,7 +145,7 @@ afterEvaluate {
             execCommand.addAll([*nodeExecutableAndArgs, cliPath])
         }
 
-        def enableHermes = enableHermesForVariant(variant)
+        def enableHermes = enableHermesForVariant(variant.name)
 
         def currentBundleTask = tasks.create(
             name: "bundle${targetName}JsAndAssets",
