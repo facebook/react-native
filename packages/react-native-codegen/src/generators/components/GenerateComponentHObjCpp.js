@@ -11,7 +11,8 @@
 'use strict';
 
 import type {
-  CommandTypeShape,
+  NamedShape,
+  CommandsTypeAnnotation,
   ComponentShape,
   SchemaType,
   CommandsFunctionTypeParamAnnotation,
@@ -273,7 +274,7 @@ function generateConvertAndValidateParam(
 }
 
 function generateCommandIfCase(
-  command: CommandTypeShape,
+  command: NamedShape<CommandsTypeAnnotation>,
   componentName: string,
 ) {
   const params = command.typeAnnotation.params;

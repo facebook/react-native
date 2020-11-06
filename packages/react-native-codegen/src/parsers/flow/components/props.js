@@ -12,7 +12,7 @@
 
 const {getValueFromTypes} = require('../utils.js');
 
-import type {PropTypeShape} from '../../../CodegenSchema.js';
+import type {NamedShape, PropTypeAnnotation} from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../utils.js';
 
 function getPropProperties(
@@ -324,7 +324,10 @@ function getTypeAnnotation(
   }
 }
 
-function buildPropSchema(property, types: TypeDeclarationMap): ?PropTypeShape {
+function buildPropSchema(
+  property,
+  types: TypeDeclarationMap,
+): ?NamedShape<PropTypeAnnotation> {
   const name = property.key.name;
 
   const value = getValueFromTypes(property.value, types);
@@ -460,7 +463,7 @@ function flattenProperties(
 function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
-): $ReadOnlyArray<PropTypeShape> {
+): $ReadOnlyArray<NamedShape<PropTypeAnnotation>> {
   return flattenProperties(typeDefinition, types)
     .map(property => buildPropSchema(property, types))
     .filter(Boolean);

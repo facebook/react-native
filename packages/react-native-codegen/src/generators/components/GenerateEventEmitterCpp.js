@@ -14,7 +14,8 @@ const {generateEventStructName} = require('./CppHelpers.js');
 
 import type {
   ComponentShape,
-  EventObjectPropertyType,
+  NamedShape,
+  EventTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
 
@@ -81,7 +82,7 @@ function generateEnumSetter(variableName, propertyName, propertyParts) {
 
 function generateSetters(
   parentPropertyName: string,
-  properties: $ReadOnlyArray<EventObjectPropertyType>,
+  properties: $ReadOnlyArray<NamedShape<EventTypeAnnotation>>,
   propertyParts: $ReadOnlyArray<string>,
 ): string {
   const propSetters = properties

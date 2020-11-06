@@ -12,14 +12,15 @@
 
 import type {
   EventTypeShape,
-  EventObjectPropertyType,
+  NamedShape,
+  EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 
 function getPropertyType(
   name,
   optional,
   typeAnnotation,
-): EventObjectPropertyType {
+): NamedShape<EventTypeAnnotation> {
   const type =
     typeAnnotation.type === 'GenericTypeAnnotation'
       ? typeAnnotation.id.name
@@ -150,7 +151,7 @@ function findEventArgumentsAndType(
   }
 }
 
-function buildPropertiesForEvent(property): EventObjectPropertyType {
+function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
   const name = property.key.name;
   const optional =
     property.value.type === 'NullableTypeAnnotation' || property.optional;

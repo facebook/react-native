@@ -21,7 +21,8 @@ const {
 import type {
   ComponentShape,
   EventTypeShape,
-  EventObjectPropertyType,
+  NamedShape,
+  EventTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
 
@@ -99,7 +100,7 @@ function indent(nice: string, spaces: number) {
 
 function getNativeTypeFromAnnotation(
   componentName: string,
-  eventProperty: EventObjectPropertyType,
+  eventProperty: NamedShape<EventTypeAnnotation>,
   nameParts: $ReadOnlyArray<string>,
 ): string {
   const {type} = eventProperty.typeAnnotation;
@@ -148,7 +149,7 @@ function generateStruct(
   structs: StructsMap,
   componentName: string,
   nameParts: $ReadOnlyArray<string>,
-  properties: $ReadOnlyArray<EventObjectPropertyType>,
+  properties: $ReadOnlyArray<NamedShape<EventTypeAnnotation>>,
 ): void {
   const structNameParts = nameParts;
   const structName = generateEventStructName(structNameParts);

@@ -10,7 +10,10 @@
 
 'use strict';
 
-import type {CommandTypeShape} from '../../../CodegenSchema.js';
+import type {
+  NamedShape,
+  CommandsTypeAnnotation,
+} from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../utils.js';
 
 const {getValueFromTypes} = require('../utils.js');
@@ -99,7 +102,7 @@ function buildCommandSchema(property, types: TypeDeclarationMap) {
 function getCommands(
   commandTypeAST: $ReadOnlyArray<EventTypeAST>,
   types: TypeDeclarationMap,
-): $ReadOnlyArray<CommandTypeShape> {
+): $ReadOnlyArray<NamedShape<CommandsTypeAnnotation>> {
   return commandTypeAST
     .filter(property => property.type === 'ObjectTypeProperty')
     .map(property => buildCommandSchema(property, types))

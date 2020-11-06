@@ -48,7 +48,12 @@ export type StringEnumTypeAnnotation = $ReadOnly<{|
   |}>,
 |}>;
 
-type NamedShape<+T> = $ReadOnly<{
+type ObjectTypeAnnotation<+T> = $ReadOnly<{|
+  type: 'ObjectTypeAnnotation',
+  properties: $ReadOnlyArray<NamedShape<T>>,
+|}>;
+
+export type NamedShape<+T> = $ReadOnly<{
   name: string,
   optional: boolean,
   typeAnnotation: T,
@@ -65,8 +70,8 @@ export type ComponentShape = $ReadOnly<{|
   ...OptionsShape,
   extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
   events: $ReadOnlyArray<EventTypeShape>,
-  props: $ReadOnlyArray<PropTypeShape>,
-  commands: $ReadOnlyArray<CommandTypeShape>,
+  props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+  commands: $ReadOnlyArray<NamedShape<CommandsTypeAnnotation>>,
 |}>;
 
 export type OptionsShape = $ReadOnly<{|
@@ -96,29 +101,20 @@ export type EventTypeShape = $ReadOnly<{|
   paperTopLevelNameDeprecated?: string,
   typeAnnotation: $ReadOnly<{|
     type: 'EventTypeAnnotation',
-    argument?: $ReadOnly<{|
-      type: 'ObjectTypeAnnotation',
-      properties: $ReadOnlyArray<EventObjectPropertyType>,
-    |}>,
+    argument?: ObjectTypeAnnotation<EventTypeAnnotation>,
   |}>,
 |}>;
 
-export type EventObjectPropertyType = NamedShape<
+export type EventTypeAnnotation =
   | BooleanTypeAnnotation
   | StringTypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | Int32TypeAnnotation
   | StringEnumTypeAnnotation
-  | $ReadOnly<{|
-      type: 'ObjectTypeAnnotation',
-      properties: $ReadOnlyArray<EventObjectPropertyType>,
-    |}>,
->;
+  | ObjectTypeAnnotation<EventTypeAnnotation>;
 
-export type PropTypeShape = NamedShape<PropTypeTypeAnnotation>;
-
-type PropTypeTypeAnnotation =
+export type PropTypeAnnotation =
   | $ReadOnly<{|
       type: 'BooleanTypeAnnotation',
       default: boolean | null,
@@ -161,10 +157,7 @@ type PropTypeTypeAnnotation =
         | 'PointPrimitive'
         | 'EdgeInsetsPrimitive',
     |}>
-  | $ReadOnly<{|
-      type: 'ObjectTypeAnnotation',
-      properties: $ReadOnlyArray<PropTypeShape>,
-    |}>
+  | ObjectTypeAnnotation<PropTypeAnnotation>
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
       elementType:
@@ -180,10 +173,7 @@ type PropTypeTypeAnnotation =
               name: string,
             |}>,
           |}>
-        | $ReadOnly<{|
-            type: 'ObjectTypeAnnotation',
-            properties: $ReadOnlyArray<PropTypeShape>,
-          |}>
+        | ObjectTypeAnnotation<PropTypeAnnotation>
         | $ReadOnly<{|
             type: 'ReservedPropTypeAnnotation',
             name:
@@ -194,26 +184,22 @@ type PropTypeTypeAnnotation =
           |}>
         | $ReadOnly<{|
             type: 'ArrayTypeAnnotation',
-            elementType: $ReadOnly<{|
-              type: 'ObjectTypeAnnotation',
-              properties: $ReadOnlyArray<PropTypeShape>,
-            |}>,
+            elementType: ObjectTypeAnnotation<PropTypeAnnotation>,
           |}>,
     |}>;
 
-export type CommandTypeShape = NamedShape<CommandsFunctionTypeAnnotation>;
-
-export type CommandsFunctionTypeAnnotation = $ReadOnly<{|
+// TODO: Unify this function type annotation with NativeModule schema
+export type CommandsTypeAnnotation = $ReadOnly<{|
   type: 'FunctionTypeAnnotation',
   params: $ReadOnlyArray<CommandsFunctionTypeParamAnnotation>,
 |}>;
 
 export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
   name: string,
-  typeAnnotation: CommandsTypeAnnotation,
+  typeAnnotation: CommandsParamTypeAnnotation,
 |}>;
 
-export type CommandsTypeAnnotation =
+type CommandsParamTypeAnnotation =
   | ReservedTypeAnnotation
   | BooleanTypeAnnotation
   | Int32TypeAnnotation
@@ -273,10 +259,9 @@ export type NativeModuleMethodParamSchema = NamedShape<
   Nullable<NativeModuleParamTypeAnnotation>,
 >;
 
-export type NativeModuleObjectTypeAnnotation = $ReadOnly<{|
-  type: 'ObjectTypeAnnotation',
-  properties: $ReadOnlyArray<NativeModuleObjectTypeAnnotationPropertySchema>,
-|}>;
+export type NativeModuleObjectTypeAnnotation = ObjectTypeAnnotation<
+  Nullable<NativeModuleBaseTypeAnnotation>,
+>;
 
 export type NativeModuleObjectTypeAnnotationPropertySchema = NamedShape<
   Nullable<NativeModuleBaseTypeAnnotation>,

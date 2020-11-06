@@ -11,9 +11,10 @@
 'use strict';
 
 import type {
-  CommandTypeShape,
+  NamedShape,
+  CommandsTypeAnnotation,
   ComponentShape,
-  PropTypeShape,
+  PropTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
 const {
@@ -64,7 +65,7 @@ const commandsTemplate = `
 `;
 
 function getJavaValueForProp(
-  prop: PropTypeShape,
+  prop: NamedShape<PropTypeAnnotation>,
   componentName: string,
 ): string {
   const typeAnnotation = prop.typeAnnotation;
@@ -181,7 +182,9 @@ function getCommandArgJavaType(param, index) {
   }
 }
 
-function getCommandArguments(command: CommandTypeShape): string {
+function getCommandArguments(
+  command: NamedShape<CommandsTypeAnnotation>,
+): string {
   return [
     'view',
     ...command.typeAnnotation.params.map(getCommandArgJavaType),
