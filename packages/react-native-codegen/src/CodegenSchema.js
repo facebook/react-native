@@ -153,14 +153,7 @@ export type PropTypeAnnotation =
       default: number,
       options: $ReadOnlyArray<number>,
     |}>
-  | $ReadOnly<{|
-      type: 'ReservedPropTypeAnnotation',
-      name:
-        | 'ColorPrimitive'
-        | 'ImageSourcePrimitive'
-        | 'PointPrimitive'
-        | 'EdgeInsetsPrimitive',
-    |}>
+  | ReservedPropTypeAnnotation
   | ObjectTypeAnnotation<PropTypeAnnotation>
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
@@ -176,19 +169,21 @@ export type PropTypeAnnotation =
             options: $ReadOnlyArray<string>,
           |}>
         | ObjectTypeAnnotation<PropTypeAnnotation>
-        | $ReadOnly<{|
-            type: 'ReservedPropTypeAnnotation',
-            name:
-              | 'ColorPrimitive'
-              | 'ImageSourcePrimitive'
-              | 'PointPrimitive'
-              | 'EdgeInsetsPrimitive',
-          |}>
+        | ReservedPropTypeAnnotation
         | $ReadOnly<{|
             type: 'ArrayTypeAnnotation',
             elementType: ObjectTypeAnnotation<PropTypeAnnotation>,
           |}>,
     |}>;
+
+type ReservedPropTypeAnnotation = $ReadOnly<{|
+  type: 'ReservedPropTypeAnnotation',
+  name:
+    | 'ColorPrimitive'
+    | 'ImageSourcePrimitive'
+    | 'PointPrimitive'
+    | 'EdgeInsetsPrimitive',
+|}>;
 
 export type CommandTypeAnnotation = FunctionTypeAnnotation<
   CommandParamTypeAnnotation,
