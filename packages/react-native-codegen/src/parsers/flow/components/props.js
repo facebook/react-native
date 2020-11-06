@@ -153,7 +153,7 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         return {
           type: 'StringEnumTypeAnnotation',
           default: (defaultValue: string),
-          options: typeAnnotation.types.map(option => ({name: option.value})),
+          options: typeAnnotation.types.map(option => option.value),
         };
       } else if (unionType === 'NumberLiteralTypeAnnotation') {
         throw new Error(
@@ -301,13 +301,13 @@ function getTypeAnnotation(
         return {
           type: 'StringEnumTypeAnnotation',
           default: (defaultValue: string),
-          options: typeAnnotation.types.map(option => ({name: option.value})),
+          options: typeAnnotation.types.map(option => option.value),
         };
       } else if (unionType === 'NumberLiteralTypeAnnotation') {
         return {
           type: 'Int32EnumTypeAnnotation',
           default: (defaultValue: number),
-          options: typeAnnotation.types.map(option => ({value: option.value})),
+          options: typeAnnotation.types.map(option => option.value),
         };
       } else {
         throw new Error(

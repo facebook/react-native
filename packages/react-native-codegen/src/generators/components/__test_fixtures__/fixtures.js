@@ -621,14 +621,7 @@ const ARRAY_PROPS: SchemaType = {
                 elementType: {
                   type: 'StringEnumTypeAnnotation',
                   default: 'small',
-                  options: [
-                    {
-                      name: 'small',
-                    },
-                    {
-                      name: 'large',
-                    },
-                  ],
+                  options: ['small', 'large'],
                 },
               },
             },
@@ -843,11 +836,7 @@ const OBJECT_PROPS: SchemaType = {
                     typeAnnotation: {
                       type: 'StringEnumTypeAnnotation',
                       default: 'option1',
-                      options: [
-                        {
-                          name: 'option1',
-                        },
-                      ],
+                      options: ['option1'],
                     },
                   },
                   {
@@ -856,11 +845,7 @@ const OBJECT_PROPS: SchemaType = {
                     typeAnnotation: {
                       type: 'Int32EnumTypeAnnotation',
                       default: 0,
-                      options: [
-                        {
-                          value: 0,
-                        },
-                      ],
+                      options: [0],
                     },
                   },
                   {
@@ -1055,17 +1040,7 @@ const STRING_ENUM_PROP: SchemaType = {
               typeAnnotation: {
                 type: 'StringEnumTypeAnnotation',
                 default: 'center',
-                options: [
-                  {
-                    name: 'top',
-                  },
-                  {
-                    name: 'center',
-                  },
-                  {
-                    name: 'bottom-right',
-                  },
-                ],
+                options: ['top', 'center', 'bottom-right'],
               },
             },
           ],
@@ -1096,17 +1071,7 @@ const INT32_ENUM_PROP: SchemaType = {
               typeAnnotation: {
                 type: 'Int32EnumTypeAnnotation',
                 default: 0,
-                options: [
-                  {
-                    value: 0,
-                  },
-                  {
-                    value: 1,
-                  },
-                  {
-                    value: 2,
-                  },
-                ],
+                options: [0, 1, 2],
               },
             },
           ],
@@ -1205,14 +1170,7 @@ const EVENT_PROPS: SchemaType = {
                       optional: false,
                       typeAnnotation: {
                         type: 'StringEnumTypeAnnotation',
-                        options: [
-                          {
-                            name: 'landscape',
-                          },
-                          {
-                            name: 'portrait',
-                          },
-                        ],
+                        options: ['landscape', 'portrait'],
                       },
                     },
                   ],

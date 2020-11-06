@@ -88,7 +88,7 @@ function getPropertyType(
         optional,
         typeAnnotation: {
           type: 'StringEnumTypeAnnotation',
-          options: typeAnnotation.types.map(option => ({name: option.value})),
+          options: typeAnnotation.types.map(option => option.value),
         },
       };
     default:

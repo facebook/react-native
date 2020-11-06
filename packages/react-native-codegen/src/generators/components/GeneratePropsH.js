@@ -290,9 +290,8 @@ function convertValueToEnumOption(value: string): string {
 function generateArrayEnumString(
   componentName: string,
   name: string,
-  enumOptions,
+  options: $ReadOnlyArray<string>,
 ): string {
-  const options = enumOptions.map(option => option.name);
   const enumName = getEnumName(componentName, name);
 
   const values = options
@@ -329,9 +328,7 @@ function generateArrayEnumString(
 function generateStringEnum(componentName, prop) {
   const typeAnnotation = prop.typeAnnotation;
   if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
-    const values: $ReadOnlyArray<string> = typeAnnotation.options.map(
-      option => option.name,
-    );
+    const values: $ReadOnlyArray<string> = typeAnnotation.options;
     const enumName = getEnumName(componentName, prop.name);
 
     const fromCases = values
@@ -365,9 +362,7 @@ function generateStringEnum(componentName, prop) {
 function generateIntEnum(componentName, prop) {
   const typeAnnotation = prop.typeAnnotation;
   if (typeAnnotation.type === 'Int32EnumTypeAnnotation') {
-    const values: $ReadOnlyArray<number> = typeAnnotation.options.map(
-      option => option.value,
-    );
+    const values: $ReadOnlyArray<number> = typeAnnotation.options;
     const enumName = getEnumName(componentName, prop.name);
 
     const fromCases = values

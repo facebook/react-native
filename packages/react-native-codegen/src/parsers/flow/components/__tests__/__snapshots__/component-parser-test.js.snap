@@ -264,12 +264,8 @@ exports[`RN Codegen Flow Parser can generate fixture ALL_PROP_TYPES_NO_EVENTS 1`
                 'type': 'StringEnumTypeAnnotation',
                 'default': 'small',
                 'options': [
-                  {
-                    'name': 'small'
-                  },
-                  {
-                    'name': 'large'
-                  }
+                  'small',
+                  'large'
                 ]
               }
             },
@@ -280,12 +276,8 @@ exports[`RN Codegen Flow Parser can generate fixture ALL_PROP_TYPES_NO_EVENTS 1`
                 'type': 'StringEnumTypeAnnotation',
                 'default': 'small',
                 'options': [
-                  {
-                    'name': 'small'
-                  },
-                  {
-                    'name': 'large'
-                  }
+                  'small',
+                  'large'
                 ]
               }
             },
@@ -296,12 +288,8 @@ exports[`RN Codegen Flow Parser can generate fixture ALL_PROP_TYPES_NO_EVENTS 1`
                 'type': 'Int32EnumTypeAnnotation',
                 'default': 0,
                 'options': [
-                  {
-                    'value': 0
-                  },
-                  {
-                    'value': 1
-                  }
+                  0,
+                  1
                 ]
               }
             },
@@ -785,12 +773,8 @@ exports[`RN Codegen Flow Parser can generate fixture ARRAY_PROP_TYPES_NO_EVENTS 
                   'type': 'StringEnumTypeAnnotation',
                   'default': 'small',
                   'options': [
-                    {
-                      'name': 'small'
-                    },
-                    {
-                      'name': 'large'
-                    }
+                    'small',
+                    'large'
                   ]
                 }
               }
@@ -804,12 +788,8 @@ exports[`RN Codegen Flow Parser can generate fixture ARRAY_PROP_TYPES_NO_EVENTS 
                   'type': 'StringEnumTypeAnnotation',
                   'default': 'small',
                   'options': [
-                    {
-                      'name': 'small'
-                    },
-                    {
-                      'name': 'large'
-                    }
+                    'small',
+                    'large'
                   ]
                 }
               }
@@ -1445,12 +1425,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -1460,12 +1436,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -1475,12 +1447,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -1490,12 +1458,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -1840,12 +1804,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -1855,12 +1815,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -1870,12 +1826,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -1885,12 +1837,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -2234,12 +2182,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -2249,12 +2193,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -2264,12 +2204,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -2279,12 +2215,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -2629,12 +2561,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -2644,12 +2572,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -2659,12 +2583,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -2674,12 +2594,8 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -3369,12 +3285,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -3384,12 +3296,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -3399,12 +3307,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -3414,12 +3318,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -3763,12 +3663,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -3778,12 +3674,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -3793,12 +3685,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -3808,12 +3696,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -4157,12 +4041,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -4172,12 +4052,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -4187,12 +4063,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -4202,12 +4074,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -4551,12 +4419,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -4566,12 +4430,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -4581,12 +4441,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -4596,12 +4452,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -4946,12 +4798,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -4961,12 +4809,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -4976,12 +4820,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -4991,12 +4831,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -5340,12 +5176,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -5355,12 +5187,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -5370,12 +5198,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -5385,12 +5209,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -5734,12 +5554,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -5749,12 +5565,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -5764,12 +5576,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -5779,12 +5587,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -6128,12 +5932,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -6143,12 +5943,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -6158,12 +5954,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -6173,12 +5965,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -6522,12 +6310,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -6537,12 +6321,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -6552,12 +6332,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -6567,12 +6343,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -6917,12 +6689,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -6932,12 +6700,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -6947,12 +6711,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -6962,12 +6722,8 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -7390,12 +7146,8 @@ exports[`RN Codegen Flow Parser can generate fixture OBJECT_PROP_TYPES_NO_EVENTS
                         'type': 'StringEnumTypeAnnotation',
                         'default': 'small',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     }
@@ -8263,12 +8015,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -8278,12 +8026,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -8293,12 +8037,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -8308,12 +8048,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -8658,12 +8394,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -8673,12 +8405,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -8688,12 +8416,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -8703,12 +8427,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -9052,12 +8772,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -9067,12 +8783,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -9082,12 +8794,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -9097,12 +8805,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -9447,12 +9151,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -9462,12 +9162,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -9477,12 +9173,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },
@@ -9492,12 +9184,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'StringEnumTypeAnnotation',
                         'options': [
-                          {
-                            'name': 'small'
-                          },
-                          {
-                            'name': 'large'
-                          }
+                          'small',
+                          'large'
                         ]
                       }
                     },

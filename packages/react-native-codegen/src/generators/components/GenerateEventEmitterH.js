@@ -124,15 +124,13 @@ function getNativeTypeFromAnnotation(
 function generateEnum(structs, options, nameParts) {
   const structName = generateEventStructName(nameParts);
   const fields = options
-    .map((option, index) => `${toSafeCppString(option.name)}`)
+    .map((option, index) => `${toSafeCppString(option)}`)
     .join(',\n  ');
 
   const toCases = options
     .map(
       option =>
-        `case ${structName}::${toSafeCppString(option.name)}: return "${
-          option.name
-        }";`,
+        `case ${structName}::${toSafeCppString(option)}: return "${option}";`,
     )
     .join('\n' + '    ');
 

@@ -43,9 +43,7 @@ export type StringTypeAnnotation = $ReadOnly<{|
 
 export type StringEnumTypeAnnotation = $ReadOnly<{|
   type: 'StringEnumTypeAnnotation',
-  options: $ReadOnlyArray<{|
-    name: string,
-  |}>,
+  options: $ReadOnlyArray<string>,
 |}>;
 
 export type VoidTypeAnnotation = $ReadOnly<{|
@@ -148,16 +146,12 @@ export type PropTypeAnnotation =
   | $ReadOnly<{|
       type: 'StringEnumTypeAnnotation',
       default: string,
-      options: $ReadOnlyArray<{|
-        name: string,
-      |}>,
+      options: $ReadOnlyArray<string>,
     |}>
   | $ReadOnly<{|
       type: 'Int32EnumTypeAnnotation',
       default: number,
-      options: $ReadOnlyArray<{|
-        value: number,
-      |}>,
+      options: $ReadOnlyArray<number>,
     |}>
   | $ReadOnly<{|
       type: 'ReservedPropTypeAnnotation',
@@ -179,9 +173,7 @@ export type PropTypeAnnotation =
         | $ReadOnly<{|
             type: 'StringEnumTypeAnnotation',
             default: string,
-            options: $ReadOnlyArray<{|
-              name: string,
-            |}>,
+            options: $ReadOnlyArray<string>,
           |}>
         | ObjectTypeAnnotation<PropTypeAnnotation>
         | $ReadOnly<{|
