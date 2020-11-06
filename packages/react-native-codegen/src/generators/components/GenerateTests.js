@@ -58,8 +58,8 @@ function getTestCasesForProp(propName, typeAnnotation) {
     typeAnnotation.options.forEach(option =>
       cases.push({
         propName,
-        testName: `${propName}_${toSafeCppString(option.name)}`,
-        propValue: option.name,
+        testName: `${propName}_${toSafeCppString(option)}`,
+        propValue: option,
       }),
     );
   } else if (typeAnnotation.type === 'StringTypeAnnotation') {

@@ -12,9 +12,9 @@
 
 import type {
   Nullable,
+  NamedShape,
   SchemaType,
-  NativeModulePropertySchema,
-  NativeModuleMethodParamSchema,
+  NativeModulePropertyShape,
   NativeModuleReturnTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
@@ -137,7 +137,7 @@ function translateReturnTypeToKind(
   }
 
   switch (realTypeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return 'NumberKind';
@@ -177,8 +177,10 @@ function translateReturnTypeToKind(
   }
 }
 
+type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+
 function translateParamTypeToJniType(
-  param: NativeModuleMethodParamSchema,
+  param: Param,
   resolveAlias: AliasResolver,
 ): string {
   const {optional, typeAnnotation: nullableTypeAnnotation} = param;
@@ -194,7 +196,7 @@ function translateParamTypeToJniType(
   }
 
   switch (realTypeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return !isRequired ? 'Ljava/lang/Double;' : 'D';
@@ -244,7 +246,7 @@ function translateReturnTypeToJniType(
   }
 
   switch (realTypeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return nullable ? 'Ljava/lang/Double;' : 'D';
@@ -285,7 +287,7 @@ function translateReturnTypeToJniType(
 }
 
 function translateMethodTypeToJniSignature(
-  property: NativeModulePropertySchema,
+  property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
 ): string {
   const {name, typeAnnotation} = property;
@@ -325,7 +327,7 @@ function translateMethodTypeToJniSignature(
 
 function translateMethodForImplementation(
   hasteModuleName: string,
-  property: NativeModulePropertySchema,
+  property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
 ): string {
   const [

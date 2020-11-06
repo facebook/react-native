@@ -11,10 +11,11 @@
 'use strict';
 
 import type {
-  NativeModuleMethodParamSchema,
-  NativeModuleReturnTypeAnnotation,
-  NativeModulePropertySchema,
   Nullable,
+  NamedShape,
+  NativeModuleParamTypeAnnotation,
+  NativeModuleReturnTypeAnnotation,
+  NativeModulePropertyShape,
 } from '../../../CodegenSchema';
 
 import type {AliasResolver} from '../Utils';
@@ -61,7 +62,7 @@ export type MethodSerializationOutput = $ReadOnly<{|
 
 function serializeMethod(
   hasteModuleName: string,
-  property: NativeModulePropertySchema,
+  property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
 ): $ReadOnlyArray<MethodSerializationOutput> {
@@ -164,10 +165,9 @@ function serializeMethod(
   ];
 }
 
-function getParamStructName(
-  methodName: string,
-  param: NativeModuleMethodParamSchema,
-): string {
+type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+
+function getParamStructName(methodName: string, param: Param): string {
   const [typeAnnotation] = unwrapNullable(param.typeAnnotation);
   if (typeAnnotation.type === 'TypeAliasTypeAnnotation') {
     return typeAnnotation.name;
@@ -179,7 +179,7 @@ function getParamStructName(
 function getParamObjCType(
   hasteModuleName: string,
   methodName: string,
-  param: NativeModuleMethodParamSchema,
+  param: Param,
   structName: string,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
@@ -246,7 +246,7 @@ function getParamObjCType(
           ' &',
       );
     }
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (structTypeAnnotation.name) {
         case 'RootTag':
           return notStruct(notRequired ? 'NSNumber *' : 'double');
@@ -308,7 +308,7 @@ function getReturnObjCType(
           typeAnnotation.elementType,
         )}> *`,
       );
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapIntoNullableIfNeeded('NSNumber *');
@@ -358,7 +358,7 @@ function getReturnJSType(
       return 'ObjectKind';
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       return 'NumberKind';
     case 'StringTypeAnnotation':
       return 'StringKind';
@@ -384,7 +384,7 @@ function getReturnJSType(
 
 function serializeConstantsProtocolMethods(
   hasteModuleName: string,
-  property: NativeModulePropertySchema,
+  property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
 ): $ReadOnlyArray<MethodSerializationOutput> {

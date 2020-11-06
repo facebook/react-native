@@ -12,9 +12,9 @@
 
 import type {
   Nullable,
+  NamedShape,
   SchemaType,
-  NativeModulePropertySchema,
-  NativeModuleMethodParamSchema,
+  NativeModulePropertyShape,
   NativeModuleReturnTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
@@ -91,8 +91,10 @@ function MethodTemplate(
   )})${methodClosing}`;
 }
 
+type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+
 function translateFunctionParamToJavaType(
-  param: NativeModuleMethodParamSchema,
+  param: Param,
   createErrorMessage: (typeName: string) => string,
   resolveAlias: AliasResolver,
   imports: Set<string>,
@@ -118,7 +120,7 @@ function translateFunctionParamToJavaType(
   }
 
   switch (realTypeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return !isRequired ? 'Double' : 'double';
@@ -188,7 +190,7 @@ function translateFunctionReturnTypeToJavaType(
   }
 
   switch (realTypeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return nullable ? 'Double' : 'double';
@@ -245,7 +247,7 @@ function getFalsyReturnStatementFromReturnType(
   }
 
   switch (realTypeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return 'return 0.0;';
@@ -283,7 +285,7 @@ function getFalsyReturnStatementFromReturnType(
 
 // Build special-cased runtime check for getConstants().
 function buildGetConstantsMethod(
-  method: NativeModulePropertySchema,
+  method: NativeModulePropertyShape,
   imports: Set<string>,
 ): string {
   const [

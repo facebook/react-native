@@ -11,13 +11,13 @@
 'use strict';
 
 import type {
+  NamedShape,
   NativeModuleAliasMap,
   NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
-  NativeModuleMethodParamSchema,
-  NativeModuleObjectTypeAnnotationPropertySchema,
-  NativeModulePropertySchema,
+  NativeModuleParamTypeAnnotation,
+  NativeModulePropertyShape,
   NativeModuleSchema,
   Nullable,
 } from '../../../CodegenSchema.js';
@@ -70,7 +70,7 @@ function translateTypeAnnotation(
       switch (typeAnnotation.id.name) {
         case 'RootTag': {
           return wrapNullable(nullable, {
-            type: 'ReservedFunctionValueTypeAnnotation',
+            type: 'ReservedTypeAnnotation',
             name: 'RootTag',
           });
         }
@@ -207,68 +207,70 @@ function translateTypeAnnotation(
       const objectTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
         properties: (typeAnnotation.properties: Array<$FlowFixMe>)
-          .map<?NativeModuleObjectTypeAnnotationPropertySchema>(property => {
-            return guard(() => {
-              if (property.type !== 'ObjectTypeProperty') {
-                throw new UnsupportedObjectPropertyTypeAnnotationParserError(
-                  hasteModuleName,
-                  property,
-                  property.type,
-                );
-              }
+          .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
+            property => {
+              return guard(() => {
+                if (property.type !== 'ObjectTypeProperty') {
+                  throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+                    hasteModuleName,
+                    property,
+                    property.type,
+                  );
+                }
 
-              const {optional, key} = property;
+                const {optional, key} = property;
 
-              const [
-                propertyTypeAnnotation,
-                isPropertyNullable,
-              ] = unwrapNullable(
-                translateTypeAnnotation(
-                  hasteModuleName,
-                  property.value,
-                  types,
-                  aliasMap,
-                  guard,
-                ),
-              );
-
-              if (propertyTypeAnnotation.type === 'FunctionTypeAnnotation') {
-                throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                  hasteModuleName,
-                  property.value,
-                  property.key,
-                  propertyTypeAnnotation.type,
-                );
-              }
-
-              if (propertyTypeAnnotation.type === 'VoidTypeAnnotation') {
-                throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                  hasteModuleName,
-                  property.value,
-                  property.key,
-                  'void',
-                );
-              }
-
-              if (propertyTypeAnnotation.type === 'PromiseTypeAnnotation') {
-                throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
-                  hasteModuleName,
-                  property.value,
-                  property.key,
-                  'Promise',
-                );
-              }
-
-              return {
-                name: key.name,
-                optional,
-                typeAnnotation: wrapNullable(
-                  isPropertyNullable,
+                const [
                   propertyTypeAnnotation,
-                ),
-              };
-            });
-          })
+                  isPropertyNullable,
+                ] = unwrapNullable(
+                  translateTypeAnnotation(
+                    hasteModuleName,
+                    property.value,
+                    types,
+                    aliasMap,
+                    guard,
+                  ),
+                );
+
+                if (propertyTypeAnnotation.type === 'FunctionTypeAnnotation') {
+                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+                    hasteModuleName,
+                    property.value,
+                    property.key,
+                    propertyTypeAnnotation.type,
+                  );
+                }
+
+                if (propertyTypeAnnotation.type === 'VoidTypeAnnotation') {
+                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+                    hasteModuleName,
+                    property.value,
+                    property.key,
+                    'void',
+                  );
+                }
+
+                if (propertyTypeAnnotation.type === 'PromiseTypeAnnotation') {
+                  throw new UnsupportedObjectPropertyValueTypeAnnotationParserError(
+                    hasteModuleName,
+                    property.value,
+                    property.key,
+                    'Promise',
+                  );
+                }
+
+                return {
+                  name: key.name,
+                  optional,
+                  typeAnnotation: wrapNullable(
+                    isPropertyNullable,
+                    propertyTypeAnnotation,
+                  ),
+                };
+              });
+            },
+          )
           .filter(Boolean),
       };
 
@@ -391,7 +393,8 @@ function translateFunctionTypeAnnotation(
   aliasMap: {...NativeModuleAliasMap},
   guard: ParserErrorCapturer,
 ): NativeModuleFunctionTypeAnnotation {
-  const params: Array<NativeModuleMethodParamSchema> = [];
+  type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+  const params: Array<Param> = [];
 
   for (const flowParam of (flowFunctionTypeAnnotation.params: $ReadOnlyArray<$FlowFixMe>)) {
     const parsedParam = guard(() => {
@@ -484,7 +487,7 @@ function buildPropertySchema(
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
   guard: ParserErrorCapturer,
-): NativeModulePropertySchema {
+): NativeModulePropertyShape {
   let nullable = false;
   let {key, value} = property;
 
@@ -571,13 +574,13 @@ function buildModuleSchema(
     .filter(property => property.type === 'ObjectTypeProperty')
     .map<?{|
       aliasMap: NativeModuleAliasMap,
-      propertySchema: NativeModulePropertySchema,
+      propertyShape: NativeModulePropertyShape,
     |}>(property => {
       const aliasMap: {...NativeModuleAliasMap} = {};
 
       return guard(() => ({
         aliasMap: aliasMap,
-        propertySchema: buildPropertySchema(
+        propertyShape: buildPropertySchema(
           hasteModuleName,
           property,
           types,
@@ -588,12 +591,12 @@ function buildModuleSchema(
     })
     .filter(Boolean)
     .reduce(
-      (moduleSchema: NativeModuleSchema, {aliasMap, propertySchema}) => {
+      (moduleSchema: NativeModuleSchema, {aliasMap, propertyShape}) => {
         return {
           type: 'NativeModule',
           aliases: {...moduleSchema.aliases, ...aliasMap},
           spec: {
-            properties: [...moduleSchema.spec.properties, propertySchema],
+            properties: [...moduleSchema.spec.properties, propertyShape],
           },
           moduleNames: moduleSchema.moduleNames,
           excludedPlatforms: moduleSchema.excludedPlatforms,

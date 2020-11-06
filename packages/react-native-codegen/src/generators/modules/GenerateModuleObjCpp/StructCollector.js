@@ -20,7 +20,7 @@ import type {
   NativeModuleFloatTypeAnnotation,
   NativeModuleBooleanTypeAnnotation,
   NativeModuleGenericObjectTypeAnnotation,
-  NativeModuleReservedFunctionValueTypeAnnotation,
+  ReservedTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
   NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
@@ -64,7 +64,7 @@ export type StructTypeAnnotation =
   | NativeModuleFloatTypeAnnotation
   | NativeModuleBooleanTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
-  | NativeModuleReservedFunctionValueTypeAnnotation
+  | ReservedTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleArrayTypeAnnotation<Nullable<StructTypeAnnotation>>;
 

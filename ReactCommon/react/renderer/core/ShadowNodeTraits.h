@@ -54,6 +54,12 @@ class ShadowNodeTraits {
     // Nodes with this trait (and all their descendants) will not produce views.
     Hidden = 1 << 6,
 
+    // Indicates that the `YogaLayoutableShadowNode` must set `isDirty` flag for
+    // Yoga node when a `ShadowNode` is being cloned. `ShadowNode`s that modify
+    // Yoga styles in the constructor (or later) *after* the `ShadowNode`
+    // is cloned must set this trait.
+    YogaLayoutableKindMutatesStylesAfterCloning = 1 << 7,
+
     // Inherits `YogaLayoutableShadowNode` and enforces that the `YGNode` is a
     // leaf.
     LeafYogaNode = 1 << 10,

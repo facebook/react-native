@@ -17,6 +17,7 @@ import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
@@ -60,7 +61,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (CallInvokerHolderImpl) nativeCallInvokerHolder,
             delegate,
-            false);
+            ReactFeatureFlags.enableTurboModulePromiseAsyncDispatch);
     installJSIBindings();
 
     mEagerInitModuleNames =

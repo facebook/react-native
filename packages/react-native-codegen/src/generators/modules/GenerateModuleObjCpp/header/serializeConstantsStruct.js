@@ -87,7 +87,7 @@ function toObjCType(
   };
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapFollyOptional('double');
@@ -152,7 +152,7 @@ function toObjCValue(
   }
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapPrimitive('double');

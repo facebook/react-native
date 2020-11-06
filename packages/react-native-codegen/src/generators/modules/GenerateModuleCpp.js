@@ -12,8 +12,9 @@
 
 import type {
   SchemaType,
-  NativeModulePropertySchema,
-  NativeModuleMethodParamSchema,
+  Nullable,
+  NamedShape,
+  NativeModulePropertyShape,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
 } from '../../CodegenSchema';
@@ -99,8 +100,10 @@ ${modules}
 `;
 };
 
+type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+
 function serializeArg(
-  arg: NativeModuleMethodParamSchema,
+  arg: Param,
   index: number,
   resolveAlias: AliasResolver,
 ): string {
@@ -118,7 +121,7 @@ function serializeArg(
   }
 
   switch (realTypeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return wrap('.getNumber()');
@@ -158,7 +161,7 @@ function serializeArg(
 
 function serializePropertyIntoHostFunction(
   hasteModuleName: string,
-  property: NativeModulePropertySchema,
+  property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
 ): string {
   const [

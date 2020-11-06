@@ -12,29 +12,15 @@
 
 export type PlatformType = 'iOS' | 'android';
 
-export type CommandsFunctionTypeAnnotation = $ReadOnly<{|
-  type: 'FunctionTypeAnnotation',
-  params: $ReadOnlyArray<CommandsFunctionTypeParamAnnotation>,
+export type SchemaType = $ReadOnly<{|
+  modules: $ReadOnly<{|
+    [hasteModuleName: string]: ComponentSchema | NativeModuleSchema,
+  |}>,
 |}>;
 
-export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
-  name: string,
-  typeAnnotation: CommandsTypeAnnotation,
-|}>;
-
-export type CommandsTypeAnnotation =
-  | ReservedFunctionValueTypeAnnotation
-  | BooleanTypeAnnotation
-  | Int32TypeAnnotation
-  | DoubleTypeAnnotation
-  | FloatTypeAnnotation
-  | StringTypeAnnotation;
-
-type ReservedFunctionValueTypeAnnotation = $ReadOnly<{|
-  type: 'ReservedFunctionValueTypeAnnotation',
-  name: ReservedFunctionValueTypeName,
-|}>;
-
+/**
+ * Component Type Annotations
+ */
 export type DoubleTypeAnnotation = $ReadOnly<{|
   type: 'DoubleTypeAnnotation',
 |}>;
@@ -55,48 +41,88 @@ export type StringTypeAnnotation = $ReadOnly<{|
   type: 'StringTypeAnnotation',
 |}>;
 
-export type EventObjectPropertyType =
-  | $ReadOnly<{|
-      type: 'BooleanTypeAnnotation',
-      name: string,
-      optional: boolean,
-    |}>
-  | $ReadOnly<{|
-      type: 'StringTypeAnnotation',
-      name: string,
-      optional: boolean,
-    |}>
-  | $ReadOnly<{|
-      type: 'DoubleTypeAnnotation',
-      name: string,
-      optional: boolean,
-    |}>
-  | $ReadOnly<{|
-      type: 'FloatTypeAnnotation',
-      name: string,
-      optional: boolean,
-    |}>
-  | $ReadOnly<{|
-      type: 'Int32TypeAnnotation',
-      name: string,
-      optional: boolean,
-    |}>
-  | $ReadOnly<{|
-      type: 'StringEnumTypeAnnotation',
-      name: string,
-      optional: boolean,
-      options: $ReadOnlyArray<{|
-        name: string,
-      |}>,
-    |}>
-  | $ReadOnly<{|
-      type: 'ObjectTypeAnnotation',
-      name: string,
-      optional: boolean,
-      properties: $ReadOnlyArray<EventObjectPropertyType>,
-    |}>;
+export type StringEnumTypeAnnotation = $ReadOnly<{|
+  type: 'StringEnumTypeAnnotation',
+  options: $ReadOnlyArray<string>,
+|}>;
 
-type PropTypeTypeAnnotation =
+export type VoidTypeAnnotation = $ReadOnly<{|
+  type: 'VoidTypeAnnotation',
+|}>;
+
+type ObjectTypeAnnotation<+T> = $ReadOnly<{|
+  type: 'ObjectTypeAnnotation',
+  properties: $ReadOnlyArray<NamedShape<T>>,
+|}>;
+
+type FunctionTypeAnnotation<+P, +R> = $ReadOnly<{|
+  type: 'FunctionTypeAnnotation',
+  params: $ReadOnlyArray<NamedShape<P>>,
+  returnTypeAnnotation: R,
+|}>;
+
+export type NamedShape<+T> = $ReadOnly<{
+  name: string,
+  optional: boolean,
+  typeAnnotation: T,
+}>;
+
+export type ComponentSchema = $ReadOnly<{|
+  type: 'Component',
+  components: $ReadOnly<{|
+    [componentName: string]: ComponentShape,
+  |}>,
+|}>;
+
+export type ComponentShape = $ReadOnly<{|
+  ...OptionsShape,
+  extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+  events: $ReadOnlyArray<EventTypeShape>,
+  props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+  commands: $ReadOnlyArray<NamedShape<CommandTypeAnnotation>>,
+|}>;
+
+export type OptionsShape = $ReadOnly<{|
+  interfaceOnly?: boolean,
+
+  // Use for components with no current paper rename in progress
+  // Does not check for new name
+  paperComponentName?: string,
+
+  // Use for components that are not used on other platforms.
+  excludedPlatforms?: $ReadOnlyArray<PlatformType>,
+
+  // Use for components currently being renamed in paper
+  // Will use new name if it is available and fallback to this name
+  paperComponentNameDeprecated?: string,
+|}>;
+
+export type ExtendsPropsShape = $ReadOnly<{|
+  type: 'ReactNativeBuiltInType',
+  knownTypeName: 'ReactNativeCoreViewProps',
+|}>;
+
+export type EventTypeShape = $ReadOnly<{|
+  name: string,
+  bubblingType: 'direct' | 'bubble',
+  optional: boolean,
+  paperTopLevelNameDeprecated?: string,
+  typeAnnotation: $ReadOnly<{|
+    type: 'EventTypeAnnotation',
+    argument?: ObjectTypeAnnotation<EventTypeAnnotation>,
+  |}>,
+|}>;
+
+export type EventTypeAnnotation =
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | Int32TypeAnnotation
+  | StringEnumTypeAnnotation
+  | ObjectTypeAnnotation<EventTypeAnnotation>;
+
+export type PropTypeAnnotation =
   | $ReadOnly<{|
       type: 'BooleanTypeAnnotation',
       default: boolean | null,
@@ -120,140 +146,61 @@ type PropTypeTypeAnnotation =
   | $ReadOnly<{|
       type: 'StringEnumTypeAnnotation',
       default: string,
-      options: $ReadOnlyArray<{|
-        name: string,
-      |}>,
+      options: $ReadOnlyArray<string>,
     |}>
   | $ReadOnly<{|
       type: 'Int32EnumTypeAnnotation',
       default: number,
-      options: $ReadOnlyArray<{|
-        value: number,
-      |}>,
+      options: $ReadOnlyArray<number>,
     |}>
-  | $ReadOnly<{|
-      type: 'ReservedPropTypeAnnotation',
-      name:
-        | 'ColorPrimitive'
-        | 'ImageSourcePrimitive'
-        | 'PointPrimitive'
-        | 'EdgeInsetsPrimitive',
-    |}>
-  | $ReadOnly<{|
-      type: 'ObjectTypeAnnotation',
-      properties: $ReadOnlyArray<PropTypeShape>,
-    |}>
+  | ReservedPropTypeAnnotation
+  | ObjectTypeAnnotation<PropTypeAnnotation>
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
       elementType:
-        | $ReadOnly<{|
-            type: 'BooleanTypeAnnotation',
-          |}>
-        | $ReadOnly<{|
-            type: 'StringTypeAnnotation',
-          |}>
-        | $ReadOnly<{|
-            type: 'DoubleTypeAnnotation',
-          |}>
-        | $ReadOnly<{|
-            type: 'FloatTypeAnnotation',
-          |}>
-        | $ReadOnly<{|
-            type: 'Int32TypeAnnotation',
-          |}>
+        | BooleanTypeAnnotation
+        | StringTypeAnnotation
+        | DoubleTypeAnnotation
+        | FloatTypeAnnotation
+        | Int32TypeAnnotation
         | $ReadOnly<{|
             type: 'StringEnumTypeAnnotation',
             default: string,
-            options: $ReadOnlyArray<{|
-              name: string,
-            |}>,
+            options: $ReadOnlyArray<string>,
           |}>
-        | $ReadOnly<{|
-            type: 'ObjectTypeAnnotation',
-            properties: $ReadOnlyArray<PropTypeShape>,
-          |}>
-        | $ReadOnly<{|
-            type: 'ReservedPropTypeAnnotation',
-            name:
-              | 'ColorPrimitive'
-              | 'ImageSourcePrimitive'
-              | 'PointPrimitive'
-              | 'EdgeInsetsPrimitive',
-          |}>
+        | ObjectTypeAnnotation<PropTypeAnnotation>
+        | ReservedPropTypeAnnotation
         | $ReadOnly<{|
             type: 'ArrayTypeAnnotation',
-            elementType: $ReadOnly<{|
-              type: 'ObjectTypeAnnotation',
-              properties: $ReadOnlyArray<PropTypeShape>,
-            |}>,
+            elementType: ObjectTypeAnnotation<PropTypeAnnotation>,
           |}>,
     |}>;
 
-export type PropTypeShape = $ReadOnly<{|
-  name: string,
-  optional: boolean,
-  typeAnnotation: PropTypeTypeAnnotation,
+type ReservedPropTypeAnnotation = $ReadOnly<{|
+  type: 'ReservedPropTypeAnnotation',
+  name:
+    | 'ColorPrimitive'
+    | 'ImageSourcePrimitive'
+    | 'PointPrimitive'
+    | 'EdgeInsetsPrimitive',
 |}>;
 
-export type EventTypeShape = $ReadOnly<{|
-  name: string,
-  bubblingType: 'direct' | 'bubble',
-  optional: boolean,
-  paperTopLevelNameDeprecated?: string,
-  typeAnnotation: $ReadOnly<{|
-    type: 'EventTypeAnnotation',
-    argument?: $ReadOnly<{|
-      type: 'ObjectTypeAnnotation',
-      properties: $ReadOnlyArray<EventObjectPropertyType>,
-    |}>,
-  |}>,
-|}>;
+export type CommandTypeAnnotation = FunctionTypeAnnotation<
+  CommandParamTypeAnnotation,
+  VoidTypeAnnotation,
+>;
 
-export type CommandTypeShape = $ReadOnly<{|
-  name: string,
-  optional: boolean,
-  typeAnnotation: CommandsFunctionTypeAnnotation,
-|}>;
+export type CommandParamTypeAnnotation =
+  | ReservedTypeAnnotation
+  | BooleanTypeAnnotation
+  | Int32TypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | StringTypeAnnotation;
 
-export type OptionsShape = $ReadOnly<{|
-  interfaceOnly?: boolean,
-
-  // Use for components with no current paper rename in progress
-  // Does not check for new name
-  paperComponentName?: string,
-
-  // Use for components that are not used on other platforms.
-  excludedPlatforms?: $ReadOnlyArray<PlatformType>,
-
-  // Use for components currently being renamed in paper
-  // Will use new name if it is available and fallback to this name
-  paperComponentNameDeprecated?: string,
-|}>;
-
-export type ExtendsPropsShape = $ReadOnly<{|
-  type: 'ReactNativeBuiltInType',
-  knownTypeName: 'ReactNativeCoreViewProps',
-|}>;
-
-export type ComponentShape = $ReadOnly<{|
-  ...OptionsShape,
-  extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
-  events: $ReadOnlyArray<EventTypeShape>,
-  props: $ReadOnlyArray<PropTypeShape>,
-  commands: $ReadOnlyArray<CommandTypeShape>,
-|}>;
-
-export type SchemaType = $ReadOnly<{|
-  modules: $ReadOnly<{|
-    [hasteModuleName: string]: ComponentSchema | NativeModuleSchema,
-  |}>,
-|}>;
-
-export type ComponentSchema = $ReadOnly<{|
-  type: 'Component',
-  components: $ReadOnly<{|
-    [componentName: string]: ComponentShape,
-  |}>,
+export type ReservedTypeAnnotation = $ReadOnly<{|
+  type: 'ReservedTypeAnnotation',
+  name: 'RootTag', // Union with more custom types.
 |}>;
 
 /**
@@ -282,41 +229,25 @@ export type NativeModuleSchema = $ReadOnly<{|
 |}>;
 
 type NativeModuleSpec = $ReadOnly<{|
-  properties: $ReadOnlyArray<NativeModulePropertySchema>,
+  properties: $ReadOnlyArray<NativeModulePropertyShape>,
 |}>;
 
-export type NativeModulePropertySchema = $ReadOnly<{|
-  name: string,
-  optional: boolean,
-  typeAnnotation: Nullable<NativeModuleFunctionTypeAnnotation>,
-|}>;
+export type NativeModulePropertyShape = NamedShape<
+  Nullable<NativeModuleFunctionTypeAnnotation>,
+>;
 
 export type NativeModuleAliasMap = $ReadOnly<{|
   [aliasName: string]: NativeModuleObjectTypeAnnotation,
 |}>;
 
-export type NativeModuleFunctionTypeAnnotation = $ReadOnly<{|
-  type: 'FunctionTypeAnnotation',
-  params: $ReadOnlyArray<NativeModuleMethodParamSchema>,
-  returnTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
-|}>;
+export type NativeModuleFunctionTypeAnnotation = FunctionTypeAnnotation<
+  Nullable<NativeModuleParamTypeAnnotation>,
+  Nullable<NativeModuleReturnTypeAnnotation>,
+>;
 
-export type NativeModuleMethodParamSchema = $ReadOnly<{|
-  name: string,
-  optional: boolean,
-  typeAnnotation: Nullable<NativeModuleParamTypeAnnotation>,
-|}>;
-
-export type NativeModuleObjectTypeAnnotation = $ReadOnly<{|
-  type: 'ObjectTypeAnnotation',
-  properties: $ReadOnlyArray<NativeModuleObjectTypeAnnotationPropertySchema>,
-|}>;
-
-export type NativeModuleObjectTypeAnnotationPropertySchema = $ReadOnly<{|
-  name: string,
-  optional: boolean,
-  typeAnnotation: Nullable<NativeModuleBaseTypeAnnotation>,
-|}>;
+export type NativeModuleObjectTypeAnnotation = ObjectTypeAnnotation<
+  Nullable<NativeModuleBaseTypeAnnotation>,
+>;
 
 export type NativeModuleArrayTypeAnnotation<
   +T: Nullable<NativeModuleBaseTypeAnnotation>,
@@ -357,11 +288,6 @@ export type NativeModuleGenericObjectTypeAnnotation = $ReadOnly<{|
   type: 'GenericObjectTypeAnnotation',
 |}>;
 
-export type NativeModuleReservedFunctionValueTypeAnnotation = $ReadOnly<{|
-  type: 'ReservedFunctionValueTypeAnnotation',
-  name: ReservedFunctionValueTypeName,
-|}>;
-
 export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{|
   type: 'TypeAliasTypeAnnotation',
   name: string,
@@ -369,10 +295,6 @@ export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{|
 
 export type NativeModulePromiseTypeAnnotation = $ReadOnly<{|
   type: 'PromiseTypeAnnotation',
-|}>;
-
-export type NativeModuleVoidTypeAnnotation = $ReadOnly<{|
-  type: 'VoidTypeAnnotation',
 |}>;
 
 export type NativeModuleBaseTypeAnnotation =
@@ -383,7 +305,7 @@ export type NativeModuleBaseTypeAnnotation =
   | NativeModuleFloatTypeAnnotation
   | NativeModuleBooleanTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
-  | NativeModuleReservedFunctionValueTypeAnnotation
+  | ReservedTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleArrayTypeAnnotation<Nullable<NativeModuleBaseTypeAnnotation>>
   | NativeModuleObjectTypeAnnotation;
@@ -404,6 +326,4 @@ export type NativeModuleTypeAnnotation =
 type NativeModuleParamOnlyTypeAnnotation = NativeModuleFunctionTypeAnnotation;
 type NativeModuleReturnOnlyTypeAnnotation =
   | NativeModulePromiseTypeAnnotation
-  | NativeModuleVoidTypeAnnotation;
-
-export type ReservedFunctionValueTypeName = 'RootTag'; // Union with more custom types.
+  | VoidTypeAnnotation;
