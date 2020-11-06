@@ -12,29 +12,15 @@
 
 export type PlatformType = 'iOS' | 'android';
 
-export type CommandsFunctionTypeAnnotation = $ReadOnly<{|
-  type: 'FunctionTypeAnnotation',
-  params: $ReadOnlyArray<CommandsFunctionTypeParamAnnotation>,
+export type SchemaType = $ReadOnly<{|
+  modules: $ReadOnly<{|
+    [hasteModuleName: string]: ComponentSchema | NativeModuleSchema,
+  |}>,
 |}>;
 
-export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
-  name: string,
-  typeAnnotation: CommandsTypeAnnotation,
-|}>;
-
-export type CommandsTypeAnnotation =
-  | ReservedTypeAnnotation
-  | BooleanTypeAnnotation
-  | Int32TypeAnnotation
-  | DoubleTypeAnnotation
-  | FloatTypeAnnotation
-  | StringTypeAnnotation;
-
-export type ReservedTypeAnnotation = $ReadOnly<{|
-  type: 'ReservedTypeAnnotation',
-  name: 'RootTag', // Union with more custom types.
-|}>;
-
+/**
+ * Component Type Annotations
+ */
 export type DoubleTypeAnnotation = $ReadOnly<{|
   type: 'DoubleTypeAnnotation',
 |}>;
@@ -68,6 +54,55 @@ type NamedShape<+T> = $ReadOnly<{
   typeAnnotation: T,
 }>;
 
+export type ComponentSchema = $ReadOnly<{|
+  type: 'Component',
+  components: $ReadOnly<{|
+    [componentName: string]: ComponentShape,
+  |}>,
+|}>;
+
+export type ComponentShape = $ReadOnly<{|
+  ...OptionsShape,
+  extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+  events: $ReadOnlyArray<EventTypeShape>,
+  props: $ReadOnlyArray<PropTypeShape>,
+  commands: $ReadOnlyArray<CommandTypeShape>,
+|}>;
+
+export type OptionsShape = $ReadOnly<{|
+  interfaceOnly?: boolean,
+
+  // Use for components with no current paper rename in progress
+  // Does not check for new name
+  paperComponentName?: string,
+
+  // Use for components that are not used on other platforms.
+  excludedPlatforms?: $ReadOnlyArray<PlatformType>,
+
+  // Use for components currently being renamed in paper
+  // Will use new name if it is available and fallback to this name
+  paperComponentNameDeprecated?: string,
+|}>;
+
+export type ExtendsPropsShape = $ReadOnly<{|
+  type: 'ReactNativeBuiltInType',
+  knownTypeName: 'ReactNativeCoreViewProps',
+|}>;
+
+export type EventTypeShape = $ReadOnly<{|
+  name: string,
+  bubblingType: 'direct' | 'bubble',
+  optional: boolean,
+  paperTopLevelNameDeprecated?: string,
+  typeAnnotation: $ReadOnly<{|
+    type: 'EventTypeAnnotation',
+    argument?: $ReadOnly<{|
+      type: 'ObjectTypeAnnotation',
+      properties: $ReadOnlyArray<EventObjectPropertyType>,
+    |}>,
+  |}>,
+|}>;
+
 export type EventObjectPropertyType = NamedShape<
   | BooleanTypeAnnotation
   | StringTypeAnnotation
@@ -80,6 +115,8 @@ export type EventObjectPropertyType = NamedShape<
       properties: $ReadOnlyArray<EventObjectPropertyType>,
     |}>,
 >;
+
+export type PropTypeShape = NamedShape<PropTypeTypeAnnotation>;
 
 type PropTypeTypeAnnotation =
   | $ReadOnly<{|
@@ -164,63 +201,29 @@ type PropTypeTypeAnnotation =
           |}>,
     |}>;
 
-export type PropTypeShape = NamedShape<PropTypeTypeAnnotation>;
-
-export type EventTypeShape = $ReadOnly<{|
-  name: string,
-  bubblingType: 'direct' | 'bubble',
-  optional: boolean,
-  paperTopLevelNameDeprecated?: string,
-  typeAnnotation: $ReadOnly<{|
-    type: 'EventTypeAnnotation',
-    argument?: $ReadOnly<{|
-      type: 'ObjectTypeAnnotation',
-      properties: $ReadOnlyArray<EventObjectPropertyType>,
-    |}>,
-  |}>,
-|}>;
-
 export type CommandTypeShape = NamedShape<CommandsFunctionTypeAnnotation>;
 
-export type OptionsShape = $ReadOnly<{|
-  interfaceOnly?: boolean,
-
-  // Use for components with no current paper rename in progress
-  // Does not check for new name
-  paperComponentName?: string,
-
-  // Use for components that are not used on other platforms.
-  excludedPlatforms?: $ReadOnlyArray<PlatformType>,
-
-  // Use for components currently being renamed in paper
-  // Will use new name if it is available and fallback to this name
-  paperComponentNameDeprecated?: string,
+export type CommandsFunctionTypeAnnotation = $ReadOnly<{|
+  type: 'FunctionTypeAnnotation',
+  params: $ReadOnlyArray<CommandsFunctionTypeParamAnnotation>,
 |}>;
 
-export type ExtendsPropsShape = $ReadOnly<{|
-  type: 'ReactNativeBuiltInType',
-  knownTypeName: 'ReactNativeCoreViewProps',
+export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
+  name: string,
+  typeAnnotation: CommandsTypeAnnotation,
 |}>;
 
-export type ComponentShape = $ReadOnly<{|
-  ...OptionsShape,
-  extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
-  events: $ReadOnlyArray<EventTypeShape>,
-  props: $ReadOnlyArray<PropTypeShape>,
-  commands: $ReadOnlyArray<CommandTypeShape>,
-|}>;
+export type CommandsTypeAnnotation =
+  | ReservedTypeAnnotation
+  | BooleanTypeAnnotation
+  | Int32TypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | StringTypeAnnotation;
 
-export type SchemaType = $ReadOnly<{|
-  modules: $ReadOnly<{|
-    [hasteModuleName: string]: ComponentSchema | NativeModuleSchema,
-  |}>,
-|}>;
-
-export type ComponentSchema = $ReadOnly<{|
-  type: 'Component',
-  components: $ReadOnly<{|
-    [componentName: string]: ComponentShape,
-  |}>,
+export type ReservedTypeAnnotation = $ReadOnly<{|
+  type: 'ReservedTypeAnnotation',
+  name: 'RootTag', // Union with more custom types.
 |}>;
 
 /**
