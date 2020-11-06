@@ -49,7 +49,7 @@ function buildCommandSchema(property, types: TypeDeclarationMap) {
     switch (type) {
       case 'RootTag':
         returnType = {
-          type: 'ReservedFunctionValueTypeAnnotation',
+          type: 'ReservedTypeAnnotation',
           name: 'RootTag',
         };
         break;

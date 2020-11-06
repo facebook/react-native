@@ -246,7 +246,7 @@ function getParamObjCType(
           ' &',
       );
     }
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (structTypeAnnotation.name) {
         case 'RootTag':
           return notStruct(notRequired ? 'NSNumber *' : 'double');
@@ -308,7 +308,7 @@ function getReturnObjCType(
           typeAnnotation.elementType,
         )}> *`,
       );
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapIntoNullableIfNeeded('NSNumber *');
@@ -358,7 +358,7 @@ function getReturnJSType(
       return 'ObjectKind';
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       return 'NumberKind';
     case 'StringTypeAnnotation':
       return 'StringKind';

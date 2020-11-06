@@ -23,16 +23,16 @@ export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
 |}>;
 
 export type CommandsTypeAnnotation =
-  | ReservedFunctionValueTypeAnnotation
+  | ReservedTypeAnnotation
   | BooleanTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | StringTypeAnnotation;
 
-type ReservedFunctionValueTypeAnnotation = $ReadOnly<{|
-  type: 'ReservedFunctionValueTypeAnnotation',
-  name: ReservedFunctionValueTypeName,
+export type ReservedTypeAnnotation = $ReadOnly<{|
+  type: 'ReservedTypeAnnotation',
+  name: 'RootTag', // Union with more custom types.
 |}>;
 
 export type DoubleTypeAnnotation = $ReadOnly<{|
@@ -318,11 +318,6 @@ export type NativeModuleGenericObjectTypeAnnotation = $ReadOnly<{|
   type: 'GenericObjectTypeAnnotation',
 |}>;
 
-export type NativeModuleReservedFunctionValueTypeAnnotation = $ReadOnly<{|
-  type: 'ReservedFunctionValueTypeAnnotation',
-  name: ReservedFunctionValueTypeName,
-|}>;
-
 export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{|
   type: 'TypeAliasTypeAnnotation',
   name: string,
@@ -344,7 +339,7 @@ export type NativeModuleBaseTypeAnnotation =
   | NativeModuleFloatTypeAnnotation
   | NativeModuleBooleanTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
-  | NativeModuleReservedFunctionValueTypeAnnotation
+  | ReservedTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleArrayTypeAnnotation<Nullable<NativeModuleBaseTypeAnnotation>>
   | NativeModuleObjectTypeAnnotation;
@@ -366,5 +361,3 @@ type NativeModuleParamOnlyTypeAnnotation = NativeModuleFunctionTypeAnnotation;
 type NativeModuleReturnOnlyTypeAnnotation =
   | NativeModulePromiseTypeAnnotation
   | NativeModuleVoidTypeAnnotation;
-
-export type ReservedFunctionValueTypeName = 'RootTag'; // Union with more custom types.

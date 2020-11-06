@@ -107,7 +107,7 @@ function getObjCParamType(param: CommandsFunctionTypeParamAnnotation): string {
   const {typeAnnotation} = param;
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return 'double';
@@ -137,7 +137,7 @@ function getObjCExpectedKindParamType(
   const {typeAnnotation} = param;
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return '[NSNumber class]';
@@ -167,7 +167,7 @@ function getReadableExpectedKindParamType(
   const {typeAnnotation} = param;
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return 'double';
@@ -198,7 +198,7 @@ function getObjCRightHandAssignmentParamType(
   const {typeAnnotation} = param;
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return `[(NSNumber *)arg${index} doubleValue]`;

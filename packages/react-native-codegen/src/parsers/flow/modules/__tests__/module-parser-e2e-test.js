@@ -9,7 +9,6 @@
  */
 
 import type {
-  ReservedFunctionValueTypeName,
   NativeModuleReturnTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
   NativeModuleSchema,
@@ -43,7 +42,7 @@ const PRIMITIVES: $ReadOnlyArray<[string, PrimitiveTypeAnnotationType]> = [
   ['boolean', 'BooleanTypeAnnotation'],
 ];
 
-const RESERVED_FUNCTION_VALUE_TYPE_NAME: $ReadOnlyArray<ReservedFunctionValueTypeName> = [
+const RESERVED_FUNCTION_VALUE_TYPE_NAME: $ReadOnlyArray<'RootTag'> = [
   'RootTag',
 ];
 
@@ -201,12 +200,9 @@ describe('Flow Module Parser', () => {
               it(`should parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter of reserved type '${FLOW_TYPE}'`, () => {
                 const [paramTypeAnnotation] = parseParamType('arg', FLOW_TYPE);
 
-                expect(paramTypeAnnotation.type).toBe(
-                  'ReservedFunctionValueTypeAnnotation',
-                );
+                expect(paramTypeAnnotation.type).toBe('ReservedTypeAnnotation');
                 invariant(
-                  paramTypeAnnotation.type ===
-                    'ReservedFunctionValueTypeAnnotation',
+                  paramTypeAnnotation.type === 'ReservedTypeAnnotation',
                   'Param must be a Reserved type',
                 );
 
@@ -267,13 +263,8 @@ describe('Flow Module Parser', () => {
                     'arg',
                     FLOW_TYPE,
                   );
-                  expect(elementType.type).toBe(
-                    'ReservedFunctionValueTypeAnnotation',
-                  );
-                  invariant(
-                    elementType.type === 'ReservedFunctionValueTypeAnnotation',
-                    '',
-                  );
+                  expect(elementType.type).toBe('ReservedTypeAnnotation');
+                  invariant(elementType.type === 'ReservedTypeAnnotation', '');
 
                   expect(elementType.name).toBe(FLOW_TYPE);
                 });
@@ -511,11 +502,10 @@ describe('Flow Module Parser', () => {
                         FLOW_TYPE,
                       );
                       expect(prop.typeAnnotation.type).toBe(
-                        'ReservedFunctionValueTypeAnnotation',
+                        'ReservedTypeAnnotation',
                       );
                       invariant(
-                        prop.typeAnnotation.type ===
-                          'ReservedFunctionValueTypeAnnotation',
+                        prop.typeAnnotation.type === 'ReservedTypeAnnotation',
                         '',
                       );
 
@@ -583,12 +573,9 @@ describe('Flow Module Parser', () => {
                         FLOW_TYPE,
                       );
 
-                      expect(elementType.type).toBe(
-                        'ReservedFunctionValueTypeAnnotation',
-                      );
+                      expect(elementType.type).toBe('ReservedTypeAnnotation');
                       invariant(
-                        elementType.type ===
-                          'ReservedFunctionValueTypeAnnotation',
+                        elementType.type === 'ReservedTypeAnnotation',
                         '',
                       );
                       expect(elementType.name).toBe(FLOW_TYPE);
@@ -800,11 +787,10 @@ describe('Flow Module Parser', () => {
               it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} reserved return of type '${FLOW_TYPE}'`, () => {
                 const [returnTypeAnnotation] = parseReturnType(FLOW_TYPE);
                 expect(returnTypeAnnotation.type).toBe(
-                  'ReservedFunctionValueTypeAnnotation',
+                  'ReservedTypeAnnotation',
                 );
                 invariant(
-                  returnTypeAnnotation.type ===
-                    'ReservedFunctionValueTypeAnnotation',
+                  returnTypeAnnotation.type === 'ReservedTypeAnnotation',
                   '',
                 );
                 expect(returnTypeAnnotation.name).toBe(FLOW_TYPE);
@@ -863,13 +849,8 @@ describe('Flow Module Parser', () => {
               RESERVED_FUNCTION_VALUE_TYPE_NAME.forEach(FLOW_TYPE => {
                 it(`should parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type 'Array<${FLOW_TYPE}>'`, () => {
                   const [elementType] = parseArrayElementReturnType(FLOW_TYPE);
-                  expect(elementType.type).toBe(
-                    'ReservedFunctionValueTypeAnnotation',
-                  );
-                  invariant(
-                    elementType.type === 'ReservedFunctionValueTypeAnnotation',
-                    '',
-                  );
+                  expect(elementType.type).toBe('ReservedTypeAnnotation');
+                  invariant(elementType.type === 'ReservedTypeAnnotation', '');
 
                   expect(elementType.name).toBe(FLOW_TYPE);
                 });
@@ -1079,11 +1060,11 @@ describe('Flow Module Parser', () => {
                         );
 
                         expect(property.typeAnnotation.type).toBe(
-                          'ReservedFunctionValueTypeAnnotation',
+                          'ReservedTypeAnnotation',
                         );
                         invariant(
                           property.typeAnnotation.type ===
-                            'ReservedFunctionValueTypeAnnotation',
+                            'ReservedTypeAnnotation',
                           '',
                         );
 
@@ -1152,12 +1133,9 @@ describe('Flow Module Parser', () => {
                           'prop',
                           FLOW_TYPE,
                         );
-                        expect(elementType.type).toBe(
-                          'ReservedFunctionValueTypeAnnotation',
-                        );
+                        expect(elementType.type).toBe('ReservedTypeAnnotation');
                         invariant(
-                          elementType.type ===
-                            'ReservedFunctionValueTypeAnnotation',
+                          elementType.type === 'ReservedTypeAnnotation',
                           '',
                         );
 

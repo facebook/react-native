@@ -70,7 +70,7 @@ function translateTypeAnnotation(
       switch (typeAnnotation.id.name) {
         case 'RootTag': {
           return wrapNullable(nullable, {
-            type: 'ReservedFunctionValueTypeAnnotation',
+            type: 'ReservedTypeAnnotation',
             name: 'RootTag',
           });
         }

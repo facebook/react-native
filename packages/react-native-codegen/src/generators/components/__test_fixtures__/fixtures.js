@@ -1537,7 +1537,7 @@ const COMMANDS_AND_PROPS: SchemaType = {
                   {
                     name: 'rootTag',
                     typeAnnotation: {
-                      type: 'ReservedFunctionValueTypeAnnotation',
+                      type: 'ReservedTypeAnnotation',
                       name: 'RootTag',
                     },
                   },

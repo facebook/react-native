@@ -157,7 +157,7 @@ function getCommandArgJavaType(param, index) {
   const {typeAnnotation} = param;
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return `args.getDouble(${index})`;
