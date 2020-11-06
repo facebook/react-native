@@ -101,9 +101,8 @@ android {
         //
         // This should really be done by packaging all Hermes related libs into
         // two separate HermesDebug and HermesRelease AARs, but until then we'll just exclude them here
-        if (config.enableHermes && enableVmCleanup) {
-            def taskName = getGradle().getStartParameter().getTaskRequests().toString()
-    
+        def taskName = getGradle().getStartParameter().getTaskRequests().toString()
+        if (enableHermesForVariant(taskName) && enableVmCleanup) {
             exclude "**/libjsc*.so"
             if (taskName.toLowerCase().contains("release")) {
                 exclude '**/libhermes-inspector.so'
