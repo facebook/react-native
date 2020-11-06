@@ -62,21 +62,24 @@ export type StringEnumTypeAnnotation = $ReadOnly<{|
   |}>,
 |}>;
 
-export type EventObjectPropertyType = $ReadOnly<{|
+type NamedShape<+T> = $ReadOnly<{
   name: string,
   optional: boolean,
-  typeAnnotation:
-    | BooleanTypeAnnotation
-    | StringTypeAnnotation
-    | DoubleTypeAnnotation
-    | FloatTypeAnnotation
-    | Int32TypeAnnotation
-    | StringEnumTypeAnnotation
-    | $ReadOnly<{|
-        type: 'ObjectTypeAnnotation',
-        properties: $ReadOnlyArray<EventObjectPropertyType>,
-      |}>,
-|}>;
+  typeAnnotation: T,
+}>;
+
+export type EventObjectPropertyType = NamedShape<
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | Int32TypeAnnotation
+  | StringEnumTypeAnnotation
+  | $ReadOnly<{|
+      type: 'ObjectTypeAnnotation',
+      properties: $ReadOnlyArray<EventObjectPropertyType>,
+    |}>,
+>;
 
 type PropTypeTypeAnnotation =
   | $ReadOnly<{|
@@ -161,11 +164,7 @@ type PropTypeTypeAnnotation =
           |}>,
     |}>;
 
-export type PropTypeShape = $ReadOnly<{|
-  name: string,
-  optional: boolean,
-  typeAnnotation: PropTypeTypeAnnotation,
-|}>;
+export type PropTypeShape = NamedShape<PropTypeTypeAnnotation>;
 
 export type EventTypeShape = $ReadOnly<{|
   name: string,
@@ -181,11 +180,7 @@ export type EventTypeShape = $ReadOnly<{|
   |}>,
 |}>;
 
-export type CommandTypeShape = $ReadOnly<{|
-  name: string,
-  optional: boolean,
-  typeAnnotation: CommandsFunctionTypeAnnotation,
-|}>;
+export type CommandTypeShape = NamedShape<CommandsFunctionTypeAnnotation>;
 
 export type OptionsShape = $ReadOnly<{|
   interfaceOnly?: boolean,
@@ -257,11 +252,9 @@ type NativeModuleSpec = $ReadOnly<{|
   properties: $ReadOnlyArray<NativeModulePropertySchema>,
 |}>;
 
-export type NativeModulePropertySchema = $ReadOnly<{|
-  name: string,
-  optional: boolean,
-  typeAnnotation: Nullable<NativeModuleFunctionTypeAnnotation>,
-|}>;
+export type NativeModulePropertySchema = NamedShape<
+  Nullable<NativeModuleFunctionTypeAnnotation>,
+>;
 
 export type NativeModuleAliasMap = $ReadOnly<{|
   [aliasName: string]: NativeModuleObjectTypeAnnotation,
@@ -273,22 +266,18 @@ export type NativeModuleFunctionTypeAnnotation = $ReadOnly<{|
   returnTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
 |}>;
 
-export type NativeModuleMethodParamSchema = $ReadOnly<{|
-  name: string,
-  optional: boolean,
-  typeAnnotation: Nullable<NativeModuleParamTypeAnnotation>,
-|}>;
+export type NativeModuleMethodParamSchema = NamedShape<
+  Nullable<NativeModuleParamTypeAnnotation>,
+>;
 
 export type NativeModuleObjectTypeAnnotation = $ReadOnly<{|
   type: 'ObjectTypeAnnotation',
   properties: $ReadOnlyArray<NativeModuleObjectTypeAnnotationPropertySchema>,
 |}>;
 
-export type NativeModuleObjectTypeAnnotationPropertySchema = $ReadOnly<{|
-  name: string,
-  optional: boolean,
-  typeAnnotation: Nullable<NativeModuleBaseTypeAnnotation>,
-|}>;
+export type NativeModuleObjectTypeAnnotationPropertySchema = NamedShape<
+  Nullable<NativeModuleBaseTypeAnnotation>,
+>;
 
 export type NativeModuleArrayTypeAnnotation<
   +T: Nullable<NativeModuleBaseTypeAnnotation>,
