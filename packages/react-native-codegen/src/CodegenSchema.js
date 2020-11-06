@@ -48,9 +48,19 @@ export type StringEnumTypeAnnotation = $ReadOnly<{|
   |}>,
 |}>;
 
+export type VoidTypeAnnotation = $ReadOnly<{|
+  type: 'VoidTypeAnnotation',
+|}>;
+
 type ObjectTypeAnnotation<+T> = $ReadOnly<{|
   type: 'ObjectTypeAnnotation',
   properties: $ReadOnlyArray<NamedShape<T>>,
+|}>;
+
+type FunctionTypeAnnotation<+P, +R> = $ReadOnly<{|
+  type: 'FunctionTypeAnnotation',
+  params: $ReadOnlyArray<NamedShape<P>>,
+  returnTypeAnnotation: R,
 |}>;
 
 export type NamedShape<+T> = $ReadOnly<{
@@ -188,18 +198,12 @@ export type PropTypeAnnotation =
           |}>,
     |}>;
 
-export type CommandTypeAnnotation = $ReadOnly<{|
-  type: 'FunctionTypeAnnotation',
-  params: $ReadOnlyArray<CommandFunctionTypeParamAnnotation>,
-|}>;
+export type CommandTypeAnnotation = FunctionTypeAnnotation<
+  CommandParamTypeAnnotation,
+  VoidTypeAnnotation,
+>;
 
-// TODO: Unify this function type annotation with NativeModule schema
-export type CommandFunctionTypeParamAnnotation = $ReadOnly<{|
-  name: string,
-  typeAnnotation: CommandParamTypeAnnotation,
-|}>;
-
-type CommandParamTypeAnnotation =
+export type CommandParamTypeAnnotation =
   | ReservedTypeAnnotation
   | BooleanTypeAnnotation
   | Int32TypeAnnotation
@@ -249,11 +253,10 @@ export type NativeModuleAliasMap = $ReadOnly<{|
   [aliasName: string]: NativeModuleObjectTypeAnnotation,
 |}>;
 
-export type NativeModuleFunctionTypeAnnotation = $ReadOnly<{|
-  type: 'FunctionTypeAnnotation',
-  params: $ReadOnlyArray<NamedShape<Nullable<NativeModuleParamTypeAnnotation>>>,
-  returnTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
-|}>;
+export type NativeModuleFunctionTypeAnnotation = FunctionTypeAnnotation<
+  Nullable<NativeModuleParamTypeAnnotation>,
+  Nullable<NativeModuleReturnTypeAnnotation>,
+>;
 
 export type NativeModuleObjectTypeAnnotation = ObjectTypeAnnotation<
   Nullable<NativeModuleBaseTypeAnnotation>,
@@ -307,10 +310,6 @@ export type NativeModulePromiseTypeAnnotation = $ReadOnly<{|
   type: 'PromiseTypeAnnotation',
 |}>;
 
-export type NativeModuleVoidTypeAnnotation = $ReadOnly<{|
-  type: 'VoidTypeAnnotation',
-|}>;
-
 export type NativeModuleBaseTypeAnnotation =
   | NativeModuleStringTypeAnnotation
   | NativeModuleNumberTypeAnnotation
@@ -340,4 +339,4 @@ export type NativeModuleTypeAnnotation =
 type NativeModuleParamOnlyTypeAnnotation = NativeModuleFunctionTypeAnnotation;
 type NativeModuleReturnOnlyTypeAnnotation =
   | NativeModulePromiseTypeAnnotation
-  | NativeModuleVoidTypeAnnotation;
+  | VoidTypeAnnotation;

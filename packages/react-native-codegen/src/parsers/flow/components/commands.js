@@ -95,6 +95,9 @@ function buildCommandSchema(property, types: TypeDeclarationMap) {
     typeAnnotation: {
       type: 'FunctionTypeAnnotation',
       params,
+      returnTypeAnnotation: {
+        type: 'VoidTypeAnnotation',
+      },
     },
   };
 }

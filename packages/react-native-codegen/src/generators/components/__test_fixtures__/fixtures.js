@@ -1456,6 +1456,9 @@ const COMMANDS: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 params: [],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
             },
             {
@@ -1466,35 +1469,43 @@ const COMMANDS: SchemaType = {
                 params: [
                   {
                     name: 'x',
+                    optional: false,
                     typeAnnotation: {
                       type: 'Int32TypeAnnotation',
                     },
                   },
                   {
                     name: 'y',
+                    optional: false,
                     typeAnnotation: {
                       type: 'FloatTypeAnnotation',
                     },
                   },
                   {
                     name: 'z',
+                    optional: false,
                     typeAnnotation: {
                       type: 'DoubleTypeAnnotation',
                     },
                   },
                   {
                     name: 'message',
+                    optional: false,
                     typeAnnotation: {
                       type: 'StringTypeAnnotation',
                     },
                   },
                   {
                     name: 'animated',
+                    optional: false,
                     typeAnnotation: {
                       type: 'BooleanTypeAnnotation',
                     },
                   },
                 ],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
             },
           ],
@@ -1536,12 +1547,16 @@ const COMMANDS_AND_PROPS: SchemaType = {
                 params: [
                   {
                     name: 'rootTag',
+                    optional: false,
                     typeAnnotation: {
                       type: 'ReservedTypeAnnotation',
                       name: 'RootTag',
                     },
                   },
                 ],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
             },
             {
@@ -1552,17 +1567,22 @@ const COMMANDS_AND_PROPS: SchemaType = {
                 params: [
                   {
                     name: 'x',
+                    optional: false,
                     typeAnnotation: {
                       type: 'Int32TypeAnnotation',
                     },
                   },
                   {
                     name: 'y',
+                    optional: false,
                     typeAnnotation: {
                       type: 'Int32TypeAnnotation',
                     },
                   },
                 ],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
             },
           ],

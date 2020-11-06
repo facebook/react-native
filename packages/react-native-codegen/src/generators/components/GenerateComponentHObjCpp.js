@@ -15,7 +15,7 @@ import type {
   CommandTypeAnnotation,
   ComponentShape,
   SchemaType,
-  CommandFunctionTypeParamAnnotation,
+  CommandParamTypeAnnotation,
 } from '../../CodegenSchema';
 
 type FilesOutput = Map<string, string>;
@@ -104,7 +104,9 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 `.trim();
 
-function getObjCParamType(param: CommandFunctionTypeParamAnnotation): string {
+type Param = NamedShape<CommandParamTypeAnnotation>;
+
+function getObjCParamType(param: Param): string {
   const {typeAnnotation} = param;
 
   switch (typeAnnotation.type) {
@@ -132,9 +134,7 @@ function getObjCParamType(param: CommandFunctionTypeParamAnnotation): string {
   }
 }
 
-function getObjCExpectedKindParamType(
-  param: CommandFunctionTypeParamAnnotation,
-): string {
+function getObjCExpectedKindParamType(param: Param): string {
   const {typeAnnotation} = param;
 
   switch (typeAnnotation.type) {
@@ -162,9 +162,7 @@ function getObjCExpectedKindParamType(
   }
 }
 
-function getReadableExpectedKindParamType(
-  param: CommandFunctionTypeParamAnnotation,
-): string {
+function getReadableExpectedKindParamType(param: Param): string {
   const {typeAnnotation} = param;
 
   switch (typeAnnotation.type) {
@@ -193,7 +191,7 @@ function getReadableExpectedKindParamType(
 }
 
 function getObjCRightHandAssignmentParamType(
-  param: CommandFunctionTypeParamAnnotation,
+  param: Param,
   index: number,
 ): string {
   const {typeAnnotation} = param;
@@ -253,7 +251,7 @@ function generateProtocol(
 }
 
 function generateConvertAndValidateParam(
-  param: CommandFunctionTypeParamAnnotation,
+  param: Param,
   index: number,
   componentName: string,
 ): string {
