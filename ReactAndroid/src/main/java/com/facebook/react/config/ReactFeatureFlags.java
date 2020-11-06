@@ -23,6 +23,9 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
+  /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
+  public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
+
   /*
    * This feature flag enables logs for Fabric
    */
