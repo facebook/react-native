@@ -267,6 +267,27 @@ describe('XMLHttpRequest', function() {
     );
   });
 
+  it('should not log to a performance logger if not in __DEV__', () => {
+    const original__DEV__ = global.__DEV__;
+    global.__DEV__ = false;
+
+    xhr.open('GET', 'blabla');
+    xhr.send();
+
+    expect(xhr._perfKey).toBe(null);
+    expect(GlobalPerformanceLogger.startTimespan).not.toHaveBeenCalled();
+
+    setRequestId(8);
+    xhr.__didReceiveResponse(requestId, 200, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Content-Length': '32',
+    });
+
+    expect(GlobalPerformanceLogger.stopTimespan).not.toHaveBeenCalled();
+
+    global.__DEV__ = original__DEV__;
+  });
+
   it('should log to a custom performance logger if set', () => {
     const performanceLogger = createPerformanceLogger();
     jest.spyOn(performanceLogger, 'startTimespan');

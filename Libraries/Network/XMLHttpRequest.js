@@ -304,8 +304,10 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
     responseURL: ?string,
   ): void {
     if (requestId === this._requestId) {
-      this._perfKey != null &&
-        this._performanceLogger.stopTimespan(this._perfKey);
+      if (__DEV__) {
+        this._perfKey != null &&
+          this._performanceLogger.stopTimespan(this._perfKey);
+      }
       this.status = status;
       this.setResponseHeaders(responseHeaders);
       this.setReadyState(this.HEADERS_RECEIVED);
@@ -529,8 +531,10 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
     const doSend = () => {
       const friendlyName =
         this._trackingName !== 'unknown' ? this._trackingName : this._url;
-      this._perfKey = 'network_XMLHttpRequest_' + String(friendlyName);
-      this._performanceLogger.startTimespan(this._perfKey);
+      if (__DEV__) {
+        this._perfKey = 'network_XMLHttpRequest_' + String(friendlyName);
+        this._performanceLogger.startTimespan(this._perfKey);
+      }
       invariant(
         this._method,
         'XMLHttpRequest method needs to be defined (%s).',
