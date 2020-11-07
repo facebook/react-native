@@ -36,25 +36,25 @@ const {
 
 type StructContext = 'CONSTANTS' | 'REGULAR';
 
-export type RegularStruct = $ReadOnly<{|
+export type RegularStruct = $ReadOnly<{
   context: 'REGULAR',
   name: string,
   properties: $ReadOnlyArray<StructProperty>,
-|}>;
+}>;
 
-export type ConstantsStruct = $ReadOnly<{|
+export type ConstantsStruct = $ReadOnly<{
   context: 'CONSTANTS',
   name: string,
   properties: $ReadOnlyArray<StructProperty>,
-|}>;
+}>;
 
 export type Struct = RegularStruct | ConstantsStruct;
 
-export type StructProperty = $ReadOnly<{|
+export type StructProperty = $ReadOnly<{
   name: string,
   optional: boolean,
   typeAnnotation: Nullable<StructTypeAnnotation>,
-|}>;
+}>;
 
 export type StructTypeAnnotation =
   | NativeModuleStringTypeAnnotation

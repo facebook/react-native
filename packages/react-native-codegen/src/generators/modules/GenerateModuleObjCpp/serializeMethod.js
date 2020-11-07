@@ -32,16 +32,16 @@ const ProtocolMethodTemplate = ({
   returnObjCType,
   methodName,
   params,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   returnObjCType: string,
   methodName: string,
   params: string,
-|}>) => `- (${returnObjCType})${methodName}${params};`;
+}>) => `- (${returnObjCType})${methodName}${params};`;
 
-export type StructParameterRecord = $ReadOnly<{|
+export type StructParameterRecord = $ReadOnly<{
   paramIndex: number,
   structName: string,
-|}>;
+}>;
 
 type ReturnJSType =
   | 'VoidKind'
@@ -51,14 +51,14 @@ type ReturnJSType =
   | 'NumberKind'
   | 'StringKind';
 
-export type MethodSerializationOutput = $ReadOnly<{|
+export type MethodSerializationOutput = $ReadOnly<{
   methodName: string,
   protocolMethod: string,
   selector: string,
   structParamRecords: $ReadOnlyArray<StructParameterRecord>,
   returnJSType: ReturnJSType,
   argCount: number,
-|}>;
+}>;
 
 function serializeMethod(
   hasteModuleName: string,
@@ -79,7 +79,7 @@ function serializeMethod(
     );
   }
 
-  const methodParams: Array<{|paramName: string, objCType: string|}> = [];
+  const methodParams: Array<{paramName: string, objCType: string}> = [];
   const structParamRecords: Array<StructParameterRecord> = [];
 
   params.forEach((param, index) => {
@@ -183,7 +183,7 @@ function getParamObjCType(
   structName: string,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
-): $ReadOnly<{|objCType: string, isStruct: boolean|}> {
+): $ReadOnly<{objCType: string, isStruct: boolean}> {
   const {name: paramName, typeAnnotation: nullableTypeAnnotation} = param;
   const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
   const notRequired = param.optional || nullable;
@@ -215,7 +215,7 @@ function getParamObjCType(
        *
        * For example:
        *   Array<number> => NSArray<NSNumber *>
-       *   type Animal = {||};
+       *   type Animal = {};
        *   Array<Animal> => NSArray<JS::NativeSampleTurboModule::Animal *>, etc.
        */
       return notStruct(wrapIntoNullableIfNeeded('NSArray *'));
@@ -398,7 +398,7 @@ function serializeConstantsProtocolMethods(
   const {returnTypeAnnotation} = propertyTypeAnnotation;
   if (returnTypeAnnotation.type !== 'ObjectTypeAnnotation') {
     throw new Error(
-      `${hasteModuleName}.getConstants() may only return an object literal: {|...|}.`,
+      `${hasteModuleName}.getConstants() may only return an object literal: {...}.`,
     );
   }
 

@@ -288,9 +288,9 @@ function translateTypeAnnotation(
        *
        * Consider this case:
        *
-       * type Animal = ?{|
+       * type Animal = ?{
        *   name: string,
-       * |};
+       * };
        *
        * type B = Animal
        *
@@ -298,11 +298,11 @@ function translateTypeAnnotation(
        *   +greet: (animal: B) => void;
        * }
        *
-       * In this case, we follow B to Animal, and then Animal to ?{|name: string|}.
+       * In this case, we follow B to Animal, and then Animal to ?{name: string}.
        *
        * We:
        *   1. Replace `+greet: (animal: B) => void;` with `+greet: (animal: ?Animal) => void;`,
-       *   2. Pretend that Animal = {|name: string|}.
+       *   2. Pretend that Animal = {name: string}.
        *
        * Why do we do this?
        *  1. In ObjC, we need to generate a struct called Animal, not B.
@@ -572,10 +572,10 @@ function buildModuleSchema(
   const declaration = types[moduleInterfaceName];
   return (declaration.body.properties: $ReadOnlyArray<$FlowFixMe>)
     .filter(property => property.type === 'ObjectTypeProperty')
-    .map<?{|
+    .map<?{
       aliasMap: NativeModuleAliasMap,
       propertyShape: NativeModulePropertyShape,
-    |}>(property => {
+    }>(property => {
       const aliasMap: {...NativeModuleAliasMap} = {};
 
       return guard(() => ({

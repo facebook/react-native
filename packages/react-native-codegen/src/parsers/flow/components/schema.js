@@ -20,7 +20,7 @@ import type {
   OptionsShape,
 } from '../../../CodegenSchema.js';
 
-export type ComponentSchemaBuilderConfig = $ReadOnly<{|
+export type ComponentSchemaBuilderConfig = $ReadOnly<{
   filename: string,
   componentName: string,
   extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
@@ -28,7 +28,7 @@ export type ComponentSchemaBuilderConfig = $ReadOnly<{|
   props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
   commands: $ReadOnlyArray<NamedShape<CommandTypeAnnotation>>,
   options?: ?OptionsShape,
-|}>;
+}>;
 
 function wrapComponentSchema({
   filename,

@@ -16,12 +16,12 @@ const {getImports, toSafeCppString} = require('./CppHelpers');
 type FilesOutput = Map<string, string>;
 type PropValueType = string | number | boolean;
 
-type TestCase = $ReadOnly<{|
+type TestCase = $ReadOnly<{
   propName: string,
   propValue: ?PropValueType,
   testName?: string,
   raw?: boolean,
-|}>;
+}>;
 
 const fileTemplate = `
 /**

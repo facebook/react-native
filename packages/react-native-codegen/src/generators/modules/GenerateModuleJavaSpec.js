@@ -27,12 +27,12 @@ const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 type FilesOutput = Map<string, string>;
 
 function FileTemplate(
-  config: $ReadOnly<{|
+  config: $ReadOnly<{
     packageName: string,
     className: string,
     methods: string,
     imports: string,
-  |}>,
+  }>,
 ): string {
   const {packageName, className, methods, imports} = config;
   return `
@@ -62,14 +62,14 @@ ${methods}
 }
 
 function MethodTemplate(
-  config: $ReadOnly<{|
+  config: $ReadOnly<{
     abstract: boolean,
     methodBody: ?string,
     methodJavaAnnotation: string,
     methodName: string,
     translatedReturnType: string,
     traversedArgs: Array<string>,
-  |}>,
+  }>,
 ): string {
   const {
     abstract,

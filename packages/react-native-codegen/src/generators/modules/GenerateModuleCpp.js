@@ -51,14 +51,12 @@ const ModuleTemplate = ({
   hostFunctions,
   moduleName,
   methods,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
   hostFunctions: $ReadOnlyArray<string>,
   moduleName: string,
-  methods: $ReadOnlyArray<
-    $ReadOnly<{|methodName: string, paramCount: number|}>,
-  >,
-|}>) => {
+  methods: $ReadOnlyArray<$ReadOnly<{methodName: string, paramCount: number}>>,
+}>) => {
   return `${hostFunctions.join('\n')}
 
 ${hasteModuleName}CxxSpecJSI::${hasteModuleName}CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)

@@ -26,11 +26,11 @@ const StructTemplate = ({
   hasteModuleName,
   structName,
   builderInputProps,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
   structName: string,
   builderInputProps: string,
-|}>) => `namespace JS {
+}>) => `namespace JS {
   namespace ${hasteModuleName} {
     struct ${structName} {
 
@@ -62,11 +62,11 @@ const MethodTemplate = ({
   hasteModuleName,
   structName,
   properties,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
   structName: string,
   properties: string,
-|}>) => `inline JS::${hasteModuleName}::${structName}::Builder::Builder(const Input i) : _factory(^{
+}>) => `inline JS::${hasteModuleName}::${structName}::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
 ${properties}
   return d;
