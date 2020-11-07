@@ -12,21 +12,12 @@ import type {BlobCollector} from './BlobTypes';
 const registry: WeakMap<BlobCollector, number> = new WeakMap();
 
 const register = (collector: BlobCollector) => {
-  if (!registry.has(collector)) {
-    registry.set(collector, 1);
-    return;
-  }
-
-  const currentCount = registry.get(collector);
+  const currentCount = registry.get(collector) || 0;
   registry.set(collector, currentCount + 1);
 };
 
 const unregister = (collector: BlobCollector) => {
-  if (!registry.has(collector)) {
-    return;
-  }
-
-  const currentCount = registry.get(collector);
+  const currentCount = registry.get(collector) || 0;
 
   if (currentCount <= 1) {
     registry.delete(collector);
@@ -37,7 +28,8 @@ const unregister = (collector: BlobCollector) => {
 };
 
 const has = (collector: BlobCollector): boolean => {
-  return registry.has(collector) && registry.get(collector) > 0;
+  const currentCount = registry.get(collector) || 0;
+  return currentCount > 0;
 };
 
 module.exports = {

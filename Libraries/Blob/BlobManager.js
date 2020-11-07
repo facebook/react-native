@@ -13,7 +13,8 @@
 const Blob = require('./Blob');
 const BlobRegistry = require('./BlobRegistry');
 
-import type {BlobData, BlobOptions, BlobCollector} from './BlobTypes';
+import type {BlobData, BlobOptions} from './BlobTypes';
+import {createBlobCollector} from './BlobTypes';
 import NativeBlobModule from './NativeBlobModule';
 import invariant from 'invariant';
 
@@ -30,21 +31,6 @@ function uuidv4(): string {
       v = c == 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
-}
-
-// **Temporary workaround**
-// TODO(#24654): Use turbomodules for the Blob module.
-// Blob collector is a jsi::HostObject that is used by native to know
-// when the a Blob instance is deallocated. This allows to free the
-// underlying native resources. This is a hack to workaround the fact
-// that the current bridge infra doesn't allow to track js objects
-// deallocation. Ideally the whole Blob object should be a jsi::HostObject.
-function createBlobCollector(blobId: string): BlobCollector {
-  if (global.__blobCollectorProvider == null) {
-    return {};
-  } else {
-    return global.__blobCollectorProvider(blobId);
-  }
 }
 
 /**
@@ -135,9 +121,9 @@ class BlobManager {
     invariant(NativeBlobModule, 'NativeBlobModule is available.');
 
     const collector = blob.data.__collector;
-    BlobRegistry.unregister(collector);
+    collector && BlobRegistry.unregister(collector);
 
-    if (BlobRegistry.has(collector)) {
+    if (collector && BlobRegistry.has(collector)) {
       return;
     }
 
