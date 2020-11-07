@@ -194,7 +194,10 @@ function getSizeWithHeaders(
     );
 }
 
-function prefetch(url: string, callback: ?Function): any {
+function prefetch(
+  url: string,
+  callback: ?(requestId: number) => void,
+): Promise<boolean> {
   const requestId = generateRequestId();
   callback && callback(requestId);
   return NativeImageLoaderAndroid.prefetchImage(url, requestId);
