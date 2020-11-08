@@ -18,10 +18,24 @@ namespace react {
 class TurboModuleSchema {
  public:
   struct Method {
+    /**
+     * Optional methods might not be implemented on the Java NativeModule class.
+     *  - Unknown: We must check if the method exists using JNI
+     *  - Implemented: Using JNI, we verified that the method exists
+     *  - Unimplemented: Using JNI, we verified that the method doesn't exist
+     */
+    enum class ImplStatus {
+      Unknown,
+      Implemented,
+      Unimplemented,
+    };
+
     const TurboModuleMethodValueKind jsReturnType;
     const std::string name;
     const std::string jniSignature;
     const bool isOptional;
+    const size_t jsParamCount;
+    ImplStatus implStatus;
   };
 
   class ParseException : public jsi::JSIException {
@@ -31,7 +45,7 @@ class TurboModuleSchema {
 
  private:
   const std::string moduleName_;
-  const std::vector<Method> methods_;
+  std::vector<Method> methods_;
 
   TurboModuleSchema(
       const std::string &moduleName,
@@ -40,7 +54,7 @@ class TurboModuleSchema {
  public:
   TurboModuleSchema() = delete;
   bool hasMethod(const std::string &methodName) const;
-  const Method &getMethod(const std::string &methodName) const;
+  Method &getMethod(const std::string &methodName);
 
   static TurboModuleSchema parse(
       jsi::Runtime &runtime,

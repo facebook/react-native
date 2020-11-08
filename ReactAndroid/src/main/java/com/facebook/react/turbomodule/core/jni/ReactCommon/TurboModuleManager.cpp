@@ -14,6 +14,7 @@
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
+#include <ReactCommon/TurboModuleSchema.h>
 #include <react/jni/JMessageQueueThread.h>
 
 #include "TurboModuleManager.h"
@@ -76,7 +77,8 @@ void TurboModuleManager::installJSIBindings() {
        jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
        nativeCallInvoker_ = std::weak_ptr<CallInvoker>(nativeCallInvoker_),
        delegate_ = jni::make_weak(delegate_),
-       javaPart_ = jni::make_weak(javaPart_)](
+       javaPart_ = jni::make_weak(javaPart_),
+       runtime_ = runtime_](
           const std::string &name,
           const jsi::Value *schema) -> std::shared_ptr<TurboModule> {
     auto turboModuleCache = turboModuleCache_.lock();
@@ -138,6 +140,13 @@ void TurboModuleManager::installJSIBindings() {
                                             .instance = moduleInstance,
                                             .jsInvoker = jsCallInvoker,
                                             .nativeInvoker = nativeCallInvoker};
+
+      if (schema->isObject() && !schema->isNull()) {
+        auto turboModule = std::make_shared<JavaTurboModule>(
+            params, TurboModuleSchema::parse(*runtime_, name, *schema));
+        TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
+        return turboModule;
+      }
 
       auto turboModule = delegate->cthis()->getTurboModule(name, params);
       turboModuleCache->insert({name, turboModule});

@@ -44,6 +44,7 @@ std::ostream &operator<<(std::ostream &os, const TurboModuleSchema &schema) {
        << std::endl;
     os << "      .isOptional = " << (method.isOptional ? "true" : "false")
        << std::endl;
+    os << "      .jsParamCount = " << method.jsParamCount << "," << std::endl;
     os << "    }," << std::endl;
   }
 
@@ -96,9 +97,9 @@ bool TurboModuleSchema::hasMethod(const std::string &methodName) const {
   return false;
 }
 
-const TurboModuleSchema::Method &TurboModuleSchema::getMethod(
-    const std::string &methodName) const {
-  for (const Method &method : methods_) {
+TurboModuleSchema::Method &TurboModuleSchema::getMethod(
+    const std::string &methodName) {
+  for (Method &method : methods_) {
     if (method.name == methodName) {
       return method;
     }
@@ -377,6 +378,8 @@ TurboModuleSchema::Method parseMethod(
         .name = methodName,
         .jniSignature = "()Ljava/util/Map;",
         .isOptional = !isMethodRequired,
+        .jsParamCount = 0,
+        .implStatus = TurboModuleSchema::Method::ImplStatus::Unknown,
     };
   }
 
@@ -460,6 +463,8 @@ TurboModuleSchema::Method parseMethod(
       .name = methodName,
       .jniSignature = jniSignature,
       .isOptional = !isMethodRequired,
+      .jsParamCount = numFunctionTypeAnnotationParams,
+      .implStatus = TurboModuleSchema::Method::ImplStatus::Unknown,
   };
 }
 

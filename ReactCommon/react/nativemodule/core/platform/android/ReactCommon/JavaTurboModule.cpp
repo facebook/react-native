@@ -56,6 +56,68 @@ void JavaTurboModule::enablePromiseAsyncDispatch(bool enable) {
   isPromiseAsyncDispatchEnabled_ = enable;
 }
 
+JavaTurboModule::JavaTurboModule(
+    const InitParams &params,
+    TurboModuleSchema &&schema)
+    : TurboModule(params.moduleName, params.jsInvoker),
+      instance_(jni::make_global(params.instance)),
+      nativeInvoker_(params.nativeInvoker),
+      turboModuleSchema_(std::move(schema)) {}
+
+jsi::Value JavaTurboModule::get(
+    jsi::Runtime &runtime,
+    const jsi::PropNameID &propName) {
+  if (!turboModuleSchema_) {
+    return TurboModule::get(runtime, propName);
+  }
+
+  std::string methodName = propName.utf8(runtime);
+  if (!turboModuleSchema_->hasMethod(methodName)) {
+    return jsi::Value::undefined();
+  }
+
+  using MethodImplStatus = TurboModuleSchema::Method::ImplStatus;
+  TurboModuleSchema::Method &method = turboModuleSchema_->getMethod(methodName);
+
+  if (method.isOptional) {
+    if (method.implStatus == MethodImplStatus::Unknown) {
+      auto instance = instance_.get();
+      JNIEnv *env = jni::Environment::current();
+      jclass cls = env->GetObjectClass(instance);
+      jmethodID methodID = env->GetMethodID(
+          cls, methodName.c_str(), method.jniSignature.c_str());
+
+      // If the method signature doesn't match, show a redbox here instead of
+      // crashing later.
+      FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
+      method.implStatus = methodID != nullptr ? MethodImplStatus::Implemented
+                                              : MethodImplStatus::Unimplemented;
+    }
+
+    if (method.implStatus == MethodImplStatus::Unimplemented) {
+      return jsi::Value::undefined();
+    }
+  }
+
+  return jsi::Function::createFromHostFunction(
+      runtime,
+      propName,
+      method.jsParamCount,
+      [this, method](
+          facebook::jsi::Runtime &runtime,
+          const facebook::jsi::Value &thisVal,
+          const facebook::jsi::Value *args,
+          size_t count) {
+        return invokeJavaMethod(
+            runtime,
+            method.jsReturnType,
+            method.name,
+            method.jniSignature,
+            args,
+            count);
+      });
+}
+
 namespace {
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
