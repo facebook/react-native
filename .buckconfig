@@ -12,3 +12,7 @@
 
 [alias]
   rntester = //packages/rn-tester/android/app:app
+
+[java]
+  source_level = 8
+  target_level = 8
