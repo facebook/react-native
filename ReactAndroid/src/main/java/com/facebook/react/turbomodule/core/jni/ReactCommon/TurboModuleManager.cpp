@@ -26,13 +26,15 @@ TurboModuleManager::TurboModuleManager(
     jsi::Runtime *rt,
     std::shared_ptr<CallInvoker> jsCallInvoker,
     std::shared_ptr<CallInvoker> nativeCallInvoker,
-    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate)
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
+    bool enableJSCodegen)
     : javaPart_(jni::make_global(jThis)),
       runtime_(rt),
       jsCallInvoker_(jsCallInvoker),
       nativeCallInvoker_(nativeCallInvoker),
       delegate_(jni::make_global(delegate)),
-      turboModuleCache_(std::make_shared<TurboModuleCache>()) {}
+      turboModuleCache_(std::make_shared<TurboModuleCache>()),
+      enableJSCodegen_(enableJSCodegen) {}
 
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jni::alias_ref<jhybridobject> jThis,
@@ -40,7 +42,8 @@ jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
     jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
-    bool enablePromiseAsyncDispatch) {
+    bool enablePromiseAsyncDispatch,
+    bool enableJSCodegen) {
   auto jsCallInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
   auto nativeCallInvoker = nativeCallInvokerHolder->cthis()->getCallInvoker();
 
@@ -51,7 +54,8 @@ jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
       (jsi::Runtime *)jsContext,
       jsCallInvoker,
       nativeCallInvoker,
-      delegate);
+      delegate,
+      enableJSCodegen);
 }
 
 void TurboModuleManager::registerNatives() {
@@ -146,7 +150,8 @@ void TurboModuleManager::installJSIBindings() {
 
   jsCallInvoker_->invokeAsync(
       [this, turboModuleProvider = std::move(turboModuleProvider)]() -> void {
-        TurboModuleBinding::install(*runtime_, std::move(turboModuleProvider));
+        TurboModuleBinding::install(
+            *runtime_, std::move(turboModuleProvider), enableJSCodegen_);
       });
 }
 

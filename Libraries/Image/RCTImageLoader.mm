@@ -187,7 +187,7 @@ RCT_EXPORT_MODULE()
   if (!_loaders) {
     std::unique_lock<std::mutex> guard(_loadersMutex);
     if (!_loaders) {
-      
+
       // Get loaders, sorted in reverse priority order (highest priority first)
       if (_loadersProvider) {
         _loaders = _loadersProvider();
@@ -1197,10 +1197,29 @@ RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject)
 {
+  [self prefetchImageWithMetadata:uri queryRootName:nil rootTag:nil resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(prefetchImageWithMetadata:(NSString *)uri
+                  queryRootName:(NSString *)queryRootName
+                  rootTag:(NSNumber *)rootTag
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject)
+{
   NSURLRequest *request = [RCTConvert NSURLRequest:uri];
   [self loadImageWithURLRequest:request
-   priority:RCTImageLoaderPriorityPrefetch
-   callback:^(NSError *error, UIImage *image) {
+                           size:CGSizeZero
+                          scale:1
+                        clipped:YES
+                     resizeMode:RCTResizeModeStretch
+                       priority:RCTImageLoaderPriorityPrefetch
+                    attribution:{
+                                  .queryRootName = queryRootName ? [queryRootName UTF8String] : "",
+                                  .surfaceId = [rootTag intValue],
+                                }
+                  progressBlock:nil
+               partialLoadBlock:nil
+                       completionBlock:^(NSError *error, UIImage *image, id completionMetadata) {
      if (error) {
        reject(@"E_PREFETCH_FAILURE", nil, error);
        return;

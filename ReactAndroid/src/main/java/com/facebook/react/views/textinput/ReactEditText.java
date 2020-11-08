@@ -419,11 +419,10 @@ public class ReactEditText extends AppCompatEditText
   @Override
   public void setInputType(int type) {
     Typeface tf = super.getTypeface();
-    // Input type password defaults to monospace font, so we need to re-apply the font
-    super.setTypeface(tf);
-
     super.setInputType(type);
     mStagedInputType = type;
+    // Input type password defaults to monospace font, so we need to re-apply the font
+    super.setTypeface(tf);
 
     /**
      * If set forces multiline on input, because of a restriction on Android source that enables

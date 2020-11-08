@@ -12,9 +12,9 @@
 
 import type {
   Nullable,
+  NamedShape,
   SchemaType,
-  NativeModulePropertySchema,
-  NativeModuleMethodParamSchema,
+  NativeModulePropertyShape,
   NativeModuleReturnTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
@@ -40,12 +40,12 @@ const HostFunctionTemplate = ({
   propertyName,
   jniSignature,
   jsReturnType,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
   propertyName: string,
   jniSignature: string,
   jsReturnType: JSReturnType,
-|}>) => {
+}>) => {
   return `static facebook::jsi::Value __hostFunction_${hasteModuleName}SpecJSI_${propertyName}(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, ${jsReturnType}, "${propertyName}", "${jniSignature}", args, count);
 }`;
@@ -54,13 +54,13 @@ const HostFunctionTemplate = ({
 const ModuleClassConstructorTemplate = ({
   hasteModuleName,
   methods,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
-  methods: $ReadOnlyArray<{|
+  methods: $ReadOnlyArray<{
     propertyName: string,
     argCount: number,
-  |}>,
-|}>) => {
+  }>,
+}>) => {
   return `
 ${hasteModuleName}SpecJSI::${hasteModuleName}SpecJSI(const JavaTurboModule::InitParams &params)
   : JavaTurboModule(params) {
@@ -75,7 +75,7 @@ ${methods
 const ModuleLookupTemplate = ({
   moduleName,
   hasteModuleName,
-}: $ReadOnly<{|moduleName: string, hasteModuleName: string|}>) => {
+}: $ReadOnly<{moduleName: string, hasteModuleName: string}>) => {
   return `  if (moduleName == "${moduleName}") {
     return std::make_shared<${hasteModuleName}SpecJSI>(params);
   }`;
@@ -86,17 +86,17 @@ const FileTemplate = ({
   include,
   modules,
   moduleLookups,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   libraryName: string,
   include: string,
   modules: string,
   moduleLookups: $ReadOnlyArray<
-    $ReadOnly<{|
+    $ReadOnly<{
       hasteModuleName: string,
       moduleName: string,
-    |}>,
+    }>,
   >,
-|}>) => {
+}>) => {
   return `
 /**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
@@ -137,7 +137,7 @@ function translateReturnTypeToKind(
   }
 
   switch (realTypeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return 'NumberKind';
@@ -177,8 +177,10 @@ function translateReturnTypeToKind(
   }
 }
 
+type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+
 function translateParamTypeToJniType(
-  param: NativeModuleMethodParamSchema,
+  param: Param,
   resolveAlias: AliasResolver,
 ): string {
   const {optional, typeAnnotation: nullableTypeAnnotation} = param;
@@ -194,7 +196,7 @@ function translateParamTypeToJniType(
   }
 
   switch (realTypeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return !isRequired ? 'Ljava/lang/Double;' : 'D';
@@ -244,7 +246,7 @@ function translateReturnTypeToJniType(
   }
 
   switch (realTypeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return nullable ? 'Ljava/lang/Double;' : 'D';
@@ -285,7 +287,7 @@ function translateReturnTypeToJniType(
 }
 
 function translateMethodTypeToJniSignature(
-  property: NativeModulePropertySchema,
+  property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
 ): string {
   const {name, typeAnnotation} = property;
@@ -325,7 +327,7 @@ function translateMethodTypeToJniSignature(
 
 function translateMethodForImplementation(
   hasteModuleName: string,
-  property: NativeModulePropertySchema,
+  property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
 ): string {
   const [
@@ -439,7 +441,7 @@ module.exports = {
         }
         return 0;
       })
-      .flatMap<{|moduleName: string, hasteModuleName: string|}>(
+      .flatMap<{moduleName: string, hasteModuleName: string}>(
         (hasteModuleName: string) => {
           const {moduleNames} = nativeModules[hasteModuleName];
           return moduleNames.map(moduleName => ({

@@ -31,7 +31,8 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
       jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
       jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
-      bool enablePromiseAsyncDispatch);
+      bool enablePromiseAsyncDispatch,
+      bool enableJSCodegen);
   static void registerNatives();
 
  private:
@@ -52,6 +53,7 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
    * they want to be long-lived or short-lived.
    */
   std::shared_ptr<TurboModuleCache> turboModuleCache_;
+  bool enableJSCodegen_;
 
   void installJSIBindings();
   explicit TurboModuleManager(
@@ -59,7 +61,8 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
       jsi::Runtime *rt,
       std::shared_ptr<CallInvoker> jsCallInvoker,
       std::shared_ptr<CallInvoker> nativeCallInvoker,
-      jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
+      jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
+      bool enableJSCodegen);
 };
 
 } // namespace react

@@ -27,7 +27,13 @@ TurboModuleBinding::TurboModuleBinding(
 
 void TurboModuleBinding::install(
     jsi::Runtime &runtime,
-    const TurboModuleProviderFunctionType &&moduleProvider) {
+    const TurboModuleProviderFunctionType &&moduleProvider,
+    bool enableJSTurboModuleCodegen) {
+  runtime.global().setProperty(
+      runtime,
+      "RN$JSTurboModuleCodegenEnabled",
+      jsi::Value(enableJSTurboModuleCodegen));
+
   runtime.global().setProperty(
       runtime,
       "__turboModuleProxy",
