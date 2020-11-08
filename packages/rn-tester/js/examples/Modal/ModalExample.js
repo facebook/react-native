@@ -21,6 +21,7 @@ const {
   Text,
   TouchableHighlight,
   View,
+  ScrollView
 } = require('react-native');
 
 const Item = Picker.Item;
@@ -81,6 +82,7 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
     presentationStyle: 'fullScreen',
     selectedSupportedOrientation: '0',
     currentOrientation: 'unknown',
+    action: ''
   };
 
   _setModalVisible = visible => {
@@ -121,7 +123,7 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
     };
 
     return (
-      <View>
+      <ScrollView contentContainerStyle={styles.ScrollView}>
         <Modal
           animationType={this.state.animationType}
           presentationStyle={this.state.presentationStyle}
@@ -135,7 +137,16 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
           }
           onOrientationChange={evt =>
             this.setState({currentOrientation: evt.nativeEvent.orientation})
-          }>
+          }
+          onDismiss={() =>
+            this.state.action === 'onDismiss' ? alert(this.state.action)
+            : null
+          }
+          onShow={() =>
+            this.state.action === 'onShow' ? alert(this.state.action)
+            : null
+          }
+          >
           <View style={[styles.container, modalBackgroundStyle]}>
             <View
               style={[styles.innerContainer, innerContainerTransparentStyle]}>
@@ -189,7 +200,7 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
         <Button onPress={this._setModalVisible.bind(this, true)}>
           Present
         </Button>
-      </View>
+      </ScrollView>
     );
   }
   renderPickers() {
@@ -213,13 +224,13 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
             <Item label="Default presentationStyle" value={null} />
           </Picker>
         </View>
-
+            
         <View>
           <Text style={styles.rowTitle}>Supported orientations</Text>
           <Picker
             selectedValue={this.state.selectedSupportedOrientation}
             onValueChange={(_, i) =>
-              this.setState({selectedSupportedOrientation: i})
+              this.setState({selectedSupportedOrientation: i.toString()})
             }
             itemStyle={styles.pickerItem}>
             <Item label="Portrait" value={'0'} />
@@ -228,6 +239,18 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
             <Item label="Portrait and landscape right" value={'3'} />
             <Item label="Portrait and landscape" value={'4'} />
             <Item label="Default supportedOrientations" value={'5'} />
+          </Picker>
+        </View>
+
+        <View>
+          <Text style={styles.rowTitle}>Actions</Text>
+          <Picker
+            selectedValue={this.state.action}
+            onValueChange={action => this.setState({action})}
+            itemStyle={styles.pickerItem}>
+            <Item label="None" value=''/>
+            <Item label="On Dismiss" value="onDismiss"/>
+            <Item label="On Show" value="onShow"/>
           </Picker>
         </View>
       </View>
@@ -282,4 +305,8 @@ const styles = StyleSheet.create({
   pickerItem: {
     fontSize: 16,
   },
+  ScrollView: {
+    paddingTop:10,
+    paddingBottom:100
+  }
 });

@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
   examplesContainer: {
     width: ScreenWidth,
     flexGrow: 1,
+    flex:1
   },
   description: {
     marginVertical: 8,
