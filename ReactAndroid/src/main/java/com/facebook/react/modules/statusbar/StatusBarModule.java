@@ -194,7 +194,7 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
               int systemUiVisibilityFlags = decorView.getSystemUiVisibility();
               if ("dark-content".equals(style)) {
                 systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-              } else if ("light-content".equals(style)) {
+              } else {
                 systemUiVisibilityFlags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
               }
               decorView.setSystemUiVisibility(systemUiVisibilityFlags);

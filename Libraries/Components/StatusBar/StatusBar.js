@@ -25,7 +25,7 @@ import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
  */
 export type StatusBarStyle = $Keys<{
   /**
-   * Default status bar style (dark for iOS, no change for Android)
+   * Default status bar style (dark for iOS, light for Android)
    */
   default: string,
   /**

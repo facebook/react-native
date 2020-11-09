@@ -55,7 +55,6 @@ const NativeStatusBarManager = {
   /**
    *  - statusBarStyles can be:
    *    - 'default'
-   *    - 'light-content'
    *    - 'dark-content'
    */
   setStyle(statusBarStyle?: ?string): void {
