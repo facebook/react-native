@@ -382,6 +382,7 @@ task extractJNIFiles {
 
 android {
     compileSdkVersion 29
+    buildToolsVersion "29.0.3"
 
     compileOptions {
         sourceCompatibility(JavaVersion.VERSION_1_8)
