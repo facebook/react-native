@@ -10,6 +10,7 @@
 
 'use strict';
 
+import TextInjection from './TextInjection';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
 
 const DeprecatedTextPropTypes = require('../DeprecatedPropTypes/DeprecatedTextPropTypes');
@@ -21,7 +22,6 @@ const nullthrows = require('nullthrows');
 const processColor = require('../StyleSheet/processColor');
 
 import type {PressEvent} from '../Types/CoreEventTypes';
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {PressRetentionOffset, TextProps} from './TextProps';
 
 type ResponseHandlers = $ReadOnly<{|
@@ -231,27 +231,30 @@ const isTouchable = (props: Props): boolean =>
   props.onLongPress != null ||
   props.onStartShouldSetResponder != null;
 
-const Text = (
-  props: TextProps,
-  forwardedRef: ?React.Ref<typeof NativeText | typeof NativeVirtualText>,
-) => {
-  return <TouchableText {...props} forwardedRef={forwardedRef} />;
-};
-const TextToExport = React.forwardRef(Text);
-TextToExport.displayName = 'Text';
+const Text: React.AbstractComponent<
+  TextProps,
+  React.ElementRef<typeof NativeText | typeof NativeVirtualText>,
+> = React.forwardRef(
+  (
+    props: TextProps,
+    forwardedRef: ?React.Ref<typeof NativeText | typeof NativeVirtualText>,
+  ) => {
+    return <TouchableText {...props} forwardedRef={forwardedRef} />;
+  },
+);
+Text.displayName = 'Text';
 
 // TODO: Deprecate this.
 /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
  * found when Flow v0.89 was deployed. To see the error, delete this comment
  * and run Flow. */
-TextToExport.propTypes = DeprecatedTextPropTypes;
+Text.propTypes = DeprecatedTextPropTypes;
 
-type TextStatics = $ReadOnly<{|
-  propTypes: typeof DeprecatedTextPropTypes,
-|}>;
+const TextToExport: typeof Text &
+  $ReadOnly<{|
+    propTypes: typeof DeprecatedTextPropTypes,
+  |}> =
+  // $FlowFixMe[incompatible-type] - No good way to type a React.AbstractComponent with statics.
+  TextInjection.unstable_Text == null ? Text : TextInjection.unstable_Text;
 
-module.exports = ((TextToExport: any): React.AbstractComponent<
-  TextProps,
-  React.ElementRef<HostComponent<TextProps>>,
-> &
-  TextStatics);
+module.exports = TextToExport;

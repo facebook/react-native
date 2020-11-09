@@ -17,16 +17,16 @@ import type {
 } from '../serializeMethod';
 
 const ModuleTemplate = ({
-  moduleName,
+  hasteModuleName,
   structs,
   methodSerializationOutputs,
-}: $ReadOnly<{|
-  moduleName: string,
+}: $ReadOnly<{
+  hasteModuleName: string,
   structs: $ReadOnlyArray<Struct>,
   methodSerializationOutputs: $ReadOnlyArray<MethodSerializationOutput>,
-|}>) => `${structs
+}>) => `${structs
   .map(struct =>
-    RCTCxxConvertCategoryTemplate({moduleName, structName: struct.name}),
+    RCTCxxConvertCategoryTemplate({hasteModuleName, structName: struct.name}),
   )
   .join('\n')}
 namespace facebook {
@@ -34,7 +34,7 @@ namespace facebook {
     ${methodSerializationOutputs
       .map(serializedMethodParts =>
         InlineHostFunctionTemplate({
-          moduleName,
+          hasteModuleName,
           methodName: serializedMethodParts.methodName,
           returnJSType: serializedMethodParts.returnJSType,
           selector: serializedMethodParts.selector,
@@ -42,12 +42,12 @@ namespace facebook {
       )
       .join('\n')}
 
-    Native${moduleName}SpecJSI::Native${moduleName}SpecJSI(const ObjCTurboModule::InitParams &params)
+    ${hasteModuleName}SpecJSI::${hasteModuleName}SpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         ${methodSerializationOutputs
           .map(({methodName, structParamRecords, argCount}) =>
             MethodMapEntryTemplate({
-              moduleName,
+              hasteModuleName,
               methodName,
               structParamRecords,
               argCount,
@@ -59,58 +59,58 @@ namespace facebook {
 } // namespace facebook`;
 
 const RCTCxxConvertCategoryTemplate = ({
-  moduleName,
+  hasteModuleName,
   structName,
-}: $ReadOnly<{|
-  moduleName: string,
+}: $ReadOnly<{
+  hasteModuleName: string,
   structName: string,
-|}>) => `@implementation RCTCxxConvert (Native${moduleName}_${structName})
-+ (RCTManagedPointer *)JS_Native${moduleName}_${structName}:(id)json
+}>) => `@implementation RCTCxxConvert (${hasteModuleName}_${structName})
++ (RCTManagedPointer *)JS_${hasteModuleName}_${structName}:(id)json
 {
-  return facebook::react::managedPointer<JS::Native${moduleName}::${structName}>(json);
+  return facebook::react::managedPointer<JS::${hasteModuleName}::${structName}>(json);
 }
 @end`;
 
 const InlineHostFunctionTemplate = ({
-  moduleName,
+  hasteModuleName,
   methodName,
   returnJSType,
   selector,
-}: $ReadOnly<{|
-  moduleName: string,
+}: $ReadOnly<{
+  hasteModuleName: string,
   methodName: string,
   returnJSType: string,
   selector: string,
-|}>) => `
-    static facebook::jsi::Value __hostFunction_Native${moduleName}SpecJSI_${methodName}(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+}>) => `
+    static facebook::jsi::Value __hostFunction_${hasteModuleName}SpecJSI_${methodName}(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ${returnJSType}, "${methodName}", ${selector}, args, count);
     }`;
 
 const MethodMapEntryTemplate = ({
-  moduleName,
+  hasteModuleName,
   methodName,
   structParamRecords,
   argCount,
-}: $ReadOnly<{|
-  moduleName: string,
+}: $ReadOnly<{
+  hasteModuleName: string,
   methodName: string,
   structParamRecords: $ReadOnlyArray<StructParameterRecord>,
   argCount: number,
-|}>) => `
-        methodMap_["${methodName}"] = MethodMetadata {${argCount}, __hostFunction_Native${moduleName}SpecJSI_${methodName}};
+}>) => `
+        methodMap_["${methodName}"] = MethodMetadata {${argCount}, __hostFunction_${hasteModuleName}SpecJSI_${methodName}};
         ${structParamRecords
           .map(({paramIndex, structName}) => {
-            return `setMethodArgConversionSelector(@"${methodName}", ${paramIndex}, @"JS_Native${moduleName}_${structName}:");`;
+            return `setMethodArgConversionSelector(@"${methodName}", ${paramIndex}, @"JS_${hasteModuleName}_${structName}:");`;
           })
           .join('\n' + ' '.repeat(8))}`;
 
 function serializeModuleSource(
-  moduleName: string,
+  hasteModuleName: string,
   structs: $ReadOnlyArray<Struct>,
   methodSerializationOutputs: $ReadOnlyArray<MethodSerializationOutput>,
 ): string {
   return ModuleTemplate({
-    moduleName,
+    hasteModuleName,
     structs: structs.filter(({context}) => context !== 'CONSTANTS'),
     methodSerializationOutputs,
   });

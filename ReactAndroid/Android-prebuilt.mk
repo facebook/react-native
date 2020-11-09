@@ -14,10 +14,6 @@
 
 LOCAL_PATH := $(call my-dir)
 
-REACT_ANDROID_DIR := $(LOCAL_PATH)
-# TODO: Find a better way without pointing to ReactAndroid/build dir.
-REACT_ANDROID_BUILD_DIR := $(REACT_ANDROID_DIR)/build
-
 FIRST_PARTY_NDK_DIR := $(REACT_ANDROID_DIR)/src/main/jni/first-party
 THIRD_PARTY_NDK_DIR := $(REACT_ANDROID_BUILD_DIR)/third-party-ndk
 REACT_ANDROID_SRC_DIR := $(REACT_ANDROID_DIR)/src/main
@@ -40,8 +36,7 @@ LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libfolly_json.so
 LOCAL_EXPORT_C_INCLUDES := \
   $(THIRD_PARTY_NDK_DIR)/boost/boost_1_63_0 \
   $(THIRD_PARTY_NDK_DIR)/double-conversion \
-  $(THIRD_PARTY_NDK_DIR)/folly \
-  $(THIRD_PARTY_NDK_DIR)/glog/exported
+  $(THIRD_PARTY_NDK_DIR)/folly
 # Note: Sync with folly/Android.mk.
 FOLLY_FLAGS := \
   -DFOLLY_NO_CONFIG=1 \
@@ -59,6 +54,14 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := folly_futures
 LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libfolly_futures.so
 LOCAL_SHARED_LIBRARIES := liblibfolly_json
+include $(PREBUILT_SHARED_LIBRARY)
+
+# glog
+include $(CLEAR_VARS)
+LOCAL_MODULE := glog
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libglog.so
+LOCAL_EXPORT_C_INCLUDES := $(THIRD_PARTY_NDK_DIR)/glog/exported
+LOCAL_SHARED_LIBRARIES := libglog
 include $(PREBUILT_SHARED_LIBRARY)
 
 # react_nativemodule_core

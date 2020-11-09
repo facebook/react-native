@@ -26,21 +26,6 @@ void RCTExperimentSetOnDemandViewMounting(BOOL value)
 }
 
 /*
- * Sync performance flag
- */
-static BOOL RCTExperimentSyncPerformanceFlag = NO;
-
-BOOL RCTExperimentGetSyncPerformanceFlag()
-{
-  return RCTExperimentSyncPerformanceFlag;
-}
-
-void RCTExperimentSetSyncPerformanceFlag(BOOL value)
-{
-  RCTExperimentSyncPerformanceFlag = value;
-}
-
-/*
  * Optimized hit-testing
  */
 static BOOL RCTExperimentOptimizedHitTesting = NO;
@@ -53,4 +38,19 @@ BOOL RCTExperimentGetOptimizedHitTesting()
 void RCTExperimentSetOptimizedHitTesting(BOOL value)
 {
   RCTExperimentOptimizedHitTesting = value;
+}
+
+/*
+ * Preemptive View Allocation
+ */
+static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
+
+BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
+{
+  return RCTExperimentPreemptiveViewAllocationDisabled;
+}
+
+void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
+{
+  RCTExperimentPreemptiveViewAllocationDisabled = value;
 }

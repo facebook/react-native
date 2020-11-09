@@ -40,7 +40,6 @@ export interface Spec extends TurboModule {
     +buttonNeutral: DialogButtonKey,
   |};
   +showAlert: (
-    // eslint-disable-next-line @react-native/codegen/react-native-modules
     config: DialogOptions,
     onError: (error: string) => void,
     onAction: (action: DialogAction, buttonKey?: DialogButtonKey) => void,

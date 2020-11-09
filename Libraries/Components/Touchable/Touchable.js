@@ -14,7 +14,6 @@ const BoundingDimensions = require('./BoundingDimensions');
 const Platform = require('../../Utilities/Platform');
 const Position = require('./Position');
 const React = require('react');
-const ReactNative = require('../../Renderer/shims/ReactNative');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const UIManager = require('../../ReactNative/UIManager');
 const View = require('../View/View');

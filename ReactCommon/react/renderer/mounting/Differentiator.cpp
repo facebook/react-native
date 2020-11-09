@@ -251,7 +251,7 @@ ShadowViewNodePair::List sliceChildShadowNodeViewPairsV2(
   reorderInPlaceIfNeeded(pairList);
 
   // Set list and mountIndex for each after reordering
-  int mountIndex = 0;
+  size_t mountIndex = 0;
   for (auto &child : pairList) {
     child.mountIndex = (child.isConcreteView ? mountIndex++ : -1);
   }
@@ -376,7 +376,7 @@ static void calculateShadowViewMutationsFlattener(
                << " [" << node.shadowView.tag << "]";
     LOG(ERROR) << "Differ Flattener Entry: Child Pairs: ";
     std::string strTreeChildPairs;
-    for (int k = 0; k < treeChildren.size(); k++) {
+    for (size_t k = 0; k < treeChildren.size(); k++) {
       strTreeChildPairs.append(std::to_string(treeChildren[k].shadowView.tag));
       strTreeChildPairs.append(treeChildren[k].isConcreteView ? "" : "'");
       strTreeChildPairs.append(treeChildren[k].flattened ? "*" : "");
@@ -410,7 +410,7 @@ static void calculateShadowViewMutationsFlattener(
   auto deletionCreationCandidatePairs =
       TinyMap<Tag, ShadowViewNodePair const *>{};
 
-  for (int index = 0;
+  for (size_t index = 0;
        index < treeChildren.size() && index < treeChildren.size();
        index++) {
     // First, remove all children of the tree being flattened, or insert
@@ -530,7 +530,7 @@ static void calculateShadowViewMutationsFlattener(
             // this "else" block, including any annotations we put on them.
             auto newFlattenedNodes = sliceChildShadowNodeViewPairsV2(
                 *newTreeNodePair.shadowNode, true);
-            for (int i = 0; i < newFlattenedNodes.size(); i++) {
+            for (size_t i = 0; i < newFlattenedNodes.size(); i++) {
               auto &newChild = newFlattenedNodes[i];
 
               auto unvisitedOtherNodesIt =
@@ -582,7 +582,7 @@ static void calculateShadowViewMutationsFlattener(
             // this "else" block, including any annotations we put on them.
             auto oldFlattenedNodes = sliceChildShadowNodeViewPairsV2(
                 *oldTreeNodePair.shadowNode, true);
-            for (int i = 0; i < oldFlattenedNodes.size(); i++) {
+            for (size_t i = 0; i < oldFlattenedNodes.size(); i++) {
               auto &oldChild = oldFlattenedNodes[i];
 
               auto unvisitedOtherNodesIt =
@@ -767,7 +767,7 @@ static void calculateShadowViewMutationsV2(
     return;
   }
 
-  auto index = int{0};
+  size_t index = 0;
 
   // Lists of mutations
   auto createMutations = ShadowViewMutation::List{};
@@ -790,7 +790,7 @@ static void calculateShadowViewMutationsV2(
     LOG(ERROR) << "Differ Entry: Child Pairs of node: [" << parentShadowView.tag
                << "]";
     std::string strOldChildPairs;
-    for (int oldIndex = 0; oldIndex < oldChildPairs.size(); oldIndex++) {
+    for (size_t oldIndex = 0; oldIndex < oldChildPairs.size(); oldIndex++) {
       strOldChildPairs.append(
           std::to_string(oldChildPairs[oldIndex].shadowView.tag));
       strOldChildPairs.append(
@@ -799,7 +799,7 @@ static void calculateShadowViewMutationsV2(
       strOldChildPairs.append(", ");
     }
     std::string strNewChildPairs;
-    for (int newIndex = 0; newIndex < newChildPairs.size(); newIndex++) {
+    for (size_t newIndex = 0; newIndex < newChildPairs.size(); newIndex++) {
       strNewChildPairs.append(
           std::to_string(newChildPairs[newIndex].shadowView.tag));
       strNewChildPairs.append(
@@ -872,7 +872,7 @@ static void calculateShadowViewMutationsV2(
     }
   }
 
-  int lastIndexAfterFirstStage = index;
+  size_t lastIndexAfterFirstStage = index;
 
   if (index == newChildPairs.size()) {
     // We've reached the end of the new children. We can delete+remove the
@@ -943,9 +943,9 @@ static void calculateShadowViewMutationsV2(
     // Walk through both lists at the same time
     // We will perform updates, create+insert, remove+delete, remove+insert
     // (move) here.
-    int oldIndex = lastIndexAfterFirstStage,
-        newIndex = lastIndexAfterFirstStage, newSize = newChildPairs.size(),
-        oldSize = oldChildPairs.size();
+    size_t oldIndex = lastIndexAfterFirstStage,
+           newIndex = lastIndexAfterFirstStage, newSize = newChildPairs.size(),
+           oldSize = oldChildPairs.size();
     while (newIndex < newSize || oldIndex < oldSize) {
       bool haveNewPair = newIndex < newSize;
       bool haveOldPair = oldIndex < oldSize;
@@ -955,8 +955,8 @@ static void calculateShadowViewMutationsV2(
         auto const &oldChildPair = oldChildPairs[oldIndex];
         auto const &newChildPair = newChildPairs[newIndex];
 
-        int newTag = newChildPair.shadowView.tag;
-        int oldTag = oldChildPair.shadowView.tag;
+        Tag newTag = newChildPair.shadowView.tag;
+        Tag oldTag = oldChildPair.shadowView.tag;
 
         if (newTag == oldTag) {
           DEBUG_LOGS({
@@ -1050,7 +1050,7 @@ static void calculateShadowViewMutationsV2(
               // children from other nodes, etc.
               auto oldFlattenedNodes = sliceChildShadowNodeViewPairsV2(
                   *oldChildPair.shadowNode, true);
-              for (int i = 0, j = 0;
+              for (size_t i = 0, j = 0;
                    i < oldChildPairs.size() && j < oldFlattenedNodes.size();
                    i++) {
                 auto &oldChild = oldChildPairs[i];
@@ -1119,7 +1119,7 @@ static void calculateShadowViewMutationsV2(
       if (haveOldPair) {
         auto const &oldChildPair = oldChildPairs[oldIndex];
 
-        int oldTag = oldChildPair.shadowView.tag;
+        Tag oldTag = oldChildPair.shadowView.tag;
 
         // Was oldTag already inserted? This indicates a reordering, not just
         // a move. The new node has already been inserted, we just need to
@@ -1171,7 +1171,7 @@ static void calculateShadowViewMutationsV2(
               // children from other nodes, etc.
               auto oldFlattenedNodes = sliceChildShadowNodeViewPairsV2(
                   *oldChildPair.shadowNode, true);
-              for (int i = 0, j = 0;
+              for (size_t i = 0, j = 0;
                    i < oldChildPairs.size() && j < oldFlattenedNodes.size();
                    i++) {
                 auto &oldChild = oldChildPairs[i];
@@ -1565,7 +1565,7 @@ static void calculateShadowViewMutations(
         std::move(newGrandChildPairs));
   }
 
-  int lastIndexAfterFirstStage = index;
+  size_t lastIndexAfterFirstStage = index;
 
   if (index == newChildPairs.size()) {
     // We've reached the end of the new children. We can delete+remove the
@@ -1630,9 +1630,9 @@ static void calculateShadowViewMutations(
     // Walk through both lists at the same time
     // We will perform updates, create+insert, remove+delete, remove+insert
     // (move) here.
-    int oldIndex = lastIndexAfterFirstStage,
-        newIndex = lastIndexAfterFirstStage, newSize = newChildPairs.size(),
-        oldSize = oldChildPairs.size();
+    size_t oldIndex = lastIndexAfterFirstStage,
+           newIndex = lastIndexAfterFirstStage, newSize = newChildPairs.size(),
+           oldSize = oldChildPairs.size();
     while (newIndex < newSize || oldIndex < oldSize) {
       bool haveNewPair = newIndex < newSize;
       bool haveOldPair = oldIndex < oldSize;
@@ -1642,8 +1642,8 @@ static void calculateShadowViewMutations(
         auto const &newChildPair = newChildPairs[newIndex];
         auto const &oldChildPair = oldChildPairs[oldIndex];
 
-        int newTag = newChildPair.shadowView.tag;
-        int oldTag = oldChildPair.shadowView.tag;
+        Tag newTag = newChildPair.shadowView.tag;
+        Tag oldTag = oldChildPair.shadowView.tag;
 
         if (newTag == oldTag) {
           DEBUG_LOGS({
@@ -1690,7 +1690,7 @@ static void calculateShadowViewMutations(
 
       if (haveOldPair) {
         auto const &oldChildPair = oldChildPairs[oldIndex];
-        int oldTag = oldChildPair.shadowView.tag;
+        Tag oldTag = oldChildPair.shadowView.tag;
 
         // Was oldTag already inserted? This indicates a reordering, not just
         // a move. The new node has already been inserted, we just need to

@@ -205,8 +205,8 @@ public class RNTesterApplication extends Application implements ReactApplication
 
   @Override
   public void onCreate() {
-    // Set `USE_CODEGEN` env var when building RNTester to enable TurboModule.
     ReactFeatureFlags.useTurboModules = BuildConfig.ENABLE_TURBOMODULE;
+    ReactFeatureFlags.enableTurboModulePackageInfoValidation = true;
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);

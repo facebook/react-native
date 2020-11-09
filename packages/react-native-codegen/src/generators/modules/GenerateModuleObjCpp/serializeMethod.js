@@ -11,10 +11,11 @@
 'use strict';
 
 import type {
-  NativeModuleMethodParamSchema,
-  NativeModuleReturnTypeAnnotation,
-  NativeModulePropertySchema,
   Nullable,
+  NamedShape,
+  NativeModuleParamTypeAnnotation,
+  NativeModuleReturnTypeAnnotation,
+  NativeModulePropertyShape,
 } from '../../../CodegenSchema';
 
 import type {AliasResolver} from '../Utils';
@@ -31,16 +32,16 @@ const ProtocolMethodTemplate = ({
   returnObjCType,
   methodName,
   params,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   returnObjCType: string,
   methodName: string,
   params: string,
-|}>) => `- (${returnObjCType})${methodName}${params};`;
+}>) => `- (${returnObjCType})${methodName}${params};`;
 
-export type StructParameterRecord = $ReadOnly<{|
+export type StructParameterRecord = $ReadOnly<{
   paramIndex: number,
   structName: string,
-|}>;
+}>;
 
 type ReturnJSType =
   | 'VoidKind'
@@ -50,18 +51,18 @@ type ReturnJSType =
   | 'NumberKind'
   | 'StringKind';
 
-export type MethodSerializationOutput = $ReadOnly<{|
+export type MethodSerializationOutput = $ReadOnly<{
   methodName: string,
   protocolMethod: string,
   selector: string,
   structParamRecords: $ReadOnlyArray<StructParameterRecord>,
   returnJSType: ReturnJSType,
   argCount: number,
-|}>;
+}>;
 
 function serializeMethod(
-  moduleName: string,
-  property: NativeModulePropertySchema,
+  hasteModuleName: string,
+  property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
 ): $ReadOnlyArray<MethodSerializationOutput> {
@@ -71,20 +72,20 @@ function serializeMethod(
 
   if (methodName === 'getConstants') {
     return serializeConstantsProtocolMethods(
-      moduleName,
+      hasteModuleName,
       property,
       structCollector,
       resolveAlias,
     );
   }
 
-  const methodParams: Array<{|paramName: string, objCType: string|}> = [];
+  const methodParams: Array<{paramName: string, objCType: string}> = [];
   const structParamRecords: Array<StructParameterRecord> = [];
 
   params.forEach((param, index) => {
     const structName = getParamStructName(methodName, param);
     const {objCType, isStruct} = getParamObjCType(
-      moduleName,
+      hasteModuleName,
       methodName,
       param,
       structName,
@@ -164,10 +165,9 @@ function serializeMethod(
   ];
 }
 
-function getParamStructName(
-  methodName: string,
-  param: NativeModuleMethodParamSchema,
-): string {
+type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+
+function getParamStructName(methodName: string, param: Param): string {
   const [typeAnnotation] = unwrapNullable(param.typeAnnotation);
   if (typeAnnotation.type === 'TypeAliasTypeAnnotation') {
     return typeAnnotation.name;
@@ -177,13 +177,13 @@ function getParamStructName(
 }
 
 function getParamObjCType(
-  moduleName: string,
+  hasteModuleName: string,
   methodName: string,
-  param: NativeModuleMethodParamSchema,
+  param: Param,
   structName: string,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
-): $ReadOnly<{|objCType: string, isStruct: boolean|}> {
+): $ReadOnly<{objCType: string, isStruct: boolean}> {
   const {name: paramName, typeAnnotation: nullableTypeAnnotation} = param;
   const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
   const notRequired = param.optional || nullable;
@@ -215,7 +215,7 @@ function getParamObjCType(
        *
        * For example:
        *   Array<number> => NSArray<NSNumber *>
-       *   type Animal = {||};
+       *   type Animal = {};
        *   Array<Animal> => NSArray<JS::NativeSampleTurboModule::Animal *>, etc.
        */
       return notStruct(wrapIntoNullableIfNeeded('NSArray *'));
@@ -242,10 +242,11 @@ function getParamObjCType(
        * TODO(T73943261): Support nullable object literals and aliases?
        */
       return isStruct(
-        getNamespacedStructName(moduleName, structTypeAnnotation.name) + ' &',
+        getNamespacedStructName(hasteModuleName, structTypeAnnotation.name) +
+          ' &',
       );
     }
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (structTypeAnnotation.name) {
         case 'RootTag':
           return notStruct(notRequired ? 'NSNumber *' : 'double');
@@ -307,7 +308,7 @@ function getReturnObjCType(
           typeAnnotation.elementType,
         )}> *`,
       );
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapIntoNullableIfNeeded('NSNumber *');
@@ -357,7 +358,7 @@ function getReturnJSType(
       return 'ObjectKind';
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       return 'NumberKind';
     case 'StringTypeAnnotation':
       return 'StringKind';
@@ -382,22 +383,22 @@ function getReturnJSType(
 }
 
 function serializeConstantsProtocolMethods(
-  moduleName: string,
-  property: NativeModulePropertySchema,
+  hasteModuleName: string,
+  property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
 ): $ReadOnlyArray<MethodSerializationOutput> {
   const [propertyTypeAnnotation] = unwrapNullable(property.typeAnnotation);
   if (propertyTypeAnnotation.params.length !== 0) {
     throw new Error(
-      `${moduleName}.getConstants() may only accept 0 arguments.`,
+      `${hasteModuleName}.getConstants() may only accept 0 arguments.`,
     );
   }
 
   const {returnTypeAnnotation} = propertyTypeAnnotation;
   if (returnTypeAnnotation.type !== 'ObjectTypeAnnotation') {
     throw new Error(
-      `${moduleName}.getConstants() may only return an object literal: {|...|}.`,
+      `${hasteModuleName}.getConstants() may only return an object literal: {...}.`,
     );
   }
 
@@ -417,7 +418,7 @@ function serializeConstantsProtocolMethods(
     "Unable to generate C++ struct from module's getConstants() method return type.",
   );
 
-  const returnObjCType = `facebook::react::ModuleConstants<JS::Native${moduleName}::Constants::Builder>`;
+  const returnObjCType = `facebook::react::ModuleConstants<JS::${hasteModuleName}::Constants::Builder>`;
 
   return ['constantsToExport', 'getConstants'].map<MethodSerializationOutput>(
     methodName => {

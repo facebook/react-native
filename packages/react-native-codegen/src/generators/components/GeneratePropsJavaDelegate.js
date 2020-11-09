@@ -11,9 +11,10 @@
 'use strict';
 
 import type {
-  CommandTypeShape,
+  NamedShape,
+  CommandTypeAnnotation,
   ComponentShape,
-  PropTypeShape,
+  PropTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
 const {
@@ -64,7 +65,7 @@ const commandsTemplate = `
 `;
 
 function getJavaValueForProp(
-  prop: PropTypeShape,
+  prop: NamedShape<PropTypeAnnotation>,
   componentName: string,
 ): string {
   const typeAnnotation = prop.typeAnnotation;
@@ -157,7 +158,7 @@ function getCommandArgJavaType(param, index) {
   const {typeAnnotation} = param;
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return `args.getDouble(${index})`;
@@ -181,7 +182,9 @@ function getCommandArgJavaType(param, index) {
   }
 }
 
-function getCommandArguments(command: CommandTypeShape): string {
+function getCommandArguments(
+  command: NamedShape<CommandTypeAnnotation>,
+): string {
   return [
     'view',
     ...command.typeAnnotation.params.map(getCommandArgJavaType),
@@ -263,10 +266,16 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     moduleSpecName: string,
+    packageName?: string,
   ): FilesOutput {
     const files = new Map();
     Object.keys(schema.modules).forEach(moduleName => {
-      const components = schema.modules[moduleName].components;
+      const module = schema.modules[moduleName];
+      if (module.type !== 'Component') {
+        return;
+      }
+
+      const {components} = module;
       // No components in this module
       if (components == null) {
         return;

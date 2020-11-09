@@ -88,6 +88,8 @@ void JReactMarker::logPerfMarkerWithInstanceKey(
       break;
     case ReactMarker::NATIVE_REQUIRE_START:
     case ReactMarker::NATIVE_REQUIRE_STOP:
+    case ReactMarker::REACT_INSTANCE_INIT_START:
+    case ReactMarker::REACT_INSTANCE_INIT_STOP:
       // These are not used on Android.
       break;
   }
