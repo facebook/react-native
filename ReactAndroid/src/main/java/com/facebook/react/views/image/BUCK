@@ -8,6 +8,7 @@ rn_android_library(
     name = "imageevents",
     srcs = IMAGE_EVENT_FILES,
     is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:core"),
@@ -31,6 +32,7 @@ rn_android_library(
         exclude = IMAGE_EVENT_FILES,
     ),
     is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:core"),

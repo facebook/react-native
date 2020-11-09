@@ -81,7 +81,7 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
     }
   }
 
-  public void loadApplicationScript(
+  public void loadBundle(
       String sourceURL, HashMap<String, String> injectedObjects, JSDebuggerCallback callback) {
     int requestID = mRequestID.getAndIncrement();
     mCallbacks.put(requestID, callback);

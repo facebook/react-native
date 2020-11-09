@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
+ * @flow
  */
 
 'use strict';
@@ -14,6 +14,8 @@ import * as React from 'react';
 
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import requireNativeComponent from '../../ReactNative/requireNativeComponent';
+import registerGeneratedViewConfig from '../../Utilities/registerGeneratedViewConfig';
+import AndroidDialogPickerViewConfig from './AndroidDialogPickerViewConfig';
 
 import type {
   DirectEventHandler,
@@ -22,7 +24,7 @@ import type {
 } from '../../Types/CodegenTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {ViewProps} from '../../Components/View/ViewPropTypes';
 
@@ -41,6 +43,7 @@ type NativeProps = $ReadOnly<{|
 
   // Props
   color?: ?ColorValue,
+  backgroundColor?: ?ColorValue,
   enabled?: WithDefault<boolean, true>,
   items: $ReadOnlyArray<PickerItem>,
   prompt?: WithDefault<string, ''>,
@@ -63,6 +66,17 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setNativeSelectedPosition'],
 });
 
-export default (requireNativeComponent<NativeProps>(
-  'AndroidDialogPicker',
-): NativeType);
+let AndroidDialogPickerNativeComponent;
+if (global.RN$Bridgeless) {
+  registerGeneratedViewConfig(
+    'AndroidDialogPicker',
+    AndroidDialogPickerViewConfig,
+  );
+  AndroidDialogPickerNativeComponent = 'AndroidDialogPicker';
+} else {
+  AndroidDialogPickerNativeComponent = requireNativeComponent<NativeProps>(
+    'AndroidDialogPicker',
+  );
+}
+
+export default ((AndroidDialogPickerNativeComponent: any): NativeType);

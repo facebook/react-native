@@ -10,10 +10,9 @@
 
 'use strict';
 
-const EventEmitter = require('../vendor/emitter/EventEmitter');
-const EventSubscriptionVendor = require('../vendor/emitter/EventSubscriptionVendor');
-
-import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
+import EventEmitter from '../vendor/emitter/EventEmitter';
+import type EmitterSubscription from '../vendor/emitter/_EmitterSubscription';
+import EventSubscriptionVendor from '../vendor/emitter/_EventSubscriptionVendor';
 
 function checkNativeEventModule(eventType: ?string) {
   if (eventType) {
@@ -81,4 +80,4 @@ class RCTDeviceEventEmitter extends EventEmitter {
   }
 }
 
-module.exports = (new RCTDeviceEventEmitter(): RCTDeviceEventEmitter);
+export default (new RCTDeviceEventEmitter(): RCTDeviceEventEmitter);

@@ -7,10 +7,12 @@
 
 #import "RCTScheduler.h"
 
-#import <react/debug/SystraceSection.h>
-#import <react/uimanager/ComponentDescriptorFactory.h>
-#import <react/uimanager/Scheduler.h>
-#import <react/uimanager/SchedulerDelegate.h>
+#import <react/renderer/animations/LayoutAnimationDriver.h>
+#import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#import <react/renderer/debug/SystraceSection.h>
+#import <react/renderer/scheduler/Scheduler.h>
+#import <react/renderer/scheduler/SchedulerDelegate.h>
+#include <react/utils/RunLoopObserver.h>
 
 #import <React/RCTFollyConvert.h>
 
@@ -61,24 +63,82 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
   void *scheduler_;
 };
 
+class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, public RunLoopObserver::Delegate {
+ public:
+  LayoutAnimationDelegateProxy(void *scheduler) : scheduler_(scheduler) {}
+  virtual ~LayoutAnimationDelegateProxy() {}
+
+  void onAnimationStarted() override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler onAnimationStarted];
+  }
+
+  /**
+   * Called when the LayoutAnimation engine completes all pending animations.
+   */
+  void onAllAnimationsComplete() override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler onAllAnimationsComplete];
+  }
+
+  void activityDidChange(RunLoopObserver::Delegate const *delegate, RunLoopObserver::Activity activity) const
+      noexcept override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler animationTick];
+  }
+
+ private:
+  void *scheduler_;
+};
+
 @implementation RCTScheduler {
-  std::shared_ptr<Scheduler> _scheduler;
+  std::unique_ptr<Scheduler> _scheduler;
+  std::shared_ptr<LayoutAnimationDriver> _animationDriver;
   std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
+  std::shared_ptr<LayoutAnimationDelegateProxy> _layoutAnimationDelegateProxy;
+  RunLoopObserver::Unique _uiRunLoopObserver;
+  BOOL _layoutAnimationsEnabled;
 }
 
 - (instancetype)initWithToolbox:(facebook::react::SchedulerToolbox)toolbox
 {
   if (self = [super init]) {
+    auto reactNativeConfig =
+        toolbox.contextContainer->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
+    _layoutAnimationsEnabled = reactNativeConfig->getBool("react_fabric:enabled_layout_animations_ios");
+
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-    _scheduler = std::make_shared<Scheduler>(toolbox, _delegateProxy.get());
+
+    if (_layoutAnimationsEnabled) {
+      _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
+      _animationDriver =
+          std::make_shared<LayoutAnimationDriver>(toolbox.runtimeExecutor, _layoutAnimationDelegateProxy.get());
+      _uiRunLoopObserver =
+          toolbox.mainRunLoopObserverFactory(RunLoopObserver::Activity::BeforeWaiting, _layoutAnimationDelegateProxy);
+      _uiRunLoopObserver->setDelegate(_layoutAnimationDelegateProxy.get());
+    }
+
+    _scheduler = std::make_unique<Scheduler>(
+        toolbox, (_animationDriver ? _animationDriver.get() : nullptr), _delegateProxy.get());
   }
 
   return self;
 }
 
+- (void)animationTick
+{
+  _scheduler->animationTick();
+}
+
 - (void)dealloc
 {
-  _scheduler->setDelegate(nullptr);
+  if (_animationDriver) {
+    _animationDriver->setLayoutAnimationStatusDelegate(nullptr);
+  }
+  _animationDriver = nullptr;
 }
 
 - (void)startSurfaceWithSurfaceId:(SurfaceId)surfaceId
@@ -90,7 +150,8 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
   SystraceSection s("-[RCTScheduler startSurfaceWithSurfaceId:...]");
 
   auto props = convertIdToFollyDynamic(initialProps);
-  _scheduler->startSurface(surfaceId, RCTStringFromNSString(moduleName), props, layoutConstraints, layoutContext);
+  _scheduler->startSurface(
+      surfaceId, RCTStringFromNSString(moduleName), props, layoutConstraints, layoutContext, _animationDriver);
   _scheduler->renderTemplateToSurface(
       surfaceId, props.getDefault("navigationConfig").getDefault("initialUITemplate", "").getString());
 }
@@ -125,6 +186,20 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
 - (MountingCoordinator::Shared)mountingCoordinatorWithSurfaceId:(SurfaceId)surfaceId
 {
   return _scheduler->findMountingCoordinator(surfaceId);
+}
+
+- (void)onAnimationStarted
+{
+  if (_uiRunLoopObserver) {
+    _uiRunLoopObserver->enable();
+  }
+}
+
+- (void)onAllAnimationsComplete
+{
+  if (_uiRunLoopObserver) {
+    _uiRunLoopObserver->disable();
+  }
 }
 
 @end

@@ -11,17 +11,20 @@ import android.os.SystemClock;
 import android.view.View;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
@@ -44,6 +47,7 @@ import java.util.Map;
 public class UIViewOperationQueue {
 
   public static final int DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS = 8;
+  private static final String TAG = UIViewOperationQueue.class.getSimpleName();
 
   private final int[] mMeasureBuffer = new int[4];
 
@@ -108,11 +112,14 @@ public class UIViewOperationQueue {
 
     @Override
     public void execute() {
-      mReactApplicationContext
-          .getNativeModule(UIManagerModule.class)
-          .getEventDispatcher()
-          .dispatchEvent(
-              OnLayoutEvent.obtain(mTag, mScreenX, mScreenY, mScreenWidth, mScreenHeight));
+      UIManagerModule uiManager = mReactApplicationContext.getNativeModule(UIManagerModule.class);
+
+      if (uiManager != null) {
+        uiManager
+            .getEventDispatcher()
+            .dispatchEvent(
+                OnLayoutEvent.obtain(mTag, mScreenX, mScreenY, mScreenWidth, mScreenHeight));
+      }
     }
   }
 
@@ -260,11 +267,34 @@ public class UIViewOperationQueue {
     }
   }
 
+  /**
+   * This is a common interface for View Command operations. Once we delete the deprecated {@link
+   * DispatchCommandOperation}, we can delete this interface too. It provides a set of common
+   * operations to simplify generic operations on all types of ViewCommands.
+   */
+  private interface DispatchCommandViewOperation {
+
+    /**
+     * Like the execute function, but throws real exceptions instead of logging soft errors and
+     * returning silently.
+     */
+    void executeWithExceptions();
+
+    /** Increment retry counter. */
+    void incrementRetries();
+
+    /** Get retry counter. */
+    int getRetries();
+  }
+
   @Deprecated
-  private final class DispatchCommandOperation extends ViewOperation {
+  private final class DispatchCommandOperation extends ViewOperation
+      implements DispatchCommandViewOperation {
 
     private final int mCommand;
     private final @Nullable ReadableArray mArgs;
+
+    private int numRetries = 0;
 
     public DispatchCommandOperation(int tag, int command, @Nullable ReadableArray args) {
       super(tag);
@@ -274,14 +304,38 @@ public class UIViewOperationQueue {
 
     @Override
     public void execute() {
+      try {
+        mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
+      } catch (Throwable e) {
+        ReactSoftException.logSoftException(
+            TAG, new RuntimeException("Error dispatching View Command", e));
+      }
+    }
+
+    @Override
+    public void executeWithExceptions() {
       mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
+    }
+
+    @Override
+    @UiThread
+    public void incrementRetries() {
+      numRetries++;
+    }
+
+    @Override
+    @UiThread
+    public int getRetries() {
+      return numRetries;
     }
   }
 
-  private final class DispatchStringCommandOperation extends ViewOperation {
+  private final class DispatchStringCommandOperation extends ViewOperation
+      implements DispatchCommandViewOperation {
 
     private final String mCommand;
     private final @Nullable ReadableArray mArgs;
+    private int numRetries = 0;
 
     public DispatchStringCommandOperation(int tag, String command, @Nullable ReadableArray args) {
       super(tag);
@@ -291,7 +345,29 @@ public class UIViewOperationQueue {
 
     @Override
     public void execute() {
+      try {
+        mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
+      } catch (Throwable e) {
+        ReactSoftException.logSoftException(
+            TAG, new RuntimeException("Error dispatching View Command", e));
+      }
+    }
+
+    @Override
+    @UiThread
+    public void executeWithExceptions() {
       mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
+    }
+
+    @Override
+    @UiThread
+    public void incrementRetries() {
+      numRetries++;
+    }
+
+    @Override
+    public int getRetries() {
+      return numRetries;
     }
   }
 
@@ -519,8 +595,7 @@ public class UIViewOperationQueue {
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
   private final ReactApplicationContext mReactApplicationContext;
 
-  private final boolean mAllowViewCommandsQueue;
-  private ArrayList<UIOperation> mViewCommandOperations = new ArrayList<>();
+  private ArrayList<DispatchCommandViewOperation> mViewCommandOperations = new ArrayList<>();
 
   // Only called from the UIManager queue?
   private ArrayList<UIOperation> mOperations = new ArrayList<>();
@@ -560,7 +635,6 @@ public class UIViewOperationQueue {
                 ? DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS
                 : minTimeLeftInFrameForNonBatchedOperationMs);
     mReactApplicationContext = reactContext;
-    mAllowViewCommandsQueue = ReactFeatureFlags.allowEarlyViewCommandExecution;
   }
 
   /*package*/ NativeViewHierarchyManager getNativeViewHierarchyManager() {
@@ -632,22 +706,14 @@ public class UIViewOperationQueue {
       int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     final DispatchCommandOperation command =
         new DispatchCommandOperation(reactTag, commandId, commandArgs);
-    if (mAllowViewCommandsQueue) {
-      mViewCommandOperations.add(command);
-    } else {
-      mOperations.add(command);
-    }
+    mViewCommandOperations.add(command);
   }
 
   public void enqueueDispatchCommand(
       int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
     final DispatchStringCommandOperation command =
         new DispatchStringCommandOperation(reactTag, commandId, commandArgs);
-    if (mAllowViewCommandsQueue) {
-      mViewCommandOperations.add(command);
-    } else {
-      mOperations.add(command);
-    }
+    mViewCommandOperations.add(command);
   }
 
   public void enqueueUpdateExtraData(int reactTag, Object extraData) {
@@ -759,7 +825,7 @@ public class UIViewOperationQueue {
 
       // Store the current operation queues to dispatch and create new empty ones to continue
       // receiving new operations
-      final ArrayList<UIOperation> viewCommandOperations;
+      final ArrayList<DispatchCommandViewOperation> viewCommandOperations;
       if (!mViewCommandOperations.isEmpty()) {
         viewCommandOperations = mViewCommandOperations;
         mViewCommandOperations = new ArrayList<>();
@@ -799,10 +865,33 @@ public class UIViewOperationQueue {
               try {
                 long runStartTime = SystemClock.uptimeMillis();
 
-                // All ViewCommands should be executed first as a perf optimization
+                // All ViewCommands should be executed first as a perf optimization.
+                // This entire block is only executed if there's at least one ViewCommand queued.
                 if (viewCommandOperations != null) {
-                  for (UIOperation viewCommandOp : viewCommandOperations) {
-                    viewCommandOp.execute();
+                  for (DispatchCommandViewOperation op : viewCommandOperations) {
+                    try {
+                      op.executeWithExceptions();
+                    } catch (RetryableMountingLayerException e) {
+                      // Catch errors in DispatchCommands. We allow all commands to be retried
+                      // exactly once, after the current batch of other mountitems. If the second
+                      // attempt fails, then  we log a soft error. This will still crash only in
+                      // debug. We do this because it is a ~relatively common pattern to dispatch a
+                      // command during render, for example, to scroll to the bottom of a ScrollView
+                      // in render. This dispatches the command before that View is even mounted. By
+                      // retrying once, we can still dispatch the vast majority of commands faster,
+                      // avoid errors, and still operate correctly for most commands even when
+                      // they're executed too soon.
+                      if (op.getRetries() == 0) {
+                        op.incrementRetries();
+                        mViewCommandOperations.add(op);
+                      } else {
+                        // Retryable exceptions should be logged, but never crash in debug.
+                        ReactSoftException.logSoftException(TAG, new ReactNoCrashSoftException(e));
+                      }
+                    } catch (Throwable e) {
+                      // Non-retryable exceptions should be logged in prod, and crash in Debug.
+                      ReactSoftException.logSoftException(TAG, e);
+                    }
                   }
                 }
 

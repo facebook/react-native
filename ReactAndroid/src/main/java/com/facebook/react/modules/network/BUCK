@@ -1,9 +1,10 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_root_target", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "network",
     srcs = glob(["**/*.java"]),
     is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:core"),
@@ -27,5 +28,5 @@ rn_android_library(
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/modules/core:core"),
     ],
-    exported_deps = [react_native_target("java/com/facebook/fbreact/specs:FBReactNativeSpec")],
+    exported_deps = [react_native_root_target("Libraries:generated_java_modules-FBReactNativeSpec")],
 )

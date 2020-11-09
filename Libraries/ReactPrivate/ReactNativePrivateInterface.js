@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import typeof BatchedBridge from '../BatchedBridge/BatchedBridge.js';
+import typeof BatchedBridge from '../BatchedBridge/BatchedBridge';
 import typeof ExceptionsManager from '../Core/ExceptionsManager';
 import typeof Platform from '../Utilities/Platform';
 import typeof RCTEventEmitter from '../EventEmitter/RCTEventEmitter';
@@ -23,7 +23,7 @@ import typeof ReactFiberErrorDialog from '../Core/ReactFiberErrorDialog';
 // flowlint unsafe-getters-setters:off
 module.exports = {
   get BatchedBridge(): BatchedBridge {
-    return require('../BatchedBridge/BatchedBridge.js');
+    return require('../BatchedBridge/BatchedBridge');
   },
   get ExceptionsManager(): ExceptionsManager {
     return require('../Core/ExceptionsManager');

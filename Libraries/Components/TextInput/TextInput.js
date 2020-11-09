@@ -13,7 +13,6 @@
 const DeprecatedTextInputPropTypes = require('../../DeprecatedPropTypes/DeprecatedTextInputPropTypes');
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
-const ReactNative = require('../../Renderer/shims/ReactNative');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const Text = require('../../Text/Text');
 const TextAncestor = require('../../Text/TextAncestor');
@@ -25,30 +24,37 @@ const nullthrows = require('nullthrows');
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent, ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PressEvent} from '../../Types/CoreEventTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
-const {useEffect, useRef, useState} = React;
+const {useLayoutEffect, useRef, useState} = React;
 
 type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
 
 let AndroidTextInput;
 let AndroidTextInputCommands;
-let RCTMultilineTextInputView;
 let RCTSinglelineTextInputView;
+let RCTSinglelineTextInputNativeCommands;
+let RCTMultilineTextInputView;
+let RCTMultilineTextInputNativeCommands;
 
 if (Platform.OS === 'android') {
   AndroidTextInput = require('./AndroidTextInputNativeComponent').default;
   AndroidTextInputCommands = require('./AndroidTextInputNativeComponent')
     .Commands;
 } else if (Platform.OS === 'ios') {
-  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent.js')
+  RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent')
     .default;
-  RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent.js')
+  RCTSinglelineTextInputNativeCommands = require('./RCTSingelineTextInputNativeComponent')
+    .Commands;
+  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent')
     .default;
+  RCTMultilineTextInputNativeCommands = require('./RCTMultilineTextInputNativeComponent')
+    .Commands;
 }
 
 export type ChangeEvent = SyntheticEvent<
@@ -402,7 +408,6 @@ type AndroidProps = $ReadOnly<{|
   /**
    * When `false`, it will prevent the soft keyboard from showing when the field is focused.
    * Defaults to `true`.
-   * @platform android
    */
   showSoftInputOnFocus?: ?boolean,
 |}>;
@@ -481,6 +486,7 @@ export type Props = $ReadOnly<{|
    * The following values work on Android only:
    *
    * - `visible-password`
+   *
    */
   keyboardType?: ?KeyboardType,
 
@@ -564,6 +570,16 @@ export type Props = $ReadOnly<{|
    * Callback that is called when text input ends.
    */
   onEndEditing?: ?(e: EditingEvent) => mixed,
+
+  /**
+   * Called when a touch is engaged.
+   */
+  onPressIn?: ?(event: PressEvent) => mixed,
+
+  /**
+   * Called when a touch is released.
+   */
+  onPressOut?: ?(event: PressEvent) => mixed,
 
   /**
    * Callback that is called when the text input selection is changed.
@@ -677,7 +693,12 @@ export type Props = $ReadOnly<{|
 
   /**
    * If `true`, caret is hidden. The default value is `false`.
-   * This property is supported only for single-line TextInput component on iOS.
+   *
+   * On Android devices manufactured by Xiaomi with Android Q,
+   * when keyboardType equals 'email-address'this will be set
+   * in native to 'true' to prevent a system related crash. This
+   * will cause cursor to be diabled as a side-effect.
+   *
    */
   caretHidden?: ?boolean,
 
@@ -845,6 +866,15 @@ function InternalTextInput(props: Props): React.Node {
     selection = null;
   }
 
+  let viewCommands: TextInputNativeCommands<HostComponent<any>>;
+  if (AndroidTextInputCommands) {
+    viewCommands = AndroidTextInputCommands;
+  } else {
+    viewCommands = props.multiline
+      ? RCTMultilineTextInputNativeCommands
+      : RCTSinglelineTextInputNativeCommands;
+  }
+
   const text =
     typeof props.value === 'string'
       ? props.value
@@ -855,7 +885,7 @@ function InternalTextInput(props: Props): React.Node {
   // This is necessary in case native updates the text and JS decides
   // that the update should be ignored and we should stick with the value
   // that we have in JS.
-  useEffect(() => {
+  useLayoutEffect(() => {
     const nativeUpdate = {};
 
     if (lastNativeText !== props.value && typeof props.value === 'string') {
@@ -877,16 +907,14 @@ function InternalTextInput(props: Props): React.Node {
       return;
     }
 
-    if (AndroidTextInputCommands && inputRef.current != null) {
-      AndroidTextInputCommands.setTextAndSelection(
+    if (inputRef.current != null) {
+      viewCommands.setTextAndSelection(
         inputRef.current,
         mostRecentEventCount,
         text,
         selection?.start ?? -1,
         selection?.end ?? -1,
       );
-    } else if (inputRef.current != null) {
-      inputRef.current.setNativeProps(nativeUpdate);
     }
   }, [
     mostRecentEventCount,
@@ -897,9 +925,10 @@ function InternalTextInput(props: Props): React.Node {
     selection,
     lastNativeSelection,
     text,
+    viewCommands,
   ]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const inputRefValue = inputRef.current;
 
     if (inputRefValue != null) {
@@ -907,30 +936,23 @@ function InternalTextInput(props: Props): React.Node {
 
       return () => {
         TextInputState.unregisterInput(inputRefValue);
+
+        if (TextInputState.currentlyFocusedInput() === inputRefValue) {
+          nullthrows(inputRefValue).blur();
+        }
       };
     }
   }, [inputRef]);
 
-  useEffect(() => {
-    // When unmounting we need to blur the input
-    return () => {
-      if (isFocused()) {
-        nullthrows(inputRef.current).blur();
-      }
-    };
-  }, [inputRef]);
-
   function clear(): void {
-    if (AndroidTextInputCommands && inputRef.current != null) {
-      AndroidTextInputCommands.setTextAndSelection(
+    if (inputRef.current != null) {
+      viewCommands.setTextAndSelection(
         inputRef.current,
         mostRecentEventCount,
         '',
         0,
         0,
       );
-    } else if (inputRef.current != null) {
-      inputRef.current.setNativeProps({text: ''});
     }
   }
 
@@ -985,17 +1007,6 @@ function InternalTextInput(props: Props): React.Node {
   };
 
   const _onChange = (event: ChangeEvent) => {
-    if (AndroidTextInputCommands && inputRef.current != null) {
-      // Do nothing
-    } else if (inputRef.current != null) {
-      // Make sure to fire the mostRecentEventCount first so it is already set on
-      // native when the text value is set.
-      // This is now only relevant on iOS until we migrate to ViewCommands everywhere
-      inputRef.current.setNativeProps({
-        mostRecentEventCount: event.nativeEvent.eventCount,
-      });
-    }
-
     const text = event.nativeEvent.text;
     props.onChange && props.onChange(event);
     props.onChangeText && props.onChangeText(text);
@@ -1056,6 +1067,10 @@ function InternalTextInput(props: Props): React.Node {
     // This is a hack to let Flow know we want an exact object
   |} = {...null};
 
+  // The default value for `blurOnSubmit` is true for single-line fields and
+  // false for multi-line fields.
+  const blurOnSubmit = props.blurOnSubmit ?? !props.multiline;
+
   if (Platform.OS === 'ios') {
     const RCTTextInputView = props.multiline
       ? RCTMultilineTextInputView
@@ -1072,7 +1087,9 @@ function InternalTextInput(props: Props): React.Node {
       <RCTTextInputView
         ref={_setNativeRef}
         {...props}
+        blurOnSubmit={blurOnSubmit}
         dataDetectorTypes={props.dataDetectorTypes}
+        mostRecentEventCount={mostRecentEventCount}
         onBlur={_onBlur}
         onChange={_onChange}
         onContentSizeChange={props.onContentSizeChange}
@@ -1089,8 +1106,7 @@ function InternalTextInput(props: Props): React.Node {
     const style = [props.style];
     const autoCapitalize = props.autoCapitalize || 'sentences';
     let children = props.children;
-    let childCount = 0;
-    React.Children.forEach(children, () => ++childCount);
+    const childCount = React.Children.count(children);
     invariant(
       !(props.value && childCount),
       'Cannot specify both value and children.',
@@ -1106,6 +1122,7 @@ function InternalTextInput(props: Props): React.Node {
         ref={_setNativeRef}
         {...props}
         autoCapitalize={autoCapitalize}
+        blurOnSubmit={blurOnSubmit}
         children={children}
         disableFullscreenUI={props.disableFullscreenUI}
         mostRecentEventCount={mostRecentEventCount}
@@ -1128,6 +1145,8 @@ function InternalTextInput(props: Props): React.Node {
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={_onPress}
+        onPressIn={props.onPressIn}
+        onPressOut={props.onPressOut}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}

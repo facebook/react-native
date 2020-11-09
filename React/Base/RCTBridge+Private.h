@@ -11,11 +11,6 @@
 @protocol RCTJavaScriptExecutor;
 
 RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
-
-#if RCT_DEBUG
-RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
-#endif
-
 RCT_EXTERN void RCTRegisterModule(Class);
 
 @interface RCTBridge ()

@@ -105,7 +105,7 @@ public class DevInternalSettings
   }
 
   @Override
-  public boolean isNuclideJSDebugEnabled() {
+  public boolean isDeviceDebugEnabled() {
     return ReactBuildConfig.IS_INTERNAL_BUILD && ReactBuildConfig.DEBUG;
   }
 

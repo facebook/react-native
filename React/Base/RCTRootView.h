@@ -94,6 +94,11 @@ extern
  */
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 
+/*
+ * The minimum size of the root view, defaults to CGSizeZero.
+ */
+@property (nonatomic, assign) CGSize minimumSize;
+
 /**
  * The delegate that handles intrinsic size updates.
  */

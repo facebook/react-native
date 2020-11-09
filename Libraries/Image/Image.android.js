@@ -20,6 +20,7 @@ const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const TextAncestor = require('../Text/TextAncestor');
 
+const ImageAnalyticsTagContext = require('./ImageAnalyticsTagContext').default;
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const resolveAssetSource = require('./resolveAssetSource');
 
@@ -95,6 +96,10 @@ const ImageProps = {
   ]): React$PropType$Primitive<{uri?: string, ...} | number>),
   progressiveRenderingEnabled: PropTypes.bool,
   fadeDuration: PropTypes.number,
+  /**
+   * Analytics Tag used by this Image
+   */
+  internal_analyticTag: PropTypes.string,
   /**
    * Invoked on load start
    */
@@ -189,6 +194,16 @@ function getSizeWithHeaders(
     );
 }
 
+function prefetchWithMetadata(
+  url: string,
+  queryRootName: string,
+  rootTag?: ?number,
+  callback: ?Function,
+): any {
+  // TODO: T79192300 Log queryRootName and rootTag
+  prefetch(url, callback);
+}
+
 function prefetch(url: string, callback: ?Function): any {
   const requestId = generateRequestId();
   callback && callback(requestId);
@@ -214,6 +229,7 @@ type ImageComponentStatics = $ReadOnly<{|
   getSize: typeof getSize,
   getSizeWithHeaders: typeof getSizeWithHeaders,
   prefetch: typeof prefetch,
+  prefetchWithMetadata: typeof prefetchWithMetadata,
   abortPrefetch: typeof abortPrefetch,
   queryCache: typeof queryCache,
   resolveAssetSource: typeof resolveAssetSource,
@@ -288,15 +304,28 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   };
 
   return (
-    <TextAncestor.Consumer>
-      {hasTextAncestor =>
-        hasTextAncestor ? (
-          <TextInlineImageNativeComponent {...nativeProps} />
-        ) : (
-          <ImageViewNativeComponent {...nativeProps} />
-        )
-      }
-    </TextAncestor.Consumer>
+    <ImageAnalyticsTagContext.Consumer>
+      {analyticTag => {
+        const nativePropsWithAnalytics =
+          analyticTag !== null
+            ? {
+                ...nativeProps,
+                internal_analyticTag: analyticTag,
+              }
+            : nativeProps;
+        return (
+          <TextAncestor.Consumer>
+            {hasTextAncestor =>
+              hasTextAncestor ? (
+                <TextInlineImageNativeComponent {...nativePropsWithAnalytics} />
+              ) : (
+                <ImageViewNativeComponent {...nativePropsWithAnalytics} />
+              )
+            }
+          </TextAncestor.Consumer>
+        );
+      }}
+    </ImageAnalyticsTagContext.Consumer>
   );
 };
 
@@ -339,6 +368,17 @@ Image.getSizeWithHeaders = getSizeWithHeaders;
  * error found when Flow v0.89 was deployed. To see the error, delete this
  * comment and run Flow. */
 Image.prefetch = prefetch;
+
+/**
+ * Prefetches a remote image for later use by downloading it to the disk
+ * cache, and adds metadata for queryRootName and rootTag.
+ *
+ * See https://reactnative.dev/docs/image.html#prefetch
+ */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.prefetchWithMetadata = prefetchWithMetadata;
 
 /**
  * Abort prefetch request.

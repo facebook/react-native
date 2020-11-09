@@ -12,8 +12,6 @@
 
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
-import * as LogBoxData from './Data/LogBoxData';
-import {parseLogBoxLog, parseInterpolation} from './Data/parseLogBoxLog';
 
 import type {IgnorePattern} from './Data/LogBoxData';
 
@@ -23,6 +21,9 @@ let LogBox;
  * LogBox displays logs in the app.
  */
 if (__DEV__) {
+  const LogBoxData = require('./Data/LogBoxData');
+  const {parseLogBoxLog, parseInterpolation} = require('./Data/parseLogBoxLog');
+
   // LogBox needs to insert itself early,
   // in order to access the component stacks appended by React DevTools.
   const {error, warn} = console;
@@ -42,7 +43,7 @@ if (__DEV__) {
     },
 
     ignoreAllLogs: (value?: ?boolean): void => {
-      LogBoxData.setDisabled(!!value);
+      LogBoxData.setDisabled(value == null ? true : value);
     },
 
     uninstall: (): void => {
@@ -102,6 +103,12 @@ if (__DEV__) {
   };
 
   const registerWarning = (...args): void => {
+    // Let warnings within LogBox itself fall through.
+    if (LogBoxData.isLogBoxErrorMessage(String(args[0]))) {
+      error.call(console, ...args);
+      return;
+    }
+
     try {
       if (!isRCTLogAdviceWarning(...args)) {
         const {category, message, componentStack} = parseLogBoxLog(args);
@@ -110,14 +117,12 @@ if (__DEV__) {
           // Be sure to pass LogBox warnings through.
           warn.call(console, ...args);
 
-          if (!LogBoxData.isLogBoxErrorMessage(message.content)) {
-            LogBoxData.addLog({
-              level: 'warn',
-              category,
-              message,
-              componentStack,
-            });
-          }
+          LogBoxData.addLog({
+            level: 'warn',
+            category,
+            message,
+            componentStack,
+          });
         }
       }
     } catch (err) {
@@ -126,9 +131,21 @@ if (__DEV__) {
   };
 
   const registerError = (...args): void => {
+    // Let errors within LogBox itself fall through.
+    if (LogBoxData.isLogBoxErrorMessage(args[0])) {
+      error.call(console, ...args);
+      return;
+    }
+
     try {
       if (!isWarningModuleWarning(...args)) {
-        // Only show LogBox for the `warning` module, otherwise pass through and skip.
+        // Only show LogBox for the 'warning' module, otherwise pass through.
+        // By passing through, this will get picked up by the React console override,
+        // potentially adding the component stack. React then passes it back to the
+        // React Native ExceptionsManager, which reports it to LogBox as an error.
+        //
+        // The 'warning' module needs to be handled here because React internally calls
+        // `console.error('Warning: ')` with the component stack already included.
         error.call(console, ...args);
         return;
       }
@@ -156,15 +173,12 @@ if (__DEV__) {
         const interpolated = parseInterpolation(args);
         error.call(console, interpolated.message.content);
 
-        // Only display errors outside of LogBox, not in LogBox itself.
-        if (!LogBoxData.isLogBoxErrorMessage(message.content)) {
-          LogBoxData.addLog({
-            level,
-            category,
-            message,
-            componentStack,
-          });
-        }
+        LogBoxData.addLog({
+          level,
+          category,
+          message,
+          componentStack,
+        });
       }
     } catch (err) {
       LogBoxData.reportLogBoxError(err);

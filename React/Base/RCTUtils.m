@@ -304,6 +304,30 @@ CGFloat RCTScreenScale()
   return scale;
 }
 
+CGFloat RCTFontSizeMultiplier()
+{
+  static NSDictionary<NSString *, NSNumber *> *mapping;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    mapping = @{
+      UIContentSizeCategoryExtraSmall : @0.823,
+      UIContentSizeCategorySmall : @0.882,
+      UIContentSizeCategoryMedium : @0.941,
+      UIContentSizeCategoryLarge : @1.0,
+      UIContentSizeCategoryExtraLarge : @1.118,
+      UIContentSizeCategoryExtraExtraLarge : @1.235,
+      UIContentSizeCategoryExtraExtraExtraLarge : @1.353,
+      UIContentSizeCategoryAccessibilityMedium : @1.786,
+      UIContentSizeCategoryAccessibilityLarge : @2.143,
+      UIContentSizeCategoryAccessibilityExtraLarge : @2.643,
+      UIContentSizeCategoryAccessibilityExtraExtraLarge : @3.143,
+      UIContentSizeCategoryAccessibilityExtraExtraExtraLarge : @3.571
+    };
+  });
+
+  return mapping[RCTSharedApplication().preferredContentSizeCategory].floatValue;
+}
+
 CGSize RCTScreenSize()
 {
   // FIXME: this caches the bounds at app start, whatever those were, and then
@@ -319,6 +343,12 @@ CGSize RCTScreenSize()
   });
 
   return size;
+}
+
+CGSize RCTViewportSize()
+{
+  UIWindow *window = RCTKeyWindow();
+  return window ? window.bounds.size : RCTScreenSize();
 }
 
 CGFloat RCTRoundPixelValue(CGFloat value)
@@ -379,6 +409,19 @@ void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement)
   } else {
     method_exchangeImplementations(originalMethod, replacementMethod);
   }
+}
+
+void RCTSwapInstanceMethodWithBlock(Class cls, SEL original, id replacementBlock, SEL replacementSelector)
+{
+  Method originalMethod = class_getInstanceMethod(cls, original);
+  if (!originalMethod) {
+    return;
+  }
+
+  IMP implementation = imp_implementationWithBlock(replacementBlock);
+  class_addMethod(cls, replacementSelector, implementation, method_getTypeEncoding(originalMethod));
+  Method newMethod = class_getInstanceMethod(cls, replacementSelector);
+  method_exchangeImplementations(originalMethod, newMethod);
 }
 
 BOOL RCTClassOverridesClassMethod(Class cls, SEL selector)
@@ -535,6 +578,16 @@ BOOL RCTForceTouchAvailable(void)
 NSError *RCTErrorWithMessage(NSString *message)
 {
   NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey : message};
+  return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
+}
+
+NSError *RCTErrorWithNSException(NSException *exception)
+{
+  NSString *message = [NSString stringWithFormat:@"NSException: %@; trace: %@.",
+                                                 exception,
+                                                 [[exception callStackSymbols] componentsJoinedByString:@";"]];
+  NSDictionary<NSString *, id> *errorInfo =
+      @{NSLocalizedDescriptionKey : message, RCTObjCStackTraceKey : [exception callStackSymbols]};
   return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
 }
 

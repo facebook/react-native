@@ -92,11 +92,18 @@ public class AppStateModule extends NativeAppStateSpec
   }
 
   private void sendEvent(String eventName, @Nullable Object data) {
-    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+    ReactApplicationContext reactApplicationContext = getReactApplicationContext();
 
-    if (reactApplicationContext != null) {
-      reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit(eventName, data);
+    if (reactApplicationContext == null) {
+      return;
     }
+    // We don't gain anything interesting from logging here, and it's an extremely common
+    // race condition for an AppState event to be triggered as the Catalyst instance is being
+    // set up or torn down. So, just fail silently here.
+    if (!reactApplicationContext.hasActiveCatalystInstance()) {
+      return;
+    }
+    reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit(eventName, data);
   }
 
   private void sendAppStateChangeEvent() {

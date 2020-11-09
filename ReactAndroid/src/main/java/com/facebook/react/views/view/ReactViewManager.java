@@ -24,7 +24,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
@@ -234,9 +234,11 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
             @Override
             public void onClick(View v) {
               final EventDispatcher mEventDispatcher =
-                  ((ReactContext) view.getContext())
-                      .getNativeModule(UIManagerModule.class)
-                      .getEventDispatcher();
+                  UIManagerHelper.getEventDispatcherForReactTag(
+                      (ReactContext) view.getContext(), view.getId());
+              if (mEventDispatcher == null) {
+                return;
+              }
               mEventDispatcher.dispatchEvent(new ViewGroupClickEvent(view.getId()));
             }
           });
@@ -333,10 +335,9 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
       throw new JSApplicationIllegalArgumentException(
           "Illegal number of arguments for 'updateHotspot' command");
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
-      float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
-      root.drawableHotspotChanged(x, y);
-    }
+
+    float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
+    float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
+    root.drawableHotspotChanged(x, y);
   }
 }

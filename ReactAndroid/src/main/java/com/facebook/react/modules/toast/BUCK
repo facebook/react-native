@@ -1,8 +1,9 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_root_target", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "toast",
     srcs = glob(["**/*.java"]),
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
         "PUBLIC",
     ],
@@ -13,5 +14,5 @@ rn_android_library(
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
     ],
-    exported_deps = [react_native_target("java/com/facebook/fbreact/specs:FBReactNativeSpec")],
+    exported_deps = [react_native_root_target("Libraries:generated_java_modules-FBReactNativeSpec")],
 )

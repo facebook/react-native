@@ -23,7 +23,7 @@ import RCTPickerNativeComponent, {
   Commands as PickerCommands,
 } from './RCTPickerNativeComponent';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
@@ -37,7 +37,7 @@ type PickerIOSChangeEvent = SyntheticEvent<
 
 type RCTPickerIOSItemType = $ReadOnly<{|
   label: ?Label,
-  value: ?(number | string),
+  value: ?string,
   textColor: ?ProcessedColorValue,
 |}>;
 
@@ -49,7 +49,7 @@ type Props = $ReadOnly<{|
   itemStyle?: ?TextStyleProp,
   onChange?: ?(event: PickerIOSChangeEvent) => mixed,
   onValueChange?: ?(itemValue: string | number, itemIndex: number) => mixed,
-  selectedValue: ?(number | string),
+  selectedValue: ?string,
   accessibilityLabel?: ?string,
 |}>;
 
@@ -60,7 +60,7 @@ type State = {|
 
 type ItemProps = $ReadOnly<{|
   label: ?Label,
-  value?: ?(number | string),
+  value?: ?string,
   color?: ?ColorValue,
 |}>;
 

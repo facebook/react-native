@@ -1,6 +1,6 @@
 
 [android]
-  target = android-28
+  target = android-29
 
 [download]
   max_number_of_retries = 3
@@ -11,4 +11,4 @@
   jcenter = https://jcenter.bintray.com/
 
 [alias]
-  rntester = //RNTester/android/app:app
+  rntester = //packages/rn-tester/android/app:app

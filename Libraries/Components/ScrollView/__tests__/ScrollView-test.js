@@ -6,7 +6,7 @@
  *
  * @format
  * @emails oncall+react_native
- * @flow strict-local
+ * @flow-strict
  */
 
 'use strict';
@@ -14,6 +14,7 @@
 const React = require('react');
 const ScrollView = require('../ScrollView');
 const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
+const ReactTestRenderer = require('react-test-renderer');
 const View = require('../../View/View');
 const Text = require('../../../Text/Text');
 
@@ -31,6 +32,20 @@ describe('<ScrollView />', () => {
       () => {
         jest.dontMock('../ScrollView');
       },
+    );
+  });
+  it('should mock native methods and instance methods when mocked', () => {
+    jest.resetModules();
+    jest.mock('../ScrollView');
+    const ref = React.createRef();
+
+    ReactTestRenderer.create(<ScrollView ref={ref} />);
+
+    expect(ref.current != null && ref.current.measure).toBeInstanceOf(
+      jest.fn().constructor,
+    );
+    expect(ref.current != null && ref.current.scrollTo).toBeInstanceOf(
+      jest.fn().constructor,
     );
   });
 });

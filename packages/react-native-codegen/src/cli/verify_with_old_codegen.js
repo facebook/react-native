@@ -45,9 +45,7 @@ if (t1.length !== t2.length) {
   for (let i = 0; i < t1.length; i++) {
     if (t1[i] !== t2[i]) {
       throw new Error(
-        `Old and new codegen does not produce similar output! ${i}  ${
-          t1[i]
-        } | ${t2[i]}`,
+        `Old and new codegen does not produce similar output! ${i}  ${t1[i]} | ${t2[i]}`,
       );
     }
   }

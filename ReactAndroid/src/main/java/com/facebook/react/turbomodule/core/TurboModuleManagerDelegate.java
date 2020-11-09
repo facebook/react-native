@@ -16,15 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class TurboModuleManagerDelegate {
-  static {
-    SoLoader.loadLibrary("turbomodulejsijni");
-  }
-
   private final HybridData mHybridData;
+
+  private static volatile boolean sIsSoLibraryLoaded;
 
   protected abstract HybridData initHybrid();
 
   protected TurboModuleManagerDelegate() {
+    maybeLoadOtherSoLibraries();
+    maybeLoadSoLibrary();
     mHybridData = initHybrid();
   }
 
@@ -45,4 +45,14 @@ public abstract class TurboModuleManagerDelegate {
   public List<String> getEagerInitModuleNames() {
     return new ArrayList<>();
   }
+
+  // Prevents issues with initializer interruptions. See T38996825 and D13793825 for more context.
+  private static synchronized void maybeLoadSoLibrary() {
+    if (!sIsSoLibraryLoaded) {
+      SoLoader.loadLibrary("turbomodulejsijni");
+      sIsSoLibraryLoaded = true;
+    }
+  }
+
+  protected synchronized void maybeLoadOtherSoLibraries() {}
 }

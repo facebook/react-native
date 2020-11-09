@@ -10,8 +10,8 @@
 
 'use strict';
 
-const registerGeneratedViewConfig = require('../../Utilities/registerGeneratedViewConfig');
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+import registerGeneratedViewConfig from '../../Utilities/registerGeneratedViewConfig';
+import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ScrollViewNativeProps} from './ScrollViewNativeComponentType';
@@ -37,6 +37,7 @@ const AndroidHorizontalScrollViewViewConfig = {
     snapToInterval: true,
     snapToStart: true,
     snapToOffsets: true,
+    contentOffset: true,
   },
 };
 

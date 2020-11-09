@@ -122,12 +122,40 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             }
           }
 
-          if (mNumberOfLines != UNSET && mNumberOfLines < layout.getLineCount()) {
-            return YogaMeasureOutput.make(
-                layout.getWidth(), layout.getLineBottom(mNumberOfLines - 1));
+          final int lineCount =
+              mNumberOfLines == UNSET
+                  ? layout.getLineCount()
+                  : Math.min(mNumberOfLines, layout.getLineCount());
+
+          // Instead of using `layout.getWidth()` (which may yield a significantly larger width for
+          // text that is wrapping), compute width using the longest line.
+          float layoutWidth = 0;
+          if (widthMode == YogaMeasureMode.EXACTLY) {
+            layoutWidth = width;
           } else {
-            return YogaMeasureOutput.make(layout.getWidth(), layout.getHeight());
+            for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+              float lineWidth = layout.getLineWidth(lineIndex);
+              if (lineWidth > layoutWidth) {
+                layoutWidth = lineWidth;
+              }
+            }
+            if (widthMode == YogaMeasureMode.AT_MOST && layoutWidth > width) {
+              layoutWidth = width;
+            }
           }
+
+          if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q) {
+            layoutWidth = (float) Math.ceil(layoutWidth);
+          }
+          float layoutHeight = height;
+          if (heightMode != YogaMeasureMode.EXACTLY) {
+            layoutHeight = layout.getLineBottom(lineCount - 1);
+            if (heightMode == YogaMeasureMode.AT_MOST && layoutHeight > height) {
+              layoutHeight = height;
+            }
+          }
+
+          return YogaMeasureOutput.make(layoutWidth, layoutHeight);
         }
       };
 

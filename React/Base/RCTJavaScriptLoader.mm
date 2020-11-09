@@ -19,7 +19,19 @@
 
 NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomain";
 
-static const int32_t JSNoBytecodeFileFormatVersion = -1;
+const UInt32 RCT_BYTECODE_ALIGNMENT = 4;
+UInt32 RCTReadUInt32LE(NSData *script, UInt32 offset)
+{
+  return [script length] < offset + 4 ? 0 : CFSwapInt32LittleToHost(*(((uint32_t *)[script bytes]) + offset / 4));
+}
+
+bool RCTIsBytecodeBundle(NSData *script)
+{
+  static const UInt32 BYTECODE_BUNDLE_MAGIC_NUMBER = 0xffe7c3c3;
+  return (
+      [script length] > 8 && RCTReadUInt32LE(script, 0) == BYTECODE_BUNDLE_MAGIC_NUMBER &&
+      RCTReadUInt32LE(script, 4) > 0);
+}
 
 @interface RCTSource () {
  @public
@@ -37,7 +49,10 @@ static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, int64_t length) NS_R
 {
   RCTSource *source = [RCTSource new];
   source->_url = url;
-  source->_data = data;
+  // Multipart responses may give us an unaligned view into the buffer. This ensures memory is aligned.
+  source->_data = (RCTIsBytecodeBundle(data) && ((long)[data bytes] % RCT_BYTECODE_ALIGNMENT))
+      ? [[NSData alloc] initWithData:data]
+      : data;
   source->_length = length;
   source->_filesChangedCount = RCTSourceFilesChangedCountNotBuiltByBundler;
   return source;
@@ -50,10 +65,14 @@ static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, int64_t length) NS_R
 - (NSString *)description
 {
   NSMutableString *desc = [NSMutableString new];
-  [desc appendString:_status ?: @"Loading"];
+  [desc appendString:_status ?: @"Bundling"];
 
-  if ([_total integerValue] > 0) {
-    [desc appendFormat:@" %ld%% (%@/%@)", (long)(100 * [_done integerValue] / [_total integerValue]), _done, _total];
+  if ([_total integerValue] > 0 && [_done integerValue] > [_total integerValue]) {
+    [desc appendFormat:@" %ld%%", (long)100];
+  } else if ([_total integerValue] > 0) {
+    [desc appendFormat:@" %ld%%", (long)(100 * [_done integerValue] / [_total integerValue])];
+  } else {
+    [desc appendFormat:@" %ld%%", (long)0];
   }
   [desc appendString:@"\u2026"];
   return desc;
@@ -71,10 +90,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   int64_t sourceLength;
   NSError *error;
-  NSData *data = [self attemptSynchronousLoadOfBundleAtURL:scriptURL
-                                          runtimeBCVersion:JSNoBytecodeFileFormatVersion
-                                              sourceLength:&sourceLength
-                                                     error:&error];
+  NSData *data = [self attemptSynchronousLoadOfBundleAtURL:scriptURL sourceLength:&sourceLength error:&error];
   if (data) {
     onComplete(nil, RCTSourceCreate(scriptURL, data, sourceLength));
     return;
@@ -91,7 +107,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 }
 
 + (NSData *)attemptSynchronousLoadOfBundleAtURL:(NSURL *)scriptURL
-                               runtimeBCVersion:(int32_t)runtimeBCVersion
                                    sourceLength:(int64_t *)sourceLength
                                           error:(NSError **)error
 {
@@ -182,27 +197,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
       return nil;
 #endif
     }
-    case facebook::react::ScriptTag::BCBundle:
-      if (runtimeBCVersion == JSNoBytecodeFileFormatVersion || runtimeBCVersion < 0) {
-        if (error) {
-          *error = [NSError
-              errorWithDomain:RCTJavaScriptLoaderErrorDomain
-                         code:RCTJavaScriptLoaderErrorBCNotSupported
-                     userInfo:@{NSLocalizedDescriptionKey : @"Bytecode bundles are not supported by this runtime."}];
-        }
-        return nil;
-      } else if ((uint32_t)runtimeBCVersion != header.version) {
-        if (error) {
-          NSString *errDesc = [NSString
-              stringWithFormat:@"BC Version Mismatch. Expect: %d, Actual: %u", runtimeBCVersion, header.version];
-
-          *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
-                                       code:RCTJavaScriptLoaderErrorBCVersion
-                                   userInfo:@{NSLocalizedDescriptionKey : errDesc}];
-        }
-        return nil;
-      }
-      break;
   }
 
   struct stat statInfo;
@@ -296,10 +290,25 @@ static void attemptAsynchronousLoadOfBundleAtURL(
         // Validate that the packager actually returned javascript.
         NSString *contentType = headers[@"Content-Type"];
         NSString *mimeType = [[contentType componentsSeparatedByString:@";"] firstObject];
-        if (![mimeType isEqualToString:@"application/javascript"] && ![mimeType isEqualToString:@"text/javascript"]) {
-          NSString *description = [NSString
-              stringWithFormat:@"Expected MIME-Type to be 'application/javascript' or 'text/javascript', but got '%@'.",
-                               mimeType];
+        if (![mimeType isEqualToString:@"application/javascript"] && ![mimeType isEqualToString:@"text/javascript"] &&
+            ![mimeType isEqualToString:@"application/x-metro-bytecode-bundle"]) {
+          NSString *description;
+          if ([mimeType isEqualToString:@"application/json"]) {
+            NSError *parseError;
+            NSDictionary *jsonError = [NSJSONSerialization JSONObjectWithData:data options:0 error:&parseError];
+            if (!parseError && [jsonError isKindOfClass:[NSDictionary class]] &&
+                [[jsonError objectForKey:@"message"] isKindOfClass:[NSString class]] &&
+                [[jsonError objectForKey:@"message"] length]) {
+              description = [jsonError objectForKey:@"message"];
+            } else {
+              description = [NSString stringWithFormat:@"Unknown error fetching '%@'.", scriptURL.absoluteString];
+            }
+          } else {
+            description = [NSString
+                stringWithFormat:
+                    @"Expected MIME-Type to be 'application/javascript' or 'text/javascript', but got '%@'.", mimeType];
+          }
+
           error = [NSError
               errorWithDomain:@"JSServer"
                          code:NSURLErrorCannotParseResponse
@@ -314,7 +323,8 @@ static void attemptAsynchronousLoadOfBundleAtURL(
       }
       progressHandler:^(NSDictionary *headers, NSNumber *loaded, NSNumber *total) {
         // Only care about download progress events for the javascript bundle part.
-        if ([headers[@"Content-Type"] isEqualToString:@"application/javascript"]) {
+        if ([headers[@"Content-Type"] isEqualToString:@"application/javascript"] ||
+            [headers[@"Content-Type"] isEqualToString:@"application/x-metro-bytecode-bundle"]) {
           onProgress(progressEventFromDownloadProgress(loaded, total));
         }
       }];
@@ -346,7 +356,7 @@ static RCTLoadingProgress *progressEventFromData(NSData *rawData)
 static RCTLoadingProgress *progressEventFromDownloadProgress(NSNumber *total, NSNumber *done)
 {
   RCTLoadingProgress *progress = [RCTLoadingProgress new];
-  progress.status = @"Downloading JavaScript bundle";
+  progress.status = @"Downloading";
   // Progress values are in bytes transform them to kilobytes for smaller numbers.
   progress.done = done != nil ? @([done integerValue] / 1024) : nil;
   progress.total = total != nil ? @([total integerValue] / 1024) : nil;

@@ -22,7 +22,7 @@ import invariant from 'invariant';
 import processColor from '../../StyleSheet/processColor';
 
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ColorValue, TextStyleProp} from '../../StyleSheet/StyleSheet';
 
 type PickerItemSelectSyntheticEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -36,6 +36,7 @@ type Props = $ReadOnly<{|
   accessibilityLabel?: ?Stringish,
   children?: React.Node,
   style?: ?TextStyleProp,
+  backgroundColor?: ?ColorValue,
   selectedValue?: ?PickerItemValue,
   enabled?: ?boolean,
   mode?: ?('dialog' | 'dropdown'),
@@ -99,7 +100,7 @@ function PickerAndroid(props: Props): React.Node {
           props.mode === 'dropdown'
             ? AndroidDropdownPickerCommands
             : AndroidDialogPickerCommands;
-        Commands.setNativeSelectedPosition(current, selected);
+        Commands.setNativeSelectedPosition(current, position);
       }
     },
     [
@@ -119,10 +120,8 @@ function PickerAndroid(props: Props): React.Node {
     prompt: props.prompt,
     ref: pickerRef,
     selected,
-    style: StyleSheet.compose(
-      styles.pickerAndroid,
-      props.style,
-    ),
+    style: StyleSheet.compose(styles.pickerAndroid, props.style),
+    backgroundColor: props.backgroundColor,
     testID: props.testID,
   };
   return props.mode === 'dropdown' ? (

@@ -40,7 +40,7 @@ struct Registration {
   std::mutex _mutex; // protects all ivars
   RCTReconnectingWebSocket *_socket;
   BOOL _socketConnected;
-  NSString *_jsLocationForSocket;
+  NSString *_serverHostPortForSocket;
   id _bundleURLChangeObserver;
   uint32_t _nextToken;
   std::vector<Registration<RCTNotificationHandler>> _notificationRegistrations;
@@ -62,8 +62,8 @@ struct Registration {
 {
   if (self = [super init]) {
     _nextToken = 1; // Prevent randomly erasing a handler if you pass a bogus 0 token
-    _jsLocationForSocket = [RCTBundleURLProvider sharedSettings].jsLocation;
-    _socket = socketForLocation(_jsLocationForSocket);
+    _serverHostPortForSocket = [[RCTBundleURLProvider sharedSettings] packagerServerHostPort];
+    _socket = socketForLocation(_serverHostPortForSocket);
     _socket.delegate = self;
     [_socket start];
 
@@ -79,12 +79,21 @@ struct Registration {
   return self;
 }
 
-static RCTReconnectingWebSocket *socketForLocation(NSString *const jsLocation)
+static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHostPort)
 {
+  NSString *serverHost;
+  NSString *serverPort;
+  NSArray *locationComponents = [serverHostPort componentsSeparatedByString:@":"];
+  if ([locationComponents count] > 0) {
+    serverHost = locationComponents[0];
+  }
+  if ([locationComponents count] > 1) {
+    serverPort = locationComponents[1];
+  }
   NSURLComponents *const components = [NSURLComponents new];
-  components.host = jsLocation ?: @"localhost";
+  components.host = serverHost ?: @"localhost";
   components.scheme = @"http";
-  components.port = @(kRCTBundleURLProviderDefaultPort);
+  components.port = serverPort ? @(serverPort.integerValue) : @(kRCTBundleURLProviderDefaultPort);
   components.path = @"/message";
   components.queryItems = @[ [NSURLQueryItem queryItemWithName:@"role" value:@"ios"] ];
   static dispatch_queue_t queue;
@@ -118,15 +127,15 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const jsLocation)
     return; // already stopped
   }
 
-  NSString *const jsLocation = [RCTBundleURLProvider sharedSettings].jsLocation;
-  if ([jsLocation isEqual:_jsLocationForSocket]) {
+  NSString *const serverHostPort = [[RCTBundleURLProvider sharedSettings] packagerServerHostPort];
+  if ([serverHostPort isEqual:_serverHostPortForSocket]) {
     return; // unchanged
   }
 
   _socket.delegate = nil;
   [_socket stop];
-  _jsLocationForSocket = jsLocation;
-  _socket = socketForLocation(jsLocation);
+  _serverHostPortForSocket = serverHostPort;
+  _socket = socketForLocation(serverHostPort);
   _socket.delegate = self;
   [_socket start];
 }

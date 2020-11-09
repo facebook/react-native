@@ -12,12 +12,10 @@ import static android.content.Context.UI_MODE_SERVICE;
 import android.annotation.SuppressLint;
 import android.app.UiModeManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Build;
 import android.provider.Settings.Secure;
 import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativePlatformConstantsAndroidSpec;
-import com.facebook.react.R;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
@@ -72,8 +70,12 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
     constants.put("Serial", Build.SERIAL);
     constants.put("Fingerprint", Build.FINGERPRINT);
     constants.put("Model", Build.MODEL);
+    constants.put("Manufacturer", Build.MANUFACTURER);
+    constants.put("Brand", Build.BRAND);
     if (ReactBuildConfig.DEBUG) {
-      constants.put("ServerHost", getServerHost());
+      constants.put(
+          "ServerHost",
+          AndroidInfoHelpers.getServerHost(getReactApplicationContext().getApplicationContext()));
     }
     constants.put(
         "isTesting", "true".equals(System.getProperty(IS_TESTING)) || isRunningScreenshotTest());
@@ -97,13 +99,5 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
     } catch (ClassNotFoundException ignored) {
       return false;
     }
-  }
-
-  private String getServerHost() {
-    Resources resources = getReactApplicationContext().getApplicationContext().getResources();
-
-    Integer devServerPort = resources.getInteger(R.integer.react_native_dev_server_port);
-
-    return AndroidInfoHelpers.getServerHost(devServerPort);
   }
 }

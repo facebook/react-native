@@ -9,6 +9,7 @@
 
 #import <Foundation/NSMapTable.h>
 #import <React/RCTAssert.h>
+#import <React/RCTConstants.h>
 
 #import "RCTImageComponentView.h"
 #import "RCTParagraphComponentView.h"
@@ -17,60 +18,6 @@
 #import <better/map.h>
 
 using namespace facebook::react;
-
-#define LEGACY_UIMANAGER_INTEGRATION_ENABLED 1
-
-#ifdef LEGACY_UIMANAGER_INTEGRATION_ENABLED
-
-#import <React/RCTBridge+Private.h>
-#import <React/RCTUIManager.h>
-
-/**
- * Warning: This is a total hack and temporary solution.
- * Unless we have a pure Fabric-based implementation of UIManager commands
- * delivery pipeline, we have to leverage existing infra. This code tricks
- * legacy UIManager by registering all Fabric-managed views in it,
- * hence existing command-delivery infra can reach "foreign" views using
- * the old pipeline.
- */
-@interface RCTUIManager ()
-- (NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry;
-@end
-
-@interface RCTUIManager (Hack)
-
-+ (void)registerView:(UIView *)view;
-+ (void)unregisterView:(UIView *)view;
-
-@end
-
-@implementation RCTUIManager (Hack)
-
-+ (void)registerView:(UIView *)view
-{
-  if (!view) {
-    return;
-  }
-
-  RCTUIManager *uiManager = [[RCTBridge currentBridge] uiManager];
-  view.reactTag = @(view.tag);
-  [uiManager.viewRegistry setObject:view forKey:@(view.tag)];
-}
-
-+ (void)unregisterView:(UIView *)view
-{
-  if (!view) {
-    return;
-  }
-
-  RCTUIManager *uiManager = [[RCTBridge currentBridge] uiManager];
-  view.reactTag = nil;
-  [uiManager.viewRegistry removeObjectForKey:@(view.tag)];
-}
-
-@end
-
-#endif
 
 const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
@@ -100,6 +47,10 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
 - (void)preallocateViewComponents
 {
+  if (RCTExperimentGetPreemptiveViewAllocationDisabled()) {
+    return;
+  }
+
   // This data is based on empirical evidence which should represent the reality pretty well.
   // Regular `<View>` has magnitude equals to `1` by definition.
   std::vector<std::pair<ComponentHandle, float>> componentMagnitudes = {
@@ -120,7 +71,8 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   }
 }
 
-- (RCTComponentViewDescriptor)dequeueComponentViewWithComponentHandle:(ComponentHandle)componentHandle tag:(Tag)tag
+- (RCTComponentViewDescriptor const &)dequeueComponentViewWithComponentHandle:(ComponentHandle)componentHandle
+                                                                          tag:(Tag)tag
 {
   RCTAssertMainQueue();
 
@@ -130,14 +82,8 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
   auto componentViewDescriptor = [self _dequeueComponentViewWithComponentHandle:componentHandle];
   componentViewDescriptor.view.tag = tag;
-
-  _registry.insert({tag, componentViewDescriptor});
-
-#ifdef LEGACY_UIMANAGER_INTEGRATION_ENABLED
-  [RCTUIManager registerView:componentViewDescriptor.view];
-#endif
-
-  return componentViewDescriptor;
+  auto it = _registry.insert({tag, componentViewDescriptor});
+  return it.first->second;
 }
 
 - (void)enqueueComponentViewWithComponentHandle:(ComponentHandle)componentHandle
@@ -148,10 +94,6 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
   RCTAssert(
       _registry.find(tag) != _registry.end(), @"RCTComponentViewRegistry: Attempt to enqueue unregistered component.");
-
-#ifdef LEGACY_UIMANAGER_INTEGRATION_ENABLED
-  [RCTUIManager unregisterView:componentViewDescriptor.view];
-#endif
 
   _registry.erase(tag);
   componentViewDescriptor.view.tag = 0;
@@ -189,7 +131,7 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   RCTAssertMainQueue();
   auto &recycledViews = _recyclePool[componentHandle];
 
-  if (recycledViews.size() == 0) {
+  if (recycledViews.empty()) {
     return [self.componentViewFactory createComponentViewWithComponentHandle:componentHandle];
   }
 
@@ -208,6 +150,8 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
     return;
   }
 
+  RCTAssert(
+      componentViewDescriptor.view.superview == nil, @"RCTComponentViewRegistry: Attempt to recycle a mounted view.");
   [componentViewDescriptor.view prepareForRecycle];
 
   recycledViews.push_back(componentViewDescriptor);

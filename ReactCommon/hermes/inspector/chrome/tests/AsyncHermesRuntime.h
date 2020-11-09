@@ -27,7 +27,9 @@ namespace chrome {
  */
 class AsyncHermesRuntime {
  public:
-  AsyncHermesRuntime();
+  // Create a runtime. If veryLazy, configure the runtime to use completely
+  // lazy compilation.
+  AsyncHermesRuntime(bool veryLazy = false);
   ~AsyncHermesRuntime();
 
   std::shared_ptr<HermesRuntime> runtime() {
@@ -51,6 +53,11 @@ class AsyncHermesRuntime {
    * to storeValue() by the JS script.
    */
   folly::Future<jsi::Value> getStoredValue();
+
+  /**
+   * hasStoredValue returns whether or not a value has been stored yet
+   */
+  bool hasStoredValue();
 
   /**
    * awaitStoredValue is a helper for getStoredValue that returns the value

@@ -22,7 +22,7 @@
 
 static NSString *const RCTImageStoreURLScheme = @"rct-image-store";
 
-@interface RCTImageStoreManager() <NativeImageStoreSpec>
+@interface RCTImageStoreManager() <NativeImageStoreIOSSpec>
 @end
 
 @implementation RCTImageStoreManager
@@ -234,10 +234,9 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   });
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-  (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeImageStoreSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeImageStoreIOSSpecJSI>(params);
 }
 
 @end

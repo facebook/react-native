@@ -5,29 +5,34 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-
-const convertRequestBody = require('./convertRequestBody');
-
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeNetworkingIOS from './NativeNetworkingIOS';
 import type {NativeResponseType} from './XMLHttpRequest';
+import convertRequestBody from './convertRequestBody';
 import type {RequestBody} from './convertRequestBody';
 
 class RCTNetworking extends NativeEventEmitter {
   constructor() {
-    super(NativeNetworkingIOS);
+    const disableCallsIntoModule =
+      typeof global.__disableRCTNetworkingExtraneousModuleCalls === 'function'
+        ? global.__disableRCTNetworkingExtraneousModuleCalls()
+        : false;
+
+    super(NativeNetworkingIOS, {
+      __SECRET_DISABLE_CALLS_INTO_MODULE_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: disableCallsIntoModule,
+    });
   }
 
   sendRequest(
     method: string,
     trackingName: string,
     url: string,
-    headers: Object,
+    headers: {...},
     data: RequestBody,
     responseType: NativeResponseType,
     incrementalUpdates: boolean,

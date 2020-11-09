@@ -41,9 +41,9 @@ RCT_EXPORT_MODULE()
   };
 }
 
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+- (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<NativeSourceCodeSpecJSI>(self, jsInvoker);
+  return std::make_shared<NativeSourceCodeSpecJSI>(params);
 }
 
 @end

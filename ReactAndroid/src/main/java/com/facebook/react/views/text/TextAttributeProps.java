@@ -10,12 +10,14 @@ package com.facebook.react.views.text;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
+import android.util.LayoutDirection;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaDirection;
@@ -57,6 +59,9 @@ public class TextAttributeProps {
   protected float mLetterSpacingInput = Float.NaN;
   protected int mTextAlign = Gravity.NO_GRAVITY;
 
+  // `UNSET` is -1 and is the same as `LayoutDirection.UNDEFINED` but the symbol isn't available.
+  protected int mLayoutDirection = UNSET;
+
   protected TextTransform mTextTransform = TextTransform.UNSET;
 
   protected float mTextShadowOffsetDx = 0;
@@ -67,6 +72,9 @@ public class TextAttributeProps {
   protected boolean mIsUnderlineTextDecorationSet = false;
   protected boolean mIsLineThroughTextDecorationSet = false;
   protected boolean mIncludeFontPadding = true;
+
+  protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
+  protected boolean mIsAccessibilityRoleSet = false;
 
   /**
    * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}. mFontWeight can be {@link
@@ -129,10 +137,11 @@ public class TextAttributeProps {
     setTextShadowRadius(getIntProp(PROP_SHADOW_RADIUS, 1));
     setTextShadowColor(getIntProp(PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
     setTextTransform(getStringProp(PROP_TEXT_TRANSFORM));
+    setLayoutDirection(getStringProp(ViewProps.LAYOUT_DIRECTION));
+    setAccessibilityRole(getStringProp(ViewProps.ACCESSIBILITY_ROLE));
   }
 
-  // TODO T63645393 add support for RTL
-  public static int getTextAlignment(ReactStylesDiffMap props) {
+  public static int getTextAlignment(ReactStylesDiffMap props, boolean isRTL) {
     @Nullable
     String textAlignPropValue =
         props.hasKey(ViewProps.TEXT_ALIGN) ? props.getString(ViewProps.TEXT_ALIGN) : null;
@@ -144,9 +153,9 @@ public class TextAttributeProps {
       if (textAlignPropValue == null || "auto".equals(textAlignPropValue)) {
         textAlignment = Gravity.NO_GRAVITY;
       } else if ("left".equals(textAlignPropValue)) {
-        textAlignment = Gravity.LEFT;
+        textAlignment = isRTL ? Gravity.RIGHT : Gravity.LEFT;
       } else if ("right".equals(textAlignPropValue)) {
-        textAlignment = Gravity.RIGHT;
+        textAlignment = isRTL ? Gravity.LEFT : Gravity.RIGHT;
       } else if ("center".equals(textAlignPropValue)) {
         textAlignment = Gravity.CENTER_HORIZONTAL;
       } else {
@@ -369,6 +378,19 @@ public class TextAttributeProps {
     }
   }
 
+  public void setLayoutDirection(@Nullable String layoutDirection) {
+    if (layoutDirection == null || "undefined".equals(layoutDirection)) {
+      mLayoutDirection = UNSET;
+    } else if ("rtl".equals(layoutDirection)) {
+      mLayoutDirection = LayoutDirection.RTL;
+    } else if ("ltr".equals(layoutDirection)) {
+      mLayoutDirection = LayoutDirection.LTR;
+    } else {
+      throw new JSApplicationIllegalArgumentException(
+          "Invalid layoutDirection: " + layoutDirection);
+    }
+  }
+
   public void setTextShadowRadius(float textShadowRadius) {
     if (textShadowRadius != mTextShadowRadius) {
       mTextShadowRadius = textShadowRadius;
@@ -392,6 +414,14 @@ public class TextAttributeProps {
       mTextTransform = TextTransform.CAPITALIZE;
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
+    }
+  }
+
+  public void setAccessibilityRole(@Nullable String accessibilityRole) {
+    if (accessibilityRole != null) {
+      mIsAccessibilityRoleSet = accessibilityRole != null;
+      mAccessibilityRole =
+          ReactAccessibilityDelegate.AccessibilityRole.fromValue(accessibilityRole);
     }
   }
 

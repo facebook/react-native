@@ -47,8 +47,8 @@ public class AppearanceModule extends NativeAppearanceSpec {
       ReactApplicationContext reactContext, @Nullable OverrideColorScheme overrideColorScheme) {
     super(reactContext);
 
-    mColorScheme = colorSchemeForCurrentConfiguration(reactContext);
     mOverrideColorScheme = overrideColorScheme;
+    mColorScheme = colorSchemeForCurrentConfiguration(reactContext);
   }
 
   private String colorSchemeForCurrentConfiguration(Context context) {

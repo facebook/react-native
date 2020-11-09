@@ -300,7 +300,7 @@ describe('VirtualizedList', () => {
 
     // This is checking if the ref acts like a ScrollView. If we had an
     // `isScrollView(ref)` method, that would be preferred.
-    expect(scrollRef.scrollTo).toBeInstanceOf(Function);
+    expect(scrollRef.scrollTo).toBeInstanceOf(jest.fn().constructor);
   });
 
   it('getScrollRef for case where it returns a View', () => {
@@ -455,5 +455,53 @@ describe('VirtualizedList', () => {
     } finally {
       console.error.mockRestore();
     }
+  });
+
+  it('throws if using scrollToIndex with index less than 0', () => {
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+        renderItem={({item}) => <item value={item.key} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
+    const instance = component.getInstance();
+
+    expect(() => instance.scrollToIndex({index: -1})).toThrow(
+      'scrollToIndex out of range: requested index -1 but minimum is 0',
+    );
+  });
+
+  it('throws if using scrollToIndex when item length is less than 1', () => {
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[]}
+        renderItem={({item}) => <item value={item.key} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
+    const instance = component.getInstance();
+
+    expect(() => instance.scrollToIndex({index: 1})).toThrow(
+      'scrollToIndex out of range: item length 0 but minimum is 1',
+    );
+  });
+
+  it('throws if using scrollToIndex when requested index is bigger than or equal to item length', () => {
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+        renderItem={({item}) => <item value={item.key} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
+    const instance = component.getInstance();
+
+    expect(() => instance.scrollToIndex({index: 3})).toThrow(
+      'scrollToIndex out of range: requested index 3 is out of 0 to 2',
+    );
   });
 });

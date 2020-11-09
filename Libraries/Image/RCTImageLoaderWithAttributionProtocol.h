@@ -15,7 +15,10 @@ RCT_EXTERN BOOL RCTImageLoadingPerfInstrumentationEnabled(void);
 RCT_EXTERN void RCTEnableImageLoadingInstrumentation(BOOL enabled);
 RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
 
-@protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol>
+RCT_EXTERN BOOL RCTGetImageLoadingPerfInstrumentationForFabricEnabled();
+RCT_EXTERN void RCTSetImageLoadingPerfInstrumentationForFabricEnabledBlock(BOOL (^getEnabled)());
+
+@protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol, RCTImageLoaderLoggableProtocol>
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
@@ -28,21 +31,22 @@ RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
                                                 scale:(CGFloat)scale
                                               clipped:(BOOL)clipped
                                            resizeMode:(RCTResizeMode)resizeMode
+                                             priority: (RCTImageLoaderPriority)priority
                                           attribution:(const facebook::react::ImageURLLoaderAttribution &)attribution
                                         progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                      partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
-                                      completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+                                      completionBlock:(RCTImageLoaderCompletionBlockWithMetadata)completionBlock;
 #endif
-
-/**
- * Image instrumentation - notify that the image content (UIImage) has been set on the native view.
- */
-- (void)trackURLImageContentDidSetForRequest:(RCTImageURLLoaderRequest *)loaderRequest;
 
 /**
  * Image instrumentation - start tracking the on-screen visibility of the native image view.
  */
 - (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(UIView *)imageView;
+
+/**
+ * Image instrumentation - notify that the request was cancelled.
+ */
+- (void)trackURLImageRequestDidDestroy:(RCTImageURLLoaderRequest *)loaderRequest;
 
 /**
  * Image instrumentation - notify that the native image view was destroyed.

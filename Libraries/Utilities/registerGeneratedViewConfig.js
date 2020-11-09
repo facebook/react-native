@@ -50,25 +50,25 @@ function registerGeneratedViewConfig(
   const mergedViewConfig = {
     uiViewClassName: componentName,
     Commands: {},
+    /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.122.0 was deployed. To see the error, delete
+     * this comment and run Flow. */
     bubblingEventTypes: {
       ...ReactNativeViewViewConfig.bubblingEventTypes,
-      /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.111 was deployed. To see the error, delete
-       * this comment and run Flow. */
       ...(viewConfig.bubblingEventTypes || {}),
     },
+    /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.122.0 was deployed. To see the error, delete
+     * this comment and run Flow. */
     directEventTypes: {
       ...ReactNativeViewViewConfig.directEventTypes,
-      /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.111 was deployed. To see the error, delete
-       * this comment and run Flow. */
       ...(viewConfig.directEventTypes || {}),
     },
+    /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.122.0 was deployed. To see the error, delete
+     * this comment and run Flow. */
     validAttributes: {
       ...ReactNativeViewViewConfig.validAttributes,
-      /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.111 was deployed. To see the error, delete
-       * this comment and run Flow. */
       ...(viewConfig.validAttributes || {}),
     },
   };

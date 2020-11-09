@@ -9,7 +9,6 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
 #import <React/RCTImageBlurUtils.h>
 #import <React/RCTImageSource.h>
 #import <React/RCTImageUtils.h>
@@ -41,9 +40,9 @@ static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSi
 static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 {
   NSDictionary *dict = @{
+    @"uri": source.request.URL.absoluteString,
     @"width": @(source.size.width),
     @"height": @(source.size.height),
-    @"url": source.request.URL.absoluteString,
   };
   return @{ @"source": dict };
 }
@@ -64,6 +63,9 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   // Weak reference back to the bridge, for image loading
   __weak RCTBridge *_bridge;
 
+  // Weak reference back to the active image loader.
+  __weak id<RCTImageLoaderWithAttributionProtocol> _imageLoader;
+
   // The image source that's currently displayed
   RCTImageSource *_imageSource;
 
@@ -73,13 +75,12 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   // Size of the image loaded / being loaded, so we can determine when to issue a reload to accommodate a changing size.
   CGSize _targetSize;
 
-  // A block that can be invoked to cancel the most recent call to -reloadImage, if any
-  RCTImageLoaderCancellationBlock _reloadImageCancellationBlock;
-
   // Whether the latest change of props requires the image to be reloaded
   BOOL _needsReload;
 
   RCTUIImageViewAnimated *_imageView;
+
+  RCTImageURLLoaderRequest *_loaderRequest;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -214,28 +215,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 
+- (void)setInternal_analyticTag:(NSString *)internal_analyticTag {
+    if (_internal_analyticTag != internal_analyticTag) {
+        _internal_analyticTag = internal_analyticTag;
+        _needsReload = YES;
+    }
+}
+
 - (void)cancelImageLoad
 {
-  RCTImageLoaderCancellationBlock previousCancellationBlock = _reloadImageCancellationBlock;
-  if (previousCancellationBlock) {
-    previousCancellationBlock();
-    _reloadImageCancellationBlock = nil;
-  }
-
+  [_loaderRequest cancel];
   _pendingImageSource = nil;
 }
 
-- (void)clearImage
+- (void)cancelAndClearImageLoad
 {
   [self cancelImageLoad];
-  self.image = nil;
-  _imageSource = nil;
+
+  [_imageLoader trackURLImageRequestDidDestroy:_loaderRequest];
+  _loaderRequest = nil;
 }
 
 - (void)clearImageIfDetached
 {
   if (!self.window) {
-    [self clearImage];
+    [self cancelAndClearImageLoad];
+    self.image = nil;
+    _imageSource = nil;
   }
 }
 
@@ -291,7 +297,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)reloadImage
 {
-  [self cancelImageLoad];
+  [self cancelAndClearImageLoad];
   _needsReload = NO;
 
   RCTImageSource *source = [self imageSourceForSize:self.frame.size];
@@ -325,27 +331,31 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       imageScale = source.scale;
     }
 
-    RCTImageLoaderCompletionBlock completionHandler = ^(NSError *error, UIImage *loadedImage) {
+    RCTImageLoaderCompletionBlockWithMetadata completionHandler = ^(NSError *error, UIImage *loadedImage, id metadata) {
       [weakSelf imageLoaderLoadedImage:loadedImage error:error forImageSource:source partial:NO];
     };
 
-    id<RCTImageLoaderWithAttributionProtocol> imageLoader = [_bridge moduleForName:@"ImageLoader"
-                                                             lazilyLoadIfNecessary:YES];
-    RCTImageURLLoaderRequest *loaderRequest = [imageLoader loadImageWithURLRequest:source.request
-                                                                              size:imageSize
-                                                                             scale:imageScale
+    if (!_imageLoader) {
+      _imageLoader = [_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES];
+    }
+
+    RCTImageURLLoaderRequest *loaderRequest = [_imageLoader loadImageWithURLRequest:source.request
+                                                                               size:imageSize
+                                                                              scale:imageScale
                                                                            clipped:NO
                                                                         resizeMode:_resizeMode
+                                                                          priority:RCTImageLoaderPriorityImmediate
                                                                        attribution:{
                                                                                    .nativeViewTag = [self.reactTag intValue],
                                                                                    .surfaceId = [self.rootTag intValue],
+                                                                                   .analyticTag = self.internal_analyticTag
                                                                                    }
                                                                      progressBlock:progressHandler
                                                                   partialLoadBlock:partialLoadHandler
                                                                    completionBlock:completionHandler];
-    _reloadImageCancellationBlock = loaderRequest.cancellationBlock;
+    _loaderRequest = loaderRequest;
   } else {
-    [self clearImage];
+    [self cancelAndClearImageLoad];
   }
 }
 
@@ -465,10 +475,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     // prioritise image requests that are actually on-screen, this removes
     // requests that have gotten "stuck" from the queue, unblocking other images
     // from loading.
+    // Do not clear _loaderRequest because this component can be visible again without changing image source
     [self cancelImageLoad];
   } else if ([self shouldChangeImageSource]) {
     [self reloadImage];
   }
+}
+
+- (void)dealloc {
+  [_imageLoader trackURLImageDidDestroy:_loaderRequest];
 }
 
 @end

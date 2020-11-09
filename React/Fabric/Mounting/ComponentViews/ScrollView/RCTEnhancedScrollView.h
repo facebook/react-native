@@ -13,6 +13,17 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /*
+ * Many `UIScrollView` customizations normally require creating a subclass which is not always convenient.
+ * `RCTEnhancedScrollView` has a delegate (conforming to this protocol) that allows customizing such behaviors without
+ * creating a subclass.
+ */
+@protocol RCTEnhancedScrollViewOverridingDelegate <NSObject>
+
+- (BOOL)touchesShouldCancelInContentView:(UIView *)view;
+
+@end
+
+/*
  * `UIScrollView` subclass which has some improvements and tweaks
  * which are not directly related to React Native.
  */
@@ -31,8 +42,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, readonly) RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *delegateSplitter;
 
+@property (nonatomic, weak) id<RCTEnhancedScrollViewOverridingDelegate> overridingDelegate;
 @property (nonatomic, assign) BOOL pinchGestureEnabled;
 @property (nonatomic, assign) BOOL centerContent;
+@property (nonatomic, assign) CGFloat snapToInterval;
+@property (nonatomic, copy) NSString *snapToAlignment;
+@property (nonatomic, assign) BOOL disableIntervalMomentum;
+@property (nonatomic, assign) BOOL snapToStart;
+@property (nonatomic, assign) BOOL snapToEnd;
+@property (nonatomic, copy) NSArray<NSNumber *> *snapToOffsets;
 
 @end
 

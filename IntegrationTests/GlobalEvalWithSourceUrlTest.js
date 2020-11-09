@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {ExtendedError} from 'react-native/Libraries/Core/Devtools/parseErrorStack';
+
 const React = require('react');
 const ReactNative = require('react-native');
 const parseErrorStack = require('react-native/Libraries/Core/Devtools/parseErrorStack');
@@ -31,7 +33,7 @@ class GlobalEvalWithSourceUrlTest extends React.Component<{...}> {
         'Expected globalEvalWithSourceUrl(expression) to return a value',
       );
     }
-    let syntaxError;
+    let syntaxError: ?ExtendedError;
     try {
       global.globalEvalWithSourceUrl('{');
     } catch (e) {
@@ -42,7 +44,12 @@ class GlobalEvalWithSourceUrlTest extends React.Component<{...}> {
         'Expected globalEvalWithSourceUrl to throw on a syntax error',
       );
     }
-    if (!(syntaxError instanceof SyntaxError)) {
+    // Hermes throws an Error instead of a SyntaxError
+    // https://github.com/facebook/hermes/issues/400
+    if (
+      syntaxError.jsEngine !== 'hermes' &&
+      !(syntaxError instanceof SyntaxError)
+    ) {
       throw new Error(
         'Expected globalEvalWithSourceUrl to throw SyntaxError on a syntax error',
       );
@@ -59,7 +66,7 @@ class GlobalEvalWithSourceUrlTest extends React.Component<{...}> {
         'Expected globalEvalWithSourceUrl to throw an Error object',
       );
     }
-    const parsedStack = parseErrorStack(error);
+    const parsedStack = parseErrorStack(error?.stack);
     if (parsedStack[0].file !== url) {
       throw new Error(
         `Expected first eval stack frame to be in ${url} but found ${String(

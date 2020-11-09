@@ -83,11 +83,9 @@ public class ReactTextViewManager
   @Override
   public Object updateState(
       ReactTextView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    // TODO T55794595: Add support for updating state with null stateWrapper
     ReadableNativeMap state = stateWrapper.getState();
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
-
     Spannable spanned =
         TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
@@ -100,7 +98,7 @@ public class ReactTextViewManager
         spanned,
         state.hasKey("mostRecentEventCount") ? state.getInt("mostRecentEventCount") : -1,
         false, // TODO add this into local Data
-        TextAttributeProps.getTextAlignment(props),
+        TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props));
   }
@@ -122,7 +120,7 @@ public class ReactTextViewManager
       YogaMeasureMode widthMode,
       float height,
       YogaMeasureMode heightMode,
-      @Nullable int[] attachmentsPositions) {
+      @Nullable float[] attachmentsPositions) {
 
     return TextLayoutManager.measureText(
         context,

@@ -11,6 +11,7 @@
 #include <vector>
 #include <array>
 #include <yoga/YGEnums.h>
+#include <stdint.h>
 
 struct YGConfig;
 struct YGNode;

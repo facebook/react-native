@@ -14,7 +14,6 @@
 #include <vector>
 
 #include <ReactCommon/CallInvokerHolder.h>
-#include <ReactCommon/MessageQueueThreadCallInvoker.h>
 #include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
 #include <cxxreact/JSBigString.h>
@@ -93,12 +92,6 @@ CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
 CatalystInstanceImpl::CatalystInstanceImpl()
     : instance_(std::make_unique<Instance>()) {}
 
-CatalystInstanceImpl::~CatalystInstanceImpl() {
-  if (moduleMessageQueue_ != NULL) {
-    moduleMessageQueue_->quitSynchronous();
-  }
-}
-
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
@@ -132,6 +125,8 @@ void CatalystInstanceImpl::registerNatives() {
       makeNativeMethod(
           "jniHandleMemoryPressure",
           CatalystInstanceImpl::handleMemoryPressure),
+      makeNativeMethod(
+          "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
   });
 
   JNativeRunnable::registerNatives();
@@ -288,8 +283,8 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
 jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getJSCallInvokerHolder() {
   if (!jsCallInvokerHolder_) {
-    jsCallInvokerHolder_ = jni::make_global(CallInvokerHolder::newObjectCxxArgs(
-        std::make_shared<BridgeJSCallInvoker>(instance_)));
+    jsCallInvokerHolder_ = jni::make_global(
+        CallInvokerHolder::newObjectCxxArgs(instance_->getJSCallInvoker()));
   }
 
   return jsCallInvokerHolder_;
@@ -298,13 +293,42 @@ CatalystInstanceImpl::getJSCallInvokerHolder() {
 jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getNativeCallInvokerHolder() {
   if (!nativeCallInvokerHolder_) {
-    nativeCallInvokerHolder_ =
-        jni::make_global(CallInvokerHolder::newObjectCxxArgs(
-            std::make_shared<MessageQueueThreadCallInvoker>(
-                moduleMessageQueue_)));
+    class NativeThreadCallInvoker : public CallInvoker {
+     private:
+      std::shared_ptr<JMessageQueueThread> messageQueueThread_;
+
+     public:
+      NativeThreadCallInvoker(
+          std::shared_ptr<JMessageQueueThread> messageQueueThread)
+          : messageQueueThread_(messageQueueThread) {}
+      void invokeAsync(std::function<void()> &&work) override {
+        messageQueueThread_->runOnQueue(std::move(work));
+      }
+      void invokeSync(std::function<void()> &&work) override {
+        messageQueueThread_->runOnQueueSync(std::move(work));
+      }
+    };
+
+    std::shared_ptr<CallInvoker> nativeInvoker =
+        std::make_shared<NativeThreadCallInvoker>(moduleMessageQueue_);
+
+    std::shared_ptr<CallInvoker> decoratedNativeInvoker =
+        instance_->getDecoratedNativeCallInvoker(nativeInvoker);
+
+    nativeCallInvokerHolder_ = jni::make_global(
+        CallInvokerHolder::newObjectCxxArgs(decoratedNativeInvoker));
   }
 
   return nativeCallInvokerHolder_;
+}
+
+jni::alias_ref<JRuntimeExecutor::javaobject>
+CatalystInstanceImpl::getRuntimeExecutor() {
+  if (!runtimeExecutor_) {
+    runtimeExecutor_ = jni::make_global(
+        JRuntimeExecutor::newObjectCxxArgs(instance_->getRuntimeExecutor()));
+  }
+  return runtimeExecutor_;
 }
 
 } // namespace react
