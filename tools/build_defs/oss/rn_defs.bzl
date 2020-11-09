@@ -122,6 +122,7 @@ def rn_extra_build_flags():
 
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
+    _ = kwargs.pop("is_androidx", False)
     if react_native_target(
         "java/com/facebook/react/uimanager/annotations:annotations",
     ) in deps and name != "processing":
@@ -144,7 +145,7 @@ def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
 
         plugins = list(set(plugins + react_module_plugins))
 
-    native.android_library(name = name, deps = deps, plugins = plugins, provided_deps = provided_deps, *args, **kwargs)
+    native.android_library(name = name, deps = deps, plugins = plugins, *args, **kwargs)
 
 def rn_android_binary(*args, **kwargs):
     native.android_binary(*args, **kwargs)
