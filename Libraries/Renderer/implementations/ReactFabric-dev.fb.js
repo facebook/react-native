@@ -1239,9 +1239,8 @@ var DehydratedFragment = 18;
 var SuspenseListComponent = 19;
 var FundamentalComponent = 20;
 var ScopeComponent = 21;
-var Block = 22;
-var OffscreenComponent = 23;
-var LegacyHiddenComponent = 24;
+var OffscreenComponent = 22;
+var LegacyHiddenComponent = 23;
 
 /**
  * Instance of element that should respond to touch/move types of interactions,
@@ -2548,8 +2547,6 @@ var REACT_SUSPENSE_TYPE = 0xead1;
 var REACT_SUSPENSE_LIST_TYPE = 0xead8;
 var REACT_MEMO_TYPE = 0xead3;
 var REACT_LAZY_TYPE = 0xead4;
-var REACT_BLOCK_TYPE = 0xead9;
-var REACT_SERVER_BLOCK_TYPE = 0xeada;
 var REACT_FUNDAMENTAL_TYPE = 0xead5;
 var REACT_SCOPE_TYPE = 0xead7;
 var REACT_OPAQUE_ID_TYPE = 0xeae0;
@@ -2571,8 +2568,6 @@ if (typeof Symbol === "function" && Symbol.for) {
   REACT_SUSPENSE_LIST_TYPE = symbolFor("react.suspense_list");
   REACT_MEMO_TYPE = symbolFor("react.memo");
   REACT_LAZY_TYPE = symbolFor("react.lazy");
-  REACT_BLOCK_TYPE = symbolFor("react.block");
-  REACT_SERVER_BLOCK_TYPE = symbolFor("react.server.block");
   REACT_FUNDAMENTAL_TYPE = symbolFor("react.fundamental");
   REACT_SCOPE_TYPE = symbolFor("react.scope");
   REACT_OPAQUE_ID_TYPE = symbolFor("react.opaque.id");
@@ -2669,9 +2664,6 @@ function getComponentName(type) {
 
       case REACT_MEMO_TYPE:
         return getComponentName(type.type);
-
-      case REACT_BLOCK_TYPE:
-        return getComponentName(type._render);
 
       case REACT_LAZY_TYPE: {
         var lazyComponent = type;
@@ -4227,9 +4219,6 @@ function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
         // Memo may contain any component type so we recursively resolve it.
         return describeUnknownElementTypeFrameInDEV(type.type, source, ownerFn);
 
-      case REACT_BLOCK_TYPE:
-        return describeFunctionComponentFrame(type._render, source, ownerFn);
-
       case REACT_LAZY_TYPE: {
         var lazyComponent = type;
         var payload = lazyComponent._payload;
@@ -5714,7 +5703,7 @@ function flushSyncCallbackQueueImpl() {
 }
 
 // TODO: this is special because it gets imported during build.
-var ReactVersion = "17.0.1-4e5d7faf5";
+var ReactVersion = "17.0.1-454c2211c";
 
 var NoMode = 0;
 var StrictMode = 1; // TODO: Remove BlockingMode and ConcurrentMode by reading from the root
@@ -5807,9 +5796,6 @@ function describeFiber(fiber) {
 
     case ForwardRef:
       return describeFunctionComponentFrame(fiber.type.render, source, owner);
-
-    case Block:
-      return describeFunctionComponentFrame(fiber.type._render, source, owner);
 
     case ClassComponent:
       return describeClassComponentFrame(fiber.type, source, owner);
@@ -8303,7 +8289,7 @@ function warnOnFunctionType(returnFiber) {
         "Or maybe you meant to call this function rather than return it."
     );
   }
-} // We avoid inlining this to avoid potential deopts from using try/catch.
+} // This wrapper function exists because I expect to clone the code in each path
 // to be able to optimize each path individually by branching early. This needs
 // a compiler or we can do it manually. Helpers that don't need this branching
 // live outside of this function.
@@ -9161,11 +9147,6 @@ function ChildReconciler(shouldTrackSideEffects) {
             break;
           }
 
-          case Block:
-
-          // We intentionally fallthrough here if enableBlocksAPI is not on.
-          // eslint-disable-next-lined no-fallthrough
-
           default: {
             if (
               child.elementType === element.type || // Keep this check inline so it only runs on the false path:
@@ -9173,17 +9154,17 @@ function ChildReconciler(shouldTrackSideEffects) {
             ) {
               deleteRemainingChildren(returnFiber, child.sibling);
 
-              var _existing3 = useFiber(child, element.props);
+              var _existing = useFiber(child, element.props);
 
-              _existing3.ref = coerceRef(returnFiber, child, element);
-              _existing3.return = returnFiber;
+              _existing.ref = coerceRef(returnFiber, child, element);
+              _existing.return = returnFiber;
 
               {
-                _existing3._debugSource = element._source;
-                _existing3._debugOwner = element._owner;
+                _existing._debugSource = element._source;
+                _existing._debugOwner = element._owner;
               }
 
-              return _existing3;
+              return _existing;
             }
 
             break;
@@ -9364,7 +9345,6 @@ function ChildReconciler(shouldTrackSideEffects) {
         // functions and classes
         // eslint-disable-next-lined no-fallthrough
 
-        case Block:
         case FunctionComponent:
         case ForwardRef:
         case SimpleMemoComponent: {
@@ -14764,10 +14744,6 @@ function beginWork(current, workInProgress, renderLanes) {
       break;
     }
 
-    case Block: {
-      break;
-    }
-
     case OffscreenComponent: {
       return updateOffscreenComponent(current, workInProgress, renderLanes);
     }
@@ -15661,9 +15637,6 @@ function completeWork(current, workInProgress, renderLanes) {
       break;
     }
 
-    case Block:
-      break;
-
     case OffscreenComponent:
     case LegacyHiddenComponent: {
       popRenderLanes(workInProgress);
@@ -16341,8 +16314,7 @@ function commitBeforeMutationLifeCycles(current, finishedWork) {
   switch (finishedWork.tag) {
     case FunctionComponent:
     case ForwardRef:
-    case SimpleMemoComponent:
-    case Block: {
+    case SimpleMemoComponent: {
       return;
     }
 
@@ -16538,8 +16510,7 @@ function commitLifeCycles(finishedRoot, current, finishedWork, committedLanes) {
   switch (finishedWork.tag) {
     case FunctionComponent:
     case ForwardRef:
-    case SimpleMemoComponent:
-    case Block: {
+    case SimpleMemoComponent: {
       // At this point layout effects have already been destroyed (during mutation phase).
       // This is done to prevent sibling component effects from interfering with each other,
       // e.g. a destroy function in one component should never override a ref set
@@ -16837,8 +16808,7 @@ function commitUnmount(finishedRoot, current, renderPriorityLevel) {
     case FunctionComponent:
     case ForwardRef:
     case MemoComponent:
-    case SimpleMemoComponent:
-    case Block: {
+    case SimpleMemoComponent: {
       var updateQueue = current.updateQueue;
 
       if (updateQueue !== null) {
@@ -17032,8 +17002,7 @@ function commitWork(current, finishedWork) {
       case FunctionComponent:
       case ForwardRef:
       case MemoComponent:
-      case SimpleMemoComponent:
-      case Block: {
+      case SimpleMemoComponent: {
         // Layout effects are destroyed during the mutation phase so that all
         // destroy functions for all fibers are called before any create functions.
         // This prevents sibling component effects from interfering with each other,
@@ -19355,8 +19324,7 @@ function warnAboutUpdateOnNotYetMountedFiberInDEV(fiber) {
       tag !== FunctionComponent &&
       tag !== ForwardRef &&
       tag !== MemoComponent &&
-      tag !== SimpleMemoComponent &&
-      tag !== Block
+      tag !== SimpleMemoComponent
     ) {
       // Only warn for user-defined components, not internal ones like Suspense.
       return;
@@ -19408,8 +19376,7 @@ function warnAboutUpdateOnUnmountedFiberInDEV(fiber) {
       tag !== FunctionComponent &&
       tag !== ForwardRef &&
       tag !== MemoComponent &&
-      tag !== SimpleMemoComponent &&
-      tag !== Block
+      tag !== SimpleMemoComponent
     ) {
       // Only warn for user-defined components, not internal ones like Suspense.
       return;
@@ -20608,10 +20575,6 @@ function createFiberFromTypeAndProps(
             case REACT_LAZY_TYPE:
               fiberTag = LazyComponent;
               resolvedType = null;
-              break getTag;
-
-            case REACT_BLOCK_TYPE:
-              fiberTag = Block;
               break getTag;
           }
         }
