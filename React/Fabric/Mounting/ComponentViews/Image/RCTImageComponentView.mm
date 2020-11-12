@@ -18,12 +18,8 @@
 
 using namespace facebook::react;
 
-@interface RCTImageComponentView ()
-@end
-
 @implementation RCTImageComponentView {
   ImageShadowNode::ConcreteState::Shared _state;
-  ImageResponseObserverCoordinator const *_coordinator;
   RCTImageResponseObserverProxy _imageResponseObserverProxy;
 }
 
@@ -80,17 +76,14 @@ using namespace facebook::react;
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _state = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
-  auto _oldState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(oldState);
-  auto data = _state->getData();
+  auto oldImageState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(_state);
+  auto newImageState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
 
-  // This call (setting `coordinator`) must be unconditional (at the same block as setting `State`)
-  // because the setter stores a raw pointer to object that `State` owns.
-  self.coordinator = &data.getImageRequest().getObserverCoordinator();
+  [self _setStateAndResubscribeImageResponseObserver:newImageState];
 
-  bool havePreviousData = _oldState && _oldState->getData().getImageSource() != ImageSource{};
+  bool havePreviousData = oldImageState && oldImageState->getData().getImageSource() != ImageSource{};
 
-  if (!havePreviousData || data.getImageSource() != _oldState->getData().getImageSource()) {
+  if (!havePreviousData || newImageState->getData().getImageSource() != oldImageState->getData().getImageSource()) {
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
     std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadStart();
@@ -100,28 +93,26 @@ using namespace facebook::react;
   }
 }
 
-- (void)setCoordinator:(ImageResponseObserverCoordinator const *)coordinator
+- (void)_setStateAndResubscribeImageResponseObserver:(ImageShadowNode::ConcreteState::Shared const &)state
 {
-  if (_coordinator) {
-    _coordinator->removeObserver(_imageResponseObserverProxy);
+  if (_state) {
+    auto &observerCoordinator = _state->getData().getImageRequest().getObserverCoordinator();
+    observerCoordinator.removeObserver(_imageResponseObserverProxy);
   }
-  _coordinator = coordinator;
-  if (_coordinator != nullptr) {
-    _coordinator->addObserver(_imageResponseObserverProxy);
+
+  _state = state;
+
+  if (_state) {
+    auto &observerCoordinator = _state->getData().getImageRequest().getObserverCoordinator();
+    observerCoordinator.addObserver(_imageResponseObserverProxy);
   }
 }
 
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  self.coordinator = nullptr;
+  [self _setStateAndResubscribeImageResponseObserver:nullptr];
   _imageView.image = nil;
-  _state.reset();
-}
-
-- (void)dealloc
-{
-  self.coordinator = nullptr;
 }
 
 #pragma mark - RCTImageResponseDelegate
