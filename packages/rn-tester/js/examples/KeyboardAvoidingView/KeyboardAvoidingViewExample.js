@@ -87,7 +87,7 @@ const KeyboardAvoidingViewBehaviour = () => {
                 {backgroundColor: behavior === 'position' ? 'blue' : 'white'},
               ]}>
               <Text style={{color: behavior === 'position' ? 'white' : 'blue'}}>
-                Padding
+                Position
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -161,6 +161,30 @@ const KeyboardAvoidingVerticalOffset = () => {
   );
 };
 
+const KeyboardAvoidingContentContainerStyle = () => {
+  const [modalOpen, setModdalOpen] = useState(false);
+  return (
+    <View>
+      <Modal animationType="fade" visible={modalOpen}>
+        <KeyboardAvoidingView
+          keyboardVerticalOffset={20}
+          behavior={'position'}
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+          >
+          <CloseButton behavior={'height'} setModdalOpen={setModdalOpen} />
+          <TextInputForm />
+        </KeyboardAvoidingView>
+      </Modal>
+      <View>
+        <Pressable onPress={() => setModdalOpen(true)}>
+          <Text>Open Example</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
@@ -171,6 +195,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 20,
+  },
+  contentContainer: {
+    paddingTop: 20,
+    backgroundColor: '#abdebf'
   },
   textInput: {
     borderRadius: 5,
@@ -225,4 +253,10 @@ exports.examples = [
       return <KeyboardAvoidingDisabled />;
     },
   },
+  {
+    title: 'Keyboard Avoiding View with contentContainerStyle',
+    render(): React.Node {
+      return <KeyboardAvoidingContentContainerStyle/>;
+    }
+  }
 ];
