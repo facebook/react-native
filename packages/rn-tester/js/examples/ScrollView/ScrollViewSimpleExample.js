@@ -146,6 +146,10 @@ class ScrollViewSimpleExample extends React.Component<{...}> {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'rgb(239, 239, 244)',
+    flex: 1,
+  },
   verticalScrollView: {
     margin: 10,
     backgroundColor: 'white',
