@@ -24,7 +24,7 @@ const nullthrows = require('nullthrows');
 
 const NUM_ITEMS = 20;
 
-class ScrollViewSimpleExample extends React.Component<{ ... }> {
+class ScrollViewSimpleExample extends React.Component<{...}> {
   makeItems: (nItems: number, styles: any) => Array<any> = (
     nItems: number,
     styles,
@@ -58,7 +58,10 @@ class ScrollViewSimpleExample extends React.Component<{ ... }> {
           console.log('First Horizontal ScrollView onMomentumScrollEnd');
         }}
         onMomentumScrollBegin={e => {
-          console.log('First Horizontal ScrollView onMomentumScrollBegin', e.nativeEvent);
+          console.log(
+            'First Horizontal ScrollView onMomentumScrollBegin',
+            e.nativeEvent,
+          );
         }}>
         {this.makeItems(NUM_ITEMS, [
           styles.itemWrapper,
@@ -79,7 +82,10 @@ class ScrollViewSimpleExample extends React.Component<{ ... }> {
           console.log('Paging Horizontal ScrollView onMomentumScrollEnd');
         }}
         onMomentumScrollBegin={e => {
-          console.log('Paging Horizontal ScrollView onMomentumScrollBegin', e.nativeEvent);
+          console.log(
+            'Paging Horizontal ScrollView onMomentumScrollBegin',
+            e.nativeEvent,
+          );
         }}>
         {this.makeItems(NUM_ITEMS, [
           styles.itemWrapper,
@@ -96,8 +102,16 @@ class ScrollViewSimpleExample extends React.Component<{ ... }> {
             title="Animated Scroll to top"
             onPress={() => {
               nullthrows(_scrollView).scrollTo({x: 0, y: 0, animated: true});
-              nullthrows(_horizontalScrollView1).scrollTo({x: 0, y: 0, animated: true});
-              nullthrows(_horizontalScrollView2).scrollTo({x: 0, y: 0, animated: true});
+              nullthrows(_horizontalScrollView1).scrollTo({
+                x: 0,
+                y: 0,
+                animated: true,
+              });
+              nullthrows(_horizontalScrollView2).scrollTo({
+                x: 0,
+                y: 0,
+                animated: true,
+              });
             }}
             style={styles.button}
           />
@@ -121,7 +135,10 @@ class ScrollViewSimpleExample extends React.Component<{ ... }> {
             console.log('Vertical ScrollView onMomentumScrollEnd');
           }}
           onMomentumScrollBegin={e => {
-            console.log('Vertical ScrollView onMomentumScrollBegin', e.nativeEvent);
+            console.log(
+              'Vertical ScrollView onMomentumScrollBegin',
+              e.nativeEvent,
+            );
           }}>
           {items}
         </ScrollView>
@@ -167,8 +184,8 @@ exports.description =
 exports.examples = [
   {
     title: 'Simple scroll view',
-    render: function (): React.Element<typeof ScrollViewSimpleExample> {
-      return <ScrollViewSimpleExample/>;
+    render: function(): React.Element<typeof ScrollViewSimpleExample> {
+      return <ScrollViewSimpleExample />;
     },
   },
 ];
