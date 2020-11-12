@@ -174,6 +174,9 @@ const styles = StyleSheet.create({
   horizontalPagingItemWrapper: {
     width: 200,
   },
+  button: {
+    margin: 10,
+  },
 });
 
 exports.title = 'ScrollViewSimpleExample';
