@@ -113,7 +113,6 @@ class ScrollViewSimpleExample extends React.Component<{...}> {
                 animated: true,
               });
             }}
-            style={styles.button}
           />
           <Button
             title="Animated Scroll to End"
@@ -122,7 +121,6 @@ class ScrollViewSimpleExample extends React.Component<{...}> {
               nullthrows(_horizontalScrollView1).scrollToEnd({animated: true});
               nullthrows(_horizontalScrollView2).scrollToEnd({animated: true});
             }}
-            style={styles.button}
             color={'blue'}
           />
         </View>
@@ -173,9 +171,6 @@ const styles = StyleSheet.create({
   },
   horizontalPagingItemWrapper: {
     width: 200,
-  },
-  button: {
-    margin: 10,
   },
 });
 
