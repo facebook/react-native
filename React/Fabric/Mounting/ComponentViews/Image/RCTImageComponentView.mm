@@ -22,7 +22,7 @@ using namespace facebook::react;
 @end
 
 @implementation RCTImageComponentView {
-  ImageShadowNode::ConcreteStateTeller _stateTeller;
+  ImageShadowNode::ConcreteState::Shared _state;
   ImageResponseObserverCoordinator const *_coordinator;
   RCTImageResponseObserverProxy _imageResponseObserverProxy;
 }
@@ -80,9 +80,9 @@ using namespace facebook::react;
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _stateTeller.setConcreteState(state);
+  _state = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
   auto _oldState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(oldState);
-  auto data = _stateTeller.getData().value();
+  auto data = _state->getData();
 
   // This call (setting `coordinator`) must be unconditional (at the same block as setting `State`)
   // because the setter stores a raw pointer to object that `State` owns.
@@ -116,7 +116,7 @@ using namespace facebook::react;
   [super prepareForRecycle];
   self.coordinator = nullptr;
   _imageView.image = nil;
-  _stateTeller.invalidate();
+  _state.reset();
 }
 
 - (void)dealloc
@@ -128,7 +128,7 @@ using namespace facebook::react;
 
 - (void)didReceiveImage:(UIImage *)image metadata:(id)metadata fromObserver:(void const *)observer
 {
-  if (!_eventEmitter || !_stateTeller.isValid()) {
+  if (!_eventEmitter || !_state) {
     // Notifications are delivered asynchronously and might arrive after the view is already recycled.
     // In the future, we should incorporate an `EventEmitter` into a separate object owned by `ImageRequest` or `State`.
     // See for more info: T46311063.
