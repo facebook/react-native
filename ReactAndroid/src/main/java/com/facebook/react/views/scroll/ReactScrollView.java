@@ -73,6 +73,7 @@ public class ReactScrollView extends ScrollView
   private boolean mDragging;
   private boolean mPagingEnabled = false;
   private @Nullable Runnable mPostTouchRunnable;
+  private @Nullable Runnable mPostSmoothScrollRunnable;
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
   private boolean mSendMomentumEvents;
@@ -544,10 +545,10 @@ public class ReactScrollView extends ScrollView
                 ViewCompat.postOnAnimationDelayed(
                     ReactScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
               } else {
-                if (mSendMomentumEvents) {
+                if (mSendMomentumEvents && !mRunning) {
                   ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
+                  disableFpsListener();
                 }
-                disableFpsListener();
               }
             }
 
@@ -563,6 +564,45 @@ public class ReactScrollView extends ScrollView
     ViewCompat.postOnAnimationDelayed(
         this, mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
   }
+
+  /**
+   * This handles any sort of animated scrolling that may occur as a result of an API call on ScrollView.
+   * For example, calling scrollTo with animated = true, initiates a scroll effect that runs over time.
+   * To match iOS, and to have a complete API, a onMomentumScrollEnd event should accompany any scroll call
+   * so that actions can be taken when a scroll is complete.  This code maps roughly to handlePostTouchScrolling,
+   * but is much simpler as it results from a simple API call vs. a user interaction.  It only executes if
+   * momentum events are turned on.
+   */
+  public void handleSmoothScrollMomentumEvents() {
+    if (!mSendMomentumEvents || null != mPostSmoothScrollRunnable) {
+      return;
+    }
+
+    enableFpsListener();
+    mActivelyScrolling = false;
+    mPostSmoothScrollRunnable = new Runnable() {
+
+      @Override
+      public void run() {
+        if (mActivelyScrolling) {
+          // We are still scrolling so we just post to check again a frame later
+          mActivelyScrolling = false;
+          ViewCompat.postOnAnimationDelayed(
+            ReactScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
+        } else {
+          // There has not been a scroll update since the last time this Runnable executed.
+          updateStateOnScroll();
+          ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
+          ReactScrollView.this.mPostSmoothScrollRunnable = null;
+          disableFpsListener();
+        }
+      }
+    };
+    ViewCompat.postOnAnimationDelayed(
+      ReactScrollView.this, mPostSmoothScrollRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+
+  }
+
 
   /** Get current X position or position after current animation finishes, if any. */
   private int getPostAnimationScrollX() {
