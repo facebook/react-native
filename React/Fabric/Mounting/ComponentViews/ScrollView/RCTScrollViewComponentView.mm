@@ -28,6 +28,18 @@ using namespace facebook::react;
 
 static CGFloat const kClippingLeeway = 44.0;
 
+static UIScrollViewKeyboardDismissMode RCTUIKeyboardDismissModeFromProps(ScrollViewProps const &props)
+{
+  switch (props.keyboardDismissMode) {
+    case ScrollViewKeyboardDismissMode::None:
+      return UIScrollViewKeyboardDismissModeNone;
+    case ScrollViewKeyboardDismissMode::OnDrag:
+      return UIScrollViewKeyboardDismissModeOnDrag;
+    case ScrollViewKeyboardDismissMode::Interactive:
+      return UIScrollViewKeyboardDismissModeInteractive;
+  }
+}
+
 static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
 {
   static uint16_t coalescingKey = 0;
@@ -43,7 +55,11 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   [[RCTBridge currentBridge].eventDispatcher sendEvent:scrollEvent];
 }
 
-@interface RCTScrollViewComponentView () <UIScrollViewDelegate, RCTScrollViewProtocol, RCTScrollableProtocol>
+@interface RCTScrollViewComponentView () <
+    UIScrollViewDelegate,
+    RCTScrollViewProtocol,
+    RCTScrollableProtocol,
+    RCTEnhancedScrollViewOverridingDelegate>
 
 @end
 
@@ -83,6 +99,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delaysContentTouches = NO;
+    ((RCTEnhancedScrollView *)_scrollView).overridingDelegate = self;
     _isUserTriggeredScrolling = NO;
     [self addSubview:_scrollView];
 
@@ -150,7 +167,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   MAP_SCROLL_VIEW_PROP(decelerationRate);
   MAP_SCROLL_VIEW_PROP(directionalLockEnabled);
   // MAP_SCROLL_VIEW_PROP(indicatorStyle);
-  // MAP_SCROLL_VIEW_PROP(keyboardDismissMode);
   MAP_SCROLL_VIEW_PROP(maximumZoomScale);
   MAP_SCROLL_VIEW_PROP(minimumZoomScale);
   MAP_SCROLL_VIEW_PROP(scrollEnabled);
@@ -218,6 +234,10 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
   MAP_SCROLL_VIEW_PROP(disableIntervalMomentum);
   MAP_SCROLL_VIEW_PROP(snapToInterval);
+
+  if (oldScrollViewProps.keyboardDismissMode != newScrollViewProps.keyboardDismissMode) {
+    scrollView.keyboardDismissMode = RCTUIKeyboardDismissModeFromProps(newScrollViewProps);
+  }
 
   // MAP_SCROLL_VIEW_PROP(scrollIndicatorInsets);
 
@@ -302,6 +322,13 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 }
 
 #pragma mark - UIScrollViewDelegate
+
+- (BOOL)touchesShouldCancelInContentView:(__unused UIView *)view
+{
+  // Historically, `UIScrollView`s in React Native do not cancel touches
+  // started on `UIControl`-based views (as normal iOS `UIScrollView`s do).
+  return YES;
+}
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
@@ -392,6 +419,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
   [self _forceDispatchNextScrollEvent];
+  [self scrollViewDidScroll:scrollView];
 
   if (!_eventEmitter) {
     return;
@@ -445,7 +473,32 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)scrollTo:(double)x y:(double)y animated:(BOOL)animated
 {
-  [_scrollView setContentOffset:CGPointMake(x, y) animated:animated];
+  CGPoint offset = CGPointMake(x, y);
+  if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
+    CGRect maxRect = CGRectMake(
+        fmin(-_scrollView.contentInset.left, 0),
+        fmin(-_scrollView.contentInset.top, 0),
+        fmax(
+            _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right +
+                fmax(_scrollView.contentInset.left, 0),
+            0.01),
+        fmax(
+            _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom +
+                fmax(_scrollView.contentInset.top, 0),
+            0.01)); // Make width and height greater than 0
+
+    const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
+    if (!CGRectContainsPoint(maxRect, offset) && !props.scrollToOverflowEnabled) {
+      CGFloat localX = fmax(offset.x, CGRectGetMinX(maxRect));
+      localX = fmin(localX, CGRectGetMaxX(maxRect));
+      CGFloat localY = fmax(offset.y, CGRectGetMinY(maxRect));
+      localY = fmin(localY, CGRectGetMaxY(maxRect));
+      offset = CGPointMake(localX, localY);
+    }
+
+    [self _forceDispatchNextScrollEvent];
+    [_scrollView setContentOffset:offset animated:animated];
+  }
 }
 
 - (void)scrollToEnd:(BOOL)animated
@@ -498,15 +551,14 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   visibleFrame.size.width *= scale;
   visibleFrame.size.height *= scale;
 
+#ifndef NDEBUG
+  NSMutableArray<UIView<RCTComponentViewProtocol> *> *expectedSubviews = [NSMutableArray new];
+#endif
+
   NSInteger mountedIndex = 0;
   for (UIView *componentView in _childComponentViews) {
     BOOL shouldBeMounted = YES;
     BOOL isMounted = componentView.superview != nil;
-
-    // If a view is mounted, it must be mounted exactly at `mountedIndex` position.
-    RCTAssert(
-        !isMounted || [_containerView.subviews objectAtIndex:mountedIndex] == componentView,
-        @"Attempt to unmount improperly mounted component view.");
 
     // It's simpler and faster to not mess with views that are not `RCTViewComponentView` subclasses.
     if ([componentView isKindOfClass:[RCTViewComponentView class]]) {
@@ -529,7 +581,24 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     if (shouldBeMounted) {
       mountedIndex++;
     }
+
+#ifndef NDEBUG
+    if (shouldBeMounted) {
+      [expectedSubviews addObject:componentView];
+    }
+#endif
   }
+
+#ifndef NDEBUG
+  RCTAssert(
+      _containerView.subviews.count == expectedSubviews.count,
+      @"-[RCTScrollViewComponentView _remountChildren]: Inconsistency detected.");
+  for (NSInteger i = 0; i < expectedSubviews.count; i++) {
+    RCTAssert(
+        [_containerView.subviews objectAtIndex:i] == [expectedSubviews objectAtIndex:i],
+        @"-[RCTScrollViewComponentView _remountChildren]: Inconsistency detected.");
+  }
+#endif
 }
 
 #pragma mark - RCTScrollableProtocol

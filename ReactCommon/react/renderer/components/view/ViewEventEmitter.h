@@ -40,6 +40,9 @@ class ViewEventEmitter : public TouchEventEmitter {
  private:
   mutable std::mutex layoutMetricsMutex_;
   mutable LayoutMetrics lastLayoutMetrics_;
+
+  mutable std::shared_ptr<std::atomic_uint_fast8_t> eventCounter_{
+      std::make_shared<std::atomic_uint_fast8_t>(0)};
 };
 
 } // namespace react

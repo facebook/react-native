@@ -468,7 +468,9 @@ using namespace facebook::react;
 - (void)_setAttributedString:(NSAttributedString *)attributedString
 {
   UITextRange *selectedRange = [_backedTextInputView selectedTextRange];
-  _backedTextInputView.attributedText = attributedString;
+  if (![self _textOf:attributedString equals:_backedTextInputView.attributedText]) {
+    _backedTextInputView.attributedText = attributedString;
+  }
   if (_lastStringStateWasUpdatedWith.length == attributedString.length) {
     // Calling `[_backedTextInputView setAttributedText]` moves caret
     // to the end of text input field. This cancels any selection as well
@@ -488,6 +490,38 @@ using namespace facebook::react;
   RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
   _backedTextInputView = backedTextInputView;
   [self addSubview:_backedTextInputView];
+}
+
+- (BOOL)_textOf:(NSAttributedString *)newText equals:(NSAttributedString *)oldText
+{
+  // When the dictation is running we can't update the attributed text on the backed up text view
+  // because setting the attributed string will kill the dictation. This means that we can't impose
+  // the settings on a dictation.
+  // Similarly, when the user is in the middle of inputting some text in Japanese/Chinese, there will be styling on the
+  // text that we should disregard. See
+  // https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc for more info. If
+  // the user added an emoji, the system adds a font attribute for the emoji and stores the original font in
+  // NSOriginalFont. Lastly, when entering a password, etc., there will be additional styling on the field as the native
+  // text view handles showing the last character for a split second.
+  __block BOOL fontHasBeenUpdatedBySystem = false;
+  [oldText enumerateAttribute:@"NSOriginalFont"
+                      inRange:NSMakeRange(0, oldText.length)
+                      options:0
+                   usingBlock:^(id value, NSRange range, BOOL *stop) {
+                     if (value) {
+                       fontHasBeenUpdatedBySystem = true;
+                     }
+                   }];
+
+  BOOL shouldFallbackToBareTextComparison =
+      [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
+      _backedTextInputView.markedTextRange || _backedTextInputView.isSecureTextEntry || fontHasBeenUpdatedBySystem;
+
+  if (shouldFallbackToBareTextComparison) {
+    return ([newText.string isEqualToString:oldText.string]);
+  } else {
+    return ([newText isEqualToAttributedString:oldText]);
+  }
 }
 
 @end

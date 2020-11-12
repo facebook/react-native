@@ -27,7 +27,9 @@ namespace chrome {
  */
 class AsyncHermesRuntime {
  public:
-  AsyncHermesRuntime();
+  // Create a runtime. If veryLazy, configure the runtime to use completely
+  // lazy compilation.
+  AsyncHermesRuntime(bool veryLazy = false);
   ~AsyncHermesRuntime();
 
   std::shared_ptr<HermesRuntime> runtime() {

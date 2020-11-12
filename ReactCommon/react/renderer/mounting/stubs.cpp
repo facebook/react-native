@@ -54,7 +54,7 @@ StubViewTree stubViewTreeFromShadowNode(ShadowNode const &rootShadowNode) {
                          ShadowNode::emptySharedShadowNodeSharedList()});
 
   auto stubViewTree = StubViewTree(ShadowView(*emptyRootShadowNode));
-  stubViewTree.mutate(mutations, true);
+  stubViewTree.mutate(mutations);
   return stubViewTree;
 }
 

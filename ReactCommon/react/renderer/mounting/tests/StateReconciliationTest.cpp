@@ -32,7 +32,7 @@ class DummyShadowTreeDelegate : public ShadowTreeDelegate {
 inline ShadowNode const *findDescendantNode(
     ShadowNode const &shadowNode,
     ShadowNodeFamily const &family) {
-  auto result = (ShadowNode const *){nullptr};
+  ShadowNode const *result = nullptr;
   shadowNode.cloneTree(family, [&](ShadowNode const &oldShadowNode) {
     result = &oldShadowNode;
     return oldShadowNode.clone({});
@@ -43,16 +43,8 @@ inline ShadowNode const *findDescendantNode(
 inline ShadowNode const *findDescendantNode(
     ShadowTree const &shadowTree,
     ShadowNodeFamily const &family) {
-  auto result = (ShadowNode const *){nullptr};
-
-  shadowTree.tryCommit(
-      [&](RootShadowNode::Shared const &oldRootShadowNode) {
-        result = findDescendantNode(*oldRootShadowNode, family);
-        return nullptr;
-      },
-      false);
-
-  return result;
+  return findDescendantNode(
+      *shadowTree.getCurrentRevision().rootShadowNode, family);
 }
 
 TEST(StateReconciliationTest, testStateReconciliation) {
@@ -107,10 +99,10 @@ TEST(StateReconciliationTest, testStateReconciliation) {
                         {}};
 
   shadowTree.commit(
-      [&](RootShadowNode::Shared const &oldRootShadowNode) {
+      [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState1);
       },
-      true);
+      {true});
 
   EXPECT_EQ(state1->getMostRecentState(), state1);
 
@@ -131,10 +123,10 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       findDescendantNode(*rootShadowNodeState2, family)->getState(), state2);
 
   shadowTree.commit(
-      [&](RootShadowNode::Shared const &oldRootShadowNode) {
+      [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
-      true);
+      {true});
 
   EXPECT_EQ(state1->getMostRecentState(), state2);
   EXPECT_EQ(state2->getMostRecentState(), state2);
@@ -153,10 +145,10 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       findDescendantNode(*rootShadowNodeState3, family)->getState(), state3);
 
   shadowTree.commit(
-      [&](RootShadowNode::Shared const &oldRootShadowNode) {
+      [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState3);
       },
-      true);
+      {true});
 
   EXPECT_EQ(findDescendantNode(shadowTree, family)->getState(), state3);
 
@@ -168,10 +160,10 @@ TEST(StateReconciliationTest, testStateReconciliation) {
   // Here we commit the old tree but we expect that the state associated with
   // the node will stay the same (newer that the old tree has).
   shadowTree.commit(
-      [&](RootShadowNode::Shared const &oldRootShadowNode) {
+      [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
-      true);
+      {true});
 
   EXPECT_EQ(findDescendantNode(shadowTree, family)->getState(), state3);
 }

@@ -13,7 +13,7 @@
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/graphics/rounding.h>
-#include <react/renderer/mounting/MountingTelemetry.h>
+#include <react/renderer/mounting/TransactionTelemetry.h>
 
 #include "ParagraphState.h"
 
@@ -138,7 +138,7 @@ Size ParagraphShadowNode::measureContent(
     attributedString.appendFragment({string, textAttributes, {}});
   }
 
-  auto telemetry = MountingTelemetry::threadLocalTelemetry();
+  auto telemetry = TransactionTelemetry::threadLocalTelemetry();
   if (telemetry) {
     telemetry->didMeasureText();
   }
@@ -169,7 +169,6 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       content.paragraphAttributes,
       layoutConstraints);
 
-#ifndef ANDROID
   if (getConcreteProps().onTextLayout) {
     auto linesMeasurements = textLayoutManager_->measureLines(
         content.attributedString,
@@ -177,10 +176,9 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
         measurement.size);
     getConcreteEventEmitter().onTextLayout(linesMeasurements);
   }
-#endif
 
   if (content.attachments.empty()) {
-    // No attachments, nothing to layout.
+    // No attachments to layout.
     return;
   }
 

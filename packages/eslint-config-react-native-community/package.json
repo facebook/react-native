@@ -6,7 +6,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git"
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/eslint-config-react-native-community"
   },
   "homepage": "https://github.com/facebook/react-native/tree/master/packages/eslint-config-react-native-community#readme",
   "dependencies": {
@@ -25,9 +26,9 @@
     "prettier": "^2.0.2"
   },
   "peerDependencies": {
-    "eslint": ">=6"
+    "eslint": ">=7"
   },
   "devDependencies": {
-    "eslint": "^6.5.1"
+    "eslint": "7.12.0"
   }
 }

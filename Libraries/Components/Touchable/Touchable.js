@@ -14,9 +14,7 @@ const BoundingDimensions = require('./BoundingDimensions');
 const Platform = require('../../Utilities/Platform');
 const Position = require('./Position');
 const React = require('react');
-const ReactNative = require('../../Renderer/shims/ReactNative');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
-const TVEventHandler = require('../AppleTV/TVEventHandler');
 const UIManager = require('../../ReactNative/UIManager');
 const View = require('../View/View');
 const SoundManager = require('../Sound/SoundManager');
@@ -370,33 +368,12 @@ const TouchableMixin = {
     if (!Platform.isTV) {
       return;
     }
-
-    this._tvEventHandler = new TVEventHandler();
-    this._tvEventHandler.enable(this, function(cmp, evt) {
-      const myTag = ReactNative.findNodeHandle(cmp);
-      evt.dispatchConfig = {};
-      if (myTag === evt.tag) {
-        if (evt.eventType === 'focus') {
-          cmp.touchableHandleFocus(evt);
-        } else if (evt.eventType === 'blur') {
-          cmp.touchableHandleBlur(evt);
-        } else if (evt.eventType === 'select' && Platform.OS !== 'android') {
-          cmp.touchableHandlePress &&
-            !cmp.props.disabled &&
-            cmp.touchableHandlePress(evt);
-        }
-      }
-    });
   },
 
   /**
    * Clear all timeouts on unmount
    */
   componentWillUnmount: function() {
-    if (this._tvEventHandler) {
-      this._tvEventHandler.disable();
-      delete this._tvEventHandler;
-    }
     this.touchableDelayTimeout && clearTimeout(this.touchableDelayTimeout);
     this.longPressDelayTimeout && clearTimeout(this.longPressDelayTimeout);
     this.pressOutDelayTimeout && clearTimeout(this.pressOutDelayTimeout);

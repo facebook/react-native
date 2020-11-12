@@ -12,13 +12,14 @@ namespace react {
 
 ImageRequest::ImageRequest(
     const ImageSource &imageSource,
-    std::shared_ptr<const ImageInstrumentation> instrumentation)
-    : imageSource_(imageSource), instrumentation_(instrumentation) {
+    std::shared_ptr<const ImageTelemetry> telemetry)
+    : imageSource_(imageSource), telemetry_(telemetry) {
   // Not implemented.
 }
 
 ImageRequest::ImageRequest(ImageRequest &&other) noexcept
     : imageSource_(std::move(other.imageSource_)),
+      telemetry_(std::move(other.telemetry_)),
       coordinator_(std::move(other.coordinator_)) {
   // Not implemented.
 }
@@ -35,17 +36,6 @@ const ImageResponseObserverCoordinator &ImageRequest::getObserverCoordinator()
 
 const std::shared_ptr<const ImageResponseObserverCoordinator>
     &ImageRequest::getSharedObserverCoordinator() const {
-  // Not implemented
-  abort();
-}
-
-const std::shared_ptr<const ImageInstrumentation>
-    &ImageRequest::getSharedImageInstrumentation() const {
-  // Not implemented
-  abort();
-}
-
-const ImageInstrumentation &ImageRequest::getImageInstrumentation() const {
   // Not implemented
   abort();
 }

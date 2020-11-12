@@ -46,16 +46,31 @@ void ViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
     lastLayoutMetrics_ = layoutMetrics;
   }
 
-  dispatchEvent("layout", [frame = layoutMetrics.frame](jsi::Runtime &runtime) {
-    auto layout = jsi::Object(runtime);
-    layout.setProperty(runtime, "x", frame.origin.x);
-    layout.setProperty(runtime, "y", frame.origin.y);
-    layout.setProperty(runtime, "width", frame.size.width);
-    layout.setProperty(runtime, "height", frame.size.height);
-    auto payload = jsi::Object(runtime);
-    payload.setProperty(runtime, "layout", std::move(layout));
-    return payload;
-  });
+  auto expectedEventCount = ++*eventCounter_;
+
+  // dispatchUniqueEvent only drops consecutive onLayout events to the same
+  // node. We want to drop *any* unprocessed onLayout events when there's a
+  // newer one.
+  dispatchEvent(
+      "layout",
+      [frame = layoutMetrics.frame,
+       expectedEventCount,
+       eventCounter = eventCounter_](jsi::Runtime &runtime) {
+        auto actualEventCount = eventCounter->load();
+        if (expectedEventCount != actualEventCount) {
+          // Drop stale events
+          return jsi::Value::null();
+        }
+
+        auto layout = jsi::Object(runtime);
+        layout.setProperty(runtime, "x", frame.origin.x);
+        layout.setProperty(runtime, "y", frame.origin.y);
+        layout.setProperty(runtime, "width", frame.size.width);
+        layout.setProperty(runtime, "height", frame.size.height);
+        auto payload = jsi::Object(runtime);
+        payload.setProperty(runtime, "layout", std::move(layout));
+        return jsi::Value(std::move(payload));
+      });
 }
 
 } // namespace react

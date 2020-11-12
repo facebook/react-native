@@ -24,13 +24,26 @@ namespace facebook {
 namespace react {
 
 using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
-    RootShadowNode::Shared const &oldRootShadowNode)>;
+    RootShadowNode const &oldRootShadowNode)>;
 
 /*
  * Represents the shadow tree and its lifecycle.
  */
 class ShadowTree final {
  public:
+  enum class CommitStatus {
+    Succeeded,
+    Failed,
+    Cancelled,
+  };
+
+  struct CommitOptions {
+    bool enableStateReconciliation{false};
+    // Lambda called inside `tryCommit`. If false is returned, commit is
+    // cancelled.
+    std::function<bool()> shouldCancel;
+  };
+
   /*
    * Creates a new shadow tree instance.
    */
@@ -53,19 +66,24 @@ class ShadowTree final {
   /*
    * Performs commit calling `transaction` function with a `oldRootShadowNode`
    * and expecting a `newRootShadowNode` as a return value.
-   * The `transaction` function can abort commit returning `nullptr`.
-   * Returns `true` if the operation finished successfully.
+   * The `transaction` function can cancel commit returning `nullptr`.
    */
-  bool tryCommit(
+  CommitStatus tryCommit(
       ShadowTreeCommitTransaction transaction,
-      bool enableStateReconciliation = false) const;
+      CommitOptions commitOptions = {false}) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
-  void commit(
+  CommitStatus commit(
       ShadowTreeCommitTransaction transaction,
-      bool enableStateReconciliation = false) const;
+      CommitOptions commitOptions = {false}) const;
+
+  /*
+   * Returns a `ShadowTreeRevision` representing the momentary state of
+   * the `ShadowTree`.
+   */
+  ShadowTreeRevision getCurrentRevision() const;
 
   /*
    * Commit an empty tree (a new `RootShadowNode` with no children).
@@ -85,31 +103,19 @@ class ShadowTree final {
    * Temporary.
    * Do not use.
    */
-  void setEnableNewStateReconciliation(bool value) {
-    enableNewStateReconciliation_ = value;
-  }
   void setEnableReparentingDetection(bool value) {
     enableReparentingDetection_ = value;
   }
 
  private:
-  RootShadowNode::Unshared cloneRootShadowNode(
-      RootShadowNode::Shared const &oldRootShadowNode,
-      LayoutConstraints const &layoutConstraints,
-      LayoutContext const &layoutContext) const;
-
   void emitLayoutEvents(
       std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
 
   SurfaceId const surfaceId_;
   ShadowTreeDelegate const &delegate_;
   mutable better::shared_mutex commitMutex_;
-  mutable RootShadowNode::Shared
-      rootShadowNode_; // Protected by `commitMutex_`.
-  mutable ShadowTreeRevision::Number revisionNumber_{
-      0}; // Protected by `commitMutex_`.
+  mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
-  bool enableNewStateReconciliation_{false};
   bool enableReparentingDetection_{false};
 };
 

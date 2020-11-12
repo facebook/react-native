@@ -12,28 +12,27 @@ namespace facebook {
 namespace react {
 
 SharedColor colorFromComponents(ColorComponents components) {
-  const CGFloat componentsArray[] = {
-      components.red, components.green, components.blue, components.alpha};
-
-  auto color = CGColorCreate(CGColorSpaceCreateDeviceRGB(), componentsArray);
-
-  return SharedColor(color, CGColorRelease);
+  float ratio = 255.9999;
+  return SharedColor(
+      ((int)(components.alpha * ratio) & 0xff) << 24 |
+      ((int)(components.red * ratio) & 0xff) << 16 |
+      ((int)(components.green * ratio) & 0xff) << 8 |
+      ((int)(components.blue * ratio) & 0xff));
 }
 
-ColorComponents colorComponentsFromColor(SharedColor color) {
-  if (!color) {
+ColorComponents colorComponentsFromColor(SharedColor sharedColor) {
+  if (!sharedColor) {
     // Empty color object can be considered as `clear` (black, fully
     // transparent) color.
     return ColorComponents{0, 0, 0, 0};
   }
 
-  auto numberOfComponents __unused = CGColorGetNumberOfComponents(color.get());
-  assert(numberOfComponents == 4);
-  const CGFloat *components = CGColorGetComponents(color.get());
-  return ColorComponents{(float)components[0],
-                         (float)components[1],
-                         (float)components[2],
-                         (float)components[3]};
+  float ratio = 256;
+  Color color = *sharedColor;
+  return ColorComponents{(float)((color >> 16) & 0xff) / ratio,
+                         (float)((color >> 8) & 0xff) / ratio,
+                         (float)((color >> 0) & 0xff) / ratio,
+                         (float)((color >> 24) & 0xff) / ratio};
 }
 
 SharedColor clearColor() {

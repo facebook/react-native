@@ -14,6 +14,7 @@
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
+#include <ReactCommon/TurboModuleSchema.h>
 #include <react/jni/JMessageQueueThread.h>
 
 #include "TurboModuleManager.h"
@@ -26,13 +27,15 @@ TurboModuleManager::TurboModuleManager(
     jsi::Runtime *rt,
     std::shared_ptr<CallInvoker> jsCallInvoker,
     std::shared_ptr<CallInvoker> nativeCallInvoker,
-    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate)
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
+    bool enableJSCodegen)
     : javaPart_(jni::make_global(jThis)),
       runtime_(rt),
       jsCallInvoker_(jsCallInvoker),
       nativeCallInvoker_(nativeCallInvoker),
       delegate_(jni::make_global(delegate)),
-      turboModuleCache_(std::make_shared<TurboModuleCache>()) {}
+      turboModuleCache_(std::make_shared<TurboModuleCache>()),
+      enableJSCodegen_(enableJSCodegen) {}
 
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jni::alias_ref<jhybridobject> jThis,
@@ -40,7 +43,8 @@ jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
     jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
-    bool enablePromiseAsyncDispatch) {
+    bool enablePromiseAsyncDispatch,
+    bool enableJSCodegen) {
   auto jsCallInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
   auto nativeCallInvoker = nativeCallInvokerHolder->cthis()->getCallInvoker();
 
@@ -51,7 +55,8 @@ jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
       (jsi::Runtime *)jsContext,
       jsCallInvoker,
       nativeCallInvoker,
-      delegate);
+      delegate,
+      enableJSCodegen);
 }
 
 void TurboModuleManager::registerNatives() {
@@ -72,7 +77,8 @@ void TurboModuleManager::installJSIBindings() {
        jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
        nativeCallInvoker_ = std::weak_ptr<CallInvoker>(nativeCallInvoker_),
        delegate_ = jni::make_weak(delegate_),
-       javaPart_ = jni::make_weak(javaPart_)](
+       javaPart_ = jni::make_weak(javaPart_),
+       runtime_ = runtime_](
           const std::string &name,
           const jsi::Value *schema) -> std::shared_ptr<TurboModule> {
     auto turboModuleCache = turboModuleCache_.lock();
@@ -135,6 +141,13 @@ void TurboModuleManager::installJSIBindings() {
                                             .jsInvoker = jsCallInvoker,
                                             .nativeInvoker = nativeCallInvoker};
 
+      if (schema->isObject() && !schema->isNull()) {
+        auto turboModule = std::make_shared<JavaTurboModule>(
+            params, TurboModuleSchema::parse(*runtime_, name, *schema));
+        TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
+        return turboModule;
+      }
+
       auto turboModule = delegate->cthis()->getTurboModule(name, params);
       turboModuleCache->insert({name, turboModule});
       TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
@@ -146,7 +159,8 @@ void TurboModuleManager::installJSIBindings() {
 
   jsCallInvoker_->invokeAsync(
       [this, turboModuleProvider = std::move(turboModuleProvider)]() -> void {
-        TurboModuleBinding::install(*runtime_, std::move(turboModuleProvider));
+        TurboModuleBinding::install(
+            *runtime_, std::move(turboModuleProvider), enableJSCodegen_);
       });
 }
 

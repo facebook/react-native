@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <react/renderer/mounting/MountingTelemetry.h>
 #include <react/renderer/mounting/MountingTransaction.h>
+#include <react/renderer/mounting/TransactionTelemetry.h>
 
 namespace facebook {
 namespace react {
@@ -24,7 +24,7 @@ class MountingTransactionMetadata final {
  public:
   SurfaceId surfaceId;
   MountingTransaction::Number number;
-  MountingTelemetry telemetry;
+  TransactionTelemetry telemetry;
   SurfaceTelemetry surfaceTelemetry;
 };
 

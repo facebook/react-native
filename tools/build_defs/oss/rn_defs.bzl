@@ -15,11 +15,20 @@ _DEBUG_PREPROCESSOR_FLAGS = []
 
 _APPLE_COMPILER_FLAGS = []
 
+def get_apple_compiler_flags():
+    return _APPLE_COMPILER_FLAGS
+
 def get_preprocessor_flags_for_build_mode():
     return _DEBUG_PREPROCESSOR_FLAGS
 
-def get_apple_compiler_flags():
+def get_static_library_ios_flags():
     return _APPLE_COMPILER_FLAGS
+
+OBJC_ARC_PREPROCESSOR_FLAGS = [
+    "-fobjc-arc",
+    "-fno-objc-arc-exceptions",
+    "-Qunused-arguments",
+]
 
 IS_OSS_BUILD = True
 
@@ -27,9 +36,17 @@ GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
 
+# Platform Definitions
+CXX = "Default"
+
 ANDROID = "Android"
 
-APPLE = ""
+APPLE = "Apple"
+
+# Apple SDK Definitions
+IOS = "ios"
+
+MACOSX = "macosx"
 
 YOGA_TARGET = "//ReactAndroid/src/main/java/com/facebook:yoga"
 
@@ -73,6 +90,12 @@ def react_native_xplat_target(path):
 
 def react_native_xplat_target_apple(path):
     return react_native_xplat_target(path) + "Apple"
+
+def react_native_root_target(path):
+    return "//" + path
+
+def react_native_xplat_shared_library_target(path):
+    return react_native_xplat_target(path)
 
 # Example: react_native_tests_target('java/com/facebook/react/modules:modules')
 def react_native_tests_target(path):
@@ -162,7 +185,13 @@ def rn_apple_library(*args, **kwargs):
     kwargs.setdefault("link_whole", True)
     kwargs.setdefault("enable_exceptions", True)
     kwargs.setdefault("target_sdk_version", "10.0")
+
+    # Unsupported kwargs
     _ = kwargs.pop("plugins_only", False)
+    _ = kwargs.pop("enable_exceptions", False)
+    _ = kwargs.pop("extension_api_only", False)
+    _ = kwargs.pop("sdks", [])
+
     native.apple_library(*args, **kwargs)
 
 def rn_java_library(*args, **kwargs):
@@ -188,19 +217,21 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
 
     kwargs["deps"] = kwargs.pop("deps", []) + [
         react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
+        react_native_dep("third-party/java/robolectric/4.4:robolectric"),
+        react_native_tests_target("resources:robolectric"),
         react_native_xplat_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock2"),
-        react_native_dep("third-party/java/robolectric/4.3.1:robolectric"),
     ]
 
     extra_vm_args = [
         "-XX:+UseConcMarkSweepGC",  # required by -XX:+CMSClassUnloadingEnabled
         "-XX:+CMSClassUnloadingEnabled",
         "-XX:ReservedCodeCacheSize=150M",
-        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.3.1",
-        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.3.1/*.jar",
+        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.4",
+        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.4/*.jar",
         "-Drobolectric.logging.enabled=true",
         "-XX:MaxPermSize=620m",
         "-Drobolectric.offline=true",
+        "-Drobolectric.looperMode=LEGACY",
     ]
     if native.read_config("user", "use_dev_shm"):
         extra_vm_args.append("-Djava.io.tmpdir=/dev/shm")

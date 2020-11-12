@@ -52,6 +52,8 @@ public class Binding {
       float maxWidth,
       float minHeight,
       float maxHeight,
+      float offsetX,
+      float offsetY,
       boolean isRTL,
       boolean doLeftAndRightSwapInRTL);
 
@@ -67,6 +69,8 @@ public class Binding {
       float maxWidth,
       float minHeight,
       float maxHeight,
+      float offsetX,
+      float offsetY,
       boolean isRTL,
       boolean doLeftAndRightSwapInRTL);
 
