@@ -968,6 +968,16 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             }
           }
 
+          // Make sure surface associated with this MountItem has been started, and not stopped.
+          // TODO T68118357: clean up this logic and simplify this method overall
+          if (mountItem instanceof IntBufferBatchMountItem) {
+            IntBufferBatchMountItem batchMountItem = (IntBufferBatchMountItem) mountItem;
+            if (!surfaceActiveForExecution(
+                batchMountItem.getRootTag(), "dispatchMountItems IntBufferBatchMountItem")) {
+              continue;
+            }
+          }
+
           mountItem.execute(mMountingManager);
         } catch (Throwable e) {
           // If there's an exception, we want to log diagnostics in prod and rethrow.
