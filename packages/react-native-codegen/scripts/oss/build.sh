@@ -17,7 +17,7 @@ rm -rf "${CODEGEN_DIR:?}/lib" "${CODEGEN_DIR:?}/node_modules"
 
 YARN_BINARY="${YARN_BINARY:-$(command -v yarn)}"
 
-if [[ "$FBSOURCE_ENV" -eq "1" ]]; then
+if [[ ${FBSOURCE_ENV:-0} -eq 1 ]]; then
   # Custom FB-specific setup
   pushd "$CODEGEN_DIR" >/dev/null
 
