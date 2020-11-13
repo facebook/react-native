@@ -212,16 +212,13 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   void adjustImmediateMutationIndicesForDelayedMutations(
       SurfaceId surfaceId,
       ShadowViewMutation &mutation,
-      ShadowViewMutationList *auxiliaryMutations = nullptr) const;
+      bool skipLastAnimation = false,
+      bool lastAnimationOnly = false) const;
 
   void adjustDelayedMutationIndicesForMutation(
       SurfaceId surfaceId,
       ShadowViewMutation const &mutation,
-      bool lastAnimationOnly = false) const;
-
-  void adjustLastAnimationDelayedMutationIndicesForMutation(
-      SurfaceId surfaceId,
-      ShadowViewMutation const &mutation) const;
+      bool skipLastAnimation = false) const;
 
   std::vector<std::tuple<AnimationKeyFrame, AnimationConfig, LayoutAnimation *>>
   getAndEraseConflictingAnimations(
@@ -245,7 +242,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   ShadowView createInterpolatedShadowView(
       double progress,
-      AnimationConfig const &animationConfig,
       ShadowView startingView,
       ShadowView finalView) const;
 
@@ -304,12 +300,30 @@ static inline bool shouldFirstComeBeforeSecondMutation(
       return true;
     }
 
+    // Update comes last, before deletes
+    if (rhs.type == ShadowViewMutation::Type::Update) {
+      return true;
+    }
+    if (lhs.type == ShadowViewMutation::Type::Update) {
+      return false;
+    }
+
     // Remove comes before insert
     if (lhs.type == ShadowViewMutation::Type::Remove &&
         rhs.type == ShadowViewMutation::Type::Insert) {
       return true;
     }
     if (rhs.type == ShadowViewMutation::Type::Remove &&
+        lhs.type == ShadowViewMutation::Type::Insert) {
+      return false;
+    }
+
+    // Create comes before insert
+    if (lhs.type == ShadowViewMutation::Type::Create &&
+        rhs.type == ShadowViewMutation::Type::Insert) {
+      return true;
+    }
+    if (rhs.type == ShadowViewMutation::Type::Create &&
         lhs.type == ShadowViewMutation::Type::Insert) {
       return false;
     }

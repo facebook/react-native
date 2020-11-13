@@ -487,8 +487,6 @@ export type Props = $ReadOnly<{|
    *
    * - `visible-password`
    *
-   * On Android devices manufactured by Xiaomi with Android Q, 'email-address'
-   * type will be replaced in native by 'default' to prevent a system related crash.
    */
   keyboardType?: ?KeyboardType,
 
@@ -572,6 +570,16 @@ export type Props = $ReadOnly<{|
    * Callback that is called when text input ends.
    */
   onEndEditing?: ?(e: EditingEvent) => mixed,
+
+  /**
+   * Called when a touch is engaged.
+   */
+  onPressIn?: ?(event: PressEvent) => mixed,
+
+  /**
+   * Called when a touch is released.
+   */
+  onPressOut?: ?(event: PressEvent) => mixed,
 
   /**
    * Callback that is called when the text input selection is changed.
@@ -685,7 +693,12 @@ export type Props = $ReadOnly<{|
 
   /**
    * If `true`, caret is hidden. The default value is `false`.
-   * This property is supported only for single-line TextInput component on iOS.
+   *
+   * On Android devices manufactured by Xiaomi with Android Q,
+   * when keyboardType equals 'email-address'this will be set
+   * in native to 'true' to prevent a system related crash. This
+   * will cause cursor to be diabled as a side-effect.
+   *
    */
   caretHidden?: ?boolean,
 
@@ -1132,6 +1145,8 @@ function InternalTextInput(props: Props): React.Node {
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={_onPress}
+        onPressIn={props.onPressIn}
+        onPressOut={props.onPressOut}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}

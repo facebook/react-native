@@ -7,8 +7,6 @@
 
 package com.facebook.react.uiapp;
 
-import static com.facebook.react.uiapp.RNTesterApplication.IS_FABRIC_ENABLED;
-
 import android.content.res.Configuration;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
@@ -31,7 +29,7 @@ public class RNTesterActivity extends ReactActivity {
     @Override
     protected ReactRootView createRootView() {
       ReactRootView reactRootView = new ReactRootView(getContext());
-      reactRootView.setIsFabric(IS_FABRIC_ENABLED);
+      reactRootView.setIsFabric(BuildConfig.ENABLE_FABRIC);
       return reactRootView;
     }
 

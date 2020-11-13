@@ -36,7 +36,8 @@ using namespace facebook::react;
 
 - (ImageRequest)requestImage:(ImageSource)imageSource surfaceId:(SurfaceId)surfaceId
 {
-  auto imageRequest = ImageRequest(imageSource, nullptr);
+  auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
+  auto imageRequest = ImageRequest(imageSource, telemetry);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 
@@ -49,14 +50,15 @@ using namespace facebook::react;
 
   NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
 
-  auto completionBlock = ^(NSError *error, UIImage *image) {
+  auto completionBlock = ^(NSError *error, UIImage *image, id metadata) {
     auto observerCoordinator = weakObserverCoordinator.lock();
     if (!observerCoordinator) {
       return;
     }
 
     if (image && !error) {
-      observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image)));
+      auto wrappedMetadata = metadata ? wrapManagedObject(metadata) : nullptr;
+      observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image), wrappedMetadata));
     } else {
       observerCoordinator->nativeImageResponseFailed();
     }

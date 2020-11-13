@@ -23,13 +23,13 @@ MountingCoordinator::MountingCoordinator(
     ShadowTreeRevision baseRevision,
     std::weak_ptr<MountingOverrideDelegate const> delegate,
     bool enableReparentingDetection)
-    : surfaceId_(baseRevision.getRootShadowNode().getSurfaceId()),
+    : surfaceId_(baseRevision.rootShadowNode->getSurfaceId()),
       baseRevision_(baseRevision),
       mountingOverrideDelegate_(delegate),
       telemetryController_(*this),
       enableReparentingDetection_(enableReparentingDetection) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
-  stubViewTree_ = stubViewTreeFromShadowNode(baseRevision_.getRootShadowNode());
+  stubViewTree_ = stubViewTreeFromShadowNode(*baseRevision_.rootShadowNode);
 #endif
 }
 
@@ -37,17 +37,15 @@ SurfaceId MountingCoordinator::getSurfaceId() const {
   return surfaceId_;
 }
 
-void MountingCoordinator::push(ShadowTreeRevision &&revision) const {
+void MountingCoordinator::push(ShadowTreeRevision const &revision) const {
   {
     std::lock_guard<std::mutex> lock(mutex_);
 
     assert(
-        !lastRevision_.has_value() ||
-        revision.getNumber() != lastRevision_->getNumber());
+        !lastRevision_.has_value() || revision.number != lastRevision_->number);
 
-    if (!lastRevision_.has_value() ||
-        lastRevision_->getNumber() < revision.getNumber()) {
-      lastRevision_ = std::move(revision);
+    if (!lastRevision_.has_value() || lastRevision_->number < revision.number) {
+      lastRevision_ = revision;
     }
   }
 
@@ -60,7 +58,7 @@ void MountingCoordinator::revoke() const {
   // 1. We need to stop retaining `ShadowNode`s to not prolong their lifetime
   // to prevent them from overliving `ComponentDescriptor`s.
   // 2. A possible call to `pullTransaction()` should return empty optional.
-  baseRevision_.rootShadowNode_.reset();
+  baseRevision_.rootShadowNode.reset();
   lastRevision_.reset();
 }
 
@@ -90,17 +88,16 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   if (lastRevision_.has_value()) {
     number_++;
 
-    auto telemetry = lastRevision_->getTelemetry();
+    auto telemetry = lastRevision_->telemetry;
 
     telemetry.willDiff();
 
     auto mutations = calculateShadowViewMutations(
-        baseRevision_.getRootShadowNode(), lastRevision_->getRootShadowNode());
+        *baseRevision_.rootShadowNode,
+        *lastRevision_->rootShadowNode,
+        enableReparentingDetection_);
 
     telemetry.didDiff();
-
-    baseRevision_ = std::move(*lastRevision_);
-    lastRevision_.reset();
 
     transaction = MountingTransaction{
         surfaceId_, number_, std::move(mutations), telemetry};
@@ -119,10 +116,13 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
       mutations = transaction->getMutations();
       telemetry = transaction->getTelemetry();
     } else {
+      number_++;
       telemetry.willLayout();
       telemetry.didLayout();
       telemetry.willCommit();
       telemetry.didCommit();
+      telemetry.willDiff();
+      telemetry.didDiff();
     }
 
     transaction = mountingOverrideDelegate->pullTransaction(
@@ -141,15 +141,17 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     // If the transaction was overridden, we don't have a model of the shadow
     // tree therefore we cannot validate the validity of the mutation
     // instructions.
-    if (!shouldOverridePullTransaction) {
-      auto line = std::string{};
-
+    if (!shouldOverridePullTransaction && lastRevision_.has_value()) {
       auto stubViewTree =
-          stubViewTreeFromShadowNode(baseRevision_.getRootShadowNode());
+          stubViewTreeFromShadowNode(*lastRevision_->rootShadowNode);
 
-      if (stubViewTree_ != stubViewTree) {
+      bool treesEqual = stubViewTree_ == stubViewTree;
+
+      if (!treesEqual) {
+        // Display debug info
+        auto line = std::string{};
         std::stringstream ssOldTree(
-            baseRevision_.getRootShadowNode().getDebugDescription());
+            baseRevision_.rootShadowNode->getDebugDescription());
         while (std::getline(ssOldTree, line, '\n')) {
           LOG(ERROR) << "Old tree:" << line;
         }
@@ -160,19 +162,21 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
         }
 
         std::stringstream ssNewTree(
-            lastRevision_->getRootShadowNode().getDebugDescription());
+            lastRevision_->rootShadowNode->getDebugDescription());
         while (std::getline(ssNewTree, line, '\n')) {
           LOG(ERROR) << "New tree:" << line;
         }
       }
 
-      assert(
-          (stubViewTree_ == stubViewTree) &&
-          "Incorrect set of mutations detected.");
+      assert((treesEqual) && "Incorrect set of mutations detected.");
     }
   }
 #endif
 
+  if (lastRevision_.has_value()) {
+    baseRevision_ = std::move(*lastRevision_);
+    lastRevision_.reset();
+  }
   return transaction;
 }
 

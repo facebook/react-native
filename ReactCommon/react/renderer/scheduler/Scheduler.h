@@ -138,7 +138,6 @@ class Scheduler final : public UIManagerDelegate {
    * Temporary flags.
    */
   bool enableReparentingDetection_{false};
-  bool enableNewStateReconciliation_{false};
   bool removeOutstandingSurfacesOnDestruction_{false};
 };
 

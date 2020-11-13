@@ -42,9 +42,18 @@ class TextLayoutManager {
    * opaque cache ID.
    */
   TextMeasurement measureCachedSpannableById(
-      int cacheId,
+      int64_t cacheId,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
+
+  /*
+   * Measures lines of `attributedString` using native text rendering
+   * infrastructure.
+   */
+  LinesMeasurements measureLines(
+      AttributedString attributedString,
+      ParagraphAttributes paragraphAttributes,
+      Size size) const;
 
   /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.

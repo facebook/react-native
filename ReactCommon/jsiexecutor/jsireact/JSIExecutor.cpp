@@ -344,7 +344,7 @@ void JSIExecutor::handleMemoryPressure(int pressureLevel) {
       // collections.
       LOG(INFO) << "Memory warning (pressure level: " << levelName
                 << ") received by JS VM, running a GC";
-      runtime_->instrumentation().collectGarbage();
+      runtime_->instrumentation().collectGarbage(levelName);
       break;
     default:
       // Use the raw number instead of the name here since the name is

@@ -477,8 +477,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  private static boolean shouldHideCursorForEmailTextInput() {
+    String manufacturer = Build.MANUFACTURER.toLowerCase();
+    return (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q && manufacturer.contains("xiaomi"));
+  }
+
   @ReactProp(name = "caretHidden", defaultBoolean = false)
   public void setCaretHidden(ReactEditText view, boolean caretHidden) {
+    if (view.getStagedInputType() == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        && shouldHideCursorForEmailTextInput()) {
+      return;
+    }
     view.setCursorVisible(!caretHidden);
   }
 
@@ -750,6 +759,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       flagsToSet = INPUT_TYPE_KEYBOARD_DECIMAL_PAD;
     } else if (KEYBOARD_TYPE_EMAIL_ADDRESS.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_CLASS_TEXT;
+
+      // Set cursor's visibility to False to fix a crash on some Xiaomi devices with Android Q. This
+      // crash happens when focusing on a email EditText, during which a prompt will be triggered
+      // but
+      // the system fail to locate it properly. Here is an example post discussing about this
+      // issue: https://github.com/facebook/react-native/issues/27204
+      if (shouldHideCursorForEmailTextInput()) {
+        view.setCursorVisible(false);
+      }
     } else if (KEYBOARD_TYPE_PHONE_PAD.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_CLASS_PHONE;
     } else if (KEYBOARD_TYPE_VISIBLE_PASSWORD.equalsIgnoreCase(keyboardType)) {
@@ -913,7 +931,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      // Fabric: update representation of AttributedString
       if (mEditText.getFabricViewStateManager().hasStateWrapper()) {
         // Fabric: communicate to C++ layer that text has changed
         // We need to call `incrementAndGetEventCounter` here explicitly because this
@@ -1166,6 +1183,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   public Object updateState(
       ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
 
+    if (ReactEditText.DEBUG_MODE) {
+      FLog.e(TAG, "updateState: [" + view.getId() + "]");
+    }
+
     view.getFabricViewStateManager().setStateWrapper(stateWrapper);
 
     ReadableNativeMap state = stateWrapper.getState();
@@ -1184,6 +1205,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
+    boolean containsMultipleFragments =
+        attributedString.getArray("fragments").toArrayList().size() > 1;
+
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
@@ -1193,6 +1217,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props),
-        attributedString);
+        containsMultipleFragments);
   }
 }

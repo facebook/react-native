@@ -63,5 +63,24 @@ struct LayoutContext {
   Point viewportOffset{};
 };
 
+inline bool operator==(LayoutContext const &lhs, LayoutContext const &rhs) {
+  return std::tie(
+             lhs.pointScaleFactor,
+             lhs.affectedNodes,
+             lhs.swapLeftAndRightInRTL,
+             lhs.fontSizeMultiplier,
+             lhs.viewportOffset) ==
+      std::tie(
+             rhs.pointScaleFactor,
+             rhs.affectedNodes,
+             rhs.swapLeftAndRightInRTL,
+             rhs.fontSizeMultiplier,
+             rhs.viewportOffset);
+}
+
+inline bool operator!=(LayoutContext const &lhs, LayoutContext const &rhs) {
+  return !(lhs == rhs);
+}
+
 } // namespace react
 } // namespace facebook

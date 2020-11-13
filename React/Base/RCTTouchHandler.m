@@ -11,7 +11,7 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
+#import "RCTEventDispatcherProtocol.h"
 #import "RCTLog.h"
 #import "RCTSurfaceView.h"
 #import "RCTTouchEvent.h"
@@ -25,7 +25,7 @@
 // TODO: this class behaves a lot like a module, and could be implemented as a
 // module if we were to assume that modules and RootViews had a 1:1 relationship
 @implementation RCTTouchHandler {
-  __weak RCTEventDispatcher *_eventDispatcher;
+  __weak id<RCTEventDispatcherProtocol> _eventDispatcher;
 
   /**
    * Arrays managed in parallel tracking native touch object along with the
@@ -47,7 +47,7 @@
   RCTAssertParam(bridge);
 
   if ((self = [super initWithTarget:nil action:NULL])) {
-    _eventDispatcher = [bridge moduleForClass:[RCTEventDispatcher class]];
+    _eventDispatcher = bridge.eventDispatcher;
 
     _nativeTouches = [NSMutableOrderedSet new];
     _reactTouches = [NSMutableArray new];
