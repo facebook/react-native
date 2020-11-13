@@ -38,19 +38,30 @@ StubView const &StubViewTree::getRootStubView() const {
   return *registry.at(rootTag);
 }
 
-void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
+/**
+ * ignoreDuplicateCreates: when stubs generates "fake" mutation instructions, in
+ * some cases it can produce too many "create" instructions. We ignore
+ * duplicates and treat them as noops. In the case of verifying actual diffing,
+ * that assert is left on.
+ *
+ * @param mutations
+ * @param ignoreDuplicateCreates
+ */
+void StubViewTree::mutate(
+    ShadowViewMutationList const &mutations,
+    bool ignoreDuplicateCreates) {
   STUB_VIEW_LOG({ LOG(ERROR) << "StubView: Mutating Begin"; });
   for (auto const &mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
         STUB_VIEW_ASSERT(mutation.parentShadowView == ShadowView{});
         STUB_VIEW_ASSERT(mutation.oldChildShadowView == ShadowView{});
-        STUB_VIEW_ASSERT(mutation.newChildShadowView.props);
         auto stubView = std::make_shared<StubView>();
-        stubView->update(mutation.newChildShadowView);
         auto tag = mutation.newChildShadowView.tag;
         STUB_VIEW_LOG({ LOG(ERROR) << "StubView: Create: " << tag; });
-        STUB_VIEW_ASSERT(registry.find(tag) == registry.end());
+        if (!ignoreDuplicateCreates) {
+          STUB_VIEW_ASSERT(registry.find(tag) == registry.end());
+        }
         registry[tag] = stubView;
         break;
       }
@@ -62,9 +73,6 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         STUB_VIEW_ASSERT(mutation.newChildShadowView == ShadowView{});
         auto tag = mutation.oldChildShadowView.tag;
         STUB_VIEW_ASSERT(registry.find(tag) != registry.end());
-        auto stubView = registry[tag];
-        STUB_VIEW_ASSERT(
-            (ShadowView)(*stubView) == mutation.oldChildShadowView);
         registry.erase(tag);
         break;
       }
@@ -129,15 +137,19 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         STUB_VIEW_LOG({
           LOG(ERROR) << "StubView: Update: " << mutation.newChildShadowView.tag;
         });
-        STUB_VIEW_ASSERT(mutation.newChildShadowView.props);
+
+        // We don't have a strict requirement that oldChildShadowView has any
+        // data. In particular, LayoutAnimations can produce UPDATEs with only a
+        // new node.
         STUB_VIEW_ASSERT(
-            mutation.newChildShadowView.tag == mutation.oldChildShadowView.tag);
+            mutation.newChildShadowView.tag ==
+                mutation.oldChildShadowView.tag ||
+            mutation.oldChildShadowView.tag == 0);
+
         STUB_VIEW_ASSERT(
             registry.find(mutation.newChildShadowView.tag) != registry.end());
-        auto oldStubView = registry[mutation.newChildShadowView.tag];
-        STUB_VIEW_ASSERT(
-            (ShadowView)(*oldStubView) == mutation.oldChildShadowView);
-        oldStubView->update(mutation.newChildShadowView);
+        auto stubView = registry[mutation.newChildShadowView.tag];
+        stubView->update(mutation.newChildShadowView);
         break;
       }
     }

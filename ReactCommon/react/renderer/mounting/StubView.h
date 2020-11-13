@@ -25,8 +25,6 @@ class StubView final {
   StubView() = default;
   StubView(StubView const &stubView) = default;
 
-  operator ShadowView() const;
-
   void update(ShadowView const &shadowView);
 
   ComponentName componentName;

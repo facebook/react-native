@@ -10,18 +10,6 @@
 namespace facebook {
 namespace react {
 
-StubView::operator ShadowView() const {
-  auto shadowView = ShadowView{};
-  shadowView.componentName = componentName;
-  shadowView.componentHandle = componentHandle;
-  shadowView.tag = tag;
-  shadowView.props = props;
-  shadowView.eventEmitter = eventEmitter;
-  shadowView.layoutMetrics = layoutMetrics;
-  shadowView.state = state;
-  return shadowView;
-}
-
 void StubView::update(ShadowView const &shadowView) {
   componentName = shadowView.componentName;
   componentHandle = shadowView.componentHandle;
