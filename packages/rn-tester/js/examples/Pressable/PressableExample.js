@@ -39,6 +39,12 @@ function ContentPress() {
     <>
       <View style={styles.row}>
         <Pressable
+          onFocus={() => {
+            console.log('Focused!!!');
+          }}
+          onBlur={() => {
+            console.log('Blurred!');
+          }}
           onPress={() => {
             setTimesPressed(current => current + 1);
           }}>
@@ -247,6 +253,31 @@ function PressableDisabled() {
         <Text style={styles.button}>Enabled Pressable</Text>
       </Pressable>
     </>
+  );
+}
+
+function PressableFocusBlurEvents() {
+  const [lastEvent, setLastEvent] = useState('');
+
+  return (
+    <View testID="pressable_hit_slop">
+      <View style={[styles.row, styles.centered]}>
+        <Pressable
+          onFocus={() => {
+            console.log('focused lol');
+            setLastEvent('received focus event');
+          }}
+          onBlur={() => {
+            setLastEvent('received blur event');
+          }}
+          testID="pressable_focus_blur_button">
+          <Text style={styles.text}>Use keyboard to move focus to me</Text>
+        </Pressable>
+      </View>
+      <View style={styles.logBox}>
+        <Text>{lastEvent}</Text>
+      </View>
+    </View>
   );
 }
 
@@ -476,6 +507,14 @@ exports.examples = [
       'any interaction with component': string),
     render: function(): React.Node {
       return <PressableDisabled />;
+    },
+  },
+  {
+    title: 'Pressable onFocus/onBlur',
+    description: ('<Pressable> components can receive focus/blur events.': string),
+    platform: 'android',
+    render: function(): React.Node {
+      return <PressableFocusBlurEvents />;
     },
   },
 ];
