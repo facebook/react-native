@@ -88,4 +88,7 @@ public class ReactFeatureFlags {
 
   /** Potential bugfix for crashes caused by mutating the view hierarchy during onDraw. */
   public static boolean enableDrawMutationFix = true;
+
+  /** Use lock-free data structures for Fabric MountItems. */
+  public static boolean enableLockFreeMountInstructions = false;
 }
