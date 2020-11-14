@@ -84,6 +84,7 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
     logViewable: false,
     virtualized: true,
     inverted: false,
+    itemsToRender: 10,
   };
 
   _scrollPos = new Animated.Value(0);
@@ -174,6 +175,7 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
           renderSectionHeader={renderSectionHeader}
           renderSectionFooter={renderSectionFooter}
           stickySectionHeadersEnabled
+          initialNumToRender={this.state.itemsToRender}
           sections={[
             {
               key: 'empty section',
