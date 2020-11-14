@@ -183,12 +183,13 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
           stickySectionHeadersEnabled
           initialNumToRender={this.state.itemsToRender}
           ListEmptyComponent={EmptySectionList}
-          onEndReached={() => {
+          onEndReached={() =>
             Alert.alert(
               'onEndReached called',
               'You have reached the end of this list',
-            );
-          }}
+            )
+          }
+          onEndReachedThreshold={0}
           sections={[
             {
               key: 'empty section',
