@@ -16,6 +16,7 @@ import type {ColorValue} from '../StyleSheet/StyleSheet';
 import Touchable from '../Components/Touchable/Touchable';
 import View from '../Components/View/View';
 import * as React from 'react';
+import {StyleSheet} from 'react-native';
 
 type Props = $ReadOnly<{|
   color: ColorValue,
@@ -52,23 +53,34 @@ export function PressabilityDebugView({color, hitSlop}: Props): React.Node {
       const baseColor =
         '#' + (normalizedColor ?? 0).toString(16).padStart(8, '0');
 
-      const pressibilityViewStyle = {
-        backgroundColor: baseColor.slice(0, -2) + '0F', // 15%
-        borderColor: baseColor.slice(0, -2) + '55', // 85%
-        borderStyle: 'dashed',
-        borderWidth: 1,
-        bottom: -(hitSlop?.bottom ?? 0),
-        left: -(hitSlop?.left ?? 0),
-        position: 'absolute',
-        right: -(hitSlop?.right ?? 0),
-        top: -(hitSlop?.top ?? 0),
-      };
-
-      return <View pointerEvents="none" style={pressibilityViewStyle} />;
+      return (
+        <View
+          pointerEvents="none"
+          style={[
+            {
+              right: -(hitSlop?.right ?? 0),
+              top: -(hitSlop?.top ?? 0),
+              bottom: -(hitSlop?.bottom ?? 0),
+              left: -(hitSlop?.left ?? 0),
+              backgroundColor: baseColor.slice(0, -2) + '0F', // 15%
+              borderColor: baseColor.slice(0, -2) + '55', // 85%
+            },
+            styles.pressibilityViewStyle,
+          ]}
+        />
+      );
     }
   }
   return null;
 }
+
+const styles = StyleSheet.create({
+  pressibilityViewStyle: {
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    position: 'absolute',
+  },
+});
 
 export function isEnabled(): boolean {
   if (__DEV__) {
