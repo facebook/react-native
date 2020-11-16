@@ -21,7 +21,7 @@ const {
   Text,
   TouchableHighlight,
   View,
-  ScrollView
+  ScrollView,
 } = require('react-native');
 
 const Item = Picker.Item;
@@ -79,10 +79,12 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
     animationType: 'none',
     modalVisible: false,
     transparent: false,
+    hardwareAccelerated: false,
+    statusBarTranslucent: false,
     presentationStyle: 'fullScreen',
     selectedSupportedOrientation: '0',
     currentOrientation: 'unknown',
-    action: ''
+    action: '',
   };
 
   _setModalVisible = visible => {
@@ -97,9 +99,38 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
     this.setState({transparent: !this.state.transparent});
   };
 
+  _toggleHardwareAccelerated = () => {
+    this.setState({hardwareAccelerated: !this.state.hardwareAccelerated});
+  }
+
+  _toggleStatusBarTranslucent = () => {
+    this.setState({statusBarTranslucent: !this.state.statusBarTranslucent});
+  }
+
   renderSwitch() {
     if (Platform.isTV) {
       return null;
+    }
+    if (Platform.OS === 'android') {
+      return (
+        <>
+        <Text style={styles.rowTitle}>Hardware Accelerated</Text>
+        <Switch
+          value={this.state.hardwareAccelerated}
+          onValueChange={this._toggleHardwareAccelerated}
+        />
+        <Text style={styles.rowTitle}>Status Bar Translucent</Text>
+        <Switch
+          value={this.state.statusBarTranslucent}
+          onValueChange={this._toggleStatusBarTranslucent}
+        />
+        <Text style={styles.rowTitle}>Transparent</Text>
+        <Switch
+          value={this.state.transparent}
+          onValueChange={this._toggleTransparent}
+        />
+        </>
+      );
     }
     return (
       <Switch
@@ -128,6 +159,8 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
           animationType={this.state.animationType}
           presentationStyle={this.state.presentationStyle}
           transparent={this.state.transparent}
+          hardwareAccelerated={this.state.hardwareAccelerated}
+          statusBarTranslucent={this.state.statusBarTranslucent}
           visible={this.state.modalVisible}
           onRequestClose={() => this._setModalVisible(false)}
           supportedOrientations={
@@ -139,14 +172,11 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
             this.setState({currentOrientation: evt.nativeEvent.orientation})
           }
           onDismiss={() =>
-            this.state.action === 'onDismiss' ? alert(this.state.action)
-            : null
+            this.state.action === 'onDismiss' ? alert(this.state.action) : null
           }
           onShow={() =>
-            this.state.action === 'onShow' ? alert(this.state.action)
-            : null
-          }
-          >
+            this.state.action === 'onShow' ? alert(this.state.action) : null
+          }>
           <View style={[styles.container, modalBackgroundStyle]}>
             <View
               style={[styles.innerContainer, innerContainerTransparentStyle]}>
@@ -193,7 +223,6 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
         </View>
 
         <View style={styles.row}>
-          <Text style={styles.rowTitle}>Transparent</Text>
           {this.renderSwitch()}
         </View>
         {this.renderPickers()}
@@ -224,7 +253,7 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
             <Item label="Default presentationStyle" value={null} />
           </Picker>
         </View>
-            
+
         <View>
           <Text style={styles.rowTitle}>Supported orientations</Text>
           <Picker
@@ -248,9 +277,9 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
             selectedValue={this.state.action}
             onValueChange={action => this.setState({action})}
             itemStyle={styles.pickerItem}>
-            <Item label="None" value=''/>
-            <Item label="On Dismiss" value="onDismiss"/>
-            <Item label="On Show" value="onShow"/>
+            <Item label="None" value="" />
+            <Item label="On Dismiss" value="onDismiss" />
+            <Item label="On Show" value="onShow" />
           </Picker>
         </View>
       </View>
@@ -306,7 +335,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   ScrollView: {
-    paddingTop:10,
-    paddingBottom:100
-  }
+    paddingTop: 10,
+    paddingBottom: 100,
+  },
 });
