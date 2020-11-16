@@ -256,7 +256,8 @@ if (enableCodegen) {
                             // The following paths assume building React Native from source.
                             "GENERATED_SRC_DIR=$buildDir/generated/source",
                             "PROJECT_BUILD_DIR=$buildDir",
-                            "REACT_ANDROID_DIR=$reactAndroidProjectDir"
+                            "REACT_ANDROID_DIR=$reactAndroidProjectDir",
+                            "REACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir"
                     cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
                     cppFlags "-std=c++1y"
                     targets "rntester_appmodules"

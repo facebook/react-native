@@ -187,7 +187,7 @@ RCT_EXPORT_MODULE()
   if (!_loaders) {
     std::unique_lock<std::mutex> guard(_loadersMutex);
     if (!_loaders) {
-      
+
       // Get loaders, sorted in reverse priority order (highest priority first)
       if (_loadersProvider) {
         _loaders = _loadersProvider();
@@ -839,12 +839,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   return [[RCTImageURLLoaderRequest alloc] initWithRequestId:loaderRequest.requestId imageURL:imageURLRequest.URL cancellationBlock:cancellationBlock];
 }
 
-- (NSString *)loaderModuleNameForRequestUrl:(NSURL *)url {
+- (BOOL)shouldEnablePerfLoggingForRequestUrl:(NSURL *)url {
   id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:url];
-  if ([loadHandler respondsToSelector:@selector(loaderModuleNameForRequestUrl:)]) {
-    return [(id<RCTImageURLLoaderWithAttribution>)loadHandler loaderModuleNameForRequestUrl:url];
+  if ([loadHandler respondsToSelector:@selector(shouldEnablePerfLogging)]) {
+    return [(id<RCTImageURLLoaderWithAttribution>)loadHandler shouldEnablePerfLogging];
   }
-  return nil;
+  return NO;
 }
 
 - (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(UIView *)imageView
@@ -1197,10 +1197,29 @@ RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject)
 {
+  [self prefetchImageWithMetadata:uri queryRootName:nil rootTag:0 resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(prefetchImageWithMetadata:(NSString *)uri
+                  queryRootName:(NSString *)queryRootName
+                  rootTag:(double)rootTag
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject)
+{
   NSURLRequest *request = [RCTConvert NSURLRequest:uri];
   [self loadImageWithURLRequest:request
-   priority:RCTImageLoaderPriorityPrefetch
-   callback:^(NSError *error, UIImage *image) {
+                           size:CGSizeZero
+                          scale:1
+                        clipped:YES
+                     resizeMode:RCTResizeModeStretch
+                       priority:RCTImageLoaderPriorityPrefetch
+                    attribution:{
+                                  .queryRootName = queryRootName ? [queryRootName UTF8String] : "",
+                                  .surfaceId = (int)rootTag,
+                                }
+                  progressBlock:nil
+               partialLoadBlock:nil
+                       completionBlock:^(NSError *error, UIImage *image, id completionMetadata) {
      if (error) {
        reject(@"E_PREFETCH_FAILURE", nil, error);
        return;

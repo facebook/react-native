@@ -11,9 +11,35 @@ THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOUR
 set -e
 set -u
 
-pushd "$THIS_DIR/../.." >/dev/null
+CODEGEN_DIR="$THIS_DIR/../.."
 
-yarn install 2> >(grep -v '^warning' 1>&2)
-yarn run build
+rm -rf "${CODEGEN_DIR:?}/lib" "${CODEGEN_DIR:?}/node_modules"
 
-popd >/dev/null
+YARN_BINARY="${YARN_BINARY:-$(command -v yarn)}"
+
+if [[ ${FBSOURCE_ENV:-0} -eq 1 ]]; then
+  # Custom FB-specific setup
+  pushd "$CODEGEN_DIR" >/dev/null
+
+  "$YARN_BINARY" install 2> >(grep -v '^warning' 1>&2)
+  # Note: Within FBSOURCE_ENV, this has to explicitly run build.
+  "$YARN_BINARY" run build
+
+  popd >/dev/null
+else
+  # Run yarn install in a separate tmp dir to avoid conflict with the rest of the repo.
+  # Note: OSS-only.
+  TMP_DIR=$(mktemp -d)
+
+  cp -R "$CODEGEN_DIR/." "$TMP_DIR"
+
+  pushd "$TMP_DIR" >/dev/null
+
+  # Note: this automatically runs build as well.
+  "$YARN_BINARY" install 2> >(grep -v '^warning' 1>&2)
+
+  popd >/dev/null
+
+  mv "$TMP_DIR/lib" "$TMP_DIR/node_modules" "$CODEGEN_DIR"
+  rm -rf "$TMP_DIR"
+fi

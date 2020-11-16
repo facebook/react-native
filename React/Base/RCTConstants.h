@@ -18,12 +18,6 @@ RCT_EXTERN BOOL RCTExperimentGetOnDemandViewMounting(void);
 RCT_EXTERN void RCTExperimentSetOnDemandViewMounting(BOOL value);
 
 /*
- * Allows to some performance flags to report data synchronously right after the mounting transaction finishes.
- */
-RCT_EXTERN BOOL RCTExperimentGetSyncPerformanceFlag(void);
-RCT_EXTERN void RCTExperimentSetSyncPerformanceFlag(BOOL value);
-
-/*
  * It's an experimental feature that improves performance of hit-testing.
  */
 RCT_EXTERN BOOL RCTExperimentGetOptimizedHitTesting(void);

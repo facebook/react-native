@@ -73,7 +73,7 @@ public class ReactDrawableHelper {
   }
 
   private static RippleDrawable getRippleDrawable(
-    Context context, ReadableMap drawableDescriptionDict) {
+      Context context, ReadableMap drawableDescriptionDict) {
     int color = getColor(context, drawableDescriptionDict);
     Drawable mask = getMask(drawableDescriptionDict);
     ColorStateList colorStateList =

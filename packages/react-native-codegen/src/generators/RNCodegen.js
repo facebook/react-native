@@ -40,13 +40,13 @@ const schemaValidator = require('../SchemaValidator.js');
 
 import type {SchemaType} from '../CodegenSchema';
 
-type Options = $ReadOnly<{|
+type Options = $ReadOnly<{
   libraryName: string,
   schema: SchemaType,
   outputDirectory: string,
   moduleSpecName: string,
   packageName?: string, // Some platforms have a notion of package, which should be configurable.
-|}>;
+}>;
 
 type Generators =
   | 'descriptors'
@@ -58,10 +58,10 @@ type Generators =
   | 'modulesCxx'
   | 'modulesIOS';
 
-type Config = $ReadOnly<{|
+type Config = $ReadOnly<{
   generators: Array<Generators>,
   test?: boolean,
-|}>;
+}>;
 
 const GENERATORS = {
   descriptors: [generateComponentDescriptorH.generate],

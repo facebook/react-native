@@ -69,6 +69,15 @@
       RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
 }
 
+- (BOOL)touchesShouldCancelInContentView:(UIView *)view
+{
+  if ([_overridingDelegate respondsToSelector:@selector(touchesShouldCancelInContentView:)]) {
+    return [_overridingDelegate touchesShouldCancelInContentView:view];
+  }
+
+  return [super touchesShouldCancelInContentView:view];
+}
+
 #pragma mark - RCTGenericDelegateSplitter
 
 - (void)setPrivateDelegate:(id<UIScrollViewDelegate>)delegate

@@ -77,7 +77,7 @@ def rn_codegen_cli():
             bash = r"""
                 set -euo pipefail
                 mkdir -p "$OUT"
-                cp -r "$SRCDIR/" "$OUT/"
+                rsync -rLptgoD "$SRCDIR/" "$OUT"
                 cd "$OUT"
                 yarn install 2> >(grep -v '^warning' 1>&2)
                 yarn run build
