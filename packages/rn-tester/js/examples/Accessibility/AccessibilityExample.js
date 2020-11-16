@@ -21,7 +21,7 @@ const {
   findNodeHandle,
   Alert,
   StyleSheet,
-  Platform
+  Platform,
 } = require('react-native');
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
@@ -29,7 +29,7 @@ const RNTesterBlock = require('../../components/RNTesterBlock');
 const checkImageSource = require('./check.png');
 const uncheckImageSource = require('./uncheck.png');
 const mixedCheckboxImageSource = require('./mixed.png');
-const { createRef } = require('react');
+const {createRef} = require('react');
 
 const styles = StyleSheet.create({
   image: {
@@ -712,37 +712,41 @@ class AnnounceForAccessibility extends React.Component<{}> {
 }
 
 class SetAccessibilityFocusExample extends React.Component<{}> {
-
   state = {
-    reactTag: null
-  }
+    reactTag: null,
+  };
 
   render() {
     const myRef = createRef();
-    
+
     const onClose = () => {
       if (myRef && myRef.current) {
         const reactTag = findNodeHandle(myRef.current);
         this.setState({reactTag});
         AccessibilityInfo.setAccessibilityFocus(reactTag);
-      } 
-    }
+      }
+    };
 
     return (
       <View>
-        <Text>SetAccessibilityFocus on ReactTag: {this.state.reactTag == null ? "Null" : this.state.reactTag}</Text>
+        <Text>
+          SetAccessibilityFocus on ReactTag:{' '}
+          {this.state.reactTag == null ? 'Null' : this.state.reactTag}
+        </Text>
         <Button
-        ref={myRef}
-          title={"Click"} 
+          ref={myRef}
+          title={'Click'}
           onPress={() => {
-            Alert.alert('Set Accessibility Focus', 
-            'Press okay to proceed',
-            [{ text: 'Okay', onPress: onClose }],
-            { cancelable: true })
+            Alert.alert(
+              'Set Accessibility Focus',
+              'Press okay to proceed',
+              [{text: 'Okay', onPress: onClose}],
+              {cancelable: true},
+            );
           }}
         />
       </View>
-    )
+    );
   }
 }
 
@@ -750,43 +754,42 @@ class EnabledExamples extends React.Component<{}> {
   render() {
     return (
       <View>
-        {Platform.OS === 'ios' ?
-        <>
-          <RNTesterBlock title="isBoldTextEnabled()">
-            <EnabledExample
-              test="bold text"
-              eventListener="boldTextChanged"
-            />
-          </RNTesterBlock>
-          <RNTesterBlock title="isGrayScaleEnabled()">
-             <EnabledExample
-              test="gray scale"
-              eventListener="grayscaleChanged"
-            />
-          </RNTesterBlock>
-          <RNTesterBlock title="isInvertColorsEnabled()">
-            <EnabledExample
-              test="invert colors"
-              eventListener="invertColorsChanged"
-            />
-          </RNTesterBlock>
-          <RNTesterBlock title="isReduceTransparencyEnabled()">
-            <EnabledExample
-              test="reduce transparency"
-              eventListener="reduceTransparencyChanged"
-            />
-          </RNTesterBlock>
-        </>
-        : null
-        }
-        
+        {Platform.OS === 'ios' ? (
+          <>
+            <RNTesterBlock title="isBoldTextEnabled()">
+              <EnabledExample
+                test="bold text"
+                eventListener="boldTextChanged"
+              />
+            </RNTesterBlock>
+            <RNTesterBlock title="isGrayScaleEnabled()">
+              <EnabledExample
+                test="gray scale"
+                eventListener="grayscaleChanged"
+              />
+            </RNTesterBlock>
+            <RNTesterBlock title="isInvertColorsEnabled()">
+              <EnabledExample
+                test="invert colors"
+                eventListener="invertColorsChanged"
+              />
+            </RNTesterBlock>
+            <RNTesterBlock title="isReduceTransparencyEnabled()">
+              <EnabledExample
+                test="reduce transparency"
+                eventListener="reduceTransparencyChanged"
+              />
+            </RNTesterBlock>
+          </>
+        ) : null}
+
         <RNTesterBlock title="isReduceMotionEnabled()">
           <EnabledExample
             test="reduce motion"
             eventListener="reduceMotionChanged"
           />
         </RNTesterBlock>
-        
+
         <RNTesterBlock title="isScreenReaderEnabled()">
           <EnabledExample
             test="screen reader"
@@ -794,64 +797,59 @@ class EnabledExamples extends React.Component<{}> {
           />
         </RNTesterBlock>
       </View>
-    )
+    );
   }
 }
 
 class EnabledExample extends React.Component<{}> {
   state = {
-    isEnabled: false
-  }
+    isEnabled: false,
+  };
 
   componentDidMount() {
     AccessibilityInfo.addEventListener(
       this.props.eventListener,
-      this._handleToggled
+      this._handleToggled,
     );
 
-    switch(this.props.eventListener) {
+    switch (this.props.eventListener) {
       case 'reduceMotionChanged':
-        return AccessibilityInfo.isReduceMotionEnabled().then(
-          (state) => {
-            this.setState({ isEnabled: state });
-          }
-        );
+        return AccessibilityInfo.isReduceMotionEnabled().then(state => {
+          this.setState({isEnabled: state});
+        });
       default:
         return null;
     }
-    
   }
 
   componentWillUnmount() {
     AccessibilityInfo.removeEventListener(
       this.props.eventListener,
-      this._handleToggled
+      this._handleToggled,
     );
   }
 
-  _handleToggled = (isEnabled) => {
+  _handleToggled = isEnabled => {
     if (!this.state.isEnabled) {
-      this.setState({ isEnabled });
+      this.setState({isEnabled});
     } else {
-      this.setState({ isEnabled: false });
+      this.setState({isEnabled: false});
     }
   };
 
   render() {
-    return(
+    return (
       <View>
-      <Text>
+        <Text>
           The {this.props.test} is{' '}
-          {this.state.isEnabled
-            ? 'enabled'
-            : 'disabled'}
+          {this.state.isEnabled ? 'enabled' : 'disabled'}
         </Text>
-        <Button 
+        <Button
           title={this.state.isEnabled ? 'disable' : 'enable'}
           onPress={this._handleToggled}
         />
       </View>
-    )
+    );
   }
 }
 
@@ -901,5 +899,4 @@ exports.examples = [
       return <EnabledExamples />;
     },
   },
-
 ];
