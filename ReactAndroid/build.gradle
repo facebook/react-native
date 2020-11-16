@@ -305,6 +305,7 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
 
     inputs.dir("$projectDir/../ReactCommon")
     inputs.dir("src/main/jni")
+    inputs.dir("src/main/java/com/facebook/react/turbomodule/core/jni")
     inputs.dir("src/main/java/com/facebook/react/modules/blob")
     outputs.dir("$buildDir/react-ndk/all")
     commandLine(getNdkBuildFullPath(),

@@ -103,6 +103,11 @@ public class MountingManager {
   @ThreadConfined(UI)
   public void addRootView(int reactRootTag, @NonNull View rootView) {
     if (rootView.getId() != View.NO_ID) {
+      FLog.e(
+          TAG,
+          "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
+          rootView.getId(),
+          reactRootTag);
       throw new IllegalViewOperationException(
           "Trying to add a root view with an explicit id already set. React Native uses "
               + "the id field to track react tags and will overwrite this field. If that is fine, "

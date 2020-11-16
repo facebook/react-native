@@ -196,6 +196,10 @@ class ModalHostViewEventEmitter : public ViewEventEmitter {
       
     };
 
+  struct OnDismiss {
+      
+    };
+
   enum class OnOrientationChangeOrientation {
     Portrait,
     Landscape
@@ -215,6 +219,8 @@ class ModalHostViewEventEmitter : public ViewEventEmitter {
   void onRequestClose(OnRequestClose value) const;
 
   void onShow(OnShow value) const;
+
+  void onDismiss(OnDismiss value) const;
 
   void onOrientationChange(OnOrientationChange value) const;
 };

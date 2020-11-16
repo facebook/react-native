@@ -23,6 +23,17 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
+  /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
+  public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
+
+  /** Enable TurboModule JS Codegen. */
+  public static volatile boolean useTurboModuleJSCodegen = false;
+
+  /**
+   * Enable the fix to validate the TurboReactPackage's module info before resolving a TurboModule.
+   */
+  public static volatile boolean enableTurboModulePackageInfoValidation = false;
+
   /*
    * This feature flag enables logs for Fabric
    */
@@ -77,4 +88,7 @@ public class ReactFeatureFlags {
 
   /** Potential bugfix for crashes caused by mutating the view hierarchy during onDraw. */
   public static boolean enableDrawMutationFix = true;
+
+  /** Use lock-free data structures for Fabric MountItems. */
+  public static boolean enableLockFreeMountInstructions = false;
 }

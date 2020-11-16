@@ -132,7 +132,6 @@ Inspector::Inspector(
 }
 
 Inspector::~Inspector() {
-  // TODO: think about expected detach flow
   debugger_.setEventObserver(nullptr);
 }
 

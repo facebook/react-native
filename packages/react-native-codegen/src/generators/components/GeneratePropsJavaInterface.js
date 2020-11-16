@@ -11,9 +11,10 @@
 'use strict';
 
 import type {
-  CommandTypeShape,
+  NamedShape,
+  CommandTypeAnnotation,
   ComponentShape,
-  PropTypeShape,
+  PropTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
 const {
@@ -47,7 +48,10 @@ function addNullable(imports) {
   imports.add('import androidx.annotation.Nullable;');
 }
 
-function getJavaValueForProp(prop: PropTypeShape, imports): string {
+function getJavaValueForProp(
+  prop: NamedShape<PropTypeAnnotation>,
+  imports,
+): string {
   const typeAnnotation = prop.typeAnnotation;
 
   switch (typeAnnotation.type) {
@@ -128,7 +132,7 @@ function getCommandArgJavaType(param) {
   const {typeAnnotation} = param;
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return 'double';
@@ -153,7 +157,7 @@ function getCommandArgJavaType(param) {
 }
 
 function getCommandArguments(
-  command: CommandTypeShape,
+  command: NamedShape<CommandTypeAnnotation>,
   componentName: string,
 ): string {
   return [

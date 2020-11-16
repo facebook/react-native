@@ -17,6 +17,7 @@ namespace react {
 struct ImageURLLoaderAttribution {
   int32_t nativeViewTag = 0;
   int32_t surfaceId = 0;
+  std::string queryRootName;
   NSString *analyticTag;
 };
 
