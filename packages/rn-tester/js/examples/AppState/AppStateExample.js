@@ -22,7 +22,7 @@ class AppStateSubscription extends React.Component<
     appState: AppState.currentState,
     previousAppStates: [],
     memoryWarnings: 0,
-    eventsDetected: []
+    eventsDetected: [],
   };
 
   componentDidMount() {
@@ -49,15 +49,15 @@ class AppStateSubscription extends React.Component<
 
   _handleBlur = () => {
     const eventsDetected = this.state.eventsDetected.slice();
-    eventsDetected.push("blur");
+    eventsDetected.push('blur');
     this.setState({eventsDetected});
-  }
+  };
 
   _handleFocus = () => {
     const eventsDetected = this.state.eventsDetected.slice();
-    eventsDetected.push("focus");
+    eventsDetected.push('focus');
     this.setState({eventsDetected});
-  }
+  };
 
   _handleAppStateChange = appState => {
     const previousAppStates = this.state.previousAppStates.slice();
@@ -88,7 +88,7 @@ class AppStateSubscription extends React.Component<
         <View>
           <Text>{JSON.stringify(this.state.eventsDetected)}</Text>
         </View>
-      )
+      );
     }
     return (
       <View>
@@ -136,7 +136,8 @@ exports.examples = [
   {
     platform: 'android',
     title: 'Focus/Blur Events',
-    description: 'In the Android simulator, toggle the notification drawer to fire events.',
+    description:
+      'In the Android simulator, toggle the notification drawer to fire events.',
     render(): React.Element<any> {
       return <AppStateSubscription detectEvents={true} />;
     },
