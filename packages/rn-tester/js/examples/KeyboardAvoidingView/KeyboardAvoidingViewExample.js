@@ -170,8 +170,7 @@ const KeyboardAvoidingContentContainerStyle = () => {
           keyboardVerticalOffset={20}
           behavior={'position'}
           style={styles.container}
-          contentContainerStyle={styles.contentContainer}
-          >
+          contentContainerStyle={styles.contentContainer}>
           <CloseButton behavior={'height'} setModdalOpen={setModdalOpen} />
           <TextInputForm />
         </KeyboardAvoidingView>
@@ -198,7 +197,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingTop: 20,
-    backgroundColor: '#abdebf'
+    backgroundColor: '#abdebf',
   },
   textInput: {
     borderRadius: 5,
@@ -256,7 +255,7 @@ exports.examples = [
   {
     title: 'Keyboard Avoiding View with contentContainerStyle',
     render(): React.Node {
-      return <KeyboardAvoidingContentContainerStyle/>;
-    }
-  }
+      return <KeyboardAvoidingContentContainerStyle />;
+    },
+  },
 ];
