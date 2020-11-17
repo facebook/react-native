@@ -101,11 +101,11 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
 
   _toggleHardwareAccelerated = () => {
     this.setState({hardwareAccelerated: !this.state.hardwareAccelerated});
-  }
+  };
 
   _toggleStatusBarTranslucent = () => {
     this.setState({statusBarTranslucent: !this.state.statusBarTranslucent});
-  }
+  };
 
   renderSwitch() {
     if (Platform.isTV) {
@@ -114,21 +114,21 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
     if (Platform.OS === 'android') {
       return (
         <>
-        <Text style={styles.rowTitle}>Hardware Accelerated</Text>
-        <Switch
-          value={this.state.hardwareAccelerated}
-          onValueChange={this._toggleHardwareAccelerated}
-        />
-        <Text style={styles.rowTitle}>Status Bar Translucent</Text>
-        <Switch
-          value={this.state.statusBarTranslucent}
-          onValueChange={this._toggleStatusBarTranslucent}
-        />
-        <Text style={styles.rowTitle}>Transparent</Text>
-        <Switch
-          value={this.state.transparent}
-          onValueChange={this._toggleTransparent}
-        />
+          <Text style={styles.rowTitle}>Hardware Accelerated</Text>
+          <Switch
+            value={this.state.hardwareAccelerated}
+            onValueChange={this._toggleHardwareAccelerated}
+          />
+          <Text style={styles.rowTitle}>Status Bar Translucent</Text>
+          <Switch
+            value={this.state.statusBarTranslucent}
+            onValueChange={this._toggleStatusBarTranslucent}
+          />
+          <Text style={styles.rowTitle}>Transparent</Text>
+          <Switch
+            value={this.state.transparent}
+            onValueChange={this._toggleTransparent}
+          />
         </>
       );
     }
@@ -222,9 +222,7 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
           </Button>
         </View>
 
-        <View style={styles.row}>
-          {this.renderSwitch()}
-        </View>
+        <View style={styles.row}>{this.renderSwitch()}</View>
         {this.renderPickers()}
         <Button onPress={this._setModalVisible.bind(this, true)}>
           Present
@@ -273,24 +271,24 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
 
         <View>
           <Text style={styles.rowTitle}>Actions</Text>
-          {Platform.OS === 'ios' ?
-          <Picker
-            selectedValue={this.state.action}
-            onValueChange={action => this.setState({action})}
-            itemStyle={styles.pickerItem}>
-            <Item label="None" value="" />
-            <Item label="On Dismiss" value="onDismiss" />
-            <Item label="On Show" value="onShow" />
-          </Picker>
-          : 
-          <Picker
-            selectedValue={this.state.action}
-            onValueChange={action => this.setState({action})}
-            itemStyle={styles.pickerItem}>
-            <Item label="None" value="" />
-            <Item label="On Show" value="onShow" />
-          </Picker>
-          }
+          {Platform.OS === 'ios' ? (
+            <Picker
+              selectedValue={this.state.action}
+              onValueChange={action => this.setState({action})}
+              itemStyle={styles.pickerItem}>
+              <Item label="None" value="" />
+              <Item label="On Dismiss" value="onDismiss" />
+              <Item label="On Show" value="onShow" />
+            </Picker>
+          ) : (
+            <Picker
+              selectedValue={this.state.action}
+              onValueChange={action => this.setState({action})}
+              itemStyle={styles.pickerItem}>
+              <Item label="None" value="" />
+              <Item label="On Show" value="onShow" />
+            </Picker>
+          )}
         </View>
       </View>
     );
