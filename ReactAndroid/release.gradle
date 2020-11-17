@@ -79,6 +79,7 @@ afterEvaluate { project ->
         classpath += files(project.getConfigurations().getByName("compile").asList())
         include("**/*.java")
         exclude("**/ReactBuildConfig.java")
+        exclude("**/ReactEditText.java")
     }
 
     task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
