@@ -273,6 +273,7 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
 
         <View>
           <Text style={styles.rowTitle}>Actions</Text>
+          {Platform.OS === 'ios' ?
           <Picker
             selectedValue={this.state.action}
             onValueChange={action => this.setState({action})}
@@ -281,6 +282,15 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
             <Item label="On Dismiss" value="onDismiss" />
             <Item label="On Show" value="onShow" />
           </Picker>
+          : 
+          <Picker
+            selectedValue={this.state.action}
+            onValueChange={action => this.setState({action})}
+            itemStyle={styles.pickerItem}>
+            <Item label="None" value="" />
+            <Item label="On Show" value="onShow" />
+          </Picker>
+          }
         </View>
       </View>
     );
