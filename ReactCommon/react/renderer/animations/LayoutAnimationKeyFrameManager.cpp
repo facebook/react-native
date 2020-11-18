@@ -631,12 +631,12 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
 std::vector<std::tuple<AnimationKeyFrame, AnimationConfig, LayoutAnimation *>>
 LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
     SurfaceId surfaceId,
-    ShadowViewMutationList &mutations,
+    ShadowViewMutationList const &mutations,
     bool deletesOnly) const {
   std::vector<std::tuple<AnimationKeyFrame, AnimationConfig, LayoutAnimation *>>
       conflictingAnimations{};
 
-  for (auto &mutation : mutations) {
+  for (auto const &mutation : mutations) {
     if (deletesOnly && mutation.type != ShadowViewMutation::Type::Delete) {
       continue;
     }
@@ -785,7 +785,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     LOG(ERROR) << "BEGINNING DISPLAYING ONGOING inflightAnimations_!";
     int i = 0;
     int j = 0;
-    for (auto &inflightAnimation : inflightAnimations_) {
+    for (auto const &inflightAnimation : inflightAnimations_) {
       i++;
       j = 0;
       if (inflightAnimation.completed) {
@@ -885,7 +885,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       std::vector<AnimationKeyFrame> keyFramesToAnimate;
       std::vector<AnimationKeyFrame> movesToAnimate;
       auto const layoutAnimationConfig = animation.layoutAnimationConfig;
-      for (auto &mutation : mutations) {
+      for (auto const &mutation : mutations) {
         ShadowView baselineShadowView =
             (mutation.type == ShadowViewMutation::Type::Delete ||
                      mutation.type == ShadowViewMutation::Type::Remove
@@ -1182,7 +1182,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 #endif
 
       auto finalConflictingMutations = ShadowViewMutationList{};
-      for (auto &conflictingKeyframeTuple : conflictingAnimations) {
+      for (auto const &conflictingKeyframeTuple : conflictingAnimations) {
         auto &keyFrame = std::get<0>(conflictingKeyframeTuple);
         if (keyFrame.finalMutationForKeyFrame.hasValue()) {
           auto &mutation = *keyFrame.finalMutationForKeyFrame;
@@ -1359,7 +1359,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       LOG(ERROR) << "No Animation: Queue up final conflicting animations";
 #endif
       ShadowViewMutationList finalMutationsForConflictingAnimations{};
-      for (auto &conflictingKeyframeTuple : conflictingAnimations) {
+      for (auto const &conflictingKeyframeTuple : conflictingAnimations) {
         auto &keyFrame = std::get<0>(conflictingKeyframeTuple);
         if (keyFrame.finalMutationForKeyFrame.hasValue()) {
           PrintMutationInstruction(
@@ -1399,7 +1399,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       LOG(ERROR)
           << "No Animation: Adjust delayed mutations based on all finalMutationsForConflictingAnimations";
 #endif
-      for (auto &mutation : finalMutationsForConflictingAnimations) {
+      for (auto const &mutation : finalMutationsForConflictingAnimations) {
         if (mutation.type == ShadowViewMutation::Type::Remove ||
             mutation.type == ShadowViewMutation::Type::Insert) {
           adjustDelayedMutationIndicesForMutation(surfaceId, mutation);
@@ -1463,7 +1463,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
   LOG(ERROR) << "FINISHING DISPLAYING ONGOING inflightAnimations_!";
   int i = 0;
   int j = 0;
-  for (auto &inflightAnimation : inflightAnimations_) {
+  for (auto const &inflightAnimation : inflightAnimations_) {
     i++;
     j = 0;
     if (inflightAnimation.completed) {
