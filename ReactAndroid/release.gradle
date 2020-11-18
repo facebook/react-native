@@ -73,12 +73,12 @@ if (JavaVersion.current().isJava8Compatible()) {
 
 afterEvaluate { project ->
 
-    task androidJavadoc(type: Javadoc) {
+    task androidJavadoc(type: Javadoc, dependsOn: generateReleaseBuildConfig) {
         source = android.sourceSets.main.java.srcDirs
         classpath += files(android.bootClasspath)
         classpath += files(project.getConfigurations().getByName("compile").asList())
+        classpath += files("$buildDir/generated/source/buildConfig/release")
         include("**/*.java")
-        exclude("**/ReactBuildConfig.java")
     }
 
     task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
