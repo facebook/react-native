@@ -27,6 +27,7 @@
     "Libraries",
     "LICENSE",
     "local-cli",
+    "packages/react-native-codegen",
     "React-Core.podspec",
     "react-native.config.js",
     "react.gradle",
@@ -117,7 +118,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.137.0",
+    "flow-bin": "^0.138.0",
     "react": "17.0.1"
   },
   "detox": {

@@ -139,12 +139,10 @@ public class TextLayoutManager {
               new SetSpanOperation(
                   start, end, new ReactBackgroundColorSpan(textAttributes.mBackgroundColor)));
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          if (!Float.isNaN(textAttributes.getLetterSpacing())) {
-            ops.add(
-                new SetSpanOperation(
-                    start, end, new CustomLetterSpacingSpan(textAttributes.getLetterSpacing())));
-          }
+        if (!Float.isNaN(textAttributes.getLetterSpacing())) {
+          ops.add(
+              new SetSpanOperation(
+                  start, end, new CustomLetterSpacingSpan(textAttributes.getLetterSpacing())));
         }
         ops.add(
             new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));

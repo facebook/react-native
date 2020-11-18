@@ -1197,12 +1197,12 @@ RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject)
 {
-  [self prefetchImageWithMetadata:uri queryRootName:nil rootTag:nil resolve:resolve reject:reject];
+  [self prefetchImageWithMetadata:uri queryRootName:nil rootTag:0 resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(prefetchImageWithMetadata:(NSString *)uri
                   queryRootName:(NSString *)queryRootName
-                  rootTag:(NSNumber *)rootTag
+                  rootTag:(double)rootTag
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject)
 {
@@ -1215,7 +1215,7 @@ RCT_EXPORT_METHOD(prefetchImageWithMetadata:(NSString *)uri
                        priority:RCTImageLoaderPriorityPrefetch
                     attribution:{
                                   .queryRootName = queryRootName ? [queryRootName UTF8String] : "",
-                                  .surfaceId = [rootTag intValue],
+                                  .surfaceId = (int)rootTag,
                                 }
                   progressBlock:nil
                partialLoadBlock:nil

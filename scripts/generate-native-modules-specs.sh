@@ -25,7 +25,7 @@ RN_DIR=$(cd "$THIS_DIR/.." && pwd)
 CODEGEN_DIR=$(cd "$RN_DIR/packages/react-native-codegen" && pwd)
 OUTPUT_DIR="${1:-$RN_DIR/Libraries/FBReactNativeSpec/FBReactNativeSpec}"
 SCHEMA_FILE="$RN_DIR/schema-native-modules.json"
-YARN_BINARY="${YARN_BINARY:-yarn}"
+YARN_BINARY="${YARN_BINARY:-$(command -v yarn)}"
 
 describe () {
   printf "\\n\\n>>>>> %s\\n\\n\\n" "$1"

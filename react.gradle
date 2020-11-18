@@ -315,7 +315,7 @@ afterEvaluate {
         // Delete the VM related libraries that this build doesn't need.
         // The application can manage this manually by setting 'enableVmCleanup: false'
         //
-        // This should really be done by packaging all Hermes releated libs into
+        // This should really be done by packaging all Hermes related libs into
         // two separate HermesDebug and HermesRelease AARs, but until then we'll
         // kludge it by deleting the .so files out of the /transforms/ directory.
         def isRelease = targetName.toLowerCase().contains("release")

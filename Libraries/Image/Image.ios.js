@@ -65,10 +65,11 @@ function prefetchWithMetadata(
   rootTag?: ?number,
 ): any {
   if (NativeImageLoaderIOS.prefetchImageWithMetadata) {
+    // number params like rootTag cannot be nullable before TurboModules is available
     return NativeImageLoaderIOS.prefetchImageWithMetadata(
       url,
       queryRootName,
-      rootTag,
+      rootTag ? rootTag : 0,
     );
   } else {
     return NativeImageLoaderIOS.prefetchImage(url);

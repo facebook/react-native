@@ -69,6 +69,9 @@ type Context = $ReadOnly<{
 export const VirtualizedListContext: React.Context<?Context> = React.createContext(
   null,
 );
+if (__DEV__) {
+  VirtualizedListContext.displayName = 'VirtualizedListContext';
+}
 
 /**
  * Resets the context. Intended for use by portal-like components (e.g. Modal).
