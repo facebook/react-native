@@ -437,6 +437,7 @@ android {
     configurations {
         extractHeaders
         extractJNI
+        javadocDeps.extendsFrom api
     }
 }
 
@@ -456,6 +457,8 @@ dependencies {
     api("com.facebook.fbjni:fbjni-java-only:0.0.3")
     extractHeaders("com.facebook.fbjni:fbjni:0.0.2:headers")
     extractJNI("com.facebook.fbjni:fbjni:0.0.2")
+
+    javadocDeps("com.squareup:javapoet:1.13.0")
 
     testImplementation("junit:junit:${JUNIT_VERSION}")
     testImplementation("org.powermock:powermock-api-mockito2:${POWERMOCK_VERSION}")
