@@ -1187,12 +1187,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         if (keyFrame.finalMutationForKeyFrame.hasValue()) {
           auto &mutation = *keyFrame.finalMutationForKeyFrame;
           if (mutation.type == ShadowViewMutation::Type::Update) {
-            const auto &mutationInstruction =
-                ShadowViewMutation::UpdateMutation(
-                    mutation.parentShadowView,
-                    {},
-                    mutation.newChildShadowView,
-                    mutation.index);
+            auto mutationInstruction = ShadowViewMutation::UpdateMutation(
+                mutation.parentShadowView,
+                {},
+                mutation.newChildShadowView,
+                mutation.index);
             PrintMutationInstruction(
                 "Queueing up final mutation instruction - update:",
                 mutationInstruction);
