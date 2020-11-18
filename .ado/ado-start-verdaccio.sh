@@ -6,6 +6,6 @@ set -ex
 THIS_DIR=$PWD
 
 COMMAND="$TMPDIR/launchVerdaccio.command"
-echo "cd ${THIS_DIR}; sudo n 10 ; verdaccio --config ./.ado/verdaccio/config.yaml &> ./.ado/verdaccio/console.log" > "$COMMAND"
+echo "cd ${THIS_DIR}; verdaccio --config ./.ado/verdaccio/config.yaml &> ./.ado/verdaccio/console.log" > "$COMMAND"
 chmod +x "$COMMAND"
 open "$COMMAND"

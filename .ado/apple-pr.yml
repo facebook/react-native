@@ -95,10 +95,6 @@ jobs:
       vmImage: $(VmImage)
       demands: ['xcode', 'sh', 'npm']
     steps:
-      - task: UseNode@1
-        inputs:
-          version: '10.x'
-
       - template: templates/react-native-macos-init.yml
         parameters:
           configuration: $(configuration)

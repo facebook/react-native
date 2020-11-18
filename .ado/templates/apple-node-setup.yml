@@ -1,0 +1,13 @@
+#
+# Task Group: Brew install node version
+#
+steps:
+  - script: 'brew bundle'
+    displayName: 'brew bundle'
+
+  # Brew can't access user data for node
+  - script: sudo chown -R $(whoami) /usr/local/*
+    displayName: 'fix node permissions'
+
+  - script: brew link node@12 --overwrite --force
+    displayName: 'ensure node 12'
