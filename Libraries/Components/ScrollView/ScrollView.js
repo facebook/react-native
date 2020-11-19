@@ -1138,7 +1138,7 @@ class ScrollView extends React.Component<Props, State> {
       ...this.props,
       alwaysBounceHorizontal,
       alwaysBounceVertical,
-      style: [baseStyle, this.props.style],
+      style: StyleSheet.compose(baseStyle, this.props.style),
       // Override the onContentSizeChange from props, since this event can
       // bubble up from TextInputs
       onContentSizeChange: null,
@@ -1224,10 +1224,10 @@ class ScrollView extends React.Component<Props, State> {
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         return React.cloneElement(
           refreshControl,
-          {style: [baseStyle, outer]},
+          {style: StyleSheet.compose(baseStyle, outer)},
           <ScrollViewClass
             {...props}
-            style={[baseStyle, inner]}
+            style={StyleSheet.compose(baseStyle, inner)}
             ref={this._setNativeRef}>
             {contentContainer}
           </ScrollViewClass>,
