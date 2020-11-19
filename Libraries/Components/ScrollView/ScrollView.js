@@ -48,20 +48,25 @@ import ScrollContentViewNativeComponent from './ScrollContentViewNativeComponent
 import AndroidHorizontalScrollViewNativeComponent from './AndroidHorizontalScrollViewNativeComponent';
 import AndroidHorizontalScrollContentViewNativeComponent from './AndroidHorizontalScrollContentViewNativeComponent';
 
-let AndroidScrollView;
-let AndroidHorizontalScrollContentView;
-let AndroidHorizontalScrollView;
-let RCTScrollView;
-let RCTScrollContentView;
-
-if (Platform.OS === 'android') {
-  AndroidScrollView = ScrollViewNativeComponent;
-  AndroidHorizontalScrollView = AndroidHorizontalScrollViewNativeComponent;
-  AndroidHorizontalScrollContentView = AndroidHorizontalScrollContentViewNativeComponent;
-} else {
-  RCTScrollView = ScrollViewNativeComponent;
-  RCTScrollContentView = ScrollContentViewNativeComponent;
-}
+const {NativeHorizontalScrollViewTuple, NativeVerticalScrollViewTuple} =
+  Platform.OS === 'android'
+    ? {
+        NativeHorizontalScrollViewTuple: [
+          AndroidHorizontalScrollViewNativeComponent,
+          AndroidHorizontalScrollContentViewNativeComponent,
+        ],
+        NativeVerticalScrollViewTuple: [ScrollViewNativeComponent, View],
+      }
+    : {
+        NativeHorizontalScrollViewTuple: [
+          ScrollViewNativeComponent,
+          ScrollContentViewNativeComponent,
+        ],
+        NativeVerticalScrollViewTuple: [
+          ScrollViewNativeComponent,
+          ScrollContentViewNativeComponent,
+        ],
+      };
 
 // Public methods for ScrollView
 export type ScrollViewImperativeMethods = $ReadOnly<{|
@@ -1008,30 +1013,10 @@ class ScrollView extends React.Component<Props, State> {
   });
 
   render(): React.Node | React.Element<string> {
-    let ScrollViewClass;
-    let ScrollContentContainerViewClass;
-    if (Platform.OS === 'android') {
-      if (this.props.horizontal === true) {
-        ScrollViewClass = AndroidHorizontalScrollView;
-        ScrollContentContainerViewClass = AndroidHorizontalScrollContentView;
-      } else {
-        ScrollViewClass = AndroidScrollView;
-        ScrollContentContainerViewClass = View;
-      }
-    } else {
-      ScrollViewClass = RCTScrollView;
-      ScrollContentContainerViewClass = RCTScrollContentView;
-    }
-
-    invariant(
-      ScrollViewClass !== undefined,
-      'ScrollViewClass must not be undefined',
-    );
-
-    invariant(
-      ScrollContentContainerViewClass !== undefined,
-      'ScrollContentContainerViewClass must not be undefined',
-    );
+    const [NativeDirectionalScrollView, NativeDirectionalScrollContentView] =
+      this.props.horizontal === true
+        ? NativeHorizontalScrollViewTuple
+        : NativeVerticalScrollViewTuple;
 
     const contentContainerStyle = [
       this.props.horizontal === true && styles.contentContainerHorizontal,
@@ -1050,12 +1035,12 @@ class ScrollView extends React.Component<Props, State> {
       );
     }
 
-    let contentSizeChangeProps = {};
-    if (this.props.onContentSizeChange) {
-      contentSizeChangeProps = {
-        onLayout: this._handleContentOnLayout,
-      };
-    }
+    const contentSizeChangeProps =
+      this.props.onContentSizeChange == null
+        ? null
+        : {
+            onLayout: this._handleContentOnLayout,
+          };
 
     const {stickyHeaderIndices} = this.props;
     let children = this.props.children;
@@ -1101,10 +1086,7 @@ class ScrollView extends React.Component<Props, State> {
       Array.isArray(stickyHeaderIndices) && stickyHeaderIndices.length > 0;
 
     const contentContainer = (
-      /* $FlowFixMe(>=0.112.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.112 was deployed. To see the error, delete
-       * this comment and run Flow. */
-      <ScrollContentContainerViewClass
+      <NativeDirectionalScrollContentView
         {...contentSizeChangeProps}
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
@@ -1117,7 +1099,7 @@ class ScrollView extends React.Component<Props, State> {
         }
         collapsable={false}>
         {children}
-      </ScrollContentContainerViewClass>
+      </NativeDirectionalScrollContentView>
     );
 
     const alwaysBounceHorizontal =
@@ -1207,13 +1189,10 @@ class ScrollView extends React.Component<Props, State> {
       if (Platform.OS === 'ios') {
         // On iOS the RefreshControl is a child of the ScrollView.
         return (
-          /* $FlowFixMe(>=0.117.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.117 was deployed. To see the error,
-           * delete this comment and run Flow. */
-          <ScrollViewClass {...props} ref={this._setNativeRef}>
+          <NativeDirectionalScrollView {...props} ref={this._setNativeRef}>
             {refreshControl}
             {contentContainer}
-          </ScrollViewClass>
+          </NativeDirectionalScrollView>
         );
       } else if (Platform.OS === 'android') {
         // On Android wrap the ScrollView with a AndroidSwipeRefreshLayout.
@@ -1225,19 +1204,19 @@ class ScrollView extends React.Component<Props, State> {
         return React.cloneElement(
           refreshControl,
           {style: StyleSheet.compose(baseStyle, outer)},
-          <ScrollViewClass
+          <NativeDirectionalScrollView
             {...props}
             style={StyleSheet.compose(baseStyle, inner)}
             ref={this._setNativeRef}>
             {contentContainer}
-          </ScrollViewClass>,
+          </NativeDirectionalScrollView>,
         );
       }
     }
     return (
-      <ScrollViewClass {...props} ref={this._setNativeRef}>
+      <NativeDirectionalScrollView {...props} ref={this._setNativeRef}>
         {contentContainer}
-      </ScrollViewClass>
+      </NativeDirectionalScrollView>
     );
   }
 }
