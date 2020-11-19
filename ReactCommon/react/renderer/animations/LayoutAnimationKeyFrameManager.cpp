@@ -640,7 +640,6 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
     if (deletesOnly && mutation.type != ShadowViewMutation::Type::Delete) {
       continue;
     }
-    PrintMutationInstruction("getAndEraseConflictingAnimations of: ", mutation);
 
     auto const &baselineShadowView =
         (mutation.type == ShadowViewMutation::Type::Insert ||
