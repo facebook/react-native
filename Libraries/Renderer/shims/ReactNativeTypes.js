@@ -40,12 +40,15 @@ type AttributeType<T> =
       process?: (arg1: any) => any,
     |}>;
 
-export type AttributeConfiguration<
-  TProps = string,
-  TStyleProps = string,
-> = $ReadOnly<{
-  [propName: TProps]: AttributeType<any>,
-  style: $ReadOnly<{[propName: TStyleProps]: AttributeType<any>, ...}>,
+type AttributeConfiguration = $ReadOnly<{
+  [propName: string]: AttributeType<any>,
+  style: $ReadOnly<{[propName: string]: AttributeType<any>, ...}>,
+  ...
+}>;
+
+type PartialAttributeConfiguration = $ReadOnly<{
+  [propName: string]: AttributeType<any>,
+  style?: $ReadOnly<{[propName: string]: AttributeType<any>, ...}>,
   ...
 }>;
 
@@ -71,14 +74,14 @@ export type ViewConfig = $ReadOnly<{
     ...,
   }>,
   uiViewClassName: string,
-  validAttributes: AttributeConfiguration<string, string>,
+  validAttributes: AttributeConfiguration,
 }>;
 
 export type PartialViewConfig = $ReadOnly<{
   bubblingEventTypes?: $PropertyType<ViewConfig, 'bubblingEventTypes'>,
   directEventTypes?: $PropertyType<ViewConfig, 'directEventTypes'>,
   uiViewClassName: string,
-  validAttributes?: $ReadOnly<{[propName: string]: AttributeType<any>}>,
+  validAttributes?: PartialAttributeConfiguration,
 }>;
 
 export type NativeMethods = {

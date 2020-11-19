@@ -10,41 +10,17 @@
 
 'use strict';
 
+import {createViewConfig} from '../NativeComponent/ViewConfig';
 import {type PartialViewConfig} from '../Renderer/shims/ReactNativeTypes';
 import ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
-import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
 import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
 import verifyComponentAttributeEquivalence from './verifyComponentAttributeEquivalence';
 
 function registerGeneratedViewConfig(
   componentName: string,
-  viewConfig: PartialViewConfig,
+  partialViewConfig: PartialViewConfig,
 ) {
-  const staticViewConfig = {
-    uiViewClassName: componentName,
-    Commands: {},
-    // $FlowFixMe[cannot-spread-indexer] Properties can be overridden.
-    bubblingEventTypes: {
-      ...ReactNativeViewViewConfig.bubblingEventTypes,
-      ...(viewConfig.bubblingEventTypes ?? {}: $NonMaybeType<
-        $PropertyType<PartialViewConfig, 'bubblingEventTypes'>,
-      >),
-    },
-    // $FlowFixMe[cannot-spread-indexer] Properties can be overridden.
-    directEventTypes: {
-      ...ReactNativeViewViewConfig.directEventTypes,
-      ...(viewConfig.directEventTypes ?? {}: $NonMaybeType<
-        $PropertyType<PartialViewConfig, 'directEventTypes'>,
-      >),
-    },
-    // $FlowFixMe[cannot-spread-indexer] Properties can be overridden.
-    validAttributes: {
-      ...ReactNativeViewViewConfig.validAttributes,
-      ...(viewConfig.validAttributes ?? {}: $NonMaybeType<
-        $PropertyType<PartialViewConfig, 'validAttributes'>,
-      >),
-    },
-  };
+  const staticViewConfig = createViewConfig(partialViewConfig);
 
   ReactNativeViewConfigRegistry.register(componentName, () => {
     if (!global.RN$Bridgeless) {
