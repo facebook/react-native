@@ -1337,7 +1337,13 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 - (void)drawFocusRingMask
 {
   if ([self enableFocusRing]) {
-    NSRectFill(self.bounds);
+    CGContextRef context = NSGraphicsContext.currentContext.CGContext;
+    RCTCornerInsets cornerInsets = RCTGetCornerInsets(self.cornerRadii, NSEdgeInsetsZero);
+    CGPathRef path = RCTPathCreateWithRoundedRect(self.bounds, cornerInsets, NULL);
+
+    CGContextAddPath(context, path);
+    CGContextFillPath(context);
+    CGPathRelease(path);
   }
 }
 #endif
