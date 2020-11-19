@@ -23,26 +23,26 @@ function registerGeneratedViewConfig(
   const staticViewConfig = {
     uiViewClassName: componentName,
     Commands: {},
-    /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.122.0 was deployed. To see the error, delete
-     * this comment and run Flow. */
+    // $FlowFixMe[cannot-spread-indexer] Properties can be overridden.
     bubblingEventTypes: {
       ...ReactNativeViewViewConfig.bubblingEventTypes,
-      ...(viewConfig.bubblingEventTypes || {}),
+      ...(viewConfig.bubblingEventTypes ?? {}: $NonMaybeType<
+        $PropertyType<PartialViewConfig, 'bubblingEventTypes'>,
+      >),
     },
-    /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.122.0 was deployed. To see the error, delete
-     * this comment and run Flow. */
+    // $FlowFixMe[cannot-spread-indexer] Properties can be overridden.
     directEventTypes: {
       ...ReactNativeViewViewConfig.directEventTypes,
-      ...(viewConfig.directEventTypes || {}),
+      ...(viewConfig.directEventTypes ?? {}: $NonMaybeType<
+        $PropertyType<PartialViewConfig, 'directEventTypes'>,
+      >),
     },
-    /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.122.0 was deployed. To see the error, delete
-     * this comment and run Flow. */
+    // $FlowFixMe[cannot-spread-indexer] Properties can be overridden.
     validAttributes: {
       ...ReactNativeViewViewConfig.validAttributes,
-      ...(viewConfig.validAttributes || {}),
+      ...(viewConfig.validAttributes ?? {}: $NonMaybeType<
+        $PropertyType<PartialViewConfig, 'validAttributes'>,
+      >),
     },
   };
 

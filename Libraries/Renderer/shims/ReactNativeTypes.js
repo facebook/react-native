@@ -51,8 +51,10 @@ export type AttributeConfiguration<
 
 export type ViewConfig = $ReadOnly<{
   Commands?: $ReadOnly<{[commandName: string]: number, ...}>,
+  Constants?: $ReadOnly<{[name: string]: mixed, ...}>,
+  Manager?: string,
   NativeProps?: $ReadOnly<{[propName: string]: string, ...}>,
-  baseModuleName?: string,
+  baseModuleName?: ?string,
   bubblingEventTypes?: $ReadOnly<{
     [eventName: string]: $ReadOnly<{
       phasedRegistrationNames: $ReadOnly<{
