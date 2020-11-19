@@ -961,6 +961,32 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             mutation.type == ShadowViewMutation::Type::Create ||
             mutation.type == ShadowViewMutation::Type::Insert) {
           executeMutationImmediately = true;
+
+          // It is possible, especially in the case of "moves", that we have a
+          // sequence of operations like:
+          // UPDATE X
+          // REMOVE X
+          // INSERT X
+          // In these cases, we will have queued up an animation for the UPDATE
+          // and delayed its execution; the REMOVE and INSERT will be executed
+          // first; and then the UPDATE will be animating to/from ShadowViews
+          // that are out-of-sync with what's on the mounting layer. Thus, for
+          // any UPDATE animations already queued up for this tag, we adjust the
+          // "previous" ShadowView.
+          if (mutation.type == ShadowViewMutation::Type::Insert) {
+            for (auto &keyframe : keyFramesToAnimate) {
+              if (keyframe.tag == baselineShadowView.tag) {
+                // If there's already an animation queued up, followed by this
+                // Insert, it *must* be an Update mutation animation. Other
+                // sequences should not be possible.
+                assert(keyframe.type == AnimationConfigurationType::Update);
+
+                keyframe.viewPrev = mutation.newChildShadowView.tag != 0
+                    ? mutation.newChildShadowView
+                    : mutation.oldChildShadowView;
+              }
+            }
+          }
         }
 
         // Deletes, non-move inserts, updates get animated
@@ -1140,6 +1166,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         }
 
         if (executeMutationImmediately) {
+          PrintMutationInstruction(
+              "Queue Up Animation For Immediate Execution", mutation);
           immediateMutations.push_back(mutation);
         }
       }
