@@ -1200,8 +1200,46 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 #endif
 
       auto finalConflictingMutations = ShadowViewMutationList{};
-      for (auto const &conflictingKeyframeTuple : conflictingAnimations) {
+      for (auto &conflictingKeyframeTuple : conflictingAnimations) {
         auto &keyFrame = std::get<0>(conflictingKeyframeTuple);
+
+        // Special-case: if we have some (1) ongoing UPDATE animation,
+        // (2) it conflicted with a new MOVE operation (REMOVE+INSERT)
+        // without another corresponding UPDATE, we should re-queue the
+        // keyframe so that its position/props don't suddenly "jump".
+        if (keyFrame.type == AnimationConfigurationType::Update) {
+          auto movedIt = movedTags.find(keyFrame.tag);
+          if (movedIt != movedTags.end()) {
+            auto newKeyFrameForUpdate = std::find_if(
+                keyFramesToAnimate.begin(),
+                keyFramesToAnimate.end(),
+                [&](auto const &newKeyFrame) {
+                  return newKeyFrame.type ==
+                      AnimationConfigurationType::Update &&
+                      newKeyFrame.tag == keyFrame.tag;
+                });
+            if (newKeyFrameForUpdate == keyFramesToAnimate.end()) {
+              keyFrame.invalidated = false;
+
+              // The animation will continue from the current position - we
+              // restart viewStart to make sure there are no sudden jumps
+              keyFrame.viewStart = keyFrame.viewPrev;
+
+              // Find the insert mutation that conflicted with this update
+              for (auto &mutation : immediateMutations) {
+                if (mutation.newChildShadowView.tag == keyFrame.tag &&
+                    (mutation.type == ShadowViewMutation::Insert ||
+                     mutation.type == ShadowViewMutation::Create)) {
+                  keyFrame.viewPrev = mutation.newChildShadowView;
+                  keyFrame.viewEnd = mutation.newChildShadowView;
+                }
+              }
+              keyFramesToAnimate.push_back(keyFrame);
+              continue;
+            }
+          }
+        }
+
         if (keyFrame.finalMutationForKeyFrame.hasValue()) {
           auto &finalMutation = *keyFrame.finalMutationForKeyFrame;
           auto mutationInstruction =
