@@ -251,6 +251,23 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
   return RCTUIViewCommonInit([super initWithCoder:coder]);
 }
 
+- (BOOL)acceptsFirstMouse:(NSEvent *)event
+{
+  if (self.acceptsFirstMouse || [super acceptsFirstMouse:event]) {
+    return YES;
+  }
+
+  // If any RCTUIView view above has acceptsFirstMouse set, then return YES here.
+  NSView *view = self;
+  while ((view = view.superview)) {
+    if ([view isKindOfClass:[RCTUIView class]] && [(RCTUIView *)view acceptsFirstMouse]) {
+      return YES;
+    }
+  }
+
+  return NO;
+}
+
 - (BOOL)acceptsFirstResponder
 {
   return [self canBecomeFirstResponder];

@@ -35,6 +35,7 @@ const ReactNativeViewViewConfigMacOS = {
     },
   },
   validAttributes: {
+    acceptsFirstMouse: true,
     acceptsKeyboardFocus: true,
     accessibilityTraits: true,
     draggedTypes: true,

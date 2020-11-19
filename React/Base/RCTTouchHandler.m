@@ -462,7 +462,14 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches) // [TODO(macOS ISS#2323203)
   [self interactionsCancelled:touches withEvent:event];
 }
 #else
-  
+
+- (BOOL)acceptsFirstMouse:(NSEvent *)event
+{
+  // This will only be called if the hit-tested view returns YES for acceptsFirstMouse,
+  // therefore asking it again would be redundant.
+  return YES;
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
   [super mouseDown:event];

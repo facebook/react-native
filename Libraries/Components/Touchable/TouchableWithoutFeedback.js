@@ -69,7 +69,8 @@ type Props = $ReadOnly<{|
   onPress?: ?(event: PressEvent) => mixed,
   onPressIn?: ?(event: PressEvent) => mixed,
   onPressOut?: ?(event: PressEvent) => mixed,
-  acceptsKeyboardFocus?: ?boolean, // [TODO(macOS ISS#2323203)
+  acceptsFirstMouse?: ?boolean, // [TODO(macOS ISS#2323203)
+  acceptsKeyboardFocus?: ?boolean,
   enableFocusRing?: ?boolean,
   tooltip?: ?string,
   onMouseEnter?: (event: MouseEvent) => void,
@@ -147,6 +148,8 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
     const elementProps: {[string]: mixed, ...} = {
       ...eventHandlersWithoutBlurAndFocus,
       accessible: this.props.accessible !== false,
+      acceptsFirstMouse:
+        this.props.acceptsFirstMouse !== false && !this.props.disabled, // [TODO(macOS ISS#2323203)
       // [macOS #656 We need to reconcile between focusable and acceptsKeyboardFocus
       // (e.g. if one is explicitly disabled, we shouldn't implicitly enable the
       // other on the underlying view). Prefer passing acceptsKeyboardFocus if

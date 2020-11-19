@@ -22,6 +22,7 @@ const UIView = {
   accessibilityState: true,
   accessibilityValue: true,
   accessibilityHint: true,
+  acceptsFirstMouse: true, // TODO(macOS ISS#2323203)
   acceptsKeyboardFocus: true, // TODO(macOS ISS#2323203)
   enableFocusRing: true, // TODO(macOS ISS#2323203)
   importantForAccessibility: true,

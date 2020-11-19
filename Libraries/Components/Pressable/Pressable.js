@@ -26,7 +26,12 @@ import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import usePressability from '../../Pressability/usePressability';
 import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import type {LayoutEvent, PressEvent} from '../../Types/CoreEventTypes';
+import type {
+  LayoutEvent,
+  MouseEvent, // TODO(macOS ISS#2323203)
+  PressEvent,
+} from '../../Types/CoreEventTypes';
+import type {DraggedTypesType} from '../View/DraggedType'; // TODO(macOS ISS#2323203)
 import View from '../View/View';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
@@ -131,6 +136,18 @@ type Props = $ReadOnly<{|
    * Used only for documentation or testing (e.g. snapshot testing).
    */
   testOnly_pressed?: ?boolean,
+
+  // [TODO(macOS ISS#2323203)
+  acceptsFirstMouse?: ?boolean,
+  enableFocusRing?: ?boolean,
+  tooltip?: ?string,
+  onMouseEnter?: (event: MouseEvent) => void,
+  onMouseLeave?: (event: MouseEvent) => void,
+  onDragEnter?: (event: MouseEvent) => void,
+  onDragLeave?: (event: MouseEvent) => void,
+  onDrop?: (event: MouseEvent) => void,
+  draggedTypes?: ?DraggedTypesType,
+  // ]TODO(macOS ISS#2323203)
 |}>;
 
 /**
@@ -139,6 +156,8 @@ type Props = $ReadOnly<{|
  */
 function Pressable(props: Props, forwardedRef): React.Node {
   const {
+    acceptsFirstMouse, // [TODO(macOS ISS#2323203)
+    enableFocusRing, // ]TODO(macOS ISS#2323203)
     accessible,
     android_disableSound,
     android_ripple,
@@ -215,6 +234,8 @@ function Pressable(props: Props, forwardedRef): React.Node {
       {...restProps}
       {...eventHandlers}
       {...android_rippleConfig?.viewProps}
+      acceptsFirstMouse={acceptsFirstMouse !== false && !disabled} // [TODO(macOS ISS#2323203)
+      enableFocusRing={enableFocusRing !== false && !disabled} // ]TODO(macOS ISS#2323203)
       accessible={accessible !== false}
       focusable={focusable !== false}
       hitSlop={hitSlop}

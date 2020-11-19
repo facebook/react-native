@@ -2,6 +2,7 @@
 
 exports[`TouchableHighlight renders correctly 1`] = `
 <View
+  acceptsFirstMouse={true}
   accessible={true}
   enableFocusRing={true}
   focusable={false}

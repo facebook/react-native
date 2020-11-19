@@ -367,6 +367,12 @@ RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RCTView)
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 // macOS properties
+RCT_CUSTOM_VIEW_PROPERTY(acceptsFirstMouse, BOOL, RCTView)
+{
+  if ([view respondsToSelector:@selector(setAcceptsFirstMouse:)]) {
+    view.acceptsFirstMouse = json ? [RCTConvert BOOL:json] : defaultView.acceptsFirstMouse;
+  }
+}
 RCT_CUSTOM_VIEW_PROPERTY(acceptsKeyboardFocus, BOOL, RCTView)
 {
   if ([view respondsToSelector:@selector(setFocusable:)]) {

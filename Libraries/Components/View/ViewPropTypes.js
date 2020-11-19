@@ -581,6 +581,14 @@ export type ViewProps = $ReadOnly<{|
   tooltip?: ?string, // TODO(macOS ISS#2323203)
 
   /**
+   * Specifies whether the view should receive the mouse down event when the
+   * containing window is in the background.
+   *
+   * @platform macos
+   */
+  acceptsFirstMouse?: ?boolean, // TODO(macOS ISS#2323203)
+
+  /**
    * Specifies whether the view participates in the key view loop as user tabs
    * through different controls.
    */
