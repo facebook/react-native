@@ -10,7 +10,6 @@
 
 'use strict';
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
@@ -77,5 +76,3 @@ export type ScrollViewNativeProps = $ReadOnly<{
   onResponderGrant?: ?(e: $FlowFixMe) => void | boolean,
   ...
 }>;
-
-export type ScrollViewNativeComponentType = HostComponent<ScrollViewNativeProps>;
