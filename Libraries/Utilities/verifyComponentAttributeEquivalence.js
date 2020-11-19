@@ -10,8 +10,6 @@
 
 'use strict';
 
-const getNativeComponentAttributes = require('../ReactNative/getNativeComponentAttributes');
-
 import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
 import type {ReactNativeBaseComponentViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
@@ -41,26 +39,27 @@ const IGNORED_KEYS = ['transform', 'hitSlop'];
  * years from now...
  */
 export default function verifyComponentAttributeEquivalence(
-  componentName: string,
-  config: ReactNativeBaseComponentViewConfig<>,
+  nativeViewConfig: ReactNativeBaseComponentViewConfig<>,
+  staticViewConfig: ReactNativeBaseComponentViewConfig<>,
 ) {
-  const nativeAttributes = getNativeComponentAttributes(componentName);
+  for (const prop of [
+    'validAttributes',
+    'bubblingEventTypes',
+    'directEventTypes',
+  ]) {
+    const diff = Object.keys(
+      lefthandObjectDiff(nativeViewConfig[prop], staticViewConfig[prop]),
+    );
 
-  ['validAttributes', 'bubblingEventTypes', 'directEventTypes'].forEach(
-    prop => {
-      const diffKeys = Object.keys(
-        lefthandObjectDiff(nativeAttributes[prop], config[prop]),
+    if (diff.length > 0) {
+      const name =
+        staticViewConfig.uiViewClassName ?? nativeViewConfig.uiViewClassName;
+      console.error(
+        `'${name}' has a view config that does not match native. ` +
+          `'${prop}' is missing: ${diff.join(', ')}`,
       );
-
-      if (diffKeys.length) {
-        console.error(
-          `${componentName} generated view config for ${prop} does not match native, missing: ${diffKeys.join(
-            ' ',
-          )}`,
-        );
-      }
-    },
-  );
+    }
+  }
 }
 
 export function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {

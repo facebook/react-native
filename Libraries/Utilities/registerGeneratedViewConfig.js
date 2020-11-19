@@ -10,8 +10,9 @@
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('../Renderer/shims/ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('../Components/View/ReactNativeViewViewConfig');
+import ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
+import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
+import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
 import verifyComponentAttributeEquivalence from './verifyComponentAttributeEquivalence';
 
 export type GeneratedViewConfig = {
@@ -47,7 +48,7 @@ function registerGeneratedViewConfig(
   componentName: string,
   viewConfig: GeneratedViewConfig,
 ) {
-  const mergedViewConfig = {
+  const staticViewConfig = {
     uiViewClassName: componentName,
     Commands: {},
     /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
@@ -75,10 +76,12 @@ function registerGeneratedViewConfig(
 
   ReactNativeViewConfigRegistry.register(componentName, () => {
     if (!global.RN$Bridgeless) {
-      verifyComponentAttributeEquivalence(componentName, mergedViewConfig);
+      const nativeViewConfig = getNativeComponentAttributes(componentName);
+
+      verifyComponentAttributeEquivalence(nativeViewConfig, staticViewConfig);
     }
 
-    return mergedViewConfig;
+    return staticViewConfig;
   });
 }
 
