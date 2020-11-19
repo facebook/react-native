@@ -158,7 +158,10 @@ class AssetSourceResolver {
     };
   }
 
-  static pickScale(scales: Array<number>, deviceScale: number): number {
+  static pickScale(scales: Array<number>, deviceScale?: number): number {
+    if (deviceScale == null) {
+      deviceScale = PixelRatio.get();
+    }
     // Packager guarantees that `scales` array is sorted
     for (let i = 0; i < scales.length; i++) {
       if (scales[i] >= deviceScale) {
