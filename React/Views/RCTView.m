@@ -1364,13 +1364,13 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 
 - (BOOL)acceptsFirstResponder
 {
-  return ([self acceptsKeyboardFocus] && [NSApp isFullKeyboardAccessEnabled]) || [super acceptsFirstResponder];
+  return ([self focusable] && [NSApp isFullKeyboardAccessEnabled]) || [super acceptsFirstResponder];
 }
 
 - (BOOL)performKeyEquivalent:(NSEvent *)theEvent
 {
   if (self.onClick != nil &&
-      [self acceptsKeyboardFocus] &&
+      [self focusable] &&
       [[self window] firstResponder] == self) {
     if ([[theEvent characters] isEqualToString:@" "] || [[theEvent characters] isEqualToString:@"\r"]) {
       self.onClick(nil);

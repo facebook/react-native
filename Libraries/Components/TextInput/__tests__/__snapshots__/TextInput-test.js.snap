@@ -2,7 +2,6 @@
 
 exports[`TextInput tests should render as expected: should deep render when mocked (please verify output manually) 1`] = `
 <RCTSinglelineTextInputView
-  acceptsKeyboardFocus={true}
   accessible={true}
   allowFontScaling={true}
   enableFocusRing={true}
@@ -31,7 +30,6 @@ exports[`TextInput tests should render as expected: should deep render when mock
 
 exports[`TextInput tests should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
 <RCTSinglelineTextInputView
-  acceptsKeyboardFocus={true}
   accessible={true}
   allowFontScaling={true}
   enableFocusRing={true}

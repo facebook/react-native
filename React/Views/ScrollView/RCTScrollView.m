@@ -416,7 +416,7 @@
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 - (BOOL)canBecomeKeyView
 {
-  return [self acceptsKeyboardFocus];
+  return [self focusable];
 }
 
 - (CGRect)focusRingMaskBounds

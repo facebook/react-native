@@ -369,8 +369,14 @@ RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RCTView)
 // macOS properties
 RCT_CUSTOM_VIEW_PROPERTY(acceptsKeyboardFocus, BOOL, RCTView)
 {
-  if ([view respondsToSelector:@selector(setAcceptsKeyboardFocus:)]) {
-    view.acceptsKeyboardFocus = json ? [RCTConvert BOOL:json] : defaultView.acceptsKeyboardFocus;
+  if ([view respondsToSelector:@selector(setFocusable:)]) {
+    view.focusable = json ? [RCTConvert BOOL:json] : defaultView.focusable;
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(focusable, BOOL, RCTView)
+{
+  if ([view respondsToSelector:@selector(setFocusable:)]) {
+    view.focusable = json ? [RCTConvert BOOL:json] : defaultView.focusable;
   }
 }
 RCT_CUSTOM_VIEW_PROPERTY(enableFocusRing, BOOL, RCTView)

@@ -15,6 +15,7 @@ import type {ViewProps} from './ViewPropTypes';
 const React = require('react');
 import ViewNativeComponent from './ViewNativeComponent';
 const TextAncestor = require('../../Text/TextAncestor');
+import warnOnce from '../../Utilities/warnOnce'; // [macOS #656]
 
 export type Props = ViewProps;
 
@@ -29,6 +30,15 @@ const View: React.AbstractComponent<
   ViewProps,
   React.ElementRef<typeof ViewNativeComponent>,
 > = React.forwardRef((props: ViewProps, forwardedRef) => {
+  // [macOS #656 Intercept props to warn about them going away
+  if (props.acceptsKeyboardFocus !== undefined) {
+    warnOnce(
+      'deprecated-acceptsKeyboardFocus',
+      '"acceptsKeyboardFocus" has been deprecated in favor of "focusable" and will be removed in a future version of react-native-macos',
+    );
+  }
+  // macOS]
+
   return (
     <TextAncestor.Provider value={false}>
       <ViewNativeComponent {...props} ref={forwardedRef} />

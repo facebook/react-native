@@ -54,7 +54,7 @@ class FocusEventExample extends React.Component<{}, State> {
           {// Only test View on MacOS, since canBecomeFirstResponder is false on all iOS, therefore we can't focus
           Platform.OS === 'macos' ? (
             <View
-              acceptsKeyboardFocus={true}
+              focusable={true}
               enableFocusRing={true}
               onFocus={() => {
                 this.setState(prevState => ({
@@ -192,7 +192,7 @@ class FocusEventExample extends React.Component<{}, State> {
                   }));
                 }}>
                 <View
-                  acceptsKeyboardFocus={true}
+                  focusable={true}
                   enableFocusRing={true}
                   onFocus={() => {
                     this.setState(prevState => ({

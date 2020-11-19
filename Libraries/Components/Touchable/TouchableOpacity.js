@@ -236,11 +236,6 @@ class TouchableOpacity extends React.Component<Props, State> {
         accessibilityLiveRegion={this.props.accessibilityLiveRegion}
         accessibilityViewIsModal={this.props.accessibilityViewIsModal}
         accessibilityElementsHidden={this.props.accessibilityElementsHidden}
-        acceptsKeyboardFocus={
-          (this.props.acceptsKeyboardFocus === undefined ||
-            this.props.acceptsKeyboardFocus === true) &&
-          !this.props.disabled
-        } // TODO(macOS ISS#2323203)
         enableFocusRing={
           (this.props.enableFocusRing === undefined ||
             this.props.enableFocusRing === true) &&
@@ -257,9 +252,22 @@ class TouchableOpacity extends React.Component<Props, State> {
         nextFocusUp={this.props.nextFocusUp}
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
         hitSlop={this.props.hitSlop}
-        focusable={
-          this.props.focusable !== false && this.props.onPress !== undefined
-        }
+        // [macOS #656 We need to reconcile between focusable and acceptsKeyboardFocus
+        // (e.g. if one is explicitly disabled, we shouldn't implicitly enable the
+        // other on the underlying view). Prefer passing acceptsKeyboardFocus if
+        // passed explicitly to preserve original behavior, and trigger view warnings.
+        {...(this.props.acceptsKeyboardFocus !== undefined
+          ? {
+              acceptsKeyboardFocus:
+                this.props.acceptsKeyboardFocus === true &&
+                !this.props.disabled,
+            }
+          : {
+              focusable:
+                this.props.focusable !== false &&
+                this.props.onPress !== undefined,
+            })}
+        // macOS]
         tooltip={this.props.tooltip} // TODO(macOS/win ISS#2323203)
         onMouseEnter={this.props.onMouseEnter} // [TODO(macOS ISS#2323203)
         onMouseLeave={this.props.onMouseLeave}
