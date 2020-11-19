@@ -12,7 +12,8 @@
 
 import {type ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
-import {Platform} from 'react-native';
+
+const Platform = require('../../Utilities/Platform')
 
 const ReactNativeViewConfig: ViewConfig = {
   uiViewClassName: 'RCTView',
