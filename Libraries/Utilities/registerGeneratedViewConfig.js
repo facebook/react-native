@@ -74,7 +74,9 @@ function registerGeneratedViewConfig(
   };
 
   ReactNativeViewConfigRegistry.register(componentName, () => {
-    verifyComponentAttributeEquivalence(componentName, mergedViewConfig);
+    if (!global.RN$Bridgeless) {
+      verifyComponentAttributeEquivalence(componentName, mergedViewConfig);
+    }
 
     return mergedViewConfig;
   });

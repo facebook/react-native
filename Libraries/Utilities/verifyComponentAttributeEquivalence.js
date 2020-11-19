@@ -16,6 +16,7 @@ import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewCon
 import type {ReactNativeBaseComponentViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
 const IGNORED_KEYS = ['transform', 'hitSlop'];
+
 /**
  * The purpose of this function is to validate that the view config that
  * native exposes for a given view manager is the same as the view config
@@ -39,29 +40,27 @@ const IGNORED_KEYS = ['transform', 'hitSlop'];
  * single source of truth. I wonder if this message will still be here two
  * years from now...
  */
-function verifyComponentAttributeEquivalence(
+export default function verifyComponentAttributeEquivalence(
   componentName: string,
   config: ReactNativeBaseComponentViewConfig<>,
 ) {
-  if (!global.RN$Bridgeless) {
-    const nativeAttributes = getNativeComponentAttributes(componentName);
+  const nativeAttributes = getNativeComponentAttributes(componentName);
 
-    ['validAttributes', 'bubblingEventTypes', 'directEventTypes'].forEach(
-      prop => {
-        const diffKeys = Object.keys(
-          lefthandObjectDiff(nativeAttributes[prop], config[prop]),
+  ['validAttributes', 'bubblingEventTypes', 'directEventTypes'].forEach(
+    prop => {
+      const diffKeys = Object.keys(
+        lefthandObjectDiff(nativeAttributes[prop], config[prop]),
+      );
+
+      if (diffKeys.length) {
+        console.error(
+          `${componentName} generated view config for ${prop} does not match native, missing: ${diffKeys.join(
+            ' ',
+          )}`,
         );
-
-        if (diffKeys.length) {
-          console.error(
-            `${componentName} generated view config for ${prop} does not match native, missing: ${diffKeys.join(
-              ' ',
-            )}`,
-          );
-        }
-      },
-    );
-  }
+      }
+    },
+  );
 }
 
 export function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
@@ -130,5 +129,3 @@ export function stringifyViewConfig(viewConfig: any): string {
     2,
   );
 }
-
-export default verifyComponentAttributeEquivalence;
