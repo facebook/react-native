@@ -200,15 +200,10 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
           // Copy so that if something else mutates the inflight animations, it
           // won't change this mutation after this point.
-          ShadowView oldShadowView{};
-          if (finalMutationForKeyFrame.type !=
-              ShadowViewMutation::Type::Update) {
-            oldShadowView = finalMutationForKeyFrame.oldChildShadowView;
-          }
           mutationsList.push_back(
               ShadowViewMutation{finalMutationForKeyFrame.type,
                                  finalMutationForKeyFrame.parentShadowView,
-                                 oldShadowView,
+                                 finalMutationForKeyFrame.oldChildShadowView,
                                  finalMutationForKeyFrame.newChildShadowView,
                                  finalMutationForKeyFrame.index});
         } else {
