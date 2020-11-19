@@ -27,7 +27,7 @@ const invariant = require('invariant');
 
 const {
   getAndroidResourceFolderName,
-  getAndroidResourceIdentifier,
+  getResourceIdentifier,
   getBasePath,
 } = require('@react-native/assets/path-support');
 
@@ -46,9 +46,9 @@ function getScaledAssetPath(asset): string {
  */
 function getAssetPathInDrawableFolder(asset): string {
   const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
-  const drawbleFolder = getAndroidResourceFolderName(asset, scale);
-  const fileName = getAndroidResourceIdentifier(asset);
-  return drawbleFolder + '/' + fileName + '.' + asset.type;
+  const drawableFolder = getAndroidResourceFolderName(asset, scale);
+  const fileName = getResourceIdentifier(asset);
+  return drawableFolder + '/' + fileName + '.' + asset.type;
 }
 
 class AssetSourceResolver {
@@ -72,6 +72,15 @@ class AssetSourceResolver {
     return !!(this.jsbundleUrl && this.jsbundleUrl.startsWith('file://'));
   }
 
+  isCatalogAsset(): boolean {
+    return (
+      this.asset.__packager_asset &&
+      (this.asset.type === 'png' ||
+        this.asset.type === 'jpg' ||
+        this.asset.type === 'jpeg')
+    );
+  }
+
   defaultAsset(): ResolvedAssetSource {
     if (this.isLoadedFromServer()) {
       return this.assetServerURL();
@@ -82,7 +91,9 @@ class AssetSourceResolver {
         ? this.drawableFolderInBundle()
         : this.resourceIdentifierWithoutScale();
     } else {
-      return this.scaledAssetURLNearBundle();
+      return this.isCatalogAsset()
+        ? this.assetFromCatalog()
+        : this.scaledAssetURLNearBundle();
     }
   }
 
@@ -124,6 +135,10 @@ class AssetSourceResolver {
     );
   }
 
+  assetFromCatalog(): ResolvedAssetSource {
+    return this.fromSource(getResourceIdentifier(this.asset));
+  }
+
   /**
    * The default location of assets bundled with the app, located by
    * resource identifier
@@ -135,7 +150,7 @@ class AssetSourceResolver {
       Platform.OS === 'android',
       'resource identifiers work on Android',
     );
-    return this.fromSource(getAndroidResourceIdentifier(this.asset));
+    return this.fromSource(getResourceIdentifier(this.asset));
   }
 
   /**
