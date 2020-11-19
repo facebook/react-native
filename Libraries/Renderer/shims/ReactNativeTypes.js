@@ -33,10 +33,10 @@ export type MeasureLayoutOnSuccessCallback = (
   height: number,
 ) => void;
 
-type AttributeType =
+type AttributeType<T> =
   | true
   | $ReadOnly<{|
-      diff?: <T>(arg1: T, arg2: T) => boolean,
+      diff?: (arg1: T, arg2: T) => boolean,
       process?: (arg1: any) => any,
     |}>;
 
@@ -44,38 +44,40 @@ export type AttributeConfiguration<
   TProps = string,
   TStyleProps = string,
 > = $ReadOnly<{
-  [propName: TProps]: AttributeType,
-  style: $ReadOnly<{[propName: TStyleProps]: AttributeType, ...}>,
+  [propName: TProps]: AttributeType<any>,
+  style: $ReadOnly<{[propName: TStyleProps]: AttributeType<any>, ...}>,
   ...
 }>;
 
-export type ReactNativeBaseComponentViewConfig<
-  TProps = string,
-  TStyleProps = string,
-> = $ReadOnly<{|
+export type ViewConfig = $ReadOnly<{
+  Commands?: $ReadOnly<{[commandName: string]: number, ...}>,
+  NativeProps?: $ReadOnly<{[propName: string]: string, ...}>,
   baseModuleName?: string,
   bubblingEventTypes?: $ReadOnly<{
-    [eventName: string]: $ReadOnly<{|
-      phasedRegistrationNames: $ReadOnly<{|
+    [eventName: string]: $ReadOnly<{
+      phasedRegistrationNames: $ReadOnly<{
         captured: string,
         bubbled: string,
-      |}>,
-    |}>,
+      }>,
+    }>,
     ...,
   }>,
-  Commands?: $ReadOnly<{[commandName: string]: number, ...}>,
   directEventTypes?: $ReadOnly<{
-    [eventName: string]: $ReadOnly<{|
+    [eventName: string]: $ReadOnly<{
       registrationName: string,
-    |}>,
+    }>,
     ...,
   }>,
-  NativeProps?: $ReadOnly<{[propName: string]: string, ...}>,
   uiViewClassName: string,
-  validAttributes: AttributeConfiguration<TProps, TStyleProps>,
-|}>;
+  validAttributes: AttributeConfiguration<string, string>,
+}>;
 
-export type ViewConfigGetter = () => ReactNativeBaseComponentViewConfig<>;
+export type PartialViewConfig = $ReadOnly<{
+  bubblingEventTypes?: $PropertyType<ViewConfig, 'bubblingEventTypes'>,
+  directEventTypes?: $PropertyType<ViewConfig, 'directEventTypes'>,
+  uiViewClassName: string,
+  validAttributes?: $ReadOnly<{[propName: string]: AttributeType<any>}>,
+}>;
 
 export type NativeMethods = {
   blur(): void,
@@ -182,7 +184,7 @@ export type ReactNativeEventTarget = {
   node: Object,
   canonical: {
     _nativeTag: number,
-    viewConfig: ReactNativeBaseComponentViewConfig<>,
+    viewConfig: ViewConfig,
     currentProps: Object,
     _internalInstanceHandle: Object,
     ...

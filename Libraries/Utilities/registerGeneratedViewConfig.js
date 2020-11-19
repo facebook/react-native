@@ -10,43 +10,15 @@
 
 'use strict';
 
+import {type PartialViewConfig} from '../Renderer/shims/ReactNativeTypes';
 import ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
 import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
 import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
 import verifyComponentAttributeEquivalence from './verifyComponentAttributeEquivalence';
 
-export type GeneratedViewConfig = {
-  uiViewClassName: string,
-  bubblingEventTypes?: $ReadOnly<{
-    [eventName: string]: $ReadOnly<{|
-      phasedRegistrationNames: $ReadOnly<{|
-        captured: string,
-        bubbled: string,
-      |}>,
-    |}>,
-    ...,
-  }>,
-  directEventTypes?: $ReadOnly<{
-    [eventName: string]: $ReadOnly<{|
-      registrationName: string,
-    |}>,
-    ...,
-  }>,
-  validAttributes?: {
-    [propName: string]:
-      | true
-      | $ReadOnly<{|
-          diff?: <T>(arg1: any, arg2: any) => boolean,
-          process?: (arg1: any) => any,
-        |}>,
-    ...,
-  },
-  ...
-};
-
 function registerGeneratedViewConfig(
   componentName: string,
-  viewConfig: GeneratedViewConfig,
+  viewConfig: PartialViewConfig,
 ) {
   const staticViewConfig = {
     uiViewClassName: componentName,

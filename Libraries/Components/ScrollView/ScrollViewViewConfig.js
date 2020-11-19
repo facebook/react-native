@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {GeneratedViewConfig} from '../../Utilities/registerGeneratedViewConfig';
+import type {PartialViewConfig} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 const ScrollViewViewConfig = {
   uiViewClassName: 'RCTScrollView',
@@ -72,4 +72,4 @@ const ScrollViewViewConfig = {
   },
 };
 
-module.exports = (ScrollViewViewConfig: GeneratedViewConfig);
+module.exports = (ScrollViewViewConfig: PartialViewConfig);

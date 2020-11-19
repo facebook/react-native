@@ -11,7 +11,7 @@
 'use strict';
 
 import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
-import type {ReactNativeBaseComponentViewConfig} from '../Renderer/shims/ReactNativeTypes';
+import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
 const ImageViewViewConfig = {
   uiViewClassName: 'RCTImageView',
@@ -65,4 +65,4 @@ const ImageViewViewConfig = {
   },
 };
 
-module.exports = (ImageViewViewConfig: ReactNativeBaseComponentViewConfig<>);
+module.exports = (ImageViewViewConfig: ViewConfig);

@@ -11,7 +11,7 @@
 'use strict';
 
 import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
-import type {ReactNativeBaseComponentViewConfig} from '../Renderer/shims/ReactNativeTypes';
+import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
 const IGNORED_KEYS = ['transform', 'hitSlop'];
 
@@ -39,8 +39,8 @@ const IGNORED_KEYS = ['transform', 'hitSlop'];
  * years from now...
  */
 export default function verifyComponentAttributeEquivalence(
-  nativeViewConfig: ReactNativeBaseComponentViewConfig<>,
-  staticViewConfig: ReactNativeBaseComponentViewConfig<>,
+  nativeViewConfig: ViewConfig,
+  staticViewConfig: ViewConfig,
 ) {
   for (const prop of [
     'validAttributes',
@@ -101,7 +101,7 @@ export function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
 }
 
 export function getConfigWithoutViewProps(
-  viewConfig: ReactNativeBaseComponentViewConfig<>,
+  viewConfig: ViewConfig,
   propName: string,
 ): {...} {
   if (!viewConfig[propName]) {
