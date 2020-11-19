@@ -29,96 +29,6 @@
 namespace facebook {
 namespace react {
 
-static double
-getProgressFromValues(double start, double end, double currentValue) {
-  auto opacityMinmax = std::minmax({start, end});
-  auto min = opacityMinmax.first;
-  auto max = opacityMinmax.second;
-  return (
-      currentValue < min
-          ? 0
-          : (currentValue > max ? 0 : ((max - currentValue) / (max - min))));
-}
-
-/**
- * Given an animation and a ShadowView with properties set on it, detect how
- * far through the animation the ShadowView has progressed.
- *
- * @param mutationsList
- * @param now
- */
-double LayoutAnimationDriver::getProgressThroughAnimation(
-    AnimationKeyFrame const &keyFrame,
-    LayoutAnimation const *layoutAnimation,
-    ShadowView const &animationStateView) const {
-  auto layoutAnimationConfig = layoutAnimation->layoutAnimationConfig;
-  auto const mutationConfig =
-      *(keyFrame.type == AnimationConfigurationType::Delete
-            ? layoutAnimationConfig.deleteConfig
-            : (keyFrame.type == AnimationConfigurationType::Create
-                   ? layoutAnimationConfig.createConfig
-                   : layoutAnimationConfig.updateConfig));
-
-  auto initialProps = keyFrame.viewStart.props;
-  auto finalProps = keyFrame.viewEnd.props;
-
-  if (mutationConfig.animationProperty == AnimationProperty::Opacity) {
-    // Detect progress through opacity animation.
-    const auto &oldViewProps =
-        dynamic_cast<const ViewProps *>(initialProps.get());
-    const auto &newViewProps =
-        dynamic_cast<const ViewProps *>(finalProps.get());
-    const auto &animationStateViewProps =
-        dynamic_cast<const ViewProps *>(animationStateView.props.get());
-    if (oldViewProps != nullptr && newViewProps != nullptr &&
-        animationStateViewProps != nullptr) {
-      return getProgressFromValues(
-          oldViewProps->opacity,
-          newViewProps->opacity,
-          animationStateViewProps->opacity);
-    }
-  } else if (
-      mutationConfig.animationProperty != AnimationProperty::NotApplicable) {
-    // Detect progress through layout animation.
-    LayoutMetrics const &finalLayoutMetrics = keyFrame.viewEnd.layoutMetrics;
-    LayoutMetrics const &baselineLayoutMetrics =
-        keyFrame.viewStart.layoutMetrics;
-    LayoutMetrics const &animationStateLayoutMetrics =
-        animationStateView.layoutMetrics;
-
-    if (baselineLayoutMetrics.frame.size.height !=
-        finalLayoutMetrics.frame.size.height) {
-      return getProgressFromValues(
-          baselineLayoutMetrics.frame.size.height,
-          finalLayoutMetrics.frame.size.height,
-          animationStateLayoutMetrics.frame.size.height);
-    }
-    if (baselineLayoutMetrics.frame.size.width !=
-        finalLayoutMetrics.frame.size.width) {
-      return getProgressFromValues(
-          baselineLayoutMetrics.frame.size.width,
-          finalLayoutMetrics.frame.size.width,
-          animationStateLayoutMetrics.frame.size.width);
-    }
-    if (baselineLayoutMetrics.frame.origin.x !=
-        finalLayoutMetrics.frame.origin.x) {
-      return getProgressFromValues(
-          baselineLayoutMetrics.frame.origin.x,
-          finalLayoutMetrics.frame.origin.x,
-          animationStateLayoutMetrics.frame.origin.x);
-    }
-    if (baselineLayoutMetrics.frame.origin.y !=
-        finalLayoutMetrics.frame.origin.y) {
-      return getProgressFromValues(
-          baselineLayoutMetrics.frame.origin.y,
-          finalLayoutMetrics.frame.origin.y,
-          animationStateLayoutMetrics.frame.origin.y);
-    }
-  }
-
-  return 0;
-}
-
 void LayoutAnimationDriver::animationMutationsForFrame(
     SurfaceId surfaceId,
     ShadowViewMutation::List &mutationsList,
@@ -132,7 +42,7 @@ void LayoutAnimationDriver::animationMutationsForFrame(
     }
 
     int incompleteAnimations = 0;
-    for (const auto &keyframe : animation.keyFrames) {
+    for (auto &keyframe : animation.keyFrames) {
       if (keyframe.type == AnimationConfigurationType::Noop) {
         continue;
       }
@@ -164,9 +74,18 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
       // Create the mutation instruction
       auto updateMutation = ShadowViewMutation::UpdateMutation(
-          keyframe.parentView, baselineShadowView, mutatedShadowView, -1);
+          keyframe.parentView, keyframe.viewPrev, mutatedShadowView, -1);
+
+      // All generated Update mutations must have an "old" and "new"
+      // ShadowView. Checking for nonzero tag doesn't guarantee that the views
+      // are valid/correct, just that something is there.
+      assert(updateMutation.oldChildShadowView.tag != 0);
+      assert(updateMutation.newChildShadowView.tag != 0);
+
       mutationsList.push_back(updateMutation);
       PrintMutationInstruction("Animation Progress:", updateMutation);
+
+      keyframe.viewPrev = mutatedShadowView;
 
       if (animationTimeProgressLinear < 1) {
         incompleteAnimations++;
@@ -200,23 +119,31 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
           // Copy so that if something else mutates the inflight animations, it
           // won't change this mutation after this point.
-          mutationsList.push_back(
+          auto mutation =
               ShadowViewMutation{finalMutationForKeyFrame.type,
                                  finalMutationForKeyFrame.parentShadowView,
-                                 finalMutationForKeyFrame.oldChildShadowView,
+                                 keyframe.viewPrev,
                                  finalMutationForKeyFrame.newChildShadowView,
-                                 finalMutationForKeyFrame.index});
+                                 finalMutationForKeyFrame.index};
+          assert(mutation.oldChildShadowView.tag != 0);
+          assert(
+              mutation.newChildShadowView.tag != 0 ||
+              finalMutationForKeyFrame.type == ShadowViewMutation::Remove ||
+              finalMutationForKeyFrame.type == ShadowViewMutation::Delete);
+          mutationsList.push_back(mutation);
         } else {
           // Issue a final UPDATE so that the final props object sent to the
           // mounting layer is the same as the one on the ShadowTree. This is
           // mostly to make the MountingCoordinator StubViewTree assertions
           // pass.
-          mutationsList.push_back(
-              ShadowViewMutation{ShadowViewMutation::Type::Update,
-                                 keyframe.parentView,
-                                 {},
-                                 keyframe.viewEnd,
-                                 -1});
+          auto mutation = ShadowViewMutation{ShadowViewMutation::Type::Update,
+                                             keyframe.parentView,
+                                             keyframe.viewPrev,
+                                             keyframe.viewEnd,
+                                             -1};
+          assert(mutation.oldChildShadowView.tag != 0);
+          assert(mutation.newChildShadowView.tag != 0);
+          mutationsList.push_back(mutation);
         }
       }
 

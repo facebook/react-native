@@ -667,9 +667,7 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
         bool conflicting = animatedKeyFrame.tag == baselineShadowView.tag ||
             ((mutation.type == ShadowViewMutation::Type::Delete ||
               mutation.type == ShadowViewMutation::Type::Create) &&
-             animatedKeyFrame.parentView.tag == baselineShadowView.tag) /* ||
-             finalMutationTag == baselineShadowView.tag*/
-            ;
+             animatedKeyFrame.parentView.tag == baselineShadowView.tag);
 
         // Conflicting animation detected: if we're mutating a tag under
         // animation, or deleting the parent of a tag under animation, or
@@ -888,7 +886,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       for (auto const &mutation : mutations) {
         ShadowView baselineShadowView =
             (mutation.type == ShadowViewMutation::Type::Delete ||
-                     mutation.type == ShadowViewMutation::Type::Remove
+                     mutation.type == ShadowViewMutation::Type::Remove ||
+                     mutation.type == ShadowViewMutation::Type::Update
                  ? mutation.oldChildShadowView
                  : mutation.newChildShadowView);
         bool haveComponentDescriptor =
@@ -949,7 +948,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                                   mutation.newChildShadowView.tag,
                                   mutation.parentShadowView,
                                   movedIt->second.oldChildShadowView,
-                                  mutation.newChildShadowView});
+                                  mutation.newChildShadowView,
+                                  movedIt->second.oldChildShadowView,
+                                  0});
           }
         }
 
@@ -1017,6 +1018,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                                          parent,
                                          viewStart,
                                          viewFinal,
+                                         baselineShadowView,
                                          0};
           } else if (mutation.type == ShadowViewMutation::Type::Delete) {
             if (mutationConfig->animationProperty ==
@@ -1058,6 +1060,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 parent,
                 viewStart,
                 viewFinal,
+                baselineShadowView,
                 0};
           } else if (mutation.type == ShadowViewMutation::Type::Update) {
             viewFinal = ShadowView(mutation.newChildShadowView);
@@ -1069,6 +1072,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 parent,
                 viewStart,
                 viewFinal,
+                baselineShadowView,
                 0};
           } else {
             // This should just be "Remove" instructions that are not animated
@@ -1092,8 +1096,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                   AnimationConfigurationType::Noop,
                   tag,
                   parent,
-                  {},
-                  {},
+                  mutation.oldChildShadowView,
+                  mutation.oldChildShadowView,
+                  mutation.oldChildShadowView,
                   0};
             } else {
               PrintMutationInstruction(
@@ -1112,30 +1117,13 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
             // We've found a conflict.
             if (conflictingMutationBaselineShadowView.tag == tag) {
-              // What's the progress of this ongoing animation?
-              double conflictingAnimationProgress =
-                  calculateAnimationProgress(
-                      now,
-                      *std::get<2>(conflictingKeyframeTuple),
-                      std::get<1>(conflictingKeyframeTuple))
-                      .first;
-
-              // Get a baseline ShadowView at the current progress of the
-              // inflight animation. TODO: handle multiple properties being
-              // animated separately?
-              auto interpolatedInflightShadowView =
-                  createInterpolatedShadowView(
-                      conflictingAnimationProgress,
-                      conflictingKeyFrame.viewStart,
-                      conflictingKeyFrame.viewEnd);
-
               // Pick a Prop or layout property, depending on the current
               // animation configuration. Figure out how much progress we've
               // already made in the current animation, and start the animation
               // from this point.
-              keyFrame.viewStart = interpolatedInflightShadowView;
-              keyFrame.initialProgress = getProgressThroughAnimation(
-                  keyFrame, &animation, interpolatedInflightShadowView);
+              keyFrame.viewStart = conflictingKeyFrame.viewPrev;
+              assert(keyFrame.viewStart.tag != 0);
+              keyFrame.initialProgress = 0;
 
               // We're guaranteed that a tag only has one animation associated
               // with it, so we can break here. If we support multiple
@@ -1145,6 +1133,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             }
           }
 
+          assert(keyFrame.viewStart.tag != 0);
+          assert(keyFrame.viewEnd.tag != 0);
+          assert(keyFrame.viewPrev.tag != 0);
           keyFramesToAnimate.push_back(keyFrame);
         }
 
@@ -1185,36 +1176,32 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       for (auto const &conflictingKeyframeTuple : conflictingAnimations) {
         auto &keyFrame = std::get<0>(conflictingKeyframeTuple);
         if (keyFrame.finalMutationForKeyFrame.hasValue()) {
-          auto &mutation = *keyFrame.finalMutationForKeyFrame;
-          if (mutation.type == ShadowViewMutation::Type::Update) {
-            auto mutationInstruction = ShadowViewMutation::UpdateMutation(
-                mutation.parentShadowView,
-                {},
-                mutation.newChildShadowView,
-                mutation.index);
-            PrintMutationInstruction(
-                "Queueing up final mutation instruction - update:",
-                mutationInstruction);
-            finalConflictingMutations.push_back(std::move(mutationInstruction));
-          } else {
-            PrintMutationInstruction(
-                "Queueing up final mutation instruction - non-update",
-                mutation);
-            finalConflictingMutations.push_back(mutation);
-          }
+          auto &finalMutation = *keyFrame.finalMutationForKeyFrame;
+          auto mutationInstruction =
+              ShadowViewMutation{finalMutation.type,
+                                 finalMutation.parentShadowView,
+                                 keyFrame.viewPrev,
+                                 finalMutation.newChildShadowView,
+                                 finalMutation.index};
+          PrintMutationInstruction(
+              "Queueing up final mutation instruction - update:",
+              mutationInstruction);
+          assert(mutationInstruction.oldChildShadowView.tag != 0);
+          assert(
+              mutationInstruction.newChildShadowView.tag != 0 ||
+              mutationInstruction.type == ShadowViewMutation::Delete ||
+              mutationInstruction.type == ShadowViewMutation::Remove);
+          finalConflictingMutations.push_back(mutationInstruction);
         } else {
           // If there's no final mutation associated, create a mutation that
           // corresponds to the animation being 100% complete. This is important
           // for, for example, INSERT mutations being animated from opacity 0
           // to 1. If the animation is interrupted we must force the View to be
           // at opacity 1.
-          auto mutatedShadowView = createInterpolatedShadowView(
-              1, keyFrame.viewStart, keyFrame.viewEnd);
           auto generatedMutation = ShadowViewMutation::UpdateMutation(
-              keyFrame.parentView,
-              keyFrame.viewStart,
-              std::move(mutatedShadowView),
-              -1);
+              keyFrame.parentView, keyFrame.viewPrev, keyFrame.viewEnd, -1);
+          assert(generatedMutation.oldChildShadowView.tag != 0);
+          assert(generatedMutation.newChildShadowView.tag != 0);
           PrintMutationInstruction(
               "Queueing up final mutation instruction - synthetic",
               generatedMutation);
@@ -1361,28 +1348,30 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       for (auto const &conflictingKeyframeTuple : conflictingAnimations) {
         auto &keyFrame = std::get<0>(conflictingKeyframeTuple);
         if (keyFrame.finalMutationForKeyFrame.hasValue()) {
+          auto &finalMutation = (*keyFrame.finalMutationForKeyFrame);
+          auto mutation = ShadowViewMutation{finalMutation.type,
+                                             finalMutation.parentShadowView,
+                                             keyFrame.viewPrev,
+                                             finalMutation.newChildShadowView,
+                                             finalMutation.index};
           PrintMutationInstruction(
-              "No Animation: Queueing final mutation instruction",
-              *keyFrame.finalMutationForKeyFrame);
-          finalMutationsForConflictingAnimations.push_back(
-              *keyFrame.finalMutationForKeyFrame);
+              "No Animation: Queueing up final conflicting mutation instruction",
+              mutation);
+          finalMutationsForConflictingAnimations.push_back(mutation);
         } else {
           // If there's no final mutation associated, create a mutation that
           // corresponds to the animation being 100% complete. This is important
           // for, for example, INSERT mutations being animated from opacity 0
           // to 1. If the animation is interrupted we must force the View to be
           // at opacity 1.
-          auto mutatedShadowView = createInterpolatedShadowView(
-              1, keyFrame.viewStart, keyFrame.viewEnd);
           auto generatedMutation = ShadowViewMutation::UpdateMutation(
-              keyFrame.parentView,
-              keyFrame.viewStart,
-              std::move(mutatedShadowView),
-              -1);
+              keyFrame.parentView, keyFrame.viewPrev, keyFrame.viewEnd, -1);
+          assert(generatedMutation.oldChildShadowView.tag != 0);
+          assert(generatedMutation.newChildShadowView.tag != 0);
           PrintMutationInstruction(
               "Queueing up final mutation instruction - synthetic",
               generatedMutation);
-          // Create the mutation instruction
+          // Create the mutation instructions
           finalMutationsForConflictingAnimations.push_back(generatedMutation);
         }
       }

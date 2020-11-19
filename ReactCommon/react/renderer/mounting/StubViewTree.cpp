@@ -129,12 +129,15 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         STUB_VIEW_LOG({
           LOG(ERROR) << "StubView: Update: " << mutation.newChildShadowView.tag;
         });
+        STUB_VIEW_ASSERT(mutation.oldChildShadowView.tag != 0);
+        STUB_VIEW_ASSERT(mutation.newChildShadowView.tag != 0);
         STUB_VIEW_ASSERT(mutation.newChildShadowView.props);
         STUB_VIEW_ASSERT(
             mutation.newChildShadowView.tag == mutation.oldChildShadowView.tag);
         STUB_VIEW_ASSERT(
             registry.find(mutation.newChildShadowView.tag) != registry.end());
         auto oldStubView = registry[mutation.newChildShadowView.tag];
+        STUB_VIEW_ASSERT(oldStubView->tag != 0);
         STUB_VIEW_ASSERT(
             (ShadowView)(*oldStubView) == mutation.oldChildShadowView);
         oldStubView->update(mutation.newChildShadowView);

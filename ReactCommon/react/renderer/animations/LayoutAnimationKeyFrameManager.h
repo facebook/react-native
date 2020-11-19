@@ -103,6 +103,9 @@ struct AnimationKeyFrame {
   ShadowView viewStart;
   ShadowView viewEnd;
 
+  // ShadowView representing the previous frame of the animation.
+  ShadowView viewPrev;
+
   // If an animation interrupts an existing one, the starting state may actually
   // be halfway through the intended transition.
   double initialProgress;
@@ -251,11 +254,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       SurfaceId surfaceId,
       ShadowViewMutation::List &mutationsList,
       uint64_t now) const = 0;
-
-  virtual double getProgressThroughAnimation(
-      AnimationKeyFrame const &keyFrame,
-      LayoutAnimation const *layoutAnimation,
-      ShadowView const &animationStateView) const = 0;
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable better::optional<LayoutAnimation> currentAnimation_{};
