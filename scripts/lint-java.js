@@ -16,7 +16,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const googleJavaFormatUrl = 'https://github.com/google/google-java-format/releases/download/google-java-format-1.9/google-java-format-1.9-all-deps.jar';
+const googleJavaFormatUrl = 'https://github.com/google/google-java-format/releases/download/google-java-format-1.7/google-java-format-1.7-all-deps.jar';
 const googleJavaFormatPath = path.join(os.tmpdir(),`google-java-format-all-deps.jar`);
 
 function download(url, downloadPath, callback){
