@@ -115,7 +115,21 @@ function parseChanges(file, diff){
     }));
 }
 
+const yargs = require('yargs');
+
+const {argv} = yargs
+  .option('c', {
+    alias: 'check',
+  });
+
 download(googleJavaFormatUrl, googleJavaFormatPath, () =>{
+    if(argv.check){
+        const proc = exec(`java -jar ${googleJavaFormatPath} --set-exit-if-changed --dry-run $(find ./ReactAndroid -name "*.java")`, {silent: false});
+
+        process.exit(proc.code);
+        return;
+    }
+
     const suggestions = filesWithLintingIssues()
         .map(unifiedDiff)
         .filter(x => x)

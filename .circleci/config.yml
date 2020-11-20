@@ -277,6 +277,11 @@ jobs:
           when: always
 
       - run:
+          name: Lint Java
+          command: scripts/circleci/exec_swallow_error.sh yarn lint-java --check
+          when: always
+
+      - run:
           name: Check for errors in code using Flow (iOS)
           command: yarn flow-check-ios
           when: always

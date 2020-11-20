@@ -34,8 +34,8 @@ const converterSummary = {
     '`flow` found some issues. Run `yarn flow check` to analyze your code and address any errors.',
   shellcheck:
     '`shellcheck` found some issues. Run `yarn shellcheck` to analyze shell scripts.',
-  "google-java-format":
-    '`google-java-format` found some issues. Run `java -jar google-java-format-1.9-all-deps.jar -replace $(find ./ReactAndroid -name "*.java")` to automatically fix problems',
+  'google-java-format':
+    '`google-java-format` found some issues. See https://github.com/google/google-java-format',
 };
 
 /**
@@ -59,7 +59,7 @@ const converters = {
     }
   },
 
-  "google-java-format": function(output, input) {
+  'google-java-format': function(output, input) {
     if (!input) {
       return;
     }
@@ -183,6 +183,7 @@ function getLineMapFromPatch(patchString) {
 }
 
 function sendReview(octokit, owner, repo, number, commit_id, body, comments) {
+  console.log(arguments);
   if (process.env.GITHUB_TOKEN) {
     if (comments.length === 0) {
       // Do not leave an empty review.
@@ -203,6 +204,8 @@ function sendReview(octokit, owner, repo, number, commit_id, body, comments) {
       event,
       comments,
     };
+
+    console.log(opts);
 
     octokit.pullRequests.createReview(opts, function(error, res) {
       if (error) {
@@ -233,6 +236,7 @@ function sendReview(octokit, owner, repo, number, commit_id, body, comments) {
 }
 
 function main(messages, owner, repo, number) {
+  console.log(messages);
   // No message, we don't need to do anything :)
   if (Object.keys(messages).length === 0) {
     return;
@@ -250,8 +254,14 @@ function main(messages, owner, repo, number) {
     auth: process.env.GITHUB_TOKEN,
   });
 
+  console.log('GO =====>');
   getShaFromPullRequest(octokit, owner, repo, number, sha => {
+    console.log('sha');
+    console.log(sha);
     getFilesFromPullRequest(octokit, owner, repo, number, files => {
+      console.log('files');
+      console.log(files);
+
       let comments = [];
       let convertersUsed = [];
       files
@@ -336,6 +346,9 @@ process.stdin.on('end', function() {
 
   const owner = process.env.GITHUB_OWNER;
   const repo = process.env.GITHUB_REPO;
+
+  process.env.GITHUB_PR_NUMBER = 30444;
+  process.env.GITHUB_TOKEN = '78a72af35445ca3f8180b1a98e0bbd56ff1ccba1';
 
   if (!process.env.GITHUB_PR_NUMBER) {
     console.error(
