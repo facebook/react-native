@@ -144,7 +144,10 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
       if ([disabledButtonIndex integerValue] < buttons.count) {
         [alertController.actions[[disabledButtonIndex integerValue]] setEnabled:false];
       } else {
-        RCTLogError(@"Index %@ from `disabledButtonIndices` is out of bounds. Maximum index value is %@.", @([disabledButtonIndex integerValue]), @(buttons.count - 1));
+        RCTLogError(
+            @"Index %@ from `disabledButtonIndices` is out of bounds. Maximum index value is %@.",
+            @([disabledButtonIndex integerValue]),
+            @(buttons.count - 1));
         return;
       }
     }
