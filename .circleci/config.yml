@@ -246,7 +246,7 @@ jobs:
 
       - run:
           name: Install additional GitHub bot dependencies
-          command: sudo apt update && sudo apt install -y shellcheck jq
+          command: apt update && apt install -y shellcheck jq
 
       - run:
           name: Run linters against modified files (analysis-bot)
