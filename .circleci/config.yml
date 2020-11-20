@@ -236,7 +236,7 @@ jobs:
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
   analyze_pr:
-    executor: nodelts
+    executor: reactnativeandroid
     steps:
       - restore_cache_checkout:
           checkout_type: node
@@ -264,7 +264,7 @@ jobs:
   #    JOBS: Analyze Code
   # -------------------------
   analyze_code:
-    executor: nodelts
+    executor: reactnativeandroid
     steps:
       - restore_cache_checkout:
           checkout_type: node
