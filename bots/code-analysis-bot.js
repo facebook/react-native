@@ -233,7 +233,6 @@ function sendReview(octokit, owner, repo, number, commit_id, body, comments) {
 }
 
 function main(messages, owner, repo, number) {
-
   // No message, we don't need to do anything :)
   if (Object.keys(messages).length === 0) {
     return;
@@ -309,7 +308,6 @@ process.stdin.on('end', function() {
   //
   //   cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; flow --json) | node code-analysis-bot.js
 
-  console.log(content);
   const lines = content.trim().split('\n');
   for (let i = 0; i < Math.ceil(lines.length / 2); ++i) {
     const converter = converters[lines[i * 2]];
@@ -339,8 +337,6 @@ process.stdin.on('end', function() {
   const owner = process.env.GITHUB_OWNER;
   const repo = process.env.GITHUB_REPO;
 
-  process.env.GITHUB_PR_NUMBER = 30305;
-
   if (!process.env.GITHUB_PR_NUMBER) {
     console.error(
       'Missing GITHUB_PR_NUMBER. Example: 4687. Review feedback with code analysis results cannot be provided on GitHub without a valid pull request number.',
@@ -350,7 +346,6 @@ process.stdin.on('end', function() {
   }
 
   const number = process.env.GITHUB_PR_NUMBER;
-  console.log(messages);
 
   // intentional lint warning to make sure that the bot is working :)
   main(messages, owner, repo, number);
