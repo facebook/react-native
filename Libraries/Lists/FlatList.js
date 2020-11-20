@@ -511,9 +511,12 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
           'array with 1-%s columns; instead, received a single item.',
         numColumns,
       );
-      return items
-        .map((it, kk) => keyExtractor(it, index * numColumns + kk))
-        .join(':');
+      return (
+        items
+          // $FlowFixMe[incompatible-call]
+          .map((it, kk) => keyExtractor(it, index * numColumns + kk))
+          .join(':')
+      );
     } else {
       // $FlowFixMe Can't call keyExtractor with an array
       return keyExtractor(items, index);
@@ -575,6 +578,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         // $FlowFixMe Component isn't valid
         return <ListItemComponent {...props} />;
       } else if (renderItem) {
+        // $FlowFixMe[incompatible-call]
         return renderItem(props);
       } else {
         return null;

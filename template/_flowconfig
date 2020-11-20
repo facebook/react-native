@@ -27,6 +27,7 @@ esproposal.optional_chaining=enable
 esproposal.nullish_coalescing=enable
 
 exact_by_default=true
+generate_tests=false
 
 module.file_ext=.js
 module.file_ext=.json
