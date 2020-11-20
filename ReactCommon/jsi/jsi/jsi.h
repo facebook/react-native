@@ -252,6 +252,7 @@ class JSI_EXPORT Runtime {
 
   virtual String createStringFromAscii(const char* str, size_t length) = 0;
   virtual String createStringFromUtf8(const uint8_t* utf8, size_t length) = 0;
+  virtual Object createArrayBufferFromBytes(const void* bytes, size_t length) = 0;
   virtual std::string utf8(const String&) = 0;
 
   // \return a \c Value created from a utf8-encoded JSON string. The default
@@ -786,6 +787,11 @@ class JSI_EXPORT ArrayBuffer : public Object {
 
   uint8_t* data(Runtime& runtime) {
     return runtime.data(*this);
+  }
+
+  static Object
+  createFromBytes(Runtime& runtime, const void* bytes, size_t length) {
+    return runtime.createArrayBufferFromBytes(bytes, length);
   }
 
  private:
