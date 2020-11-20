@@ -118,7 +118,6 @@ class LayoutAnimationCallbackWrapper {
   LayoutAnimationCallbackWrapper(jsi::Function &&callback)
       : callback_(std::make_shared<jsi::Function>(std::move(callback))) {}
   LayoutAnimationCallbackWrapper() : callback_(nullptr) {}
-  ~LayoutAnimationCallbackWrapper() {}
 
   // Copy and assignment-copy constructors should copy callback_, and not
   // std::move it. Copying is desirable, otherwise the shared_ptr and
@@ -134,7 +133,7 @@ class LayoutAnimationCallbackWrapper {
     }
 
     std::weak_ptr<jsi::Function> callable = callback_;
-    std::shared_ptr<bool> callComplete = callComplete_;
+    std::shared_ptr<std::atomic_bool> callComplete = callComplete_;
 
     runtimeExecutor(
         [=, callComplete = std::move(callComplete)](jsi::Runtime &runtime) {
@@ -150,7 +149,8 @@ class LayoutAnimationCallbackWrapper {
   }
 
  private:
-  std::shared_ptr<bool> callComplete_ = std::make_shared<bool>(false);
+  std::shared_ptr<std::atomic_bool> callComplete_ =
+      std::make_shared<std::atomic_bool>(false);
   std::shared_ptr<jsi::Function> callback_;
 };
 
