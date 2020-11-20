@@ -125,4 +125,4 @@ download(googleJavaFormatUrl, googleJavaFormatPath, () =>{
     console.log(JSON.stringify(suggestions));
 });
 
-if(true){} //Temporary google-java-format lint violation for testing
+if(true){} //Temporary eslint violation for testing
