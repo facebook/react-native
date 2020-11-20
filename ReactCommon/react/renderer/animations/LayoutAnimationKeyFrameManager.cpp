@@ -323,9 +323,7 @@ void LayoutAnimationKeyFrameManager::stopSurface(SurfaceId surfaceId) {
 }
 
 bool LayoutAnimationKeyFrameManager::shouldAnimateFrame() const {
-  // There is potentially a race here between getting and setting
-  // `currentMutation_`. We don't want to lock around this because then we're
-  // creating contention between pullTransaction and the JS thread.
+  std::lock_guard<std::mutex> lock(currentAnimationMutex_);
   return currentAnimation_ || !inflightAnimations_.empty();
 }
 
