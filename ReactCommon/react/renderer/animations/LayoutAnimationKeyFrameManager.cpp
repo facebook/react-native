@@ -73,22 +73,22 @@ void PrintMutationInstructionRelative(
 
 static better::optional<AnimationType> parseAnimationType(std::string param) {
   if (param == "spring") {
-    return better::optional<AnimationType>(AnimationType::Spring);
+    return AnimationType::Spring;
   }
   if (param == "linear") {
-    return better::optional<AnimationType>(AnimationType::Linear);
+    return AnimationType::Linear;
   }
   if (param == "easeInEaseOut") {
-    return better::optional<AnimationType>(AnimationType::EaseInEaseOut);
+    return AnimationType::EaseInEaseOut;
   }
   if (param == "easeIn") {
-    return better::optional<AnimationType>(AnimationType::EaseIn);
+    return AnimationType::EaseIn;
   }
   if (param == "easeOut") {
-    return better::optional<AnimationType>(AnimationType::EaseOut);
+    return AnimationType::EaseOut;
   }
   if (param == "keyboard") {
-    return better::optional<AnimationType>(AnimationType::Keyboard);
+    return AnimationType::Keyboard;
   }
 
   LOG(ERROR) << "Error parsing animation type: " << param;
@@ -98,16 +98,16 @@ static better::optional<AnimationType> parseAnimationType(std::string param) {
 static better::optional<AnimationProperty> parseAnimationProperty(
     std::string param) {
   if (param == "opacity") {
-    return better::optional<AnimationProperty>(AnimationProperty::Opacity);
+    return AnimationProperty::Opacity;
   }
   if (param == "scaleX") {
-    return better::optional<AnimationProperty>(AnimationProperty::ScaleX);
+    return AnimationProperty::ScaleX;
   }
   if (param == "scaleY") {
-    return better::optional<AnimationProperty>(AnimationProperty::ScaleY);
+    return AnimationProperty::ScaleY;
   }
   if (param == "scaleXY") {
-    return better::optional<AnimationProperty>(AnimationProperty::ScaleXY);
+    return AnimationProperty::ScaleXY;
   }
 
   LOG(ERROR) << "Error parsing animation property: " << param;
@@ -119,13 +119,12 @@ static better::optional<AnimationConfig> parseAnimationConfig(
     double defaultDuration,
     bool parsePropertyType) {
   if (config.empty() || !config.isObject()) {
-    return better::optional<AnimationConfig>(
-        AnimationConfig{AnimationType::Linear,
-                        AnimationProperty::NotApplicable,
-                        defaultDuration,
-                        0,
-                        0,
-                        0});
+    return AnimationConfig{AnimationType::Linear,
+                           AnimationProperty::NotApplicable,
+                           defaultDuration,
+                           0,
+                           0,
+                           0};
   }
 
   auto const typeIt = config.find("type");
@@ -820,10 +819,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     // current mutations then these deleted mutations will serve as the baseline
     // for the next animation. If not, the current mutations are executed
     // immediately without issues.
-    std::vector<
-        std::tuple<AnimationKeyFrame, AnimationConfig, LayoutAnimation *>>
-        conflictingAnimations =
-            getAndEraseConflictingAnimations(surfaceId, mutations);
+    auto conflictingAnimations =
+        getAndEraseConflictingAnimations(surfaceId, mutations);
 
     // Are we animating this list of mutations?
     better::optional<LayoutAnimation> currentAnimation{};
