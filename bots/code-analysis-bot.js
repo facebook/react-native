@@ -233,6 +233,8 @@ function sendReview(octokit, owner, repo, number, commit_id, body, comments) {
 }
 
 function main(messages, owner, repo, number) {
+  console.log(messages);
+
   // No message, we don't need to do anything :)
   if (Object.keys(messages).length === 0) {
     return;
