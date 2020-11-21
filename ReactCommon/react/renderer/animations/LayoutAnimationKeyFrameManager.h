@@ -81,9 +81,9 @@ struct AnimationConfig {
 // This corresponds exactly with JS.
 struct LayoutAnimationConfig {
   double duration; // ms
-  better::optional<AnimationConfig> createConfig;
-  better::optional<AnimationConfig> updateConfig;
-  better::optional<AnimationConfig> deleteConfig;
+  AnimationConfig createConfig;
+  AnimationConfig updateConfig;
+  AnimationConfig deleteConfig;
 };
 
 struct AnimationKeyFrame {

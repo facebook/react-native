@@ -56,7 +56,7 @@ void LayoutAnimationDriver::animationMutationsForFrame(
       // The contract with the "keyframes generation" phase is that any animated
       // node will have a valid configuration.
       auto const layoutAnimationConfig = animation.layoutAnimationConfig;
-      auto const mutationConfig =
+      auto const &mutationConfig =
           (keyframe.type == AnimationConfigurationType::Delete
                ? layoutAnimationConfig.deleteConfig
                : (keyframe.type == AnimationConfigurationType::Create
@@ -65,7 +65,7 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
       // Interpolate
       std::pair<double, double> progress =
-          calculateAnimationProgress(now, animation, *mutationConfig);
+          calculateAnimationProgress(now, animation, mutationConfig);
       double animationTimeProgressLinear = progress.first;
       double animationInterpolationFactor = progress.second;
 
