@@ -19,7 +19,7 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 
 const invariant = require('invariant');
 
-import typeof NativeScrollView from '../Components/ScrollView/NativeScrollView';
+import typeof ScrollViewNativeComponent from '../Components/ScrollView/ScrollViewNativeComponent';
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
@@ -373,7 +373,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    */
   getNativeScrollRef():
     | ?React.ElementRef<typeof View>
-    | ?React.ElementRef<NativeScrollView> {
+    | ?React.ElementRef<ScrollViewNativeComponent> {
     if (this._listRef) {
       return this._listRef.getScrollRef();
     }
