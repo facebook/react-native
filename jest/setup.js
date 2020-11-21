@@ -330,6 +330,9 @@ jest
       get: jest.fn((name, viewConfigProvider) => {
         return jest.requireActual('./mockNativeComponent')(name);
       }),
+      getWithFallback_DEPRECATED: jest.fn((name, viewConfigProvider) => {
+        return jest.requireActual('./mockNativeComponent')(name);
+      }),
       setRuntimeConfigProvider: jest.fn(),
     };
   })
