@@ -17,6 +17,7 @@
     "!template/node_modules",
     "!template/package-lock.json",
     "!template/yarn.lock",
+    "android",
     "cli.js",
     "flow",
     "flow-typed",
