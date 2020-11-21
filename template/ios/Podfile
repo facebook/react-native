@@ -14,7 +14,7 @@ target 'HelloWorld' do
   end
 
   pre_install do |installer|
-    codegen_pre_install(installer)
+    codegen_pre_install(installer, :path => config[:reactNativePath])
   end
 
   # Enables Flipper.
