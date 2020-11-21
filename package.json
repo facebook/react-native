@@ -28,7 +28,6 @@
     "Libraries",
     "LICENSE",
     "local-cli",
-    "packages/react-native-codegen",
     "React-Core.podspec",
     "react-native.config.js",
     "react.gradle",
