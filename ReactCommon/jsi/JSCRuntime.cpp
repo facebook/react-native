@@ -155,8 +155,9 @@ class JSCRuntime : public jsi::Runtime {
 
   jsi::String createStringFromAscii(const char *str, size_t length) override;
   jsi::String createStringFromUtf8(const uint8_t *utf8, size_t length) override;
-  jsi::Object createArrayBufferFromBytes(const void* bytes, size_t length) override;
   std::string utf8(const jsi::String &) override;
+
+  jsi::Object createArrayBufferFromBytes(const void* bytes, size_t length) override;
 
   jsi::Object createObject() override;
   jsi::Object createObject(std::shared_ptr<jsi::HostObject> ho) override;
@@ -676,6 +677,10 @@ jsi::String JSCRuntime::createStringFromUtf8(
   return result;
 }
 
+std::string JSCRuntime::utf8(const jsi::String &str) {
+  return JSStringToSTLString(stringRef(str));
+}
+
 static void freePtr(void* ptr, void*) {
   free(ptr);
 }
@@ -685,10 +690,6 @@ jsi::Object JSCRuntime::createArrayBufferFromBytes(const void* bytes, size_t len
   memcpy(buf, bytes, length);
   JSObjectRef ref = JSObjectMakeArrayBufferWithBytesNoCopy(ctx_, buf, length, freePtr, nullptr, nullptr);
   return createObject(ref);
-}
-
-std::string JSCRuntime::utf8(const jsi::String &str) {
-  return JSStringToSTLString(stringRef(str));
 }
 
 jsi::Object JSCRuntime::createObject() {

@@ -190,12 +190,13 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   String createStringFromUtf8(const uint8_t* utf8, size_t length) override {
     return plain_.createStringFromUtf8(utf8, length);
   };
-  Object createArrayBufferFromBytes(const void* bytes, size_t length) override {
-    return plain_.createArrayBufferFromBytes(bytes, length);
-  };
   std::string utf8(const String& s) override {
     return plain_.utf8(s);
   }
+
+  Object createArrayBufferFromBytes(const void* bytes, size_t length) override {
+    return plain_.createArrayBufferFromBytes(bytes, length);
+  };
 
   Object createObject() override {
     return plain_.createObject();
@@ -563,14 +564,15 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::createStringFromUtf8(utf8, length);
   };
-  Object createArrayBufferFromBytes(const void* bytes, size_t length) override {
-    Around around{with_};
-    return RD::createArrayBufferFromBytes(bytes, length);
-  };
   std::string utf8(const String& s) override {
     Around around{with_};
     return RD::utf8(s);
   }
+
+  Object createArrayBufferFromBytes(const void* bytes, size_t length) override {
+    Around around{with_};
+    return RD::createArrayBufferFromBytes(bytes, length);
+  };
 
   Object createObject() override {
     Around around{with_};

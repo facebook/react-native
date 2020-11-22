@@ -252,12 +252,15 @@ class JSI_EXPORT Runtime {
 
   virtual String createStringFromAscii(const char* str, size_t length) = 0;
   virtual String createStringFromUtf8(const uint8_t* utf8, size_t length) = 0;
-  virtual Object createArrayBufferFromBytes(const void* bytes, size_t length) = 0;
   virtual std::string utf8(const String&) = 0;
 
   // \return a \c Value created from a utf8-encoded JSON string. The default
   // implementation creates a \c String and invokes JSON.parse.
   virtual Value createValueFromJsonUtf8(const uint8_t* json, size_t length);
+
+  virtual Object createArrayBufferFromBytes(const void* bytes, size_t length) {
+    throw std::runtime_error{"Not implemented."}; 
+  }
 
   virtual Object createObject() = 0;
   virtual Object createObject(std::shared_ptr<HostObject> ho) = 0;
