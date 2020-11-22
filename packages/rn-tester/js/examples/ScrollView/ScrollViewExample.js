@@ -26,7 +26,7 @@ const {
 
 const nullthrows = require('nullthrows');
 
-import { useState, useCallback } from 'react';
+import {useState, useCallback} from 'react';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 exports.displayName = 'ScrollViewExample';
@@ -173,108 +173,92 @@ exports.examples = [
     title: '<ScrollView> Content\n',
     description: 'Adjust properties of content inside ScrollView.',
     render: function(): React.Node {
-      return (
-        <ContentExample/>
-      );
+      return <ContentExample />;
     },
   },
   {
     title: '<ScrollView> Deceleration Rate\n',
-    description: 'Determines how quickly the scroll view decelerates after the user lifts their finger.',
+    description:
+      'Determines how quickly the scroll view decelerates after the user lifts their finger.',
     render: function(): React.Node {
-      return (
-        <DecelerationRateExample/>
-      );
+      return <DecelerationRateExample />;
     },
   },
   {
     title: '<ScrollView> Enable & Disable Scrolling Behavior\n',
-    description: 'DirectionalLockEnabled (iOS), disableIntervalMomentum, disableScrollViewPanResponder can be enabled or disabled.',
+    description:
+      'DirectionalLockEnabled (iOS), disableIntervalMomentum, disableScrollViewPanResponder can be enabled or disabled.',
     render: function(): React.Node {
-      return (
-        <DisableEnable/>
-      );
+      return <DisableEnable />;
     },
   },
   {
     title: '<ScrollView> Invert Sticky Headers\n',
-    description: 'If sticky headers should stick at the bottom instead of the top of the ScrollView. This is usually used with inverted ScrollViews.',
+    description:
+      'If sticky headers should stick at the bottom instead of the top of the ScrollView. This is usually used with inverted ScrollViews.',
     render: function(): React.Node {
-      return (
-        <InvertStickyHeaders/>
-      );
+      return <InvertStickyHeaders />;
     },
   },
   {
     title: '<ScrollView> Keyboard Options\n',
-    description: 'Toggle the keyboard using the search bar and determine keyboard behavior in response to drag and tap.',
+    description:
+      'Toggle the keyboard using the search bar and determine keyboard behavior in response to drag and tap.',
     render: function(): React.Node {
-      return (
-        <KeyboardExample/>
-      );
+      return <KeyboardExample />;
     },
   },
   {
     title: '<ScrollView> OnContentSizeChange\n',
-    description: 'The text below will change when scrollable content view of the ScrollView changes.',
+    description:
+      'The text below will change when scrollable content view of the ScrollView changes.',
     render: function(): React.Node {
-      return (
-        <OnContentSizeChange/>
-      );
+      return <OnContentSizeChange />;
     },
   },
   {
     title: '<ScrollView> OnMomentumScroll\n',
-    description: 'An alert will be called when the momentum scroll starts or ends.',
+    description:
+      'An alert will be called when the momentum scroll starts or ends.',
     render: function(): React.Node {
-      return (
-        <OnMomentumScroll/>
-      );
+      return <OnMomentumScroll />;
     },
   },
   {
     title: '<ScrollView> OnScroll Options\n',
-    description: 'Change the behavior of onScroll using these options: onScrollBeginDrag, onScrollEndDrag, onScrollToTop (iOS), and overScrollMode (Android).',
+    description:
+      'Change the behavior of onScroll using these options: onScrollBeginDrag, onScrollEndDrag, onScrollToTop (iOS), and overScrollMode (Android).',
     render: function(): React.Node {
-      return (
-        <OnScrollOptions/>
-      );
+      return <OnScrollOptions />;
     },
   },
   {
     title: '<ScrollView> RefreshControl\n',
     description: 'Pull down to see RefreshControl indicator.',
     render: function(): React.Node {
-      return (
-        <RefreshControlExample/>
-      );
+      return <RefreshControlExample />;
     },
   },
   {
     title: '<ScrollView> Remove Clipped Subviews\n',
-    description: 'When true, offscreen child views (whose overflow value is hidden) are removed from their native backing superview when offscreen.',
+    description:
+      'When true, offscreen child views (whose overflow value is hidden) are removed from their native backing superview when offscreen.',
     render: function(): React.Node {
-      return (
-        <RemoveClippedSubviews/>
-      );
+      return <RemoveClippedSubviews />;
     },
   },
   {
     title: '<ScrollView> Scroll Indicator\n',
     description: 'Adjust properties of the scroll indicator.',
     render: function(): React.Node {
-      return (
-        <ScrollIndicatorExample/>
-      );
+      return <ScrollIndicatorExample />;
     },
   },
   {
     title: '<ScrollView> SnapTo Options\n',
     description: 'Adjust properties of snapping to the scroll view.',
     render: function(): React.Node {
-      return (
-        <SnapToOptions/>
-      );
+      return <SnapToOptions />;
     },
   },
 ];
@@ -439,10 +423,10 @@ if (Platform.OS === 'ios') {
     render: function(): React.Node {
       return (
         <>
-        <Text style={styles.text}>Vertical</Text>
-          <BouncesExampleVertical/>
-        <Text style={styles.text}>Horizontal</Text>
-          <BouncesExampleHorizontal/>
+          <Text style={styles.text}>Vertical</Text>
+          <BouncesExampleVertical />
+          <Text style={styles.text}>Horizontal</Text>
+          <BouncesExampleHorizontal />
         </>
       );
     },
@@ -451,45 +435,36 @@ if (Platform.OS === 'ios') {
     title: '<ScrollView> Bounces & Bounces Zoom\n',
     description: 'There are different options for bouncing behavior.',
     render: function(): React.Node {
-      return (
-        <BouncesExample/>
-      );
+      return <BouncesExample />;
     },
   });
   exports.examples.push({
     title: '<ScrollView> Indicator Style\n',
     description: 'There are different options for indicator style colors.',
     render: function(): React.Node {
-      return (
-        <IndicatorStyle/>
-      );
+      return <IndicatorStyle />;
     },
   });
   exports.examples.push({
     title: '<ScrollView> Maximum & Minimum Zoom Scale\n',
     description: 'Set the maximum and minimum allowed zoom scale.',
     render: function(): React.Node {
-      return (
-        <MaxMinZoomScale/>
-      );
+      return <MaxMinZoomScale />;
     },
   });
   exports.examples.push({
     title: '<ScrollView> Maximum & Minimum Zoom Scale\n',
     description: 'Set the maximum and minimum allowed zoom scale.',
     render: function(): React.Node {
-      return (
-        <MaxMinZoomScale/>
-      );
+      return <MaxMinZoomScale />;
     },
   });
   exports.examples.push({
     title: '<ScrollView> ScrollTo Options\n',
-    description: 'Toggle scrollToOverflowEnabled and scrollsToTop. When scrollToOverflowEnabled is true, the scroll view can be programmatically scrolled beyond its content size. When scrollsToTop is true, the scroll view scrolls to top when the status bar is tapped.',
+    description:
+      'Toggle scrollToOverflowEnabled and scrollsToTop. When scrollToOverflowEnabled is true, the scroll view can be programmatically scrolled beyond its content size. When scrollsToTop is true, the scroll view scrolls to top when the status bar is tapped.',
     render: function(): React.Node {
-      return (
-        <ScrollToOptions/>
-      );
+      return <ScrollToOptions />;
     },
   });
 } else {
@@ -497,9 +472,7 @@ if (Platform.OS === 'ios') {
     title: '<ScrollView> EndFillColor & FadingEdgeLength\n',
     description: 'Toggle to set endFillColor and fadingEdgeLength.',
     render: function(): React.Node {
-      return (
-        <EndFillColorFadingEdgeLen/>
-      );
+      return <EndFillColorFadingEdgeLen />;
     },
   });
 }
@@ -510,17 +483,16 @@ const AndroidScrollBarOptions = () => {
     <View>
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
-        persistentScrollbar={persistentScrollBar}
-      >
+        persistentScrollbar={persistentScrollBar}>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button 
-        label={"persistentScrollBar: " + persistentScrollBar}
+      <Button
+        label={'persistentScrollBar: ' + persistentScrollBar}
         onPress={() => setPersistentScrollBar(!persistentScrollBar)}
       />
     </View>
   );
-}
+};
 
 const EndFillColorFadingEdgeLen = () => {
   const [endFillColor, setEndFillColor] = useState('');
@@ -531,21 +503,24 @@ const EndFillColorFadingEdgeLen = () => {
         style={[styles.scrollView, {height: 200}]}
         endFillColor={endFillColor}
         fadingEdgeLength={fadingEdgeLen}
-        nestedScrollEnabled
-      >
+        nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button 
-        label={endFillColor === '' ? "setEndFillColor" : "resetEndFillColor"}
-        onPress={() => endFillColor === '' ? setEndFillColor('#A9DFD0') : setEndFillColor('')}
+      <Button
+        label={endFillColor === '' ? 'setEndFillColor' : 'resetEndFillColor'}
+        onPress={() =>
+          endFillColor === '' ? setEndFillColor('#A9DFD0') : setEndFillColor('')
+        }
       />
-      <Button 
-        label={fadingEdgeLen === 0 ? "setFadingEdgeLen" : "resetFadingEdgeLen"}
-        onPress={() => fadingEdgeLen === 0 ? setFadingEdgeLen(300) : setFadingEdgeLen(0)}
+      <Button
+        label={fadingEdgeLen === 0 ? 'setFadingEdgeLen' : 'resetFadingEdgeLen'}
+        onPress={() =>
+          fadingEdgeLen === 0 ? setFadingEdgeLen(300) : setFadingEdgeLen(0)
+        }
       />
     </View>
   );
-}
+};
 
 const SnapToOptions = () => {
   const [snapToAlignment, setSnapToAlignment] = useState('start');
@@ -563,44 +538,51 @@ const SnapToOptions = () => {
         snapToInterval={snapToInterval}
         snapToOffsets={snapToOffsets}
         snapToStart={snapToStart}
-        nestedScrollEnabled
-      >
+        nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      {Platform.OS === 'ios' ?
-      <>
-      <Text style={styles.rowTitle}>Snap to Alignment Mode</Text>
-      <Picker
-        selectedValue={snapToAlignment}
-        onValueChange={value => setSnapToAlignment(value)}
-        itemStyle={styles.pickerItem}
-      >
-        {snapToAlignmentModes.map((label) => {
-          return <Item label={label} value={label} key={label}/>
-        })}
-      </Picker>
-      </>
-      : null
-      }
-      <Button 
-        label={"snapToEnd: " + snapToEnd}
+      {Platform.OS === 'ios' ? (
+        <>
+          <Text style={styles.rowTitle}>Snap to Alignment Mode</Text>
+          <Picker
+            selectedValue={snapToAlignment}
+            onValueChange={value => setSnapToAlignment(value)}
+            itemStyle={styles.pickerItem}>
+            {snapToAlignmentModes.map(label => {
+              return <Item label={label} value={label} key={label} />;
+            })}
+          </Picker>
+        </>
+      ) : null}
+      <Button
+        label={'snapToEnd: ' + snapToEnd}
         onPress={() => setSnapToEnd(!snapToEnd)}
       />
-      <Button 
-        label={"snapToStart: " + snapToStart}
+      <Button
+        label={'snapToStart: ' + snapToStart}
         onPress={() => setSnapToStart(!snapToStart)}
       />
-      <Button 
-        label={snapToInterval === 0 ? "setSnapToInterval" : "reset snapToInterval"}
-        onPress={() => snapToInterval === 0 ? setSnapToInterval(2) : setSnapToInterval(0)}
+      <Button
+        label={
+          snapToInterval === 0 ? 'setSnapToInterval' : 'reset snapToInterval'
+        }
+        onPress={() =>
+          snapToInterval === 0 ? setSnapToInterval(2) : setSnapToInterval(0)
+        }
       />
-      <Button 
-        label={snapToOffsets === [] ? "setSnapToOffsets" : "reset snapToOffsets"}
-        onPress={() => snapToOffsets === [] ? setSnapToOffsets([2,4,6,8,10]) : setSnapToOffsets([])}
+      <Button
+        label={
+          snapToOffsets === [] ? 'setSnapToOffsets' : 'reset snapToOffsets'
+        }
+        onPress={() =>
+          snapToOffsets === []
+            ? setSnapToOffsets([2, 4, 6, 8, 10])
+            : setSnapToOffsets([])
+        }
       />
     </View>
   );
-}
+};
 
 const ScrollToOptions = () => {
   const [scrollToOverflowEnabled, setScrollToOverflowEnabled] = useState(false);
@@ -611,53 +593,70 @@ const ScrollToOptions = () => {
         style={[styles.scrollView, {height: 200}]}
         scrollToOverflowEnabled={scrollToOverflowEnabled}
         scrollsToTop={scrollsToTop}
-        nestedScrollEnabled
-      >
+        nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button 
-        label={"scrollToOverflowEnabled: " + scrollToOverflowEnabled}
+      <Button
+        label={'scrollToOverflowEnabled: ' + scrollToOverflowEnabled}
         onPress={() => setScrollToOverflowEnabled(!scrollToOverflowEnabled)}
       />
-      <Button 
-        label={"scrollsToTop: " + scrollsToTop}
+      <Button
+        label={'scrollsToTop: ' + scrollsToTop}
         onPress={() => setScrollsToTop(!scrollsToTop)}
       />
     </View>
   );
-}
+};
 
 const ScrollIndicatorExample = () => {
   const [scrollIndicatorInsets, setScrollIndicatorInsets] = useState(null);
-  const [showsHorizontalScrollIndic, setShowsHorizontalScrollIndic] = useState(true);
-  const [showsVerticallScrollIndic, setShowsVerticalScrollIndic] = useState(true);
+  const [showsHorizontalScrollIndic, setShowsHorizontalScrollIndic] = useState(
+    true,
+  );
+  const [showsVerticallScrollIndic, setShowsVerticalScrollIndic] = useState(
+    true,
+  );
   return (
     <View>
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
-        contentInset={{top:10, bottom:10, left:10, right:10}}
+        contentInset={{top: 10, bottom: 10, left: 10, right: 10}}
         scrollIndicatorInsets={scrollIndicatorInsets}
         showsHorizontalScrollIndicator={showsHorizontalScrollIndic}
         showsVerticalScrollIndicator={showsVerticallScrollIndic}
-        nestedScrollEnabled
-      >
+        nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button 
-        label={scrollIndicatorInsets == null ? "setScrollIndicatorInsets" : "Reset scrollIndicatorInsets"}
-        onPress={() => scrollIndicatorInsets == null ? setScrollIndicatorInsets({top:10, left:10, bottom:10, right:10}) : setScrollIndicatorInsets(null)}
+      <Button
+        label={
+          scrollIndicatorInsets == null
+            ? 'setScrollIndicatorInsets'
+            : 'Reset scrollIndicatorInsets'
+        }
+        onPress={() =>
+          scrollIndicatorInsets == null
+            ? setScrollIndicatorInsets({
+                top: 10,
+                left: 10,
+                bottom: 10,
+                right: 10,
+              })
+            : setScrollIndicatorInsets(null)
+        }
       />
-      <Button 
-        label={"showsHorizontalScrollIndicator: " + showsHorizontalScrollIndic}
-        onPress={() => setShowsHorizontalScrollIndic(!showsHorizontalScrollIndic)}
+      <Button
+        label={'showsHorizontalScrollIndicator: ' + showsHorizontalScrollIndic}
+        onPress={() =>
+          setShowsHorizontalScrollIndic(!showsHorizontalScrollIndic)
+        }
       />
-      <Button 
-        label={"showsVerticalScrollIndicator: " + showsVerticallScrollIndic}
+      <Button
+        label={'showsVerticalScrollIndicator: ' + showsVerticallScrollIndic}
         onPress={() => setShowsVerticalScrollIndic(!showsVerticallScrollIndic)}
       />
     </View>
   );
-}
+};
 
 const RemoveClippedSubviews = () => {
   const [removeClippedSubviews, setRemoveClippedSubviews] = useState(false);
@@ -666,17 +665,16 @@ const RemoveClippedSubviews = () => {
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         removeClippedSubviews={setRemoveClippedSubviews}
-        nestedScrollEnabled
-      >
+        nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button 
-        label={"removeClippedSubviews: " + removeClippedSubviews} 
+      <Button
+        label={'removeClippedSubviews: ' + removeClippedSubviews}
         onPress={() => setRemoveClippedSubviews(!removeClippedSubviews)}
       />
     </View>
   );
-}
+};
 
 const RefreshControlExample = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -685,11 +683,11 @@ const RefreshControlExample = () => {
     wait(2000).then(() => setRefreshing(false));
   }, []);
 
-  const wait = (timeout) => {
+  const wait = timeout => {
     return new Promise(resolve => {
       setTimeout(resolve, timeout);
     });
-  }
+  };
 
   return (
     <View>
@@ -698,13 +696,12 @@ const RefreshControlExample = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        nestedScrollEnabled
-      >
+        nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
     </View>
   );
-}
+};
 
 const OnScrollOptions = () => {
   const [onScrollDrag, setOnScrollDrag] = useState('none');
@@ -719,28 +716,25 @@ const OnScrollOptions = () => {
         onScrollEndDrag={() => setOnScrollDrag('onScrollEndDrag')}
         onScrollToTop={() => setOnScrollDrag('onScrollToTop')}
         overScrollMode={overScrollMode}
-        nestedScrollEnabled
-      >
-      {ITEMS.map(createItemRow)}
+        nestedScrollEnabled>
+        {ITEMS.map(createItemRow)}
       </ScrollView>
-      {Platform.OS === 'android' ?  
-      <>
-      <Text style={styles.rowTitle}>Over Scroll Mode</Text>
-      <Picker
-        selectedValue={overScrollMode}
-        onValueChange={value => setOverScrollMode(value)}
-        itemStyle={styles.pickerItem}
-      >
-        {overScrollModeOptions.map((label) => {
-          return <Item label={label} value={label} key={label}/>
-        })}
-      </Picker>
-      </>
-      : null
-      }
+      {Platform.OS === 'android' ?
+        <>
+          <Text style={styles.rowTitle}>Over Scroll Mode</Text>
+          <Picker
+            selectedValue={overScrollMode}
+            onValueChange={value => setOverScrollMode(value)}
+            itemStyle={styles.pickerItem}>
+            {overScrollModeOptions.map(label => {
+              return <Item label={label} value={label} key={label} />;
+            })}
+          </Picker>
+        </>
+      : null}
     </View>
   );
-}
+};
 
 const OnMomentumScroll = () => {
   const [scroll, setScroll] = useState('none');
@@ -751,13 +745,12 @@ const OnMomentumScroll = () => {
         style={[styles.scrollView, {height: 200}]}
         onMomentumScrollBegin={() => setScroll('onMomentumScrollBegin')}
         onMomentumScrollEnd={() => setScroll('onMomentumScrollEnd')}
-        nestedScrollEnabled
-      >
-      {ITEMS.map(createItemRow)}
+        nestedScrollEnabled>
+        {ITEMS.map(createItemRow)}
       </ScrollView>
     </View>
   );
-}
+};
 
 const OnContentSizeChange = () => {
   const [items, setItems] = useState(ITEMS);
@@ -767,17 +760,23 @@ const OnContentSizeChange = () => {
       <Text>Content Size Changed: {contentSizeChanged}</Text>
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
-        onContentSizeChange={() => contentSizeChanged === 'original' ? setContentSizeChanged('changed') : setContentSizeChanged('original')}
-        nestedScrollEnabled
-      >
-      {items.map(createItemRow)}
+        onContentSizeChange={() =>
+          contentSizeChanged === 'original'
+            ? setContentSizeChanged('changed')
+            : setContentSizeChanged('original')
+        }
+        nestedScrollEnabled>
+        {items.map(createItemRow)}
       </ScrollView>
-      <Button 
-        label="Change Content Size" 
-        onPress={() => items === ITEMS ? setItems([1,2,3,4,5]) : setItems(ITEMS)} />
+      <Button
+        label="Change Content Size"
+        onPress={() =>
+          items === ITEMS ? setItems([1, 2, 3, 4, 5]) : setItems(ITEMS)
+        }
+      />
     </View>
   );
-}
+};
 
 const MaxMinZoomScale = () => {
   const [maxZoomScale, setMaxZoomScale] = useState('1.0');
@@ -790,44 +789,47 @@ const MaxMinZoomScale = () => {
         pinchGestureEnabled
         maximumZoomScale={maxZoomScale !== '' ? parseFloat(maxZoomScale) : 0.0}
         minimumZoomScale={minZoomScale !== '' ? parseFloat(minZoomScale) : 0.0}
-        nestedScrollEnabled
-      >
-      {ITEMS.map(createItemRow)}
+        nestedScrollEnabled>
+        {ITEMS.map(createItemRow)}
       </ScrollView>
       <Text style={styles.rowTitle}>Set Maximum Zoom Scale</Text>
-      <TextInput 
+      <TextInput
         style={styles.textInput}
         value={maxZoomScale}
         onChangeText={val => setMaxZoomScale(val)}
-        keyboardType='decimal-pad'
+        keyboardType="decimal-pad"
       />
       <Text style={styles.rowTitle}>Set Minimum Zoom Scale</Text>
-      <TextInput 
+      <TextInput
         style={styles.textInput}
         value={minZoomScale.toString()}
         onChangeText={val => setMinZoomScale(val)}
-        keyboardType='decimal-pad'
+        keyboardType="decimal-pad"
       />
-      {Platform.OS === 'ios' ?
-      <>
-      <Text style={styles.rowTitle}>Set Zoom Scale</Text>
-      <TextInput 
-        style={styles.textInput}
-        value={zoomScale.toString()}
-        onChangeText={val => setZoomScale(val)}
-        keyboardType='decimal-pad'
-      />
-      </>
-      : null
-      }
+      {Platform.OS === 'ios' ? (
+        <>
+          <Text style={styles.rowTitle}>Set Zoom Scale</Text>
+          <TextInput
+            style={styles.textInput}
+            value={zoomScale.toString()}
+            onChangeText={val => setZoomScale(val)}
+            keyboardType="decimal-pad"
+          />
+        </>
+      ) : null}
     </View>
-  )
-}
+  );
+};
 
 const KeyboardExample = () => {
   const [keyboardDismissMode, setKeyboardDismissMode] = useState('none');
-  const [keyboardShouldPersistTaps, setKeyboardShouldPersistTaps] = useState('never');
-  const dismissOptions = Platform.OS === 'ios' ? ['none', 'on-drag', 'interactive'] : ['none', 'on-drag'];
+  const [keyboardShouldPersistTaps, setKeyboardShouldPersistTaps] = useState(
+    'never',
+  );
+  const dismissOptions =
+    Platform.OS === 'ios'
+      ? ['none', 'on-drag', 'interactive']
+      : ['none', 'on-drag'];
   const persistOptions = ['never', 'always', 'handled'];
   return (
     <View>
@@ -835,54 +837,50 @@ const KeyboardExample = () => {
         style={[styles.scrollView, {height: 200}]}
         keyboardDismissMode={keyboardDismissMode}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
-        nestedScrollEnabled
-      >
-      {ITEMS.map(createItemRow)}
+        nestedScrollEnabled>
+        {ITEMS.map(createItemRow)}
       </ScrollView>
       <Text style={styles.rowTitle}>Keyboard Dismiss Mode</Text>
       <Picker
         selectedValue={keyboardDismissMode}
         onValueChange={value => setKeyboardDismissMode(value)}
-        itemStyle={styles.pickerItem}
-      >
-        {dismissOptions.map((label) => {
-          return <Item label={label} value={label} key={label}/>
+        itemStyle={styles.pickerItem}>
+        {dismissOptions.map(label => {
+          return <Item label={label} value={label} key={label} />;
         })}
       </Picker>
       <Text style={styles.rowTitle}>Keyboard Should Persist taps</Text>
       <Picker
         selectedValue={keyboardShouldPersistTaps}
         onValueChange={value => setKeyboardShouldPersistTaps(value)}
-        itemStyle={styles.pickerItem}
-      >
-        {persistOptions.map((label) => {
-          return <Item label={label} value={label} key={label}/>
+        itemStyle={styles.pickerItem}>
+        {persistOptions.map(label => {
+          return <Item label={label} value={label} key={label} />;
         })}
       </Picker>
     </View>
-  )
-}
+  );
+};
 
 const InvertStickyHeaders = () => {
   const [invertStickyHeaders, setInvertStickyHeaders] = useState(false);
   return (
     <View>
-    <ScrollView
+      <ScrollView
         style={[styles.scrollView, {height: 200}]}
         stickyHeaderIndices={[0]}
         invertStickyHeaders={invertStickyHeaders}
-        nestedScrollEnabled
-      >
-      {<Text>STICKY HEADER</Text>}
-      {ITEMS.map(createItemRow)}
+        nestedScrollEnabled>
+        {<Text>STICKY HEADER</Text>}
+        {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button 
+      <Button
         onPress={() => setInvertStickyHeaders(!invertStickyHeaders)}
-        label={"invertStickyHeaders: " + invertStickyHeaders}
+        label={'invertStickyHeaders: ' + invertStickyHeaders}
       />
     </View>
   );
-}
+};
 
 const IndicatorStyle = () => {
   const [indicatorStyle, setIndicatorStyle] = useState('default');
@@ -891,53 +889,59 @@ const IndicatorStyle = () => {
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         indicatorStyle={indicatorStyle}
-        nestedScrollEnabled
-      >
-      {ITEMS.map(createItemRow)}
+        nestedScrollEnabled>
+        {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button 
-        onPress={() => indicatorStyle === 'default' ? setIndicatorStyle('white') : setIndicatorStyle('default')}
-        label={"Indicator Style: " + indicatorStyle}
+      <Button
+        onPress={() =>
+          indicatorStyle === 'default'
+            ? setIndicatorStyle('white')
+            : setIndicatorStyle('default')
+        }
+        label={'Indicator Style: ' + indicatorStyle}
       />
     </View>
   );
-}
+};
 
 const DisableEnable = () => {
   const [directionalLockEnabled, setDirectionalLockEnabled] = useState(false);
   const [disableIntervalMomentum, setDisableIntervalMomentum] = useState(false);
-  const [disableScrollViewPanResponder, setDisableScrollViewPanResponder] = useState(false);
+  const [
+    disableScrollViewPanResponder,
+    setDisableScrollViewPanResponder,
+  ] = useState(false);
   return (
     <View>
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
-        contentInset={{top:10, bottom:10, left:10, right:10}}
+        contentInset={{top: 10, bottom: 10, left: 10, right: 10}}
         snapToInterval={0}
         directionalLockEnabled={directionalLockEnabled}
         disableIntervalMomentum={disableIntervalMomentum}
         disableScrollViewPanResponder={disableScrollViewPanResponder}
-        nestedScrollEnabled
-      >
-      {ITEMS.map(createItemRow)}
+        nestedScrollEnabled>
+        {ITEMS.map(createItemRow)}
       </ScrollView>
-      {Platform.OS === 'ios' ? 
-      <Button 
-        onPress={() => setDirectionalLockEnabled(!directionalLockEnabled)}
-        label={"directionalLockEnabled: " + directionalLockEnabled}
-      /> 
-      : null
-      }
-      <Button 
+      {Platform.OS === 'ios' ?
+        <Button
+          onPress={() => setDirectionalLockEnabled(!directionalLockEnabled)}
+          label={'directionalLockEnabled: ' + directionalLockEnabled}
+        />
+      ) : null}
+      <Button
         onPress={() => setDisableIntervalMomentum(!disableIntervalMomentum)}
-        label={"setDisableIntervalMomentum: " + disableIntervalMomentum}
+        label={'setDisableIntervalMomentum: ' + disableIntervalMomentum}
       />
-      <Button 
-        onPress={() => setDisableScrollViewPanResponder(!disableScrollViewPanResponder)}
-        label={"setDisableScrollViewPanResponder: " + disableScrollViewPanResponder}
+      <Button
+        onPress={() =>
+          setDisableScrollViewPanResponder(!disableScrollViewPanResponder)
+        }
+        label={'setDisableScrollViewPanResponder: ' + disableScrollViewPanResponder}
       />
     </View>
   );
-}
+};
 
 const DecelerationRateExample = () => {
   const [decelRate, setDecelRate] = useState('normal');
@@ -946,23 +950,27 @@ const DecelerationRateExample = () => {
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         decelerationRate={decelRate}
-        nestedScrollEnabled
-      >
-      {ITEMS.map(createItemRow)}
+        nestedScrollEnabled>
+        {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button 
-        onPress={() => decelRate==='normal' ? setDecelRate('fast') : setDecelRate('normal')}
-        label={"Deceleration Rate: " + decelRate}
+      <Button
+        onPress={() =>
+          decelRate === 'normal' ? setDecelRate('fast') : setDecelRate('normal')
+        }
+        label={'Deceleration Rate: ' + decelRate}
       />
     </View>
-  )
-}
+  );
+};
 
 const ContentExample = () => {
   const [canCancelContentTouches, setCanCancelContentTouches] = useState(false);
   const [contentInset, setContentInset] = useState(null);
   const [contentContainerStyle, setContentContainerStyle] = useState(null);
-  const [contentInsetAdjustmentBehavior, setContentInsetAdjustmentBehavior] = useState('never');
+  const [
+    contentInsetAdjustmentBehavior,
+    setContentInsetAdjustmentBehavior,
+  ] = useState('never');
   return (
     <View>
       <ScrollView
@@ -972,37 +980,57 @@ const ContentExample = () => {
         contentContainerStyle={contentContainerStyle}
         contentInset={contentInset}
         contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
-        nestedScrollEnabled
-        >
+        nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      {Platform.OS === 'ios' ? 
-      <>
-      <Button 
-        onPress={() => setCanCancelContentTouches(!canCancelContentTouches)}
-        label={"canCancelContentTouches: " + canCancelContentTouches}
-      />
-      <Button
-        onPress={() => contentInsetAdjustmentBehavior === 'never' ? setContentInsetAdjustmentBehavior('always') : setContentInsetAdjustmentBehavior('never')}
-        label={contentInsetAdjustmentBehavior === 'never' ? "setContentInsetAdjustmentBehavior to 'always'" : "reset content inset adjustment behavior"}
-      />
-      </>
-      :null
+      {Platform.OS === 'ios' ?
+        <>
+          <Button
+            onPress={() => setCanCancelContentTouches(!canCancelContentTouches)}
+            label={'canCancelContentTouches: ' + canCancelContentTouches}
+          />
+          <Button
+            onPress={() =>
+              contentInsetAdjustmentBehavior === 'never'
+                ? setContentInsetAdjustmentBehavior('always')
+                : setContentInsetAdjustmentBehavior('never')
+            }
+            label={
+              contentInsetAdjustmentBehavior === 'never'
+                ? "setContentInsetAdjustmentBehavior to 'always'"
+                : 'reset content inset adjustment behavior'
+            }
+          />
+        </>
+      : null
       }
       <Button
-        onPress={() => contentContainerStyle === null ? setContentContainerStyle(styles.containerStyle) : setContentContainerStyle(null)}
-        label={contentContainerStyle === null ? "setContentContainerStyle" : "reset content container style"}
+        onPress={() =>
+          contentContainerStyle === null
+            ? setContentContainerStyle(styles.containerStyle)
+            : setContentContainerStyle(null)
+        }
+        label={
+          contentContainerStyle === null
+            ? 'setContentContainerStyle'
+            : 'reset content container style'
+        }
       />
       <Button
-        onPress={() => contentInset === null ? setContentInset({top:10, bottom:10, left:10, right:10}) : setContentInset(null)}
-        label={contentInset === null ? "setContentInset" : "reset content inset"}
-      />
-      
+        onPress={() =>
+          contentInset === null
+            ? setContentInset({top: 10, bottom: 10, left: 10, right: 10})
+            : setContentInset(null)
+        }
+        label={
+          contentInset === null ? 'setContentInset' : 'reset content inset'
+        }
+
     </View>
   );
-}
+};
 
-const BouncesExample = () =>{
+const BouncesExample = () => {
   const [bounces, setBounces] = useState(false);
   const [bouncesZoom, setBouncesZoom] = useState(false);
   return (
@@ -1011,21 +1039,20 @@ const BouncesExample = () =>{
         style={[styles.scrollView, {height: 200}]}
         bounces={bounces}
         bouncesZoom={bouncesZoom}
-        nestedScrollEnabled
-        >
+        nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button 
+      <Button
         onPress={() => setBounces(!bounces)}
-        label={"Bounces: " + bounces}
+        label={'Bounces: ' + bounces}
       />
-      <Button 
+      <Button
         onPress={() => setBouncesZoom(!bouncesZoom)}
-        label={"Bounces Zoom: " + bouncesZoom}
+        label={'Bounces Zoom: ' + bouncesZoom}
       />
     </View>
-  )
-}
+  );
+};
 
 const BouncesExampleHorizontal = () => {
   const [bounce, setBounce] = useState(false);
@@ -1036,17 +1063,16 @@ const BouncesExampleHorizontal = () => {
         horizontal={true}
         alwaysBounceHorizontal={bounce}
         contentOffset={{x: 100, y: 0}}
-        nestedScrollEnabled
-      >
+        nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button 
+      <Button
         onPress={() => setBounce(!bounce)}
-        label={"Always Bounce Horizontal: " + bounce}
+        label={'Always Bounce Horizontal: ' + bounce}
       />
     </View>
-  )
-}
+  );
+};
 
 const BouncesExampleVertical = () => {
   const [bounce, setBounce] = useState(false);
@@ -1056,17 +1082,16 @@ const BouncesExampleVertical = () => {
         style={[styles.scrollView, {height: 200}]}
         alwaysBounceVertical={bounce}
         contentOffset={{x: 100, y: 0}}
-        nestedScrollEnabled
-      >
+        nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button 
+      <Button
         onPress={() => setBounce(!bounce)}
-        label={"Always Bounce Vertical: " + bounce}
+        label={'Always Bounce Vertical: ' + bounce}
       />
     </View>
-  )
-}
+  );
+};
 
 class Item extends React.PureComponent<{|
   msg?: string,
@@ -1133,8 +1158,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   textInput: {
-    height: 40, 
-    borderColor: 'gray', 
+    height: 40,
+    borderColor: 'gray',
     borderWidth: 1,
-  }
+  },
 });
