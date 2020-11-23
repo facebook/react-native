@@ -6,9 +6,11 @@ platform :ios, '10.0'
 target 'HelloWorld' do
   config = use_native_modules!
 
-  use_react_native!(:path => config[:reactNativePath])
-  # Or, to enable hermes on iOS, comment out the above line and uncomment the below:
-  # use_react_native!(:path => config[:reactNativePath], :hermes_enabled => true)
+  use_react_native(
+    :path => config[:reactNativePath],
+    # Or, to enable hermes on iOS, uncomment the below line:
+    # :hermes_enabled => true
+  )
 
   target 'HelloWorldTests' do
     inherit! :complete
