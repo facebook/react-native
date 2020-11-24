@@ -20,18 +20,6 @@ def isReleaseBuild() {
     return VERSION_NAME.contains("SNAPSHOT") == false
 }
 
-def getRepositoryUrl() {
-    return project.findProperty("repositoryUrl") ?: "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-}
-
-def getRepositoryUsername() {
-    return project.findProperty("repositoryUsername") ?: ""
-}
-
-def getRepositoryPassword() {
-    return project.findProperty("repositoryPassword") ?: ""
-}
-
 def configureReactNativePom(def pom) {
     pom.project {
         name(POM_NAME)
@@ -111,24 +99,6 @@ afterEvaluate { project ->
     signing {
         required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
         sign(configurations.archives)
-    }
-
-    uploadArchives {
-        configuration = configurations.archives
-        repositories.mavenDeployer {
-            beforeDeployment {
-                MavenDeployment deployment -> signing.signPom(deployment)
-            }
-
-            repository(url: getRepositoryUrl()) {
-                authentication(
-                        userName: getRepositoryUsername(),
-                        password: getRepositoryPassword())
-
-            }
-
-            configureReactNativePom(pom)
-        }
     }
 
     task installArchives(type: Upload) {
