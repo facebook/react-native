@@ -35,46 +35,46 @@ success "Preparing version $PACKAGE_VERSION"
 
 repo_root=$(pwd)
 
-# rm -rf android
-# ./gradlew :ReactAndroid:installArchives || error "Couldn't generate artifacts"
+rm -rf android
+./gradlew :ReactAndroid:installArchives || error "Couldn't generate artifacts"
 
-# success "Generated artifacts for Maven"
+success "Generated artifacts for Maven"
 
 npm install
 
-# success "Killing any running packagers"
-# lsof -i :8081 | grep LISTEN
-# lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill
+success "Killing any running packagers"
+lsof -i :8081 | grep LISTEN
+lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill
 
-# info "Start the packager in another terminal by running 'npm start' from the root"
-# info "and then press any key."
-# info ""
-# read -n 1
+info "Start the packager in another terminal by running 'npm start' from the root"
+info "and then press any key."
+info ""
+read -n 1
 
-# ./gradlew :packages:rn-tester:android:app:installJscDebug || error "Couldn't build RNTester Android"
+./gradlew :packages:rn-tester:android:app:installJscDebug || error "Couldn't build RNTester Android"
 
-# info "Press any key to run RNTester in an already running Android emulator/device"
-# info ""
-# read -n 1
-# adb shell am start -n com.facebook.react.uiapp/.RNTesterActivity
+info "Press any key to run RNTester in an already running Android emulator/device"
+info ""
+read -n 1
+adb shell am start -n com.facebook.react.uiapp/.RNTesterActivity
 
-# success "Installing CocoaPods dependencies"
-# rm -rf packages/rn-tester/Pods
-# (cd packages/rn-tester && pod install)
+success "Installing CocoaPods dependencies"
+rm -rf packages/rn-tester/Pods
+(cd packages/rn-tester && pod install)
 
-# info "Press any key to open the workspace in Xcode, then build and test manually."
-# info ""
-# read -n 1
+info "Press any key to open the workspace in Xcode, then build and test manually."
+info ""
+read -n 1
 
-# open "packages/rn-tester/RNTesterPods.xcworkspace"
+open "packages/rn-tester/RNTesterPods.xcworkspace"
 
-# info "When done testing RNTester app on iOS and Android press any key to continue."
-# info ""
-# read -n 1
+info "When done testing RNTester app on iOS and Android press any key to continue."
+info ""
+read -n 1
 
-# success "Killing packager"
-# lsof -i :8081 | grep LISTEN
-# lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill
+success "Killing packager"
+lsof -i :8081 | grep LISTEN
+lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill
 
 npm pack
 
