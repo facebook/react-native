@@ -3,7 +3,12 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-def use_react_native! (options={})
+def resolve_module(request)
+  script = "console.log(path.dirname(require.resolve('#{request}/package.json')));"
+  Pod::Executable.execute_command('node', ['-e', script], true).strip
+end
+
+def use_react_native!(options={})
   # The prefix to the react-native
   prefix = options[:path] ||= "../node_modules/react-native"
 
@@ -111,11 +116,15 @@ end
 
 # Pre Install processing for Native Modules
 def codegen_pre_install(installer, options={})
-  # Path to React Native
-  prefix = options[:path] ||= "../node_modules/react-native"
+  # Path to React Native relative to where `pod install` was invoked. This can
+  # sometimes be inside the `ios` folder (i.e. `pod install `), or outside
+  # (e.g. `pod install --project_directory=ios`).
+  prefix = options[:path] ||= resolve_module "react-native"
 
-  # Path to react-native-codegen
-  codegen_path = options[:codegen_path] ||= "#{prefix}/../react-native-codegen"
+  # Path to react-native-codegen relative to where `pod install` was invoked.
+  # This can sometimes be inside the `ios` folder (i.e. `pod install `), or
+  # outside (e.g. `pod install --project_directory=ios`).
+  codegen_path = options[:codegen_path] ||= resolve_module "react-native-codegen"
 
   # Handle Core Modules
   Dir.mktmpdir do |dir|
