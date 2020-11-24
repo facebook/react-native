@@ -171,11 +171,13 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
           onOrientationChange={evt =>
             this.setState({currentOrientation: evt.nativeEvent.orientation})
           }
-          onDismiss={() =>
-            this.state.action === 'onDismiss' ? alert(this.state.action) : null
+          onDismiss={() => {
+            if (this.state.action === 'onDismiss') alert(this.state.action);
           }
-          onShow={() =>
-            this.state.action === 'onShow' ? alert(this.state.action) : null
+          }
+          onShow={() => {
+            if (this.state.action === 'onShow') alert(this.state.action);
+          }
           }>
           <View style={[styles.container, modalBackgroundStyle]}>
             <View
