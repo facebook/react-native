@@ -60,37 +60,11 @@ if (JavaVersion.current().isJava8Compatible()) {
 }
 
 afterEvaluate { project ->
-
-    task androidJavadoc(type: Javadoc, dependsOn: generateReleaseBuildConfig) {
-        source = android.sourceSets.main.java.srcDirs
-        classpath += files(android.bootClasspath)
-        classpath += files("$buildDir/generated/source/buildConfig/release")
-        // Note: this doesn't handle .aar files, only .jar.
-        classpath += configurations.javadocDeps
-        include("**/*.java")
-    }
-
-    task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
-        classifier = "javadoc"
-        from(androidJavadoc.destinationDir)
-    }
-
-    task androidSourcesJar(type: Jar) {
-        classifier = "sources"
-        from(android.sourceSets.main.java.srcDirs)
-        include("**/*.java")
-    }
-
     android.libraryVariants.all { variant ->
         def name = variant.name.capitalize()
         task "jar${name}"(type: Jar, dependsOn: variant.javaCompileProvider.get()) {
             from(variant.javaCompileProvider.get().destinationDir)
         }
-    }
-
-    artifacts {
-        archives(androidSourcesJar)
-        archives(androidJavadocJar)
     }
 
     version = VERSION_NAME
