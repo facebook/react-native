@@ -126,11 +126,33 @@ if (nightlyBuild) {
   releaseVersion = tagsWithVersion[tagsWithVersion.length - 1].slice(1);
 }
 
-// -------- Generating Android Artifacts with JavaDoc
-if (exec('./gradlew :ReactAndroid:installArchives').code) {
-  echo('Could not generate artifacts');
-  exit(1);
+const buildAndroid = (rebuildOnError) => {
+  // -------- Generating Android Artifacts with JavaDoc
+  if (exec('./gradlew :ReactAndroid:installArchives').code) {
+    echo('Could not generate artifacts.');
+    exit(1);
+  }
+
+  const aarLocation = `android/com/facebook/react/react-native/${releaseVersion}/react-native-${releaseVersion}.aar`;
+
+  // -------- Check if Android artifact contains all the files
+  const {stdout: aarContent} = exec(`unzip -l ${aarLocation} | grep libfbjni.so`);
+  if ((aarContent.match(/libfbjni.so/g) || []).length === 4) {
+    echo(`Artifacts validated, continuing.`);
+    return;
+  }
+
+  // -------- Temporary fix for broken Android artifact is to build with Gradle once again
+  if (rebuildOnError) {
+    echo(`${aarLocation} is missing contents. Rebuilding with Gradle again in an effort to try to fix it.`);
+    buildAndroid(false);
+  } else {
+    echo(`${aarLocation} is missing contents. Rebuilding did not fix the issue.`);
+    exit(1);
+  }
 }
+
+buildAndroid(true);
 
 // undo uncommenting javadoc setting
 exec('git checkout ReactAndroid/gradle.properties');
@@ -157,8 +179,8 @@ artifacts.forEach(name => {
 const tagFlag = nightlyBuild
   ? '--tag nightly'
   : releaseVersion.indexOf('-rc') === -1
-  ? ''
-  : '--tag next';
+    ? ''
+    : '--tag next';
 
 // use otp from envvars if available
 const otpFlag = otp ? `--otp ${otp}` : '';
