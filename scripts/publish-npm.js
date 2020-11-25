@@ -126,6 +126,13 @@ if (nightlyBuild) {
   releaseVersion = tagsWithVersion[tagsWithVersion.length - 1].slice(1);
 }
 
+// Remove `workspaces` and `private` from React Native `package.json`
+let packageJson = JSON.parse(cat('package.json'));
+packageJson.version = version;
+delete packageJson.workspaces;
+delete packageJson.private;
+fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
+
 // -------- Generating Android Artifacts with JavaDoc
 if (exec('./gradlew :ReactAndroid:installArchives').code) {
   echo('Could not generate artifacts');
@@ -157,8 +164,8 @@ artifacts.forEach(name => {
 const tagFlag = nightlyBuild
   ? '--tag nightly'
   : releaseVersion.indexOf('-rc') === -1
-  ? ''
-  : '--tag next';
+    ? ''
+    : '--tag next';
 
 // use otp from envvars if available
 const otpFlag = otp ? `--otp ${otp}` : '';
