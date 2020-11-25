@@ -134,13 +134,9 @@ const buildAndroid = (rebuildOnError) => {
   }
 
   const aarLocation = `android/com/facebook/react/react-native/${releaseVersion}/react-native-${releaseVersion}.aar`;
-  const tmpLocation = `/tmp/react-native-${releaseVersion}`;
-
-  // -------- Remove unzipped Android artifact (if any) 
-  exec(`rm -rf ${tmpLocation}`);
 
   // -------- Check if Android artifact contains all the files
-  const {stdout: aarContent} = exec(`unzip ${aarLocation} -d ${tmpLocation} | grep libfbjni.so`);
+  const {stdout: aarContent} = exec(`unzip -l ${aarLocation} | grep libfbjni.so`);
   if ((aarContent.match(/libfbjni.so/g) || []).length === 4) {
     echo(`Artifacts validated, continuing.`);
     return;
@@ -183,8 +179,8 @@ artifacts.forEach(name => {
 const tagFlag = nightlyBuild
   ? '--tag nightly'
   : releaseVersion.indexOf('-rc') === -1
-  ? ''
-  : '--tag next';
+    ? ''
+    : '--tag next';
 
 // use otp from envvars if available
 const otpFlag = otp ? `--otp ${otp}` : '';
