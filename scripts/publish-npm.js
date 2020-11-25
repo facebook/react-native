@@ -126,11 +126,37 @@ if (nightlyBuild) {
   releaseVersion = tagsWithVersion[tagsWithVersion.length - 1].slice(1);
 }
 
-// -------- Generating Android Artifacts with JavaDoc
-if (exec('./gradlew :ReactAndroid:installArchives').code) {
-  echo('Could not generate artifacts');
-  exit(1);
+const buildAndroid = (rebuildOnError) => {
+  // -------- Generating Android Artifacts with JavaDoc
+  if (exec('./gradlew :ReactAndroid:installArchives').code) {
+    echo('Could not generate artifacts.');
+    exit(1);
+  }
+
+  const aarLocation = `android/com/facebook/react/react-native/${releaseVersion}/react-native-${releaseVersion}.aar`;
+  const tmpLocation = `/tmp/react-native-${releaseVersion}`;
+
+  // -------- Remove unzipped Android artifact (if any) 
+  exec(`rm -rf ${tmpLocation}`);
+
+  // -------- Check if Android artifact contains all the files
+  const {stdout: aarContent} = exec(`unzip ${aarLocation} -d ${tmpLocation} | grep libfbjni.so`);
+  if ((aarContent.match(/libfbjni.so/g) || []).length === 4) {
+    echo(`Artifacts validated, continuing.`);
+    return;
+  }
+
+  // -------- Temporary fix for broken Android artifact is to build with Gradle once again
+  if (rebuildOnError) {
+    echo('Artifacts are corrupted. Rebuilding with Gradle once again to fix it.');
+    buildAndroid(false);
+  } else {
+    echo('Artifacts are corrupted. Exiting.');
+    exit(1);
+  }
 }
+
+buildAndroid(true);
 
 // undo uncommenting javadoc setting
 exec('git checkout ReactAndroid/gradle.properties');
