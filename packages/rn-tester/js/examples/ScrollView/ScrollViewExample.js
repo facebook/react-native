@@ -487,7 +487,7 @@ const AndroidScrollBarOptions = () => {
         {ITEMS.map(createItemRow)}
       </ScrollView>
       <Button
-        label={'persistentScrollBar: ' + persistentScrollBar}
+        label={'persistentScrollBar: ' + persistentScrollBar.toString()}
         onPress={() => setPersistentScrollBar(!persistentScrollBar)}
       />
     </View>
@@ -523,8 +523,8 @@ const EndFillColorFadingEdgeLen = () => {
 };
 
 const SnapToOptions = () => {
-  const [snapToAlignment, setSnapToAlignment] = useState('start');
-  const snapToAlignmentModes = ['start', 'center', 'end'];
+  const [snapToAlignment, setSnapToAlignment] = useState("start");
+  const snapToAlignmentModes = ["start", "center", "end"];
   const [snapToEnd, setSnapToEnd] = useState(true);
   const [snapToInterval, setSnapToInterval] = useState(0);
   const [snapToOffsets, setSnapToOffsets] = useState([]);
@@ -549,17 +549,17 @@ const SnapToOptions = () => {
             onValueChange={value => setSnapToAlignment(value)}
             itemStyle={styles.pickerItem}>
             {snapToAlignmentModes.map(label => {
-              return <Item label={label} value={label} key={label} />;
+              return <Picker.Item label={label} value={label} key={label} />;
             })}
           </Picker>
         </>
       ) : null}
       <Button
-        label={'snapToEnd: ' + snapToEnd}
+        label={'snapToEnd: ' + snapToEnd.toString()}
         onPress={() => setSnapToEnd(!snapToEnd)}
       />
       <Button
-        label={'snapToStart: ' + snapToStart}
+        label={'snapToStart: ' + snapToStart.toString()}
         onPress={() => setSnapToStart(!snapToStart)}
       />
       <Button
@@ -597,11 +597,11 @@ const ScrollToOptions = () => {
         {ITEMS.map(createItemRow)}
       </ScrollView>
       <Button
-        label={'scrollToOverflowEnabled: ' + scrollToOverflowEnabled}
+        label={'scrollToOverflowEnabled: ' + scrollToOverflowEnabled.toString()}
         onPress={() => setScrollToOverflowEnabled(!scrollToOverflowEnabled)}
       />
       <Button
-        label={'scrollsToTop: ' + scrollsToTop}
+        label={'scrollsToTop: ' + scrollsToTop.toString()}
         onPress={() => setScrollsToTop(!scrollsToTop)}
       />
     </View>
@@ -645,13 +645,13 @@ const ScrollIndicatorExample = () => {
         }
       />
       <Button
-        label={'showsHorizontalScrollIndicator: ' + showsHorizontalScrollIndic}
+        label={'showsHorizontalScrollIndicator: ' + showsHorizontalScrollIndic.toString()}
         onPress={() =>
           setShowsHorizontalScrollIndic(!showsHorizontalScrollIndic)
         }
       />
       <Button
-        label={'showsVerticalScrollIndicator: ' + showsVerticallScrollIndic}
+        label={'showsVerticalScrollIndicator: ' + showsVerticallScrollIndic.toString()}
         onPress={() => setShowsVerticalScrollIndic(!showsVerticallScrollIndic)}
       />
     </View>
@@ -669,7 +669,7 @@ const RemoveClippedSubviews = () => {
         {ITEMS.map(createItemRow)}
       </ScrollView>
       <Button
-        label={'removeClippedSubviews: ' + removeClippedSubviews}
+        label={'removeClippedSubviews: ' + removeClippedSubviews.toString()}
         onPress={() => setRemoveClippedSubviews(!removeClippedSubviews)}
       />
     </View>
@@ -727,7 +727,7 @@ const OnScrollOptions = () => {
             onValueChange={value => setOverScrollMode(value)}
             itemStyle={styles.pickerItem}>
             {overScrollModeOptions.map(label => {
-              return <Item label={label} value={label} key={label} />;
+              return <Picker.Item label={label} value={label} key={label} />;
             })}
           </Picker>
         </>
@@ -822,15 +822,15 @@ const MaxMinZoomScale = () => {
 };
 
 const KeyboardExample = () => {
-  const [keyboardDismissMode, setKeyboardDismissMode] = useState('none');
+  const [keyboardDismissMode, setKeyboardDismissMode] = useState("none");
   const [keyboardShouldPersistTaps, setKeyboardShouldPersistTaps] = useState(
-    'never',
+    "never",
   );
   const dismissOptions =
     Platform.OS === 'ios'
-      ? ['none', 'on-drag', 'interactive']
-      : ['none', 'on-drag'];
-  const persistOptions = ['never', 'always', 'handled'];
+      ? ["none", "on-drag", "interactive"]
+      : ["none", "on-drag"];
+  const persistOptions = ["never", "always", "handled"];
   return (
     <View>
       <ScrollView
@@ -846,7 +846,7 @@ const KeyboardExample = () => {
         onValueChange={value => setKeyboardDismissMode(value)}
         itemStyle={styles.pickerItem}>
         {dismissOptions.map(label => {
-          return <Item label={label} value={label} key={label} />;
+          return <Picker.Item label={label} value={label} key={label} />;
         })}
       </Picker>
       <Text style={styles.rowTitle}>Keyboard Should Persist taps</Text>
@@ -855,7 +855,7 @@ const KeyboardExample = () => {
         onValueChange={value => setKeyboardShouldPersistTaps(value)}
         itemStyle={styles.pickerItem}>
         {persistOptions.map(label => {
-          return <Item label={label} value={label} key={label} />;
+          return <Picker.Item label={label} value={label} key={label} />;
         })}
       </Picker>
     </View>
@@ -876,7 +876,7 @@ const InvertStickyHeaders = () => {
       </ScrollView>
       <Button
         onPress={() => setInvertStickyHeaders(!invertStickyHeaders)}
-        label={'invertStickyHeaders: ' + invertStickyHeaders}
+        label={'invertStickyHeaders: ' + invertStickyHeaders.toString()}
       />
     </View>
   );
@@ -926,18 +926,18 @@ const DisableEnable = () => {
       {Platform.OS === 'ios' ?
         <Button
           onPress={() => setDirectionalLockEnabled(!directionalLockEnabled)}
-          label={'directionalLockEnabled: ' + directionalLockEnabled}
+          label={'directionalLockEnabled: ' + directionalLockEnabled.toString()}
         />
        : null}
       <Button
         onPress={() => setDisableIntervalMomentum(!disableIntervalMomentum)}
-        label={'setDisableIntervalMomentum: ' + disableIntervalMomentum}
+        label={'setDisableIntervalMomentum: ' + disableIntervalMomentum.toString()}
       />
       <Button
         onPress={() =>
           setDisableScrollViewPanResponder(!disableScrollViewPanResponder)
         }
-        label={'setDisableScrollViewPanResponder: ' + disableScrollViewPanResponder}
+        label={'setDisableScrollViewPanResponder: ' + disableScrollViewPanResponder.toString()}
       />
     </View>
   );
