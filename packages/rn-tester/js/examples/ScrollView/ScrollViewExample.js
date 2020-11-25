@@ -546,7 +546,7 @@ const SnapToOptions = () => {
           <Text style={styles.rowTitle}>Snap to Alignment Mode</Text>
           <Picker
             selectedValue={snapToAlignment}
-            onValueChange={value => setSnapToAlignment(value)}
+            onValueChange={value => { if (typeof value === 'string') setSnapToAlignment(value)}}
             itemStyle={styles.pickerItem}>
             {snapToAlignmentModes.map(label => {
               return <Picker.Item label={label} value={label} key={label} />;
@@ -664,7 +664,7 @@ const RemoveClippedSubviews = () => {
     <View>
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
-        removeClippedSubviews={setRemoveClippedSubviews}
+        removeClippedSubviews={removeClippedSubviews}
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
@@ -771,7 +771,7 @@ const OnContentSizeChange = () => {
       <Button
         label="Change Content Size"
         onPress={() =>
-          items === ITEMS ? setItems([1, 2, 3, 4, 5]) : setItems(ITEMS)
+          items === ITEMS ? setItems(["1", "2", "3", "4", "5"]) : setItems(ITEMS)
         }
       />
     </View>
@@ -987,7 +987,7 @@ const ContentExample = () => {
         <>
           <Button
             onPress={() => setCanCancelContentTouches(!canCancelContentTouches)}
-            label={'canCancelContentTouches: ' + canCancelContentTouches}
+            label={'canCancelContentTouches: ' + canCancelContentTouches.toString()}
           />
           <Button
             onPress={() =>
@@ -1044,11 +1044,11 @@ const BouncesExample = () => {
       </ScrollView>
       <Button
         onPress={() => setBounces(!bounces)}
-        label={'Bounces: ' + bounces}
+        label={'Bounces: ' + bounces.toString()}
       />
       <Button
         onPress={() => setBouncesZoom(!bouncesZoom)}
-        label={'Bounces Zoom: ' + bouncesZoom}
+        label={'Bounces Zoom: ' + bouncesZoom.toString()}
       />
     </View>
   );
@@ -1068,7 +1068,7 @@ const BouncesExampleHorizontal = () => {
       </ScrollView>
       <Button
         onPress={() => setBounce(!bounce)}
-        label={'Always Bounce Horizontal: ' + bounce}
+        label={'Always Bounce Horizontal: ' + bounce.toString()}
       />
     </View>
   );
@@ -1087,7 +1087,7 @@ const BouncesExampleVertical = () => {
       </ScrollView>
       <Button
         onPress={() => setBounce(!bounce)}
-        label={'Always Bounce Vertical: ' + bounce}
+        label={'Always Bounce Vertical: ' + bounce.toString()}
       />
     </View>
   );
