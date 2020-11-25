@@ -928,7 +928,7 @@ const DisableEnable = () => {
           onPress={() => setDirectionalLockEnabled(!directionalLockEnabled)}
           label={'directionalLockEnabled: ' + directionalLockEnabled}
         />
-      ) : null}
+       : null}
       <Button
         onPress={() => setDisableIntervalMomentum(!disableIntervalMomentum)}
         label={'setDisableIntervalMomentum: ' + disableIntervalMomentum}
@@ -1025,7 +1025,7 @@ const ContentExample = () => {
         label={
           contentInset === null ? 'setContentInset' : 'reset content inset'
         }
-
+      />
     </View>
   );
 };
