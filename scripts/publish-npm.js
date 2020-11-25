@@ -148,7 +148,7 @@ const buildAndroid = (rebuildOnError) => {
 
   // -------- Temporary fix for broken Android artifact is to build with Gradle once again
   if (rebuildOnError) {
-    echo('Artifacts are corrupted. Rebuilding with Gradle once again to fix it.');
+    echo(`${aarLocation} is missing contents. Rebuilding with Gradle again in an effort to try to fix it.`);
     buildAndroid(false);
   } else {
     echo('Artifacts are corrupted. Exiting.');
