@@ -73,22 +73,22 @@ void PrintMutationInstructionRelative(
 
 static better::optional<AnimationType> parseAnimationType(std::string param) {
   if (param == "spring") {
-    return better::optional<AnimationType>(AnimationType::Spring);
+    return AnimationType::Spring;
   }
   if (param == "linear") {
-    return better::optional<AnimationType>(AnimationType::Linear);
+    return AnimationType::Linear;
   }
   if (param == "easeInEaseOut") {
-    return better::optional<AnimationType>(AnimationType::EaseInEaseOut);
+    return AnimationType::EaseInEaseOut;
   }
   if (param == "easeIn") {
-    return better::optional<AnimationType>(AnimationType::EaseIn);
+    return AnimationType::EaseIn;
   }
   if (param == "easeOut") {
-    return better::optional<AnimationType>(AnimationType::EaseOut);
+    return AnimationType::EaseOut;
   }
   if (param == "keyboard") {
-    return better::optional<AnimationType>(AnimationType::Keyboard);
+    return AnimationType::Keyboard;
   }
 
   LOG(ERROR) << "Error parsing animation type: " << param;
@@ -98,16 +98,16 @@ static better::optional<AnimationType> parseAnimationType(std::string param) {
 static better::optional<AnimationProperty> parseAnimationProperty(
     std::string param) {
   if (param == "opacity") {
-    return better::optional<AnimationProperty>(AnimationProperty::Opacity);
+    return AnimationProperty::Opacity;
   }
   if (param == "scaleX") {
-    return better::optional<AnimationProperty>(AnimationProperty::ScaleX);
+    return AnimationProperty::ScaleX;
   }
   if (param == "scaleY") {
-    return better::optional<AnimationProperty>(AnimationProperty::ScaleY);
+    return AnimationProperty::ScaleY;
   }
   if (param == "scaleXY") {
-    return better::optional<AnimationProperty>(AnimationProperty::ScaleXY);
+    return AnimationProperty::ScaleXY;
   }
 
   LOG(ERROR) << "Error parsing animation property: " << param;
@@ -119,13 +119,12 @@ static better::optional<AnimationConfig> parseAnimationConfig(
     double defaultDuration,
     bool parsePropertyType) {
   if (config.empty() || !config.isObject()) {
-    return better::optional<AnimationConfig>(
-        AnimationConfig{AnimationType::Linear,
-                        AnimationProperty::NotApplicable,
-                        defaultDuration,
-                        0,
-                        0,
-                        0});
+    return AnimationConfig{AnimationType::Linear,
+                           AnimationProperty::NotApplicable,
+                           defaultDuration,
+                           0,
+                           0,
+                           0};
   }
 
   auto const typeIt = config.find("type");
@@ -324,9 +323,7 @@ void LayoutAnimationKeyFrameManager::stopSurface(SurfaceId surfaceId) {
 }
 
 bool LayoutAnimationKeyFrameManager::shouldAnimateFrame() const {
-  // There is potentially a race here between getting and setting
-  // `currentMutation_`. We don't want to lock around this because then we're
-  // creating contention between pullTransaction and the JS thread.
+  std::lock_guard<std::mutex> lock(currentAnimationMutex_);
   return currentAnimation_ || !inflightAnimations_.empty();
 }
 
@@ -675,7 +672,7 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
           auto const layoutAnimationConfig =
               inflightAnimation.layoutAnimationConfig;
 
-          auto const mutationConfig =
+          auto const &mutationConfig =
               (animatedKeyFrame.type == AnimationConfigurationType::Delete
                    ? layoutAnimationConfig.deleteConfig
                    : (animatedKeyFrame.type ==
@@ -693,7 +690,7 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
                 mutatedViewIsVirtual(
                     *animatedKeyFrame.finalMutationForKeyFrame))) {
             conflictingAnimations.push_back(std::make_tuple(
-                animatedKeyFrame, *mutationConfig, &inflightAnimation));
+                animatedKeyFrame, mutationConfig, &inflightAnimation));
           }
 
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
@@ -820,10 +817,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     // current mutations then these deleted mutations will serve as the baseline
     // for the next animation. If not, the current mutations are executed
     // immediately without issues.
-    std::vector<
-        std::tuple<AnimationKeyFrame, AnimationConfig, LayoutAnimation *>>
-        conflictingAnimations =
-            getAndEraseConflictingAnimations(surfaceId, mutations);
+    auto conflictingAnimations =
+        getAndEraseConflictingAnimations(surfaceId, mutations);
 
     // Are we animating this list of mutations?
     better::optional<LayoutAnimation> currentAnimation{};
@@ -894,13 +889,6 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
         bool executeMutationImmediately = false;
 
-        auto mutationConfig =
-            (mutation.type == ShadowViewMutation::Type::Delete
-                 ? layoutAnimationConfig.deleteConfig
-                 : (mutation.type == ShadowViewMutation::Type::Insert
-                        ? layoutAnimationConfig.createConfig
-                        : layoutAnimationConfig.updateConfig));
-
         bool isRemoveReinserted =
             mutation.type == ShadowViewMutation::Type::Remove &&
             std::find(
@@ -925,7 +913,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         // Inserts that follow a "remove" of the same tag should be treated as
         // an update (move) animation.
         bool wasInsertedTagRemoved = false;
-        bool haveConfiguration = mutationConfig.has_value();
+        auto movedIt = movedTags.end();
         if (mutation.type == ShadowViewMutation::Type::Insert) {
           // If this is a move, we actually don't want to copy this insert
           // instruction to animated instructions - we want to
@@ -933,24 +921,28 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           // the layout.
           // The corresponding Remove and Insert instructions will instead
           // be treated as "immediate" instructions.
-          auto movedIt = movedTags.find(mutation.newChildShadowView.tag);
+          movedIt = movedTags.find(mutation.newChildShadowView.tag);
           wasInsertedTagRemoved = movedIt != movedTags.end();
-          if (wasInsertedTagRemoved) {
-            mutationConfig = layoutAnimationConfig.updateConfig;
-          }
-          haveConfiguration = mutationConfig.has_value();
+        }
 
-          if (wasInsertedTagRemoved && haveConfiguration) {
-            movesToAnimate.push_back(
-                AnimationKeyFrame{{},
-                                  AnimationConfigurationType::Update,
-                                  mutation.newChildShadowView.tag,
-                                  mutation.parentShadowView,
-                                  movedIt->second.oldChildShadowView,
-                                  mutation.newChildShadowView,
-                                  movedIt->second.oldChildShadowView,
-                                  0});
-          }
+        auto const &mutationConfig =
+            (mutation.type == ShadowViewMutation::Type::Delete
+                 ? layoutAnimationConfig.deleteConfig
+                 : (mutation.type == ShadowViewMutation::Type::Insert &&
+                            !wasInsertedTagRemoved
+                        ? layoutAnimationConfig.createConfig
+                        : layoutAnimationConfig.updateConfig));
+        bool haveConfiguration =
+            mutationConfig.animationType != AnimationType::None;
+
+        if (wasInsertedTagRemoved && haveConfiguration) {
+          movesToAnimate.push_back(
+              AnimationKeyFrame{{},
+                                AnimationConfigurationType::Update,
+                                mutation.newChildShadowView.tag,
+                                mutation.parentShadowView,
+                                movedIt->second.oldChildShadowView,
+                                mutation.newChildShadowView});
         }
 
         // Creates and inserts should also be executed immediately.
@@ -1005,7 +997,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
           AnimationKeyFrame keyFrame{};
           if (mutation.type == ShadowViewMutation::Type::Insert) {
-            if (mutationConfig->animationProperty ==
+            if (mutationConfig.animationProperty ==
                     AnimationProperty::Opacity &&
                 haveComponentDescriptor) {
               auto props =
@@ -1018,12 +1010,12 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               }
               viewStart.props = props;
             }
-            bool isScaleX = mutationConfig->animationProperty ==
-                    AnimationProperty::ScaleX ||
-                mutationConfig->animationProperty == AnimationProperty::ScaleXY;
-            bool isScaleY = mutationConfig->animationProperty ==
-                    AnimationProperty::ScaleY ||
-                mutationConfig->animationProperty == AnimationProperty::ScaleXY;
+            bool isScaleX =
+                mutationConfig.animationProperty == AnimationProperty::ScaleX ||
+                mutationConfig.animationProperty == AnimationProperty::ScaleXY;
+            bool isScaleY =
+                mutationConfig.animationProperty == AnimationProperty::ScaleY ||
+                mutationConfig.animationProperty == AnimationProperty::ScaleXY;
             if ((isScaleX || isScaleY) && haveComponentDescriptor) {
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)
@@ -1046,7 +1038,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                                          baselineShadowView,
                                          0};
           } else if (mutation.type == ShadowViewMutation::Type::Delete) {
-            if (mutationConfig->animationProperty ==
+            if (mutationConfig.animationProperty ==
                     AnimationProperty::Opacity &&
                 haveComponentDescriptor) {
               auto props =
@@ -1059,12 +1051,12 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               }
               viewFinal.props = props;
             }
-            bool isScaleX = mutationConfig->animationProperty ==
-                    AnimationProperty::ScaleX ||
-                mutationConfig->animationProperty == AnimationProperty::ScaleXY;
-            bool isScaleY = mutationConfig->animationProperty ==
-                    AnimationProperty::ScaleY ||
-                mutationConfig->animationProperty == AnimationProperty::ScaleXY;
+            bool isScaleX =
+                mutationConfig.animationProperty == AnimationProperty::ScaleX ||
+                mutationConfig.animationProperty == AnimationProperty::ScaleXY;
+            bool isScaleY =
+                mutationConfig.animationProperty == AnimationProperty::ScaleY ||
+                mutationConfig.animationProperty == AnimationProperty::ScaleXY;
             if ((isScaleX || isScaleY) && haveComponentDescriptor) {
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)

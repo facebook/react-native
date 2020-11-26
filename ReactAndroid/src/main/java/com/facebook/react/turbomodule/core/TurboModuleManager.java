@@ -15,8 +15,8 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.JSIModule;
-import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
@@ -50,14 +50,14 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   private final HybridData mHybridData;
 
   public TurboModuleManager(
-      JavaScriptContextHolder jsContext,
+      RuntimeExecutor runtimeExecutor,
       @Nullable final TurboModuleManagerDelegate delegate,
       CallInvokerHolder jsCallInvokerHolder,
       CallInvokerHolder nativeCallInvokerHolder) {
     maybeLoadSoLibrary();
     mHybridData =
         initHybrid(
-            jsContext.get(),
+            runtimeExecutor,
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (CallInvokerHolderImpl) nativeCallInvokerHolder,
             delegate,
@@ -291,7 +291,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   }
 
   private native HybridData initHybrid(
-      long jsContext,
+      RuntimeExecutor runtimeExecutor,
       CallInvokerHolderImpl jsCallInvokerHolder,
       CallInvokerHolderImpl nativeCallInvokerHolder,
       TurboModuleManagerDelegate tmmDelegate,

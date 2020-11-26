@@ -111,14 +111,18 @@ end
 
 # Pre Install processing for Native Modules
 def codegen_pre_install(installer, options={})
+  # Path to React Native
   prefix = options[:path] ||= "../node_modules/react-native"
-  system("./#{prefix}/packages/react-native-codegen/scripts/oss/build.sh")
 
+  # Path to react-native-codegen
+  codegen_path = options[:codegen_path] ||= "#{prefix}/../react-native-codegen"
+
+  # Handle Core Modules
   Dir.mktmpdir do |dir|
     native_module_spec_name = "FBReactNativeSpec"
     schema_file = dir + "/schema-#{native_module_spec_name}.json"
     srcs_dir = "#{prefix}/Libraries"
-    schema_generated = system("node #{prefix}/packages/react-native-codegen/lib/cli/combine/combine-js-to-schema-cli.js #{schema_file} #{srcs_dir}")
-    specs_generated = system("node #{prefix}/scripts/generate-native-modules-specs-cli.js ios #{schema_file} #{srcs_dir}/#{native_module_spec_name}/#{native_module_spec_name}")
+    schema_generated = system("node #{codegen_path}/lib/cli/combine/combine-js-to-schema-cli.js #{schema_file} #{srcs_dir}") or raise "Could not generate Native Module schema"
+    specs_generated = system("node #{prefix}/scripts/generate-native-modules-specs-cli.js ios #{schema_file} #{srcs_dir}/#{native_module_spec_name}/#{native_module_spec_name}") or raise "Could not generate code for #{native_module_spec_name}"
   end
 end

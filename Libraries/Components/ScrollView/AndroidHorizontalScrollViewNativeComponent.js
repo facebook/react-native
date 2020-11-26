@@ -14,7 +14,7 @@ import {type ScrollViewNativeProps as Props} from './ScrollViewNativeComponentTy
 import {type HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 
-const NativeAndroidHorizontalScrollView: HostComponent<Props> = NativeComponentRegistry.get<Props>(
+const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
   'AndroidHorizontalScrollView',
   () => ({
     uiViewClassName: 'AndroidHorizontalScrollView',
@@ -42,4 +42,4 @@ const NativeAndroidHorizontalScrollView: HostComponent<Props> = NativeComponentR
   }),
 );
 
-export default NativeAndroidHorizontalScrollView;
+export default AndroidHorizontalScrollViewNativeComponent;

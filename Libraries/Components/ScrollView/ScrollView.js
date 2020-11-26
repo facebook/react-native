@@ -40,30 +40,31 @@ import type {
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {State as ScrollResponderState} from '../ScrollResponder';
 import type {ViewProps} from '../View/ViewPropTypes';
-import NativeAndroidHorizontalScrollContentView from './NativeAndroidHorizontalScrollContentView';
-import NativeAndroidHorizontalScrollView from './NativeAndroidHorizontalScrollView';
-import NativeScrollContentView from './NativeScrollContentView';
-import NativeScrollView from './NativeScrollView';
 import ScrollViewContext, {HORIZONTAL, VERTICAL} from './ScrollViewContext';
 import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
+
+import AndroidHorizontalScrollContentViewNativeComponent from './AndroidHorizontalScrollContentViewNativeComponent';
+import AndroidHorizontalScrollViewNativeComponent from './AndroidHorizontalScrollViewNativeComponent';
+import ScrollContentViewNativeComponent from './ScrollContentViewNativeComponent';
+import ScrollViewNativeComponent from './ScrollViewNativeComponent';
 
 const {NativeHorizontalScrollViewTuple, NativeVerticalScrollViewTuple} =
   Platform.OS === 'android'
     ? {
         NativeHorizontalScrollViewTuple: [
-          NativeAndroidHorizontalScrollView,
-          NativeAndroidHorizontalScrollContentView,
+          AndroidHorizontalScrollViewNativeComponent,
+          AndroidHorizontalScrollContentViewNativeComponent,
         ],
-        NativeVerticalScrollViewTuple: [NativeScrollView, View],
+        NativeVerticalScrollViewTuple: [ScrollViewNativeComponent, View],
       }
     : {
         NativeHorizontalScrollViewTuple: [
-          NativeScrollView,
-          NativeScrollContentView,
+          ScrollViewNativeComponent,
+          ScrollContentViewNativeComponent,
         ],
         NativeVerticalScrollViewTuple: [
-          NativeScrollView,
-          NativeScrollContentView,
+          ScrollViewNativeComponent,
+          ScrollContentViewNativeComponent,
         ],
       };
 
@@ -592,7 +593,7 @@ export type Props = $ReadOnly<{|
    * measure, measureLayout, etc.
    */
   scrollViewRef?: React.Ref<
-    typeof NativeScrollView & ScrollViewImperativeMethods,
+    typeof ScrollViewNativeComponent & ScrollViewImperativeMethods,
   >,
 |}>;
 
