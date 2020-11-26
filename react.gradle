@@ -103,6 +103,7 @@ afterEvaluate {
         // Create variant and target names
         def targetName = variant.name.capitalize()
         def targetPath = variant.dirName
+        def isRelease = targetName.toLowerCase().contains("release")
 
         // React js bundle directories
         def jsBundleDir = file("$buildDir/generated/assets/react/${targetPath}")
@@ -313,7 +314,6 @@ afterEvaluate {
         // This should really be done by packaging all Hermes releated libs into
         // two separate HermesDebug and HermesRelease AARs, but until then we'll
         // kludge it by deleting the .so files out of the /transforms/ directory.
-        def isRelease = targetName.toLowerCase().contains("release")
         def libDir = "$buildDir/intermediates/transforms/"
         def vmSelectionAction = {
             fileTree(libDir).matching {
