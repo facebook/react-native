@@ -103,7 +103,7 @@ afterEvaluate {
         // Create variant and target names
         def targetName = variant.name.capitalize()
         def targetPath = variant.dirName
-        def isRelease = targetName.toLowerCase().contains("release")
+        def isRelease = targetName.toLowerCase().contains("release") || config."useReleaseConfigIn${targetName}"
 
         // React js bundle directories
         def jsBundleDir = file("$buildDir/generated/assets/react/${targetPath}")
