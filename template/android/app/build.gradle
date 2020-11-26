@@ -23,6 +23,10 @@ import com.android.build.OutputFile
  *   // https://reactnative.dev/docs/performance#enable-the-ram-format
  *   bundleCommand: "ram-bundle",
  *
+ *   // whether to use same config as release in another build variant
+ *   // This includes bundleInBeta and devDisabledInBeta
+ *   useReleaseConfigInBeta: false,
+ *
  *   // whether to bundle JS and assets in debug mode
  *   bundleInDebug: false,
  *
