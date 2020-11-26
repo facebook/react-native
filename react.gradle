@@ -158,7 +158,7 @@ afterEvaluate {
 
             // Set up dev mode
             def devEnabled = !(config."devDisabledIn${targetName}"
-                || targetName.toLowerCase().contains("release"))
+                || isRelease)
 
             def extraArgs = config.extraPackagerArgs ?: [];
 
@@ -178,7 +178,7 @@ afterEvaluate {
                     def hermesFlags;
                     def hbcTempFile = file("${jsBundleFile}.hbc")
                     exec {
-                        if (targetName.toLowerCase().contains("release")) {
+                        if (isRelease) {
                             // Can't use ?: since that will also substitute valid empty lists
                             hermesFlags = config.hermesFlagsRelease
                             if (hermesFlags == null) hermesFlags = ["-O", "-output-source-map"]
@@ -222,7 +222,7 @@ afterEvaluate {
                 ? config."bundleIn${targetName}"
                 : config."bundleIn${variant.buildType.name.capitalize()}" != null
                     ? config."bundleIn${variant.buildType.name.capitalize()}"
-                    : targetName.toLowerCase().contains("release")
+                    : isRelease
         }
 
         // Expose a minimal interface on the application variant and the task itself:
