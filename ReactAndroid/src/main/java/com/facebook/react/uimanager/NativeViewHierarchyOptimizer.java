@@ -339,9 +339,10 @@ public class NativeViewHierarchyOptimizer {
 
     ReactShadowNode parent = node.getParent();
 
-    // We use screenX/screenY (which round to integer pixels) at each node in the hierarchy to
-    // emulate what the layout would look like if it were actually built with native views which
-    // have to have integral top/left/bottom/right values
+    // We use getlayoutX/getlayoutY to get the exact position (maybe decimal) in the recursive 
+    // calculation of view position to obtain the child view exact position. Finally, it is 
+    // converted to the integral top / left / bottom / right values required in the Android layout
+    // process to ensure that the original continuous view is still continuous.
     float x = node.getLayoutX();
     float y = node.getLayoutY();
 
