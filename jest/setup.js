@@ -31,6 +31,8 @@ global.cancelAnimationFrame = function(id) {
   clearTimeout(id);
 };
 
+require('whatwg-fetch');
+
 // there's a __mock__ for it.
 jest.setMock(
   '../Libraries/vendor/core/ErrorUtils',
