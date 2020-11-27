@@ -219,6 +219,13 @@
             <description><![CDATA[At Shoutem, we've been fortunate enough to work with React Native from its very beginnings. We decided we wanted to be part of the amazing community from day one. Soon enough, we realized it's almost impossible to keep up with the pace the community was growing and improving. That's why we decided to organize a monthly meeting where all major React Native contributors can briefly present what their efforts and plans are.]]></description>
         </item>
         <item>
+            <title><![CDATA[Introducing Create React Native App]]></title>
+            <link>https://reactnative.dev/blog/2017/03/13/introducing-create-react-native-app</link>
+            <guid>Introducing Create React Native App</guid>
+            <pubDate>Mon, 13 Mar 2017 00:00:00 GMT</pubDate>
+            <description><![CDATA[Today we’re announcing Create React Native App: a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of Create React App and is the product of a collaboration between Facebook and Expo (formerly Exponent).]]></description>
+        </item>
+        <item>
             <title><![CDATA[Better List Views in React Native]]></title>
             <link>https://reactnative.dev/blog/2017/03/13/better-list-views</link>
             <guid>Better List Views in React Native</guid>
@@ -231,13 +238,6 @@
             <guid>idx: The Existential Function</guid>
             <pubDate>Mon, 13 Mar 2017 00:00:00 GMT</pubDate>
             <description><![CDATA[At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be null for a variety of reasons, from failed privacy checks to the mere fact that null happens to be the most flexible way to represent non-fatal errors.]]></description>
-        </item>
-        <item>
-            <title><![CDATA[Introducing Create React Native App]]></title>
-            <link>https://reactnative.dev/blog/2017/03/13/introducing-create-react-native-app</link>
-            <guid>Introducing Create React Native App</guid>
-            <pubDate>Mon, 13 Mar 2017 00:00:00 GMT</pubDate>
-            <description><![CDATA[Today we’re announcing Create React Native App: a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of Create React App and is the product of a collaboration between Facebook and Expo (formerly Exponent).]]></description>
         </item>
         <item>
             <title><![CDATA[Using Native Driver for Animated]]></title>
