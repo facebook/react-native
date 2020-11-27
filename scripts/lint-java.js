@@ -21,11 +21,15 @@ const googleJavaFormatUrl = 'https://github.com/google/google-java-format/releas
 const googleJavaFormatPath = path.join(os.tmpdir(),`google-java-format-all-deps.jar`);
 const javaFilesCommand = 'find ./ReactAndroid -name "*.java"';
 
-function download(url, downloadPath, callback){
+function download(url, downloadPath, callback, redirectCount){
     https.get(url, response => {
         switch (response.statusCode){
             case 302: //Permanent Redirect
-                download(response.headers.location, downloadPath, callback);
+                if(redirectCount === 1){
+                    throw new Error(`Unhandled response code (HTTP${response.statusCode}) while retrieving google-java-format binary from ${url}`);
+                }
+
+                download(response.headers.location, downloadPath, callback, redirectCount + 1);
                 break;
             case 200: //OK
                 const file = fs.createWriteStream(downloadPath);
