@@ -15,9 +15,11 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const yargs = require('yargs');
 
 const googleJavaFormatUrl = 'https://github.com/google/google-java-format/releases/download/google-java-format-1.7/google-java-format-1.7-all-deps.jar';
 const googleJavaFormatPath = path.join(os.tmpdir(),`google-java-format-all-deps.jar`);
+const javaFilesCommand = 'find ./ReactAndroid -name "*.java"';
 
 function download(url, downloadPath, callback){
     https.get(url, response => {
@@ -39,7 +41,7 @@ function download(url, downloadPath, callback){
 }
 
 function filesWithLintingIssues(){
-    const proc = exec(`java -jar ${googleJavaFormatPath} --dry-run $(find ./ReactAndroid -name "*.java")`, {silent: true});
+    const proc = exec(`java -jar ${googleJavaFormatPath} --dry-run $(${javaFilesCommand})`, {silent: true});
 
     if(proc.code !== 0){
         throw new Error(proc.stderr);
@@ -122,28 +124,47 @@ function parseChanges(file, diff){
     }));
 }
 
-const yargs = require('yargs');
-
 const {argv} = yargs
-  .option('c', {
-    alias: 'check',
-  });
+    .scriptName('lint-java')
+    .usage('Usage: $0 [options]')
+    .command('$0', 'Downloads the google-java-format package and reformats Java source code to comply with Google Java Style.\n\nSee https://github.com/google/google-java-format')
+    .option('check', {
+        type: 'boolean',
+        description: 'Outputs a list of files with lint violations.\nExit code is set to 1 if there are violations, otherwise 0.\nDoes not reformat lint issues.',
+    })
+    .option('diff', {
+        type: 'boolean',
+        description: 'Outputs a diff of the lint fix changes in json format.\nDoes not reformat lint issues.',
+    });
 
 download(googleJavaFormatUrl, googleJavaFormatPath, () =>{
     if(argv.check){
-        const proc = exec(`java -jar ${googleJavaFormatPath} --set-exit-if-changed --dry-run $(find ./ReactAndroid -name "*.java")`, {silent: false});
+        const files = filesWithLintingIssues();
 
-        process.exit(proc.code);
+        files.forEach(x => console.log(x));
+
+        process.exit(files.length === 0 ? 0 : 1);
+
         return;
     }
 
-    const suggestions = filesWithLintingIssues()
-        .map(unifiedDiff)
-        .filter(x => x)
-        .map(x => parseChanges(x.file, x.diff))
-        .reduce((accumulator, current) => accumulator.concat(current), []);
+    if(argv.diff){
+        const suggestions = filesWithLintingIssues()
+            .map(unifiedDiff)
+            .filter(x => x)
+            .map(x => parseChanges(x.file, x.diff))
+            .reduce((accumulator, current) => accumulator.concat(current), []);
 
-    console.log(JSON.stringify(suggestions));
+        console.log(JSON.stringify(suggestions));
+
+        process.exit(suggestions.length === 0 ? 0 : 1);
+
+        return;
+    }
+
+    const proc = exec(`java -jar ${googleJavaFormatPath} --set-exit-if-changed $(${javaFilesCommand})`);
+
+    process.exit(proc.code);
 });
 
 if(true){} //Temporary eslint violation for testing
