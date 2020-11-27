@@ -14,7 +14,7 @@ import {type ScrollViewNativeProps as Props} from './ScrollViewNativeComponentTy
 import {type HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 
-const NativeScrollView: HostComponent<Props> = NativeComponentRegistry.get<Props>(
+const ScrollViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
   'RCTScrollView',
   () => ({
     uiViewClassName: 'RCTScrollView',
@@ -84,4 +84,4 @@ const NativeScrollView: HostComponent<Props> = NativeComponentRegistry.get<Props
   }),
 );
 
-export default NativeScrollView;
+export default ScrollViewNativeComponent;
