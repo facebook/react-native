@@ -24,14 +24,14 @@ global.performance = {
 global.Promise = jest.requireActual('promise');
 global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
 
-global.requestAnimationFrame = function(callback) {
+global.requestAnimationFrame = function (callback) {
   return setTimeout(callback, 0);
 };
-global.cancelAnimationFrame = function(id) {
+global.cancelAnimationFrame = function (id) {
   clearTimeout(id);
 };
 
-require('whatwg-fetch');
+jest.requireActual('../Libraries/Network/fetch');
 
 // there's a __mock__ for it.
 jest.setMock(
@@ -343,7 +343,7 @@ jest
   })
   .mock(
     '../Libraries/Utilities/verifyComponentAttributeEquivalence',
-    () => function() {},
+    () => function () {},
   )
   .mock('../Libraries/Components/View/ViewNativeComponent', () => {
     const React = require('react');
