@@ -162,7 +162,7 @@ download(googleJavaFormatUrl, googleJavaFormatPath, () =>{
         return;
     }
 
-    const proc = exec(`java -jar ${googleJavaFormatPath} --set-exit-if-changed $(${javaFilesCommand})`);
+    const proc = exec(`java -jar ${googleJavaFormatPath} --set-exit-if-changed --replace $(${javaFilesCommand})`);
 
     process.exit(proc.code);
 });
