@@ -98,7 +98,7 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
     if (cursorMovedBackwardsOrAtBeginningOfInput || (!noPreviousSelection && cursorDidNotMove)) {
       key = BACKSPACE_KEY_VALUE;
     } else {
-      key = String.valueOf(mEditText.getText().charAt(currentSelectionStart - 1));
+      key = String.valueOf(text.charAt(text.length() -1));
     }
     dispatchKeyEventOrEnqueue(key);
     return consumed;
