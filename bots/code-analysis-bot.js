@@ -130,7 +130,7 @@ const converters = {
 };
 
 function getShaFromPullRequest(octokit, owner, repo, number, callback) {
-  octokit.pulls.get({owner, repo, pull_number: number}, (error, res) => {
+  octokit.pullRequests.get({owner, repo, number}, (error, res) => {
     if (error) {
       console.error(error);
       return;
@@ -141,8 +141,8 @@ function getShaFromPullRequest(octokit, owner, repo, number, callback) {
 }
 
 function getFilesFromPullRequest(octokit, owner, repo, number, callback) {
-  octokit.pulls.listFiles(
-    {owner, repo, pull_number: number, per_page: 100},
+  octokit.pullRequests.listFiles(
+    {owner, repo, number, per_page: 100},
     (error, res) => {
       if (error) {
         console.error(error);
