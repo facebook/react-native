@@ -483,7 +483,8 @@ void LayoutAnimationKeyFrameManager::
         std::remove_if(
             candidateMutations.begin(),
             candidateMutations.end(),
-            [&](ShadowViewMutation *candidateMutation) {
+            [&changed, &mutation, &adjustedDelta, &isRemoveMutation](
+                ShadowViewMutation *candidateMutation) {
               bool indexConflicts =
                   (candidateMutation->index < mutation.index ||
                    (isRemoveMutation &&
@@ -625,13 +626,12 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
   }
 }
 
-std::vector<std::tuple<AnimationKeyFrame, AnimationConfig, LayoutAnimation *>>
+std::vector<AnimationKeyFrame>
 LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
     SurfaceId surfaceId,
     ShadowViewMutationList const &mutations,
     bool deletesOnly) const {
-  std::vector<std::tuple<AnimationKeyFrame, AnimationConfig, LayoutAnimation *>>
-      conflictingAnimations{};
+  std::vector<AnimationKeyFrame> conflictingAnimations{};
 
   for (auto const &mutation : mutations) {
     if (deletesOnly && mutation.type != ShadowViewMutation::Type::Delete) {
@@ -669,17 +669,6 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
         // animation, or deleting the parent of a tag under animation, or
         // reparenting.
         if (conflicting) {
-          auto const layoutAnimationConfig =
-              inflightAnimation.layoutAnimationConfig;
-
-          auto const &mutationConfig =
-              (animatedKeyFrame.type == AnimationConfigurationType::Delete
-                   ? layoutAnimationConfig.deleteConfig
-                   : (animatedKeyFrame.type ==
-                              AnimationConfigurationType::Create
-                          ? layoutAnimationConfig.createConfig
-                          : layoutAnimationConfig.updateConfig));
-
           animatedKeyFrame.invalidated = true;
 
           // We construct a list of all conflicting animations, whether or not
@@ -689,8 +678,7 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
           if (!(animatedKeyFrame.finalMutationForKeyFrame.has_value() &&
                 mutatedViewIsVirtual(
                     *animatedKeyFrame.finalMutationForKeyFrame))) {
-            conflictingAnimations.push_back(std::make_tuple(
-                animatedKeyFrame, mutationConfig, &inflightAnimation));
+            conflictingAnimations.push_back(animatedKeyFrame);
           }
 
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
@@ -1127,8 +1115,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           }
 
           // Handle conflicting animations
-          for (auto &conflictingKeyframeTuple : conflictingAnimations) {
-            auto &conflictingKeyFrame = std::get<0>(conflictingKeyframeTuple);
+          for (auto &conflictingKeyFrame : conflictingAnimations) {
             auto const &conflictingMutationBaselineShadowView =
                 conflictingKeyFrame.viewStart;
 
@@ -1192,9 +1179,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 #endif
 
       auto finalConflictingMutations = ShadowViewMutationList{};
-      for (auto &conflictingKeyframeTuple : conflictingAnimations) {
-        auto &keyFrame = std::get<0>(conflictingKeyframeTuple);
-
+      for (auto &keyFrame : conflictingAnimations) {
         // Special-case: if we have some (1) ongoing UPDATE animation,
         // (2) it conflicted with a new MOVE operation (REMOVE+INSERT)
         // without another corresponding UPDATE, we should re-queue the
@@ -1402,8 +1387,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       LOG(ERROR) << "No Animation: Queue up final conflicting animations";
 #endif
       ShadowViewMutationList finalMutationsForConflictingAnimations{};
-      for (auto const &conflictingKeyframeTuple : conflictingAnimations) {
-        auto &keyFrame = std::get<0>(conflictingKeyframeTuple);
+      for (auto const &keyFrame : conflictingAnimations) {
         if (keyFrame.finalMutationForKeyFrame.hasValue()) {
           auto &finalMutation = (*keyFrame.finalMutationForKeyFrame);
           auto mutation = ShadowViewMutation{finalMutation.type,
