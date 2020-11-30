@@ -61,10 +61,12 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         STUB_VIEW_ASSERT(mutation.parentShadowView == ShadowView{});
         STUB_VIEW_ASSERT(mutation.newChildShadowView == ShadowView{});
         auto tag = mutation.oldChildShadowView.tag;
+        /* Disable this assert until T76057501 is resolved.
         STUB_VIEW_ASSERT(registry.find(tag) != registry.end());
         auto stubView = registry[tag];
         STUB_VIEW_ASSERT(
             (ShadowView)(*stubView) == mutation.oldChildShadowView);
+        */
         registry.erase(tag);
         break;
       }
