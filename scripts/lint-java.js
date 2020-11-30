@@ -171,4 +171,4 @@ download(googleJavaFormatUrl, googleJavaFormatPath, () =>{
     process.exit(proc.code);
 });
 
-if(true){}//Temporary eslint violation for testing
+if(true){} //Temporary eslint violation for testing
