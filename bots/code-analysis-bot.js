@@ -68,7 +68,7 @@ const converters = {
       push(output, change.file, {
         message: `\`google-java-format\` suggested changes:
 \`\`\`diff
-  ${change.description}
+${change.description}
 \`\`\`
 `,
         line: change.line,
@@ -171,9 +171,6 @@ async function sendReview(
   body,
   comments,
 ) {
-  console.log(body);
-  console.log(comments);
-
   if (process.env.GITHUB_TOKEN) {
     if (comments.length === 0) {
       // Do not leave an empty review.
