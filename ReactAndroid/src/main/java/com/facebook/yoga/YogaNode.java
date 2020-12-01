@@ -9,7 +9,8 @@ package com.facebook.yoga;
 
 import javax.annotation.Nullable;
 
-public abstract class YogaNode {
+public abstract
+class YogaNode { //intentional lint issue
   public abstract void reset();
 
   public abstract int getChildCount();

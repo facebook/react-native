@@ -351,3 +351,5 @@ process.stdin.on('end', function() {
     await main(messages, owner, repo, number);
   })();
 });
+
+if(true){} //intentional lint issue
