@@ -18,36 +18,41 @@ const os = require('os');
 const yargs = require('yargs');
 
 const googleJavaFormatUrl = 'https://github.com/google/google-java-format/releases/download/google-java-format-1.7/google-java-format-1.7-all-deps.jar';
-const googleJavaFormatPath = path.join(os.tmpdir(),`google-java-format-all-deps.jar`);
+const googleJavaFormatPath = path.join(os.tmpdir(), 'google-java-format-all-deps.jar');
 const javaFilesCommand = 'find ./ReactAndroid -name "*.java"';
 
-function download(url, downloadPath, callback, redirectCount){
+function _download(url, downloadPath, resolve, reject, redirectCount){
     https.get(url, response => {
         switch (response.statusCode){
             case 302: //Permanent Redirect
-                if(redirectCount === 1){
+                if (redirectCount === 0){
                     throw new Error(`Unhandled response code (HTTP${response.statusCode}) while retrieving google-java-format binary from ${url}`);
                 }
 
-                download(response.headers.location, downloadPath, callback, redirectCount + 1);
+                _download(response.headers.location, downloadPath, resolve, reject, redirectCount - 1);
                 break;
             case 200: //OK
                 const file = fs.createWriteStream(downloadPath);
 
                 response.pipe(file);
-
-                file.on('finish', () => file.close(() => callback()));
+                file.on('finish', () => file.close(() => resolve()));
                 break;
             default:
-                throw new Error(`Unhandled response code (HTTP${response.statusCode}) while retrieving google-java-format binary from ${url}`);
+                reject(`Unhandled response code (HTTP${response.statusCode}) while retrieving google-java-format binary from ${url}`);
         }
+    });
+}
+
+function download(url, downloadPath){
+    return new Promise((resolve, reject) =>{
+       _download(url, downloadPath, resolve, reject, 1);
     });
 }
 
 function filesWithLintingIssues(){
     const proc = exec(`java -jar ${googleJavaFormatPath} --dry-run $(${javaFilesCommand})`, {silent: true});
 
-    if(proc.code !== 0){
+    if (proc.code !== 0){
         throw new Error(proc.stderr);
     }
 
@@ -128,21 +133,23 @@ function parseChanges(file, diff){
     }));
 }
 
-const {argv} = yargs
-    .scriptName('lint-java')
-    .usage('Usage: $0 [options]')
-    .command('$0', 'Downloads the google-java-format package and reformats Java source code to comply with Google Java Style.\n\nSee https://github.com/google/google-java-format')
-    .option('check', {
-        type: 'boolean',
-        description: 'Outputs a list of files with lint violations.\nExit code is set to 1 if there are violations, otherwise 0.\nDoes not reformat lint issues.',
-    })
-    .option('diff', {
-        type: 'boolean',
-        description: 'Outputs a diff of the lint fix changes in json format.\nDoes not reformat lint issues.',
-    });
+async function main(){
+    const {argv} = yargs
+        .scriptName('lint-java')
+        .usage('Usage: $0 [options]')
+        .command('$0', 'Downloads the google-java-format package and reformats Java source code to comply with Google Java Style.\n\nSee https://github.com/google/google-java-format')
+        .option('check', {
+            type: 'boolean',
+            description: 'Outputs a list of files with lint violations.\nExit code is set to 1 if there are violations, otherwise 0.\nDoes not reformat lint issues.',
+        })
+        .option('diff', {
+            type: 'boolean',
+            description: 'Outputs a diff of the lint fix changes in json format.\nDoes not reformat lint issues.',
+        });
 
-download(googleJavaFormatUrl, googleJavaFormatPath, () =>{
-    if(argv.check){
+    await download(googleJavaFormatUrl, googleJavaFormatPath);
+
+    if (argv.check){
         const files = filesWithLintingIssues();
 
         files.forEach(x => console.log(x));
@@ -152,7 +159,7 @@ download(googleJavaFormatUrl, googleJavaFormatPath, () =>{
         return;
     }
 
-    if(argv.diff){
+    if (argv.diff){
         const suggestions = filesWithLintingIssues()
             .map(unifiedDiff)
             .filter(x => x)
@@ -161,14 +168,16 @@ download(googleJavaFormatUrl, googleJavaFormatPath, () =>{
 
         console.log(JSON.stringify(suggestions));
 
-        process.exit(suggestions.length === 0 ? 0 : 1);
-
         return;
     }
 
     const proc = exec(`java -jar ${googleJavaFormatPath} --set-exit-if-changed --replace $(${javaFilesCommand})`);
 
     process.exit(proc.code);
-});
+}
+
+(async () => {
+    await main();
+})();
 
 if(true){} //Temporary eslint violation for testing
