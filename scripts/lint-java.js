@@ -179,5 +179,3 @@ async function main(){
 (async () => {
     await main();
 })();
-
-if(true){} //Temporary eslint violation for testing

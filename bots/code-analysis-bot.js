@@ -67,10 +67,10 @@ const converters = {
     input.forEach(function(change) {
       push(output, change.file, {
         message: `\`google-java-format\` suggested changes:
-        \`\`\`diff
-        ${change.description}
-        \`\`\`
-        `,
+\`\`\`diff
+  ${change.description}
+\`\`\`
+`,
         line: change.line,
         converter: 'google-java-format',
       });
@@ -169,8 +169,8 @@ async function sendReview(
   pull_number,
   commit_id,
   body,
-  comments,) {
-
+  comments,
+) {
   console.log(body);
   console.log(comments);
 
@@ -282,7 +282,8 @@ async function main(messages, owner, repo, pull_number) {
     pull_number,
     pull.head.sha,
     body,
-    comments,);
+    comments,
+  );
 }
 
 let content = '';

@@ -9,8 +9,7 @@ package com.facebook.yoga;
 
 import javax.annotation.Nullable;
 
-public abstract
-class YogaNode { //Temporary google-java-format lint violation for testing
+public abstract class YogaNode {
   public abstract void reset();
 
   public abstract int getChildCount();
