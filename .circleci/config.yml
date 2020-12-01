@@ -856,7 +856,7 @@ workflows:
   analysis:
     jobs:
       - setup:
-        name: setup_js
+          name: setup_js
 
       - setup:
           name: setup_android
