@@ -238,8 +238,8 @@ jobs:
   analyze_pr:
     executor: reactnativeandroid
     steps:
-      # - restore_cache_checkout:
-      #     checkout_type: android
+      - restore_cache_checkout:
+          checkout_type: android
       - run_yarn
 
       - install_github_bot_deps
@@ -266,8 +266,8 @@ jobs:
   analyze_code:
     executor: reactnativeandroid
     steps:
-      # - restore_cache_checkout:
-      #     checkout_type: android
+      - restore_cache_checkout:
+          checkout_type: android
       - setup_artifacts
       - run_yarn
 
