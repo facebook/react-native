@@ -855,10 +855,10 @@ workflows:
 
   analysis:
     jobs:
-      - setup
+      - setup:
         name: setup_js
 
-      - setup
+      - setup:
           name: setup_android
           checkout_type: android
           executor: reactnativeandroid
