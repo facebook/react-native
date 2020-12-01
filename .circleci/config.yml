@@ -681,7 +681,7 @@ jobs:
   # -------------------------
   # Collect JavaScript test coverage
   js_coverage:
-    executor: reactnativeandroid
+    executor: nodelts
     environment:
       - CI_BRANCH: $CIRCLE_BRANCH
       - CI_PULL_REQUEST: $CIRCLE_PULL_REQUEST
@@ -689,7 +689,7 @@ jobs:
       - CI_BUILD_URL: $CIRCLE_BUILD_URL
     steps:
       - restore_cache_checkout:
-          checkout_type: android
+          checkout_type: node
       - setup_artifacts
       - run_yarn
       - run:
@@ -856,6 +856,9 @@ workflows:
   analysis:
     jobs:
       - setup
+        name: setup_js
+
+      - setup
           name: setup_android
           checkout_type: android
           executor: reactnativeandroid
@@ -879,7 +882,7 @@ workflows:
       # Gather coverage
       - js_coverage:
           requires:
-            - setup_android
+            - setup_js
   nightly:
     triggers:
       - schedule:
