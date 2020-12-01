@@ -859,7 +859,7 @@ workflows:
       # Run lints on every commit other than those to the gh-pages branch
       - analyze_code:
           requires:
-            - setup
+            - setup_android
           filters:
             branches:
               ignore: gh-pages
@@ -867,7 +867,7 @@ workflows:
       # Run code checks on PRs from forks
       - analyze_pr:
           requires:
-            - setup
+            - setup_android
           filters:
             branches:
               only: /^pull\/.*$/
