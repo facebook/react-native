@@ -17,7 +17,6 @@ import ViewNativeComponent from './ViewNativeComponent';
 const TextAncestor = require('../../Text/TextAncestor');
 const TextInputState = require('../TextInput/TextInputState');
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-type ComponentRef = React.ElementRef<HostComponent<mixed>>;
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 const {useRef} = React;
 
@@ -60,9 +59,9 @@ const View: React.AbstractComponent<
   return (
     <TextAncestor.Provider value={false}>
       <ViewNativeComponent
+        {...props}
         onBlur={_onBlur}
         onFocus={_onFocus}
-        {...props}
         ref={_setNativeRef}
       />
     </TextAncestor.Provider>

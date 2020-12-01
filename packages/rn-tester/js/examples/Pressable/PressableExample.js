@@ -39,12 +39,6 @@ function ContentPress() {
     <>
       <View style={styles.row}>
         <Pressable
-          onFocus={() => {
-            console.log('Focused!!!');
-          }}
-          onBlur={() => {
-            console.log('Blurred!');
-          }}
           onPress={() => {
             setTimesPressed(current => current + 1);
           }}>
@@ -264,11 +258,12 @@ function PressableFocusBlurEvents() {
       <View style={[styles.row, styles.centered]}>
         <Pressable
           onFocus={() => {
-            console.log('focused lol');
-            setLastEvent('received focus event');
+            console.log('Focused!');
+            setLastEvent('Received focus event');
           }}
           onBlur={() => {
-            setLastEvent('received blur event');
+            console.log('Blurred!');
+            setLastEvent('Received blur event');
           }}
           testID="pressable_focus_blur_button">
           <Text style={styles.text}>Use keyboard to move focus to me</Text>

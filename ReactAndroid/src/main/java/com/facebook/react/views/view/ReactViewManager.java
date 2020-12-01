@@ -265,7 +265,7 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
     view.setOnFocusChangeListener(
       new View.OnFocusChangeListener() {
         public void onFocusChange(View v, boolean hasFocus) {
-            EventDispatcher eventDispatcher = getEventDispatcher(reactContext, view);
+          EventDispatcher eventDispatcher = getEventDispatcher(reactContext, view);
           if (hasFocus) {
             eventDispatcher.dispatchEvent(new ReactViewFocusEvent(view.getId()));
           } else {

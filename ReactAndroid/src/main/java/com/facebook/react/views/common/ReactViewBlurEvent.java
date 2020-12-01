@@ -12,7 +12,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
-/** Event emitted a native view when it loses focus. */
+/** Event emitted by a native view when it loses focus. */
 public class ReactViewBlurEvent extends Event<ReactViewBlurEvent> {
 
   private static final String EVENT_NAME = "topBlur";
