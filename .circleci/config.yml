@@ -856,6 +856,11 @@ workflows:
   analysis:
     jobs:
       - setup
+
+      - setup_android:
+          checkout_type: android
+          executor: reactnativeandroid
+
       # Run lints on every commit other than those to the gh-pages branch
       - analyze_code:
           requires:
