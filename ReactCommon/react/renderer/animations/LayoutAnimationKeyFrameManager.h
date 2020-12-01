@@ -223,8 +223,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       ShadowViewMutation const &mutation,
       bool skipLastAnimation = false) const;
 
-  std::vector<std::tuple<AnimationKeyFrame, AnimationConfig, LayoutAnimation *>>
-  getAndEraseConflictingAnimations(
+  std::vector<AnimationKeyFrame> getAndEraseConflictingAnimations(
       SurfaceId surfaceId,
       ShadowViewMutationList const &mutations,
       bool deletesOnly = false) const;
