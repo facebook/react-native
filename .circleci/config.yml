@@ -858,6 +858,7 @@ workflows:
       - setup
 
       - setup_android:
+          name: setup_android
           checkout_type: android
           executor: reactnativeandroid
 
