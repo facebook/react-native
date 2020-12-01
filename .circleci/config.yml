@@ -15,10 +15,10 @@ defaults: &defaults
   environment:
     - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
     # The public github tokens are publicly visible by design
-    - PUBLIC_PULLBOT_GITHUB_TOKEN_A: "a6edf8e8d40ce4e8b11a"
-    - PUBLIC_PULLBOT_GITHUB_TOKEN_B: "150e1341f4dd9c944d2a"
-    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_token_a "312d354b5c36f082cfe9"
-    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_token_b "07973d757026bdd9f196"
+    - PUBLIC_PULLBOT_GITHUB_TOKEN_A: &github_pullbot_token_a "a6edf8e8d40ce4e8b11a"
+    - PUBLIC_PULLBOT_GITHUB_TOKEN_B: &github_pullbot_token_b "150e1341f4dd9c944d2a"
+    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_analysisbot_token_a "312d354b5c36f082cfe9"
+    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_analysisbot_token_b "07973d757026bdd9f196"
 
 # -------------------------
 #        EXECUTORS
@@ -44,8 +44,10 @@ executors:
       - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
       - BUILD_THREADS: 2
       # Repeated here, as the environment key in this executor will overwrite the one in defaults
-      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_token_a
-      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_token_b
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_analysisbot_token_a
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_analysisbot_token_b
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_A: *github_pullbot_token_a
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_B: *github_pullbot_token_b
   reactnativeios:
     <<: *defaults
     macos:
