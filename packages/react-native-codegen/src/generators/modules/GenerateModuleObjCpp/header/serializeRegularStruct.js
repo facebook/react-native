@@ -26,11 +26,11 @@ const StructTemplate = ({
   hasteModuleName,
   structName,
   structProperties,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
   structName: string,
   structProperties: string,
-|}>) => `namespace JS {
+}>) => `namespace JS {
   namespace ${hasteModuleName} {
     struct ${structName} {
       ${structProperties}
@@ -52,13 +52,13 @@ const MethodTemplate = ({
   hasteModuleName,
   structName,
   propertyName,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   returnType: string,
   returnValue: string,
   hasteModuleName: string,
   structName: string,
   propertyName: string,
-|}>) => `inline ${returnType}JS::${hasteModuleName}::${structName}::${propertyName}() const
+}>) => `inline ${returnType}JS::${hasteModuleName}::${structName}::${propertyName}() const
 {
   id const p = _v[@"${propertyName}"];
   return ${returnValue};
@@ -76,7 +76,7 @@ function toObjCType(
   };
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapFollyOptional('double');
@@ -140,7 +140,7 @@ function toObjCValue(
   };
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return RCTBridgingTo('Double');

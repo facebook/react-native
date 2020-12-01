@@ -56,6 +56,7 @@ export const NativeText: HostComponent<NativeTextProps> = (createReactNativeComp
 ): any);
 
 export const NativeVirtualText: HostComponent<NativeTextProps> =
+  !global.RN$Bridgeless &&
   UIManager.getViewManagerConfig('RCTVirtualText') == null
     ? NativeText
     : (createReactNativeComponentClass('RCTVirtualText', () => ({

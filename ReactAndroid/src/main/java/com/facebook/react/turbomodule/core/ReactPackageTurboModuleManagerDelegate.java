@@ -15,13 +15,18 @@ import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModuleManagerDelegate {
   private final List<TurboReactPackage> mPackages = new ArrayList<>();
+  private final Map<TurboReactPackage, Map<String, ReactModuleInfo>> mPackageModuleInfos =
+      new HashMap<>();
   private final ReactApplicationContext mReactApplicationContext;
 
   protected ReactPackageTurboModuleManagerDelegate(
@@ -30,7 +35,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     mReactApplicationContext = reactApplicationContext;
     for (ReactPackage reactPackage : packages) {
       if (reactPackage instanceof TurboReactPackage) {
-        mPackages.add((TurboReactPackage) reactPackage);
+        TurboReactPackage pkg = (TurboReactPackage) reactPackage;
+        mPackages.add(pkg);
+        if (ReactFeatureFlags.enableTurboModulePackageInfoValidation) {
+          mPackageModuleInfos.put(pkg, pkg.getReactModuleInfoProvider().getReactModuleInfos());
+        }
       }
     }
   }
@@ -72,9 +81,23 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
     for (final TurboReactPackage pkg : mPackages) {
       try {
-        NativeModule module = pkg.getModule(moduleName, mReactApplicationContext);
-        if (resolvedModule == null || module != null && module.canOverrideExistingModule()) {
-          resolvedModule = module;
+        if (ReactFeatureFlags.enableTurboModulePackageInfoValidation) {
+          final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(pkg).get(moduleName);
+          if (moduleInfo == null
+              || !moduleInfo.isTurboModule()
+              || resolvedModule != null && !moduleInfo.canOverrideExistingModule()) {
+            continue;
+          }
+
+          final NativeModule module = pkg.getModule(moduleName, mReactApplicationContext);
+          if (module != null) {
+            resolvedModule = module;
+          }
+        } else {
+          final NativeModule module = pkg.getModule(moduleName, mReactApplicationContext);
+          if (resolvedModule == null || module != null && module.canOverrideExistingModule()) {
+            resolvedModule = module;
+          }
         }
       } catch (IllegalArgumentException ex) {
         /**

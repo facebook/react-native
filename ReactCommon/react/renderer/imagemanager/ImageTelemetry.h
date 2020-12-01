@@ -15,25 +15,20 @@ namespace react {
 
 /*
  * Represents telemetry data associated with a image request
+ * where the willRequestUrlTime is the time at ImageTelemetry's creation.
  */
 class ImageTelemetry final {
  public:
-  ImageTelemetry(SurfaceId const surfaceId) : surfaceId_(surfaceId) {}
+  ImageTelemetry(SurfaceId const surfaceId) : surfaceId_(surfaceId) {
+    willRequestUrlTime_ = telemetryTimePointNow();
+  }
 
-  /*
-   * Signaling
-   */
-  void willRequestUrl();
-
-  /*
-   * Reading
-   */
   TelemetryTimePoint getWillRequestUrlTime() const;
 
   SurfaceId getSurfaceId() const;
 
  private:
-  TelemetryTimePoint willRequestUrlTime_{kTelemetryUndefinedTimePoint};
+  TelemetryTimePoint willRequestUrlTime_;
 
   const SurfaceId surfaceId_;
 };

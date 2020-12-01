@@ -12,6 +12,9 @@
 
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import NativeModalManager from './NativeModalManager';
+const Platform = require('../Utilities/Platform');
 const React = require('react');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
@@ -25,6 +28,11 @@ import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
+
+const ModalEventEmitter =
+  Platform.OS === 'ios' && NativeModalManager != null
+    ? new NativeEventEmitter(NativeModalManager)
+    : null;
 
 /**
  * The Modal component is a simple way to present content above an enclosing view.
@@ -161,9 +169,22 @@ class Modal extends React.Component<Props> {
     this._identifier = uniqueModalIdentifier++;
   }
 
+  componentDidMount() {
+    if (ModalEventEmitter) {
+      this._eventSubscription = ModalEventEmitter.addListener(
+        'modalDismissed',
+        event => {
+          if (event.modalID === this._identifier && this.props.onDismiss) {
+            this.props.onDismiss();
+          }
+        },
+      );
+    }
+  }
+
   componentWillUnmount() {
-    if (this.props.onDismiss != null) {
-      this.props.onDismiss();
+    if (this._eventSubscription) {
+      this._eventSubscription.remove();
     }
   }
 

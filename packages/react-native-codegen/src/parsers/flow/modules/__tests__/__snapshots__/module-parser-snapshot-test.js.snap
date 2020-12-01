@@ -1236,7 +1236,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ROOT_TAG
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'ReservedFunctionValueTypeAnnotation',
+                'type': 'ReservedTypeAnnotation',
                 'name': 'RootTag'
               },
               'params': [
@@ -1244,7 +1244,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ROOT_TAG
                   'name': 'rootTag',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'ReservedFunctionValueTypeAnnotation',
+                    'type': 'ReservedTypeAnnotation',
                     'name': 'RootTag'
                   }
                 }

@@ -18,4 +18,8 @@ const Context: React.Context<ContextType> = React.createContext<ContextType>(
   null,
 );
 
+if (__DEV__) {
+  Context.displayName = 'ImageAnalyticsTagContext';
+}
+
 export default Context;

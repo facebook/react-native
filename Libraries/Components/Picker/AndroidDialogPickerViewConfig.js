@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {GeneratedViewConfig} from '../../Utilities/registerGeneratedViewConfig';
+import type {PartialViewConfig} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 const AndroidDialogPickerViewConfig = {
   uiViewClassName: 'AndroidDialogPicker',
@@ -27,4 +27,4 @@ const AndroidDialogPickerViewConfig = {
   },
 };
 
-module.exports = (AndroidDialogPickerViewConfig: GeneratedViewConfig);
+module.exports = (AndroidDialogPickerViewConfig: PartialViewConfig);
