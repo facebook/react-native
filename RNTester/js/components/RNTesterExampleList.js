@@ -73,8 +73,8 @@ class RowComponent extends React.PureComponent<{
               onPress={this._onPress}>
               <View
                 style={[
-                  rowStyle, // TODO(macOS ISS#2323203)
                   {backgroundColor: theme.SystemBackgroundColor},
+                  rowStyle, // TODO(macOS ISS#2323203)
                 ]}>
                 <Text style={[styles.rowTitleText, {color: theme.LabelColor}]}>
                   {item.module.title}
@@ -290,19 +290,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   row: {
-    ...Platform.select({
-      // [TODO(macOS ISS#2323203)
-      macos: {
-        backgroundColor: PlatformColor('controlBackgroundColor'),
-      },
-      ios: {
-        backgroundColor: PlatformColor('secondarySystemGroupedBackgroundColor'),
-      },
-      default: {
-        // ]TODO(macOS ISS#2323203)
-        backgroundColor: 'white',
-      }, // [TODO(macOS ISS#2323203)
-    }), // ]TODO(macOS ISS#2323203)
     justifyContent: 'center',
     paddingHorizontal: 15,
     paddingVertical: 8,
