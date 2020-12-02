@@ -586,11 +586,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     int commitNumber = mCurrentSynchronousCommitNumber++;
 
-    // We are on the UI thread so this would otherwise be safe to call, *BUT* we don't know
-    // where we are on the callstack. Why isn't this safe, and why do we have additional safeguards
-    // here?
+    // We are on the UI thread so it would otherwise be safe to call `tryDispatchMountItems` here to
+    // flush previously-queued mountitems, *BUT* we don't know where we are on the callstack.
+    // Why isn't it safe, and why do we have additional safeguards here?
     //
-    // A tangible example where this will cause a crash:
+    // A tangible example where it would cause a crash, and did in the past:
     // 1. There are queued "delete" mutations
     // 2. We're called by this stack trace:
     //    FabricUIManager.synchronouslyUpdateViewOnUIThread(FabricUIManager.java:574)
@@ -607,9 +607,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     //    android.widget.ScrollView.overScrollBy(ScrollView.java:2040)
     //    android.widget.ScrollView.computeScroll(ScrollView.java:1481)
     //    android.view.View.updateDisplayListIfDirty(View.java:20466)
-    if (!ReactFeatureFlags.enableDrawMutationFix) {
-      tryDispatchMountItems();
-    }
+    // 3. A view is deleted while its parent is being drawn, causing a crash.
 
     MountItem synchronousMountItem =
         new MountItem() {

@@ -86,9 +86,6 @@ public class ReactFeatureFlags {
   /** Disable customDrawOrder in ReactViewGroup under Fabric only. */
   public static boolean disableCustomDrawOrderFabric = false;
 
-  /** Potential bugfix for crashes caused by mutating the view hierarchy during onDraw. */
-  public static boolean enableDrawMutationFix = true;
-
   /** Use lock-free data structures for Fabric MountItems. */
   public static boolean enableLockFreeMountInstructions = false;
 }
