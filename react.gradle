@@ -159,12 +159,21 @@ afterEvaluate {
             def devEnabled = !(config."devDisabledIn${targetName}"
                 || targetName.toLowerCase().contains("release"))
 
-            def extraArgs = config.extraPackagerArgs ?: [];
+            def extraArgs = []
 
             if (bundleConfig) {
-                extraArgs = extraArgs.clone()
-                extraArgs.add("--config");
-                extraArgs.add(bundleConfig);
+                extraArgs.add("--config")
+                extraArgs.add(bundleConfig)
+            }
+
+            // Hermes doesn't require JS minification.
+            if (enableHermes && !devEnabled) {
+                extraArgs.add("--minify")
+                extraArgs.add("false")
+            }
+
+            if (config.extraPackagerArgs) {
+                extraArgs.addAll(config.extraPackagerArgs)
             }
 
             commandLine(*execCommand, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
