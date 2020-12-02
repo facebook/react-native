@@ -53,8 +53,7 @@ class ShadowTree final {
       LayoutContext const &layoutContext,
       RootComponentDescriptor const &rootComponentDescriptor,
       ShadowTreeDelegate const &delegate,
-      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate,
-      bool enableReparentingDetection = false);
+      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate);
 
   ~ShadowTree();
 
@@ -99,14 +98,6 @@ class ShadowTree final {
 
   MountingCoordinator::Shared getMountingCoordinator() const;
 
-  /*
-   * Temporary.
-   * Do not use.
-   */
-  void setEnableReparentingDetection(bool value) {
-    enableReparentingDetection_ = value;
-  }
-
  private:
   void emitLayoutEvents(
       std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
@@ -116,7 +107,6 @@ class ShadowTree final {
   mutable better::shared_mutex commitMutex_;
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
-  bool enableReparentingDetection_{false};
 };
 
 } // namespace react

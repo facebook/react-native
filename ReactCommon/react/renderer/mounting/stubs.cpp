@@ -33,7 +33,7 @@ static void calculateShadowViewMutationsForNewTree(
         parentShadowView, newChildPair.shadowView, index));
 
     auto const newGrandChildPairs =
-        sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
+        sliceChildShadowNodeViewPairsLegacy(*newChildPair.shadowNode);
 
     calculateShadowViewMutationsForNewTree(
         mutations, newChildPair.shadowView, newGrandChildPairs);
@@ -47,7 +47,7 @@ StubViewTree stubViewTreeFromShadowNode(ShadowNode const &rootShadowNode) {
   calculateShadowViewMutationsForNewTree(
       mutations,
       ShadowView(rootShadowNode),
-      sliceChildShadowNodeViewPairs(rootShadowNode));
+      sliceChildShadowNodeViewPairsLegacy(rootShadowNode));
 
   auto emptyRootShadowNode = rootShadowNode.clone(
       ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
