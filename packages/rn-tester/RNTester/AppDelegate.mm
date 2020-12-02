@@ -16,7 +16,7 @@
 #endif
 
 #if RCT_USE_HERMES
-#import <React/HermesExecutorFactory.h>
+#import <reacthermes/HermesExecutorFactory.h>
 #else
 #import <React/JSCExecutorFactory.h>
 #endif

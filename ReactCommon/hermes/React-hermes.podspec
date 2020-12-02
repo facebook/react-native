@@ -33,12 +33,13 @@ Pod::Spec.new do |s|
                              "inspector/*.{cpp,h}",
                              "inspector/chrome/*.{cpp,h}",
                              "inspector/detail/*.{cpp,h}"
+  s.public_header_files    = "executor/HermesExecutorFactory.h"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = {
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/..\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\"",
                                "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1",
                              }
-  s.header_dir             = "React"
+  s.header_dir             = "reacthermes"
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
   s.dependency "React-jsiexecutor", version
