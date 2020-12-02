@@ -56,10 +56,6 @@
 -keep class com.facebook.jni.** { *; }
 
 
--keepattributes Signature
--keepattributes *Annotation*
-
-
 # okio
 
 -keep class sun.misc.Unsafe { *; }
