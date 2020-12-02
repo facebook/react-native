@@ -21,28 +21,11 @@ export type Args = {|
   cancelButtonKey?: string,
   destructiveButtonKey?: string,
   keyboardType?: string,
-  // [TODO(macOS GH#774)
+  // [TODO(macOS ISS#2323203)
   defaultInputs?: DefaultInputsArray,
   modal?: ?boolean,
   critical?: ?boolean,
-  // ]TODO(macOS GH#774)
-|};
-
-// TODO(macOS GH#774): stand-in for Args to make codegen happy
-type NativeArgs = {|
-  title?: string,
-  message?: string,
-  buttons?: Array<Object>, // TODO(T67565166): have a better type
-  type?: string,
-  defaultValue?: string,
-  cancelButtonKey?: string,
-  destructiveButtonKey?: string,
-  keyboardType?: string,
-  // [TODO(macOS GH#774)
-  defaultInputs?: Array<Object>,
-  modal?: ?boolean,
-  critical?: ?boolean,
-  // ]TODO(macOS GH#774)
+  // ]TODO(macOS ISS#2323203)
 |};
 
 export interface Spec extends TurboModule {
