@@ -20,7 +20,7 @@ const {ParserError} = require('./errors');
  *
  * TODO(T71778680): Flow type AST Nodes
  */
-export type TypeDeclarationMap = {|[declarationName: string]: $FlowFixMe|};
+export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
 function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
@@ -47,13 +47,13 @@ export type ASTNode = Object;
 const invariant = require('invariant');
 
 type TypeAliasResolutionStatus =
-  | $ReadOnly<{|
+  | $ReadOnly<{
       successful: true,
       aliasName: string,
-    |}>
-  | $ReadOnly<{|
+    }>
+  | $ReadOnly<{
       successful: false,
-    |}>;
+    }>;
 
 function resolveTypeAnnotation(
   // TODO(T71778680): This is an Flow TypeAnnotation. Flow-type this

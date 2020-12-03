@@ -70,6 +70,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)start;
 - (BOOL)stop;
 
+/**
+ * EXPERIMENTAL
+ * Reset's the Surface to it's initial stage.
+ * It uses the passed in surface presenter, and whatever else was passed in init.
+ */
+- (void)resetWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter;
+
 #pragma mark - Layout: Setting the size constrains
 
 /**

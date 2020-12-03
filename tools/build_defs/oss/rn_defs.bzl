@@ -122,6 +122,7 @@ def rn_extra_build_flags():
 
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
+    _ = kwargs.pop("is_androidx", False)
     if react_native_target(
         "java/com/facebook/react/uimanager/annotations:annotations",
     ) in deps and name != "processing":
@@ -144,30 +145,7 @@ def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
 
         plugins = list(set(plugins + react_module_plugins))
 
-    is_androidx = kwargs.pop("is_androidx", False)
-    provided_deps = kwargs.pop("provided_deps", [])
-    appcompat = react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat")
-    support_v4 = react_native_dep("third-party/android/support/v4:lib-support-v4")
-
-    if is_androidx and (appcompat in deps or appcompat in provided_deps):
-        # add androidx target to provided_deps
-        pass
-        # provided_deps.append(
-        #     react_native_dep(
-        #         ""
-        #     )
-        # )
-
-    if is_androidx and (support_v4 in deps or support_v4 in provided_deps):
-        # add androidx target to provided_deps
-        pass
-        # provided_deps.append(
-        #     react_native_dep(
-        #         ""
-        #     )
-        # )
-
-    native.android_library(name = name, deps = deps, plugins = plugins, provided_deps = provided_deps, *args, **kwargs)
+    native.android_library(name = name, deps = deps, plugins = plugins, *args, **kwargs)
 
 def rn_android_binary(*args, **kwargs):
     native.android_binary(*args, **kwargs)
@@ -217,8 +195,9 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
 
     kwargs["deps"] = kwargs.pop("deps", []) + [
         react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
-        react_native_xplat_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock2"),
         react_native_dep("third-party/java/robolectric/4.4:robolectric"),
+        react_native_tests_target("resources:robolectric"),
+        react_native_xplat_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock2"),
     ]
 
     extra_vm_args = [

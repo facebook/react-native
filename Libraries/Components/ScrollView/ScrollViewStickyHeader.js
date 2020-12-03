@@ -67,6 +67,15 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
     this.setState({nextHeaderLayoutY: y});
   }
 
+  componentWillUnmount() {
+    if (this._translateY != null && this._animatedValueListenerId != null) {
+      this._translateY.removeListener(this._animatedValueListenerId);
+    }
+    if (this._timer) {
+      clearTimeout(this._timer);
+    }
+  }
+
   UNSAFE_componentWillReceiveProps(nextProps: Props) {
     if (
       nextProps.scrollViewHeight !== this.props.scrollViewHeight ||

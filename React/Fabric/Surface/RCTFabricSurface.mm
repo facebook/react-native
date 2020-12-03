@@ -64,6 +64,13 @@ using namespace facebook::react;
   return self;
 }
 
+- (void)resetWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
+{
+  _surfacePresenter = surfacePresenter;
+  _stage = RCTSurfaceStageSurfaceDidInitialize;
+  _view = nil;
+}
+
 - (BOOL)start
 {
   if (![self _setStage:RCTSurfaceStageStarted]) {

@@ -21,7 +21,8 @@ EventDispatcher::EventDispatcher(
     StatePipe const &statePipe,
     EventBeat::Factory const &synchonousEventBeatFactory,
     EventBeat::Factory const &asynchonousEventBeatFactory,
-    EventBeat::SharedOwnerBox const &ownerBox)
+    EventBeat::SharedOwnerBox const &ownerBox,
+    bool enableV2EventCoalescing)
     : synchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
           eventPipe,
           statePipe,
@@ -29,7 +30,8 @@ EventDispatcher::EventDispatcher(
       synchronousBatchedQueue_(std::make_unique<BatchedEventQueue>(
           eventPipe,
           statePipe,
-          synchonousEventBeatFactory(ownerBox))),
+          synchonousEventBeatFactory(ownerBox),
+          enableV2EventCoalescing)),
       asynchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
           eventPipe,
           statePipe,
@@ -37,7 +39,8 @@ EventDispatcher::EventDispatcher(
       asynchronousBatchedQueue_(std::make_unique<BatchedEventQueue>(
           eventPipe,
           statePipe,
-          asynchonousEventBeatFactory(ownerBox))) {}
+          asynchonousEventBeatFactory(ownerBox),
+          enableV2EventCoalescing)) {}
 
 void EventDispatcher::dispatchEvent(
     RawEvent const &rawEvent,

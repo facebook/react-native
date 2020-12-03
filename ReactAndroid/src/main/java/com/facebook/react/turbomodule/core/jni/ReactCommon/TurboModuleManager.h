@@ -9,12 +9,14 @@
 
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/JavaTurboModule.h>
+#include <ReactCommon/RuntimeExecutor.h>
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModuleManagerDelegate.h>
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 #include <react/jni/CxxModuleWrapper.h>
 #include <react/jni/JMessageQueueThread.h>
+#include <react/jni/JRuntimeExecutor.h>
 #include <memory>
 #include <unordered_map>
 
@@ -27,17 +29,18 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
       "Lcom/facebook/react/turbomodule/core/TurboModuleManager;";
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jhybridobject> jThis,
-      jlong jsContext,
+      jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
       jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
       jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
-      bool enablePromiseAsyncDispatch);
+      bool enablePromiseAsyncDispatch,
+      bool enableJSCodegen);
   static void registerNatives();
 
  private:
   friend HybridBase;
   jni::global_ref<TurboModuleManager::javaobject> javaPart_;
-  jsi::Runtime *runtime_;
+  RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<CallInvoker> jsCallInvoker_;
   std::shared_ptr<CallInvoker> nativeCallInvoker_;
   jni::global_ref<TurboModuleManagerDelegate::javaobject> delegate_;
@@ -52,14 +55,16 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
    * they want to be long-lived or short-lived.
    */
   std::shared_ptr<TurboModuleCache> turboModuleCache_;
+  bool enableJSCodegen_;
 
   void installJSIBindings();
   explicit TurboModuleManager(
       jni::alias_ref<TurboModuleManager::jhybridobject> jThis,
-      jsi::Runtime *rt,
+      RuntimeExecutor runtimeExecutor,
       std::shared_ptr<CallInvoker> jsCallInvoker,
       std::shared_ptr<CallInvoker> nativeCallInvoker,
-      jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
+      jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
+      bool enableJSCodegen);
 };
 
 } // namespace react

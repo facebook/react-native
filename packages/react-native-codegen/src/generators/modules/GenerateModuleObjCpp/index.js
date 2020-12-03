@@ -26,11 +26,11 @@ const ModuleDeclarationTemplate = ({
   hasteModuleName,
   structDeclarations,
   protocolMethods,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
   structDeclarations: string,
   protocolMethods: string,
-|}>) => `${structDeclarations}
+}>) => `${structDeclarations}
 @protocol ${hasteModuleName}Spec <RCTBridgeModule, RCTTurboModule>
 
 ${protocolMethods}
@@ -51,10 +51,10 @@ namespace facebook {
 const HeaderFileTemplate = ({
   moduleDeclarations,
   structInlineMethods,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   moduleDeclarations: string,
   structInlineMethods: string,
-|}>) => `/**
+}>) => `/**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -88,10 +88,10 @@ ${structInlineMethods}
 const SourceFileTemplate = ({
   headerFileName,
   moduleImplementations,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   headerFileName: string,
   moduleImplementations: string,
-|}>) => `/**
+}>) => `/**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the

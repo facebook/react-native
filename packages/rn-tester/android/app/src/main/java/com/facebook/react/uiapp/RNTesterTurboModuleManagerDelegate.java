@@ -17,9 +17,7 @@ import java.util.List;
 
 /** This class is responsible for creating all the TurboModules for the RNTester app. */
 public class RNTesterTurboModuleManagerDelegate extends ReactPackageTurboModuleManagerDelegate {
-  static {
-    SoLoader.loadLibrary("rntester_appmodules");
-  }
+  private static volatile boolean sIsSoLibraryLoaded;
 
   protected native HybridData initHybrid();
 
@@ -29,5 +27,18 @@ public class RNTesterTurboModuleManagerDelegate extends ReactPackageTurboModuleM
   public RNTesterTurboModuleManagerDelegate(
       ReactApplicationContext context, List<ReactPackage> packages) {
     super(context, packages);
+  }
+
+  @Override
+  protected void maybeLoadOtherSoLibraries() {
+    maybeLoadSoLibraries();
+  }
+
+  // Prevents issues with initializer interruptions.
+  private static synchronized void maybeLoadSoLibraries() {
+    if (!sIsSoLibraryLoaded) {
+      SoLoader.loadLibrary("rntester_appmodules");
+      sIsSoLibraryLoaded = true;
+    }
   }
 }

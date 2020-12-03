@@ -53,7 +53,7 @@ const UserFlow = {
     var resolvedInstanceKey = instanceKey;
     if (instanceKey === AUTO_INSTANCE_KEY) {
       if (global.nativeUserFlowNextInstanceKey) {
-        resolvedInstanceKey = global.nativeUserFlowNextInstanceKey();
+        resolvedInstanceKey = global.nativeUserFlowNextInstanceKey(markerId);
       } else {
         // There is no JSI methods installed, API won't do anything
         resolvedInstanceKey = 0;

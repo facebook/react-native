@@ -18,7 +18,7 @@ const {getModules} = require('./Utils');
 
 const ModuleClassDeclarationTemplate = ({
   hasteModuleName,
-}: $ReadOnly<{|hasteModuleName: string|}>) => {
+}: $ReadOnly<{hasteModuleName: string}>) => {
   return `/**
  * JNI C++ class for module '${hasteModuleName}'
  */
@@ -32,7 +32,7 @@ public:
 const HeaderFileTemplate = ({
   modules,
   libraryName,
-}: $ReadOnly<{|modules: string, libraryName: string|}>) => {
+}: $ReadOnly<{modules: string, libraryName: string}>) => {
   return `
 /**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.

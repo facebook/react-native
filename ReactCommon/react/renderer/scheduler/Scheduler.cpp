@@ -67,7 +67,8 @@ Scheduler::Scheduler(
       statePipe,
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
-      eventOwnerBox);
+      eventOwnerBox,
+      reactNativeConfig_->getBool("react_fabric:enable_v2_event_coalescing"));
 
   // Casting to `std::shared_ptr<EventDispatcher const>`.
   auto eventDispatcher =
@@ -106,16 +107,12 @@ Scheduler::Scheduler(
   uiManager_->setAnimationDelegate(animationDelegate);
 
 #ifdef ANDROID
-  enableReparentingDetection_ = reactNativeConfig_->getBool(
-      "react_fabric:enable_reparenting_detection_android");
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
   uiManager_->experimentEnableStateUpdateWithAutorepeat =
       reactNativeConfig_->getBool(
           "react_fabric:enable_state_update_with_autorepeat_android");
 #else
-  enableReparentingDetection_ = reactNativeConfig_->getBool(
-      "react_fabric:enable_reparenting_detection_ios");
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
   uiManager_->experimentEnableStateUpdateWithAutorepeat =
@@ -191,8 +188,7 @@ void Scheduler::startSurface(
       layoutContext,
       *rootComponentDescriptor_,
       *uiManager_,
-      mountingOverrideDelegate,
-      enableReparentingDetection_);
+      mountingOverrideDelegate);
 
   auto uiManager = uiManager_;
 

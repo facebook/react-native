@@ -13,10 +13,6 @@ target 'HelloWorld' do
     # Pods for testing
   end
 
-  pre_install do |installer|
-    codegen_pre_install(installer)
-  end
-
   # Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
