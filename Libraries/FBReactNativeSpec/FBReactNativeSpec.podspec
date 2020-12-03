@@ -23,7 +23,8 @@ react_native_path = File.join(__dir__, "..", "..")
 srcs_dir = File.join(__dir__, "..")
 codegen_script_path = File.join(react_native_path, "scripts", "generate-native-modules-specs.sh")
 codegen_path = File.join(react_native_path, codegen_path_prefix, "react-native-codegen")
-generated_files = [File.join(__dir__, "FBReactNativeSpec", "FBReactNativeSpec.h"), File.join(__dir__, "FBReactNativeSpec", "FBReactNativeSpec-generated.mm")]
+output_dir = File.join(__dir__, "FBReactNativeSpec")
+generated_files = [File.join(output_dir, "FBReactNativeSpec.h"), File.join(output_dir, "FBReactNativeSpec-generated.mm")]
 codegen_command = "CODEGEN_PATH=#{codegen_path} sh '#{codegen_script_path}' | tee \"${SCRIPT_OUTPUT_FILE_0}\""
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
@@ -55,7 +56,7 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi", version
   s.dependency "ReactCommon/turbomodule/core", version
 
-  s.prepare_command = "touch #{generated_files.reduce() { |str, file| str + " " + file }}"
+  s.prepare_command = "mkdir -p #{output_dir} && touch #{generated_files.reduce() { |str, file| str + " " + file }}"
   s.script_phase = {
     :name => 'Generate Native Modules Code',
     :input_files => [srcs_dir],
