@@ -25,6 +25,7 @@ export interface Spec extends TurboModule {
       +anchor?: ?number,
       +tintColor?: ?number,
       +userInterfaceStyle?: ?string,
+      +disabledButtonIndices?: Array<number>,
     |},
     callback: (buttonIndex: number) => void,
   ) => void;

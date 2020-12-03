@@ -46,6 +46,7 @@ export function get<T: TurboModule>(name: string): ?T {
    * TurboModule object.
    */
   const schema = arguments.length === 2 ? arguments[1] : undefined;
+  // $FlowFixMe[incompatible-call]
   return requireModule<T>(name, schema);
 }
 
@@ -60,6 +61,7 @@ export function getEnforcing<T: TurboModule>(name: string): T {
    * TurboModule object.
    */
   const schema = arguments.length === 2 ? arguments[1] : undefined;
+  // $FlowFixMe[incompatible-call]
   const module = requireModule<T>(name, schema);
   invariant(
     module != null,

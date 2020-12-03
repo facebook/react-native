@@ -129,6 +129,13 @@ void ModalHostViewEventEmitter::onShow(OnShow event) const {
     return payload;
   });
 }
+void ModalHostViewEventEmitter::onDismiss(OnDismiss event) const {
+  dispatchEvent("dismiss", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    
+    return payload;
+  });
+}
 void ModalHostViewEventEmitter::onOrientationChange(OnOrientationChange event) const {
   dispatchEvent("orientationChange", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);

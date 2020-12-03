@@ -23,4 +23,7 @@ import type {IPerformanceLogger} from './createPerformanceLogger';
 const PerformanceLoggerContext: React.Context<IPerformanceLogger> = React.createContext(
   GlobalPerformanceLogger,
 );
+if (__DEV__) {
+  PerformanceLoggerContext.displayName = 'PerformanceLoggerContext';
+}
 module.exports = PerformanceLoggerContext;

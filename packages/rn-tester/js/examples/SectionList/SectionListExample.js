@@ -67,6 +67,12 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
   </View>
 );
 
+const EmptySectionList = () => (
+  <View style={{alignItems: 'center'}}>
+    <Text style={{fontSize: 20}}>This is rendered when the list is empty</Text>
+  </View>
+);
+
 class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
   state:
     | any
@@ -174,6 +180,15 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
           renderSectionHeader={renderSectionHeader}
           renderSectionFooter={renderSectionFooter}
           stickySectionHeadersEnabled
+          initialNumToRender={10}
+          ListEmptyComponent={EmptySectionList}
+          onEndReached={() =>
+            Alert.alert(
+              'onEndReached called',
+              'You have reached the end of this list',
+            )
+          }
+          onEndReachedThreshold={0}
           sections={[
             {
               key: 'empty section',

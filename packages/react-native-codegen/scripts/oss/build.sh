@@ -15,7 +15,13 @@ CODEGEN_DIR="$THIS_DIR/../.."
 
 rm -rf "${CODEGEN_DIR:?}/lib" "${CODEGEN_DIR:?}/node_modules"
 
-YARN_BINARY="${YARN_BINARY:-$(command -v yarn)}"
+# Fallback to npm if yarn is not available
+if [ -x "$(command -v yarn)" ]; then
+  YARN_OR_NPM=$(command -v yarn)
+else
+  YARN_OR_NPM=$(command -v npm)
+fi
+YARN_BINARY="${YARN_BINARY:-$YARN_OR_NPM}"
 
 if [[ ${FBSOURCE_ENV:-0} -eq 1 ]]; then
   # Custom FB-specific setup

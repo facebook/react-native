@@ -452,7 +452,12 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   [self _updateStateWithContentOffset];
 }
 
-#pragma mark - UIScrollViewDelegate
+- (UIView *)viewForZoomingInScrollView:(__unused UIScrollView *)scrollView
+{
+  return _containerView;
+}
+
+#pragma mark -
 
 - (void)_forceDispatchNextScrollEvent
 {
@@ -622,7 +627,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)zoomToRect:(CGRect)rect animated:(BOOL)animated
 {
-  // Not implemented.
+  [_scrollView zoomToRect:rect animated:animated];
 }
 
 - (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
