@@ -41,7 +41,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -489,7 +488,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     // to be committed via the Scheduler, which will cause mounting instructions
     // to be queued up and synchronously executed to delete and remove
     // all the views in the hierarchy.
-    if (mReactInstanceManager != null && ReactFeatureFlags.enableStopSurfaceOnRootViewUnmount) {
+    if (mReactInstanceManager != null) {
       final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
       if (reactApplicationContext != null && getUIManagerType() == FABRIC) {
         @Nullable
