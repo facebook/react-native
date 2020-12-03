@@ -25,9 +25,7 @@ set -e
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 TEMP_DIR=$(mktemp -d /tmp/react-native-codegen-XXXXXXXX)
 RN_DIR=$(cd "$THIS_DIR/.." && pwd)
-CODEGEN_PATH="${CODEGEN_PATH:-$(cd "$RN_DIR/packages" && pwd)}"
-CODEGEN_DIR="$CODEGEN_PATH/react-native-codegen"
-
+CODEGEN_PATH="${CODEGEN_PATH:-$(cd "$RN_DIR/packages/react-native-codegen" && pwd)}"
 YARN_BINARY="${YARN_BINARY:-$(command -v yarn)}"
 
 cleanup () {
@@ -40,16 +38,6 @@ describe () {
   printf "\\n\\n>>>>> %s\\n\\n\\n" "$1"
 }
 
-step_build_codegen () {
-  if [ ! -d "$CODEGEN_DIR/lib" ]; then
-    describe "Building react-native-codegen package"
-    pushd "$CODEGEN_DIR" >/dev/null || exit
-      "$YARN_BINARY"
-      "$YARN_BINARY" build
-    popd >/dev/null || exit
-  fi
-}
-
 run_codegen () {
   SRCS_DIR=$1
   LIBRARY_NAME=$2
@@ -57,16 +45,16 @@ run_codegen () {
 
   SCHEMA_FILE="$TEMP_DIR/schema-$LIBRARY_NAME.json"
 
-  if [ ! -d "$CODEGEN_DIR/lib" ]; then
+  if [ ! -d "$CODEGEN_PATH/lib" ]; then
     describe "Building react-native-codegen package"
-    pushd "$CODEGEN_DIR" >/dev/null || exit
+    pushd "$CODEGEN_PATH" >/dev/null || exit
       "$YARN_BINARY"
       "$YARN_BINARY" build
     popd >/dev/null || exit
   fi
 
   describe "Generating schema from flow types"
-  "$YARN_BINARY" node "$CODEGEN_DIR/lib/cli/combine/combine-js-to-schema-cli.js" "$SCHEMA_FILE" "$SRCS_DIR"
+  "$YARN_BINARY" node "$CODEGEN_PATH/lib/cli/combine/combine-js-to-schema-cli.js" "$SCHEMA_FILE" "$SRCS_DIR"
 
   describe "Generating native code from schema (iOS)"
   pushd "$RN_DIR" >/dev/null || exit
