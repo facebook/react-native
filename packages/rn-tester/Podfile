@@ -3,7 +3,9 @@ require_relative '../../scripts/react_native_pods'
 source 'https://cdn.cocoapods.org/'
 platform :ios, '10.0'
 
-if ENV['USE_FRAMEWORKS'] == '1'
+USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
+
+if USE_FRAMEWORKS
   puts "Installing pods with use_frameworks!"
   use_frameworks!
 end
@@ -31,7 +33,9 @@ end
 
 target 'RNTester' do
   pods()
-  use_flipper!
+  if !USE_FRAMEWORKS
+    use_flipper!
+  end
 end
 
 target 'RNTesterUnitTests' do
@@ -44,22 +48,8 @@ target 'RNTesterIntegrationTests' do
   pod 'React-RCTTest', :path => "./RCTTest"
 end
 
-def frameworks_pre_install(installer)
-  static_frameworks = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-      'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
-      'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket',
-      'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
-
-  Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
-  installer.pod_targets.each do |pod|
-    if static_frameworks.include?(pod.name)
-      def pod.build_type
-        Pod::BuildType.static_library
-      end
-    end
-  end
-end
-
 post_install do |installer|
-  flipper_post_install(installer)
+  if !USE_FRAMEWORKS
+    flipper_post_install(installer)
+  end
 end
