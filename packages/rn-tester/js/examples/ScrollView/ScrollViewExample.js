@@ -546,7 +546,7 @@ const SnapToOptions = () => {
           <Text style={styles.rowTitle}>Snap to Alignment Mode</Text>
           <Picker
             selectedValue={snapToAlignment}
-            onValueChange={value => { if (typeof value === 'string') setSnapToAlignment(value)}}
+            onValueChange={value => { if (value === 'start' || value === 'center' || value === 'end') setSnapToAlignment(value)}}
             itemStyle={styles.pickerItem}>
             {snapToAlignmentModes.map(label => {
               return <Picker.Item label={label} value={label} key={label} />;
@@ -724,7 +724,7 @@ const OnScrollOptions = () => {
           <Text style={styles.rowTitle}>Over Scroll Mode</Text>
           <Picker
             selectedValue={overScrollMode}
-            onValueChange={value => setOverScrollMode(value)}
+            onValueChange={value => {if (value === 'always' || value === 'auto' || value === 'never') setOverScrollMode(value)}}
             itemStyle={styles.pickerItem}>
             {overScrollModeOptions.map(label => {
               return <Picker.Item label={label} value={label} key={label} />;
@@ -843,7 +843,7 @@ const KeyboardExample = () => {
       <Text style={styles.rowTitle}>Keyboard Dismiss Mode</Text>
       <Picker
         selectedValue={keyboardDismissMode}
-        onValueChange={value => setKeyboardDismissMode(value)}
+        onValueChange={value => { if (value === 'none' || value === 'on-drag' || value === 'interactive') setKeyboardDismissMode(value)}}
         itemStyle={styles.pickerItem}>
         {dismissOptions.map(label => {
           return <Picker.Item label={label} value={label} key={label} />;
@@ -852,7 +852,7 @@ const KeyboardExample = () => {
       <Text style={styles.rowTitle}>Keyboard Should Persist taps</Text>
       <Picker
         selectedValue={keyboardShouldPersistTaps}
-        onValueChange={value => setKeyboardShouldPersistTaps(value)}
+        onValueChange={value => { if (value === 'never' || value === 'always' || value === 'handled') setKeyboardShouldPersistTaps(value)}}
         itemStyle={styles.pickerItem}>
         {persistOptions.map(label => {
           return <Picker.Item label={label} value={label} key={label} />;
