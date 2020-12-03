@@ -144,6 +144,9 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             }
           }
 
+          if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q) {
+            layoutWidth = (float) Math.ceil(layoutWidth);
+          }
           float layoutHeight = height;
           if (heightMode != YogaMeasureMode.EXACTLY) {
             layoutHeight = layout.getLineBottom(lineCount - 1);

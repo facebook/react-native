@@ -96,23 +96,26 @@ static void UpdateActiveTouchWithUITouch(
   activeTouch.touch.timestamp = uiTouch.timestamp;
 
   if (RCTForceTouchAvailable()) {
-    activeTouch.touch.force = uiTouch.force / uiTouch.maximumPossibleForce;
+    activeTouch.touch.force = RCTZeroIfNaN(uiTouch.force / uiTouch.maximumPossibleForce);
   }
 }
 
 static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView, CGPoint rootViewOriginOffset)
 {
-  UIView *componentView = uiTouch.view;
-
   ActiveTouch activeTouch = {};
 
-  if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
-    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView
-        touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
-    activeTouch.touch.target = (Tag)componentView.tag;
+  // Find closest Fabric-managed touchable view
+  UIView *componentView = uiTouch.view;
+  while (componentView) {
+    if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+      activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView
+          touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
+      activeTouch.touch.target = (Tag)componentView.tag;
+      activeTouch.componentView = componentView;
+      break;
+    }
+    componentView = componentView.superview;
   }
-
-  activeTouch.componentView = componentView;
 
   UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView, rootViewOriginOffset);
   return activeTouch;
@@ -159,7 +162,10 @@ struct PointerHasher {
   std::unordered_map<__unsafe_unretained UITouch *, ActiveTouch, PointerHasher<__unsafe_unretained UITouch *>>
       _activeTouches;
 
-  UIView *_rootComponentView;
+  /*
+   * We hold the view weakly to prevent a retain cycle.
+   */
+  __weak UIView *_rootComponentView;
   IdentifierPool<11> _identifierPool;
 }
 

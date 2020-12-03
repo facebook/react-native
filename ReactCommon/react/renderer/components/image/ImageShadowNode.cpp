@@ -25,7 +25,7 @@ void ImageShadowNode::setImageManager(const SharedImageManager &imageManager) {
 void ImageShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
-  auto const &imageSource = getImageSource();
+  auto imageSource = getImageSource();
   auto const &currentState = getStateData();
   bool hasSameRadius =
       getConcreteProps().blurRadius == currentState.getBlurRadius();

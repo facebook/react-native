@@ -73,6 +73,11 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override;
 
+  /*
+   * Temporary flags.
+   */
+  bool experimentEnableStateUpdateWithAutorepeat{false};
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
@@ -95,10 +100,8 @@ class UIManager final : public ShadowTreeDelegate {
 
   void completeSurface(
       SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildren) const;
-
-  void setNativeProps(ShadowNode const &shadowNode, RawProps const &rawProps)
-      const;
+      SharedShadowNodeUnsharedList const &rootChildren,
+      ShadowTree::CommitOptions commitOptions) const;
 
   void setJSResponder(
       const ShadowNode::Shared &shadowNode,
@@ -128,6 +131,7 @@ class UIManager final : public ShadowTreeDelegate {
    * and performs a commit.
    */
   void updateState(StateUpdate const &stateUpdate) const;
+  void updateStateWithAutorepeat(StateUpdate const &stateUpdate) const;
 
   void dispatchCommand(
       const ShadowNode::Shared &shadowNode,
@@ -141,8 +145,8 @@ class UIManager final : public ShadowTreeDelegate {
   void configureNextLayoutAnimation(
       jsi::Runtime &runtime,
       RawValue const &config,
-      const jsi::Value &successCallback,
-      const jsi::Value &failureCallback) const;
+      jsi::Value const &successCallback,
+      jsi::Value const &failureCallback) const;
 
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 
@@ -152,6 +156,12 @@ class UIManager final : public ShadowTreeDelegate {
   UIManagerBinding *uiManagerBinding_;
   ShadowTreeRegistry shadowTreeRegistry_{};
   BackgroundExecutor backgroundExecutor_{};
+
+  // Used only when BackgroundExecutor is enabled.
+  // Property is used to keep count of `completeRoot` events to
+  // determine whether a commit should be cancelled. Only to be used
+  // inside UIManagerBinding.
+  std::atomic_uint_fast8_t completeRootEventCounter_{0};
 };
 
 } // namespace react

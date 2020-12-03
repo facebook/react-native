@@ -12,7 +12,7 @@
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
 
-const infoLog = require('../../../../../Libraries/Utilities/infoLog');
+const infoLog = require('react-native/Libraries/Utilities/infoLog');
 
 const {
   HeaderComponent,
@@ -64,6 +64,12 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
       highlighted && {backgroundColor: 'rgb(217, 217, 217)'},
     ]}>
     <Text style={styles.separatorText}>{text}</Text>
+  </View>
+);
+
+const EmptySectionList = () => (
+  <View style={{alignItems: 'center'}}>
+    <Text style={{fontSize: 20}}>This is rendered when the list is empty</Text>
   </View>
 );
 
@@ -174,6 +180,15 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
           renderSectionHeader={renderSectionHeader}
           renderSectionFooter={renderSectionFooter}
           stickySectionHeadersEnabled
+          initialNumToRender={10}
+          ListEmptyComponent={EmptySectionList}
+          onEndReached={() =>
+            Alert.alert(
+              'onEndReached called',
+              'You have reached the end of this list',
+            )
+          }
+          onEndReachedThreshold={0}
           sections={[
             {
               key: 'empty section',

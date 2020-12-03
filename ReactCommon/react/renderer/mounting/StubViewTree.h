@@ -21,9 +21,7 @@ class StubViewTree {
   StubViewTree() = default;
   StubViewTree(ShadowView const &shadowView);
 
-  void mutate(
-      ShadowViewMutationList const &mutations,
-      bool ignoreDuplicateCreates = false);
+  void mutate(ShadowViewMutationList const &mutations);
 
   StubView const &getRootStubView() const;
 

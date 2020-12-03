@@ -15,115 +15,204 @@ import type {SchemaType} from '../../CodegenSchema.js';
 const flowParser = require('flow-parser');
 const fs = require('fs');
 const path = require('path');
-const {buildModuleSchema} = require('./modules/schema');
-const {buildComponentSchema} = require('./components/schema');
-const {processComponent} = require('./components');
-const {processModule} = require('./modules');
+const {buildComponentSchema} = require('./components');
+const {wrapComponentSchema} = require('./components/schema');
+const {buildModuleSchema} = require('./modules');
+const {wrapModuleSchema} = require('./modules/schema');
+const {createParserErrorCapturer} = require('./utils');
+const invariant = require('invariant');
 
-function getTypes(ast) {
-  return ast.body.reduce((types, node) => {
-    if (node.type === 'ExportNamedDeclaration') {
-      if (node.declaration && node.declaration.type !== 'VariableDeclaration') {
-        types[node.declaration.id.name] = node.declaration;
-      }
-    } else if (
-      node.type === 'TypeAlias' ||
-      node.type === 'InterfaceDeclaration'
-    ) {
-      types[node.id.name] = node;
-    }
-    return types;
-  }, {});
-}
-
-function getConfigType(ast, types): 'module' | 'component' {
+function isComponent(ast) {
   const defaultExports = ast.body.filter(
     node => node.type === 'ExportDefaultDeclaration',
   );
 
-  let isComponent = false;
-
-  if (defaultExports.length > 0) {
-    let declaration = defaultExports[0].declaration;
-    // codegenNativeComponent can be nested inside a cast
-    // expression so we need to go one level deeper
-    if (declaration.type === 'TypeCastExpression') {
-      declaration = declaration.expression;
-    }
-
-    isComponent =
-      declaration &&
-      declaration.callee &&
-      declaration.callee.name === 'codegenNativeComponent';
+  if (defaultExports.length === 0) {
+    return false;
   }
 
-  const typesExtendingTurboModule = Object.keys(types)
-    .map(typeName => types[typeName])
-    .filter(
-      type =>
-        type.extends &&
-        type.extends[0] &&
-        type.extends[0].id.name === 'TurboModule',
-    );
+  let declaration = defaultExports[0].declaration;
+  // codegenNativeComponent can be nested inside a cast
+  // expression so we need to go one level deeper
+  if (declaration.type === 'TypeCastExpression') {
+    declaration = declaration.expression;
+  }
 
-  if (typesExtendingTurboModule.length > 1) {
+  if (declaration.type !== 'CallExpression') {
+    return false;
+  }
+
+  return (
+    declaration.callee.type === 'Identifier' &&
+    declaration.callee.name === 'codegenNativeComponent'
+  );
+}
+
+function isModule(
+  // TODO(T71778680): Flow-type this node.
+  ast: $FlowFixMe,
+) {
+  const moduleInterfaces = ast.body
+    .map(node => {
+      if (
+        node.type === 'ExportNamedDeclaration' &&
+        node.exportKind === 'type' &&
+        node.declaration.type === 'InterfaceDeclaration'
+      ) {
+        return node.declaration;
+      }
+      return node;
+    })
+    .filter(declaration => {
+      return (
+        declaration.type === 'InterfaceDeclaration' &&
+        declaration.extends.length === 1 &&
+        declaration.extends[0].type === 'InterfaceExtends' &&
+        declaration.extends[0].id.name === 'TurboModule'
+      );
+    })
+    .map(declaration => declaration.id.name);
+
+  if (moduleInterfaces.length === 0) {
+    return false;
+  }
+
+  if (moduleInterfaces.length > 1) {
     throw new Error(
-      'Found two types extending "TurboModule" is one file. Split them into separated files.',
+      'File contains declarations of more than one module: ' +
+        moduleInterfaces.join(', ') +
+        '. Please declare exactly one module in this file.',
     );
   }
 
-  const isModule = typesExtendingTurboModule.length === 1;
+  return true;
+}
 
-  if (isModule && isComponent) {
+function getConfigType(
+  // TODO(T71778680): Flow-type this node.
+  ast: $FlowFixMe,
+): 'module' | 'component' {
+  const isConfigAComponent = isComponent(ast);
+  const isConfigAModule = isModule(ast);
+
+  if (isConfigAModule && isConfigAComponent) {
     throw new Error(
       'Found type extending "TurboModule" and exported "codegenNativeComponent" declaration in one file. Split them into separated files.',
     );
   }
 
-  if (isModule) {
+  if (isConfigAModule) {
     return 'module';
-  } else if (isComponent) {
+  } else if (isConfigAComponent) {
     return 'component';
   } else {
     throw new Error(
-      `Default export for module specified incorrectly. It should containts
-    either type extending "TurboModule" or "codegenNativeComponent".`,
+      'File neither contains a module declaration, nor a component declaration. ' +
+        'For module declarations, please make sure your file has an InterfaceDeclaration extending TurboModule. ' +
+        'For component declarations, please make sure your file has a default export calling the codegenNativeComponent<Props>(...) macro.',
     );
   }
 }
 
-function buildSchema(contents: string, filename: ?string): ?SchemaType {
+const withSpace = (...args) => args.join('\\s*');
+/**
+ * Parse the TurboModuleRegistry.get(Enforcing)? call using RegExp.
+ * Why? This call can appear anywhere in the NativeModule spec. Currently,
+ * there is no good way of traversing the AST to find the MemberExpression
+ * responsible for the call.
+ */
+const TURBO_MODULE_REGISTRY_REQUIRE_REGEX_STRING = withSpace(
+  'TurboModuleRegistry',
+  '\\.',
+  'get(Enforcing)?',
+  '<',
+  'Spec',
+  '>',
+  '\\(',
+  '[\'"](?<nativeModuleName>[A-Za-z$_0-9]+)[\'"]',
+  ',?',
+  '\\)',
+);
+
+function buildSchema(contents: string, filename: ?string): SchemaType {
   const ast = flowParser.parse(contents);
 
-  const types = getTypes(ast);
-
-  const configType = getConfigType(ast, types);
+  const configType = getConfigType(ast);
 
   if (configType === 'component') {
-    return buildComponentSchema(processComponent(ast, types));
+    return wrapComponentSchema(buildComponentSchema(ast));
   } else {
     if (filename === undefined || filename === null) {
       throw new Error('Filepath expected while parasing a module');
     }
-    const moduleName = path.basename(filename).slice(6, -3);
-    return buildModuleSchema(processModule(types), moduleName);
+    const hasteModuleName = path.basename(filename).replace(/\.js$/, '');
+
+    const regex = new RegExp(TURBO_MODULE_REGISTRY_REQUIRE_REGEX_STRING, 'g');
+    let match = regex.exec(contents);
+
+    const errorHeader = `Error while parsing Module '${hasteModuleName}'`;
+
+    if (match == null) {
+      throw new Error(
+        `${errorHeader}: No call to TurboModuleRegistry.get<Spec>('...') detected.`,
+      );
+    }
+
+    const moduleNames = [];
+    while (match != null) {
+      const resultGroups = match.groups;
+      invariant(
+        resultGroups != null,
+        `Couldn't parse TurboModuleRegistry.(get|getEnforcing)<Spec> call in module '${hasteModuleName}'.`,
+      );
+
+      if (!moduleNames.includes(resultGroups.nativeModuleName)) {
+        moduleNames.push(resultGroups.nativeModuleName);
+      }
+      match = regex.exec(contents);
+    }
+
+    const [parsingErrors, guard] = createParserErrorCapturer();
+
+    const schema = guard(() =>
+      buildModuleSchema(hasteModuleName, moduleNames, ast, guard),
+    );
+
+    if (parsingErrors.length > 0) {
+      /**
+       * TODO(T77968131): We have two options:
+       *  - Throw the first error, but indicate there are more then one errors.
+       *  - Display all errors, nicely formatted.
+       *
+       * For the time being, we're just throw the first error.
+       **/
+
+      throw parsingErrors[0];
+    }
+
+    invariant(
+      schema != null,
+      'When there are no parsing errors, the schema should not be null',
+    );
+
+    return wrapModuleSchema(schema, hasteModuleName);
   }
 }
 
-function parseFile(filename: string): ?SchemaType {
+function parseFile(filename: string): SchemaType {
   const contents = fs.readFileSync(filename, 'utf8');
 
   return buildSchema(contents, filename);
 }
 
-function parseModuleFixture(filename: string): ?SchemaType {
+function parseModuleFixture(filename: string): SchemaType {
   const contents = fs.readFileSync(filename, 'utf8');
 
   return buildSchema(contents, 'path/NativeSampleTurboModule.js');
 }
 
-function parseString(contents: string): ?SchemaType {
-  return buildSchema(contents);
+function parseString(contents: string, filename: ?string): SchemaType {
+  return buildSchema(contents, filename);
 }
 
 module.exports = {

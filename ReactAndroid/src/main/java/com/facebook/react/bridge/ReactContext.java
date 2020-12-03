@@ -470,7 +470,8 @@ public class ReactContext extends ContextWrapper {
    * @param segmentId
    * @param path
    */
-  public void registerSegment(int segmentId, String path) {
+  public void registerSegment(int segmentId, String path, Callback callback) {
     Assertions.assertNotNull(mCatalystInstance).registerSegment(segmentId, path);
+    Assertions.assertNotNull(callback).invoke();
   }
 }

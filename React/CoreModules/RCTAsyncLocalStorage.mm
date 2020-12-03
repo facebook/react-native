@@ -76,11 +76,7 @@ static NSString *RCTGetStorageDirectory()
   static NSString *storageDirectory = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-#if TARGET_OS_TV
-    storageDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-#else
     storageDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-#endif
     storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
   });
   return storageDirectory;
@@ -166,7 +162,7 @@ static NSDictionary *RCTDeleteStorageDirectory()
 
 #pragma mark - RCTAsyncLocalStorage
 
-@interface RCTAsyncLocalStorage () <NativeAsyncStorageSpec>
+@interface RCTAsyncLocalStorage () <NativeAsyncLocalStorageSpec>
 @end
 
 @implementation RCTAsyncLocalStorage {
@@ -231,10 +227,6 @@ RCT_EXPORT_MODULE()
 - (NSDictionary *)_ensureSetup
 {
   RCTAssertThread(RCTGetMethodQueue(), @"Must be executed on storage thread");
-
-#if TARGET_OS_TV
-  RCTLogWarn(@"Persistent storage is not supported on tvOS, your data may be removed at any point.");
-#endif
 
   NSError *error = nil;
   if (!RCTHasCreatedStorageDirectory) {
@@ -463,7 +455,7 @@ RCT_EXPORT_METHOD(getAllKeys : (RCTResponseSenderBlock)callback)
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeAsyncStorageSpecJSI>(params);
+  return std::make_shared<facebook::react::NativeAsyncLocalStorageSpecJSI>(params);
 }
 
 @end

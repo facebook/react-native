@@ -30,7 +30,12 @@ ImageProps::ImageProps(const ImageProps &sourceProps, const RawProps &rawProps)
       capInsets(
           convertRawProp(rawProps, "capInsets", sourceProps.capInsets, {})),
       tintColor(
-          convertRawProp(rawProps, "tintColor", sourceProps.tintColor, {})) {}
+          convertRawProp(rawProps, "tintColor", sourceProps.tintColor, {})),
+      internal_analyticTag(convertRawProp(
+          rawProps,
+          "internal_analyticTag",
+          sourceProps.internal_analyticTag,
+          {})) {}
 
 } // namespace react
 } // namespace facebook

@@ -1,11 +1,12 @@
 {
   "name": "react-native-codegen",
-  "version": "0.0.3",
+  "version": "0.0.6",
   "description": "⚛️ Code generation tools for React Native",
   "homepage": "https://github.com/facebook/react-native/tree/master/packages/react-native-codegen",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git"
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/react-native-codegen"
   },
   "scripts": {
     "build": "yarn clean && node scripts/build.js --verbose",
@@ -18,11 +19,12 @@
   ],
   "dependencies": {
     "flow-parser": "^0.121.0",
-    "jscodeshift": "^0.9.0",
+    "jscodeshift": "^0.11.0",
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/plugin-proposal-optional-chaining": "^7.0.0",
@@ -32,6 +34,7 @@
     "@babel/plugin-transform-flow-strip-types": "^7.0.0",
     "chalk": "^4.0.0",
     "glob": "^7.1.1",
+    "invariant": "^2.2.4",
     "micromatch": "^4.0.2",
     "mkdirp": "^0.5.1",
     "prettier": "1.19.1"

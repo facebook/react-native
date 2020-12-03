@@ -6,7 +6,6 @@
 def use_react_native! (options={})
   # The prefix to the react-native
   prefix = options[:path] ||= "../node_modules/react-native"
-  hermes_engine_prefix = options[:hermes_path] ||= "../node_modules/hermes-engine-darwin"
 
   # Include Fabric dependencies
   fabric_enabled = options[:fabric_enabled] ||= false
@@ -64,13 +63,13 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-Core/Hermes', :path => "#{prefix}/"
-    pod 'hermes', :path => hermes_engine_prefix
+    pod 'hermes-engine'
     pod 'libevent', :podspec => "#{prefix}/third-party-podspecs/libevent.podspec"
   end
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
-  versions['Flipper'] ||= '~> 0.41.1'
+  versions['Flipper'] ||= '~> 0.54.0'
   versions['Flipper-DoubleConversion'] ||= '1.1.7'
   versions['Flipper-Folly'] ||= '~> 2.2'
   versions['Flipper-Glog'] ||= '0.3.6'
