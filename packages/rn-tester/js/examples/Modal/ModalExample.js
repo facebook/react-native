@@ -173,12 +173,10 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
           }
           onDismiss={() => {
             if (this.state.action === 'onDismiss') alert(this.state.action);
-          }
-          }
+          }}
           onShow={() => {
             if (this.state.action === 'onShow') alert(this.state.action);
-          }
-          }>
+          }}>
           <View style={[styles.container, modalBackgroundStyle]}>
             <View
               style={[styles.innerContainer, innerContainerTransparentStyle]}>
