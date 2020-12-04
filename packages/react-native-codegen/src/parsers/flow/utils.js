@@ -137,18 +137,14 @@ function createParserErrorCapturer(): [
   return [errors, guard];
 }
 
-// TODO(T71778680): Flow-type this node.
-function findChildren(
+// TODO(T71778680): Flow-type ASTNodes.
+function visit(
   astNode: $FlowFixMe,
-  predicate: (node: $FlowFixMe) => boolean,
-): $ReadOnlyArray<$FlowFixMe> {
-  if (predicate(astNode)) {
-    return astNode;
-  }
-
-  const found = [];
-  const queue = Object.values(astNode);
-
+  visitor: {
+    [type: string]: (node: $FlowFixMe) => void,
+  },
+) {
+  const queue = [astNode];
   while (queue.length !== 0) {
     let item = queue.shift();
 
@@ -156,16 +152,18 @@ function findChildren(
       continue;
     }
 
-    if (Array.isArray(item)) {
+    if (
+      typeof item.type === 'string' &&
+      typeof visitor[item.type] === 'function'
+    ) {
+      // Don't visit any children
+      visitor[item.type](item);
+    } else if (Array.isArray(item)) {
       queue.push(...item);
-    } else if (typeof item.type === 'string' && predicate(item)) {
-      found.push(item);
     } else {
       queue.push(...Object.values(item));
     }
   }
-
-  return found;
 }
 
 module.exports = {
@@ -173,5 +171,5 @@ module.exports = {
   resolveTypeAnnotation,
   createParserErrorCapturer,
   getTypes,
-  findChildren,
+  visit,
 };

@@ -26,7 +26,7 @@ import type {TypeDeclarationMap} from '../utils.js';
 import type {ParserErrorCapturer} from '../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 
-const {resolveTypeAnnotation, getTypes, findChildren} = require('../utils.js');
+const {resolveTypeAnnotation, getTypes, visit} = require('../utils.js');
 const {unwrapNullable, wrapNullable} = require('./utils');
 const {
   IncorrectlyParameterizedFlowGenericParserError,
@@ -527,7 +527,7 @@ function buildPropertySchema(
   };
 }
 
-function isCallIntoModuleRegistry(node) {
+function isModuleRegistryCall(node) {
   if (node.type !== 'CallExpression') {
     return false;
   }
@@ -560,6 +560,15 @@ function isCallIntoModuleRegistry(node) {
   return true;
 }
 
+function isModuleInterface(node) {
+  return (
+    node.type === 'InterfaceDeclaration' &&
+    node.extends.length === 1 &&
+    node.extends[0].type === 'InterfaceExtends' &&
+    node.extends[0].id.name === 'TurboModule'
+  );
+}
+
 function buildModuleSchema(
   hasteModuleName: string,
   /**
@@ -569,46 +578,46 @@ function buildModuleSchema(
   tryParse: ParserErrorCapturer,
 ): NativeModuleSchema {
   const types = getTypes(ast);
-  const moduleInterfaceNames = (Object.keys(
-    types,
-  ): $ReadOnlyArray<string>).filter((typeName: string) => {
-    const declaration = types[typeName];
-    return (
-      declaration.type === 'InterfaceDeclaration' &&
-      declaration.extends.length === 1 &&
-      declaration.extends[0].type === 'InterfaceExtends' &&
-      declaration.extends[0].id.name === 'TurboModule'
-    );
-  });
+  const moduleSpecs = (Object.values(types): $ReadOnlyArray<$FlowFixMe>).filter(
+    isModuleInterface,
+  );
 
-  if (moduleInterfaceNames.length === 0) {
+  if (moduleSpecs.length === 0) {
     throw new ModuleFlowInterfaceNotFoundParserError(hasteModuleName, ast);
   }
 
-  if (moduleInterfaceNames.length > 1) {
+  if (moduleSpecs.length > 1) {
     throw new MoreThanOneModuleFlowInterfaceParserError(
       hasteModuleName,
-      moduleInterfaceNames.map(name => types[name]),
-      moduleInterfaceNames,
+      moduleSpecs,
+      moduleSpecs.map(node => node.id.name),
     );
   }
 
-  const [moduleInterfaceName] = moduleInterfaceNames;
+  const [moduleSpec] = moduleSpecs;
 
-  if (moduleInterfaceName !== 'Spec') {
+  if (moduleSpec.id.name !== 'Spec') {
     throw new MisnamedModuleFlowInterfaceParserError(
       hasteModuleName,
-      types[moduleInterfaceName].id,
+      moduleSpec.id,
     );
   }
 
   // Parse Module Names
   const moduleName = tryParse((): string => {
-    const callExpressions = findChildren(ast, isCallIntoModuleRegistry);
+    const callExpressions = [];
+    visit(ast, {
+      CallExpression(node) {
+        if (isModuleRegistryCall(node)) {
+          callExpressions.push(node);
+        }
+      },
+    });
+
     if (callExpressions.length === 0) {
       throw new UnusedModuleFlowInterfaceParserError(
         hasteModuleName,
-        types[moduleInterfaceName],
+        moduleSpec,
       );
     }
 
@@ -687,8 +696,7 @@ function buildModuleSchema(
     }
   });
 
-  const declaration = types[moduleInterfaceName];
-  return (declaration.body.properties: $ReadOnlyArray<$FlowFixMe>)
+  return (moduleSpec.body.properties: $ReadOnlyArray<$FlowFixMe>)
     .filter(property => property.type === 'ObjectTypeProperty')
     .map<?{
       aliasMap: NativeModuleAliasMap,
