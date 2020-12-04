@@ -701,7 +701,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
     }
 
-    if (shouldSchedule && mountItem != null) {
+    if (shouldSchedule) {
       addMountItem(mountItem);
       if (UiThreadUtil.isOnUiThread()) {
         // We only read these flags on the UI thread.
