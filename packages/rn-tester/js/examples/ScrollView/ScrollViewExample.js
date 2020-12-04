@@ -321,6 +321,48 @@ if (Platform.OS === 'ios') {
       return <CenterContentList />;
     },
   });
+  exports.examples.push({
+    title: '<ScrollView> (snapToOffsets = [100, 200, 300], disableIntervalMomentum)\n',
+    description:
+      'ScrollView can snap to custom intervals. Using disableIntervalMomentum controls whether the momentum of the scroll can go past intervals.',
+    render: function(): React.Node {
+      class SnapToOffsets extends React.Component<{...}, *> {
+        state = {
+          disableIntervalMomentum: false,
+        };
+        render() {
+          return (
+            <View>
+              <ScrollView
+                style={[styles.scrollView, {height: 100}]}
+                horizontal={true}
+                snapToOffsets={ITEMS.map((_, i) => 106 * i)}
+                disableIntervalMomentum={this.state.disableIntervalMomentum}>
+                {ITEMS.map(createItemRow)}
+              </ScrollView>
+              <Text>
+                {'Scroll momentum past intervals enabled = ' +
+                  (!this.state.disableIntervalMomentum).toString()}
+              </Text>
+              <Button
+                label="Disable Scroll momentum past intervals"
+                onPress={() => {
+                  this.setState({disableIntervalMomentum: true});
+                }}
+              />
+              <Button
+                label="Enable Scroll momentum past intervals"
+                onPress={() => {
+                  this.setState({disableIntervalMomentum: false});
+                }}
+              />
+            </View>
+          );
+        }
+      }
+      return <SnapToOffsets />;
+    },
+  });
 }
 
 class Item extends React.PureComponent<{|
