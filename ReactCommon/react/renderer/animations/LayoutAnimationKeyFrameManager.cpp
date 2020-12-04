@@ -914,7 +914,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         }
 
         auto const &mutationConfig =
-            (mutation.type == ShadowViewMutation::Type::Delete
+            (mutation.type == ShadowViewMutation::Type::Delete ||
+                     (mutation.type == ShadowViewMutation::Type::Remove &&
+                      !wasInsertedTagRemoved)
                  ? layoutAnimationConfig.deleteConfig
                  : (mutation.type == ShadowViewMutation::Type::Insert &&
                             !wasInsertedTagRemoved
