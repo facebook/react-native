@@ -85,4 +85,7 @@ public class ReactFeatureFlags {
 
   /** Use lock-free data structures for Fabric MountItems. */
   public static boolean enableLockFreeMountInstructions = false;
+
+  /** Temporary flag for FB-internal workaround for RN:Litho interop in non-Fabric RN. */
+  public static boolean enableNonFabricRNLithoForceLayout = true;
 }
