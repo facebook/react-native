@@ -14,7 +14,6 @@ rn_android_library(
         "PUBLIC",
     ],
     deps = [
-        "//fbandroid/java/com/facebook/proguard/annotations:annotations",
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("java/com/facebook/proguard/annotations:annotations"),
         react_native_dep("java/com/facebook/systrace:systrace"),
