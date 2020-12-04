@@ -23,12 +23,33 @@ class MisnamedModuleFlowInterfaceParserError extends ParserError {
   }
 }
 
-class ModuleFlowInterfaceNotParserError extends ParserError {
+class ModuleFlowInterfaceNotFoundParserError extends ParserError {
   constructor(hasteModuleName: string, ast: $FlowFixMe) {
     super(
       hasteModuleName,
       ast,
-      `Module ${hasteModuleName}: No Flow interfaces extending TurboModule were detected in this NativeNativeModule spec.`,
+      'No Flow interfaces extending TurboModule were detected in this NativeModule spec.',
+    );
+  }
+}
+
+class MoreThanOneModuleFlowInterfaceParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    flowModuleInterfaces: $ReadOnlyArray<$FlowFixMe>,
+    names: $ReadOnlyArray<string>,
+  ) {
+    const finalName = names[names.length - 1];
+    const allButLastName = names.slice(0, -1);
+    const quote = x => `'${x}'`;
+
+    const nameStr =
+      allButLastName.map(quote).join(', ') + ', and ' + quote(finalName);
+
+    super(
+      hasteModuleName,
+      flowModuleInterfaces,
+      `Every NativeModule spec file must declare exactly one NativeModule Flow interface. This file declares ${names.length}: ${nameStr}. Please remove the extraneous Flow interface declarations.`,
     );
   }
 }
@@ -294,7 +315,8 @@ class IncorrectModuleRegistryCallArgumentTypeParserError extends ParserError {
 module.exports = {
   IncorrectlyParameterizedFlowGenericParserError,
   MisnamedModuleFlowInterfaceParserError,
-  ModuleFlowInterfaceNotParserError,
+  ModuleFlowInterfaceNotFoundParserError,
+  MoreThanOneModuleFlowInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedFlowGenericParserError,

@@ -31,7 +31,8 @@ const {unwrapNullable, wrapNullable} = require('./utils');
 const {
   IncorrectlyParameterizedFlowGenericParserError,
   MisnamedModuleFlowInterfaceParserError,
-  ModuleFlowInterfaceNotParserError,
+  ModuleFlowInterfaceNotFoundParserError,
+  MoreThanOneModuleFlowInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedFlowGenericParserError,
@@ -580,8 +581,16 @@ function buildModuleSchema(
     );
   });
 
-  if (moduleInterfaceNames.length !== 1) {
-    throw new ModuleFlowInterfaceNotParserError(hasteModuleName, ast);
+  if (moduleInterfaceNames.length === 0) {
+    throw new ModuleFlowInterfaceNotFoundParserError(hasteModuleName, ast);
+  }
+
+  if (moduleInterfaceNames.length > 1) {
+    throw new MoreThanOneModuleFlowInterfaceParserError(
+      hasteModuleName,
+      moduleInterfaceNames.map(name => types[name]),
+      moduleInterfaceNames,
+    );
   }
 
   const [moduleInterfaceName] = moduleInterfaceNames;

@@ -77,14 +77,6 @@ function isModule(
     return false;
   }
 
-  if (moduleInterfaces.length > 1) {
-    throw new Error(
-      'File contains declarations of more than one module: ' +
-        moduleInterfaces.join(', ') +
-        '. Please declare exactly one module in this file.',
-    );
-  }
-
   return true;
 }
 
