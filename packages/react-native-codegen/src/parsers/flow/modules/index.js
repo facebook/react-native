@@ -26,7 +26,7 @@ import type {TypeDeclarationMap} from '../utils.js';
 import type {ParserErrorCapturer} from '../utils';
 import type {NativeModuleTypeAnnotation} from '../../../CodegenSchema.js';
 
-const {resolveTypeAnnotation, getTypes} = require('../utils.js');
+const {resolveTypeAnnotation, getTypes, findChildren} = require('../utils.js');
 const {unwrapNullable, wrapNullable} = require('./utils');
 const {
   IncorrectlyParameterizedFlowGenericParserError,
@@ -41,6 +41,12 @@ const {
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
+  UnusedModuleFlowInterfaceParserError,
+  MoreThanOneModuleRegistryCallsParserError,
+  UntypedModuleRegistryCallParserError,
+  IncorrectModuleRegistryCallTypeParameterParserError,
+  IncorrectModuleRegistryCallArityParserError,
+  IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('./errors.js');
 
 const invariant = require('invariant');
@@ -520,9 +526,41 @@ function buildPropertySchema(
   };
 }
 
+function isCallIntoModuleRegistry(node) {
+  if (node.type !== 'CallExpression') {
+    return false;
+  }
+
+  const callExpression = node;
+
+  if (callExpression.callee.type !== 'MemberExpression') {
+    return false;
+  }
+
+  const memberExpression = callExpression.callee;
+  if (
+    !(
+      memberExpression.object.type === 'Identifier' &&
+      memberExpression.object.name === 'TurboModuleRegistry'
+    )
+  ) {
+    return false;
+  }
+
+  if (
+    !(
+      memberExpression.property.type === 'Identifier' &&
+      (memberExpression.property.name === 'get' ||
+        memberExpression.property.name === 'getEnforcing')
+    )
+  ) {
+    return false;
+  }
+  return true;
+}
+
 function buildModuleSchema(
   hasteModuleName: string,
-  moduleNames: $ReadOnlyArray<string>,
   /**
    * TODO(T71778680): Flow-type this node.
    */
@@ -554,6 +592,77 @@ function buildModuleSchema(
       types[moduleInterfaceName].id,
     );
   }
+
+  // Parse Module Names
+  const moduleName = guard((): string => {
+    const callExpressions = findChildren(ast, isCallIntoModuleRegistry);
+    if (callExpressions.length === 0) {
+      throw new UnusedModuleFlowInterfaceParserError(
+        hasteModuleName,
+        types[moduleInterfaceName],
+      );
+    }
+
+    if (callExpressions.length > 1) {
+      throw new MoreThanOneModuleRegistryCallsParserError(
+        hasteModuleName,
+        callExpressions,
+        callExpressions.length,
+      );
+    }
+
+    const [callExpression] = callExpressions;
+    const {typeArguments} = callExpression;
+    const methodName = callExpression.callee.property.name;
+
+    if (callExpression.arguments.length !== 1) {
+      throw new IncorrectModuleRegistryCallArityParserError(
+        hasteModuleName,
+        callExpression,
+        methodName,
+        callExpression.arguments.length,
+      );
+    }
+
+    if (callExpression.arguments[0].type !== 'Literal') {
+      const {type} = callExpression.arguments[0];
+      throw new IncorrectModuleRegistryCallArgumentTypeParserError(
+        hasteModuleName,
+        callExpression.arguments[0],
+        methodName,
+        type,
+      );
+    }
+
+    const $moduleName = callExpression.arguments[0].value;
+
+    if (typeArguments == null) {
+      throw new UntypedModuleRegistryCallParserError(
+        hasteModuleName,
+        callExpression,
+        methodName,
+        $moduleName,
+      );
+    }
+
+    if (
+      typeArguments.type !== 'TypeParameterInstantiation' ||
+      typeArguments.params.length !== 1 ||
+      typeArguments.params[0].type !== 'GenericTypeAnnotation' ||
+      typeArguments.params[0].id.name !== 'Spec'
+    ) {
+      throw new IncorrectModuleRegistryCallTypeParameterParserError(
+        hasteModuleName,
+        typeArguments,
+        methodName,
+        $moduleName,
+      );
+    }
+
+    return $moduleName;
+  });
+
+  const moduleNames = moduleName == null ? [] : [moduleName];
 
   // Some module names use platform suffix to indicate platform-exclusive modules.
   // Eventually this should be made explicit in the Flow type itself.

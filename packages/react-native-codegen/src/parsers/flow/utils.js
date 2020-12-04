@@ -137,9 +137,41 @@ function createParserErrorCapturer(): [
   return [errors, guard];
 }
 
+// TODO(T71778680): Flow-type this node.
+function findChildren(
+  astNode: $FlowFixMe,
+  predicate: (node: $FlowFixMe) => boolean,
+): $ReadOnlyArray<$FlowFixMe> {
+  if (predicate(astNode)) {
+    return astNode;
+  }
+
+  const found = [];
+  const queue = Object.values(astNode);
+
+  while (queue.length !== 0) {
+    let item = queue.shift();
+
+    if (!(typeof item === 'object' && item != null)) {
+      continue;
+    }
+
+    if (Array.isArray(item)) {
+      queue.push(...item);
+    } else if (typeof item.type === 'string' && predicate(item)) {
+      found.push(item);
+    } else {
+      queue.push(...Object.values(item));
+    }
+  }
+
+  return found;
+}
+
 module.exports = {
   getValueFromTypes,
   resolveTypeAnnotation,
   createParserErrorCapturer,
   getTypes,
+  findChildren,
 };

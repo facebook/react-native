@@ -114,26 +114,6 @@ function getConfigType(
   }
 }
 
-const withSpace = (...args) => args.join('\\s*');
-/**
- * Parse the TurboModuleRegistry.get(Enforcing)? call using RegExp.
- * Why? This call can appear anywhere in the NativeModule spec. Currently,
- * there is no good way of traversing the AST to find the MemberExpression
- * responsible for the call.
- */
-const TURBO_MODULE_REGISTRY_REQUIRE_REGEX_STRING = withSpace(
-  'TurboModuleRegistry',
-  '\\.',
-  'get(Enforcing)?',
-  '<',
-  'Spec',
-  '>',
-  '\\(',
-  '[\'"](?<nativeModuleName>[A-Za-z$_0-9]+)[\'"]',
-  ',?',
-  '\\)',
-);
-
 function buildSchema(contents: string, filename: ?string): SchemaType {
   const ast = flowParser.parse(contents);
 
@@ -147,36 +127,8 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
     }
     const hasteModuleName = path.basename(filename).replace(/\.js$/, '');
 
-    const regex = new RegExp(TURBO_MODULE_REGISTRY_REQUIRE_REGEX_STRING, 'g');
-    let match = regex.exec(contents);
-
-    const errorHeader = `Error while parsing Module '${hasteModuleName}'`;
-
-    if (match == null) {
-      throw new Error(
-        `${errorHeader}: No call to TurboModuleRegistry.get<Spec>('...') detected.`,
-      );
-    }
-
-    const moduleNames = [];
-    while (match != null) {
-      const resultGroups = match.groups;
-      invariant(
-        resultGroups != null,
-        `Couldn't parse TurboModuleRegistry.(get|getEnforcing)<Spec> call in module '${hasteModuleName}'.`,
-      );
-
-      if (!moduleNames.includes(resultGroups.nativeModuleName)) {
-        moduleNames.push(resultGroups.nativeModuleName);
-      }
-      match = regex.exec(contents);
-    }
-
     const [parsingErrors, guard] = createParserErrorCapturer();
-
-    const schema = guard(() =>
-      buildModuleSchema(hasteModuleName, moduleNames, ast, guard),
-    );
+    const schema = guard(() => buildModuleSchema(hasteModuleName, ast, guard));
 
     if (parsingErrors.length > 0) {
       /**
