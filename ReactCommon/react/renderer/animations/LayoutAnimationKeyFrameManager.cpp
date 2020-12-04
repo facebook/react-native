@@ -1242,14 +1242,34 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           // for, for example, INSERT mutations being animated from opacity 0
           // to 1. If the animation is interrupted we must force the View to be
           // at opacity 1.
+          // For Android - since it passes along only deltas, not an entire bag
+          // of props - generate an "animation" frame corresponding to a final
+          // update for this view. Only then, generate an update that will cause
+          // the ShadowTree to be consistent with the Mounting layer by passing
+          // viewEnd, unmodified, to the mounting layer. This helps with, for
+          // example, opacity animations.
+          auto mutatedShadowView = createInterpolatedShadowView(
+              1, keyFrame.viewStart, keyFrame.viewEnd);
+          auto generatedPenultimateMutation =
+              ShadowViewMutation::UpdateMutation(
+                  keyFrame.parentView,
+                  keyFrame.viewPrev,
+                  mutatedShadowView,
+                  -1);
+          assert(generatedPenultimateMutation.oldChildShadowView.tag != 0);
+          assert(generatedPenultimateMutation.newChildShadowView.tag != 0);
+          PrintMutationInstruction(
+              "Queueing up penultimate mutation instruction - synthetic",
+              generatedPenultimateMutation);
+          finalConflictingMutations.push_back(generatedPenultimateMutation);
+
           auto generatedMutation = ShadowViewMutation::UpdateMutation(
-              keyFrame.parentView, keyFrame.viewPrev, keyFrame.viewEnd, -1);
+              keyFrame.parentView, mutatedShadowView, keyFrame.viewEnd, -1);
           assert(generatedMutation.oldChildShadowView.tag != 0);
           assert(generatedMutation.newChildShadowView.tag != 0);
           PrintMutationInstruction(
               "Queueing up final mutation instruction - synthetic",
               generatedMutation);
-          // Create the mutation instruction
           finalConflictingMutations.push_back(generatedMutation);
         }
       }
@@ -1407,14 +1427,35 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           // for, for example, INSERT mutations being animated from opacity 0
           // to 1. If the animation is interrupted we must force the View to be
           // at opacity 1.
+          // For Android - since it passes along only deltas, not an entire bag
+          // of props - generate an "animation" frame corresponding to a final
+          // update for this view. Only then, generate an update that will cause
+          // the ShadowTree to be consistent with the Mounting layer by passing
+          // viewEnd, unmodified, to the mounting layer. This helps with, for
+          // example, opacity animations.
+          auto mutatedShadowView = createInterpolatedShadowView(
+              1, keyFrame.viewStart, keyFrame.viewEnd);
+          auto generatedPenultimateMutation =
+              ShadowViewMutation::UpdateMutation(
+                  keyFrame.parentView,
+                  keyFrame.viewPrev,
+                  mutatedShadowView,
+                  -1);
+          assert(generatedPenultimateMutation.oldChildShadowView.tag != 0);
+          assert(generatedPenultimateMutation.newChildShadowView.tag != 0);
+          PrintMutationInstruction(
+              "No Animation: Queueing up penultimate mutation instruction - synthetic",
+              generatedPenultimateMutation);
+          finalMutationsForConflictingAnimations.push_back(
+              generatedPenultimateMutation);
+
           auto generatedMutation = ShadowViewMutation::UpdateMutation(
-              keyFrame.parentView, keyFrame.viewPrev, keyFrame.viewEnd, -1);
+              keyFrame.parentView, mutatedShadowView, keyFrame.viewEnd, -1);
           assert(generatedMutation.oldChildShadowView.tag != 0);
           assert(generatedMutation.newChildShadowView.tag != 0);
           PrintMutationInstruction(
-              "Queueing up final mutation instruction - synthetic",
+              "No Animation: Queueing up final mutation instruction - synthetic",
               generatedMutation);
-          // Create the mutation instructions
           finalMutationsForConflictingAnimations.push_back(generatedMutation);
         }
       }
