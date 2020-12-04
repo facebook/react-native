@@ -74,6 +74,7 @@ const ImageViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.g
       defaultSrc: true,
       fadeDuration: true,
       headers: true,
+      internal_analyticTag: true,
       loadingIndicatorSrc: true,
       onError: true,
       onLoad: true,
