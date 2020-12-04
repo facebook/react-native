@@ -46,7 +46,7 @@
 #endif
 
 #if RCT_USE_HERMES
-#import "HermesExecutorFactory.h"
+#import <reacthermes/HermesExecutorFactory.h">
 #else
 #import "JSCExecutorFactory.h"
 #endif
