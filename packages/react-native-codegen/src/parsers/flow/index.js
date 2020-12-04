@@ -127,8 +127,10 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
     }
     const hasteModuleName = path.basename(filename).replace(/\.js$/, '');
 
-    const [parsingErrors, guard] = createParserErrorCapturer();
-    const schema = guard(() => buildModuleSchema(hasteModuleName, ast, guard));
+    const [parsingErrors, tryParse] = createParserErrorCapturer();
+    const schema = tryParse(() =>
+      buildModuleSchema(hasteModuleName, ast, tryParse),
+    );
 
     if (parsingErrors.length > 0) {
       /**

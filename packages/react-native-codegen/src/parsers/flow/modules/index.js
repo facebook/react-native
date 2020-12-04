@@ -63,7 +63,7 @@ function translateTypeAnnotation(
   flowTypeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
-  guard: ParserErrorCapturer,
+  tryParse: ParserErrorCapturer,
 ): Nullable<NativeModuleTypeAnnotation> {
   const {
     nullable,
@@ -173,7 +173,7 @@ function translateTypeAnnotation(
             typeAnnotation.typeParameters.params[0],
             types,
             aliasMap,
-            guard,
+            tryParse,
           );
         }
         case 'Stringish': {
@@ -215,7 +215,7 @@ function translateTypeAnnotation(
         properties: (typeAnnotation.properties: Array<$FlowFixMe>)
           .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
             property => {
-              return guard(() => {
+              return tryParse(() => {
                 if (property.type !== 'ObjectTypeProperty') {
                   throw new UnsupportedObjectPropertyTypeAnnotationParserError(
                     hasteModuleName,
@@ -235,7 +235,7 @@ function translateTypeAnnotation(
                     property.value,
                     types,
                     aliasMap,
-                    guard,
+                    tryParse,
                   ),
                 );
 
@@ -351,7 +351,7 @@ function translateTypeAnnotation(
           typeAnnotation,
           types,
           aliasMap,
-          guard,
+          tryParse,
         ),
       );
     }
@@ -397,13 +397,13 @@ function translateFunctionTypeAnnotation(
   flowFunctionTypeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
-  guard: ParserErrorCapturer,
+  tryParse: ParserErrorCapturer,
 ): NativeModuleFunctionTypeAnnotation {
   type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
   const params: Array<Param> = [];
 
   for (const flowParam of (flowFunctionTypeAnnotation.params: $ReadOnlyArray<$FlowFixMe>)) {
-    const parsedParam = guard(() => {
+    const parsedParam = tryParse(() => {
       if (flowParam.name == null) {
         throw new UnnamedFunctionParamParserError(flowParam, hasteModuleName);
       }
@@ -418,7 +418,7 @@ function translateFunctionTypeAnnotation(
           flowParam.typeAnnotation,
           types,
           aliasMap,
-          guard,
+          tryParse,
         ),
       );
 
@@ -461,7 +461,7 @@ function translateFunctionTypeAnnotation(
       flowFunctionTypeAnnotation.returnType,
       types,
       aliasMap,
-      guard,
+      tryParse,
     ),
   );
 
@@ -492,7 +492,7 @@ function buildPropertySchema(
   property: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
-  guard: ParserErrorCapturer,
+  tryParse: ParserErrorCapturer,
 ): NativeModulePropertyShape {
   let nullable = false;
   let {key, value} = property;
@@ -520,7 +520,7 @@ function buildPropertySchema(
         value,
         types,
         aliasMap,
-        guard,
+        tryParse,
       ),
     ),
   };
@@ -565,7 +565,7 @@ function buildModuleSchema(
    * TODO(T71778680): Flow-type this node.
    */
   ast: $FlowFixMe,
-  guard: ParserErrorCapturer,
+  tryParse: ParserErrorCapturer,
 ): NativeModuleSchema {
   const types = getTypes(ast);
   const moduleInterfaceNames = (Object.keys(
@@ -594,7 +594,7 @@ function buildModuleSchema(
   }
 
   // Parse Module Names
-  const moduleName = guard((): string => {
+  const moduleName = tryParse((): string => {
     const callExpressions = findChildren(ast, isCallIntoModuleRegistry);
     if (callExpressions.length === 0) {
       throw new UnusedModuleFlowInterfaceParserError(
@@ -687,14 +687,14 @@ function buildModuleSchema(
     }>(property => {
       const aliasMap: {...NativeModuleAliasMap} = {};
 
-      return guard(() => ({
+      return tryParse(() => ({
         aliasMap: aliasMap,
         propertyShape: buildPropertySchema(
           hasteModuleName,
           property,
           types,
           aliasMap,
-          guard,
+          tryParse,
         ),
       }));
     })

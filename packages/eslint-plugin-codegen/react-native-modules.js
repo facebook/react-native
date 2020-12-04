@@ -118,11 +118,15 @@ function rule(context) {
       } = requireModuleParser();
       const flowParser = require('flow-parser');
 
-      const [parsingErrors, guard] = createParserErrorCapturer();
+      const [parsingErrors, tryParse] = createParserErrorCapturer();
 
       const sourceCode = context.getSourceCode().getText();
       const ast = flowParser.parse(sourceCode);
-      guard(() => buildModuleSchema(hasteModuleName, ast, guard));
+
+      tryParse(() => {
+        buildModuleSchema(hasteModuleName, ast, tryParse);
+      });
+
       parsingErrors.forEach(error => {
         error.nodes.forEach(flowNode => {
           context.report({
