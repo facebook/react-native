@@ -41,6 +41,7 @@ import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Process;
 import android.view.View;
+import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
@@ -794,12 +795,15 @@ public class ReactInstanceManager {
     mDevSupportManager.showDevOptionsDialog();
   }
 
+  @ThreadConfined(UI)
   private void clearReactRoot(ReactRoot reactRoot) {
+    UiThreadUtil.assertOnUiThread();
     if (ReactFeatureFlags.enableStartSurfaceRaceConditionFix) {
       reactRoot.getState().compareAndSet(ReactRoot.STATE_STARTED, ReactRoot.STATE_STOPPED);
     }
-    reactRoot.getRootViewGroup().removeAllViews();
-    reactRoot.getRootViewGroup().setId(View.NO_ID);
+    ViewGroup rootViewGroup = reactRoot.getRootViewGroup();
+    rootViewGroup.removeAllViews();
+    rootViewGroup.setId(View.NO_ID);
   }
 
   /**
@@ -1222,6 +1226,7 @@ public class ReactInstanceManager {
     }
   }
 
+  @ThreadConfined(UI)
   private void tearDownReactContext(ReactContext reactContext) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.tearDownReactContext()");
     UiThreadUtil.assertOnUiThread();
