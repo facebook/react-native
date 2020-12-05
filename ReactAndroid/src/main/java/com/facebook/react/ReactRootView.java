@@ -56,6 +56,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Default root view for catalyst apps. Provides the ability to listen for size changes so that a UI
@@ -98,6 +99,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private int mLastOffsetX = Integer.MIN_VALUE;
   private int mLastOffsetY = Integer.MIN_VALUE;
   private @UIManagerType int mUIManagerType = DEFAULT;
+  private final AtomicInteger mState = new AtomicInteger(STATE_STOPPED);
 
   public ReactRootView(Context context) {
     super(context);
@@ -411,6 +413,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   public String getSurfaceID() {
     Bundle appProperties = getAppProperties();
     return appProperties != null ? appProperties.getString("surfaceID") : null;
+  }
+
+  public AtomicInteger getState() {
+    return mState;
   }
 
   public static Point getViewportOffset(View v) {

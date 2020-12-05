@@ -91,4 +91,10 @@ public class ReactFeatureFlags {
 
   /** Disable UI update operations in non-Fabric renderer after catalyst instance was destroyed */
   public static boolean disableNonFabricViewOperationsOnCatalystDestroy = false;
+
+  /**
+   * Fixes race-condition in the initialization of RN surface. TODO T78832286: remove this flag once
+   * we verify the fix is correct in production
+   */
+  public static boolean enableStartSurfaceRaceConditionFix = false;
 }

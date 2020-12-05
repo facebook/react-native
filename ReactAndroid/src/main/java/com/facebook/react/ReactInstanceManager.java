@@ -795,6 +795,9 @@ public class ReactInstanceManager {
   }
 
   private void clearReactRoot(ReactRoot reactRoot) {
+    if (ReactFeatureFlags.enableStartSurfaceRaceConditionFix) {
+      reactRoot.getState().compareAndSet(ReactRoot.STATE_STARTED, ReactRoot.STATE_STOPPED);
+    }
     reactRoot.getRootViewGroup().removeAllViews();
     reactRoot.getRootViewGroup().setId(View.NO_ID);
   }
@@ -810,17 +813,28 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void attachRootView(ReactRoot reactRoot) {
     UiThreadUtil.assertOnUiThread();
-    mAttachedReactRoots.add(reactRoot);
 
-    // Reset reactRoot content as it's going to be populated by the application content from JS.
-    clearReactRoot(reactRoot);
+    // Calling clearReactRoot is necessary to initialize the Id on reactRoot
+    // This is necessary independently if the RN Bridge has been initialized or not.
+    // Ideally reactRoot should be initialized with id == NO_ID
+    if (ReactFeatureFlags.enableStartSurfaceRaceConditionFix) {
+      if (mAttachedReactRoots.add(reactRoot)) {
+        clearReactRoot(reactRoot);
+      }
+    } else {
+      mAttachedReactRoots.add(reactRoot);
+      clearReactRoot(reactRoot);
+    }
 
     // If react context is being created in the background, JS application will be started
     // automatically when creation completes, as reactRoot reactRoot is part of the attached
     // reactRoot reactRoot list.
     ReactContext currentContext = getCurrentReactContext();
     if (mCreateReactContextThread == null && currentContext != null) {
-      attachRootViewToInstance(reactRoot);
+      if (!ReactFeatureFlags.enableStartSurfaceRaceConditionFix
+          || reactRoot.getState().compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
+        attachRootViewToInstance(reactRoot);
+      }
     }
   }
 
@@ -1087,7 +1101,12 @@ public class ReactInstanceManager {
 
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
       for (ReactRoot reactRoot : mAttachedReactRoots) {
-        attachRootViewToInstance(reactRoot);
+        if (!ReactFeatureFlags.enableStartSurfaceRaceConditionFix
+            || reactRoot
+                .getState()
+                .compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
+          attachRootViewToInstance(reactRoot);
+        }
       }
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
     }
