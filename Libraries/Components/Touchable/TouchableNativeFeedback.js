@@ -177,7 +177,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
       delayPressOut: this.props.delayPressOut,
       minPressDuration: 0,
       pressRectOffset: this.props.pressRetentionOffset,
-      android_disableSound: this.props.touchSoundDisabled,
+      androidDisableSound: this.props.touchSoundDisabled,
       onLongPress: this.props.onLongPress,
       onPress: this.props.onPress,
       onPressIn: event => {

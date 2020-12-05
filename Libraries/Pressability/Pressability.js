@@ -50,7 +50,7 @@ export type PressabilityConfig = $ReadOnly<{|
   /**
    * Whether to disable the systemm sound when `onPress` fires on Android.
    **/
-  android_disableSound?: ?boolean,
+  androidDisableSound?: ?boolean,
 
   /**
    * Duration to wait after hover in before calling `onHoverIn`.
@@ -684,14 +684,14 @@ export default class Pressability {
         this._activate(event);
         this._deactivate(event);
       }
-      const {onLongPress, onPress, android_disableSound} = this._config;
+      const {onLongPress, onPress, androidDisableSound} = this._config;
       if (onPress != null) {
         const isPressCanceledByLongPress =
           onLongPress != null &&
           prevState === 'RESPONDER_ACTIVE_LONG_PRESS_IN' &&
           this._shouldLongPressCancelPress();
         if (!isPressCanceledByLongPress) {
-          if (Platform.OS === 'android' && android_disableSound !== true) {
+          if (Platform.OS === 'android' && androidDisableSound !== true) {
             SoundManager.playTouchSound();
           }
           onPress(event);

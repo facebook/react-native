@@ -119,7 +119,7 @@ type Props = $ReadOnly<{|
   /**
    * If true, doesn't play system sound on touch.
    */
-  android_disableSound?: ?boolean,
+  androidDisableSound?: ?boolean,
 
   /**
    * Enables the Android ripple effect and configures its color.
@@ -144,7 +144,7 @@ type Props = $ReadOnly<{|
 function Pressable(props: Props, forwardedRef): React.Node {
   const {
     accessible,
-    android_disableSound,
+    androidDisableSound,
     android_ripple,
     children,
     delayLongPress,
@@ -183,7 +183,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       disabled,
       hitSlop,
       pressRectOffset: pressRetentionOffset,
-      android_disableSound,
+      androidDisableSound,
       delayLongPress,
       delayPressIn: unstable_pressDelay,
       onLongPress,
@@ -209,7 +209,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       },
     }),
     [
-      android_disableSound,
+      androidDisableSound,
       android_rippleConfig,
       delayLongPress,
       disabled,

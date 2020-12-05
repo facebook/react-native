@@ -149,7 +149,7 @@ function createPressabilityConfig(props: Props): PressabilityConfig {
     delayPressOut: props.delayPressOut,
     minPressDuration: 0,
     pressRectOffset: props.pressRetentionOffset,
-    android_disableSound: props.touchSoundDisabled,
+    androidDisableSound: props.touchSoundDisabled,
     onBlur: props.onBlur,
     onFocus: props.onFocus,
     onLongPress: props.onLongPress,

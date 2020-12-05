@@ -52,7 +52,7 @@ class TouchableBounce extends React.Component<Props, State> {
       delayPressOut: this.props.delayPressOut,
       minPressDuration: 0,
       pressRectOffset: this.props.pressRetentionOffset,
-      android_disableSound: this.props.touchSoundDisabled,
+      androidDisableSound: this.props.touchSoundDisabled,
       onBlur: event => {
         if (Platform.isTV) {
           this._bounceTo(1, 0.4, 0);
