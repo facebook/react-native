@@ -43,7 +43,7 @@ type Props = $ReadOnly<{|
   style?: ?ViewStyleProp,
   onShowUnderlay?: ?() => void,
   onHideUnderlay?: ?() => void,
-  testOnly_pressed?: ?boolean,
+  testOnlyPressed?: ?boolean,
 
   hostRef: React.Ref<typeof View>,
 |}>;
@@ -161,7 +161,7 @@ class TouchableHighlight extends React.Component<Props, State> {
   state: State = {
     pressability: new Pressability(this._createPressabilityConfig()),
     extraStyles:
-      this.props.testOnly_pressed === true ? this._createExtraStyles() : null,
+      this.props.testOnlyPressed === true ? this._createExtraStyles() : null,
   };
 
   _createPressabilityConfig(): PressabilityConfig {
@@ -254,7 +254,7 @@ class TouchableHighlight extends React.Component<Props, State> {
       clearTimeout(this._hideTimeout);
       this._hideTimeout = null;
     }
-    if (this.props.testOnly_pressed === true) {
+    if (this.props.testOnlyPressed === true) {
       return;
     }
     if (this._hasPressHandler()) {

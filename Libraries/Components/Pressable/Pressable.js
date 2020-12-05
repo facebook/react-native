@@ -129,7 +129,7 @@ type Props = $ReadOnly<{|
   /**
    * Used only for documentation or testing (e.g. snapshot testing).
    */
-  testOnly_pressed?: ?boolean,
+  testOnlyPressed?: ?boolean,
 
   /**
    * Duration to wait after press down before calling `onPressIn`.
@@ -156,7 +156,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     onPressOut,
     pressRetentionOffset,
     style,
-    testOnly_pressed,
+    testOnlyPressed,
     unstable_pressDelay,
     ...restProps
   } = props;
@@ -166,7 +166,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
 
   const androidRippleConfig = useAndroidRippleForView(androidRipple, viewRef);
 
-  const [pressed, setPressed] = usePressState(testOnly_pressed === true);
+  const [pressed, setPressed] = usePressState(testOnlyPressed === true);
 
   const hitSlop = normalizeRect(props.hitSlop);
 
