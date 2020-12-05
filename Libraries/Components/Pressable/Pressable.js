@@ -124,7 +124,7 @@ type Props = $ReadOnly<{|
   /**
    * Enables the Android ripple effect and configures its color.
    */
-  android_ripple?: ?RippleConfig,
+  androidRipple?: ?RippleConfig,
 
   /**
    * Used only for documentation or testing (e.g. snapshot testing).
@@ -145,7 +145,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
   const {
     accessible,
     androidDisableSound,
-    android_ripple,
+    androidRipple,
     children,
     delayLongPress,
     disabled,
@@ -164,7 +164,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
   const viewRef = useRef<React.ElementRef<typeof View> | null>(null);
   useImperativeHandle(forwardedRef, () => viewRef.current);
 
-  const android_rippleConfig = useAndroidRippleForView(android_ripple, viewRef);
+  const androidRippleConfig = useAndroidRippleForView(androidRipple, viewRef);
 
   const [pressed, setPressed] = usePressState(testOnly_pressed === true);
 
@@ -172,7 +172,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
 
   const restPropsWithDefaults: React.ElementConfig<typeof View> = {
     ...restProps,
-    ...android_rippleConfig?.viewProps,
+    ...androidRippleConfig?.viewProps,
     accessible: accessible !== false,
     focusable: focusable !== false,
     hitSlop,
@@ -189,18 +189,18 @@ function Pressable(props: Props, forwardedRef): React.Node {
       onLongPress,
       onPress,
       onPressIn(event: PressEvent): void {
-        if (android_rippleConfig != null) {
-          android_rippleConfig.onPressIn(event);
+        if (androidRippleConfig != null) {
+          androidRippleConfig.onPressIn(event);
         }
         setPressed(true);
         if (onPressIn != null) {
           onPressIn(event);
         }
       },
-      onPressMove: android_rippleConfig?.onPressMove,
+      onPressMove: androidRippleConfig?.onPressMove,
       onPressOut(event: PressEvent): void {
-        if (android_rippleConfig != null) {
-          android_rippleConfig.onPressOut(event);
+        if (androidRippleConfig != null) {
+          androidRippleConfig.onPressOut(event);
         }
         setPressed(false);
         if (onPressOut != null) {
@@ -210,7 +210,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     }),
     [
       androidDisableSound,
-      android_rippleConfig,
+      androidRippleConfig,
       delayLongPress,
       disabled,
       hitSlop,
