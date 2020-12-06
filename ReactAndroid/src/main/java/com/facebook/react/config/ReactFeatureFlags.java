@@ -97,4 +97,7 @@ public class ReactFeatureFlags {
    * we verify the fix is correct in production
    */
   public static boolean enableStartSurfaceRaceConditionFix = false;
+
+  /** Enables the usage of an experimental optimized iterator for ReadableNativeMaps. */
+  public static boolean enableExperimentalReadableNativeMapIterator = false;
 }
