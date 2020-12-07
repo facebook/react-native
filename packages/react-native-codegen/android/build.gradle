@@ -51,8 +51,7 @@ task('buildCodegenCLI', type: Exec) {
       String linuxPath = canonicalPath.replace('\\', '/');
       linuxPath = linuxPath.replace(':', '')
       linuxPath = '/' + linuxPath
-      codegenRoot = linuxPath
-      
+
       // Get the location of bash in the system; assume environment variable created to store it.
       String bashHome = "$System.env.REACT_WINDOWS_BASH"
       if (bashHome == null) {
@@ -63,5 +62,4 @@ task('buildCodegenCLI', type: Exec) {
     else {
         commandLine("$codegenRoot/scripts/oss/build.sh")
     }
-    
 }

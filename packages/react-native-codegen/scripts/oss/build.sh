@@ -43,11 +43,9 @@ else
   # Using in-memory tar operation because piping `find` and `grep` doesn't preserve folder structure
   # during recursive copying, and `rsync` is not installed by default in Git Bash.
   # As an added benefit, blob copy is faster.
-  if [ "$OSTYPE" = "msys" ]; then
-    my_dir=`pwd`;
+  if [ "$OSTYPE" = "msys" ] || [ "$OSTYPE" = "cygwin" ]; then
     tar cf - --exclude=*.lock $CODEGEN_DIR | (cd $TMP_DIR && tar xvf - );
-    cd $my_dir;
-  else  
+  else
     cp -R "$CODEGEN_DIR/." "$TMP_DIR";
   fi
 
@@ -60,5 +58,4 @@ else
 
   mv "$TMP_DIR/lib" "$TMP_DIR/node_modules" "$CODEGEN_DIR"
   rm -rf "$TMP_DIR"
-
 fi
