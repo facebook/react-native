@@ -8,7 +8,6 @@
 package com.facebook.react.fabric.mounting;
 
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
-import static com.facebook.infer.annotation.ThreadConfined.UI;
 
 import android.content.Context;
 import android.view.View;
@@ -100,23 +99,29 @@ public class MountingManager {
    * @param reactRootTag
    * @param rootView
    */
-  @ThreadConfined(UI)
-  public void addRootView(int reactRootTag, @NonNull View rootView) {
-    if (rootView.getId() != View.NO_ID) {
-      FLog.e(
-          TAG,
-          "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
-          rootView.getId(),
-          reactRootTag);
-      throw new IllegalViewOperationException(
-          "Trying to add a root view with an explicit id already set. React Native uses "
-              + "the id field to track react tags and will overwrite this field. If that is fine, "
-              + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
-    }
-
+  @AnyThread
+  public void addRootView(final int reactRootTag, @NonNull final View rootView) {
     mTagToViewState.put(
         reactRootTag, new ViewState(reactRootTag, rootView, mRootViewManager, true));
-    rootView.setId(reactRootTag);
+
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            if (rootView.getId() != View.NO_ID) {
+              FLog.e(
+                  TAG,
+                  "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
+                  rootView.getId(),
+                  reactRootTag);
+              throw new IllegalViewOperationException(
+                  "Trying to add a root view with an explicit id already set. React Native uses "
+                      + "the id field to track react tags and will overwrite this field. If that is fine, "
+                      + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+            }
+            rootView.setId(reactRootTag);
+          }
+        });
   }
 
   /** Delete rootView and all children/ */
