@@ -74,7 +74,7 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
       // Create the mutation instruction
       auto updateMutation = ShadowViewMutation::UpdateMutation(
-          keyframe.parentView, keyframe.viewPrev, mutatedShadowView, -1);
+          keyframe.viewPrev, mutatedShadowView);
 
       // All generated Update mutations must have an "old" and "new"
       // ShadowView. Checking for nonzero tag doesn't guarantee that the views

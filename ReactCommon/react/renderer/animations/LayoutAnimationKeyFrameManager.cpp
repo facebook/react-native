@@ -1252,10 +1252,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               1, keyFrame.viewStart, keyFrame.viewEnd);
           auto generatedPenultimateMutation =
               ShadowViewMutation::UpdateMutation(
-                  keyFrame.parentView,
-                  keyFrame.viewPrev,
-                  mutatedShadowView,
-                  -1);
+                  keyFrame.viewPrev, mutatedShadowView);
           assert(generatedPenultimateMutation.oldChildShadowView.tag != 0);
           assert(generatedPenultimateMutation.newChildShadowView.tag != 0);
           PrintMutationInstruction(
@@ -1264,7 +1261,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           finalConflictingMutations.push_back(generatedPenultimateMutation);
 
           auto generatedMutation = ShadowViewMutation::UpdateMutation(
-              keyFrame.parentView, mutatedShadowView, keyFrame.viewEnd, -1);
+              mutatedShadowView, keyFrame.viewEnd);
           assert(generatedMutation.oldChildShadowView.tag != 0);
           assert(generatedMutation.newChildShadowView.tag != 0);
           PrintMutationInstruction(
@@ -1437,10 +1434,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               1, keyFrame.viewStart, keyFrame.viewEnd);
           auto generatedPenultimateMutation =
               ShadowViewMutation::UpdateMutation(
-                  keyFrame.parentView,
-                  keyFrame.viewPrev,
-                  mutatedShadowView,
-                  -1);
+                  keyFrame.viewPrev, mutatedShadowView);
           assert(generatedPenultimateMutation.oldChildShadowView.tag != 0);
           assert(generatedPenultimateMutation.newChildShadowView.tag != 0);
           PrintMutationInstruction(
@@ -1450,7 +1444,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               generatedPenultimateMutation);
 
           auto generatedMutation = ShadowViewMutation::UpdateMutation(
-              keyFrame.parentView, mutatedShadowView, keyFrame.viewEnd, -1);
+              mutatedShadowView, keyFrame.viewEnd);
           assert(generatedMutation.oldChildShadowView.tag != 0);
           assert(generatedMutation.newChildShadowView.tag != 0);
           PrintMutationInstruction(

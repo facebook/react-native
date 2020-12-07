@@ -486,10 +486,7 @@ static void calculateShadowViewMutationsFlattener(
           newTreeNodePair.isConcreteView && oldTreeNodePair.isConcreteView) {
         mutationInstructionContainer.updateMutations.push_back(
             ShadowViewMutation::UpdateMutation(
-                parentShadowView,
-                oldTreeNodePair.shadowView,
-                newTreeNodePair.shadowView,
-                newTreeNodePair.mountIndex));
+                oldTreeNodePair.shadowView, newTreeNodePair.shadowView));
       }
 
       // Update children if appropriate.
@@ -850,10 +847,7 @@ static void calculateShadowViewMutationsV2(
     if (newChildPair.isConcreteView &&
         oldChildPair.shadowView != newChildPair.shadowView) {
       updateMutations.push_back(ShadowViewMutation::UpdateMutation(
-          parentShadowView,
-          oldChildPair.shadowView,
-          newChildPair.shadowView,
-          newChildPair.mountIndex));
+          oldChildPair.shadowView, newChildPair.shadowView));
     }
 
     // Recursively update tree if ShadowNode pointers are not equal
@@ -995,10 +989,7 @@ static void calculateShadowViewMutationsV2(
             // concrete view. The case where they're different is handled above.
             if (oldChildPair.shadowView != newChildPair.shadowView) {
               updateMutations.push_back(ShadowViewMutation::UpdateMutation(
-                  parentShadowView,
-                  oldChildPair.shadowView,
-                  newChildPair.shadowView,
-                  newChildPair.mountIndex));
+                  oldChildPair.shadowView, newChildPair.shadowView));
             }
 
             // Remove from newRemainingPairs
@@ -1251,10 +1242,7 @@ static void calculateShadowViewMutationsV2(
 
             if (oldChildPair.shadowView != newChildPair.shadowView) {
               updateMutations.push_back(ShadowViewMutation::UpdateMutation(
-                  parentShadowView,
-                  oldChildPair.shadowView,
-                  newChildPair.shadowView,
-                  newChildPair.mountIndex));
+                  oldChildPair.shadowView, newChildPair.shadowView));
             }
           }
           if (!oldChildPair.flattened &&
@@ -1516,7 +1504,7 @@ ShadowViewMutation::List calculateShadowViewMutations(
 
   if (oldRootShadowView != newRootShadowView) {
     mutations.push_back(ShadowViewMutation::UpdateMutation(
-        ShadowView(), oldRootShadowView, newRootShadowView, -1));
+        oldRootShadowView, newRootShadowView));
   }
 
   calculateShadowViewMutationsV2(
