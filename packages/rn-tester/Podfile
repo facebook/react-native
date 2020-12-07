@@ -52,4 +52,8 @@ post_install do |installer|
   if !USE_FRAMEWORKS
     flipper_post_install(installer)
   end
+  
+  installer.pods_project.build_configurations.each do |config|
+    config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+  end
 end

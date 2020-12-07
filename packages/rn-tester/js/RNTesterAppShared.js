@@ -15,6 +15,7 @@ import {
   StyleSheet,
   useColorScheme,
   View,
+  Text,
   LogBox,
 } from 'react-native';
 import * as React from 'react';
@@ -45,11 +46,9 @@ const APP_STATE_KEY = 'RNTesterAppState.v3';
 // TODO: Vendor AsyncStorage or create our own.
 LogBox.ignoreLogs([/AsyncStorage has been extracted from react-native/]);
 
-const DisplayIfVisible = ({isVisible, children}) => (
-  <View style={[styles.container, !isVisible && styles.hidden]}>
-    {children}
-  </View>
-);
+// Disable yellowbox so that they don't cover the API's tab and make it
+// unaccessible for detox.
+console.disableYellowBox = true;
 
 type ExampleListsContainerProps = $ReadOnly<{|
   theme: RNTesterTheme,
@@ -72,35 +71,38 @@ const ExampleListsContainer = ({
 }: ExampleListsContainerProps) => {
   const isBookmarkEmpty = examplesList.bookmarks.length === 0;
 
+  if(!isVisible){
+    return null;
+  }
+
   return (
-    <DisplayIfVisible isVisible={isVisible}>
-      <Header title={title} theme={theme} />
-      <DisplayIfVisible isVisible={screen === Screens.COMPONENTS}>
-        <RNTesterExampleList
-          sections={examplesList.components}
-          toggleBookmark={toggleBookmark}
-          handleExampleCardPress={handleExampleCardPress}
-        />
-      </DisplayIfVisible>
-      <DisplayIfVisible isVisible={screen === Screens.APIS}>
-        <RNTesterExampleList
-          sections={examplesList.apis}
-          toggleBookmark={toggleBookmark}
-          handleExampleCardPress={handleExampleCardPress}
-        />
-      </DisplayIfVisible>
-      <DisplayIfVisible isVisible={screen === Screens.BOOKMARKS}>
-        {isBookmarkEmpty ? (
-          <RNTesterEmptyBookmarksState />
-        ) : (
+    <>
+        <Header title={title} theme={theme} />
+        {screen === Screens.COMPONENTS && (
+          <RNTesterExampleList
+            sections={examplesList.components}
+            toggleBookmark={toggleBookmark}
+            handleExampleCardPress={handleExampleCardPress}
+          />
+        )}
+        {screen === Screens.APIS && (
+          <RNTesterExampleList
+            sections={examplesList.apis}
+            toggleBookmark={toggleBookmark}
+            handleExampleCardPress={handleExampleCardPress}
+          />
+        )}
+        {screen === Screens.BOOKMARKS && isBookmarkEmpty && (
+              <RNTesterEmptyBookmarksState />
+        )}
+        {screen === Screens.BOOKMARKS && !isBookmarkEmpty && (
           <RNTesterExampleList
             sections={examplesList.bookmarks}
             toggleBookmark={toggleBookmark}
             handleExampleCardPress={handleExampleCardPress}
           />
         )}
-      </DisplayIfVisible>
-    </DisplayIfVisible>
+    </>
   );
 };
 

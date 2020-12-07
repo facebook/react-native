@@ -14,7 +14,7 @@
 // by filtering by component and then tapping on the label
 exports.openComponentWithLabel = async (component, label) => {
   await element(by.id('explorer_search')).replaceText(component);
-  await element(by.label(label)).tap();
+  await element(by.label(label)).atIndex(0).tap();
 };
 
 // Will open an individual example for a component

@@ -793,17 +793,17 @@ workflows:
           run_unit_tests: true
           requires:
             - setup_ios
-      # - test_ios:
-      #     name: test_ios_detox
-      #     run_detox_tests: true
-      #     requires:
-      #       - setup_ios
-      # - test_ios:
-      #     name: test_ios_detox_frameworks
-      #     use_frameworks: true
-      #     run_detox_tests: true
-      #     requires:
-      #       - setup_ios
+      - test_ios:
+          name: test_ios_detox
+          run_detox_tests: true
+          requires:
+            - setup_ios
+      - test_ios:
+          name: test_ios_detox_frameworks
+          use_frameworks: true
+          run_detox_tests: true
+          requires:
+             - setup_ios
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
