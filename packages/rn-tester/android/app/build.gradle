@@ -39,6 +39,14 @@ plugins {
  *   // bundleInPaidRelease: true,
  *   // bundleInBeta: true,
  *
+ *   // whether to set hermes in release mode (reduce size by deleting the debugger/inspector, etc.). 
+ *   // (by default only enabled in release)
+ *   // for example: to set release mode in the staging build type (if configured)
+ *   // hermesReleaseInStaging: true,
+ *   // The configuration property can be in the following formats
+ *   //         'hermesReleaseIn${productFlavor}${buildType}'
+ *   //         'hermesReleaseIn${buildType}'
+ *
  *   // the root of your project, i.e. where "package.json" lives
  *   root: "../../",
  *
