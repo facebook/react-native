@@ -232,7 +232,7 @@ class ShareScreenshotExample extends React.Component<
 
   showShareActionSheet = () => {
     // Take the snapshot (returns a temp file uri)
-    ScreenshotManager.takeScreenshot('window')
+    ScreenshotManager.takeScreenshot('window', {})
       .then(uri => {
         // Share image data
         ActionSheetIOS.showShareActionSheetWithOptions(
@@ -287,7 +287,7 @@ class ShareScreenshotAnchorExample extends React.Component<
 
   showShareActionSheet = () => {
     // Take the snapshot (returns a temp file uri)
-    ScreenshotManager.takeScreenshot('window')
+    ScreenshotManager.takeScreenshot('window', {})
       .then(uri => {
         // Share image data
         ActionSheetIOS.showShareActionSheetWithOptions(
