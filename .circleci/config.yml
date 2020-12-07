@@ -15,10 +15,10 @@ defaults: &defaults
   environment:
     - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
     # The public github tokens are publicly visible by design
-    - PUBLIC_PULLBOT_GITHUB_TOKEN_A: "a6edf8e8d40ce4e8b11a"
-    - PUBLIC_PULLBOT_GITHUB_TOKEN_B: "150e1341f4dd9c944d2a"
-    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_token_a "78a72af35445ca3f8180"
-    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_token_b "b1a98e0bbd56ff1ccba1"
+    - PUBLIC_PULLBOT_GITHUB_TOKEN_A: &github_pullbot_token_a "a6edf8e8d40ce4e8b11a"
+    - PUBLIC_PULLBOT_GITHUB_TOKEN_B: &github_pullbot_token_b "150e1341f4dd9c944d2a"
+    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_analysisbot_token_a "312d354b5c36f082cfe9"
+    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_analysisbot_token_b "07973d757026bdd9f196"
 
 # -------------------------
 #        EXECUTORS
@@ -44,8 +44,10 @@ executors:
       - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
       - BUILD_THREADS: 2
       # Repeated here, as the environment key in this executor will overwrite the one in defaults
-      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_token_a
-      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_token_b
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_analysisbot_token_a
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_analysisbot_token_b
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_A: *github_pullbot_token_a
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_B: *github_pullbot_token_b
   reactnativeios:
     <<: *defaults
     macos:
@@ -234,17 +236,17 @@ jobs:
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
   analyze_pr:
-    executor: nodelts
+    executor: reactnativeandroid
     steps:
       - restore_cache_checkout:
-          checkout_type: node
+          checkout_type: android
       - run_yarn
 
       - install_github_bot_deps
 
       - run:
           name: Install additional GitHub bot dependencies
-          command: sudo apt update && sudo apt install -y shellcheck jq
+          command: apt update && apt install -y shellcheck jq
 
       - run:
           name: Run linters against modified files (analysis-bot)
@@ -262,16 +264,21 @@ jobs:
   #    JOBS: Analyze Code
   # -------------------------
   analyze_code:
-    executor: nodelts
+    executor: reactnativeandroid
     steps:
       - restore_cache_checkout:
-          checkout_type: node
+          checkout_type: android
       - setup_artifacts
       - run_yarn
 
       - run:
           name: Lint code
           command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
+          when: always
+
+      - run:
+          name: Lint Java
+          command: scripts/circleci/exec_swallow_error.sh yarn lint-java --check
           when: always
 
       - run:
@@ -847,11 +854,18 @@ workflows:
 
   analysis:
     jobs:
-      - setup
+      - setup:
+          name: setup_js
+
+      - setup:
+          name: setup_android
+          checkout_type: android
+          executor: reactnativeandroid
+
       # Run lints on every commit other than those to the gh-pages branch
       - analyze_code:
           requires:
-            - setup
+            - setup_android
           filters:
             branches:
               ignore: gh-pages
@@ -859,7 +873,7 @@ workflows:
       # Run code checks on PRs from forks
       - analyze_pr:
           requires:
-            - setup
+            - setup_android
           filters:
             branches:
               only: /^pull\/.*$/
@@ -867,7 +881,7 @@ workflows:
       # Gather coverage
       - js_coverage:
           requires:
-            - setup
+            - setup_js
   nightly:
     triggers:
       - schedule:
