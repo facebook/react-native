@@ -254,6 +254,11 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'PixelRatio',
+    module: require('../examples/PixelRatio/PixelRatioExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'PointerEventsExample',
     module: require('../examples/PointerEvents/PointerEventsExample'),
     supportsTVOS: false,
