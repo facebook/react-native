@@ -36,7 +36,7 @@ type NetworkImageCallbackExampleState = {|
   events: Array<string>,
   startLoadPrefetched: boolean,
   mountTime: number,
-  imageHas, number
+  imageHash: number,
 |};
 
 type NetworkImageCallbackExampleProps = $ReadOnly<{|
