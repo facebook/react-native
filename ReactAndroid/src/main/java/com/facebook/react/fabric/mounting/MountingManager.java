@@ -124,11 +124,12 @@ public class MountingManager {
         });
   }
 
-  /** Delete rootView and all children/ */
+  /** Delete rootView and all children recursively. */
   @UiThread
   public void deleteRootView(int reactRootTag) {
-    if (mTagToViewState.containsKey(reactRootTag)) {
-      dropView(mTagToViewState.get(reactRootTag).mView, true);
+    ViewState rootViewState = mTagToViewState.get(reactRootTag);
+    if (rootViewState != null && rootViewState.mView != null) {
+      dropView(rootViewState.mView, true);
     }
   }
 
