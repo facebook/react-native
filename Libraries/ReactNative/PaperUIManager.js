@@ -71,7 +71,7 @@ const UIManagerJS = {
     ) {
       const result = NativeUIManager.lazilyLoadView(viewManagerName);
       triedLoadingConfig.add(viewManagerName);
-      if (result.viewConfig) {
+      if (result != null && result.viewConfig != null) {
         getConstants()[viewManagerName] = result.viewConfig;
         lazifyViewManagerConfig(viewManagerName);
       }

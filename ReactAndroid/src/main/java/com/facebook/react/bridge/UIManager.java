@@ -41,11 +41,12 @@ public interface UIManager extends JSIModule, PerformanceCounter {
 
   /**
    * Updates the layout specs of the RootShadowNode based on the Measure specs received by
-   * parameters.
+   * parameters. offsetX and offsetY are the position of the RootView within the screen.
    */
   @UiThread
   @ThreadConfined(UI)
-  void updateRootLayoutSpecs(int rootTag, int widthMeasureSpec, int heightMeasureSpec);
+  void updateRootLayoutSpecs(
+      int rootTag, int widthMeasureSpec, int heightMeasureSpec, int offsetX, int offsetY);
 
   /**
    * Dispatches the commandId received by parameter to the view associated with the reactTag. The
@@ -123,4 +124,9 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * @param event parameters
    */
   void receiveEvent(int reactTag, String eventName, @Nullable WritableMap event);
+
+  /** Resolves Direct Event name exposed to JS from the one known to the Native side. */
+  @Deprecated
+  @Nullable
+  String resolveCustomDirectEventName(@Nullable String eventName);
 }

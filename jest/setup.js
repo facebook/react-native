@@ -12,10 +12,14 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('../Libraries/polyfills/Object.es7.js');
-jest.requireActual('../Libraries/polyfills/error-guard');
+jest.requireActual('@react-native/polyfills/Object.es7');
+jest.requireActual('@react-native/polyfills/error-guard');
 
 global.__DEV__ = true;
+
+global.performance = {
+  now: jest.fn(Date.now),
+};
 
 global.Promise = jest.requireActual('promise');
 global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
@@ -211,6 +215,10 @@ jest
         };
       },
     },
+    DevSettings: {
+      addMenuItem: jest.fn(),
+      reload: jest.fn(),
+    },
     ImageLoader: {
       getSize: jest.fn(url => Promise.resolve({width: 320, height: 240})),
       prefetchImage: jest.fn(),
@@ -317,32 +325,19 @@ jest
       }),
     },
   }))
-  .mock('../Libraries/ReactNative/requireNativeComponent', () => {
-    const React = require('react');
-
-    return viewName => {
-      const Component = class extends React.Component {
-        render() {
-          return React.createElement(viewName, this.props, this.props.children);
-        }
-
-        // The methods that exist on host components
-        blur = jest.fn();
-        focus = jest.fn();
-        measure = jest.fn();
-        measureInWindow = jest.fn();
-        measureLayout = jest.fn();
-        setNativeProps = jest.fn();
-      };
-
-      if (viewName === 'RCTView') {
-        Component.displayName = 'View';
-      } else {
-        Component.displayName = viewName;
-      }
-
-      return Component;
+  .mock('../Libraries/NativeComponent/NativeComponentRegistry', () => {
+    return {
+      get: jest.fn((name, viewConfigProvider) => {
+        return jest.requireActual('./mockNativeComponent')(name);
+      }),
+      getWithFallback_DEPRECATED: jest.fn((name, viewConfigProvider) => {
+        return jest.requireActual('./mockNativeComponent')(name);
+      }),
+      setRuntimeConfigProvider: jest.fn(),
     };
+  })
+  .mock('../Libraries/ReactNative/requireNativeComponent', () => {
+    return jest.requireActual('./mockNativeComponent');
   })
   .mock(
     '../Libraries/Utilities/verifyComponentAttributeEquivalence',

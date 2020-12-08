@@ -25,8 +25,10 @@ const generatePropsCpp = require('./components/GeneratePropsCpp.js');
 const generatePropsH = require('./components/GeneratePropsH.js');
 const generateModuleH = require('./modules/GenerateModuleH.js');
 const generateModuleCpp = require('./modules/GenerateModuleCpp.js');
-const generateModuleHObjCpp = require('./modules/GenerateModuleHObjCpp.js');
-const generateModuleMm = require('./modules/GenerateModuleMm.js');
+const generateModuleObjCpp = require('./modules/GenerateModuleObjCpp');
+const generateModuleJavaSpec = require('./modules/GenerateModuleJavaSpec.js');
+const GenerateModuleJniCpp = require('./modules/GenerateModuleJniCpp.js');
+const GenerateModuleJniH = require('./modules/GenerateModuleJniH.js');
 const generatePropsJavaInterface = require('./components/GeneratePropsJavaInterface.js');
 const generatePropsJavaDelegate = require('./components/GeneratePropsJavaDelegate.js');
 const generateTests = require('./components/GenerateTests.js');
@@ -38,12 +40,13 @@ const schemaValidator = require('../SchemaValidator.js');
 
 import type {SchemaType} from '../CodegenSchema';
 
-type Options = $ReadOnly<{|
+type Options = $ReadOnly<{
   libraryName: string,
   schema: SchemaType,
   outputDirectory: string,
   moduleSpecName: string,
-|}>;
+  packageName?: string, // Some platforms have a notion of package, which should be configurable.
+}>;
 
 type Generators =
   | 'descriptors'
@@ -51,21 +54,18 @@ type Generators =
   | 'props'
   | 'tests'
   | 'shadow-nodes'
-  | 'modules';
+  | 'modulesAndroid'
+  | 'modulesCxx'
+  | 'modulesIOS';
 
-type Config = $ReadOnly<{|
+type Config = $ReadOnly<{
   generators: Array<Generators>,
   test?: boolean,
-|}>;
+}>;
 
 const GENERATORS = {
   descriptors: [generateComponentDescriptorH.generate],
-  events: [
-    generateEventEmitterCpp.generate,
-    generateEventEmitterH.generate,
-    generateModuleHObjCpp.generate,
-    generateModuleMm.generate,
-  ],
+  events: [generateEventEmitterCpp.generate, generateEventEmitterH.generate],
   props: [
     generateComponentHObjCpp.generate,
     generatePropsCpp.generate,
@@ -73,7 +73,14 @@ const GENERATORS = {
     generatePropsJavaInterface.generate,
     generatePropsJavaDelegate.generate,
   ],
-  modules: [generateModuleCpp.generate, generateModuleH.generate],
+  // TODO: Refactor this to consolidate various C++ output variation instead of forking per platform.
+  modulesAndroid: [
+    GenerateModuleJniCpp.generate,
+    GenerateModuleJniH.generate,
+    generateModuleJavaSpec.generate,
+  ],
+  modulesCxx: [generateModuleCpp.generate, generateModuleH.generate],
+  modulesIOS: [generateModuleObjCpp.generate],
   tests: [generateTests.generate],
   'shadow-nodes': [
     generateShadowNodeCpp.generate,
@@ -86,6 +93,10 @@ function writeMapToFiles(map: Map<string, string>, outputDir: string) {
   map.forEach((contents: string, fileName: string) => {
     try {
       const location = path.join(outputDir, fileName);
+      const dirName = path.dirname(location);
+      if (!fs.existsSync(dirName)) {
+        fs.mkdirSync(dirName, {recursive: true});
+      }
       fs.writeFileSync(location, contents);
     } catch (error) {
       success = false;
@@ -117,7 +128,13 @@ function checkFilesForChanges(
 
 module.exports = {
   generate(
-    {libraryName, schema, outputDirectory, moduleSpecName}: Options,
+    {
+      libraryName,
+      schema,
+      outputDirectory,
+      moduleSpecName,
+      packageName,
+    }: Options,
     {generators, test}: Config,
   ): boolean {
     schemaValidator.validate(schema);
@@ -125,7 +142,9 @@ module.exports = {
     const generatedFiles = [];
     for (const name of generators) {
       for (const generator of GENERATORS[name]) {
-        generatedFiles.push(...generator(libraryName, schema, moduleSpecName));
+        generatedFiles.push(
+          ...generator(libraryName, schema, moduleSpecName, packageName),
+        );
       }
     }
 

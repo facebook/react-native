@@ -16,10 +16,8 @@ import RCTDeviceEventEmitter from '../RCTDeviceEventEmitter';
 /**
  * Mock the NativeEventEmitter as a normal JS EventEmitter.
  */
-class NativeEventEmitter extends EventEmitter {
+export default class NativeEventEmitter extends EventEmitter {
   constructor() {
     super(RCTDeviceEventEmitter.sharedSubscriber);
   }
 }
-
-module.exports = NativeEventEmitter;

@@ -6,7 +6,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git"
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/eslint-config-react-native-community"
   },
   "homepage": "https://github.com/facebook/react-native/tree/master/packages/eslint-config-react-native-community#readme",
   "dependencies": {
@@ -20,14 +21,14 @@
     "eslint-plugin-jest": "22.4.1",
     "eslint-plugin-prettier": "3.1.2",
     "eslint-plugin-react": "^7.20.0",
-    "eslint-plugin-react-hooks": "^4.0.4",
+    "eslint-plugin-react-hooks": "^4.0.7",
     "eslint-plugin-react-native": "^3.8.1",
     "prettier": "^2.0.2"
   },
   "peerDependencies": {
-    "eslint": ">=6"
+    "eslint": ">=7"
   },
   "devDependencies": {
-    "eslint": "^6.5.1"
+    "eslint": "7.12.0"
   }
 }

@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_integration_tests_target", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_android_toplevel_dep", "react_native_dep", "react_native_integration_tests_target", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "testing",
@@ -25,7 +25,7 @@ rn_android_library(
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/junit:junit"),
-        react_native_dep("third-party/java/mockito:mockito"),
+        react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
         react_native_dep("third-party/java/testing-support-lib:runner"),
         react_native_integration_tests_target("java/com/facebook/react/testing/idledetection:idledetection"),
         react_native_integration_tests_target("java/com/facebook/react/testing/network:network"),

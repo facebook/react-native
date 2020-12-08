@@ -22,7 +22,6 @@ const ViewabilityHelper = require('./ViewabilityHelper');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
-const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('./VirtualizeUtils');
 
@@ -850,11 +849,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   render(): React.Node {
     if (__DEV__) {
       const flatStyles = flattenStyle(this.props.contentContainerStyle);
-      warning(
-        flatStyles == null || flatStyles.flexWrap !== 'wrap',
-        '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
-          'Consider using `numColumns` with `FlatList` instead.',
-      );
+      if (flatStyles != null && flatStyles.flexWrap === 'wrap') {
+        console.warn(
+          '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
+            'Consider using `numColumns` with `FlatList` instead.',
+        );
+      }
     }
     const {
       ListEmptyComponent,
@@ -1061,6 +1061,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       onScroll: this._onScroll,
       onScrollBeginDrag: this._onScrollBeginDrag,
       onScrollEndDrag: this._onScrollEndDrag,
+      onMomentumScrollBegin: this._onMomentumScrollBegin,
       onMomentumScrollEnd: this._onMomentumScrollEnd,
       scrollEventThrottle: this.props.scrollEventThrottle, // TODO: Android support
       invertStickyHeaders:
@@ -1466,7 +1467,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const distanceFromEnd = contentLength - visibleLength - offset;
     const threshold = onEndReachedThreshold
       ? onEndReachedThreshold * visibleLength
-      : 0;
+      : 2;
     if (
       onEndReached &&
       this.state.last === getItemCount(data) - 1 &&
@@ -1662,6 +1663,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _onScrollEndDrag = (e): void => {
+    this._nestedChildLists.forEach(childList => {
+      childList.ref && childList.ref._onScrollEndDrag(e);
+    });
     const {velocity} = e.nativeEvent;
     if (velocity) {
       this._scrollMetrics.velocity = this._selectOffset(velocity);
@@ -1670,7 +1674,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this.props.onScrollEndDrag && this.props.onScrollEndDrag(e);
   };
 
+  _onMomentumScrollBegin = (e): void => {
+    this._nestedChildLists.forEach(childList => {
+      childList.ref && childList.ref._onMomentumScrollBegin(e);
+    });
+    this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
+  };
+
   _onMomentumScrollEnd = (e): void => {
+    this._nestedChildLists.forEach(childList => {
+      childList.ref && childList.ref._onMomentumScrollEnd(e);
+    });
     this._scrollMetrics.velocity = 0;
     this._computeBlankness();
     this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e);

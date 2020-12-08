@@ -14,14 +14,11 @@ const BoundingDimensions = require('./BoundingDimensions');
 const Platform = require('../../Utilities/Platform');
 const Position = require('./Position');
 const React = require('react');
-const ReactNative = require('../../Renderer/shims/ReactNative');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
-const TVEventHandler = require('../AppleTV/TVEventHandler');
 const UIManager = require('../../ReactNative/UIManager');
 const View = require('../View/View');
 const SoundManager = require('../Sound/SoundManager');
 
-const keyMirror = require('fbjs/lib/keyMirror');
 const normalizeColor = require('../../StyleSheet/normalizeColor');
 
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
@@ -129,16 +126,16 @@ const extractSingleTouch = nativeEvent => {
  * Touchable states.
  */
 
-const States = keyMirror({
-  NOT_RESPONDER: null, // Not the responder
-  RESPONDER_INACTIVE_PRESS_IN: null, // Responder, inactive, in the `PressRect`
-  RESPONDER_INACTIVE_PRESS_OUT: null, // Responder, inactive, out of `PressRect`
-  RESPONDER_ACTIVE_PRESS_IN: null, // Responder, active, in the `PressRect`
-  RESPONDER_ACTIVE_PRESS_OUT: null, // Responder, active, out of `PressRect`
-  RESPONDER_ACTIVE_LONG_PRESS_IN: null, // Responder, active, in the `PressRect`, after long press threshold
-  RESPONDER_ACTIVE_LONG_PRESS_OUT: null, // Responder, active, out of `PressRect`, after long press threshold
-  ERROR: null,
-});
+const States = {
+  NOT_RESPONDER: 'NOT_RESPONDER', // Not the responder
+  RESPONDER_INACTIVE_PRESS_IN: 'RESPONDER_INACTIVE_PRESS_IN', // Responder, inactive, in the `PressRect`
+  RESPONDER_INACTIVE_PRESS_OUT: 'RESPONDER_INACTIVE_PRESS_OUT', // Responder, inactive, out of `PressRect`
+  RESPONDER_ACTIVE_PRESS_IN: 'RESPONDER_ACTIVE_PRESS_IN', // Responder, active, in the `PressRect`
+  RESPONDER_ACTIVE_PRESS_OUT: 'RESPONDER_ACTIVE_PRESS_OUT', // Responder, active, out of `PressRect`
+  RESPONDER_ACTIVE_LONG_PRESS_IN: 'RESPONDER_ACTIVE_LONG_PRESS_IN', // Responder, active, in the `PressRect`, after long press threshold
+  RESPONDER_ACTIVE_LONG_PRESS_OUT: 'RESPONDER_ACTIVE_LONG_PRESS_OUT', // Responder, active, out of `PressRect`, after long press threshold
+  ERROR: 'ERROR',
+};
 
 type State =
   | typeof States.NOT_RESPONDER
@@ -190,15 +187,15 @@ const IsLongPressingIn = {
 /**
  * Inputs to the state machine.
  */
-const Signals = keyMirror({
-  DELAY: null,
-  RESPONDER_GRANT: null,
-  RESPONDER_RELEASE: null,
-  RESPONDER_TERMINATED: null,
-  ENTER_PRESS_RECT: null,
-  LEAVE_PRESS_RECT: null,
-  LONG_PRESS_DETECTED: null,
-});
+const Signals = {
+  DELAY: 'DELAY',
+  RESPONDER_GRANT: 'RESPONDER_GRANT',
+  RESPONDER_RELEASE: 'RESPONDER_RELEASE',
+  RESPONDER_TERMINATED: 'RESPONDER_TERMINATED',
+  ENTER_PRESS_RECT: 'ENTER_PRESS_RECT',
+  LEAVE_PRESS_RECT: 'LEAVE_PRESS_RECT',
+  LONG_PRESS_DETECTED: 'LONG_PRESS_DETECTED',
+};
 
 type Signal =
   | typeof Signals.DELAY
@@ -371,33 +368,12 @@ const TouchableMixin = {
     if (!Platform.isTV) {
       return;
     }
-
-    this._tvEventHandler = new TVEventHandler();
-    this._tvEventHandler.enable(this, function(cmp, evt) {
-      const myTag = ReactNative.findNodeHandle(cmp);
-      evt.dispatchConfig = {};
-      if (myTag === evt.tag) {
-        if (evt.eventType === 'focus') {
-          cmp.touchableHandleFocus(evt);
-        } else if (evt.eventType === 'blur') {
-          cmp.touchableHandleBlur(evt);
-        } else if (evt.eventType === 'select' && Platform.OS !== 'android') {
-          cmp.touchableHandlePress &&
-            !cmp.props.disabled &&
-            cmp.touchableHandlePress(evt);
-        }
-      }
-    });
   },
 
   /**
    * Clear all timeouts on unmount
    */
   componentWillUnmount: function() {
-    if (this._tvEventHandler) {
-      this._tvEventHandler.disable();
-      delete this._tvEventHandler;
-    }
     this.touchableDelayTimeout && clearTimeout(this.touchableDelayTimeout);
     this.longPressDelayTimeout && clearTimeout(this.longPressDelayTimeout);
     this.pressOutDelayTimeout && clearTimeout(this.pressOutDelayTimeout);

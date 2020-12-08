@@ -7,10 +7,10 @@
 
 #import "RCTTextInputComponentView.h"
 
-#import <react/components/iostextinput/TextInputComponentDescriptor.h>
-#import <react/graphics/Geometry.h>
-#import <react/textlayoutmanager/RCTAttributedTextUtils.h>
-#import <react/textlayoutmanager/TextLayoutManager.h>
+#import <react/renderer/components/iostextinput/TextInputComponentDescriptor.h>
+#import <react/renderer/graphics/Geometry.h>
+#import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
+#import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 #import <React/RCTBackedTextInputViewProtocol.h>
 #import <React/RCTUITextField.h>
@@ -29,7 +29,7 @@ using namespace facebook::react;
 @end
 
 @implementation RCTTextInputComponentView {
-  TextInputShadowNode::ConcreteState::Shared _state;
+  TextInputShadowNode::ConcreteStateTeller _stateTeller;
   UIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
   NSUInteger _mostRecentEventCount;
   NSAttributedString *_lastStringStateWasUpdatedWith;
@@ -174,9 +174,7 @@ using namespace facebook::react;
   }
 
   if (newTextInputProps.traits.textContentType != oldTextInputProps.traits.textContentType) {
-    if (@available(iOS 10.0, *)) {
-      _backedTextInputView.textContentType = RCTUITextContentTypeFromString(newTextInputProps.traits.textContentType);
-    }
+    _backedTextInputView.textContentType = RCTUITextContentTypeFromString(newTextInputProps.traits.textContentType);
   }
 
   if (newTextInputProps.traits.passwordRules != oldTextInputProps.traits.passwordRules) {
@@ -207,21 +205,30 @@ using namespace facebook::react;
     _backedTextInputView.tintColor = RCTUIColorFromSharedColor(newTextInputProps.selectionColor);
   }
 
+  if (newTextInputProps.inputAccessoryViewID != oldTextInputProps.inputAccessoryViewID) {
+    _backedTextInputView.inputAccessoryViewID = RCTNSStringFromString(newTextInputProps.inputAccessoryViewID);
+  }
+
   [super updateProps:props oldProps:oldProps];
 }
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _state = std::static_pointer_cast<TextInputShadowNode::ConcreteState const>(state);
+  _stateTeller.setConcreteState(state);
 
-  if (!_state) {
+  if (!_stateTeller.isValid()) {
     assert(false && "State is `null` for <TextInput> component.");
     _backedTextInputView.attributedText = nil;
     return;
   }
 
-  if (_mostRecentEventCount == _state->getData().mostRecentEventCount) {
-    auto data = _state->getData();
+  auto data = _stateTeller.getData().value();
+
+  if (!oldState) {
+    _mostRecentEventCount = data.mostRecentEventCount;
+  }
+
+  if (_mostRecentEventCount == data.mostRecentEventCount) {
     _comingFromJS = YES;
     [self _setAttributedString:RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox)];
     _comingFromJS = NO;
@@ -242,9 +249,9 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
+  _stateTeller.invalidate();
   _backedTextInputView.attributedText = nil;
   _mostRecentEventCount = 0;
-  _state.reset();
   _comingFromJS = NO;
   _lastStringStateWasUpdatedWith = nil;
   _ignoreNextTextInputCall = NO;
@@ -435,16 +442,17 @@ using namespace facebook::react;
 
 - (void)_updateState
 {
-  if (!_state) {
+  if (!_stateTeller.isValid()) {
     return;
   }
+
   NSAttributedString *attributedString = _backedTextInputView.attributedText;
-  auto data = _state->getData();
+  auto data = _stateTeller.getData().value();
   _lastStringStateWasUpdatedWith = attributedString;
   data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
   _mostRecentEventCount += _comingFromJS ? 0 : 1;
   data.mostRecentEventCount = _mostRecentEventCount;
-  _state->updateState(std::move(data));
+  _stateTeller.updateState(std::move(data));
 }
 
 - (AttributedString::Range)_selectionRange
@@ -460,7 +468,9 @@ using namespace facebook::react;
 - (void)_setAttributedString:(NSAttributedString *)attributedString
 {
   UITextRange *selectedRange = [_backedTextInputView selectedTextRange];
-  _backedTextInputView.attributedText = attributedString;
+  if (![self _textOf:attributedString equals:_backedTextInputView.attributedText]) {
+    _backedTextInputView.attributedText = attributedString;
+  }
   if (_lastStringStateWasUpdatedWith.length == attributedString.length) {
     // Calling `[_backedTextInputView setAttributedText]` moves caret
     // to the end of text input field. This cancels any selection as well
@@ -480,6 +490,38 @@ using namespace facebook::react;
   RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
   _backedTextInputView = backedTextInputView;
   [self addSubview:_backedTextInputView];
+}
+
+- (BOOL)_textOf:(NSAttributedString *)newText equals:(NSAttributedString *)oldText
+{
+  // When the dictation is running we can't update the attributed text on the backed up text view
+  // because setting the attributed string will kill the dictation. This means that we can't impose
+  // the settings on a dictation.
+  // Similarly, when the user is in the middle of inputting some text in Japanese/Chinese, there will be styling on the
+  // text that we should disregard. See
+  // https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc for more info. If
+  // the user added an emoji, the system adds a font attribute for the emoji and stores the original font in
+  // NSOriginalFont. Lastly, when entering a password, etc., there will be additional styling on the field as the native
+  // text view handles showing the last character for a split second.
+  __block BOOL fontHasBeenUpdatedBySystem = false;
+  [oldText enumerateAttribute:@"NSOriginalFont"
+                      inRange:NSMakeRange(0, oldText.length)
+                      options:0
+                   usingBlock:^(id value, NSRange range, BOOL *stop) {
+                     if (value) {
+                       fontHasBeenUpdatedBySystem = true;
+                     }
+                   }];
+
+  BOOL shouldFallbackToBareTextComparison =
+      [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
+      _backedTextInputView.markedTextRange || _backedTextInputView.isSecureTextEntry || fontHasBeenUpdatedBySystem;
+
+  if (shouldFallbackToBareTextComparison) {
+    return ([newText.string isEqualToString:oldText.string]);
+  } else {
+    return ([newText isEqualToAttributedString:oldText]);
+  }
 }
 
 @end

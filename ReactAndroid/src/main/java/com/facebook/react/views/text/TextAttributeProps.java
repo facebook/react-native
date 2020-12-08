@@ -17,6 +17,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaDirection;
@@ -71,6 +72,9 @@ public class TextAttributeProps {
   protected boolean mIsUnderlineTextDecorationSet = false;
   protected boolean mIsLineThroughTextDecorationSet = false;
   protected boolean mIncludeFontPadding = true;
+
+  protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
+  protected boolean mIsAccessibilityRoleSet = false;
 
   /**
    * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}. mFontWeight can be {@link
@@ -134,6 +138,7 @@ public class TextAttributeProps {
     setTextShadowColor(getIntProp(PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
     setTextTransform(getStringProp(PROP_TEXT_TRANSFORM));
     setLayoutDirection(getStringProp(ViewProps.LAYOUT_DIRECTION));
+    setAccessibilityRole(getStringProp(ViewProps.ACCESSIBILITY_ROLE));
   }
 
   public static int getTextAlignment(ReactStylesDiffMap props, boolean isRTL) {
@@ -409,6 +414,14 @@ public class TextAttributeProps {
       mTextTransform = TextTransform.CAPITALIZE;
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
+    }
+  }
+
+  public void setAccessibilityRole(@Nullable String accessibilityRole) {
+    if (accessibilityRole != null) {
+      mIsAccessibilityRoleSet = accessibilityRole != null;
+      mAccessibilityRole =
+          ReactAccessibilityDelegate.AccessibilityRole.fromValue(accessibilityRole);
     }
   }
 

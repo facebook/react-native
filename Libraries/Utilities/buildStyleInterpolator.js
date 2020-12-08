@@ -9,11 +9,9 @@
 
 'use strict';
 
-const keyOf = require('fbjs/lib/keyOf');
-
-const X_DIM = keyOf({x: null});
-const Y_DIM = keyOf({y: null});
-const Z_DIM = keyOf({z: null});
+const X_DIM = 'x';
+const Y_DIM = 'y';
+const Z_DIM = 'z';
 
 const InitialOperationField = {
   transformTranslate: [0, 0, 0],

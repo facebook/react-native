@@ -10,11 +10,11 @@
 
 'use strict';
 
-const AnimatedImplementation = require('../../Animated/src/AnimatedImplementation');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
-const Platform = require('../../Utilities/Platform');
+import AnimatedImplementation from '../../Animated/AnimatedImplementation';
+import * as React from 'react';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
+import Platform from '../../Utilities/Platform';
 
 import type {LayoutEvent} from '../../Types/CoreEventTypes';
 
@@ -65,6 +65,15 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
 
   setNextHeaderY(y: number) {
     this.setState({nextHeaderLayoutY: y});
+  }
+
+  componentWillUnmount() {
+    if (this._translateY != null && this._animatedValueListenerId != null) {
+      this._translateY.removeListener(this._animatedValueListenerId);
+    }
+    if (this._timer) {
+      clearTimeout(this._timer);
+    }
   }
 
   UNSAFE_componentWillReceiveProps(nextProps: Props) {
@@ -122,19 +131,6 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
             this.setState({
               translateY: value,
             });
-            // This fixes jank on iOS, especially around paging,
-            // but causes jank on Android.
-            // It seems that Native Animated Driver on iOS has
-            // more conflicts with values passed through the ShadowTree
-            // especially when connecting new Animated nodes + disconnecting
-            // old ones, compared to Android where that process seems fine.
-            if (Platform.OS === 'ios') {
-              setTimeout(() => {
-                this.setState({
-                  translateY: null,
-                });
-              }, 0);
-            }
           }
         }, this._debounceTimeout);
       };
@@ -303,6 +299,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
 const styles = StyleSheet.create({
   header: {
     zIndex: 10,
+    position: 'relative',
   },
   fill: {
     flex: 1,

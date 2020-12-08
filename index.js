@@ -10,6 +10,7 @@
 
 'use strict';
 
+// Components
 import typeof AccessibilityInfo from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
 import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/ActivityIndicator';
 import typeof Button from './Libraries/Components/Button';
@@ -27,14 +28,14 @@ import typeof PickerIOS from './Libraries/Components/Picker/PickerIOS';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 import typeof ProgressViewIOS from './Libraries/Components/ProgressViewIOS/ProgressViewIOS';
+import typeof RefreshControl from './Libraries/Components/RefreshControl/RefreshControl';
 import typeof SafeAreaView from './Libraries/Components/SafeAreaView/SafeAreaView';
 import typeof ScrollView from './Libraries/Components/ScrollView/ScrollView';
 import typeof SectionList from './Libraries/Lists/SectionList';
 import typeof SegmentedControlIOS from './Libraries/Components/SegmentedControlIOS/SegmentedControlIOS';
 import typeof Slider from './Libraries/Components/Slider/Slider';
-import typeof Switch from './Libraries/Components/Switch/Switch';
-import typeof RefreshControl from './Libraries/Components/RefreshControl/RefreshControl';
 import typeof StatusBar from './Libraries/Components/StatusBar/StatusBar';
+import typeof Switch from './Libraries/Components/Switch/Switch';
 import typeof Text from './Libraries/Text/Text';
 import typeof TextInput from './Libraries/Components/TextInput/TextInput';
 import typeof Touchable from './Libraries/Components/Touchable/Touchable';
@@ -45,9 +46,11 @@ import typeof TouchableWithoutFeedback from './Libraries/Components/Touchable/To
 import typeof View from './Libraries/Components/View/View';
 import typeof VirtualizedList from './Libraries/Lists/VirtualizedList';
 import typeof VirtualizedSectionList from './Libraries/Lists/VirtualizedSectionList';
+
+// APIs
 import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
 import typeof Alert from './Libraries/Alert/Alert';
-import typeof Animated from './Libraries/Animated/src/Animated';
+import typeof Animated from './Libraries/Animated/Animated';
 import typeof Appearance from './Libraries/Utilities/Appearance';
 import typeof AppRegistry from './Libraries/ReactNative/AppRegistry';
 import typeof AppState from './Libraries/AppState/AppState';
@@ -58,7 +61,7 @@ import typeof DatePickerAndroid from './Libraries/Components/DatePickerAndroid/D
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
 import typeof DevSettings from './Libraries/Utilities/DevSettings';
 import typeof Dimensions from './Libraries/Utilities/Dimensions';
-import typeof Easing from './Libraries/Animated/src/Easing';
+import typeof Easing from './Libraries/Animated/Easing';
 import typeof ReactNative from './Libraries/Renderer/shims/ReactNative';
 import typeof I18nManager from './Libraries/ReactNative/I18nManager';
 import typeof ImagePickerIOS from './Libraries/Image/ImagePickerIOS';
@@ -66,6 +69,7 @@ import typeof InteractionManager from './Libraries/Interaction/InteractionManage
 import typeof Keyboard from './Libraries/Components/Keyboard/Keyboard';
 import typeof LayoutAnimation from './Libraries/LayoutAnimation/LayoutAnimation';
 import typeof Linking from './Libraries/Linking/Linking';
+import typeof LogBox from './Libraries/LogBox/LogBox';
 import typeof NativeDialogManagerAndroid from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
 import typeof NativeEventEmitter from './Libraries/EventEmitter/NativeEventEmitter';
 import typeof Networking from './Libraries/Network/RCTNetworking';
@@ -80,22 +84,24 @@ import typeof StyleSheet from './Libraries/StyleSheet/StyleSheet';
 import typeof Systrace from './Libraries/Performance/Systrace';
 import typeof ToastAndroid from './Libraries/Components/ToastAndroid/ToastAndroid';
 import typeof * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
-import typeof TVEventHandler from './Libraries/Components/AppleTV/TVEventHandler';
 import typeof UIManager from './Libraries/ReactNative/UIManager';
 import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
 import typeof UTFSequence from './Libraries/UTFSequence';
 import typeof Vibration from './Libraries/Vibration/Vibration';
 import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
-import typeof LogBox from './Libraries/LogBox/LogBox';
-import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEventEmitter';
-import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
+
+// Plugins
+import typeof {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
 import typeof NativeModules from './Libraries/BatchedBridge/NativeModules';
 import typeof Platform from './Libraries/Utilities/Platform';
-import typeof processColor from './Libraries/StyleSheet/processColor';
 import typeof {PlatformColor} from './Libraries/StyleSheet/PlatformColorValueTypes';
-import typeof {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
+import typeof processColor from './Libraries/StyleSheet/processColor';
+import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEventEmitter';
+import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
 import typeof {RootTagContext} from './Libraries/ReactNative/RootTag';
+
+// Prop Types
 import typeof DeprecatedColorPropType from './Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
 import typeof DeprecatedEdgeInsetsPropType from './Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType';
 import typeof DeprecatedPointPropType from './Libraries/DeprecatedPropTypes/DeprecatedPointPropType';
@@ -119,15 +125,17 @@ module.exports = {
   get Button(): Button {
     return require('./Libraries/Components/Button');
   },
+  // $FlowFixMe[value-as-type]
   get DatePickerIOS(): DatePickerIOS {
     warnOnce(
       'DatePickerIOS-merged',
       'DatePickerIOS has been merged with DatePickerAndroid and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/datetimepicker',
+        'See https://github.com/react-native-datetimepicker/datetimepicker',
     );
     return require('./Libraries/Components/DatePicker/DatePickerIOS');
   },
+  // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
     return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid');
   },
@@ -150,8 +158,8 @@ module.exports = {
     warnOnce(
       'maskedviewios-moved',
       'MaskedViewIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/masked-view' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-masked-view',
+        "It can now be installed and imported from '@react-native-masked-view/masked-view' instead of 'react-native'. " +
+        'See https://github.com/react-native-masked-view/react-native-masked-view',
     );
     return require('./Libraries/Components/MaskedView/MaskedViewIOS');
   },
@@ -162,40 +170,46 @@ module.exports = {
     warnOnce(
       'picker-moved',
       'Picker has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/picker' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-picker',
+        "It can now be installed and imported from '@react-native-picker/picker' instead of 'react-native'. " +
+        'See https://github.com/react-native-picker/react-native-picker',
     );
     return require('./Libraries/Components/Picker/Picker');
   },
+  // $FlowFixMe[value-as-type]
   get PickerIOS(): PickerIOS {
     warnOnce(
       'pickerios-moved',
       'PickerIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/picker' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-picker',
+        "It can now be installed and imported from '@react-native-picker/picker' instead of 'react-native'. " +
+        'See https://github.com/react-native-picker/react-native-picker',
     );
     return require('./Libraries/Components/Picker/PickerIOS');
   },
   get Pressable(): Pressable {
     return require('./Libraries/Components/Pressable/Pressable').default;
   },
+  // $FlowFixMe[value-as-type]
   get ProgressBarAndroid(): ProgressBarAndroid {
     warnOnce(
       'progress-bar-android-moved',
       'ProgressBarAndroid has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/progress-bar-android' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/progress-bar-android',
+        'See https://github.com/react-native-progress-view/progress-bar-android',
     );
     return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid');
   },
+  // $FlowFixMe[value-as-type]
   get ProgressViewIOS(): ProgressViewIOS {
     warnOnce(
       'progress-view-ios-moved',
       'ProgressViewIOS has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/progress-view' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/progress-view',
+        'See https://github.com/react-native-progress-view/progress-view',
     );
     return require('./Libraries/Components/ProgressViewIOS/ProgressViewIOS');
+  },
+  get RefreshControl(): RefreshControl {
+    return require('./Libraries/Components/RefreshControl/RefreshControl');
   },
   get SafeAreaView(): SafeAreaView {
     return require('./Libraries/Components/SafeAreaView/SafeAreaView');
@@ -206,12 +220,13 @@ module.exports = {
   get SectionList(): SectionList {
     return require('./Libraries/Lists/SectionList');
   },
+  // $FlowFixMe[value-as-type]
   get SegmentedControlIOS(): SegmentedControlIOS {
     warnOnce(
       'segmented-control-ios-moved',
       'SegmentedControlIOS has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/segmented-control' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/segmented-control',
+        'See https://github.com/react-native-segmented-control/segmented-control',
     );
     return require('./Libraries/Components/SegmentedControlIOS/SegmentedControlIOS');
   },
@@ -220,18 +235,15 @@ module.exports = {
       'slider-moved',
       'Slider has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/slider' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-slider',
+        'See https://github.com/callstack/react-native-slider',
     );
     return require('./Libraries/Components/Slider/Slider');
   },
-  get Switch(): Switch {
-    return require('./Libraries/Components/Switch/Switch');
-  },
-  get RefreshControl(): RefreshControl {
-    return require('./Libraries/Components/RefreshControl/RefreshControl');
-  },
   get StatusBar(): StatusBar {
     return require('./Libraries/Components/StatusBar/StatusBar');
+  },
+  get Switch(): Switch {
+    return require('./Libraries/Components/Switch/Switch');
   },
   get Text(): Text {
     return require('./Libraries/Text/Text');
@@ -272,7 +284,7 @@ module.exports = {
     return require('./Libraries/Alert/Alert');
   },
   get Animated(): Animated {
-    return require('./Libraries/Animated/src/Animated');
+    return require('./Libraries/Animated/Animated');
   },
   get Appearance(): Appearance {
     return require('./Libraries/Utilities/Appearance');
@@ -283,12 +295,13 @@ module.exports = {
   get AppState(): AppState {
     return require('./Libraries/AppState/AppState');
   },
+  // $FlowFixMe[value-as-type]
   get AsyncStorage(): AsyncStorage {
     warnOnce(
       'async-storage-moved',
       'AsyncStorage has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/async-storage' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/async-storage',
+        "It can now be installed and imported from '@react-native-async-storage/async-storage' instead of 'react-native'. " +
+        'See https://github.com/react-native-async-storage/async-storage',
     );
     return require('./Libraries/Storage/AsyncStorage');
   },
@@ -300,7 +313,7 @@ module.exports = {
       'clipboard-moved',
       'Clipboard has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/clipboard' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/clipboard',
+        'See https://github.com/react-native-clipboard/clipboard',
     );
     return require('./Libraries/Components/Clipboard/Clipboard');
   },
@@ -309,7 +322,7 @@ module.exports = {
       'DatePickerAndroid-merged',
       'DatePickerAndroid has been merged with DatePickerIOS and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/datetimepicker',
+        'See https://github.com/react-native-datetimepicker/datetimepicker',
     );
     return require('./Libraries/Components/DatePickerAndroid/DatePickerAndroid');
   },
@@ -323,7 +336,7 @@ module.exports = {
     return require('./Libraries/Utilities/Dimensions');
   },
   get Easing(): Easing {
-    return require('./Libraries/Animated/src/Easing');
+    return require('./Libraries/Animated/Easing');
   },
   get findNodeHandle(): $PropertyType<ReactNative, 'findNodeHandle'> {
     return require('./Libraries/Renderer/shims/ReactNative').findNodeHandle;
@@ -337,7 +350,7 @@ module.exports = {
       'ImagePickerIOS has been extracted from react-native core and will be removed in a future release. ' +
         "Please upgrade to use either '@react-native-community/react-native-image-picker' or 'expo-image-picker'. " +
         "If you cannot upgrade to a different library, please install the deprecated '@react-native-community/image-picker-ios' package. " +
-        'See https://github.com/react-native-community/react-native-image-picker-ios',
+        'See https://github.com/rnc-archive/react-native-image-picker-ios',
     );
     return require('./Libraries/Image/ImagePickerIOS');
   },
@@ -361,7 +374,7 @@ module.exports = {
       .default;
   },
   get NativeEventEmitter(): NativeEventEmitter {
-    return require('./Libraries/EventEmitter/NativeEventEmitter');
+    return require('./Libraries/EventEmitter/NativeEventEmitter').default;
   },
   get Networking(): Networking {
     return require('./Libraries/Network/RCTNetworking');
@@ -380,7 +393,7 @@ module.exports = {
       'pushNotificationIOS-moved',
       'PushNotificationIOS has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/push-notification-ios' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/push-notification-ios',
+        'See https://github.com/react-native-push-notification-ios/push-notification-ios',
     );
     return require('./Libraries/PushNotificationIOS/PushNotificationIOS');
   },
@@ -403,14 +416,12 @@ module.exports = {
   get Systrace(): Systrace {
     return require('./Libraries/Performance/Systrace');
   },
+  // $FlowFixMe[value-as-type]
   get ToastAndroid(): ToastAndroid {
     return require('./Libraries/Components/ToastAndroid/ToastAndroid');
   },
   get TurboModuleRegistry(): TurboModuleRegistry {
     return require('./Libraries/TurboModule/TurboModuleRegistry');
-  },
-  get TVEventHandler(): TVEventHandler {
-    return require('./Libraries/Components/AppleTV/TVEventHandler');
   },
   get UIManager(): UIManager {
     return require('./Libraries/ReactNative/UIManager');
@@ -440,7 +451,11 @@ module.exports = {
 
   // Plugins
   get DeviceEventEmitter(): RCTDeviceEventEmitter {
-    return require('./Libraries/EventEmitter/RCTDeviceEventEmitter');
+    return require('./Libraries/EventEmitter/RCTDeviceEventEmitter').default;
+  },
+  get DynamicColorIOS(): DynamicColorIOS {
+    return require('./Libraries/StyleSheet/PlatformColorValueTypesIOS')
+      .DynamicColorIOS;
   },
   get NativeAppEventEmitter(): RCTNativeAppEventEmitter {
     return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter');
@@ -451,16 +466,12 @@ module.exports = {
   get Platform(): Platform {
     return require('./Libraries/Utilities/Platform');
   },
-  get processColor(): processColor {
-    return require('./Libraries/StyleSheet/processColor');
-  },
   get PlatformColor(): PlatformColor {
     return require('./Libraries/StyleSheet/PlatformColorValueTypes')
       .PlatformColor;
   },
-  get DynamicColorIOS(): DynamicColorIOS {
-    return require('./Libraries/StyleSheet/PlatformColorValueTypesIOS')
-      .DynamicColorIOS;
+  get processColor(): processColor {
+    return require('./Libraries/StyleSheet/processColor');
   },
   get requireNativeComponent(): <T>(
     uiViewClassName: string,
@@ -477,6 +488,7 @@ module.exports = {
       );
   },
   // Prop Types
+  // $FlowFixMe[value-as-type]
   get ColorPropType(): DeprecatedColorPropType {
     return require('./Libraries/DeprecatedPropTypes/DeprecatedColorPropType');
   },
@@ -500,7 +512,7 @@ if (__DEV__) {
         false,
         'ART has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/art' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/art',
+          'See https://github.com/react-native-art/art',
       );
     },
   });
@@ -539,7 +551,7 @@ if (__DEV__) {
         false,
         'WebView has been removed from React Native. ' +
           "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-webview',
+          'See https://github.com/react-native-webview/react-native-webview',
       );
     },
   });
@@ -552,7 +564,7 @@ if (__DEV__) {
         false,
         'NetInfo has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/netinfo' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-netinfo',
+          'See https://github.com/react-native-netinfo/react-native-netinfo',
       );
     },
   });
@@ -565,7 +577,7 @@ if (__DEV__) {
         false,
         'CameraRoll has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/cameraroll' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-cameraroll',
+          'See https://github.com/react-native-cameraroll/react-native-cameraroll',
       );
     },
   });
@@ -592,7 +604,7 @@ if (__DEV__) {
         false,
         'ImageEditor has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-image-editor',
+          'See https://github.com/callstack/react-native-image-editor',
       );
     },
   });
@@ -605,7 +617,7 @@ if (__DEV__) {
         false,
         'TimePickerAndroid has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/datetimepicker',
+          'See https://github.com/react-native-datetimepicker/datetimepicker',
       );
     },
   });
@@ -618,7 +630,7 @@ if (__DEV__) {
         false,
         'ToolbarAndroid has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/toolbar-android' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/toolbar-android',
+          'See https://github.com/react-native-toolbar-android/toolbar-android',
       );
     },
   });
@@ -631,7 +643,7 @@ if (__DEV__) {
         false,
         'ViewPagerAndroid has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-viewpager',
+          'See https://github.com/callstack/react-native-viewpager',
       );
     },
   });
@@ -644,7 +656,7 @@ if (__DEV__) {
         false,
         'CheckBox has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/checkbox' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-checkbox',
+          'See https://github.com/react-native-checkbox/react-native-checkbox',
       );
     },
   });

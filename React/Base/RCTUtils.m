@@ -345,6 +345,12 @@ CGSize RCTScreenSize()
   return size;
 }
 
+CGSize RCTViewportSize()
+{
+  UIWindow *window = RCTKeyWindow();
+  return window ? window.bounds.size : RCTScreenSize();
+}
+
 CGFloat RCTRoundPixelValue(CGFloat value)
 {
   CGFloat scale = RCTScreenScale();
@@ -572,6 +578,16 @@ BOOL RCTForceTouchAvailable(void)
 NSError *RCTErrorWithMessage(NSString *message)
 {
   NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey : message};
+  return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
+}
+
+NSError *RCTErrorWithNSException(NSException *exception)
+{
+  NSString *message = [NSString stringWithFormat:@"NSException: %@; trace: %@.",
+                                                 exception,
+                                                 [[exception callStackSymbols] componentsJoinedByString:@";"]];
+  NSDictionary<NSString *, id> *errorInfo =
+      @{NSLocalizedDescriptionKey : message, RCTObjCStackTraceKey : [exception callStackSymbols]};
   return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
 }
 

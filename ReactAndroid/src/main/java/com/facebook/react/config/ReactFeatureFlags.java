@@ -23,6 +23,17 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
+  /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
+  public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
+
+  /** Enable TurboModule JS Codegen. */
+  public static volatile boolean useTurboModuleJSCodegen = false;
+
+  /**
+   * Enable the fix to validate the TurboReactPackage's module info before resolving a TurboModule.
+   */
+  public static volatile boolean enableTurboModulePackageInfoValidation = false;
+
   /*
    * This feature flag enables logs for Fabric
    */
@@ -41,27 +52,6 @@ public class ReactFeatureFlags {
    * inside view manager will be called instead.
    */
   public static boolean useViewManagerDelegatesForCommands = false;
-
-  /**
-   * Should this application use Catalyst Teardown V2? This is an experiment to use a V2 of the
-   * CatalystInstanceImpl `destroy` method.
-   */
-  public static boolean useCatalystTeardownV2 = false;
-
-  /**
-   * When the ReactContext is destroyed, should the CatalystInstance immediately be nullified? This
-   * is the safest thing to do since the CatalystInstance shouldn't be used, and should be
-   * garbage-collected after it's destroyed, but this is a breaking change in that many native
-   * modules assume that a ReactContext will always have a CatalystInstance. This will be deleted
-   * and the CatalystInstance will always be destroyed in some future release.
-   */
-  public static boolean nullifyCatalystInstanceOnDestroy = false;
-
-  /**
-   * Temporary flag. See UIImplementation: if this flag is enabled, ViewCommands will be queued and
-   * executed before any other types of UI operations.
-   */
-  public static boolean allowEarlyViewCommandExecution = false;
 
   /**
    * This react flag enables a custom algorithm for the getChildVisibleRect() method in the classes
@@ -84,12 +74,30 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
-  /** Feature flag to configure initialization of Fabric surfaces. */
-  public static boolean enableFabricStartSurfaceWithLayoutMetrics = true;
+  /** Use experimental SetState retry mechanism in view? */
+  public static boolean enableExperimentalStateUpdateRetry = false;
 
-  /** Feature flag to have FabricUIManager teardown stop all active surfaces. */
-  public static boolean enableFabricStopAllSurfacesOnTeardown = false;
+  /** Enable caching of Spannable objects using equality of ReadableNativeMaps */
+  public static boolean enableSpannableCacheByReadableNativeMapEquality = true;
 
-  /** Feature flag to use stopSurface when ReactRootView is unmounted. */
-  public static boolean enableStopSurfaceOnRootViewUnmount = false;
+  /** Disable customDrawOrder in ReactViewGroup under Fabric only. */
+  public static boolean disableCustomDrawOrderFabric = false;
+
+  /** Use lock-free data structures for Fabric MountItems. */
+  public static boolean enableLockFreeMountInstructions = false;
+
+  /** Temporary flag for FB-internal workaround for RN:Litho interop in non-Fabric RN. */
+  public static boolean enableNonFabricRNLithoForceLayout = true;
+
+  /** Disable UI update operations in non-Fabric renderer after catalyst instance was destroyed */
+  public static boolean disableNonFabricViewOperationsOnCatalystDestroy = false;
+
+  /**
+   * Fixes race-condition in the initialization of RN surface. TODO T78832286: remove this flag once
+   * we verify the fix is correct in production
+   */
+  public static boolean enableStartSurfaceRaceConditionFix = false;
+
+  /** Enables the usage of an experimental optimized iterator for ReadableNativeMaps. */
+  public static boolean enableExperimentalReadableNativeMapIterator = false;
 }

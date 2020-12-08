@@ -132,8 +132,30 @@ Inspector::Inspector(
 }
 
 Inspector::~Inspector() {
-  // TODO: think about expected detach flow
   debugger_.setEventObserver(nullptr);
+}
+
+static bool toBoolean(jsi::Runtime &runtime, const jsi::Value &val) {
+  // Based on Operations.cpp:toBoolean in the Hermes VM.
+  if (val.isUndefined() || val.isNull()) {
+    return false;
+  }
+  if (val.isBool()) {
+    return val.getBool();
+  }
+  if (val.isNumber()) {
+    double m = val.getNumber();
+    return m != 0 && !std::isnan(m);
+  }
+  if (val.isSymbol() || val.isObject()) {
+    return true;
+  }
+  if (val.isString()) {
+    std::string s = val.getString(runtime).utf8(runtime);
+    return !s.empty();
+  }
+  assert(false && "All cases should be covered");
+  return false;
 }
 
 void Inspector::installConsoleFunction(
@@ -169,11 +191,30 @@ void Inspector::installConsoleFunction(
             }
 
             if (auto inspector = weakInspector.lock()) {
-              jsi::Array argsArray(runtime, count);
-              for (size_t index = 0; index < count; ++index)
-                argsArray.setValueAtIndex(runtime, index, args[index]);
-              inspector->logMessage(
-                  ConsoleMessageInfo{chromeType, std::move(argsArray)});
+              if (name != "assert") {
+                // All cases other than assert just log a simple message.
+                jsi::Array argsArray(runtime, count);
+                for (size_t index = 0; index < count; ++index)
+                  argsArray.setValueAtIndex(runtime, index, args[index]);
+                inspector->logMessage(
+                    ConsoleMessageInfo{chromeType, std::move(argsArray)});
+                return jsi::Value::undefined();
+              }
+              // console.assert needs to check the first parameter before
+              // logging.
+              if (count == 0) {
+                // No parameters, throw a blank assertion failed message.
+                inspector->logMessage(
+                    ConsoleMessageInfo{chromeType, jsi::Array(runtime, 0)});
+              } else if (!toBoolean(runtime, args[0])) {
+                // Shift the message array down by one to not include the
+                // condition.
+                jsi::Array argsArray(runtime, count - 1);
+                for (size_t index = 1; index < count; ++index)
+                  argsArray.setValueAtIndex(runtime, index, args[index]);
+                inspector->logMessage(
+                    ConsoleMessageInfo{chromeType, std::move(argsArray)});
+              }
             }
 
             return jsi::Value::undefined();
@@ -309,6 +350,9 @@ folly::Future<debugger::BreakpointInfo> Inspector::setBreakpoint(
     debugger::SourceLocation loc,
     folly::Optional<std::string> condition) {
   auto promise = std::make_shared<folly::Promise<debugger::BreakpointInfo>>();
+  // Automatically re-enable breakpoints since the user presumably wants this
+  // to start triggering.
+  breakpointsActive_ = true;
 
   executor_->add([this, loc, condition, promise] {
     setBreakpointOnExecutor(loc, condition, promise);
@@ -407,6 +451,14 @@ folly::Future<folly::Unit> Inspector::setPauseOnLoads(
   // Return a future anyways for consistency.
   auto promise = std::make_shared<folly::Promise<Unit>>();
   pauseOnLoadMode_ = mode;
+  promise->setValue();
+  return promise->getFuture();
+};
+
+folly::Future<folly::Unit> Inspector::setBreakpointsActive(bool active) {
+  // Same logic as setPauseOnLoads.
+  auto promise = std::make_shared<folly::Promise<Unit>>();
+  breakpointsActive_ = active;
   promise->setValue();
   return promise->getFuture();
 };

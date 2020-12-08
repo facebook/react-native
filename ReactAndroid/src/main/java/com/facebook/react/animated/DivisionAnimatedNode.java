@@ -51,4 +51,14 @@ import com.facebook.react.bridge.ReadableMap;
       }
     }
   }
+
+  @Override
+  public String prettyPrint() {
+    return "DivisionAnimatedNode["
+        + mTag
+        + "]: input nodes: "
+        + (mInputNodes != null ? mInputNodes.toString() : "null")
+        + " - super: "
+        + super.prettyPrint();
+  }
 }

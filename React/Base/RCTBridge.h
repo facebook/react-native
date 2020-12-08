@@ -15,7 +15,6 @@
 
 @class JSValue;
 @class RCTBridge;
-@class RCTEventDispatcher;
 @class RCTPerformanceLogger;
 
 /**
@@ -32,11 +31,6 @@ RCT_EXTERN NSString *const RCTJavaScriptWillStartExecutingNotification;
  * This notification fires when the bridge has finished loading the JS bundle.
  */
 RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
-
-/**
- * This notification fires every time the bridge has finished loading an additional JS bundle.
- */
-RCT_EXTERN NSString *const RCTAdditionalJavaScriptDidLoadNotification;
 
 /**
  * This notification fires when the bridge failed to load the JS bundle. The
@@ -158,6 +152,22 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 RCT_EXTERN BOOL RCTTurboModuleEnabled(void);
 RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 
+// Turn on TurboModule eager initialization
+RCT_EXTERN BOOL RCTTurboModuleEagerInitEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
+
+// Turn on TurboModule shared mutex initialization
+RCT_EXTERN BOOL RCTTurboModuleSharedMutexInitEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleSharedMutexInit(BOOL enabled);
+
+// Turn on TurboModule block copy
+RCT_EXTERN BOOL RCTTurboModuleBlockCopyEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleBlockCopy(BOOL enabled);
+
+// Turn on TurboModule JS Codegen
+RCT_EXTERN BOOL RCTTurboModuleJSCodegenEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleJSCodegen(BOOL enabled);
+
 /**
  * Async batched bridge used to communicate with the JavaScript application.
  */
@@ -221,9 +231,9 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 
 /**
  * When a NativeModule performs a lookup for a TurboModule, we need to query
- * the lookupDelegate.
+ * the TurboModuleRegistry.
  */
-- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate;
+- (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry;
 
 /**
  * Convenience method for retrieving all modules conforming to a given protocol.

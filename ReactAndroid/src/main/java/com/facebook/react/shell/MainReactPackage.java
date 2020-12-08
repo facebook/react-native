@@ -21,7 +21,6 @@ import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.blob.FileReaderModule;
-import com.facebook.react.modules.camera.CameraRollManager;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.datepicker.DatePickerDialogModule;
@@ -58,6 +57,7 @@ import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.text.ReactVirtualTextViewManager;
 import com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager;
 import com.facebook.react.views.textinput.ReactTextInputManager;
+import com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager;
 import com.facebook.react.views.view.ReactViewManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,7 +73,6 @@ import java.util.Map;
       BlobModule.class,
       FileReaderModule.class,
       AsyncStorageModule.class,
-      CameraRollManager.class,
       ClipboardModule.class,
       DatePickerDialogModule.class,
       DialogModule.class,
@@ -118,8 +117,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new FileReaderModule(context);
       case AsyncStorageModule.NAME:
         return new AsyncStorageModule(context);
-      case CameraRollManager.NAME:
-        return new CameraRollManager(context);
       case ClipboardModule.NAME:
         return new ClipboardModule(context);
       case DatePickerDialogModule.FRAGMENT_TAG:
@@ -184,6 +181,8 @@ public class MainReactPackage extends TurboReactPackage {
     viewManagers.add(new ReactViewManager());
     viewManagers.add(new ReactVirtualTextViewManager());
 
+    viewManagers.add(new ReactUnimplementedViewManager());
+
     return viewManagers;
   }
 
@@ -203,7 +202,6 @@ public class MainReactPackage extends TurboReactPackage {
             BlobModule.class,
             FileReaderModule.class,
             AsyncStorageModule.class,
-            CameraRollManager.class,
             ClipboardModule.class,
             DatePickerDialogModule.class,
             DialogModule.class,

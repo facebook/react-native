@@ -5,7 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#pragma once
+// using include guards instead of #pragma once due to compile issues
+// with MSVC and BUCK
+#ifndef HERMES_INSPECTOR_EXCEPTIONS_H
+#define HERMES_INSPECTOR_EXCEPTIONS_H
 
 #include <stdexcept>
 
@@ -47,3 +50,5 @@ class MultipleCommandsPendingException : public std::runtime_error {
 } // namespace inspector
 } // namespace hermes
 } // namespace facebook
+
+#endif // HERMES_INSPECTOR_EXCEPTIONS_H

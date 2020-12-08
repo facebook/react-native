@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -23,16 +23,21 @@ import Platform from '../Utilities/Platform';
 // Reexport type
 export type LayoutAnimationConfig = LayoutAnimationConfig_;
 
+type OnAnimationDidEndCallback = () => void;
+type OnAnimationDidFailCallback = () => void;
+
 function configureNext(
   config: LayoutAnimationConfig,
-  onAnimationDidEnd?: Function,
+  onAnimationDidEnd?: OnAnimationDidEndCallback,
+  onAnimationDidFail?: OnAnimationDidFailCallback,
 ) {
   if (!Platform.isTesting) {
     if (UIManager?.configureNextLayoutAnimation) {
       UIManager.configureNextLayoutAnimation(
         config,
         onAnimationDidEnd ?? function() {},
-        function() {} /* unused onError */,
+        onAnimationDidFail ??
+          function() {} /* this should never be called in Non-Fabric */,
       );
     }
     const FabricUIManager: FabricUIManagerSpec = global?.nativeFabricUIManager;
@@ -40,7 +45,8 @@ function configureNext(
       global?.nativeFabricUIManager?.configureNextLayoutAnimation(
         config,
         onAnimationDidEnd ?? function() {},
-        function() {} /* unused onError */,
+        onAnimationDidFail ??
+          function() {} /* this will only be called if configuration fails */,
       );
     }
   }
@@ -131,13 +137,13 @@ const LayoutAnimation = {
   },
   Presets,
   easeInEaseOut: (configureNext.bind(null, Presets.easeInEaseOut): (
-    onAnimationDidEnd?: any,
+    onAnimationDidEnd?: OnAnimationDidEndCallback,
   ) => void),
   linear: (configureNext.bind(null, Presets.linear): (
-    onAnimationDidEnd?: any,
+    onAnimationDidEnd?: OnAnimationDidEndCallback,
   ) => void),
   spring: (configureNext.bind(null, Presets.spring): (
-    onAnimationDidEnd?: any,
+    onAnimationDidEnd?: OnAnimationDidEndCallback,
   ) => void),
 };
 

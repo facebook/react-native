@@ -198,8 +198,7 @@ export function addLog(log: LogData): void {
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {
     try {
-      // TODO: Use Error.captureStackTrace on Hermes
-      const stack = parseErrorStack(errorForStackTrace);
+      const stack = parseErrorStack(errorForStackTrace?.stack);
 
       appendNewLog(
         new LogBoxLog({
