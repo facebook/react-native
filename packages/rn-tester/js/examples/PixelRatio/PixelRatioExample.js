@@ -47,7 +47,7 @@ function LayoutSizeToPixel() {
         </View>
         <View style={[styles.row, styles.outputContainer]}>
           <Text style={styles.inputLabel}>Pixel Size: </Text>
-          <Text style={styles.output}>{pixelSize}px</Text>
+          <Text>{pixelSize}px</Text>
         </View>
       </View>
     </View>
@@ -80,7 +80,7 @@ function RoundToNearestPixel() {
         </View>
         <View style={[styles.row, styles.outputContainer]}>
           <Text style={styles.inputLabel}>Nearest Layout Size: </Text>
-          <Text style={styles.output}>{pixelSize}dp</Text>
+          <Text>{pixelSize}dp</Text>
         </View>
       </View>
     </View>
@@ -101,7 +101,7 @@ function GetPixelRatio() {
         {pixelDensity ? (
           <View style={[styles.row, styles.outputContainer]}>
             <Text style={styles.inputLabel}>Pixel Density: </Text>
-            <Text style={styles.output}>{pixelDensity}</Text>
+            <Text>{pixelDensity}</Text>
           </View>
         ) : null}
       </View>
@@ -123,7 +123,7 @@ function GetFontScale() {
         {fontScale ? (
           <View style={[styles.row, styles.outputContainer]}>
             <Text style={styles.inputLabel}>Font scale: </Text>
-            <Text style={styles.output}>{fontScale}</Text>
+            <Text>{fontScale}</Text>
           </View>
         ) : null}
       </View>
