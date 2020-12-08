@@ -168,12 +168,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @NonNull
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
 
-  @ThreadConfined(UI)
-  private int mLastExecutedMountItemSurfaceId = -1;
-
-  @ThreadConfined(UI)
-  private boolean mLastExecutedMountItemSurfaceIdActive = false;
-
   /**
    * This is used to keep track of whether or not the FabricUIManager has been destroyed. Once the
    * Catalyst instance is being destroyed, we should cease all operation here.
@@ -755,7 +749,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       didDispatchItems = dispatchMountItems();
     } catch (Throwable e) {
       mReDispatchCounter = 0;
-      mLastExecutedMountItemSurfaceId = -1;
       throw e;
     } finally {
       // Clean up after running dispatchMountItems - even if an exception was thrown
@@ -782,7 +775,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       tryDispatchMountItems();
     }
     mReDispatchCounter = 0;
-    mLastExecutedMountItemSurfaceId = -1;
   }
 
   @Nullable
@@ -860,25 +852,22 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    */
   @UiThread
   @ThreadConfined(UI)
-  private boolean surfaceActiveForExecution(int surfaceId, String context) {
-    if (mLastExecutedMountItemSurfaceId != surfaceId) {
-      mLastExecutedMountItemSurfaceId = surfaceId;
-      mLastExecutedMountItemSurfaceIdActive = mReactContextForRootTag.get(surfaceId) != null;
+  private boolean isSurfaceActiveForExecution(int surfaceId, String context) {
+    boolean surfaceActive = mReactContextForRootTag.get(surfaceId) != null;
 
-      // If there are many MountItems with the same SurfaceId, we only
-      // log a warning for the first one that is skipped.
-      if (!mLastExecutedMountItemSurfaceIdActive) {
-        ReactSoftException.logSoftException(
-            TAG,
-            new ReactNoCrashSoftException(
-                "dispatchMountItems: skipping "
-                    + context
-                    + ", because surface not available: "
-                    + surfaceId));
-      }
+    // If there are many MountItems with the same SurfaceId, we only
+    // log a warning for the first one that is skipped.
+    if (!surfaceActive) {
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "dispatchMountItems: skipping "
+                  + context
+                  + ", because surface not available: "
+                  + surfaceId));
     }
 
-    return mLastExecutedMountItemSurfaceIdActive;
+    return surfaceActive;
   }
 
   private static void printMountItem(MountItem mountItem, String prefix) {
@@ -970,7 +959,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
               + preMountItemsToDispatch.size());
 
       for (PreAllocateViewMountItem preMountItem : preMountItemsToDispatch) {
-        if (surfaceActiveForExecution(
+        if (isSurfaceActiveForExecution(
             preMountItem.getRootTag(), "dispatchMountItems PreAllocateViewMountItem")) {
           preMountItem.execute(mMountingManager);
         }
@@ -996,7 +985,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           // TODO T68118357: clean up this logic and simplify this method overall
           if (mountItem instanceof BatchMountItem) {
             BatchMountItem batchMountItem = (BatchMountItem) mountItem;
-            if (!surfaceActiveForExecution(
+            if (!isSurfaceActiveForExecution(
                 batchMountItem.getRootTag(), "dispatchMountItems BatchMountItem")) {
               continue;
             }
@@ -1006,7 +995,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           // TODO T68118357: clean up this logic and simplify this method overall
           if (mountItem instanceof IntBufferBatchMountItem) {
             IntBufferBatchMountItem batchMountItem = (IntBufferBatchMountItem) mountItem;
-            if (!surfaceActiveForExecution(
+            if (!isSurfaceActiveForExecution(
                 batchMountItem.getRootTag(), "dispatchMountItems IntBufferBatchMountItem")) {
               continue;
             }
@@ -1065,14 +1054,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           break;
         }
 
-        if (surfaceActiveForExecution(
+        if (isSurfaceActiveForExecution(
             preMountItemToDispatch.getRootTag(), "dispatchPreMountItems")) {
           preMountItemToDispatch.execute(mMountingManager);
         }
       }
     } finally {
       mInDispatch = false;
-      mLastExecutedMountItemSurfaceId = -1;
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
