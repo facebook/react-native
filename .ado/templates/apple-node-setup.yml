@@ -2,6 +2,9 @@
 # Task Group: Brew install node version
 #
 steps:
+  - script: 'brew uninstall openssl@1.0.2t && rm -rf /usr/local/etc/openssl && rm -rf /usr/local/etc/openssl@1.1'
+    displayName: Fix Homebrew
+
   - script: 'brew bundle'
     displayName: 'brew bundle'
 
