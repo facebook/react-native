@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
   },
   examplesContainer: {
     flexGrow: 1,
+    flex: 1,
   },
   description: {
     marginVertical: 8,
