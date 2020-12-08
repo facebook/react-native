@@ -36,6 +36,7 @@ type NetworkImageCallbackExampleState = {|
   events: Array<string>,
   startLoadPrefetched: boolean,
   mountTime: number,
+  imageHas, number
 |};
 
 type NetworkImageCallbackExampleProps = $ReadOnly<{|
@@ -346,7 +347,7 @@ class MultipleSourcesExample extends React.Component<
 }
 
 type LoadingIndicatorSourceExampleState = {|
-  imageHash: Date,
+  imageHash: number,
 |};
 
 type LoadingIndicatorSourceExampleProps = $ReadOnly<{||}>;
@@ -1151,9 +1152,9 @@ exports.examples = [
   },
   {
     title: 'Accessibility',
-    description: ('If the `accessibility` (boolean) prop is set to True, the image will be indicated as an accessbility element.': string),
+    description: ('If the `accessible` (boolean) prop is set to True, the image will be indicated as an accessbility element.': string),
     render: function(): React.Node {
-      return <Image accessibility source={fullImage} style={styles.base} />;
+      return <Image accessible source={fullImage} style={styles.base} />;
     },
   },
   {
@@ -1162,7 +1163,7 @@ exports.examples = [
     render: function(): React.Node {
       return (
         <Image
-          accessibility
+          accessible
           accessibilityLabel="Picture of people standing around a table"
           source={fullImage}
           style={styles.base}
