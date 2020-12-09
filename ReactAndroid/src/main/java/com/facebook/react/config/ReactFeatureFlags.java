@@ -100,4 +100,7 @@ public class ReactFeatureFlags {
 
   /** Enables the usage of an experimental optimized iterator for ReadableNativeMaps. */
   public static boolean enableExperimentalReadableNativeMapIterator = false;
+
+  /** Enables Static ViewConfig in RN Android native code. */
+  public static boolean enableExperimentalStaticViewConfigs = false;
 }

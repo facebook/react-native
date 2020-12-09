@@ -39,6 +39,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
@@ -297,6 +298,15 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   @Deprecated
   public void preComputeConstantsForViewManager(List<String> viewManagerNames) {
+    // TODO T81145457 - Implement pre-initialization of ViewManagers in Fabric Android
+    if (ReactFeatureFlags.enableExperimentalStaticViewConfigs) {
+      preInitializeViewManagers(viewManagerNames);
+      // When Static view configs are enabled it is not necessary to pre-compute the constants for
+      // viewManagers, although the pre-initialization of viewManager objects is still necessary
+      // for performance reasons.
+      return;
+    }
+
     Map<String, WritableMap> constantsMap = new ArrayMap<>();
     for (String viewManagerName : viewManagerNames) {
       WritableMap constants = computeConstantsForViewManager(viewManagerName);
@@ -313,6 +323,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     // accessed - write one, read multiple times, and then throw the data away.
     mViewManagerConstantsCacheSize = viewManagerNames.size();
     mViewManagerConstantsCache = Collections.unmodifiableMap(constantsMap);
+  }
+
+  private void preInitializeViewManagers(List<String> viewManagerNames) {
+    for (String viewManagerName : viewManagerNames) {
+      mUIImplementation.resolveViewManager(viewManagerName);
+    }
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
