@@ -18,8 +18,10 @@ const {
   View,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  findNodeHandle,
   Alert,
   StyleSheet,
+  Platform,
 } = require('react-native');
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
@@ -27,6 +29,7 @@ const RNTesterBlock = require('../../components/RNTesterBlock');
 const checkImageSource = require('./check.png');
 const uncheckImageSource = require('./uncheck.png');
 const mixedCheckboxImageSource = require('./mixed.png');
+const {createRef} = require('react');
 
 const styles = StyleSheet.create({
   image: {
@@ -692,48 +695,6 @@ class FakeSliderExample extends React.Component {
   }
 }
 
-class ScreenReaderStatusExample extends React.Component<{}> {
-  state = {
-    screenReaderEnabled: false,
-  };
-
-  componentDidMount() {
-    AccessibilityInfo.addEventListener(
-      'change',
-      this._handleScreenReaderToggled,
-    );
-    AccessibilityInfo.fetch().done(isEnabled => {
-      this.setState({
-        screenReaderEnabled: isEnabled,
-      });
-    });
-  }
-
-  componentWillUnmount() {
-    AccessibilityInfo.removeEventListener(
-      'change',
-      this._handleScreenReaderToggled,
-    );
-  }
-
-  _handleScreenReaderToggled = isEnabled => {
-    this.setState({
-      screenReaderEnabled: isEnabled,
-    });
-  };
-
-  render() {
-    return (
-      <View>
-        <Text>
-          The screen reader is{' '}
-          {this.state.screenReaderEnabled ? 'enabled' : 'disabled'}.
-        </Text>
-      </View>
-    );
-  }
-}
-
 class AnnounceForAccessibility extends React.Component<{}> {
   _handleOnPress = () =>
     AccessibilityInfo.announceForAccessibility('Announcement Test');
@@ -744,6 +705,148 @@ class AnnounceForAccessibility extends React.Component<{}> {
         <Button
           onPress={this._handleOnPress}
           title="Announce for Accessibility"
+        />
+      </View>
+    );
+  }
+}
+
+class SetAccessibilityFocusExample extends React.Component<{}> {
+  state = {
+    reactTag: null,
+  };
+
+  render() {
+    const myRef = createRef();
+
+    const onClose = () => {
+      if (myRef && myRef.current) {
+        const reactTag = findNodeHandle(myRef.current);
+        this.setState({reactTag});
+        AccessibilityInfo.setAccessibilityFocus(reactTag);
+      }
+    };
+
+    return (
+      <View>
+        <Text>
+          SetAccessibilityFocus on ReactTag:{' '}
+          {this.state.reactTag == null ? 'Null' : this.state.reactTag}
+        </Text>
+        <Button
+          ref={myRef}
+          title={'Click'}
+          onPress={() => {
+            Alert.alert(
+              'Set Accessibility Focus',
+              'Press okay to proceed',
+              [{text: 'Okay', onPress: onClose}],
+              {cancelable: true},
+            );
+          }}
+        />
+      </View>
+    );
+  }
+}
+
+class EnabledExamples extends React.Component<{}> {
+  render() {
+    return (
+      <View>
+        {Platform.OS === 'ios' ? (
+          <>
+            <RNTesterBlock title="isBoldTextEnabled()">
+              <EnabledExample
+                test="bold text"
+                eventListener="boldTextChanged"
+              />
+            </RNTesterBlock>
+            <RNTesterBlock title="isGrayScaleEnabled()">
+              <EnabledExample
+                test="gray scale"
+                eventListener="grayscaleChanged"
+              />
+            </RNTesterBlock>
+            <RNTesterBlock title="isInvertColorsEnabled()">
+              <EnabledExample
+                test="invert colors"
+                eventListener="invertColorsChanged"
+              />
+            </RNTesterBlock>
+            <RNTesterBlock title="isReduceTransparencyEnabled()">
+              <EnabledExample
+                test="reduce transparency"
+                eventListener="reduceTransparencyChanged"
+              />
+            </RNTesterBlock>
+          </>
+        ) : null}
+
+        <RNTesterBlock title="isReduceMotionEnabled()">
+          <EnabledExample
+            test="reduce motion"
+            eventListener="reduceMotionChanged"
+          />
+        </RNTesterBlock>
+
+        <RNTesterBlock title="isScreenReaderEnabled()">
+          <EnabledExample
+            test="screen reader"
+            eventListener="screenReaderChanged"
+          />
+        </RNTesterBlock>
+      </View>
+    );
+  }
+}
+
+class EnabledExample extends React.Component<{}> {
+  state = {
+    isEnabled: false,
+  };
+
+  componentDidMount() {
+    AccessibilityInfo.addEventListener(
+      this.props.eventListener,
+      this._handleToggled,
+    );
+
+    switch (this.props.eventListener) {
+      case 'reduceMotionChanged':
+        return AccessibilityInfo.isReduceMotionEnabled().then(state => {
+          this.setState({isEnabled: state});
+        });
+      default:
+        return null;
+    }
+  }
+
+  componentWillUnmount() {
+    AccessibilityInfo.removeEventListener(
+      this.props.eventListener,
+      this._handleToggled,
+    );
+  }
+
+  _handleToggled = isEnabled => {
+    if (!this.state.isEnabled) {
+      this.setState({isEnabled});
+    } else {
+      this.setState({isEnabled: false});
+    }
+  };
+
+  render() {
+    return (
+      <View>
+        <Text>
+          The {this.props.test} is{' '}
+          {this.state.isEnabled ? 'enabled' : 'disabled'}
+        </Text>
+        <Button
+          title={this.state.isEnabled ? 'disable' : 'enable'}
+          onPress={this._handleToggled}
         />
       </View>
     );
@@ -779,15 +882,21 @@ exports.examples = [
     },
   },
   {
-    title: 'Check if the screen reader is enabled',
-    render(): React.Element<typeof ScreenReaderStatusExample> {
-      return <ScreenReaderStatusExample />;
-    },
-  },
-  {
     title: 'Check if the screen reader announces',
     render(): React.Element<typeof AnnounceForAccessibility> {
       return <AnnounceForAccessibility />;
+    },
+  },
+  {
+    title: 'Check if accessibility is focused',
+    render(): React.Element<typeof SetAccessibilityFocusExample> {
+      return <SetAccessibilityFocusExample />;
+    },
+  },
+  {
+    title: 'Check if these properties are enabled',
+    render(): React.Element<typeof EnabledExamples> {
+      return <EnabledExamples />;
     },
   },
 ];

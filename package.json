@@ -60,6 +60,7 @@
     "flow-check-android": "flow check --flowconfig-name .flowconfig.android",
     "lint": "eslint .",
     "lint-ci": "./scripts/circleci/analyze_code.sh && yarn shellcheck",
+    "lint-java": "node ./scripts/lint-java.js",
     "shellcheck": "./scripts/circleci/analyze_scripts.sh",
     "clang-format": "clang-format -i --glob=*/**/*.{h,cpp,m,mm}",
     "format": "npm run prettier && npm run clang-format",

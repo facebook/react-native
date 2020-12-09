@@ -180,7 +180,16 @@ module.exports = function({parse, types: t}) {
            * Insert the TurboModule schema into the TurboModuleRegistry.(get|getEnforcing)
            * call.
            */
-          if (this.turboModuleRequireCallExpressions.length > 0) {
+
+          // Disabling TurobModule processing for react-native-web NPM module
+          // Workaround for T80868008, can remove after fixed
+          const enableTurboModuleJSCodegen =
+            this.filename.indexOf('/node_modules/react-native-web') === -1;
+
+          if (
+            this.turboModuleRequireCallExpressions.length > 0 &&
+            enableTurboModuleJSCodegen
+          ) {
             const schema = parseString(this.code, this.filename);
             const hasteModuleName = basename(this.filename).replace(
               /\.js$/,

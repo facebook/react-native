@@ -130,18 +130,12 @@
 
 - (void)surface:(RCTSurface *)surface didChangeIntrinsicSize:(CGSize)intrinsicSize
 {
-  __weak const auto weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf setIntrinsicSize:intrinsicSize];
-  });
+  [self setIntrinsicSize:intrinsicSize];
 }
 
 - (void)surface:(RCTSurface *)surface didChangeStage:(RCTSurfaceStage)stage
 {
-  __weak const auto weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf setStage:stage];
-  });
+  [self setStage:stage];
 }
 
 @end
