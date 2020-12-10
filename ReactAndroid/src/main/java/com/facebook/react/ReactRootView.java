@@ -52,7 +52,6 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerHelper;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -191,7 +190,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
@@ -279,7 +278,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
