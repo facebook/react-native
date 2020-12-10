@@ -23,7 +23,6 @@ import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.ViewStructure;
 import android.view.animation.Animation;
 import androidx.annotation.Nullable;
@@ -713,48 +712,10 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   protected void dispatchDraw(Canvas canvas) {
-    // TODO T78035906: delete this if we find the root-cause
-    int initialChildCount = getChildCount();
-
     try {
       dispatchOverflowDraw(canvas);
       super.dispatchDraw(canvas);
     } catch (NullPointerException | StackOverflowError e) {
-      // Catch errors and log additional diagnostics to logcat for debugging
-      FLog.e(
-          TAG,
-          "Exception thrown when executing ReactViewGroup.dispatchDraw method on ReactViewGroup["
-              + getId()
-              + "]",
-          e);
-
-      // Log all children of view, if any
-      int childCount = getChildCount();
-      FLog.e(TAG, "Initial Child Count: %d / final: %d", initialChildCount, childCount);
-      FLog.e(TAG, "Child List:");
-      for (int i = 0; i < childCount; i++) {
-        View child = getChildAt(i);
-        FLog.e(
-            TAG,
-            "Child #"
-                + i
-                + ": "
-                + (child != null ? child.getId() : -1337)
-                + " - "
-                + (child != null ? child.toString() : "<null>"));
-      }
-
-      // Log all ancestors of view
-      ViewParent viewParent = getParent();
-      FLog.e(TAG, "Ancestor List:");
-      while (viewParent != null) {
-        ViewGroup parentViewGroup =
-            (viewParent instanceof ViewGroup ? (ViewGroup) viewParent : null);
-        int parentViewGroupId = (parentViewGroup != null ? parentViewGroup.getId() : -1337);
-        FLog.e(TAG, "Ancestor[" + parentViewGroupId + "]: " + viewParent.toString());
-        viewParent = viewParent.getParent();
-      }
-
       // Adding special exception management for StackOverflowError for logging purposes.
       // This will be removed in the future.
       RootView rootView = RootViewUtil.getRootView(ReactViewGroup.this);
