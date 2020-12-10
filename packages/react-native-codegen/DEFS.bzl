@@ -481,9 +481,7 @@ def rn_codegen_components(
             deps = [
                 react_native_dep("third-party/android/androidx:annotation"),
                 react_native_target("java/com/facebook/react/bridge:bridge"),
-                react_native_target("java/com/facebook/react/common:common"),
-                react_native_target("java/com/facebook/react/turbomodule/core:core"),
-                react_native_target("java/com/facebook/react/uimanager:uimanager"),
+                react_native_target("java/com/facebook/react/uimanager/interfaces:interfaces"),
             ],
         )
 

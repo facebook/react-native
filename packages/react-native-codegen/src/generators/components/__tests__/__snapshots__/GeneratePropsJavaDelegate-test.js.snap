@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class ArrayPropsNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & ArrayPropsNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public ArrayPropsNativeComponentManagerDelegate(U viewManager) {
@@ -87,7 +86,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class ArrayPropsNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & ArrayPropsNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public ArrayPropsNativeComponentManagerDelegate(U viewManager) {
@@ -125,7 +123,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class BooleanPropNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & BooleanPropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public BooleanPropNativeComponentManagerDelegate(U viewManager) {
@@ -164,7 +161,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class ColorPropNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & ColorPropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public ColorPropNativeComponentManagerDelegate(U viewManager) {
@@ -203,7 +199,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class CommandNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & CommandNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public CommandNativeComponentManagerDelegate(U viewManager) {
@@ -248,7 +243,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class CommandNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & CommandNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public CommandNativeComponentManagerDelegate(U viewManager) {
@@ -298,7 +292,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class DoublePropNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & DoublePropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public DoublePropNativeComponentManagerDelegate(U viewManager) {
@@ -351,7 +344,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class EventsNestedObjectNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & EventsNestedObjectNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public EventsNestedObjectNativeComponentManagerDelegate(U viewManager) {
@@ -389,7 +381,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class EventsNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & EventsNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public EventsNativeComponentManagerDelegate(U viewManager) {
@@ -427,7 +418,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class InterfaceOnlyComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & InterfaceOnlyComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public InterfaceOnlyComponentManagerDelegate(U viewManager) {
@@ -463,7 +453,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class FloatPropNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & FloatPropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public FloatPropNativeComponentManagerDelegate(U viewManager) {
@@ -517,7 +506,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class ImagePropNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & ImagePropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public ImagePropNativeComponentManagerDelegate(U viewManager) {
@@ -556,7 +544,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class InsetsPropNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & InsetsPropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public InsetsPropNativeComponentManagerDelegate(U viewManager) {
@@ -594,7 +581,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class Int32EnumPropsNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & Int32EnumPropsNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public Int32EnumPropsNativeComponentManagerDelegate(U viewManager) {
@@ -632,7 +618,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class IntegerPropNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & IntegerPropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public IntegerPropNativeComponentManagerDelegate(U viewManager) {
@@ -676,7 +661,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class InterfaceOnlyComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & InterfaceOnlyComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public InterfaceOnlyComponentManagerDelegate(U viewManager) {
@@ -716,7 +700,6 @@ import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class ImageColorPropNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & ImageColorPropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public ImageColorPropNativeComponentManagerDelegate(U viewManager) {
@@ -763,7 +746,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class NoPropsNoEventsComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & NoPropsNoEventsComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public NoPropsNoEventsComponentManagerDelegate(U viewManager) {
@@ -796,7 +778,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class ObjectPropsManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & ObjectPropsManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public ObjectPropsManagerDelegate(U viewManager) {
@@ -835,7 +816,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class PointPropNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & PointPropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public PointPropNativeComponentManagerDelegate(U viewManager) {
@@ -873,7 +853,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class StringEnumPropsNativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & StringEnumPropsNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public StringEnumPropsNativeComponentManagerDelegate(U viewManager) {
@@ -911,7 +890,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class StringPropComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & StringPropComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public StringPropComponentManagerDelegate(U viewManager) {
@@ -952,7 +930,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class MultiFile1NativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & MultiFile1NativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public MultiFile1NativeComponentManagerDelegate(U viewManager) {
@@ -985,7 +962,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class MultiFile2NativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & MultiFile2NativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public MultiFile2NativeComponentManagerDelegate(U viewManager) {
@@ -1023,7 +999,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class MultiComponent1NativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & MultiComponent1NativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public MultiComponent1NativeComponentManagerDelegate(U viewManager) {
@@ -1056,7 +1031,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class MultiComponent2NativeComponentManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & MultiComponent2NativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public MultiComponent2NativeComponentManagerDelegate(U viewManager) {

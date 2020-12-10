@@ -245,7 +245,6 @@ function getDelegateImports(component) {
   imports.add('import androidx.annotation.Nullable;');
   imports.add('import com.facebook.react.uimanager.BaseViewManagerDelegate;');
   imports.add('import com.facebook.react.uimanager.BaseViewManagerInterface;');
-  imports.add('import com.facebook.react.uimanager.LayoutShadowNode;');
 
   return imports;
 }
