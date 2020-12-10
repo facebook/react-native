@@ -122,7 +122,7 @@ public class ReactViewGroup extends ViewGroup
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing = false;
-  private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
+  private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper = null;
   private @Nullable Path mPath;
   private int mLayoutDirection;
   private float mBackfaceOpacity = 1.f;
@@ -131,7 +131,13 @@ public class ReactViewGroup extends ViewGroup
   public ReactViewGroup(Context context) {
     super(context);
     setClipChildren(false);
-    mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
+  }
+
+  private ViewGroupDrawingOrderHelper getDrawingOrderHelper() {
+    if (mDrawingOrderHelper == null) {
+      mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
+    }
+    return mDrawingOrderHelper;
   }
 
   @Override
@@ -439,11 +445,7 @@ public class ReactViewGroup extends ViewGroup
     if (getId() == NO_ID) {
       return false;
     }
-    if (ViewUtil.getUIManagerType(getId()) != UIManagerType.FABRIC) {
-      return false;
-    }
-
-    return ReactFeatureFlags.disableCustomDrawOrderFabric;
+    return ViewUtil.getUIManagerType(getId()) == UIManagerType.FABRIC;
   }
 
   @Override
@@ -452,8 +454,8 @@ public class ReactViewGroup extends ViewGroup
     // method.
 
     if (!customDrawOrderDisabled()) {
-      mDrawingOrderHelper.handleAddView(child);
-      setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+      getDrawingOrderHelper().handleAddView(child);
+      setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {
       setChildrenDrawingOrderEnabled(false);
     }
@@ -466,8 +468,8 @@ public class ReactViewGroup extends ViewGroup
     UiThreadUtil.assertOnUiThread();
 
     if (!customDrawOrderDisabled()) {
-      mDrawingOrderHelper.handleRemoveView(view);
-      setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+      getDrawingOrderHelper().handleRemoveView(view);
+      setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {
       setChildrenDrawingOrderEnabled(false);
     }
@@ -480,8 +482,8 @@ public class ReactViewGroup extends ViewGroup
     UiThreadUtil.assertOnUiThread();
 
     if (!customDrawOrderDisabled()) {
-      mDrawingOrderHelper.handleRemoveView(getChildAt(index));
-      setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+      getDrawingOrderHelper().handleRemoveView(getChildAt(index));
+      setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {
       setChildrenDrawingOrderEnabled(false);
     }
@@ -491,16 +493,25 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   protected int getChildDrawingOrder(int childCount, int index) {
-    return mDrawingOrderHelper.getChildDrawingOrder(childCount, index);
+    UiThreadUtil.assertOnUiThread();
+
+    if (!customDrawOrderDisabled()) {
+      return getDrawingOrderHelper().getChildDrawingOrder(childCount, index);
+    } else {
+      return index;
+    }
   }
 
   @Override
   public int getZIndexMappedChildIndex(int index) {
-    if (mDrawingOrderHelper.shouldEnableCustomDrawingOrder()) {
-      return mDrawingOrderHelper.getChildDrawingOrder(getChildCount(), index);
-    } else {
-      return index;
+    UiThreadUtil.assertOnUiThread();
+
+    if (!customDrawOrderDisabled() && getDrawingOrderHelper().shouldEnableCustomDrawingOrder()) {
+      return getDrawingOrderHelper().getChildDrawingOrder(getChildCount(), index);
     }
+
+    // Fabric behavior
+    return index;
   }
 
   @Override
@@ -509,8 +520,8 @@ public class ReactViewGroup extends ViewGroup
       return;
     }
 
-    mDrawingOrderHelper.update();
-    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+    getDrawingOrderHelper().update();
+    setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     invalidate();
   }
 
