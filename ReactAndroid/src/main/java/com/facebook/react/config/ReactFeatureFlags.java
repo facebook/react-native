@@ -74,9 +74,6 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
-  /** Use experimental SetState retry mechanism in view? */
-  public static boolean enableExperimentalStateUpdateRetry = false;
-
   /** Use lock-free data structures for Fabric MountItems. */
   public static boolean enableLockFreeMountInstructions = false;
 
