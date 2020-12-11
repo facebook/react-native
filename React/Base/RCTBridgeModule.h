@@ -11,6 +11,7 @@
 
 @class RCTBridge;
 @protocol RCTBridgeMethod;
+@class RCTModuleRegistry;
 
 /**
  * The type of a block that is capable of sending a response to a bridged
@@ -112,6 +113,14 @@ RCT_EXTERN_C_END
 + (NSString *)moduleName;
 
 @optional
+
+/**
+ * A reference to the RCTModuleRegistry. Useful for modules that require access
+ * to other NativeModules. To implement this in your module, just add `@synthesize
+ * moduleRegistry = _moduleRegistry;`. If using Swift, add
+ * `@objc var moduleRegistry: RCTModuleRegistry!` to your module.
+ */
+@property (nonatomic, weak, readonly) RCTModuleRegistry *moduleRegistry;
 
 /**
  * A reference to the RCTBridge. Useful for modules that require access
