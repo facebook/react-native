@@ -372,3 +372,14 @@ RCT_EXTERN_C_END
  * See RCTTurboModule.h for actual signature.
  */
 @protocol RCTTurboModule;
+
+/**
+ * A class that allows NativeModules and TurboModules to look up one another.
+ */
+@interface RCTModuleRegistry : NSObject
+- (void)setBridge:(RCTBridge *)bridge;
+- (void)setTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry;
+
+- (id)moduleForName:(const char *)moduleName;
+- (id)moduleForName:(const char *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad;
+@end
