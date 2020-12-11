@@ -358,6 +358,10 @@ static Class getFallbackClassFromName(const char *name)
  */
 - (id<RCTTurboModule>)provideRCTTurboModule:(const char *)moduleName
 {
+  if (strncmp("RCT", moduleName, 3) == 0) {
+    moduleName = [[[NSString stringWithUTF8String:moduleName] substringFromIndex:3] UTF8String];
+  }
+
   TurboModuleHolder *moduleHolder = [self _getOrCreateTurboModuleHolder:moduleName];
 
   if (!moduleHolder) {
