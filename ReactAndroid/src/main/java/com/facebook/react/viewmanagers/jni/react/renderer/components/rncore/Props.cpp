@@ -24,19 +24,6 @@ ActivityIndicatorViewProps::ActivityIndicatorViewProps(
     color(convertRawProp(rawProps, "color", sourceProps.color, {})),
     size(convertRawProp(rawProps, "size", sourceProps.size, {ActivityIndicatorViewSize::Small}))
       {}
-DatePickerProps::DatePickerProps(
-    const DatePickerProps &sourceProps,
-    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
-
-    date(convertRawProp(rawProps, "date", sourceProps.date, {0.0})),
-    initialDate(convertRawProp(rawProps, "initialDate", sourceProps.initialDate, {0.0})),
-    locale(convertRawProp(rawProps, "locale", sourceProps.locale, {})),
-    maximumDate(convertRawProp(rawProps, "maximumDate", sourceProps.maximumDate, {0.0})),
-    minimumDate(convertRawProp(rawProps, "minimumDate", sourceProps.minimumDate, {0.0})),
-    minuteInterval(convertRawProp(rawProps, "minuteInterval", sourceProps.minuteInterval, {DatePickerMinuteInterval::MinuteInterval1})),
-    mode(convertRawProp(rawProps, "mode", sourceProps.mode, {DatePickerMode::Date})),
-    timeZoneOffsetInMinutes(convertRawProp(rawProps, "timeZoneOffsetInMinutes", sourceProps.timeZoneOffsetInMinutes, {0.0}))
-      {}
 AndroidDrawerLayoutProps::AndroidDrawerLayoutProps(
     const AndroidDrawerLayoutProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
@@ -51,8 +38,6 @@ AndroidDrawerLayoutProps::AndroidDrawerLayoutProps(
 RCTMaskedViewProps::RCTMaskedViewProps(
     const RCTMaskedViewProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps)
-
-    
       {}
 AndroidProgressBarProps::AndroidProgressBarProps(
     const AndroidProgressBarProps &sourceProps,

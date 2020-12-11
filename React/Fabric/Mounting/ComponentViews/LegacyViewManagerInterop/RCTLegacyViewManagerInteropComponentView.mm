@@ -51,7 +51,6 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 + (NSMutableSet<NSString *> *)supportedViewManagers
 {
   static NSMutableSet<NSString *> *supported = [NSMutableSet setWithObjects:@"Picker",
-                                                                            @"DatePicker",
                                                                             @"ProgressView",
                                                                             @"SegmentedControl",
                                                                             @"MaskedView",

@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     // have to set the component's height explicitly on the
     // surrounding view to ensure it gets rendered.
     // TODO would be better to export a native constant for this,
-    // like in iOS the RCTDatePickerManager.m
+    // as it used to be in RCTDatePickerManager.m
     height: 50,
   },
 });

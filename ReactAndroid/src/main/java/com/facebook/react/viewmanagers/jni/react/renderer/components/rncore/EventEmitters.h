@@ -22,16 +22,6 @@ class ActivityIndicatorViewEventEmitter : public ViewEventEmitter {
 
   
 };
-class DatePickerEventEmitter : public ViewEventEmitter {
- public:
-  using ViewEventEmitter::ViewEventEmitter;
-
-  struct OnChange {
-      Float timestamp;
-    };
-
-  void onChange(OnChange value) const;
-};
 class AndroidDrawerLayoutEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;

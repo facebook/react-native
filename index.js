@@ -14,7 +14,6 @@
 import typeof AccessibilityInfo from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
 import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/ActivityIndicator';
 import typeof Button from './Libraries/Components/Button';
-import typeof DatePickerIOS from './Libraries/Components/DatePicker/DatePickerIOS';
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 import typeof FlatList from './Libraries/Lists/FlatList';
 import typeof Image from './Libraries/Image/Image';
@@ -57,7 +56,6 @@ import typeof AppState from './Libraries/AppState/AppState';
 import typeof AsyncStorage from './Libraries/Storage/AsyncStorage';
 import typeof BackHandler from './Libraries/Utilities/BackHandler';
 import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
-import typeof DatePickerAndroid from './Libraries/Components/DatePickerAndroid/DatePickerAndroid';
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
 import typeof DevSettings from './Libraries/Utilities/DevSettings';
 import typeof Dimensions from './Libraries/Utilities/Dimensions';
@@ -124,16 +122,6 @@ module.exports = {
   },
   get Button(): Button {
     return require('./Libraries/Components/Button');
-  },
-  // $FlowFixMe[value-as-type]
-  get DatePickerIOS(): DatePickerIOS {
-    warnOnce(
-      'DatePickerIOS-merged',
-      'DatePickerIOS has been merged with DatePickerAndroid and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-datetimepicker/datetimepicker',
-    );
-    return require('./Libraries/Components/DatePicker/DatePickerIOS');
   },
   // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
@@ -316,15 +304,6 @@ module.exports = {
         'See https://github.com/react-native-clipboard/clipboard',
     );
     return require('./Libraries/Components/Clipboard/Clipboard');
-  },
-  get DatePickerAndroid(): DatePickerAndroid {
-    warnOnce(
-      'DatePickerAndroid-merged',
-      'DatePickerAndroid has been merged with DatePickerIOS and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-datetimepicker/datetimepicker',
-    );
-    return require('./Libraries/Components/DatePickerAndroid/DatePickerAndroid');
   },
   get DeviceInfo(): DeviceInfo {
     return require('./Libraries/Utilities/DeviceInfo');
@@ -605,19 +584,6 @@ if (__DEV__) {
         'ImageEditor has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
           'See https://github.com/callstack/react-native-image-editor',
-      );
-    },
-  });
-
-  // $FlowFixMe This is intentional: Flow will error when attempting to access TimePickerAndroid.
-  Object.defineProperty(module.exports, 'TimePickerAndroid', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'TimePickerAndroid has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-          'See https://github.com/react-native-datetimepicker/datetimepicker',
       );
     },
   });
