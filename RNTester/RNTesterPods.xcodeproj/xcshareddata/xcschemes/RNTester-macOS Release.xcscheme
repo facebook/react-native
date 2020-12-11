@@ -101,12 +101,21 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
+            BlueprintIdentifier = "9F15345A233AB2C4006DFE44"
+            BuildableName = "RNTester-macOS.app"
+            BlueprintName = "RNTester-macOS"
+            ReferencedContainer = "container:RNTesterPods.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
             BlueprintIdentifier = "18FC77851EF4770B002B3F17"
             BuildableName = "RNTester-macOS.app"
             BlueprintName = "RNTester-macOS"
             ReferencedContainer = "container:RNTester.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "CI_USE_PACKAGER"
