@@ -28,6 +28,7 @@ using namespace facebook::react;
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 @synthesize turboModuleRegistry = _turboModuleRegistry;
 
 RCT_EXPORT_MODULE()
@@ -180,8 +181,9 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge, id<RCTTurboModuleR
        !UIInterfaceOrientationIsLandscape(nextOrientation))) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                body:RCTExportedDimensions(_bridge, _turboModuleRegistry)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"]
+        sendDeviceEventWithName:@"didUpdateDimensions"
+                           body:RCTExportedDimensions(_bridge, _turboModuleRegistry)];
 #pragma clang diagnostic pop
   }
 
@@ -203,7 +205,8 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge, id<RCTTurboModuleR
   if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions])) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions" body:nextInterfaceDimensions];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
+                                                                          body:nextInterfaceDimensions];
 #pragma clang diagnostic pop
   }
 
