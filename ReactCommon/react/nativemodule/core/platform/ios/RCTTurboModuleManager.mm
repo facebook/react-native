@@ -172,6 +172,8 @@ static Class getFallbackClassFromName(const char *name)
   std::shared_timed_mutex _turboModuleHoldersSharedMutex;
   std::mutex _turboModuleHoldersMutex;
   std::atomic<bool> _invalidating;
+
+  RCTModuleRegistry *_moduleRegistry;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -183,6 +185,9 @@ static Class getFallbackClassFromName(const char *name)
     _delegate = delegate;
     _bridge = bridge;
     _invalidating = false;
+    _moduleRegistry = [RCTModuleRegistry new];
+    [_moduleRegistry setBridge:bridge];
+    [_moduleRegistry setTurboModuleRegistry:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeWillInvalidateModules:)
@@ -530,6 +535,25 @@ static Class getFallbackClassFromName(const char *name)
       RCTLogError(
           @"%@ has no setter or ivar for its bridge, which is not "
            "permitted. You must either @synthesize the bridge property, "
+           "or provide your own setter method.",
+          RCTBridgeModuleNameForClass([module class]));
+    }
+  }
+
+  /**
+   * Attach the RCTModuleRegistry to this TurboModule, which allows this TurboModule
+   * To load other NativeModules & TurboModules.
+   *
+   * Usage: In the NativeModule @implementation, include:
+   *   `@synthesize moduleRegistry = _moduleRegistry`
+   */
+  if ([module respondsToSelector:@selector(moduleRegistry)] && _moduleRegistry) {
+    @try {
+      [(id)module setValue:_moduleRegistry forKey:@"moduleRegistry"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the moduleRegistry property, "
            "or provide your own setter method.",
           RCTBridgeModuleNameForClass([module class]));
     }
