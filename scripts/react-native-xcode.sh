@@ -148,24 +148,17 @@ case "$PLATFORM_NAME" in
     ;;
 esac
 
-EMIT_SOURCEMAP=
-if [[ ! -z "$SOURCEMAP_FILE" ]]; then
-  EMIT_SOURCEMAP=true
-fi
-
-PACKAGER_SOURCEMAP_FILE=
-if [[ $EMIT_SOURCEMAP == true ]]; then
-  if [[ $USE_HERMES == true ]]; then
-    PACKAGER_SOURCEMAP_FILE="$CONFIGURATION_BUILD_DIR/$(basename $SOURCEMAP_FILE)"
-  else
-    PACKAGER_SOURCEMAP_FILE="$SOURCEMAP_FILE"
-  fi
-  EXTRA_ARGS="$EXTRA_ARGS --sourcemap-output $PACKAGER_SOURCEMAP_FILE"
-fi
-
 # Hermes doesn't require JS minification.
 if [[ $USE_HERMES == true && $DEV == false ]]; then
   EXTRA_ARGS="$EXTRA_ARGS --minify false"
+fi
+
+JS_SOURCEMAP_OUTPUT_PATH="$CONFIGURATION_BUILD_DIR/$PRODUCT_NAME.ios.map"
+BUNDLE_SOURCEMAP_OUTPUT_PATH=JS_SOURCEMAP_OUTPUT_PATH
+PACKAGER_SOURCEMAP_FILE=
+if [[ $USE_HERMES == true ]]; then
+  PACKAGER_SOURCEMAP_FILE="$CONFIGURATION_BUILD_DIR/$PRODUCT_NAME.ios.packager.map"
+  BUNDLE_SOURCEMAP_OUTPUT_PATH=PACKAGER_SOURCEMAP_FILE
 fi
 
 "$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
@@ -176,6 +169,7 @@ fi
   --reset-cache \
   --bundle-output "$BUNDLE_FILE" \
   --assets-dest "$DEST" \
+  --sourcemap-output "$BUNDLE_SOURCEMAP_OUTPUT_PATH" \
   $EXTRA_ARGS \
   $EXTRA_PACKAGER_ARGS
 
@@ -187,16 +181,11 @@ else
   if [[ $DEV == true ]]; then
     EXTRA_COMPILER_ARGS=-Og
   else
-    EXTRA_COMPILER_ARGS=-O
-  fi
-  if [[ $EMIT_SOURCEMAP == true ]]; then
-    EXTRA_COMPILER_ARGS="$EXTRA_COMPILER_ARGS -output-source-map"
+    EXTRA_COMPILER_ARGS="-O -output-source-map"
   fi
   "$HERMES_CLI_PATH" -emit-binary $EXTRA_COMPILER_ARGS -out "$DEST/main.jsbundle" "$BUNDLE_FILE"
-  if [[ $EMIT_SOURCEMAP == true ]]; then
-    HBC_SOURCEMAP_FILE="$BUNDLE_FILE.map"
-    "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$SOURCEMAP_FILE"
-  fi
+  HBC_SOURCEMAP_FILE="$BUNDLE_FILE.map"
+  "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$JS_SOURCEMAP_OUTPUT_PATH"
   BUNDLE_FILE="$DEST/main.jsbundle"
 fi
 
