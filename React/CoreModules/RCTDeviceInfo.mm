@@ -152,12 +152,14 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge, id<RCTTurboModuleR
 - (void)didReceiveNewContentSizeMultiplier
 {
   RCTBridge *bridge = _bridge;
+  RCTModuleRegistry *moduleRegistry = _moduleRegistry;
   RCTExecuteOnMainQueue(^{
   // Report the event across the bridge.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                               body:RCTExportedDimensions(bridge, self->_turboModuleRegistry)];
+    [[moduleRegistry moduleForName:"EventDispatcher"]
+        sendDeviceEventWithName:@"didUpdateDimensions"
+                           body:RCTExportedDimensions(bridge, self->_turboModuleRegistry)];
 #pragma clang diagnostic pop
   });
 }

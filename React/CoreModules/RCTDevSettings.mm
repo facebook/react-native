@@ -350,7 +350,7 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   if (_isJSLoaded) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [self.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+    [[self.moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"toggleElementInspector" body:nil];
 #pragma clang diagnostic pop
   }
 }
@@ -463,7 +463,7 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
     if ([self isElementInspectorShown]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      [self.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+      [[self.moduleRegistry moduleForName:"EventDispatcher"]  sendDeviceEventWithName:@"toggleElementInspector" body:nil];
 #pragma clang diagnostic pop
     }
   });
