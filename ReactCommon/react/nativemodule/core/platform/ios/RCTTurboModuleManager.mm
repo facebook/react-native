@@ -619,7 +619,9 @@ static Class getFallbackClassFromName(const char *name)
    * rollout.
    */
   if (_bridge) {
-    RCTModuleData *data = [[RCTModuleData alloc] initWithModuleInstance:(id<RCTBridgeModule>)module bridge:_bridge];
+    RCTModuleData *data = [[RCTModuleData alloc] initWithModuleInstance:(id<RCTBridgeModule>)module
+                                                                 bridge:_bridge
+                                                         moduleRegistry:_moduleRegistry];
     [_bridge registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:data];
   }
 
