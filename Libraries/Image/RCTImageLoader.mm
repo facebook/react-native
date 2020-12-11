@@ -646,7 +646,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 {
   // Check if networking module is available
   if (RCT_DEBUG && ![_bridge respondsToSelector:@selector(networking)]
-      && ![_turboModuleRegistry moduleForName:"RCTNetworking"]) {
+      && ![_turboModuleRegistry moduleForName:"Networking"]) {
     RCTLogError(@"No suitable image URL loader found for %@. You may need to "
                 " import the RCTNetwork library in order to load images.",
                 request.URL.absoluteString);
@@ -655,7 +655,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
   RCTNetworking *networking = [_bridge networking];
   if (!networking) {
-    networking = [_turboModuleRegistry moduleForName:"RCTNetworking"];
+    networking = [_turboModuleRegistry moduleForName:"Networking"];
   }
 
   // Check if networking module can load image
