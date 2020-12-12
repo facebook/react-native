@@ -33,7 +33,31 @@ void StateWrapperImpl::updateStateImpl(NativeMap *map) {
   // Get folly::dynamic from map
   auto dynamicMap = map->consume();
   // Set state
-  state_->updateState(dynamicMap);
+  state_->updateState(dynamicMap, nullptr);
+}
+
+void StateWrapperImpl::updateStateWithFailureCallbackImpl(
+    NativeMap *map,
+    jni::alias_ref<jobject> self,
+    int callbackRefId) {
+  // Get folly::dynamic from map
+  auto dynamicMap = map->consume();
+  // Turn the alias into a global_ref
+  // Note: this whole thing feels really janky, making StateWrapperImpl.java
+  // pass "this" into a function it's calling on "this". But after struggling
+  // for a while I couldn't figure out how to get a reference to the Java side
+  // of "this" in C++ in a way that's reasonably safe, and it maybe is even
+  // discouraged. Anyway, it might be weird, but this seems to work and be safe.
+  jni::global_ref<jobject> globalSelf = make_global(self);
+  // Set state
+  state_->updateState(
+      dynamicMap, [globalSelf = std::move(globalSelf), callbackRefId]() {
+        static auto method =
+            jni::findClassStatic(
+                StateWrapperImpl::StateWrapperImplJavaDescriptor)
+                ->getMethod<void(jint)>("updateStateFailed");
+        method(globalSelf, callbackRefId);
+      });
 }
 
 void StateWrapperImpl::registerNatives() {
@@ -41,6 +65,9 @@ void StateWrapperImpl::registerNatives() {
       makeNativeMethod("initHybrid", StateWrapperImpl::initHybrid),
       makeNativeMethod("getState", StateWrapperImpl::getState),
       makeNativeMethod("updateStateImpl", StateWrapperImpl::updateStateImpl),
+      makeNativeMethod(
+          "updateStateWithFailureCallbackImpl",
+          StateWrapperImpl::updateStateWithFailureCallbackImpl),
   });
 }
 

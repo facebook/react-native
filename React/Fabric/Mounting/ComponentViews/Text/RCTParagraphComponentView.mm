@@ -8,15 +8,15 @@
 #import "RCTParagraphComponentView.h"
 #import "RCTParagraphComponentAccessibilityProvider.h"
 
-#import <react/components/text/ParagraphComponentDescriptor.h>
-#import <react/components/text/ParagraphProps.h>
-#import <react/components/text/ParagraphState.h>
-#import <react/components/text/RawTextComponentDescriptor.h>
-#import <react/components/text/TextComponentDescriptor.h>
-#import <react/graphics/Geometry.h>
-#import <react/textlayoutmanager/RCTAttributedTextUtils.h>
-#import <react/textlayoutmanager/RCTTextLayoutManager.h>
-#import <react/textlayoutmanager/TextLayoutManager.h>
+#import <react/renderer/components/text/ParagraphComponentDescriptor.h>
+#import <react/renderer/components/text/ParagraphProps.h>
+#import <react/renderer/components/text/ParagraphState.h>
+#import <react/renderer/components/text/RawTextComponentDescriptor.h>
+#import <react/renderer/components/text/TextComponentDescriptor.h>
+#import <react/renderer/graphics/Geometry.h>
+#import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
+#import <react/renderer/textlayoutmanager/RCTTextLayoutManager.h>
+#import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "RCTConversions.h"
@@ -141,16 +141,21 @@ using namespace facebook::react;
 
 - (NSArray *)accessibilityElements
 {
-  if (![_accessibilityProvider isUpToDate:_state->getData().attributedString]) {
+  if (!_state) {
+    return [NSArray new];
+  }
+
+  auto &data = _state->getData();
+
+  if (![_accessibilityProvider isUpToDate:data.attributedString]) {
     RCTTextLayoutManager *textLayoutManager =
-        (RCTTextLayoutManager *)unwrapManagedObject(_state->getData().layoutManager->getNativeTextLayoutManager());
+        (RCTTextLayoutManager *)unwrapManagedObject(data.layoutManager->getNativeTextLayoutManager());
     CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
-    _accessibilityProvider =
-        [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:_state->getData().attributedString
-                                                             layoutManager:textLayoutManager
-                                                       paragraphAttributes:_state->getData().paragraphAttributes
-                                                                     frame:frame
-                                                                      view:self];
+    _accessibilityProvider = [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:data.attributedString
+                                                                                  layoutManager:textLayoutManager
+                                                                            paragraphAttributes:data.paragraphAttributes
+                                                                                          frame:frame
+                                                                                           view:self];
   }
 
   self.isAccessibilityElement = NO;

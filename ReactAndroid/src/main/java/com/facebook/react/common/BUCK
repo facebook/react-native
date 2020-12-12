@@ -10,6 +10,7 @@ rn_android_library(
         ["**/*.java"],
         exclude = SUB_PROJECTS,
     ),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [

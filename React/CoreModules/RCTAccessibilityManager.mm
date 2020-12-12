@@ -10,7 +10,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
 
@@ -29,6 +29,7 @@ NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification =
 @implementation RCTAccessibilityManager
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 @synthesize multipliers = _multipliers;
 
 RCT_EXPORT_MODULE()
@@ -111,7 +112,7 @@ RCT_EXPORT_MODULE()
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"announcementFinished" body:response];
+  [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"announcementFinished" body:response];
 #pragma clang diagnostic pop
 }
 
@@ -122,7 +123,8 @@ RCT_EXPORT_MODULE()
     _isBoldTextEnabled = newBoldTextEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"boldTextChanged" body:@(_isBoldTextEnabled)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"boldTextChanged"
+                                                                          body:@(_isBoldTextEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -134,7 +136,8 @@ RCT_EXPORT_MODULE()
     _isGrayscaleEnabled = newGrayscaleEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"grayscaleChanged" body:@(_isGrayscaleEnabled)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"grayscaleChanged"
+                                                                          body:@(_isGrayscaleEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -146,7 +149,8 @@ RCT_EXPORT_MODULE()
     _isInvertColorsEnabled = newInvertColorsEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"invertColorsChanged" body:@(_isInvertColorsEnabled)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"invertColorsChanged"
+                                                                          body:@(_isInvertColorsEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -158,7 +162,8 @@ RCT_EXPORT_MODULE()
     _isReduceMotionEnabled = newReduceMotionEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"reduceMotionChanged" body:@(_isReduceMotionEnabled)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"reduceMotionChanged"
+                                                                          body:@(_isReduceMotionEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -170,7 +175,8 @@ RCT_EXPORT_MODULE()
     _isReduceTransparencyEnabled = newReduceTransparencyEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"reduceTransparencyChanged" body:@(_isReduceTransparencyEnabled)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"reduceTransparencyChanged"
+                                                                          body:@(_isReduceTransparencyEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -182,7 +188,8 @@ RCT_EXPORT_MODULE()
     _isVoiceOverEnabled = newIsVoiceOverEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"screenReaderChanged" body:@(_isVoiceOverEnabled)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"screenReaderChanged"
+                                                                          body:@(_isVoiceOverEnabled)];
 #pragma clang diagnostic pop
   }
 }

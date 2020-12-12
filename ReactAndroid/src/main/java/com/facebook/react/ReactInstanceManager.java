@@ -41,6 +41,7 @@ import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Process;
 import android.view.View;
+import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
@@ -794,9 +795,15 @@ public class ReactInstanceManager {
     mDevSupportManager.showDevOptionsDialog();
   }
 
+  @ThreadConfined(UI)
   private void clearReactRoot(ReactRoot reactRoot) {
-    reactRoot.getRootViewGroup().removeAllViews();
-    reactRoot.getRootViewGroup().setId(View.NO_ID);
+    UiThreadUtil.assertOnUiThread();
+    if (ReactFeatureFlags.enableStartSurfaceRaceConditionFix) {
+      reactRoot.getState().compareAndSet(ReactRoot.STATE_STARTED, ReactRoot.STATE_STOPPED);
+    }
+    ViewGroup rootViewGroup = reactRoot.getRootViewGroup();
+    rootViewGroup.removeAllViews();
+    rootViewGroup.setId(View.NO_ID);
   }
 
   /**
@@ -810,17 +817,28 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void attachRootView(ReactRoot reactRoot) {
     UiThreadUtil.assertOnUiThread();
-    mAttachedReactRoots.add(reactRoot);
 
-    // Reset reactRoot content as it's going to be populated by the application content from JS.
-    clearReactRoot(reactRoot);
+    // Calling clearReactRoot is necessary to initialize the Id on reactRoot
+    // This is necessary independently if the RN Bridge has been initialized or not.
+    // Ideally reactRoot should be initialized with id == NO_ID
+    if (ReactFeatureFlags.enableStartSurfaceRaceConditionFix) {
+      if (mAttachedReactRoots.add(reactRoot)) {
+        clearReactRoot(reactRoot);
+      }
+    } else {
+      mAttachedReactRoots.add(reactRoot);
+      clearReactRoot(reactRoot);
+    }
 
     // If react context is being created in the background, JS application will be started
     // automatically when creation completes, as reactRoot reactRoot is part of the attached
     // reactRoot reactRoot list.
     ReactContext currentContext = getCurrentReactContext();
     if (mCreateReactContextThread == null && currentContext != null) {
-      attachRootViewToInstance(reactRoot);
+      if (!ReactFeatureFlags.enableStartSurfaceRaceConditionFix
+          || reactRoot.getState().compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
+        attachRootViewToInstance(reactRoot);
+      }
     }
   }
 
@@ -1087,7 +1105,12 @@ public class ReactInstanceManager {
 
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
       for (ReactRoot reactRoot : mAttachedReactRoots) {
-        attachRootViewToInstance(reactRoot);
+        if (!ReactFeatureFlags.enableStartSurfaceRaceConditionFix
+            || reactRoot
+                .getState()
+                .compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
+          attachRootViewToInstance(reactRoot);
+        }
       }
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
     }
@@ -1151,30 +1174,18 @@ public class ReactInstanceManager {
 
     final int rootTag;
 
-    if (ReactFeatureFlags.enableFabricStartSurfaceWithLayoutMetrics) {
-      if (reactRoot.getUIManagerType() == FABRIC) {
-        rootTag =
-            uiManager.startSurface(
-                reactRoot.getRootViewGroup(),
-                reactRoot.getJSModuleName(),
-                initialProperties == null
-                    ? new WritableNativeMap()
-                    : Arguments.fromBundle(initialProperties),
-                reactRoot.getWidthMeasureSpec(),
-                reactRoot.getHeightMeasureSpec());
-        reactRoot.setRootViewTag(rootTag);
-        reactRoot.setShouldLogContentAppeared(true);
-      } else {
-        rootTag =
-            uiManager.addRootView(
-                reactRoot.getRootViewGroup(),
-                initialProperties == null
-                    ? new WritableNativeMap()
-                    : Arguments.fromBundle(initialProperties),
-                reactRoot.getInitialUITemplate());
-        reactRoot.setRootViewTag(rootTag);
-        reactRoot.runApplication();
-      }
+    if (reactRoot.getUIManagerType() == FABRIC) {
+      rootTag =
+          uiManager.startSurface(
+              reactRoot.getRootViewGroup(),
+              reactRoot.getJSModuleName(),
+              initialProperties == null
+                  ? new WritableNativeMap()
+                  : Arguments.fromBundle(initialProperties),
+              reactRoot.getWidthMeasureSpec(),
+              reactRoot.getHeightMeasureSpec());
+      reactRoot.setRootViewTag(rootTag);
+      reactRoot.setShouldLogContentAppeared(true);
     } else {
       rootTag =
           uiManager.addRootView(
@@ -1184,15 +1195,7 @@ public class ReactInstanceManager {
                   : Arguments.fromBundle(initialProperties),
               reactRoot.getInitialUITemplate());
       reactRoot.setRootViewTag(rootTag);
-      if (reactRoot.getUIManagerType() == FABRIC) {
-        // Fabric requires to call updateRootLayoutSpecs before starting JS Application,
-        // this ensures the root will hace the correct pointScaleFactor.
-        uiManager.updateRootLayoutSpecs(
-            rootTag, reactRoot.getWidthMeasureSpec(), reactRoot.getHeightMeasureSpec());
-        reactRoot.setShouldLogContentAppeared(true);
-      } else {
-        reactRoot.runApplication();
-      }
+      reactRoot.runApplication();
     }
 
     Systrace.beginAsyncSection(
@@ -1223,6 +1226,7 @@ public class ReactInstanceManager {
     }
   }
 
+  @ThreadConfined(UI)
   private void tearDownReactContext(ReactContext reactContext) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.tearDownReactContext()");
     UiThreadUtil.assertOnUiThread();

@@ -11,24 +11,24 @@
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
-#import <better/set.h>
+#include <better/set.h>
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
-#include <react/animations/LayoutAnimationDriver.h>
-#include <react/componentregistry/ComponentDescriptorFactory.h>
-#include <react/components/scrollview/ScrollViewProps.h>
-#include <react/core/EventBeat.h>
-#include <react/core/EventEmitter.h>
-#include <react/core/conversions.h>
-#include <react/debug/SystraceSection.h>
-#include <react/scheduler/Scheduler.h>
-#include <react/scheduler/SchedulerDelegate.h>
-#include <react/scheduler/SchedulerToolbox.h>
-#include <react/uimanager/primitives.h>
+#include <react/renderer/animations/LayoutAnimationDriver.h>
+#include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#include <react/renderer/components/scrollview/ScrollViewProps.h>
+#include <react/renderer/core/EventBeat.h>
+#include <react/renderer/core/EventEmitter.h>
+#include <react/renderer/core/conversions.h>
+#include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/scheduler/Scheduler.h>
+#include <react/renderer/scheduler/SchedulerDelegate.h>
+#include <react/renderer/scheduler/SchedulerToolbox.h>
+#include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 
-#include <Glog/logging.h>
+#include <glog/logging.h>
 
 using namespace facebook::jni;
 using namespace facebook::jsi;
@@ -52,6 +52,173 @@ struct RemoveDeleteMetadata {
 };
 
 } // namespace
+
+CppMountItem CppMountItem::CreateMountItem(ShadowView shadowView) {
+  return {CppMountItem::Type::Create, {}, {}, shadowView, -1};
+}
+CppMountItem CppMountItem::DeleteMountItem(ShadowView shadowView) {
+  return {CppMountItem::Type::Delete, {}, shadowView, {}, -1};
+}
+CppMountItem CppMountItem::InsertMountItem(
+    ShadowView parentView,
+    ShadowView shadowView,
+    int index) {
+  return {CppMountItem::Type::Insert, parentView, {}, shadowView, index};
+}
+CppMountItem CppMountItem::RemoveMountItem(
+    ShadowView parentView,
+    ShadowView shadowView,
+    int index) {
+  return {CppMountItem::Type::Remove, parentView, shadowView, {}, index};
+}
+CppMountItem CppMountItem::UpdatePropsMountItem(ShadowView shadowView) {
+  return {CppMountItem::Type::UpdateProps, {}, {}, shadowView, -1};
+}
+CppMountItem CppMountItem::UpdateStateMountItem(ShadowView shadowView) {
+  return {CppMountItem::Type::UpdateState, {}, {}, shadowView, -1};
+}
+CppMountItem CppMountItem::UpdateLayoutMountItem(ShadowView shadowView) {
+  return {CppMountItem::Type::UpdateLayout, {}, {}, shadowView, -1};
+}
+CppMountItem CppMountItem::UpdateEventEmitterMountItem(ShadowView shadowView) {
+  return {CppMountItem::Type::UpdateEventEmitter, {}, {}, shadowView, -1};
+}
+CppMountItem CppMountItem::UpdatePaddingMountItem(ShadowView shadowView) {
+  return {CppMountItem::Type::UpdatePadding, {}, {}, shadowView, -1};
+}
+
+static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
+  if (mountItemType == CppMountItem::Type::Create) {
+    return 2; // tag, isLayoutable
+  } else if (mountItemType == CppMountItem::Type::Insert) {
+    return 3; // tag, parentTag, index
+  } else if (mountItemType == CppMountItem::Type::Remove) {
+    return 3; // tag, parentTag, index
+  } else if (mountItemType == CppMountItem::Type::Delete) {
+    return 1; // tag
+  } else if (mountItemType == CppMountItem::Type::UpdateProps) {
+    return 1; // tag
+  } else if (mountItemType == CppMountItem::Type::UpdateState) {
+    return 1; // tag
+  } else if (mountItemType == CppMountItem::Type::UpdatePadding) {
+    return 5; // tag, top, left, bottom, right
+  } else if (mountItemType == CppMountItem::Type::UpdateLayout) {
+    return 6; // tag, x, y, w, h, layoutDirection
+  } else if (mountItemType == CppMountItem::Type::UpdateEventEmitter) {
+    return 1; // tag
+  } else {
+    return -1;
+  }
+}
+
+static inline void updateBufferSizes(
+    CppMountItem::Type mountItemType,
+    int numInstructions,
+    int &batchMountItemIntsSize,
+    int &batchMountItemObjectsSize) {
+  if (numInstructions == 0) {
+    return;
+  }
+
+  batchMountItemIntsSize +=
+      numInstructions == 1 ? 1 : 2; // instructionType[, numInstructions]
+  batchMountItemIntsSize +=
+      numInstructions * getIntBufferSizeForType(mountItemType);
+
+  if (mountItemType == CppMountItem::Type::UpdateProps) {
+    batchMountItemObjectsSize +=
+        numInstructions; // props object * numInstructions
+  } else if (mountItemType == CppMountItem::Type::UpdateState) {
+    batchMountItemObjectsSize +=
+        numInstructions; // state object * numInstructions
+  } else if (mountItemType == CppMountItem::Type::UpdateEventEmitter) {
+    batchMountItemObjectsSize +=
+        numInstructions; // EventEmitter object * numInstructions
+  }
+}
+
+static inline void computeBufferSizes(
+    int &batchMountItemIntsSize,
+    int &batchMountItemObjectsSize,
+    std::vector<CppMountItem> &cppCommonMountItems,
+    std::vector<CppMountItem> &cppDeleteMountItems,
+    std::vector<CppMountItem> &cppUpdatePropsMountItems,
+    std::vector<CppMountItem> &cppUpdateStateMountItems,
+    std::vector<CppMountItem> &cppUpdatePaddingMountItems,
+    std::vector<CppMountItem> &cppUpdateLayoutMountItems,
+    std::vector<CppMountItem> &cppUpdateEventEmitterMountItems) {
+  CppMountItem::Type lastType = CppMountItem::Type::Undefined;
+  int numSameType = 0;
+  for (const auto &mountItem : cppCommonMountItems) {
+    const auto &mountItemType = mountItem.type;
+
+    if (lastType == mountItemType) {
+      numSameType++;
+      if (numSameType == 2) {
+        batchMountItemIntsSize += 1; // numInstructions
+      }
+    } else {
+      numSameType = 1;
+      lastType = mountItemType;
+      batchMountItemIntsSize += 1; // instructionType
+    }
+
+    batchMountItemIntsSize += getIntBufferSizeForType(mountItemType);
+    if (mountItemType == CppMountItem::Type::Create) {
+      batchMountItemObjectsSize += 3; // component name, props, state
+    }
+  }
+
+  updateBufferSizes(
+      CppMountItem::Type::UpdateProps,
+      cppUpdatePropsMountItems.size(),
+      batchMountItemIntsSize,
+      batchMountItemObjectsSize);
+  updateBufferSizes(
+      CppMountItem::Type::UpdateState,
+      cppUpdateStateMountItems.size(),
+      batchMountItemIntsSize,
+      batchMountItemObjectsSize);
+  updateBufferSizes(
+      CppMountItem::Type::UpdatePadding,
+      cppUpdatePaddingMountItems.size(),
+      batchMountItemIntsSize,
+      batchMountItemObjectsSize);
+  updateBufferSizes(
+      CppMountItem::Type::UpdateLayout,
+      cppUpdateLayoutMountItems.size(),
+      batchMountItemIntsSize,
+      batchMountItemObjectsSize);
+  updateBufferSizes(
+      CppMountItem::Type::UpdateEventEmitter,
+      cppUpdateEventEmitterMountItems.size(),
+      batchMountItemIntsSize,
+      batchMountItemObjectsSize);
+  updateBufferSizes(
+      CppMountItem::Type::Delete,
+      cppDeleteMountItems.size(),
+      batchMountItemIntsSize,
+      batchMountItemObjectsSize);
+}
+
+static inline void writeIntBufferTypePreamble(
+    int mountItemType,
+    int numItems,
+    _JNIEnv *env,
+    jintArray &intBufferArray,
+    int &intBufferPosition) {
+  jint temp[2];
+  if (numItems == 1) {
+    temp[0] = mountItemType;
+    env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
+    intBufferPosition += 1;
+  } else {
+    temp[0] = mountItemType | CppMountItem::Type::Multiple;
+    temp[1] = numItems;
+    env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
+    intBufferPosition += 2;
+  }
+}
 
 jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
     jni::alias_ref<jclass>) {
@@ -101,6 +268,8 @@ void Binding::startSurfaceWithConstraints(
     jfloat maxWidth,
     jfloat minHeight,
     jfloat maxHeight,
+    jfloat offsetX,
+    jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
@@ -123,6 +292,8 @@ void Binding::startSurfaceWithConstraints(
       Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
 
   LayoutContext context;
+  context.viewportOffset =
+      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};
@@ -178,6 +349,8 @@ void Binding::setConstraints(
     jfloat maxWidth,
     jfloat minHeight,
     jfloat maxHeight,
+    jfloat offsetX,
+    jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::setConstraints");
@@ -194,6 +367,8 @@ void Binding::setConstraints(
       Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
 
   LayoutContext context;
+  context.viewportOffset =
+      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};
@@ -206,12 +381,11 @@ void Binding::setConstraints(
 }
 
 void Binding::installFabricUIManager(
-    jlong jsContextNativePointer,
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
-    ComponentFactoryDelegate *componentsRegistry,
+    ComponentFactory *componentsRegistry,
     jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
@@ -240,24 +414,7 @@ void Binding::installFabricUIManager(
 
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
-
-  bool useRuntimeExecutor =
-      config->getBool("react_fabric:use_shared_runtime_executor_android");
-
-  RuntimeExecutor runtimeExecutor;
-  if (useRuntimeExecutor) {
-    runtimeExecutor = runtimeExecutorHolder->cthis()->get();
-  } else {
-    Runtime *runtime = (Runtime *)jsContextNativePointer;
-    runtimeExecutor =
-        [runtime, sharedJSMessageQueueThread](
-            std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
-          sharedJSMessageQueueThread->runOnQueue(
-              [runtime, callback = std::move(callback)]() {
-                callback(*runtime);
-              });
-        };
-  }
+  auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
 
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
@@ -280,8 +437,16 @@ void Binding::installFabricUIManager(
 
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
-  collapseDeleteCreateMountingInstructions_ = reactNativeConfig_->getBool(
-      "react_fabric:enabled_collapse_delete_create_mounting_instructions");
+  collapseDeleteCreateMountingInstructions_ =
+      reactNativeConfig_->getBool(
+          "react_fabric:enabled_collapse_delete_create_mounting_instructions") &&
+      !reactNativeConfig_->getBool(
+          "react_fabric:enable_reparenting_detection_android") &&
+      !reactNativeConfig_->getBool(
+          "react_fabric:enabled_layout_animations_android");
+
+  useIntBufferBatchMountItem_ = reactNativeConfig_->getBool(
+      "react_fabric:use_int_buffer_batch_mountitem_android");
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
@@ -296,8 +461,15 @@ void Binding::installFabricUIManager(
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
+  if (reactNativeConfig_->getBool(
+          "react_fabric:enable_background_executor_android")) {
+    backgroundExecutor_ = std::make_unique<JBackgroundExecutor>();
+    toolbox.backgroundExecutor = backgroundExecutor_->get();
+  }
+
   if (enableLayoutAnimations) {
-    animationDriver_ = std::make_shared<LayoutAnimationDriver>(this);
+    animationDriver_ =
+        std::make_shared<LayoutAnimationDriver>(runtimeExecutor, this);
   }
   scheduler_ = std::make_shared<Scheduler>(
       toolbox, (animationDriver_ ? animationDriver_.get() : nullptr), this);
@@ -373,8 +545,6 @@ local_ref<JMountItem::javaobject> createUpdatePropsMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation) {
   auto shadowView = mutation.newChildShadowView;
-  auto newViewProps =
-      *std::dynamic_pointer_cast<const ViewProps>(shadowView.props);
 
   // TODO: move props from map to a typed object.
   auto newProps = shadowView.props->rawProps;
@@ -426,11 +596,12 @@ local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
   auto newChildShadowView = mutation.newChildShadowView;
 
   if (oldChildShadowView.layoutMetrics.contentInsets ==
-      newChildShadowView.layoutMetrics.contentInsets) {
+          newChildShadowView.layoutMetrics.contentInsets &&
+      mutation.type != ShadowViewMutation::Type::Insert) {
     return nullptr;
   }
 
-  static auto updateLayoutInstruction =
+  static auto updatePaddingInstruction =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint)>(
               "updatePaddingMountItem");
@@ -439,12 +610,12 @@ local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
   auto pointScaleFactor = layoutMetrics.pointScaleFactor;
   auto contentInsets = layoutMetrics.contentInsets;
 
-  int left = round(contentInsets.left * pointScaleFactor);
-  int top = round(contentInsets.top * pointScaleFactor);
-  int right = round(contentInsets.right * pointScaleFactor);
-  int bottom = round(contentInsets.bottom * pointScaleFactor);
+  int left = floor(contentInsets.left * pointScaleFactor);
+  int top = floor(contentInsets.top * pointScaleFactor);
+  int right = floor(contentInsets.right * pointScaleFactor);
+  int bottom = floor(contentInsets.bottom * pointScaleFactor);
 
-  return updateLayoutInstruction(
+  return updatePaddingInstruction(
       javaUIManager, newChildShadowView.tag, left, top, right, bottom);
 }
 
@@ -567,9 +738,471 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
       isLayoutable);
 }
 
+void Binding::schedulerDidFinishTransactionIntBuffer(
+    MountingCoordinator::Shared const &mountingCoordinator) {
+  std::lock_guard<std::recursive_mutex> lock(commitMutex_);
+
+  SystraceSection s(
+      "FabricUIManagerBinding::schedulerDidFinishTransactionIntBuffer");
+  auto finishTransactionStartTime = telemetryTimePointNow();
+
+  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
+  if (!localJavaUIManager) {
+    LOG(ERROR)
+        << "Binding::schedulerDidFinishTransaction: JavaUIManager disappeared";
+    return;
+  }
+
+  auto mountingTransaction = mountingCoordinator->pullTransaction();
+
+  if (!mountingTransaction.has_value()) {
+    return;
+  }
+
+  auto env = Environment::current();
+
+  auto telemetry = mountingTransaction->getTelemetry();
+  auto surfaceId = mountingTransaction->getSurfaceId();
+  auto &mutations = mountingTransaction->getMutations();
+
+  auto revisionNumber = telemetry.getRevisionNumber();
+
+  std::vector<CppMountItem> cppCommonMountItems;
+  std::vector<CppMountItem> cppDeleteMountItems;
+  std::vector<CppMountItem> cppUpdatePropsMountItems;
+  std::vector<CppMountItem> cppUpdateStateMountItems;
+  std::vector<CppMountItem> cppUpdatePaddingMountItems;
+  std::vector<CppMountItem> cppUpdateLayoutMountItems;
+  std::vector<CppMountItem> cppUpdateEventEmitterMountItems;
+
+  for (const auto &mutation : mutations) {
+    const auto &parentShadowView = mutation.parentShadowView;
+    const auto &oldChildShadowView = mutation.oldChildShadowView;
+    const auto &newChildShadowView = mutation.newChildShadowView;
+    auto &mutationType = mutation.type;
+    auto &index = mutation.index;
+
+    bool isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
+        oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
+
+    switch (mutationType) {
+      case ShadowViewMutation::Create: {
+        if (disablePreallocateViews_ ||
+            newChildShadowView.props->revision > 1) {
+          cppCommonMountItems.push_back(
+              CppMountItem::CreateMountItem(newChildShadowView));
+        }
+        break;
+      }
+      case ShadowViewMutation::Remove: {
+        if (!isVirtual) {
+          cppCommonMountItems.push_back(CppMountItem::RemoveMountItem(
+              parentShadowView, oldChildShadowView, index));
+        }
+        break;
+      }
+      case ShadowViewMutation::Delete: {
+        cppDeleteMountItems.push_back(
+            CppMountItem::DeleteMountItem(oldChildShadowView));
+        break;
+      }
+      case ShadowViewMutation::Update: {
+        if (!isVirtual) {
+          if (oldChildShadowView.props != newChildShadowView.props) {
+            cppUpdatePropsMountItems.push_back(
+                CppMountItem::UpdatePropsMountItem(newChildShadowView));
+          }
+          if (oldChildShadowView.state != newChildShadowView.state) {
+            cppUpdateStateMountItems.push_back(
+                CppMountItem::UpdateStateMountItem(newChildShadowView));
+          }
+
+          // Padding: padding mountItems must be executed before layout props
+          // are updated in the view. This is necessary to ensure that events
+          // (resulting from layout changes) are dispatched with the correct
+          // padding information.
+          if (oldChildShadowView.layoutMetrics.contentInsets !=
+              newChildShadowView.layoutMetrics.contentInsets) {
+            cppUpdatePaddingMountItems.push_back(
+                CppMountItem::UpdatePaddingMountItem(newChildShadowView));
+          }
+
+          if (oldChildShadowView.layoutMetrics !=
+              newChildShadowView.layoutMetrics) {
+            cppUpdateLayoutMountItems.push_back(
+                CppMountItem::UpdateLayoutMountItem(
+                    mutation.newChildShadowView));
+          }
+        }
+
+        if (oldChildShadowView.eventEmitter !=
+            newChildShadowView.eventEmitter) {
+          cppUpdateEventEmitterMountItems.push_back(
+              CppMountItem::UpdateEventEmitterMountItem(
+                  mutation.newChildShadowView));
+        }
+        break;
+      }
+      case ShadowViewMutation::Insert: {
+        if (!isVirtual) {
+          // Insert item
+          cppCommonMountItems.push_back(CppMountItem::InsertMountItem(
+              parentShadowView, newChildShadowView, index));
+
+          if (disablePreallocateViews_ ||
+              newChildShadowView.props->revision > 1) {
+            cppUpdatePropsMountItems.push_back(
+                CppMountItem::UpdatePropsMountItem(newChildShadowView));
+          }
+
+          // State
+          if (newChildShadowView.state) {
+            cppUpdateStateMountItems.push_back(
+                CppMountItem::UpdateStateMountItem(newChildShadowView));
+          }
+
+          // Padding: padding mountItems must be executed before layout props
+          // are updated in the view. This is necessary to ensure that events
+          // (resulting from layout changes) are dispatched with the correct
+          // padding information.
+          cppUpdatePaddingMountItems.push_back(
+              CppMountItem::UpdatePaddingMountItem(
+                  mutation.newChildShadowView));
+
+          // Layout
+          cppUpdateLayoutMountItems.push_back(
+              CppMountItem::UpdateLayoutMountItem(mutation.newChildShadowView));
+        }
+
+        // EventEmitter
+        cppUpdateEventEmitterMountItems.push_back(
+            CppMountItem::UpdateEventEmitterMountItem(
+                mutation.newChildShadowView));
+
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
+  // We now have all the information we need, including ordering of mount items,
+  // to know exactly how much space must be allocated
+  int batchMountItemIntsSize = 0;
+  int batchMountItemObjectsSize = 0;
+  computeBufferSizes(
+      batchMountItemIntsSize,
+      batchMountItemObjectsSize,
+      cppCommonMountItems,
+      cppDeleteMountItems,
+      cppUpdatePropsMountItems,
+      cppUpdateStateMountItems,
+      cppUpdatePaddingMountItems,
+      cppUpdateLayoutMountItems,
+      cppUpdateEventEmitterMountItems);
+
+  static auto createMountItemsIntBufferBatchContainer =
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
+          ->getMethod<alias_ref<JMountItem>(
+              jint, jintArray, jtypeArray<jobject>, jint)>(
+              "createIntBufferBatchMountItem");
+
+  static auto scheduleMountItem =
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
+          ->getMethod<void(
+              JMountItem::javaobject,
+              jint,
+              jlong,
+              jlong,
+              jlong,
+              jlong,
+              jlong,
+              jlong,
+              jlong)>("scheduleMountItem");
+
+  if (batchMountItemIntsSize == 0) {
+    auto finishTransactionEndTime = telemetryTimePointNow();
+
+    scheduleMountItem(
+        localJavaUIManager,
+        nullptr,
+        telemetry.getRevisionNumber(),
+        telemetryTimePointToMilliseconds(telemetry.getCommitStartTime()),
+        telemetryTimePointToMilliseconds(telemetry.getDiffStartTime()),
+        telemetryTimePointToMilliseconds(telemetry.getDiffEndTime()),
+        telemetryTimePointToMilliseconds(telemetry.getLayoutStartTime()),
+        telemetryTimePointToMilliseconds(telemetry.getLayoutEndTime()),
+        telemetryTimePointToMilliseconds(finishTransactionStartTime),
+        telemetryTimePointToMilliseconds(finishTransactionEndTime));
+    return;
+  }
+
+  // Allocate the intBuffer and object array, now that we know exact sizes
+  // necessary
+  // TODO: don't allocate at all if size is zero
+  jintArray intBufferArray = env->NewIntArray(batchMountItemIntsSize);
+  local_ref<JArrayClass<jobject>> objBufferArray =
+      JArrayClass<jobject>::newArray(batchMountItemObjectsSize);
+
+  // Fill in arrays
+  int intBufferPosition = 0;
+  int objBufferPosition = 0;
+  int prevMountItemType = -1;
+  jint temp[6];
+  for (int i = 0; i < cppCommonMountItems.size(); i++) {
+    const auto &mountItem = cppCommonMountItems[i];
+    const auto &mountItemType = mountItem.type;
+
+    // Get type here, and count forward how many items of this type are in a
+    // row. Write preamble to any common type here.
+    if (prevMountItemType != mountItemType) {
+      int numSameItemTypes = 1;
+      for (int j = i + 1; j < cppCommonMountItems.size() &&
+           cppCommonMountItems[j].type == mountItemType;
+           j++) {
+        numSameItemTypes++;
+      }
+
+      writeIntBufferTypePreamble(
+          mountItemType,
+          numSameItemTypes,
+          env,
+          intBufferArray,
+          intBufferPosition);
+    }
+    prevMountItemType = mountItemType;
+
+    // TODO: multi-create, multi-insert, etc
+    if (mountItemType == CppMountItem::Type::Create) {
+      local_ref<JString> componentName =
+          getPlatformComponentName(mountItem.newChildShadowView);
+
+      int isLayoutable =
+          mountItem.newChildShadowView.layoutMetrics != EmptyLayoutMetrics ? 1
+                                                                           : 0;
+
+      local_ref<ReadableMap::javaobject> props =
+          castReadableMap(ReadableNativeMap::newObjectCxxArgs(
+              mountItem.newChildShadowView.props->rawProps));
+
+      // Do not hold onto Java object from C
+      // We DO want to hold onto C object from Java, since we don't know the
+      // lifetime of the Java object
+      local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
+      if (mountItem.newChildShadowView.state != nullptr) {
+        javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
+        StateWrapperImpl *cStateWrapper = cthis(javaStateWrapper);
+        cStateWrapper->state_ = mountItem.newChildShadowView.state;
+      }
+
+      temp[0] = mountItem.newChildShadowView.tag;
+      temp[1] = isLayoutable;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
+      intBufferPosition += 2;
+
+      (*objBufferArray)[objBufferPosition++] = componentName.get();
+      (*objBufferArray)[objBufferPosition++] = props.get();
+      (*objBufferArray)[objBufferPosition++] =
+          javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr;
+    } else if (mountItemType == CppMountItem::Type::Insert) {
+      temp[0] = mountItem.newChildShadowView.tag;
+      temp[1] = mountItem.parentShadowView.tag;
+      temp[2] = mountItem.index;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 3, temp);
+      intBufferPosition += 3;
+    } else if (mountItemType == CppMountItem::Remove) {
+      temp[0] = mountItem.oldChildShadowView.tag;
+      temp[1] = mountItem.parentShadowView.tag;
+      temp[2] = mountItem.index;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 3, temp);
+      intBufferPosition += 3;
+    } else {
+      LOG(ERROR) << "Unexpected CppMountItem type";
+    }
+  }
+  if (cppUpdatePropsMountItems.size() > 0) {
+    writeIntBufferTypePreamble(
+        CppMountItem::Type::UpdateProps,
+        cppUpdatePropsMountItems.size(),
+        env,
+        intBufferArray,
+        intBufferPosition);
+
+    for (const auto &mountItem : cppUpdatePropsMountItems) {
+      temp[0] = mountItem.newChildShadowView.tag;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
+      intBufferPosition += 1;
+
+      auto newProps = mountItem.newChildShadowView.props->rawProps;
+      local_ref<ReadableMap::javaobject> newPropsReadableMap =
+          castReadableMap(ReadableNativeMap::newObjectCxxArgs(newProps));
+      (*objBufferArray)[objBufferPosition++] = newPropsReadableMap.get();
+    }
+  }
+  if (cppUpdateStateMountItems.size() > 0) {
+    writeIntBufferTypePreamble(
+        CppMountItem::Type::UpdateState,
+        cppUpdateStateMountItems.size(),
+        env,
+        intBufferArray,
+        intBufferPosition);
+
+    for (const auto &mountItem : cppUpdateStateMountItems) {
+      temp[0] = mountItem.newChildShadowView.tag;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
+      intBufferPosition += 1;
+
+      auto state = mountItem.newChildShadowView.state;
+      // Do not hold onto Java object from C
+      // We DO want to hold onto C object from Java, since we don't know the
+      // lifetime of the Java object
+      local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
+      if (state != nullptr) {
+        javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
+        StateWrapperImpl *cStateWrapper = cthis(javaStateWrapper);
+        cStateWrapper->state_ = state;
+      }
+
+      (*objBufferArray)[objBufferPosition++] =
+          (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr);
+    }
+  }
+  if (cppUpdatePaddingMountItems.size() > 0) {
+    writeIntBufferTypePreamble(
+        CppMountItem::Type::UpdatePadding,
+        cppUpdatePaddingMountItems.size(),
+        env,
+        intBufferArray,
+        intBufferPosition);
+
+    for (const auto &mountItem : cppUpdatePaddingMountItems) {
+      auto layoutMetrics = mountItem.newChildShadowView.layoutMetrics;
+      auto pointScaleFactor = layoutMetrics.pointScaleFactor;
+      auto contentInsets = layoutMetrics.contentInsets;
+
+      int left = floor(contentInsets.left * pointScaleFactor);
+      int top = floor(contentInsets.top * pointScaleFactor);
+      int right = floor(contentInsets.right * pointScaleFactor);
+      int bottom = floor(contentInsets.bottom * pointScaleFactor);
+
+      temp[0] = mountItem.newChildShadowView.tag;
+      temp[1] = left;
+      temp[2] = top;
+      temp[3] = right;
+      temp[4] = bottom;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 5, temp);
+      intBufferPosition += 5;
+    }
+  }
+  if (cppUpdateLayoutMountItems.size() > 0) {
+    writeIntBufferTypePreamble(
+        CppMountItem::Type::UpdateLayout,
+        cppUpdateLayoutMountItems.size(),
+        env,
+        intBufferArray,
+        intBufferPosition);
+
+    for (const auto &mountItem : cppUpdateLayoutMountItems) {
+      auto layoutMetrics = mountItem.newChildShadowView.layoutMetrics;
+      auto pointScaleFactor = layoutMetrics.pointScaleFactor;
+      auto frame = layoutMetrics.frame;
+
+      int x = round(frame.origin.x * pointScaleFactor);
+      int y = round(frame.origin.y * pointScaleFactor);
+      int w = round(frame.size.width * pointScaleFactor);
+      int h = round(frame.size.height * pointScaleFactor);
+      int layoutDirection =
+          toInt(mountItem.newChildShadowView.layoutMetrics.layoutDirection);
+
+      temp[0] = mountItem.newChildShadowView.tag;
+      temp[1] = x;
+      temp[2] = y;
+      temp[3] = w;
+      temp[4] = h;
+      temp[5] = layoutDirection;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 6, temp);
+      intBufferPosition += 6;
+    }
+  }
+  if (cppUpdateEventEmitterMountItems.size() > 0) {
+    writeIntBufferTypePreamble(
+        CppMountItem::Type::UpdateEventEmitter,
+        cppUpdateEventEmitterMountItems.size(),
+        env,
+        intBufferArray,
+        intBufferPosition);
+
+    for (const auto &mountItem : cppUpdateEventEmitterMountItems) {
+      temp[0] = mountItem.newChildShadowView.tag;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
+      intBufferPosition += 1;
+
+      SharedEventEmitter eventEmitter =
+          mountItem.newChildShadowView.eventEmitter;
+
+      // Do not hold a reference to javaEventEmitter from the C++ side.
+      auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
+      EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
+      cEventEmitter->eventEmitter = eventEmitter;
+
+      (*objBufferArray)[objBufferPosition++] = javaEventEmitter.get();
+    }
+  }
+
+  // Write deletes last - so that all prop updates, etc, for the tag in the same
+  // batch don't fail. Without additional machinery, moving deletes here
+  // requires that the differ never produces "DELETE...CREATE" in that order for
+  // the same tag. It's nice to be able to batch all similar operations together
+  // for space efficiency.
+  if (cppDeleteMountItems.size() > 0) {
+    writeIntBufferTypePreamble(
+        CppMountItem::Type::Delete,
+        cppDeleteMountItems.size(),
+        env,
+        intBufferArray,
+        intBufferPosition);
+
+    for (const auto &mountItem : cppDeleteMountItems) {
+      temp[0] = mountItem.oldChildShadowView.tag;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
+      intBufferPosition += 1;
+    }
+  }
+
+  // If there are no items, we pass a nullptr instead of passing the object
+  // through the JNI
+  auto batch = createMountItemsIntBufferBatchContainer(
+      localJavaUIManager,
+      surfaceId,
+      batchMountItemIntsSize == 0 ? nullptr : intBufferArray,
+      batchMountItemObjectsSize == 0 ? nullptr : objBufferArray.get(),
+      revisionNumber);
+
+  auto finishTransactionEndTime = telemetryTimePointNow();
+
+  scheduleMountItem(
+      localJavaUIManager,
+      batch.get(),
+      telemetry.getRevisionNumber(),
+      telemetryTimePointToMilliseconds(telemetry.getCommitStartTime()),
+      telemetryTimePointToMilliseconds(telemetry.getDiffStartTime()),
+      telemetryTimePointToMilliseconds(telemetry.getDiffEndTime()),
+      telemetryTimePointToMilliseconds(telemetry.getLayoutStartTime()),
+      telemetryTimePointToMilliseconds(telemetry.getLayoutEndTime()),
+      telemetryTimePointToMilliseconds(finishTransactionStartTime),
+      telemetryTimePointToMilliseconds(finishTransactionEndTime));
+
+  env->DeleteLocalRef(intBufferArray);
+}
+
 void Binding::schedulerDidFinishTransaction(
     MountingCoordinator::Shared const &mountingCoordinator) {
   std::lock_guard<std::recursive_mutex> lock(commitMutex_);
+
+  if (useIntBufferBatchMountItem_) {
+    return schedulerDidFinishTransactionIntBuffer(mountingCoordinator);
+  }
 
   SystraceSection s("FabricUIManagerBinding::schedulerDidFinishTransaction");
   auto finishTransactionStartTime = telemetryTimePointNow();
@@ -617,7 +1250,8 @@ void Binding::schedulerDidFinishTransaction(
       }
     }
   }
-  int64_t commitNumber = telemetry.getCommitNumber();
+
+  auto revisionNumber = telemetry.getRevisionNumber();
 
   std::vector<local_ref<jobject>> queue;
   // Upper bound estimation of mount items to be delivered to Java side.
@@ -821,7 +1455,7 @@ void Binding::schedulerDidFinishTransaction(
       surfaceId,
       position == 0 ? nullptr : mountItemsArray.get(),
       position,
-      commitNumber);
+      revisionNumber);
 
   static auto scheduleMountItem =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
@@ -841,7 +1475,7 @@ void Binding::schedulerDidFinishTransaction(
   scheduleMountItem(
       localJavaUIManager,
       batch.get(),
-      telemetry.getCommitNumber(),
+      telemetry.getRevisionNumber(),
       telemetryTimePointToMilliseconds(telemetry.getCommitStartTime()),
       telemetryTimePointToMilliseconds(telemetry.getDiffStartTime()),
       telemetryTimePointToMilliseconds(telemetry.getDiffEndTime()),

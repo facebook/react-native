@@ -7,16 +7,15 @@
 
 package com.facebook.react.turbomodule.core;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.perflogger.NativeModulePerfLogger;
 import com.facebook.soloader.SoLoader;
 import javax.annotation.Nullable;
 
+@DoNotStrip
 public class TurboModulePerfLogger {
   @Nullable private static NativeModulePerfLogger sNativeModulePerfLogger = null;
-
-  static {
-    SoLoader.loadLibrary("turbomodulejsijni");
-  }
+  private static boolean sIsSoLibraryLoaded = false;
 
   public static void moduleDataCreateStart(String moduleName, int id) {
     if (sNativeModulePerfLogger != null) {
@@ -72,11 +71,25 @@ public class TurboModulePerfLogger {
     }
   }
 
+  public static void moduleCreateFail(String moduleName, int id) {
+    if (sNativeModulePerfLogger != null) {
+      sNativeModulePerfLogger.moduleCreateFail(moduleName, id);
+    }
+  }
+
   private static native void jniEnableCppLogging(NativeModulePerfLogger perfLogger);
+
+  private static synchronized void maybeLoadSoLibrary() {
+    if (!sIsSoLibraryLoaded) {
+      SoLoader.loadLibrary("turbomodulejsijni");
+      sIsSoLibraryLoaded = true;
+    }
+  }
 
   public static void enableLogging(NativeModulePerfLogger perfLogger) {
     if (perfLogger != null) {
       sNativeModulePerfLogger = perfLogger;
+      maybeLoadSoLibrary();
       jniEnableCppLogging(perfLogger);
     }
   }

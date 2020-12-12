@@ -15,7 +15,7 @@ rn_android_library(
     ],
     deps = [
         react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
-        react_native_dep("third-party/java/robolectric/4.3.1:robolectric"),
+        react_native_dep("third-party/java/robolectric/4.4:robolectric"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_tests_target("java/org/mockito/configuration:configuration"),
@@ -25,6 +25,7 @@ rn_android_library(
 rn_robolectric_test(
     name = "bridge",
     srcs = glob(STANDARD_TEST_SRCS),
+    autoglob = False,
     contacts = ["oncall+react_native@xmail.facebook.com"],
     visibility = [
         "PUBLIC",

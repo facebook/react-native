@@ -11,7 +11,7 @@
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTAssert.h>
 #import <React/RCTConstants.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
 
@@ -23,13 +23,13 @@ using namespace facebook::react;
 @end
 
 @implementation RCTDeviceInfo {
-#if !TARGET_OS_TV
   UIInterfaceOrientation _currentInterfaceOrientation;
   NSDictionary *_currentInterfaceDimensions;
-#endif
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
+@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -51,7 +51,7 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
-#if !TARGET_OS_TV
+
   _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -59,7 +59,7 @@ RCT_EXPORT_MODULE()
                                                name:UIApplicationDidChangeStatusBarOrientationNotification
                                              object:nil];
 
-  _currentInterfaceDimensions = RCTExportedDimensions(_bridge);
+  _currentInterfaceDimensions = RCTExportedDimensions(_bridge, _turboModuleRegistry);
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
@@ -70,8 +70,6 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceFrameDidChange)
                                                name:RCTUserInterfaceStyleDidChangeNotification
                                              object:nil];
-
-#endif
 }
 
 static BOOL RCTIsIPhoneX()
@@ -86,18 +84,32 @@ static BOOL RCTIsIPhoneX()
     CGSize iPhoneXScreenSize = CGSizeMake(1125, 2436);
     CGSize iPhoneXMaxScreenSize = CGSizeMake(1242, 2688);
     CGSize iPhoneXRScreenSize = CGSizeMake(828, 1792);
+    CGSize iPhone12ScreenSize = CGSizeMake(1170, 2532);
+    CGSize iPhone12MiniScreenSize = CGSizeMake(1080, 2340);
+    CGSize iPhone12ProMaxScreenSize = CGSizeMake(1284, 2778);
 
     isIPhoneX = CGSizeEqualToSize(screenSize, iPhoneXScreenSize) ||
-        CGSizeEqualToSize(screenSize, iPhoneXMaxScreenSize) || CGSizeEqualToSize(screenSize, iPhoneXRScreenSize);
+        CGSizeEqualToSize(screenSize, iPhoneXMaxScreenSize) || CGSizeEqualToSize(screenSize, iPhoneXRScreenSize) ||
+        CGSizeEqualToSize(screenSize, iPhone12ScreenSize) || CGSizeEqualToSize(screenSize, iPhone12MiniScreenSize) ||
+        CGSizeEqualToSize(screenSize, iPhone12ProMaxScreenSize);
+    ;
   });
 
   return isIPhoneX;
 }
 
-static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
+static NSDictionary *RCTExportedDimensions(RCTBridge *bridge, id<RCTTurboModuleRegistry> turboModuleRegistry)
 {
   RCTAssertMainQueue();
-  RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
+  RCTDimensions dimensions;
+  if (bridge) {
+    dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier ?: 1.0);
+  } else if (turboModuleRegistry) {
+    dimensions = RCTGetDimensions(
+        ((RCTAccessibilityManager *)[turboModuleRegistry moduleForName:"RCTAccessibilityManager"]).multiplier ?: 1.0);
+  } else {
+    RCTAssert(false, @"Bridge or TurboModuleRegistry must be set to properly init dimensions.");
+  }
   __typeof(dimensions.window) window = dimensions.window;
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
     @"width" : @(window.width),
@@ -125,7 +137,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
   __block NSDictionary<NSString *, id> *constants;
   RCTUnsafeExecuteOnMainQueueSync(^{
     constants = @{
-      @"Dimensions" : RCTExportedDimensions(self->_bridge),
+      @"Dimensions" : RCTExportedDimensions(self->_bridge, self->_turboModuleRegistry),
       // Note:
       // This prop is deprecated and will be removed in a future release.
       // Please use this only for a quick and temporary solution.
@@ -140,16 +152,17 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 - (void)didReceiveNewContentSizeMultiplier
 {
   RCTBridge *bridge = _bridge;
+  RCTModuleRegistry *moduleRegistry = _moduleRegistry;
   RCTExecuteOnMainQueue(^{
   // Report the event across the bridge.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions" body:RCTExportedDimensions(bridge)];
+    [[moduleRegistry moduleForName:"EventDispatcher"]
+        sendDeviceEventWithName:@"didUpdateDimensions"
+                           body:RCTExportedDimensions(bridge, self->_turboModuleRegistry)];
 #pragma clang diagnostic pop
   });
 }
-
-#if !TARGET_OS_TV
 
 - (void)interfaceOrientationDidChange
 {
@@ -170,7 +183,9 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
        !UIInterfaceOrientationIsLandscape(nextOrientation))) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions" body:RCTExportedDimensions(_bridge)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"]
+        sendDeviceEventWithName:@"didUpdateDimensions"
+                           body:RCTExportedDimensions(_bridge, _turboModuleRegistry)];
 #pragma clang diagnostic pop
   }
 
@@ -187,19 +202,18 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 - (void)_interfaceFrameDidChange
 {
-  NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_bridge);
+  NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_bridge, _turboModuleRegistry);
 
   if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions])) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions" body:nextInterfaceDimensions];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
+                                                                          body:nextInterfaceDimensions];
 #pragma clang diagnostic pop
   }
 
   _currentInterfaceDimensions = nextInterfaceDimensions;
 }
-
-#endif // TARGET_OS_TV
 
 - (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {

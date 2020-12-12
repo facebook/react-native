@@ -24,7 +24,7 @@
     _heightConstraint = [_safeAreaContainer.heightAnchor constraintEqualToConstant:0];
     _heightConstraint.active = YES;
 
-    if (@available(iOS 11.0, tvOS 11.0, *)) {
+    if (@available(iOS 11.0, *)) {
       [NSLayoutConstraint activateConstraints:@[
         [_safeAreaContainer.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
         [_safeAreaContainer.topAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],

@@ -11,7 +11,6 @@
 'use strict';
 
 const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
-const Platform = require('../../Utilities/Platform');
 const Systrace = require('../../Performance/Systrace');
 
 const invariant = require('invariant');
@@ -35,14 +34,6 @@ export type JSTimerType =
 // android `RCTTiming` module.
 const FRAME_DURATION = 1000 / 60;
 const IDLE_CALLBACK_FRAME_DEADLINE = 1;
-
-const MAX_TIMER_DURATION_MS = 60 * 1000;
-const IS_ANDROID = Platform.OS === 'android';
-const ANDROID_LONG_TIMER_MESSAGE =
-  'Setting a timer for a long period of time, i.e. multiple minutes, is a ' +
-  'performance and correctness issue on Android as it keeps the timer ' +
-  'module awake, and timers can only be called when the app is in the foreground. ' +
-  'See https://github.com/facebook/react-native/issues/12981 for more info.';
 
 // Parallel arrays
 const callbacks: Array<?Function> = [];
@@ -81,11 +72,12 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
  * recurring (setInterval).
  */
 function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
-  require('fbjs/lib/warning')(
-    timerID <= GUID,
-    'Tried to call timer with ID %s but no such timer exists.',
-    timerID,
-  );
+  if (timerID > GUID) {
+    console.warn(
+      'Tried to call timer with ID %s but no such timer exists.',
+      timerID,
+    );
+  }
 
   // timerIndex of -1 means that no timer with that ID exists. There are
   // two situations when this happens, when a garbage timer ID was given
@@ -217,15 +209,6 @@ const JSTimers = {
    * @param {number} duration Number of milliseconds.
    */
   setTimeout: function(func: Function, duration: number, ...args: any): number {
-    if (__DEV__ && IS_ANDROID && duration > MAX_TIMER_DURATION_MS) {
-      console.warn(
-        ANDROID_LONG_TIMER_MESSAGE +
-          '\n' +
-          '(Saw setTimeout with duration ' +
-          duration +
-          'ms)',
-      );
-    }
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'setTimeout',
@@ -243,15 +226,6 @@ const JSTimers = {
     duration: number,
     ...args: any
   ): number {
-    if (__DEV__ && IS_ANDROID && duration > MAX_TIMER_DURATION_MS) {
-      console.warn(
-        ANDROID_LONG_TIMER_MESSAGE +
-          '\n' +
-          '(Saw setInterval with duration ' +
-          duration +
-          'ms)',
-      );
-    }
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'setInterval',

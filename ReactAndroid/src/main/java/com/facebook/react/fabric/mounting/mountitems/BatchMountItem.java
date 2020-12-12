@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.mounting.mountitems;
 
 import androidx.annotation.NonNull;
+import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -25,6 +26,7 @@ import com.facebook.systrace.Systrace;
  */
 @DoNotStrip
 public class BatchMountItem implements MountItem {
+  static final String TAG = "FabricBatchMountItem";
 
   private final int mRootTag;
   @NonNull private final MountItem[] mMountItems;
@@ -69,22 +71,20 @@ public class BatchMountItem implements MountItem {
   public void execute(@NonNull MountingManager mountingManager) {
     beginMarkers("mountViews");
 
-    for (int mountItemIndex = 0; mountItemIndex < mSize; mountItemIndex++) {
-      MountItem mountItem = mMountItems[mountItemIndex];
-      mountItem.execute(mountingManager);
-    }
-
-    endMarkers();
-  }
-
-  public void executeDeletes(@NonNull MountingManager mountingManager) {
-    beginMarkers("deleteViews");
-
-    for (int mountItemIndex = 0; mountItemIndex < mSize; mountItemIndex++) {
-      MountItem mountItem = mMountItems[mountItemIndex];
-      if (mountItem instanceof RemoveDeleteMultiMountItem) {
-        ((RemoveDeleteMultiMountItem) mountItem).executeDeletes(mountingManager, true);
+    int mountItemIndex = 0;
+    try {
+      for (; mountItemIndex < mSize; mountItemIndex++) {
+        mMountItems[mountItemIndex].execute(mountingManager);
       }
+    } catch (RuntimeException e) {
+      FLog.e(
+          TAG,
+          "Caught exception executing mountItem @"
+              + mountItemIndex
+              + ": "
+              + mMountItems[mountItemIndex].toString(),
+          e);
+      throw e;
     }
 
     endMarkers();
@@ -94,8 +94,8 @@ public class BatchMountItem implements MountItem {
     return mRootTag;
   }
 
-  public int getSize() {
-    return mSize;
+  public boolean shouldSchedule() {
+    return mSize != 0;
   }
 
   @Override

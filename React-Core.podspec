@@ -41,14 +41,14 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "10.0", :tvos => "10.0" }
+  s.platforms              = { :ios => "10.0" }
   s.source                 = source
   s.resource_bundle        = { "AccessibilityResources" => ["React/AccessibilityResources/*.lproj"]}
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
   s.framework              = "JavaScriptCore"
   s.library                = "stdc++"
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/RCT-Folly\"", "DEFINES_MODULE" => "YES" }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
   s.default_subspec        = "Default"
 
@@ -57,14 +57,8 @@ Pod::Spec.new do |s|
     ss.exclude_files          = "React/CoreModules/**/*",
                                 "React/DevSupport/**/*",
                                 "React/Fabric/**/*",
+                                "React/Tests/**/*",
                                 "React/Inspector/**/*"
-    ss.ios.exclude_files      = "React/**/RCTTV*.*"
-    ss.tvos.exclude_files     = "React/Modules/RCTClipboard*",
-                                "React/Views/RCTDatePicker*",
-                                "React/Views/RCTPicker*",
-                                "React/Views/RCTRefreshControl*",
-                                "React/Views/RCTSlider*",
-                                "React/Views/RCTSwitch*",
     ss.private_header_files   = "React/Cxx*/*.h"
   end
 
@@ -91,7 +85,7 @@ Pod::Spec.new do |s|
     end
   end
 
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "React-cxxreact", version
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version

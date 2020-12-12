@@ -24,13 +24,14 @@
 RCT_EXPORT_MODULE(FileReaderModule)
 
 @synthesize bridge = _bridge;
+@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 RCT_EXPORT_METHOD(readAsText:(NSDictionary<NSString *, id> *)blob
                   encoding:(NSString *)encoding
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
+  RCTBlobManager *blobManager = [_bridge moduleForClass:[RCTBlobManager class]];
   NSData *data = [blobManager resolve:blob];
 
   if (data == nil) {
@@ -55,7 +56,12 @@ RCT_EXPORT_METHOD(readAsDataURL:(NSDictionary<NSString *, id> *)blob
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
+  RCTBlobManager *blobManager = nil;
+  if (_bridge) {
+    blobManager = [_bridge moduleForClass:[RCTBlobManager class]];
+  } else {
+    blobManager = [[self turboModuleRegistry] moduleForName:[NSStringFromClass([RCTBlobManager class]) UTF8String]];
+  }
   NSData *data = [blobManager resolve:blob];
 
   if (data == nil) {

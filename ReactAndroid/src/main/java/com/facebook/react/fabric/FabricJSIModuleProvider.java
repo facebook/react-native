@@ -10,7 +10,6 @@ package com.facebook.react.fabric;
 import androidx.annotation.NonNull;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSIModuleProvider;
-import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.queue.MessageQueueThread;
@@ -42,24 +41,22 @@ import com.facebook.systrace.Systrace;
 
 public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
 
-  @NonNull private final JavaScriptContextHolder mJSContext;
   @NonNull private final ReactApplicationContext mReactApplicationContext;
-  @NonNull private final ComponentFactoryDelegate mComponentFactoryDelegate;
+  @NonNull private final ComponentFactory mComponentFactory;
   @NonNull private final ReactNativeConfig mConfig;
 
   public FabricJSIModuleProvider(
       @NonNull ReactApplicationContext reactApplicationContext,
-      @NonNull JavaScriptContextHolder jsContext,
-      @NonNull ComponentFactoryDelegate componentFactoryDelegate,
+      @NonNull ComponentFactory componentFactory,
       @NonNull ReactNativeConfig config) {
     mReactApplicationContext = reactApplicationContext;
-    mJSContext = jsContext;
-    mComponentFactoryDelegate = componentFactoryDelegate;
+    mComponentFactory = componentFactory;
     mConfig = config;
   }
 
   @Override
   public UIManager get() {
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.get");
     final EventBeatManager eventBeatManager = new EventBeatManager(mReactApplicationContext);
     final FabricUIManager uiManager = createUIManager(eventBeatManager);
     Systrace.beginSection(
@@ -74,14 +71,16 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
             .getJSQueueThread();
 
     binding.register(
-        mJSContext,
         mReactApplicationContext.getCatalystInstance().getRuntimeExecutor(),
         uiManager,
         eventBeatManager,
         jsMessageQueueThread,
-        mComponentFactoryDelegate,
+        mComponentFactory,
         mConfig);
+
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+
     return uiManager;
   }
 
@@ -126,7 +125,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     LayoutMetricsConversions.class.getClass();
     MountingManager.class.getClass();
     Binding.class.getClass();
-    ComponentFactoryDelegate.class.getClass();
+    ComponentFactory.class.getClass();
     FabricComponents.class.getClass();
     FabricSoLoader.class.getClass();
     FabricUIManager.class.getClass();

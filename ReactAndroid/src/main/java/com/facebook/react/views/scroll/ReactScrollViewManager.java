@@ -305,7 +305,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     }
   }
 
-  @ReactProp(name = "contentOffset")
+  @ReactProp(name = "contentOffset", customType = "Point")
   public void setContentOffset(ReactScrollView view, ReadableMap value) {
     if (value != null) {
       double x = value.hasKey("x") ? value.getDouble("x") : 0;
@@ -319,7 +319,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @Override
   public Object updateState(
       ReactScrollView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    view.updateState(stateWrapper);
+    view.getFabricViewStateManager().setStateWrapper(stateWrapper);
     return null;
   }
 

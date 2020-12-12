@@ -8,19 +8,13 @@
 package com.facebook.react.modules.network;
 
 import android.content.Context;
-import android.os.Build;
 import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
 import java.io.File;
 import java.security.Provider;
 import java.security.Security;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import okhttp3.Cache;
-import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
-import okhttp3.TlsVersion;
 
 /**
  * Helper class that provides the same OkHttpClient instance that will be used for all networking
@@ -101,26 +95,6 @@ public class OkHttpClientProvider {
    enables it.
   */
   public static OkHttpClient.Builder enableTls12OnPreLollipop(OkHttpClient.Builder client) {
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-      try {
-        client.sslSocketFactory(new TLSSocketFactory());
-
-        ConnectionSpec cs =
-            new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                .tlsVersions(TlsVersion.TLS_1_2)
-                .build();
-
-        List<ConnectionSpec> specs = new ArrayList<>();
-        specs.add(cs);
-        specs.add(ConnectionSpec.COMPATIBLE_TLS);
-        specs.add(ConnectionSpec.CLEARTEXT);
-
-        client.connectionSpecs(specs);
-      } catch (Exception exc) {
-        FLog.e("OkHttpClientProvider", "Error while enabling TLS 1.2", exc);
-      }
-    }
-
     return client;
   }
 }

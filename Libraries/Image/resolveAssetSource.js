@@ -12,7 +12,7 @@
 
 'use strict';
 
-const AssetRegistry = require('./AssetRegistry');
+const AssetRegistry = require('@react-native/assets/registry');
 const AssetSourceResolver = require('./AssetSourceResolver');
 
 import type {ResolvedAssetSource} from './AssetSourceResolver';

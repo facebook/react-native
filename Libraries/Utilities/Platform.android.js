@@ -42,6 +42,8 @@ const Platform = {
     Model: string,
     ServerHost?: string,
     uiMode: string,
+    Brand: string,
+    Manufacturer: string,
   |} {
     if (this.__constants == null) {
       this.__constants = NativePlatformConstantsAndroid.getConstants();
@@ -61,10 +63,13 @@ const Platform = {
   },
   select: <A, N, D>(spec: PlatformSelectSpec<A, N, D>): A | N | D =>
     'android' in spec
-      ? spec.android
+      ? // $FlowFixMe[incompatible-return]
+        spec.android
       : 'native' in spec
-      ? spec.native
-      : spec.default,
+      ? // $FlowFixMe[incompatible-return]
+        spec.native
+      : // $FlowFixMe[incompatible-return]
+        spec.default,
 };
 
 module.exports = Platform;

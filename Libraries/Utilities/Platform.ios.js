@@ -68,6 +68,7 @@ const Platform = {
     return false;
   },
   select: <D, N, I>(spec: PlatformSelectSpec<D, N, I>): D | N | I =>
+    // $FlowFixMe[incompatible-return]
     'ios' in spec ? spec.ios : 'native' in spec ? spec.native : spec.default,
 };
 

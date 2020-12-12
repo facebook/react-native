@@ -12,7 +12,7 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <fbjni/fbjni.h>
-#include <react/core/EventBeat.h>
+#include <react/renderer/core/EventBeat.h>
 
 namespace facebook {
 namespace react {

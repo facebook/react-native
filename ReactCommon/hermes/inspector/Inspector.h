@@ -5,7 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#pragma once
+// using include guards instead of #pragma once due to compile issues
+// with MSVC and BUCK
+#ifndef HERMES_INSPECTOR_INSPECTOR_H
+#define HERMES_INSPECTOR_INSPECTOR_H
 
 #include <memory>
 #include <queue>
@@ -209,6 +212,12 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   folly::Future<folly::Unit> setPauseOnLoads(const PauseOnLoadMode mode);
 
   /**
+   * Set whether breakpoints are active (pause when hit). This does not require
+   * runtime modifications, but returns a future for consistency.
+   */
+  folly::Future<folly::Unit> setBreakpointsActive(bool active);
+
+  /**
    * If called during a script load event, return true if we should pause.
    * Assumed to be called from a script load event where we already hold
    * `mutex_`.
@@ -310,11 +319,6 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   facebook::hermes::debugger::Debugger &debugger_;
   InspectorObserver &observer_;
 
-  // All client methods (e.g. enable, setBreakpoint, resume, etc.) are executed
-  // on executor_ to prevent deadlocking on mutex_. See the implementation for
-  // more comments on the threading invariants used in this class.
-  std::unique_ptr<folly::Executor> executor_;
-
   // All of the following member variables are guarded by mutex_.
   std::mutex mutex_;
   std::unique_ptr<InspectorState> state_;
@@ -325,6 +329,9 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
 
   // Whether we should enter a paused state when a script loads.
   PauseOnLoadMode pauseOnLoadMode_ = PauseOnLoadMode::None;
+
+  // Whether or not we should pause on breakpoints.
+  bool breakpointsActive_ = true;
 
   // All scripts loaded in to the VM, along with whether we've notified the
   // client about the script yet.
@@ -348,8 +355,16 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   // Are we currently waiting for a debugger to attach, because we
   // requested 'pauseOnFirstStatement'?
   bool awaitingDebuggerOnStart_;
+
+  // All client methods (e.g. enable, setBreakpoint, resume, etc.) are executed
+  // on executor_ to prevent deadlocking on mutex_. See the implementation for
+  // more comments on the threading invariants used in this class.
+  // NOTE: This needs to be declared LAST because it should be destroyed FIRST.
+  std::unique_ptr<folly::Executor> executor_;
 };
 
 } // namespace inspector
 } // namespace hermes
 } // namespace facebook
+
+#endif // HERMES_INSPECTOR_INSPECTOR_H
