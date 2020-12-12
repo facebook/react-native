@@ -7,12 +7,3 @@ steps:
         $lines = Get-Content package.json | Where {$_ -match '^\s*"version":.*'} 
         $npmVersion = $lines.Trim().Split()[1].Trim('",');
         echo "##vso[task.setvariable variable=buildNumber]$npmVersion"
-
-  # Pretty yucky - but we dont want devmain to have to update versions _all_ over the place
-  - task: PowerShell@2
-    displayName: Change pom file to always use version 1000
-    inputs:
-      targetType: inline # filePath | inline
-      script: |
-        (Get-Content android\com\facebook\react\react-native\0.63.0\react-native-0.63.0.pom).replace('<version>0.63.0</version>', '<version>1000.0.0-master</version>') | Set-Content android\com\facebook\react\react-native\0.63.0\react-native-0.63.0.pom
-
