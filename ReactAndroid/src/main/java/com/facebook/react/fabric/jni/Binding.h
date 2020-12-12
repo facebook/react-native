@@ -170,7 +170,6 @@ class Binding : public jni::HybridClass<Binding>,
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
   bool useIntBufferBatchMountItem_{false};
-  bool collapseDeleteCreateMountingInstructions_{false};
   bool disablePreallocateViews_{false};
   bool disableVirtualNodePreallocation_{false};
   bool enableFabricLogs_{false};
