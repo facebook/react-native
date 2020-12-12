@@ -17,6 +17,7 @@ import {normalizeRect, type RectOrSize} from '../StyleSheet/Rect';
 import type {
   BlurEvent,
   FocusEvent,
+  KeyEvent,
   PressEvent,
   MouseEvent,
 } from '../Types/CoreEventTypes';
@@ -93,6 +94,28 @@ export type PressabilityConfig = $ReadOnly<{|
    */
   onFocus?: ?(event: FocusEvent) => mixed,
 
+  /*
+   * Called after a key down event is detected.
+   */
+  onKeyDown?: ?(event: KeyEvent) => mixed,
+
+  /*
+   * Called after a key up event is detected.
+   */
+  onKeyUp?: ?(event: KeyEvent) => mixed,
+
+  /*
+   * Array of keys to receive key down events for
+   * For arrow keys, add "leftArrow", "rightArrow", "upArrow", "downArrow",
+   */
+  validKeysDown?: ?Array<string>,
+
+  /*
+   * Array of keys to receive key up events for
+   * For arrow keys, add "leftArrow", "rightArrow", "upArrow", "downArrow",
+   */
+  validKeysUp?: ?Array<string>,
+
   /**
    * Called when the hover is activated to provide visual feedback.
    */
@@ -156,6 +179,8 @@ export type EventHandlers = $ReadOnly<{|
   onBlur: (event: BlurEvent) => void,
   onClick: (event: PressEvent) => void,
   onFocus: (event: FocusEvent) => void,
+  onKeyDown: (event: KeyEvent) => void,
+  onKeyUp: (event: KeyEvent) => void,
   onMouseEnter?: (event: MouseEvent) => void,
   onMouseLeave?: (event: MouseEvent) => void,
   onResponderGrant: (event: PressEvent) => void,
@@ -446,6 +471,21 @@ export default class Pressability {
       },
     };
 
+    const keyEventHandlers = {
+      onKeyDown: (event: KeyEvent): void => {
+        const {onKeyDown} = this._config;
+        if (onKeyDown != null) {
+          onKeyDown(event);
+        }
+      },
+      onKeyUp: (event: KeyEvent): void => {
+        const {onKeyUp} = this._config;
+        if (onKeyUp != null) {
+          onKeyUp(event);
+        }
+      },
+    };
+
     const responderEventHandlers = {
       onStartShouldSetResponder: (): boolean => {
         const {disabled} = this._config;
@@ -602,6 +642,7 @@ export default class Pressability {
       ...focusEventHandlers,
       ...responderEventHandlers,
       ...mouseEventHandlers,
+      ...keyEventHandlers,
     };
   }
 

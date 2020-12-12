@@ -112,6 +112,8 @@ RCT_EXPORT_MODULE()
     @"change",
     @"focus",
     @"blur",
+    @"keyDown",
+    @"keyUp",
     @"submitEditing",
     @"endEditing",
     @"keyPress",
@@ -463,6 +465,20 @@ RCT_EXPORT_VIEW_PROPERTY(onMouseLeave, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDragEnter, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDragLeave, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDrop, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onKeyDown, RCTBubblingEventBlock) // macOS keyboard events
+RCT_EXPORT_VIEW_PROPERTY(onKeyUp, RCTBubblingEventBlock) // macOS keyboard events
+RCT_CUSTOM_VIEW_PROPERTY(validKeysDown, NSArray<NSString*>, RCTView)
+{
+  if ([view respondsToSelector:@selector(setValidKeysDown:)]) {
+    view.validKeysDown = [RCTConvert NSArray:json];
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(validKeysUp, NSArray<NSString*>, RCTView)
+{
+  if ([view respondsToSelector:@selector(setValidKeysUp:)]) {
+    view.validKeysUp = [RCTConvert NSArray:json];
+  }
+}
 #endif // ]TODO(macOS ISS#2323203)
 
 #pragma mark - ShadowView properties

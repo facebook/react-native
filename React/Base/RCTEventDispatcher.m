@@ -84,7 +84,7 @@ RCT_EXPORT_MODULE()
                           key:(NSString *)key
                    eventCount:(NSInteger)eventCount
 {
-  static NSString *events[] = {@"focus", @"blur", @"change", @"submitEditing", @"endEditing", @"keyPress"};
+  static NSString *events[] = {@"focus", @"blur", @"change", @"submitEditing", @"endEditing", @"keyPress", @"keyDown", @"keyUp"};
 
   NSMutableDictionary *body = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"eventCount" : @(eventCount),

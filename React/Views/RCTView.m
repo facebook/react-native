@@ -16,6 +16,7 @@
 #import "RCTRootContentView.h" // TODO(macOS ISS#2323203)
 #import "RCTUtils.h"
 #import "UIView+React.h"
+#import "RCTViewKeyboardEvent.h"
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 #import "RCTTextView.h"
 #endif // ]TODO(macOS ISS#2323203)
@@ -1568,5 +1569,141 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
   return YES;
 }
 #endif // ]TODO(macOS ISS#2323203)
+
+#pragma mark - Keyboard Events
+
+#if TARGET_OS_OSX
+const NSString *leftArrowPressKey = @"leftArrow";
+const NSString *rightArrowPressKey = @"rightArrow";
+const NSString *upArrowPressKey = @"upArrow";
+const NSString *downArrowPressKey = @"downArrow";
+
+- (RCTViewKeyboardEvent*)keyboardEvent:(NSEvent*)event downPress:(BOOL)downPress {
+  // modifiers
+  BOOL capsLockKey = NO;
+  BOOL shiftKey = NO;
+  BOOL controlKey = NO;
+  BOOL optionKey = NO;
+  BOOL commandKey = NO;
+  BOOL numericPadKey = NO;
+  BOOL helpKey = NO;
+  BOOL functionKey = NO;
+  // commonly used key short-cuts
+  BOOL leftArrowKey = NO;
+  BOOL rightArrowKey = NO;
+  BOOL upArrowKey = NO;
+  BOOL downArrowKey = NO;
+  NSString *key = event.charactersIgnoringModifiers;
+  unichar const code = [key characterAtIndex:0];
+
+  // detect arrow key presses
+  if (code == NSLeftArrowFunctionKey) {
+    leftArrowKey = YES;
+  } else if (code == NSRightArrowFunctionKey) {
+    rightArrowKey = YES;
+  } else if (code == NSUpArrowFunctionKey) {
+    upArrowKey = YES;
+  } else if (code == NSDownArrowFunctionKey) {
+    downArrowKey = YES;
+  }
+
+  // detect modifier flags
+  if (event.modifierFlags & NSEventModifierFlagCapsLock) {
+    capsLockKey = YES;
+  } else if (event.modifierFlags & NSEventModifierFlagShift) {
+    shiftKey = YES;
+  } else if (event.modifierFlags & NSEventModifierFlagControl) {
+    controlKey = YES;
+  } else if (event.modifierFlags & NSEventModifierFlagOption) {
+    optionKey = YES;
+  } else if (event.modifierFlags & NSEventModifierFlagCommand) {
+    commandKey = YES;
+  } else if (event.modifierFlags & NSEventModifierFlagNumericPad) {
+    numericPadKey = YES;
+  } else if (event.modifierFlags & NSEventModifierFlagHelp) {
+    helpKey = YES;
+  } else if (event.modifierFlags & NSEventModifierFlagFunction) {
+    functionKey = YES;
+  }
+
+  RCTViewKeyboardEvent *keyboardEvent = nil;
+  // only post events for keys we care about
+  if (downPress) {
+    if ([self keyIsValid:key left:leftArrowKey right:rightArrowKey up:upArrowKey down:downArrowKey validKeys:[self validKeysDown]]) {
+      keyboardEvent = [RCTViewKeyboardEvent keyDownEventWithReactTag:self.reactTag
+                                                         capsLockKey:capsLockKey
+                                                            shiftKey:shiftKey
+                                                          controlKey:controlKey
+                                                           optionKey:optionKey
+                                                          commandKey:commandKey
+                                                       numericPadKey:numericPadKey
+                                                             helpKey:helpKey
+                                                         functionKey:functionKey
+                                                        leftArrowKey:leftArrowKey
+                                                       rightArrowKey:rightArrowKey
+                                                          upArrowKey:upArrowKey
+                                                        downArrowKey:downArrowKey
+                                                                 key:key];
+    }
+  } else {
+    if ([self keyIsValid:key left:leftArrowKey right:rightArrowKey up:upArrowKey down:downArrowKey validKeys:[self validKeysUp]]) {
+      keyboardEvent = [RCTViewKeyboardEvent keyUpEventWithReactTag:self.reactTag
+                                                       capsLockKey:capsLockKey
+                                                          shiftKey:shiftKey
+                                                        controlKey:controlKey
+                                                         optionKey:optionKey
+                                                        commandKey:commandKey
+                                                     numericPadKey:numericPadKey
+                                                           helpKey:helpKey
+                                                       functionKey:functionKey
+                                                      leftArrowKey:leftArrowKey
+                                                     rightArrowKey:rightArrowKey
+                                                        upArrowKey:upArrowKey
+                                                      downArrowKey:downArrowKey
+                                                               key:key];
+    }
+  }
+  return keyboardEvent;
+}
+
+// check if the user typed key matches a key we need to send an event for
+- (BOOL)keyIsValid:(NSString*)key left:(BOOL)leftArrowPressed right:(BOOL)rightArrowPressed up:(BOOL)UpArrowPressed down:(BOOL)downArrowPressed validKeys:(NSArray<NSString*>*)validKeys {
+  BOOL keyIsValid = NO;
+  
+  if ([validKeys containsObject:key] || ([validKeys containsObject:leftArrowPressKey] && leftArrowPressed) || ([validKeys containsObject:rightArrowPressKey] && rightArrowPressed) || ([validKeys containsObject:upArrowPressKey] && UpArrowPressed) || ([validKeys containsObject:downArrowPressKey] && downArrowPressed)) {
+    keyIsValid = YES;
+  }
+  
+  return keyIsValid;
+}
+
+- (void)keyDown:(NSEvent *)event {
+  if (self.onKeyDown == nil) {
+    [super keyDown:event];
+    return;
+  }
+
+  RCTViewKeyboardEvent *keyboardEvent = [self keyboardEvent:event downPress:YES];
+  if (keyboardEvent != nil) {
+    [_eventDispatcher sendEvent:[self keyboardEvent:event downPress:YES]];
+  } else {
+    [super keyDown:event];
+  }
+}
+
+- (void)keyUp:(NSEvent *)event {
+  if (self.onKeyUp == nil) {
+    [super keyUp:event];
+    return;
+  }
+
+  RCTViewKeyboardEvent *keyboardEvent = [self keyboardEvent:event downPress:NO];
+  if (keyboardEvent != nil) {
+    [_eventDispatcher sendEvent:keyboardEvent];
+  } else {
+    [super keyDown:event];
+  }
+}
+#endif // TARGET_OS_OSX
 
 @end

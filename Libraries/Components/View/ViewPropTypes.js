@@ -18,6 +18,7 @@ import type {
   Layout,
   LayoutEvent,
   ScrollEvent, // TODO(macOS ISS#2323203)
+  KeyEvent,
 } from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
@@ -33,6 +34,8 @@ import type {
 
 // [TODO(macOS ISS#2323203)
 import type {DraggedTypesType} from '../View/DraggedType';
+//$FlowFixMe
+import {array} from 'yargs';
 // ]TODO(macOS ISS#2323203)
 
 export type ViewLayout = Layout;
@@ -41,6 +44,8 @@ export type ViewLayoutEvent = LayoutEvent;
 type BubblingEventProps = $ReadOnly<{|
   onBlur?: ?(event: BlurEvent) => mixed,
   onFocus?: ?(event: FocusEvent) => mixed,
+  onKeyDown?: ?(event: KeyEvent) => mixed,
+  onKeyUp?: ?(event: KeyEvent) => mixed,
 |}>;
 
 type DirectEventProps = $ReadOnly<{|
@@ -598,6 +603,18 @@ export type ViewProps = $ReadOnly<{|
    * Specifies whether focus ring should be drawn when the view has the first responder status.
    */
   enableFocusRing?: ?boolean, // TODO(macOS ISS#2323203)
+
+  /*
+   * Array of keys to receive key down events for
+   * For arrow keys, add "leftArrow", "rightArrow", "upArrow", "downArrow",
+   */
+  validKeysDown?: ?array<string>,
+
+  /*
+   * Array of keys to receive key up events for
+   * For arrow keys, add "leftArrow", "rightArrow", "upArrow", "downArrow",
+   */
+  validKeysUp?: ?array<string>,
 
   /**
    * Enables Dran'n'Drop Support for certain types of dragged types

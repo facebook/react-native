@@ -52,6 +52,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   }, // ]TODO(OSS Candidate ISS#2710739)
   {
+    key: 'KeyboardEvents',
+    module: require('../examples/KeyboardEventsExample/KeyboardEventsExample'),
+    supportsTVOS: false,
+  }, // ]TODO(OSS Candidate ISS#2710739)
+  {
     key: 'ImageExample',
     module: require('../examples/Image/ImageExample'),
     supportsTVOS: true,

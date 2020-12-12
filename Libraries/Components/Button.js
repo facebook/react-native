@@ -20,7 +20,7 @@ const View = require('./View/View');
 
 const invariant = require('invariant');
 
-import type {PressEvent} from '../Types/CoreEventTypes';
+import type {PressEvent, KeyEvent} from '../Types/CoreEventTypes';
 import type {FocusEvent, BlurEvent} from './TextInput/TextInput'; // TODO(OSS Candidate ISS#2710739)
 import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
 
@@ -113,6 +113,28 @@ type ButtonProps = $ReadOnly<{|
    * Handler to be called when the button loses key focus
    */
   onFocus?: ?(e: FocusEvent) => void,
+
+  /**
+   * Handler to be called when a key down press is detected
+   */
+  onKeyDown?: ?(e: KeyEvent) => void,
+
+  /**
+   * Handler to be called when a key up press is detected
+   */
+  onKeyUp?: ?(e: KeyEvent) => void,
+
+  /*
+   * Array of keys to receive key down events for
+   * For arrow keys, add "leftArrow", "rightArrow", "upArrow", "downArrow",
+   */
+  validKeysDown?: ?Array<string>,
+
+  /*
+   * Array of keys to receive key up events for
+   * For arrow keys, add "leftArrow", "rightArrow", "upArrow", "downArrow",
+   */
+  validKeysUp?: ?Array<string>,
   // ]TODO(OSS Candidate ISS#2710739)
 |}>;
 
@@ -163,6 +185,10 @@ class Button extends React.Component<ButtonProps> {
       testID,
       onFocus, // TODO(OSS Candidate ISS#2710739)
       onBlur, // TODO(OSS Candidate ISS#2710739)
+      onKeyDown,
+      validKeysDown,
+      validKeysUp,
+      onKeyUp,
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -207,6 +233,10 @@ class Button extends React.Component<ButtonProps> {
         onPress={onPress}
         onFocus={onFocus} // TODO(OSS Candidate ISS#2710739)
         onBlur={onBlur} // TODO(OSS Candidate ISS#2710739)
+        onKeyDown={onKeyDown}
+        onKeyUp={onKeyUp}
+        validKeysDown={validKeysDown}
+        validKeysUp={validKeysUp}
         touchSoundDisabled={touchSoundDisabled}>
         <View style={buttonStyles}>
           <Text style={textStyles} disabled={disabled}>

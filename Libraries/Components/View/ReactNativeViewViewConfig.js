@@ -45,6 +45,18 @@ const ReactNativeViewConfig = {
         captured: 'onFocusCapture',
       },
     },
+    topKeyUp: {
+      phasedRegistrationNames: {
+        bubbled: 'onKeyUp',
+        captured: 'onKeyUpCapture',
+      },
+    },
+    topKeyDown: {
+      phasedRegistrationNames: {
+        bubbled: 'onKeyDown',
+        captured: 'onKeyDownCapture',
+      },
+    },
     topKeyPress: {
       phasedRegistrationNames: {
         bubbled: 'onKeyPress',
@@ -343,6 +355,8 @@ const ReactNativeViewConfig = {
       : {process: require('../../StyleSheet/processTransform')}): any),
     translateX: true,
     translateY: true,
+    validKeysDown: true,
+    validKeysUp: true,
     width: true,
     zIndex: true,
   },
