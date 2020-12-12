@@ -6,6 +6,7 @@ rn_android_library(
         "AndroidInfoModule.java",
         "ReactNativeVersion.java",
     ],
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
@@ -31,6 +32,7 @@ rn_android_library(
     srcs = [
         "AndroidInfoHelpers.java",
     ],
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [

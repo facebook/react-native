@@ -25,6 +25,7 @@ rn_android_library(
 rn_robolectric_test(
     name = "bridge",
     srcs = glob(STANDARD_TEST_SRCS),
+    autoglob = False,
     contacts = ["oncall+react_native@xmail.facebook.com"],
     visibility = [
         "PUBLIC",
