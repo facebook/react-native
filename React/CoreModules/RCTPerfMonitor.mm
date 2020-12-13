@@ -168,7 +168,7 @@ RCT_EXPORT_MODULE()
 {
   if (!_devMenuItem) {
     __weak __typeof__(self) weakSelf = self;
-    __weak RCTDevSettings *devSettings = self.bridge.devSettings;
+    __weak RCTDevSettings *devSettings = [self->_moduleRegistry moduleForName:"DevSettings"];
     if (devSettings.isPerfMonitorShown) {
       [weakSelf show];
     }
