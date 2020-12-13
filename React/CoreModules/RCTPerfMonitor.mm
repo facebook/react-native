@@ -136,6 +136,7 @@ static vm_size_t RCTGetResidentMemorySize(void)
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -149,12 +150,11 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
 {
-  _bridge = bridge;
-
+  _moduleRegistry = moduleRegistry;
 #if __has_include(<React/RCTDevMenu.h>)
-  [_bridge.devMenu addItem:self.devMenuItem];
+  [(RCTDevMenu *)[_moduleRegistry moduleForName:"DevMenu"] addItem:self.devMenuItem];
 #endif
 }
 
