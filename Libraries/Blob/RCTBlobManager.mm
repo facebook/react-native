@@ -156,23 +156,23 @@ RCT_EXPORT_METHOD(addNetworkingHandler)
 
 RCT_EXPORT_METHOD(addWebSocketHandler:(double)socketID)
 {
-  dispatch_async(_bridge.webSocketModule.methodQueue, ^{
-    [self->_bridge.webSocketModule setContentHandler:self forSocketID:[NSNumber numberWithDouble:socketID]];
+  dispatch_async(((RCTWebSocketModule *)[_moduleRegistry moduleForName:"WebSocketModule"]).methodQueue, ^{
+    [[self->_moduleRegistry moduleForName:"WebSocketModule"] setContentHandler:self forSocketID:[NSNumber numberWithDouble:socketID]];
   });
 }
 
 RCT_EXPORT_METHOD(removeWebSocketHandler:(double)socketID)
 {
-  dispatch_async(_bridge.webSocketModule.methodQueue, ^{
-    [self->_bridge.webSocketModule setContentHandler:nil forSocketID:[NSNumber numberWithDouble:socketID]];
+  dispatch_async(((RCTWebSocketModule *)[_moduleRegistry moduleForName:"WebSocketModule"]).methodQueue, ^{
+    [[self->_moduleRegistry moduleForName:"WebSocketModule"] setContentHandler:nil forSocketID:[NSNumber numberWithDouble:socketID]];
   });
 }
 
 // @lint-ignore FBOBJCUNTYPEDCOLLECTION1
 RCT_EXPORT_METHOD(sendOverSocket:(NSDictionary *)blob socketID:(double)socketID)
 {
-  dispatch_async(_bridge.webSocketModule.methodQueue, ^{
-    [self->_bridge.webSocketModule sendData:[self resolve:blob] forSocketID:[NSNumber numberWithDouble:socketID]];
+  dispatch_async(((RCTWebSocketModule *)[_moduleRegistry moduleForName:"WebSocketModule"]).methodQueue, ^{
+    [[self->_moduleRegistry moduleForName:"WebSocketModule"] sendData:[self resolve:blob] forSocketID:[NSNumber numberWithDouble:socketID]];
   });
 }
 
