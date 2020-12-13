@@ -37,8 +37,8 @@ static NSString *const kBlobURIScheme = @"blob";
 RCT_EXPORT_MODULE(BlobModule)
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 @synthesize methodQueue = _methodQueue;
-@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 - (void)setBridge:(RCTBridge *)bridge
 {
@@ -140,9 +140,9 @@ RCT_EXPORT_MODULE(BlobModule)
 
 RCT_EXPORT_METHOD(addNetworkingHandler)
 {
-  RCTNetworking *const networking = _bridge ? _bridge.networking : [_turboModuleRegistry moduleForName:"Networking"];
+  RCTNetworking *const networking = [_moduleRegistry moduleForName:"Networking"];
 
-  // TODO(T63516227): Why can methodQueue be nil here? 
+  // TODO(T63516227): Why can methodQueue be nil here?
   // We don't want to do anything when methodQueue is nil.
   if (!networking.methodQueue) {
     return;

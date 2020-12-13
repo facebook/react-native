@@ -109,6 +109,7 @@ static uint64_t monotonicTimeGetCurrentNanoseconds(void)
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 @synthesize maxConcurrentLoadingTasks = _maxConcurrentLoadingTasks;
 @synthesize maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks;
 @synthesize maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes;
@@ -653,7 +654,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     return NULL;
   }
 
-  RCTNetworking *networking = [_bridge networking];
+  RCTNetworking *networking = [_moduleRegistry moduleForName:"Networking"];
   if (!networking) {
     networking = [_turboModuleRegistry moduleForName:"Networking"];
   }
