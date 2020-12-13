@@ -136,14 +136,16 @@ RCT_EXPORT_MODULE()
     [commands registerKeyCommandWithInput:@"i"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(__unused UIKeyCommand *command) {
-                                     [weakSelf.bridge.devSettings toggleElementInspector];
+                                     [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
+                                         toggleElementInspector];
                                    }];
 
     // Reload in normal mode
     [commands registerKeyCommandWithInput:@"n"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(__unused UIKeyCommand *command) {
-                                     [weakSelf.bridge.devSettings setIsDebuggingRemotely:NO];
+                                     [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
+                                         setIsDebuggingRemotely:NO];
                                    }];
 #endif
   }
