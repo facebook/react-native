@@ -43,14 +43,13 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
 {
-  _bridge = bridge;
-
+  _moduleRegistry = moduleRegistry;
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
-                                             object:_bridge.accessibilityManager];
+                                             object:[moduleRegistry moduleForName:"AccessibilityManager"]];
 
   _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
 
@@ -59,7 +58,7 @@ RCT_EXPORT_MODULE()
                                                name:UIApplicationDidChangeStatusBarOrientationNotification
                                              object:nil];
 
-  _currentInterfaceDimensions = RCTExportedDimensions(_bridge, _turboModuleRegistry);
+  _currentInterfaceDimensions = RCTExportedDimensions(_moduleRegistry);
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
@@ -98,17 +97,15 @@ static BOOL RCTIsIPhoneX()
   return isIPhoneX;
 }
 
-static NSDictionary *RCTExportedDimensions(RCTBridge *bridge, id<RCTTurboModuleRegistry> turboModuleRegistry)
+static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry)
 {
   RCTAssertMainQueue();
   RCTDimensions dimensions;
-  if (bridge) {
-    dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier ?: 1.0);
-  } else if (turboModuleRegistry) {
+  if (moduleRegistry) {
     dimensions = RCTGetDimensions(
-        ((RCTAccessibilityManager *)[turboModuleRegistry moduleForName:"RCTAccessibilityManager"]).multiplier ?: 1.0);
+        ((RCTAccessibilityManager *)[moduleRegistry moduleForName:"AccessibilityManager"]).multiplier ?: 1.0);
   } else {
-    RCTAssert(false, @"Bridge or TurboModuleRegistry must be set to properly init dimensions.");
+    RCTAssert(false, @"ModuleRegistry must be set to properly init dimensions.");
   }
   __typeof(dimensions.window) window = dimensions.window;
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
@@ -135,9 +132,10 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge, id<RCTTurboModuleR
 - (NSDictionary<NSString *, id> *)getConstants
 {
   __block NSDictionary<NSString *, id> *constants;
+  RCTModuleRegistry *moduleRegistry = _moduleRegistry;
   RCTUnsafeExecuteOnMainQueueSync(^{
     constants = @{
-      @"Dimensions" : RCTExportedDimensions(self->_bridge, self->_turboModuleRegistry),
+      @"Dimensions" : RCTExportedDimensions(moduleRegistry),
       // Note:
       // This prop is deprecated and will be removed in a future release.
       // Please use this only for a quick and temporary solution.
@@ -151,15 +149,13 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge, id<RCTTurboModuleR
 
 - (void)didReceiveNewContentSizeMultiplier
 {
-  RCTBridge *bridge = _bridge;
   RCTModuleRegistry *moduleRegistry = _moduleRegistry;
   RCTExecuteOnMainQueue(^{
   // Report the event across the bridge.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[moduleRegistry moduleForName:"EventDispatcher"]
-        sendDeviceEventWithName:@"didUpdateDimensions"
-                           body:RCTExportedDimensions(bridge, self->_turboModuleRegistry)];
+    [[moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
+                                                                         body:RCTExportedDimensions(moduleRegistry)];
 #pragma clang diagnostic pop
   });
 }
@@ -183,9 +179,8 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge, id<RCTTurboModuleR
        !UIInterfaceOrientationIsLandscape(nextOrientation))) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[_moduleRegistry moduleForName:"EventDispatcher"]
-        sendDeviceEventWithName:@"didUpdateDimensions"
-                           body:RCTExportedDimensions(_bridge, _turboModuleRegistry)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
+                                                                          body:RCTExportedDimensions(_moduleRegistry)];
 #pragma clang diagnostic pop
   }
 
@@ -202,7 +197,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge, id<RCTTurboModuleR
 
 - (void)_interfaceFrameDidChange
 {
-  NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_bridge, _turboModuleRegistry);
+  NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_moduleRegistry);
 
   if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions])) {
 #pragma clang diagnostic push
