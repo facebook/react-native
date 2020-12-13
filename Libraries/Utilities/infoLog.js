@@ -14,7 +14,9 @@
  * Intentional info-level logging for clear separation from ad-hoc console debug logging.
  */
 function infoLog(...args: Array<mixed>): void {
-  return console.log(...args);
+  if (__DEV__) {
+    return console.log(...args);
+  }
 }
 
 module.exports = infoLog;
