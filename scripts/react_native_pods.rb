@@ -108,3 +108,24 @@ def flipper_post_install(installer)
     end
   end
 end
+
+def react_native_post_install(installer)
+  projects = installer.aggregate_targets
+    .map{ |t| t.user_project }
+    .uniq{ |p| p.path }
+    .push(installer.pods_project)
+
+  arm_value = `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i
+
+  projects.each do |project|
+    project.build_configurations.each do |config|
+      if arm_value == 1 then
+        config.build_settings.delete("EXCLUDED_ARCHS[sdk=iphonesimulator*]")
+      else
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+      end
+    end
+
+    project.save()
+  end
+end
