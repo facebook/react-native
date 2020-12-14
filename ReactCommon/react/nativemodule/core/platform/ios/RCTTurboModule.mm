@@ -244,7 +244,8 @@ jsi::Value ObjCTurboModule::createPromise(
           }
 
           if (resolveWasCalled) {
-            throw std::runtime_error("Tried to resolve a promise more than once.");
+            RCTLogWarn(@"Tried to resolve a promise more than once.");
+            return;
           }
 
           auto strongResolveWrapper = weakResolveWrapper.lock();
