@@ -120,9 +120,9 @@ def react_native_post_install(installer)
   projects.each do |project|
     project.build_configurations.each do |config|
       if arm_value == 1 then
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
-      else
         config.build_settings.delete("EXCLUDED_ARCHS[sdk=iphonesimulator*]")
+      else
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
       end
     end
 
