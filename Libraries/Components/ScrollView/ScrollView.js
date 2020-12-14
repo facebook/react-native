@@ -778,8 +778,8 @@ class ScrollView extends React.Component<Props, State> {
       if (ref) {
         ref.getScrollResponder = this.getScrollResponder;
         ref.getScrollableNode = this.getScrollableNode;
-        ref.getInnerViewNode = this.getInnerViewNode;
-        ref.getInnerViewRef = this.getInnerViewRef;
+        ref.getInnerViewNode = this.getInnerViewNode.bind(this);
+        ref.getInnerViewRef = this.getInnerViewRef.bind(this);
         ref.getNativeScrollRef = this.getNativeScrollRef;
         ref.scrollTo = this.scrollTo;
         ref.scrollToEnd = this.scrollToEnd;
