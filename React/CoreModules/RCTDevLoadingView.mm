@@ -107,17 +107,20 @@ RCT_EXPORT_MODULE()
       self->_label.textAlignment = NSTextAlignmentCenter;
 #elif TARGET_OS_OSX // [TODO(macOS ISS#2323203)
       NSRect screenFrame = [NSScreen mainScreen].visibleFrame;
-      self->_window = [[NSPanel alloc] initWithContentRect:NSMakeRect(screenFrame.origin.x + round((screenFrame.size.width - 375) / 2), screenFrame.size.height - 22, 375, 22)
+      self->_window = [[NSPanel alloc] initWithContentRect:NSMakeRect(screenFrame.origin.x + round((screenFrame.size.width - 375) / 2), screenFrame.size.height - 20, 375, 19)
                                                  styleMask:NSWindowStyleMaskBorderless
                                                    backing:NSBackingStoreBuffered
                                                      defer:YES];
       self->_window.releasedWhenClosed = NO;
+      self->_window.backgroundColor = [NSColor clearColor];
 
       NSTextField *label = [[NSTextField alloc] initWithFrame:self->_window.contentView.bounds];
       label.alignment = NSTextAlignmentCenter;
       label.bezeled = NO;
       label.editable = NO;
       label.selectable = NO;
+      label.wantsLayer = YES;
+      label.layer.cornerRadius = label.frame.size.height / 3;
       self->_label = label;
       [[self->_window contentView] addSubview:label];
 #endif // ]TODO(macOS ISS#2323203)
