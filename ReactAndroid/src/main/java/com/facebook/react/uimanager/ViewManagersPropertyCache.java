@@ -334,7 +334,7 @@ import java.util.Map;
     @Override
     protected @Nullable Object getValueOrDefault(Object value, Context context) {
       if (value != null) {
-          return ColorPropConverter.getColor(value, context);
+        return ColorPropConverter.getColor(value, context);
       }
       return null;
     }
