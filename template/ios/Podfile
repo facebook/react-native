@@ -25,10 +25,5 @@ target 'HelloWorld' do
 
   post_install do |installer|
     react_native_post_install(installer)
-
-    # Enables Flipper.
-    #
-    # Disable the next line if you are not using Flipper.
-    flipper_post_install(installer)  
   end
 end
