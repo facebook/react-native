@@ -498,16 +498,18 @@ const CombineExample = () => {
 const LoopExample = () => {
   const opacity = new Animated.Value(0);
   const animation = Animated.loop(
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration: 3000,
-      useNativeDriver: false,
-    }),
-    Animated.timing(opacity, {
-      toValue: 0,
-      duration: 3000,
-      useNativeDriver: false,
-    }),
+    Animated.sequence([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 3000,
+        useNativeDriver: false,
+      }),
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 3000,
+        useNativeDriver: false,
+      }),
+    ]),
   );
 
   return (
