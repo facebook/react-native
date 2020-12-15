@@ -38,6 +38,14 @@ StubView const &StubViewTree::getRootStubView() const {
   return *registry.at(rootTag);
 }
 
+StubView const &StubViewTree::getStubView(Tag tag) const {
+  return *registry.at(tag);
+}
+
+size_t StubViewTree::size() const {
+  return registry.size();
+}
+
 void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
   STUB_VIEW_LOG({ LOG(ERROR) << "StubView: Mutating Begin"; });
   for (auto const &mutation : mutations) {
