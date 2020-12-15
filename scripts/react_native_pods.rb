@@ -98,6 +98,10 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configurations => configurations
 end
 
+def has_pod(installer, name)
+  installer.pods_project.pod_group(name) != nil
+end
+
 # Post Install processing for Flipper
 def flipper_post_install(installer)
   installer.pods_project.targets.each do |target|
@@ -109,7 +113,7 @@ def flipper_post_install(installer)
   end
 end
 
-def react_native_post_install(installer)
+def exclude_architectures(installer)
   projects = installer.aggregate_targets
     .map{ |t| t.user_project }
     .uniq{ |p| p.path }
@@ -117,15 +121,26 @@ def react_native_post_install(installer)
 
   arm_value = `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i
 
+  # Hermes does not support `i386` architecture
+  excluded_archs_default = has_pod(installer, 'hermes-engine') ? "i386" : ""
+
   projects.each do |project|
     project.build_configurations.each do |config|
       if arm_value == 1 then
-        config.build_settings.delete("EXCLUDED_ARCHS[sdk=iphonesimulator*]")
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
       else
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64 " + excluded_archs_default
       end
     end
 
     project.save()
   end
+end
+
+def react_native_post_install(installer)
+  if has_pod(installer, 'Flipper')
+    flipper_post_install(installer)
+  end
+
+  exclude_architectures(installer)
 end
