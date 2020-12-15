@@ -381,13 +381,7 @@ class LoadingIndicatorSourceExample extends React.Component<
           <Text style={styles.touchableText} onPress={this.reloadImage}>
             Refresh Image
           </Text>
-          {/* <Text style={styles.touchableText} onPress={this.increaseImageSize}>
-            Increase image size
-          </Text> */}
         </View>
-        {/* <Text>
-          Container image size: {this.state.width}x{this.state.height}{' '}
-        </Text> */}
         <Image
           loadingIndicatorSource={this.loaderGif}
           source={loadingImage}
