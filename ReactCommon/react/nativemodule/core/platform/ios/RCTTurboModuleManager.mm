@@ -761,6 +761,12 @@ static Class getFallbackClassFromName(const char *name)
 
 - (id)moduleForName:(const char *)moduleName warnOnLookupFailure:(BOOL)warnOnLookupFailure
 {
+  // When the bridge is invalidating, TurboModules will be nil.
+  // Therefore, don't (1) do the lookup, and (2) warn on lookup.
+  if (_invalidating) {
+    return nil;
+  }
+
   id<RCTTurboModule> module = [self provideRCTTurboModule:moduleName];
 
   if (warnOnLookupFailure && !module) {
