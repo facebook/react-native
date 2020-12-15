@@ -40,6 +40,7 @@ rn_android_build_config(
     package = "com.facebook.react",
     values = [
         "boolean IS_INTERNAL_BUILD = true",
+        "int HERMES_BYTECODE_VERSION = 0",
     ],
     visibility = [
         "PUBLIC",
