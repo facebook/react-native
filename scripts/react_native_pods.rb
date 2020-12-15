@@ -62,8 +62,8 @@ def use_react_native! (options={})
   end
 
   if hermes_enabled
-    pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    pod 'hermes-engine'
+    pod 'React-Core/Hermes', :path => "#{prefix}/"
+    pod 'hermes-engine', '~> 0.7.2'
     pod 'libevent', :podspec => "#{prefix}/third-party-podspecs/libevent.podspec"
   end
 end
@@ -120,9 +120,9 @@ def react_native_post_install(installer)
   projects.each do |project|
     project.build_configurations.each do |config|
       if arm_value == 1 then
-        config.build_settings.delete("EXCLUDED_ARCHS[sdk=iphonesimulator*]")
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "i386"
       else
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64 i386"
       end
     end
 
