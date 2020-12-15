@@ -15,7 +15,6 @@ import {
   StyleSheet,
   useColorScheme,
   View,
-  Text,
   LogBox,
 } from 'react-native';
 import * as React from 'react';
@@ -48,7 +47,7 @@ LogBox.ignoreLogs([/AsyncStorage has been extracted from react-native/]);
 
 // Disable yellowbox so that they don't cover the API's tab and make it
 // unaccessible for detox.
-console.disableYellowBox = true;
+LogBox.ignoreAllLogs();
 
 type ExampleListsContainerProps = $ReadOnly<{|
   theme: RNTesterTheme,
@@ -71,37 +70,37 @@ const ExampleListsContainer = ({
 }: ExampleListsContainerProps) => {
   const isBookmarkEmpty = examplesList.bookmarks.length === 0;
 
-  if(!isVisible){
+  if (!isVisible) {
     return null;
   }
 
   return (
     <>
-        <Header title={title} theme={theme} />
-        {screen === Screens.COMPONENTS && (
-          <RNTesterExampleList
-            sections={examplesList.components}
-            toggleBookmark={toggleBookmark}
-            handleExampleCardPress={handleExampleCardPress}
-          />
-        )}
-        {screen === Screens.APIS && (
-          <RNTesterExampleList
-            sections={examplesList.apis}
-            toggleBookmark={toggleBookmark}
-            handleExampleCardPress={handleExampleCardPress}
-          />
-        )}
-        {screen === Screens.BOOKMARKS && isBookmarkEmpty && (
-              <RNTesterEmptyBookmarksState />
-        )}
-        {screen === Screens.BOOKMARKS && !isBookmarkEmpty && (
-          <RNTesterExampleList
-            sections={examplesList.bookmarks}
-            toggleBookmark={toggleBookmark}
-            handleExampleCardPress={handleExampleCardPress}
-          />
-        )}
+      <Header title={title} theme={theme} />
+      {screen === Screens.COMPONENTS && (
+        <RNTesterExampleList
+          sections={examplesList.components}
+          toggleBookmark={toggleBookmark}
+          handleExampleCardPress={handleExampleCardPress}
+        />
+      )}
+      {screen === Screens.APIS && (
+        <RNTesterExampleList
+          sections={examplesList.apis}
+          toggleBookmark={toggleBookmark}
+          handleExampleCardPress={handleExampleCardPress}
+        />
+      )}
+      {screen === Screens.BOOKMARKS && isBookmarkEmpty && (
+        <RNTesterEmptyBookmarksState />
+      )}
+      {screen === Screens.BOOKMARKS && !isBookmarkEmpty && (
+        <RNTesterExampleList
+          sections={examplesList.bookmarks}
+          toggleBookmark={toggleBookmark}
+          handleExampleCardPress={handleExampleCardPress}
+        />
+      )}
     </>
   );
 };
