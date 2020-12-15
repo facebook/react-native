@@ -31,7 +31,7 @@ RCT_EXPORT_METHOD(readAsText:(NSDictionary<NSString *, id> *)blob
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  RCTBlobManager *blobManager = [_moduleRegistry moduleForName:"BlobManager"];
+  RCTBlobManager *blobManager = [_moduleRegistry moduleForName:"BlobModule"];
   NSData *data = [blobManager resolve:blob];
 
   if (data == nil) {
@@ -56,7 +56,7 @@ RCT_EXPORT_METHOD(readAsDataURL:(NSDictionary<NSString *, id> *)blob
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  RCTBlobManager *blobManager = [_moduleRegistry moduleForName:"BlobManager"];
+  RCTBlobManager *blobManager = [_moduleRegistry moduleForName:"BlobModule"];
   NSData *data = [blobManager resolve:blob];
 
   if (data == nil) {
