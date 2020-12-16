@@ -15,6 +15,25 @@ namespace facebook {
 namespace react {
 
 /*
+ * Sorting comparator for `reorderInPlaceIfNeeded`.
+ */
+static bool shouldFirstPairComesBeforeSecondOne(
+    ShadowViewNodePair const &lhs,
+    ShadowViewNodePair const &rhs) noexcept {
+  return lhs.shadowNode->getOrderIndex() < rhs.shadowNode->getOrderIndex();
+}
+
+/*
+ * Reorders pairs in-place based on `orderIndex` using a stable sort algorithm.
+ */
+static void reorderInPlaceIfNeeded(ShadowViewNodePair::List &pairs) noexcept {
+  // This is a simplified version of the function intentionally copied from
+  // `Differentiator.cpp`.
+  std::stable_sort(
+      pairs.begin(), pairs.end(), &shouldFirstPairComesBeforeSecondOne);
+}
+
+/*
  * Generates `create` and `insert` instructions recursively traversing a shadow
  * tree.
  * This is a trivial implementation of diffing algorithm that can only "diff"
@@ -23,7 +42,11 @@ namespace react {
 static void calculateShadowViewMutationsForNewTree(
     ShadowViewMutation::List &mutations,
     ShadowView const &parentShadowView,
-    ShadowViewNodePair::List const &newChildPairs) {
+    ShadowViewNodePair::List newChildPairs) {
+
+  // Sorting pairs based on `orderIndex` if needed.
+  reorderInPlaceIfNeeded(newChildPairs);
+
   for (auto index = 0; index < newChildPairs.size(); index++) {
     auto const &newChildPair = newChildPairs[index];
 
