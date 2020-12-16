@@ -355,5 +355,108 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize1) {
   EXPECT_EQ(viewTree.getRootStubView().children.at(2)->tag, 7);
 }
 
+TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
+  //  ┌────────────── (Root) ──────────────┐    ┌─────────── (Root) ──────────┐
+  //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ A (tag: 2) ━━━━━━━━━━━━┓ │
+  //  │ ┃ backgroundColor: black;        ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃                                ┃ │    │ ┃                         ┃ │
+  //  │ ┃                                ┃ │    │ ┃                         ┃ │
+  //  │ ┃                                ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┏━ AA (tag: 3) ━━━━━━━━━━━━━━┓ ┃ │    │ ┏━ AA (tag: 3) ━━━━━━━━━━━┓ │
+  //  │ ┃ ┃ pointerEvents: none;       ┃ ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┏━ B (tag: 4) ━━━━━━━━━━━━┓ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │ ┃                         ┃ │
+  //  │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┏━ B (tag: 4) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ BA (tag: 5) ━━━━━━━━━━━┓ │
+  //  │ ┃ testId: "42"                   ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃                                ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃                                ┃ │    │ ┃                         ┃ │
+  //  │ ┃                                ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┏━ BA (tag: 5) ━━━━━━━━━━━━━━┓ ┃ │    │ ┏━ BB (tag: 6) ━━━━━━━━━━━┓ │
+  //  │ ┃ ┃ nativeId: "42"             ┃ ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │ ┏━ BBA (tag: 7) ━━━━━━━━━━┓ │
+  //  │ ┃ ┏━ BB (tag: 6) ━━━━━━━━━━━━━━┓ ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃ ┃ foregroundColor: black;    ┃ ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │━━━▶│ ┃                         ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┏━ BBB (tag: 8) ━━━━━━━━━━┓ │
+  //  │ ┃ ┃ ┏━ BBA (tag: 7) ━━━━━━━━━┓ ┃ ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃ ┃ ┃ transform: scale(2);   ┃ ┃ ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │ ┏━ BC (tag: 9) ━━━━━━━━━━━┓ │
+  //  │ ┃ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃ ┃ ┏━ BBB (tag: 8) ━━━━━━━━━┓ ┃ ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃ ┃ ┃ position: relative;    ┃ ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┃ ┃ zIndex: 42;            ┃ ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │ ┏━ BD (tag: 10) ━━━━━━━━━━┓ │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┏━ BC (tag: 9) ━━━━━━━━━━━━━━┓ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┃ shadowColor: black;        ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             │
+  //  │ ┃ ┏━ BD (tag: 10) ━━━━━━━━━━━━━┓ ┃ │    │                             │
+  //  │ ┃ ┃ opacity: 0.42;             ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             │
+  //  │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │    │                             │
+  //  └────────────────────────────────────┘    └─────────────────────────────┘
+
+  mutateViewShadowNodeProps_(
+      nodeA_, [](ViewProps &props) { props.backgroundColor = blackColor(); });
+
+  mutateViewShadowNodeProps_(nodeAA_, [](ViewProps &props) {
+    props.pointerEvents = PointerEventsMode::None;
+  });
+
+  mutateViewShadowNodeProps_(
+      nodeB_, [](ViewProps &props) { props.testId = "42"; });
+
+  mutateViewShadowNodeProps_(
+      nodeBA_, [](ViewProps &props) { props.nativeId = "42"; });
+
+  mutateViewShadowNodeProps_(
+      nodeBB_, [](ViewProps &props) { props.foregroundColor = blackColor(); });
+
+  mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps &props) {
+    props.transform = Transform::Scale(2, 2, 2);
+  });
+
+  mutateViewShadowNodeProps_(nodeBBB_, [](ViewProps &props) {
+    auto &yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = YGPositionTypeRelative;
+    props.zIndex = 42;
+  });
+
+  mutateViewShadowNodeProps_(
+      nodeBC_, [](ViewProps &props) { props.shadowColor = blackColor(); });
+
+  mutateViewShadowNodeProps_(
+      nodeBD_, [](ViewProps &props) { props.opacity = 0.42; });
+
+  rootShadowNode_->layoutIfNeeded();
+  auto viewTree = stubViewTreeFromShadowNode(*rootShadowNode_);
+
+  // 10 views in total.
+  EXPECT_EQ(viewTree.size(), 10);
+
+  // The root view has all 9 subviews.
+  EXPECT_EQ(viewTree.getRootStubView().children.size(), 9);
+}
+
 } // namespace react
 } // namespace facebook
