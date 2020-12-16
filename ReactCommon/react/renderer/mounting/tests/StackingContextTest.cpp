@@ -462,5 +462,119 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
   });
 }
 
+TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
+  //  ┌────────────── (Root) ──────────────┐    ┌────────── (Root) ───────────┐
+  //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ BD (tag: 10) ━━━━━━━━━━┓ │
+  //  │ ┃                                ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃                                ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃                                ┃ │    │ ┃                         ┃ │
+  //  │ ┃                                ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┏━ AA (tag: 3) ━━━━━━━━━━━━━━┓ ┃ │    │ ┏━ BC (tag: 9) ━━━━━━━━━━━┓ │
+  //  │ ┃ ┃ position: relative;        ┃ ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃ ┃ zIndex: 9001;              ┃ ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┏━ BBB (tag: 8) ━━━━━━━━━━┓ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │ ┃                         ┃ │
+  //  │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┏━ B (tag: 4) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ BBA (tag: 7) ━━━━━━━━━━┓ │
+  //  │ ┃                                ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃                                ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃                                ┃ │    │ ┃                         ┃ │
+  //  │ ┃                                ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┏━ BA (tag: 5) ━━━━━━━━━━━━━━┓ ┃ │    │ ┏━ BA (tag: 5) ━━━━━━━━━━━┓ │
+  //  │ ┃ ┃ position: relative;        ┃ ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃ ┃ zIndex: 9000;              ┃ ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃                         ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │ ┏━ AA (tag: 3) ━━━━━━━━━━━┓ │
+  //  │ ┃ ┏━ BB (tag: 6) ━━━━━━━━━━━━━━┓ ┃ │    │ ┃ #FormsView              ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │━━━▶│ ┃                         ┃ │
+  //  │ ┃ ┃                            ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┏━ BBA (tag: 7) ━━━━━━━━━┓ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃ position: relative;    ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃ zIndex: 8999;          ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┏━ BBB (tag: 8) ━━━━━━━━━┓ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃ position: relative;    ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃ zIndex: 8998;          ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┃                        ┃ ┃ ┃ │    │                             │
+  //  │ ┃ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ ┃ │    │                             │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             │
+  //  │ ┃ ┏━ BC (tag: 9) ━━━━━━━━━━━━━━┓ ┃ │    │                             │
+  //  │ ┃ ┃ position: relative;        ┃ ┃ │    │                             │
+  //  │ ┃ ┃ zIndex: 8997;              ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             │
+  //  │ ┃ ┏━ BD (tag: 10) ━━━━━━━━━━━━━┓ ┃ │    │                             │
+  //  │ ┃ ┃ position: relative;        ┃ ┃ │    │                             │
+  //  │ ┃ ┃ zIndex: 8996;              ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┃                            ┃ ┃ │    │                             │
+  //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │                             │
+  //  │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │    │                             │
+  //  └────────────────────────────────────┘    └─────────────────────────────┘
+
+  mutateViewShadowNodeProps_(nodeAA_, [](ViewProps &props) {
+    auto &yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = YGPositionTypeRelative;
+    props.zIndex = 9001;
+  });
+
+  mutateViewShadowNodeProps_(nodeBA_, [](ViewProps &props) {
+    auto &yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = YGPositionTypeRelative;
+    props.zIndex = 9000;
+  });
+
+  mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps &props) {
+    auto &yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = YGPositionTypeRelative;
+    props.zIndex = 8999;
+  });
+
+  mutateViewShadowNodeProps_(nodeBBB_, [](ViewProps &props) {
+    auto &yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = YGPositionTypeRelative;
+    props.zIndex = 8998;
+  });
+
+  mutateViewShadowNodeProps_(nodeBC_, [](ViewProps &props) {
+    auto &yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = YGPositionTypeRelative;
+    props.zIndex = 8997;
+  });
+
+  mutateViewShadowNodeProps_(nodeBD_, [](ViewProps &props) {
+    auto &yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = YGPositionTypeRelative;
+    props.zIndex = 8996;
+  });
+
+  testViewTree([](StubViewTree const &viewTree) {
+    // 7 views in total.
+    EXPECT_EQ(viewTree.size(), 7);
+
+    // The root view has all 6 subviews.
+    EXPECT_EQ(viewTree.getRootStubView().children.size(), 6);
+
+    // The root view subviews are [10, 9, 8, 7, 5, 3].
+    EXPECT_EQ(viewTree.getRootStubView().children.at(0)->tag, 10);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(1)->tag, 9);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(2)->tag, 8);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(3)->tag, 7);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(4)->tag, 5);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(5)->tag, 3);
+  });
+}
+
 } // namespace react
 } // namespace facebook
