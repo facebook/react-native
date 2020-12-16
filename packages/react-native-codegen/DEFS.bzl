@@ -161,6 +161,7 @@ def rn_codegen_modules(
         srcs = [
             ":{}".format(generate_module_java_zip_name),
         ],
+        autoglob = False,
         labels = library_labels + ["codegen_rule"],
         visibility = ["PUBLIC"],
         deps = [
@@ -476,6 +477,7 @@ def rn_codegen_components(
             srcs = [
                 ":{}".format(zip_generated_java_files),
             ],
+            autoglob = False,
             labels = library_labels + ["codegen_rule"],
             visibility = ["PUBLIC"],
             deps = [
@@ -490,6 +492,7 @@ def rn_codegen_components(
             srcs = [
                 ":{}".format(zip_generated_cxx_files),
             ],
+            autoglob = False,
             labels = library_labels + ["codegen_rule"],
             visibility = ["PUBLIC"],
             deps = [
