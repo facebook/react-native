@@ -330,6 +330,7 @@ const ScrollResponderMixin = {
    * Invoke this from an `onResponderRelease` event.
    */
   scrollResponderHandleResponderRelease: function(e: PressEvent) {
+    this.state.isTouching = e.nativeEvent.touches.length !== 0;
     this.props.onResponderRelease && this.props.onResponderRelease(e);
 
     if (typeof e.target === 'number') {
