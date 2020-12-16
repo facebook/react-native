@@ -43,7 +43,6 @@ static void calculateShadowViewMutationsForNewTree(
     ShadowViewMutation::List &mutations,
     ShadowView const &parentShadowView,
     ShadowViewNodePair::List newChildPairs) {
-
   // Sorting pairs based on `orderIndex` if needed.
   reorderInPlaceIfNeeded(newChildPairs);
 
@@ -55,7 +54,7 @@ static void calculateShadowViewMutationsForNewTree(
     mutations.push_back(ShadowViewMutation::InsertMutation(
         parentShadowView, newChildPair.shadowView, index));
 
-    auto const newGrandChildPairs =
+    auto newGrandChildPairs =
         sliceChildShadowNodeViewPairsLegacy(*newChildPair.shadowNode);
 
     calculateShadowViewMutationsForNewTree(
@@ -63,7 +62,8 @@ static void calculateShadowViewMutationsForNewTree(
   }
 }
 
-StubViewTree stubViewTreeFromShadowNode(ShadowNode const &rootShadowNode) {
+StubViewTree buildStubViewTreeWithoutUsingDifferentiator(
+    ShadowNode const &rootShadowNode) {
   auto mutations = ShadowViewMutation::List{};
   mutations.reserve(256);
 
@@ -75,6 +75,20 @@ StubViewTree stubViewTreeFromShadowNode(ShadowNode const &rootShadowNode) {
   auto emptyRootShadowNode = rootShadowNode.clone(
       ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
                          ShadowNode::emptySharedShadowNodeSharedList()});
+
+  auto stubViewTree = StubViewTree(ShadowView(*emptyRootShadowNode));
+  stubViewTree.mutate(mutations);
+  return stubViewTree;
+}
+
+StubViewTree buildStubViewTreeUsingDifferentiator(
+    ShadowNode const &rootShadowNode) {
+  auto emptyRootShadowNode = rootShadowNode.clone(
+      ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
+                         ShadowNode::emptySharedShadowNodeSharedList()});
+
+  auto mutations =
+      calculateShadowViewMutations(*emptyRootShadowNode, rootShadowNode);
 
   auto stubViewTree = StubViewTree(ShadowView(*emptyRootShadowNode));
   stubViewTree.mutate(mutations);

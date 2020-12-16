@@ -155,17 +155,24 @@ class StackingContextTest : public ::testing::Test {
               return oldShadowNode.clone(ShadowNodeFragment{viewProps});
             }));
   }
+
+  void testViewTree(
+      std::function<void(StubViewTree const &viewTree)> callback) {
+    rootShadowNode_->layoutIfNeeded();
+
+    callback(buildStubViewTreeUsingDifferentiator(*rootShadowNode_));
+    callback(buildStubViewTreeWithoutUsingDifferentiator(*rootShadowNode_));
+  }
 };
 
 TEST_F(StackingContextTest, defaultPropsMakeEverythingFlattened) {
-  rootShadowNode_->layoutIfNeeded();
-  auto viewTree = stubViewTreeFromShadowNode(*rootShadowNode_);
+  testViewTree([](StubViewTree const &viewTree) {
+    // 1 view in total.
+    EXPECT_EQ(viewTree.size(), 1);
 
-  // 1 view in total.
-  EXPECT_EQ(viewTree.size(), 1);
-
-  // The root view has no subviews.
-  EXPECT_EQ(viewTree.getRootStubView().children.size(), 0);
+    // The root view has no subviews.
+    EXPECT_EQ(viewTree.getRootStubView().children.size(), 0);
+  });
 }
 
 TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
@@ -260,14 +267,13 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
     props.hitSlop = EdgeInsets{42, 42, 42, 42};
   });
 
-  rootShadowNode_->layoutIfNeeded();
-  auto viewTree = stubViewTreeFromShadowNode(*rootShadowNode_);
+  testViewTree([](StubViewTree const &viewTree) {
+    // 1 view in total.
+    EXPECT_EQ(viewTree.size(), 1);
 
-  // 1 view in total.
-  EXPECT_EQ(viewTree.size(), 1);
-
-  // The root view has no subviews.
-  EXPECT_EQ(viewTree.getRootStubView().children.size(), 0);
+    // The root view has no subviews.
+    EXPECT_EQ(viewTree.getRootStubView().children.size(), 0);
+  });
 }
 
 TEST_F(StackingContextTest, somePropsForceViewsToMaterialize1) {
@@ -340,19 +346,18 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize1) {
   mutateViewShadowNodeProps_(
       nodeBBA_, [](ViewProps &props) { props.shadowColor = blackColor(); });
 
-  rootShadowNode_->layoutIfNeeded();
-  auto viewTree = stubViewTreeFromShadowNode(*rootShadowNode_);
+  testViewTree([](StubViewTree const &viewTree) {
+    // 4 views in total.
+    EXPECT_EQ(viewTree.size(), 4);
 
-  // 4 views in total.
-  EXPECT_EQ(viewTree.size(), 4);
+    // The root view has all 3 subviews.
+    EXPECT_EQ(viewTree.getRootStubView().children.size(), 3);
 
-  // The root view has all 3 subviews.
-  EXPECT_EQ(viewTree.getRootStubView().children.size(), 3);
-
-  // The root view subviews are [3, 5, 7].
-  EXPECT_EQ(viewTree.getRootStubView().children.at(0)->tag, 3);
-  EXPECT_EQ(viewTree.getRootStubView().children.at(1)->tag, 5);
-  EXPECT_EQ(viewTree.getRootStubView().children.at(2)->tag, 7);
+    // The root view subviews are [3, 5, 7].
+    EXPECT_EQ(viewTree.getRootStubView().children.at(0)->tag, 3);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(1)->tag, 5);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(2)->tag, 7);
+  });
 }
 
 TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
@@ -448,14 +453,13 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
   mutateViewShadowNodeProps_(
       nodeBD_, [](ViewProps &props) { props.opacity = 0.42; });
 
-  rootShadowNode_->layoutIfNeeded();
-  auto viewTree = stubViewTreeFromShadowNode(*rootShadowNode_);
+  testViewTree([](StubViewTree const &viewTree) {
+    // 10 views in total.
+    EXPECT_EQ(viewTree.size(), 10);
 
-  // 10 views in total.
-  EXPECT_EQ(viewTree.size(), 10);
-
-  // The root view has all 9 subviews.
-  EXPECT_EQ(viewTree.getRootStubView().children.size(), 9);
+    // The root view has all 9 subviews.
+    EXPECT_EQ(viewTree.getRootStubView().children.size(), 9);
+  });
 }
 
 } // namespace react
