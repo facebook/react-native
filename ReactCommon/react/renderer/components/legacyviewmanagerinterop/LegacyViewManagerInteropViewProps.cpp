@@ -10,10 +10,20 @@
 namespace facebook {
 namespace react {
 
+static folly::dynamic recursiveMerge(
+    folly::dynamic const &lhs,
+    folly::dynamic const &rhs) {
+  auto copy = lhs;
+  copy.merge_patch(rhs);
+  return copy;
+}
+
 LegacyViewManagerInteropViewProps::LegacyViewManagerInteropViewProps(
     const LegacyViewManagerInteropViewProps &sourceProps,
     const RawProps &rawProps)
-    : ViewProps(sourceProps, rawProps), otherProps((folly::dynamic)rawProps) {}
+    : ViewProps(sourceProps, rawProps),
+      otherProps(
+          recursiveMerge(sourceProps.otherProps, (folly::dynamic)rawProps)) {}
 
 } // namespace react
 } // namespace facebook

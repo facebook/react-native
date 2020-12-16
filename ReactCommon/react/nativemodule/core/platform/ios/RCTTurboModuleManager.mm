@@ -172,6 +172,8 @@ static Class getFallbackClassFromName(const char *name)
   std::shared_timed_mutex _turboModuleHoldersSharedMutex;
   std::mutex _turboModuleHoldersMutex;
   std::atomic<bool> _invalidating;
+
+  RCTModuleRegistry *_moduleRegistry;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -183,6 +185,9 @@ static Class getFallbackClassFromName(const char *name)
     _delegate = delegate;
     _bridge = bridge;
     _invalidating = false;
+    _moduleRegistry = [RCTModuleRegistry new];
+    [_moduleRegistry setBridge:bridge];
+    [_moduleRegistry setTurboModuleRegistry:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeWillInvalidateModules:)
@@ -353,6 +358,10 @@ static Class getFallbackClassFromName(const char *name)
  */
 - (id<RCTTurboModule>)provideRCTTurboModule:(const char *)moduleName
 {
+  if (strncmp("RCT", moduleName, 3) == 0) {
+    moduleName = [[[NSString stringWithUTF8String:moduleName] substringFromIndex:3] UTF8String];
+  }
+
   TurboModuleHolder *moduleHolder = [self _getOrCreateTurboModuleHolder:moduleName];
 
   if (!moduleHolder) {
@@ -536,6 +545,25 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   /**
+   * Attach the RCTModuleRegistry to this TurboModule, which allows this TurboModule
+   * To load other NativeModules & TurboModules.
+   *
+   * Usage: In the NativeModule @implementation, include:
+   *   `@synthesize moduleRegistry = _moduleRegistry`
+   */
+  if ([module respondsToSelector:@selector(moduleRegistry)] && _moduleRegistry) {
+    @try {
+      [(id)module setValue:_moduleRegistry forKey:@"moduleRegistry"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the moduleRegistry property, "
+           "or provide your own setter method.",
+          RCTBridgeModuleNameForClass([module class]));
+    }
+  }
+
+  /**
    * Some modules need their own queues, but don't provide any, so we need to create it for them.
    * These modules typically have the following:
    *   `@synthesize methodQueue = _methodQueue`
@@ -595,7 +623,9 @@ static Class getFallbackClassFromName(const char *name)
    * rollout.
    */
   if (_bridge) {
-    RCTModuleData *data = [[RCTModuleData alloc] initWithModuleInstance:(id<RCTBridgeModule>)module bridge:_bridge];
+    RCTModuleData *data = [[RCTModuleData alloc] initWithModuleInstance:(id<RCTBridgeModule>)module
+                                                                 bridge:_bridge
+                                                         moduleRegistry:_moduleRegistry];
     [_bridge registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:data];
   }
 
@@ -731,6 +761,12 @@ static Class getFallbackClassFromName(const char *name)
 
 - (id)moduleForName:(const char *)moduleName warnOnLookupFailure:(BOOL)warnOnLookupFailure
 {
+  // When the bridge is invalidating, TurboModules will be nil.
+  // Therefore, don't (1) do the lookup, and (2) warn on lookup.
+  if (_invalidating) {
+    return nil;
+  }
+
   id<RCTTurboModule> module = [self provideRCTTurboModule:moduleName];
 
   if (warnOnLookupFailure && !module) {

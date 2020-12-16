@@ -81,6 +81,7 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -196,7 +197,8 @@ RCT_EXPORT_MODULE()
   id multiplier = [[self->_bridge moduleForName:@"AccessibilityManager"
                           lazilyLoadIfNecessary:YES] valueForKey:@"multiplier"];
   if (multiplier) {
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier" body:multiplier];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
+                                                                          body:multiplier];
   }
 #pragma clang diagnostic pop
 
@@ -256,7 +258,8 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"namedOrientationDidChange" body:orientationEvent];
+  [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"namedOrientationDidChange"
+                                                                        body:orientationEvent];
 #pragma clang diagnostic pop
 }
 

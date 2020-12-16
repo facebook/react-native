@@ -54,6 +54,7 @@ rn_android_library(
         ["**/*.java"],
         exclude = ["android/gradlePlugin-build/**/*"],
     ),
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],

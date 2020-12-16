@@ -6,6 +6,7 @@ rn_android_library(
         "HermesExecutor.java",
         "HermesExecutorFactory.java",
     ],
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],

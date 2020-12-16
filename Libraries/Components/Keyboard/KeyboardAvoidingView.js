@@ -97,13 +97,16 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   };
 
   _onLayout = (event: ViewLayoutEvent) => {
+    const wasFrameNull = this._frame == null;
     this._frame = event.nativeEvent.layout;
     if (!this._initialFrameHeight) {
       // save the initial frame height, before the keyboard is visible
       this._initialFrameHeight = this._frame.height;
     }
 
-    this._updateBottomIfNecesarry();
+    if (wasFrameNull) {
+      this._updateBottomIfNecesarry();
+    }
   };
 
   _updateBottomIfNecesarry = () => {

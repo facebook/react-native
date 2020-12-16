@@ -48,6 +48,7 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
   RCTBridgeModuleProvider _moduleProvider;
   std::mutex _instanceLock;
   BOOL _setupComplete;
+  RCTModuleRegistry *_moduleRegistry;
 }
 
 @synthesize methods = _methods;
@@ -97,34 +98,42 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
   }
 }
 
-- (instancetype)initWithModuleClass:(Class)moduleClass bridge:(RCTBridge *)bridge
+- (instancetype)initWithModuleClass:(Class)moduleClass
+                             bridge:(RCTBridge *)bridge
+                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
 {
   return [self initWithModuleClass:moduleClass
                     moduleProvider:^id<RCTBridgeModule> {
                       return [moduleClass new];
                     }
-                            bridge:bridge];
+                            bridge:bridge
+                    moduleRegistry:moduleRegistry];
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
                      moduleProvider:(RCTBridgeModuleProvider)moduleProvider
                              bridge:(RCTBridge *)bridge
+                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
     _bridge = bridge;
     _moduleClass = moduleClass;
     _moduleProvider = [moduleProvider copy];
+    _moduleRegistry = moduleRegistry;
     [self setUp];
   }
   return self;
 }
 
-- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance bridge:(RCTBridge *)bridge
+- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
+                                bridge:(RCTBridge *)bridge
+                        moduleRegistry:(RCTModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
     _bridge = bridge;
     _instance = instance;
     _moduleClass = [instance class];
+    _moduleRegistry = moduleRegistry;
     [self setUp];
   }
   return self;
@@ -185,6 +194,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       // initialization requires it (View Managers get their queue by calling
       // self.bridge.uiManager.methodQueue)
       [self setBridgeForInstance];
+      [self setModuleRegistryForInstance];
     }
 
     [self setUpMethodQueue];
@@ -224,6 +234,23 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       RCTLogError(
           @"%@ has no setter or ivar for its bridge, which is not "
            "permitted. You must either @synthesize the bridge property, "
+           "or provide your own setter method.",
+          self.name);
+    }
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)setModuleRegistryForInstance
+{
+  if ([_instance respondsToSelector:@selector(moduleRegistry)] && _instance.moduleRegistry != _moduleRegistry) {
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setModuleRegistryForInstance]", nil);
+    @try {
+      [(id)_instance setValue:_moduleRegistry forKey:@"moduleRegistry"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the moduleRegistry property, "
            "or provide your own setter method.",
           self.name);
     }

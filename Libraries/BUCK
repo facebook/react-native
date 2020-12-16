@@ -6,6 +6,7 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:rn_codegen_defs.bzl",
+    "rn_codegen_components",
     "rn_codegen_modules",
 )
 load(
@@ -32,5 +33,11 @@ rn_codegen_modules(
     name = "FBReactNativeSpec",
     library_labels = ["supermodule:xplat/default/public.react_native.infra"],
     native_module_spec_name = "FBReactNativeSpec",
+    schema_target = ":react_native_codegen_schema",
+)
+
+rn_codegen_components(
+    name = "FBReactNativeComponentSpec",
+    library_labels = ["supermodule:xplat/default/public.react_native.infra"],
     schema_target = ":react_native_codegen_schema",
 )
