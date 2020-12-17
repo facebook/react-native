@@ -399,6 +399,7 @@ android {
 
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+        buildConfigField("int", "HERMES_BYTECODE_VERSION", "0")
 
         resValue "integer", "react_native_dev_server_port", reactNativeDevServerPort()
         resValue "integer", "react_native_inspector_proxy_port", reactNativeInspectorProxyPort()
