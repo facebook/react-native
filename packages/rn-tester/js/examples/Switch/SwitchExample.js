@@ -210,25 +210,25 @@ class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMeState> {
   render() {
     return (
       <View>
-          <Switch
-            disabled
-            ios_backgroundColor={this.state.iosBackgroundColor}
-            style={{marginBottom: 20}}
-          />
-          <Text>The background color can be seen either when the switch value is false or when the switch is disabled (and the switch is translucent). </Text>
+        <Switch
+          disabled
+          ios_backgroundColor={this.state.iosBackgroundColor}
+          style={{marginBottom: 20}}
+        />
+        <Text>
+          The background color can be seen either when the switch value is false
+          or when the switch is disabled (and the switch is translucent).{' '}
+        </Text>
       </View>
     );
   }
 }
 
 class OnChangeExample extends React.Component<{...}, $FlowFixMeState> {
-
   render() {
     return (
       <View>
-          <Switch
-            onChange={() => alert('OnChange Called')}
-          />
+        <Switch onChange={() => alert('OnChange Called')} />
       </View>
     );
   }
@@ -279,12 +279,10 @@ exports.examples = [
 ];
 
 if (Platform.OS === 'ios') {
-  exports.examples.push(
-    {
-      title: '[iOS Only] Custom background colors can be set',
-      render(): React.Element<any> {
-        return <IOSBackgroundColEx />;
-      },
+  exports.examples.push({
+    title: '[iOS Only] Custom background colors can be set',
+    render(): React.Element<any> {
+      return <IOSBackgroundColEx />;
     },
-  );
+  });
 }
