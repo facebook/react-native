@@ -14,7 +14,6 @@ const RNTesterButton = require('../../components/RNTesterButton');
 const React = require('react');
 
 const {Animated, Easing, StyleSheet, Text, View} = require('react-native');
-const {useState} = require('react');
 
 const styles = StyleSheet.create({
   content: {
@@ -448,17 +447,6 @@ exports.examples = [
     },
   },
   {
-    title: 'Combine Animated Values (add, subtract, divide, modulo, multiply)',
-    description:
-      'Change the opacity of the view by combining different Animated.Values.',
-    render: (): React.Node => <CombineExample />,
-  },
-  {
-    title: 'Loop, Start, Stop, Reset Animation',
-    description: 'Loop an animation using loop, start, stop, and reset.',
-    render: (): React.Node => <LoopExample />,
-  },
-  {
     title: 'Continuous Interactions',
     description: ('Gesture events, chaining, 2D ' +
       'values, interrupting and transitioning ' +
@@ -468,68 +456,3 @@ exports.examples = [
     ),
   },
 ];
-
-const CombineExample = () => {
-  const [opacity, setOpacity] = useState(0.5);
-  const a = new Animated.Value(0.4);
-  const b = new Animated.Value(0.5);
-  const add = Animated.add(a, b);
-  const subtract = Animated.subtract(b, a);
-  const mult = Animated.multiply(a, b);
-  const divide = Animated.divide(b, a);
-  const mod = Animated.modulo(b, 0.4);
-
-  return (
-    <View>
-      <Animated.View style={[styles.content, {opacity: opacity}]}>
-        <Text>Change Opacity</Text>
-      </Animated.View>
-      <RNTesterButton onPress={() => setOpacity(add)}>Add</RNTesterButton>
-      <RNTesterButton onPress={() => setOpacity(subtract)}>
-        Subtract
-      </RNTesterButton>
-      <RNTesterButton onPress={() => setOpacity(mult)}>Multiply</RNTesterButton>
-      <RNTesterButton onPress={() => setOpacity(divide)}>Divide</RNTesterButton>
-      <RNTesterButton onPress={() => setOpacity(mod)}>Modulo</RNTesterButton>
-    </View>
-  );
-};
-
-const LoopExample = () => {
-  const opacity = new Animated.Value(0);
-  const animation = Animated.loop(
-    Animated.sequence([
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 3000,
-        useNativeDriver: false,
-      }),
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 3000,
-        useNativeDriver: false,
-      }),
-    ]),
-  );
-
-  return (
-    <View>
-      <Animated.View style={[styles.content, {opacity: opacity}]}>
-        <Text>Fade Animation</Text>
-      </Animated.View>
-      <RNTesterButton
-        onPress={() => {
-          animation.start();
-        }}>
-        Start Animation
-      </RNTesterButton>
-      <RNTesterButton
-        onPress={() => {
-          animation.stop();
-          animation.reset();
-        }}>
-        Stop and Reset Animation
-      </RNTesterButton>
-    </View>
-  );
-};
