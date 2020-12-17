@@ -115,6 +115,12 @@ abstract class ReactExtension @Inject constructor(project: Project) {
       objects.listProperty(String::class.java).convention(emptyList())
 
   /**
+   * Functional interface to disable dev mode only on specific [BaseVariant] Default: will
+   * check [devDisabledInVariants] or return True for Release variants and False for Debug variants.
+   */
+  var disableDevForVariant: (BaseVariant) -> Boolean = { variant -> variant.name in devDisabledInVariants.get() || variant.isRelease }
+
+  /**
    * Variant Name to Boolean map that allows to toggle the bundle command for a specific variant.
    * Default: {}
    */
