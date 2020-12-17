@@ -208,6 +208,7 @@ namespace react {
 jsi::Value ObjCTurboModule::createPromise(
     jsi::Runtime &runtime,
     std::shared_ptr<CallInvoker> jsInvoker,
+    std::string methodName,
     PromiseInvocationBlock invoke)
 {
   if (!invoke) {
@@ -215,6 +216,7 @@ jsi::Value ObjCTurboModule::createPromise(
   }
 
   jsi::Function Promise = runtime.global().getPropertyAsFunction(runtime, "Promise");
+  std::string moduleName = name_;
 
   // Note: the passed invoke() block is not retained by default, so let's retain it here to help keep it longer.
   // Otherwise, there's a risk of it getting released before the promise function below executes.
@@ -223,10 +225,14 @@ jsi::Value ObjCTurboModule::createPromise(
       runtime,
       jsi::PropNameID::forAscii(runtime, "fn"),
       2,
-      [invokeCopy, jsInvoker](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
+      [invokeCopy, jsInvoker, moduleName, methodName](
+          jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
+        std::string moduleMethod = moduleName + "." + methodName + "()";
+
         if (count != 2) {
           throw std::invalid_argument(
-              "Promise must pass constructor function two args. Passed " + std::to_string(count) + " args.");
+              moduleMethod + ": Promise must pass constructor function two args. Passed " + std::to_string(count) +
+              " args.");
         }
         if (!invokeCopy) {
           return jsi::Value::undefined();
@@ -240,11 +246,12 @@ jsi::Value ObjCTurboModule::createPromise(
 
         RCTPromiseResolveBlock resolveBlock = ^(id result) {
           if (rejectWasCalled) {
-            throw std::runtime_error("Tried to resolve a promise after it's already been rejected.");
+            RCTLogError(@"%s: Tried to resolve a promise after it's already been rejected.", moduleMethod.c_str());
+            return;
           }
 
           if (resolveWasCalled) {
-            RCTLogWarn(@"Tried to resolve a promise more than once.");
+            RCTLogError(@"%s: Tried to resolve a promise more than once.", moduleMethod.c_str());
             return;
           }
 
@@ -274,11 +281,13 @@ jsi::Value ObjCTurboModule::createPromise(
 
         RCTPromiseRejectBlock rejectBlock = ^(NSString *code, NSString *message, NSError *error) {
           if (resolveWasCalled) {
-            throw std::runtime_error("Tried to reject a promise after it's already been resolved.");
+            RCTLogError(@"%s: Tried to reject a promise after it's already been resolved.", moduleMethod.c_str());
+            return;
           }
 
           if (rejectWasCalled) {
-            throw std::runtime_error("Tried to reject a promise more than once.");
+            RCTLogError(@"%s: Tried to reject a promise more than once.", moduleMethod.c_str());
+            return;
           }
 
           auto strongResolveWrapper = weakResolveWrapper.lock();
@@ -640,6 +649,7 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
       ? createPromise(
             runtime,
             jsInvoker_,
+            methodNameStr,
             ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
               RCTPromiseResolveBlock resolveCopy = resolveBlock;
               RCTPromiseRejectBlock rejectCopy = rejectBlock;
