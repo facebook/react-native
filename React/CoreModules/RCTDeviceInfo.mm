@@ -27,7 +27,6 @@ using namespace facebook::react;
   NSDictionary *_currentInterfaceDimensions;
 }
 
-@synthesize bridge = _bridge;
 @synthesize moduleRegistry = _moduleRegistry;
 @synthesize turboModuleRegistry = _turboModuleRegistry;
 

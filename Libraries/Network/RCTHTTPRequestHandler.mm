@@ -25,7 +25,6 @@
   std::mutex _mutex;
 }
 
-@synthesize bridge = _bridge;
 @synthesize moduleRegistry = _moduleRegistry;
 @synthesize methodQueue = _methodQueue;
 

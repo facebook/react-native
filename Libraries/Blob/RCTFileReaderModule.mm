@@ -23,7 +23,6 @@
 
 RCT_EXPORT_MODULE(FileReaderModule)
 
-@synthesize bridge = _bridge;
 @synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_METHOD(readAsText:(NSDictionary<NSString *, id> *)blob
