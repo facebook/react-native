@@ -9,7 +9,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := reactnative
 
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(filter-out $(LOCAL_PATH)/ReactMarker.cpp, $(wildcard $(LOCAL_PATH)/*.cpp))
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/..
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
@@ -20,9 +20,28 @@ LOCAL_CFLAGS := \
 LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 
 LOCAL_STATIC_LIBRARIES := boost jsi callinvoker reactperflogger runtimeexecutor
-LOCAL_SHARED_LIBRARIES := jsinspector libfolly_json glog
+LOCAL_SHARED_LIBRARIES := jsinspector libfolly_json glog reactmarker
 
 include $(BUILD_STATIC_LIBRARY)
+
+##################################
+###       reactmarker          ###
+##################################
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := reactmarker
+
+LOCAL_SRC_FILES := $(LOCAL_PATH)/ReactMarker.cpp
+
+# LOCAL_LDLIBS := -lm -llog
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/..
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
+
+LOCAL_CFLAGS += -fexceptions
+
+include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,fb)
 $(call import-module,folly)
