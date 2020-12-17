@@ -210,6 +210,8 @@ using namespace facebook::react;
   }
 
   [super updateProps:props oldProps:oldProps];
+
+  [self setDefaultInputAccessoryView];
 }
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
@@ -427,6 +429,50 @@ using namespace facebook::react;
     [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
   }
   _comingFromJS = NO;
+}
+
+#pragma mark - Default input accessory view
+
+- (void)setDefaultInputAccessoryView
+{
+  UIKeyboardType keyboardType = _backedTextInputView.keyboardType;
+
+  // These keyboard types (all are number pads) don't have a "Done" button by default,
+  // so we create an `inputAccessoryView` with this button for them.
+  BOOL shouldHaveInputAccesoryView =
+      (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
+       keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
+      _backedTextInputView.returnKeyType == UIReturnKeyDone;
+
+  if ((_backedTextInputView.inputAccessoryView != nil) == shouldHaveInputAccesoryView) {
+    return;
+  }
+
+  if (shouldHaveInputAccesoryView) {
+    UIToolbar *toolbarView = [[UIToolbar alloc] init];
+    [toolbarView sizeToFit];
+    UIBarButtonItem *flexibleSpace =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    UIBarButtonItem *doneButton =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                      target:self
+                                                      action:@selector(handleInputAccessoryDoneButton)];
+    toolbarView.items = @[ flexibleSpace, doneButton ];
+    _backedTextInputView.inputAccessoryView = toolbarView;
+  } else {
+    _backedTextInputView.inputAccessoryView = nil;
+  }
+
+  if (_backedTextInputView.isFirstResponder) {
+    [_backedTextInputView reloadInputViews];
+  }
+}
+
+- (void)handleInputAccessoryDoneButton
+{
+  if ([self textInputShouldReturn]) {
+    [_backedTextInputView endEditing:YES];
+  }
 }
 
 #pragma mark - Other
