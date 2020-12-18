@@ -26,6 +26,7 @@ rn_android_library(
     srcs = [
         "RuntimeConfig.java",
     ],
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],
