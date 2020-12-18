@@ -195,11 +195,7 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
     wrapperWasCalled = YES;
   };
 
-  if (RCTTurboModuleBlockCopyEnabled()) {
-    return [callback copy];
-  }
-
-  return callback;
+  return [callback copy];
 }
 
 namespace facebook {
@@ -651,13 +647,8 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
             jsInvoker_,
             methodNameStr,
             ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
-              RCTPromiseResolveBlock resolveCopy = resolveBlock;
-              RCTPromiseRejectBlock rejectCopy = rejectBlock;
-
-              if (RCTTurboModuleBlockCopyEnabled()) {
-                resolveCopy = [resolveBlock copy];
-                rejectCopy = [rejectBlock copy];
-              }
+              RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
+              RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
 
               [inv setArgument:(void *)&resolveCopy atIndex:count + 2];
               [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
