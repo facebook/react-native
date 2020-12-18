@@ -10,6 +10,7 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/uimanager/UIManagerCommitHook.h>
 
 #include <glog/logging.h>
 
@@ -330,13 +331,40 @@ ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
   return shadowTreeRegistry_;
 }
 
+void UIManager::registerCommitHook(
+    UIManagerCommitHook const &commitHook) const {
+  std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
+  assert(
+      std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook) ==
+      commitHooks_.end());
+  commitHook.commitHookWasRegistered(*this);
+  commitHooks_.push_back(&commitHook);
+}
+
+void UIManager::unregisterCommitHook(
+    UIManagerCommitHook const &commitHook) const {
+  std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
+  auto iterator =
+      std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook);
+  assert(iterator != commitHooks_.end());
+  commitHooks_.erase(iterator);
+  commitHook.commitHookWasUnregistered(*this);
+}
+
 #pragma mark - ShadowTreeDelegate
 
 RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
     ShadowTree const &shadowTree,
     RootShadowNode::Shared const &oldRootShadowNode,
     RootShadowNode::Unshared const &newRootShadowNode) const {
+  std::shared_lock<better::shared_mutex> lock(commitHookMutex_);
+
   auto resultRootShadowNode = newRootShadowNode;
+  for (auto const *commitHook : commitHooks_) {
+    resultRootShadowNode = commitHook->shadowTreeWillCommit(
+        shadowTree, oldRootShadowNode, resultRootShadowNode);
+  }
+
   return resultRootShadowNode;
 }
 

@@ -25,6 +25,7 @@ namespace facebook {
 namespace react {
 
 class UIManagerBinding;
+class UIManagerCommitHook;
 
 class UIManager final : public ShadowTreeDelegate {
  public:
@@ -66,6 +67,12 @@ class UIManager final : public ShadowTreeDelegate {
   void visitBinding(
       std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
       const;
+
+  /*
+   * Registers and unregisters a commit hook.
+   */
+  void registerCommitHook(UIManagerCommitHook const &commitHook) const;
+  void unregisterCommitHook(UIManagerCommitHook const &commitHook) const;
 
 #pragma mark - ShadowTreeDelegate
 
@@ -167,6 +174,9 @@ class UIManager final : public ShadowTreeDelegate {
   // determine whether a commit should be cancelled. Only to be used
   // inside UIManagerBinding.
   std::atomic_uint_fast8_t completeRootEventCounter_{0};
+
+  mutable better::shared_mutex commitHookMutex_;
+  mutable std::vector<UIManagerCommitHook const *> commitHooks_;
 };
 
 } // namespace react
