@@ -29,11 +29,6 @@ public class ReactFeatureFlags {
   /** Enable TurboModule JS Codegen. */
   public static volatile boolean useTurboModuleJSCodegen = false;
 
-  /**
-   * Enable the fix to validate the TurboReactPackage's module info before resolving a TurboModule.
-   */
-  public static volatile boolean enableTurboModulePackageInfoValidation = false;
-
   /*
    * This feature flag enables logs for Fabric
    */
