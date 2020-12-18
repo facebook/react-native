@@ -27,6 +27,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -418,6 +419,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return mState;
   }
 
+  @UiThread
   public static Point getViewportOffset(View v) {
     int[] locationInWindow = new int[2];
     v.getLocationInWindow(locationInWindow);
