@@ -33,7 +33,6 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
       jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
       jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
-      bool enablePromiseAsyncDispatch,
       bool enableJSCodegen);
   static void registerNatives();
 
