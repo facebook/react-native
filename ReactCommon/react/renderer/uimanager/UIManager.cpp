@@ -332,6 +332,14 @@ ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
 
 #pragma mark - ShadowTreeDelegate
 
+RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
+    ShadowTree const &shadowTree,
+    RootShadowNode::Shared const &oldRootShadowNode,
+    RootShadowNode::Unshared const &newRootShadowNode) const {
+  auto resultRootShadowNode = newRootShadowNode;
+  return resultRootShadowNode;
+}
+
 void UIManager::shadowTreeDidFinishTransaction(
     ShadowTree const &shadowTree,
     MountingCoordinator::Shared const &mountingCoordinator) const {

@@ -78,6 +78,11 @@ class UIManager final : public ShadowTreeDelegate {
    */
   bool experimentEnableStateUpdateWithAutorepeat{false};
 
+  RootShadowNode::Unshared shadowTreeWillCommit(
+      ShadowTree const &shadowTree,
+      RootShadowNode::Shared const &oldRootShadowNode,
+      RootShadowNode::Unshared const &newRootShadowNode) const override;
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
