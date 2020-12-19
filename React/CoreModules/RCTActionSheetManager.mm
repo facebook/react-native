@@ -32,6 +32,7 @@ using namespace facebook::react;
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
+@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
 
 - (dispatch_queue_t)methodQueue
 {
@@ -46,7 +47,7 @@ RCT_EXPORT_MODULE()
   UIView *sourceView = parentViewController.view;
 
   if (anchorViewTag) {
-    sourceView = [self.bridge.uiManager viewForReactTag:anchorViewTag];
+    sourceView = [self.viewRegistry_DEPRECATED viewForReactTag:anchorViewTag];
   } else {
     alertController.popoverPresentationController.permittedArrowDirections = 0;
   }

@@ -29,6 +29,7 @@ NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification =
 @implementation RCTAccessibilityManager
 
 @synthesize bridge = _bridge;
+@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
 @synthesize moduleRegistry = _moduleRegistry;
 @synthesize multipliers = _multipliers;
 
@@ -285,7 +286,7 @@ static void setMultipliers(
 RCT_EXPORT_METHOD(setAccessibilityFocus : (double)reactTag)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIView *view = [self.bridge.uiManager viewForReactTag:@(reactTag)];
+    UIView *view = [self.viewRegistry_DEPRECATED viewForReactTag:@(reactTag)];
     UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, view);
   });
 }
