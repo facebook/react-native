@@ -31,7 +31,6 @@ using namespace facebook::react;
 
 RCT_EXPORT_MODULE()
 
-@synthesize bridge = _bridge;
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
 
 - (dispatch_queue_t)methodQueue

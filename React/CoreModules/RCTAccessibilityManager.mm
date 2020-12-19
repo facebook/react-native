@@ -28,7 +28,6 @@ NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification =
 
 @implementation RCTAccessibilityManager
 
-@synthesize bridge = _bridge;
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
 @synthesize moduleRegistry = _moduleRegistry;
 @synthesize multipliers = _multipliers;
