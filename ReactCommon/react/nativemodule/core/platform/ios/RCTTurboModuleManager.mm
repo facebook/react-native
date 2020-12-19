@@ -205,6 +205,11 @@ static Class getFallbackClassFromName(const char *name)
   return self;
 }
 
+- (void)setBridgelessComponentViewProvider:(RCTBridgelessComponentViewProvider)viewProvider
+{
+  [_viewRegistry_DEPRECATED setBridgelessComponentViewProvider:viewProvider];
+}
+
 - (void)notifyAboutTurboModuleSetup:(const char *)name
 {
   NSString *moduleName = [[NSString alloc] initWithUTF8String:name];
