@@ -66,6 +66,12 @@ const ReactNativeViewViewConfigAndroid = {
     onAssetDidLoad: {
       registrationName: 'onAssetDidLoad',
     },
+    onAccessibilityBlur: {
+      registrationName: 'onAccessibilityBlur',
+    },
+    onAccessibilityFocus: {
+      registrationName: 'onAccessibilityFocus',
+    },
   },
   validAttributes: {
     hasTVPreferredFocus: true,

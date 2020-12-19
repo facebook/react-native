@@ -32,6 +32,12 @@ const TestComponentNativeViewConfig = {
     topAccessibilityAction: {
       registrationName: 'onAccessibilityAction',
     },
+    onAccessibilityBlur: {
+      registrationName: 'onAccessibilityBlur',
+    },
+    onAccessibilityFocus: {
+      registrationName: 'onAccessibilityFocus',
+    },
   },
   validAttributes: {
     borderColor: true,
@@ -98,6 +104,12 @@ describe('verifyComponentAttributeEquivalence', () => {
     );
     expect(console.error).toBeCalledWith(
       "'TestComponent' has a view config that does not match native. 'directEventTypes' is missing: topAccessibilityAction",
+    );
+    expect(console.error).toBeCalledWith(
+      "'TestComponent' has a view config that does not match native. 'directEventTypes' is missing: onAccessibilityBlur",
+    );
+    expect(console.error).toBeCalledWith(
+      "'TestComponent' has a view config that does not match native. 'directEventTypes' is missing: onAccessibilityFocus",
     );
   });
 });

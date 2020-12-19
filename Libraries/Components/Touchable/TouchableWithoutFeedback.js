@@ -10,10 +10,8 @@
 
 'use strict';
 
-import Pressability, {
-  type PressabilityConfig,
-} from '../../Pressability/Pressability';
-import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
+import * as React from 'react';
+import View from '../../Components/View/View';
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
@@ -21,6 +19,10 @@ import type {
   AccessibilityState,
   AccessibilityValue,
 } from '../../Components/View/ViewAccessibility';
+import Pressability, {
+  type PressabilityConfig,
+} from '../../Pressability/Pressability';
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {
   BlurEvent,
@@ -28,8 +30,9 @@ import type {
   LayoutEvent,
   PressEvent,
 } from '../../Types/CoreEventTypes';
-import View from '../../Components/View/View';
-import * as React from 'react';
+
+type AccessibilityBlurEvent = BlurEvent;
+type AccessibilityFocusEvent = BlurEvent;
 
 type Props = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
@@ -43,6 +46,10 @@ type Props = $ReadOnly<{|
   accessibilityValue?: ?AccessibilityValue,
   accessibilityViewIsModal?: ?boolean,
   accessible?: ?boolean,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
+  importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
+  onAccessibilityBlur?: ?(event: AccessibilityBlurEvent) => mixed,
+  onAccessibilityFocus?: ?(event: AccessibilityFocusEvent) => mixed,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -50,9 +57,7 @@ type Props = $ReadOnly<{|
   disabled?: ?boolean,
   focusable?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
-  importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   nativeID?: ?string,
-  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   onBlur?: ?(event: BlurEvent) => mixed,
   onFocus?: ?(event: FocusEvent) => mixed,
   onLayout?: ?(event: LayoutEvent) => mixed,
@@ -81,6 +86,8 @@ const PASSTHROUGH_PROPS = [
   'accessibilityState',
   'accessibilityValue',
   'accessibilityViewIsModal',
+  'onAccessibilityBlur',
+  'onAccessibilityFocus',
   'hitSlop',
   'importantForAccessibility',
   'nativeID',

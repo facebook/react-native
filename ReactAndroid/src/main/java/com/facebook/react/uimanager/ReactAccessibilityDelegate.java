@@ -37,6 +37,8 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import java.util.HashMap;
+import com.facebook.common.logging.FLog;
+import android.util.Log;
 
 /**
  * Utility class that handles the addition of a "role" for accessibility to either a View or
@@ -46,6 +48,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
 
   private static final String TAG = "ReactAccessibilityDelegate";
   public static final String TOP_ACCESSIBILITY_ACTION_EVENT = "topAccessibilityAction";
+  public static final String ACCESSIBILITY_FOCUS_EVENT = "onAccessibilityFocus";
+  public static final String ACCESSIBILITY_BLUR_EVENT = "onAccessibilityBlur";
   private static int sCounter = 0x3f000000;
   private static final int TIMEOUT_SEND_ACCESSIBILITY_EVENT = 200;
   private static final int SEND_EVENT = 1;
@@ -250,6 +254,10 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
 
   @Override
   public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
+
+    Log.v(TAG, String.valueOf(event));
+    Log.v(TAG, String.valueOf(host));
+
     super.onInitializeAccessibilityEvent(host, event);
     // Set item count and current item index on accessibility events for adjustable
     // in order to make Talkback announce the value of the adjustable
@@ -273,6 +281,61 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         if (max > min && now >= min && max >= now) {
           event.setItemCount(max - min);
           event.setCurrentItemIndex(now);
+        }
+      }
+    }
+
+    if (host != null) {
+      ReactContext reactContext = (ReactContext) host.getContext();
+
+      WritableMap accessibilityEventMap = Arguments.createMap();
+      accessibilityEventMap.putInt("target", host.getId());
+
+      if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
+        {
+          final int reactTag = host.getId();
+          UIManager uiManager = UIManagerHelper.getUIManager(reactContext, reactTag);
+          if (uiManager != null) {
+            uiManager
+                .<EventDispatcher>getEventDispatcher()
+                .dispatchEvent(
+                    new Event(reactTag) {
+                      @Override
+                      public String getEventName() {
+                        return ACCESSIBILITY_BLUR_EVENT;
+                      }
+
+                      @Override
+                      public void dispatch(RCTEventEmitter rctEventEmitter) {
+                        accessibilityEventMap.putString("type", "accessibilityBlur");
+                        rctEventEmitter.receiveEvent(reactTag, ACCESSIBILITY_BLUR_EVENT, accessibilityEventMap);
+                      }
+                    });
+          }
+        }
+      }
+
+      if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+        {
+          final int reactTag = host.getId();
+          UIManager uiManager = UIManagerHelper.getUIManager(reactContext, reactTag);
+          if (uiManager != null) {
+            uiManager
+                .<EventDispatcher>getEventDispatcher()
+                .dispatchEvent(
+                    new Event(reactTag) {
+                      @Override
+                      public String getEventName() {
+                        return ACCESSIBILITY_FOCUS_EVENT;
+                      }
+
+                      @Override
+                      public void dispatch(RCTEventEmitter rctEventEmitter) {
+                        accessibilityEventMap.putString("type", "accessibilityFocus");
+                        rctEventEmitter.receiveEvent(reactTag, ACCESSIBILITY_FOCUS_EVENT, accessibilityEventMap);
+                      }
+                    });
+          }
         }
       }
     }

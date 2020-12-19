@@ -174,6 +174,33 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Button with Accessibility onFocus/onBlur',
+    description: ('Note: These props allow you to react when a VoiceOver/TalkBack user focuses an element.': string),
+    render(): React.Node { 
+      function A11yFocusBlurButton() {
+        const [isFocused, setIsFocused] = React.useState(false)
+        return (
+          <RNTesterThemeContext.Consumer>
+            {theme => {
+              return (
+                <Button
+                  onPress={() => {}}
+                  testID="accessibilityFocusBlur_button"
+                  color={theme.LinkColor}
+                  disabled={isFocused}
+                  title={`VoiceOver/TalkBack ${isFocused ? 'is' : 'is not'} focused.`}
+                  onAccessibilityFocus={() => setIsFocused(true)}
+                  onAccessibilityBlur={() => setIsFocused(false)}
+                />
+              );
+            }}
+          </RNTesterThemeContext.Consumer>
+        );
+      }
+      return <A11yFocusBlurButton />
+    }
+  },
 ];
 
 const styles = StyleSheet.create({

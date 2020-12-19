@@ -417,6 +417,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.<String, Object>builder()
         .put("topAccessibilityAction", MapBuilder.of("registrationName", "onAccessibilityAction"))
+        .put("onAccessibilityBlur", MapBuilder.of("registrationName", "onAccessibilityBlur"))
+        .put("onAccessibilityFocus", MapBuilder.of("registrationName", "onAccessibilityFocus"))
         .build();
   }
 

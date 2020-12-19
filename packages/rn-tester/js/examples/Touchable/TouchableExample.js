@@ -430,6 +430,20 @@ class TouchableDisabled extends React.Component<{...}> {
   }
 }
 
+function TouchableAccessibilityBlurFocus() {
+  const [isFocused, setIsFocused] = React.useState(false);
+  return (
+    <View>
+      <TouchableOpacity
+        accessible={true}
+        onAccessibilityFocus={() => setIsFocused(true)}
+        onAccessibilityBlur={() => setIsFocused(false)}>
+        <Text>TouchableOpacity {isFocused ? 'is' : 'is not'} focused.</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
 function CustomRippleRadius() {
   if (Platform.OS !== 'android') {
     return null;
@@ -663,6 +677,13 @@ exports.examples = [
       'any interaction with component': string),
     render: function(): React.Element<any> {
       return <TouchableDisabled />;
+    },
+  },
+  {
+    title: 'Touchable Accessible onFocus/onBlur',
+    description: ('Showing active accessibility events.': string),
+    render: function(): React.Element<any> {
+      return <TouchableAccessibilityBlurFocus />;
     },
   },
 ];

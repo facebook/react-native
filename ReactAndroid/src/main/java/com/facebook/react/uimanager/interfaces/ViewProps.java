@@ -151,6 +151,8 @@ public class ViewProps {
   public static final String ACCESSIBILITY_ACTIONS = "accessibilityActions";
   public static final String ACCESSIBILITY_VALUE = "accessibilityValue";
   public static final String IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
+  public static final String ON_ACCESSIBILITY_BLUR = "onAccessibilityBlur";
+  public static final String ON_ACCESSIBILITY_FOCUS = "onAccessibilityFocus";
 
   // DEPRECATED
   public static final String ROTATION = "rotation";

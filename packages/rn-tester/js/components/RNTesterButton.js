@@ -14,17 +14,21 @@ const React = require('react');
 
 const {StyleSheet, Text, TouchableHighlight} = require('react-native');
 
-import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {PressEvent, SyntheticEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 type Props = $ReadOnly<{|
   children?: React.Node,
   onPress?: ?(event: PressEvent) => mixed,
+  onAccessibilityFocus?: ?(event: SyntheticEvent) => void,
+  onAccessibilityBlur?: ?(event: SyntheticEvent) => void,
 |}>;
 
 class RNTesterButton extends React.Component<Props> {
   render(): React.Node {
     return (
       <TouchableHighlight
+        onAccessibilityFocus={this.props.onAccessibilityFocus}
+        onAccessibilityBlur={this.props.onAccessibilityBlur}
         onPress={this.props.onPress}
         style={styles.button}
         underlayColor="grey">
