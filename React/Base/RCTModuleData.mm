@@ -49,6 +49,7 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
   std::mutex _instanceLock;
   BOOL _setupComplete;
   RCTModuleRegistry *_moduleRegistry;
+  RCTViewRegistry *_viewRegistry_DEPRECATED;
 }
 
 @synthesize methods = _methods;
@@ -101,25 +102,29 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
 - (instancetype)initWithModuleClass:(Class)moduleClass
                              bridge:(RCTBridge *)bridge
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
 {
   return [self initWithModuleClass:moduleClass
                     moduleProvider:^id<RCTBridgeModule> {
                       return [moduleClass new];
                     }
                             bridge:bridge
-                    moduleRegistry:moduleRegistry];
+                    moduleRegistry:moduleRegistry
+           viewRegistry_DEPRECATED:viewRegistry_DEPRECATED];
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
                      moduleProvider:(RCTBridgeModuleProvider)moduleProvider
                              bridge:(RCTBridge *)bridge
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
 {
   if (self = [super init]) {
     _bridge = bridge;
     _moduleClass = moduleClass;
     _moduleProvider = [moduleProvider copy];
     _moduleRegistry = moduleRegistry;
+    _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
     [self setUp];
   }
   return self;
@@ -128,12 +133,14 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
 - (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
                                 bridge:(RCTBridge *)bridge
                         moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+               viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
 {
   if (self = [super init]) {
     _bridge = bridge;
     _instance = instance;
     _moduleClass = [instance class];
     _moduleRegistry = moduleRegistry;
+    _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
     [self setUp];
   }
   return self;
@@ -195,6 +202,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       // self.bridge.uiManager.methodQueue)
       [self setBridgeForInstance];
       [self setModuleRegistryForInstance];
+      [self setViewRegistryForInstance];
     }
 
     [self setUpMethodQueue];
@@ -251,6 +259,24 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       RCTLogError(
           @"%@ has no setter or ivar for its module registry, which is not "
            "permitted. You must either @synthesize the moduleRegistry property, "
+           "or provide your own setter method.",
+          self.name);
+    }
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)setViewRegistryForInstance
+{
+  if ([_instance respondsToSelector:@selector(viewRegistry_DEPRECATED)] &&
+      _instance.viewRegistry_DEPRECATED != _viewRegistry_DEPRECATED) {
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setViewRegistryForInstance]", nil);
+    @try {
+      [(id)_instance setValue:_viewRegistry_DEPRECATED forKey:@"viewRegistry_DEPRECATED"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the viewRegistry_DEPRECATED property, "
            "or provide your own setter method.",
           self.name);
     }
