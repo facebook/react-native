@@ -174,6 +174,7 @@ static Class getFallbackClassFromName(const char *name)
   std::atomic<bool> _invalidating;
 
   RCTModuleRegistry *_moduleRegistry;
+  RCTViewRegistry *_viewRegistry_DEPRECATED;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -188,6 +189,9 @@ static Class getFallbackClassFromName(const char *name)
     _moduleRegistry = [RCTModuleRegistry new];
     [_moduleRegistry setBridge:bridge];
     [_moduleRegistry setTurboModuleRegistry:self];
+
+    _viewRegistry_DEPRECATED = [RCTViewRegistry new];
+    [_viewRegistry_DEPRECATED setBridge:bridge];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeWillInvalidateModules:)
@@ -558,6 +562,25 @@ static Class getFallbackClassFromName(const char *name)
       RCTLogError(
           @"%@ has no setter or ivar for its module registry, which is not "
            "permitted. You must either @synthesize the moduleRegistry property, "
+           "or provide your own setter method.",
+          RCTBridgeModuleNameForClass([module class]));
+    }
+  }
+
+  /**
+   * Attach the RCTViewRegistry to this TurboModule, which allows this TurboModule
+   * To query a React component's UIView, given its reactTag.
+   *
+   * Usage: In the NativeModule @implementation, include:
+   *   `@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED`
+   */
+  if ([module respondsToSelector:@selector(viewRegistry_DEPRECATED)] && _viewRegistry_DEPRECATED) {
+    @try {
+      [(id)module setValue:_viewRegistry_DEPRECATED forKey:@"viewRegistry_DEPRECATED"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the viewRegistry_DEPRECATED property, "
            "or provide your own setter method.",
           RCTBridgeModuleNameForClass([module class]));
     }
