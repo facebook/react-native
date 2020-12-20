@@ -8,7 +8,6 @@
 package com.facebook.react.fabric.mounting;
 
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
-import static com.facebook.infer.annotation.ThreadConfined.UI;
 
 import android.content.Context;
 import android.view.View;
@@ -28,6 +27,7 @@ import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
@@ -50,6 +50,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MountingManager {
   public static final String TAG = MountingManager.class.getSimpleName();
+  private static final boolean SHOW_CHANGED_VIEW_HIERARCHIES = ReactBuildConfig.DEBUG && false;
 
   @NonNull private final ConcurrentHashMap<Integer, ViewState> mTagToViewState;
   @NonNull private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
@@ -61,6 +62,36 @@ public class MountingManager {
     mViewManagerRegistry = viewManagerRegistry;
   }
 
+  private static void logViewHierarchy(ViewGroup parent, boolean recurse) {
+    int parentTag = parent.getId();
+    FLog.e(TAG, "  <ViewGroup tag=" + parentTag + " class=" + parent.getClass().toString() + ">");
+    for (int i = 0; i < parent.getChildCount(); i++) {
+      FLog.e(
+          TAG,
+          "     <View idx="
+              + i
+              + " tag="
+              + parent.getChildAt(i).getId()
+              + " class="
+              + parent.getChildAt(i).getClass().toString()
+              + ">");
+    }
+    FLog.e(TAG, "  </ViewGroup tag=" + parentTag + ">");
+
+    if (recurse) {
+      FLog.e(TAG, "Displaying Ancestors:");
+      ViewParent ancestor = parent.getParent();
+      while (ancestor != null) {
+        ViewGroup ancestorViewGroup = (ancestor instanceof ViewGroup ? (ViewGroup) ancestor : null);
+        int ancestorId = ancestorViewGroup == null ? View.NO_ID : ancestorViewGroup.getId();
+        FLog.e(
+            TAG,
+            "<ViewParent tag=" + ancestorId + " class=" + ancestor.getClass().toString() + ">");
+        ancestor = ancestor.getParent();
+      }
+    }
+  }
+
   /**
    * This mutates the rootView, which is an Android View, so this should only be called on the UI
    * thread.
@@ -68,26 +99,46 @@ public class MountingManager {
    * @param reactRootTag
    * @param rootView
    */
-  @ThreadConfined(UI)
-  public void addRootView(int reactRootTag, @NonNull View rootView) {
-    if (rootView.getId() != View.NO_ID) {
-      throw new IllegalViewOperationException(
-          "Trying to add a root view with an explicit id already set. React Native uses "
-              + "the id field to track react tags and will overwrite this field. If that is fine, "
-              + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
-    }
-
+  @AnyThread
+  public void addRootView(final int reactRootTag, @NonNull final View rootView) {
     mTagToViewState.put(
         reactRootTag, new ViewState(reactRootTag, rootView, mRootViewManager, true));
-    rootView.setId(reactRootTag);
+
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            if (rootView.getId() != View.NO_ID) {
+              FLog.e(
+                  TAG,
+                  "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
+                  rootView.getId(),
+                  reactRootTag);
+              throw new IllegalViewOperationException(
+                  "Trying to add a root view with an explicit id already set. React Native uses "
+                      + "the id field to track react tags and will overwrite this field. If that is fine, "
+                      + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+            }
+            rootView.setId(reactRootTag);
+          }
+        });
+  }
+
+  /** Delete rootView and all children recursively. */
+  @UiThread
+  public void deleteRootView(int reactRootTag) {
+    ViewState rootViewState = mTagToViewState.get(reactRootTag);
+    if (rootViewState != null && rootViewState.mView != null) {
+      dropView(rootViewState.mView, true);
+    }
   }
 
   /** Releases all references to given native View. */
   @UiThread
-  private void dropView(@NonNull View view) {
+  private void dropView(@NonNull View view, boolean deleteImmediately) {
     UiThreadUtil.assertOnUiThread();
 
-    int reactTag = view.getId();
+    final int reactTag = view.getId();
     ViewState state = getViewState(reactTag);
     ViewManager viewManager = state.mViewManager;
 
@@ -96,14 +147,29 @@ public class MountingManager {
       viewManager.onDropViewInstance(view);
     }
     if (view instanceof ViewGroup && viewManager instanceof ViewGroupManager) {
-      ViewGroup viewGroup = (ViewGroup) view;
-      ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(state);
-      for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
-        View child = viewGroupManager.getChildAt(viewGroup, i);
-        if (getNullableViewState(child.getId()) != null) {
-          dropView(child);
-        }
-        viewGroupManager.removeViewAt(viewGroup, i);
+      final ViewGroup viewGroup = (ViewGroup) view;
+      final ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(state);
+
+      // As documented elsewhere, sometimes when a child is removed from a parent, that change
+      // is not immediately available in the hierarchy until a future UI tick. This can cause
+      // inconsistent child counts, etc, but it can _also_ cause us to drop views that shouldn't,
+      // because they're removed from the parent but that change isn't immediately visible. So,
+      // we do two things: 1) delay this logic until the next UI thread tick, 2) ignore children
+      // who don't report the expected parent.
+      // For most cases, we _do not_ want this logic to run, anyway, since it either means that we
+      // don't have a correct set of MountingInstructions; or it means that we're tearing down an
+      // entire screen, in which case we can safely delete everything immediately, not having
+      // executed any remove instructions immediately before this.
+      if (deleteImmediately) {
+        dropChildren(reactTag, viewGroup, viewGroupManager);
+      } else {
+        UiThreadUtil.runOnUiThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                dropChildren(reactTag, viewGroup, viewGroupManager);
+              }
+            });
       }
     }
 
@@ -111,7 +177,47 @@ public class MountingManager {
   }
 
   @UiThread
-  public void addViewAt(int parentTag, int tag, int index) {
+  private void dropChildren(
+      int reactTag,
+      @NonNull ViewGroup viewGroup,
+      @NonNull ViewGroupManager<ViewGroup> viewGroupManager) {
+    for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
+      View child = viewGroupManager.getChildAt(viewGroup, i);
+      if (getNullableViewState(child.getId()) != null) {
+        if (SHOW_CHANGED_VIEW_HIERARCHIES) {
+          FLog.e(
+              TAG,
+              "Automatically dropping view that is still attached to a parent being dropped. Parent: ["
+                  + reactTag
+                  + "] child: ["
+                  + child.getId()
+                  + "]");
+        }
+        ViewParent childParent = child.getParent();
+        if (childParent == null || !childParent.equals(viewGroup)) {
+          int childParentId =
+              (childParent == null
+                  ? -1
+                  : (childParent instanceof ViewGroup ? ((ViewGroup) childParent).getId() : -1));
+          FLog.e(
+              TAG,
+              "Recursively deleting children of ["
+                  + reactTag
+                  + "] but parent of child ["
+                  + child.getId()
+                  + "] is ["
+                  + childParentId
+                  + "]");
+        } else {
+          dropView(child, true);
+        }
+      }
+      viewGroupManager.removeViewAt(viewGroup, i);
+    }
+  }
+
+  @UiThread
+  public void addViewAt(final int parentTag, final int tag, final int index) {
     UiThreadUtil.assertOnUiThread();
     ViewState parentViewState = getViewState(parentTag);
     if (!(parentViewState.mView instanceof ViewGroup)) {
@@ -132,15 +238,52 @@ public class MountingManager {
       throw new IllegalStateException(
           "Unable to find view for viewState " + viewState + " and tag " + tag);
     }
-    getViewGroupManager(parentViewState).addView(parentView, view, index);
+
+    // Display children before inserting
+    if (SHOW_CHANGED_VIEW_HIERARCHIES) {
+      FLog.e(TAG, "addViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " BEFORE");
+      logViewHierarchy(parentView, false);
+    }
+
+    try {
+      getViewGroupManager(parentViewState).addView(parentView, view, index);
+    } catch (IllegalStateException e) {
+      // Wrap error with more context for debugging
+      throw new IllegalStateException(
+          "addViewAt: failed to insert view ["
+              + tag
+              + "] into parent ["
+              + parentTag
+              + "] at index "
+              + index,
+          e);
+    }
+
+    // Display children after inserting
+    if (SHOW_CHANGED_VIEW_HIERARCHIES) {
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              FLog.e(
+                  TAG, "addViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " AFTER");
+              logViewHierarchy(parentView, false);
+            }
+          });
+    }
   }
 
-  private @NonNull ViewState getViewState(int tag) {
+  @NonNull
+  private ViewState getViewState(int tag) {
     ViewState viewState = mTagToViewState.get(tag);
     if (viewState == null) {
       throw new RetryableMountingLayerException("Unable to find viewState view for tag " + tag);
     }
     return viewState;
+  }
+
+  public boolean getViewExists(int tag) {
+    return mTagToViewState.get(tag) != null;
   }
 
   private @Nullable ViewState getNullableViewState(int tag) {
@@ -224,7 +367,7 @@ public class MountingManager {
   }
 
   @UiThread
-  public void removeViewAt(int parentTag, int index) {
+  public void removeViewAt(final int tag, final int parentTag, int index) {
     UiThreadUtil.assertOnUiThread();
     ViewState viewState = getNullableViewState(parentTag);
 
@@ -242,7 +385,73 @@ public class MountingManager {
       throw new IllegalStateException("Unable to find view for tag " + parentTag);
     }
 
+    if (SHOW_CHANGED_VIEW_HIERARCHIES) {
+      // Display children before deleting any
+      FLog.e(TAG, "removeViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " BEFORE");
+      logViewHierarchy(parentView, false);
+    }
+
     ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(viewState);
+
+    // Verify that the view we're about to remove has the same tag we expect
+    View view = viewGroupManager.getChildAt(parentView, index);
+    int actualTag = (view != null ? view.getId() : -1);
+    if (actualTag != tag) {
+      int tagActualIndex = -1;
+      int parentChildrenCount = parentView.getChildCount();
+      for (int i = 0; i < parentChildrenCount; i++) {
+        if (parentView.getChildAt(i).getId() == tag) {
+          tagActualIndex = i;
+          break;
+        }
+      }
+
+      // TODO T74425739: previously, we did not do this check and `removeViewAt` would be executed
+      // below, sometimes crashing there. *However*, interestingly enough, `removeViewAt` would not
+      // complain if you removed views from an already-empty parent. This seems necessary currently
+      // for certain ViewManagers that remove their own children - like BottomSheet?
+      // This workaround seems not-great, but for now, we just return here for
+      // backwards-compatibility. Essentially, if a view has already been removed from the
+      // hierarchy, we treat it as a noop.
+      if (tagActualIndex == -1) {
+        FLog.e(
+            TAG,
+            "removeViewAt: ["
+                + tag
+                + "] -> ["
+                + parentTag
+                + "] @"
+                + index
+                + ": view already removed from parent! Children in parent: "
+                + parentChildrenCount);
+        return;
+      }
+
+      // Here we are guaranteed that the view is still in the View hierarchy, just
+      // at a different index. In debug mode we'll crash here; in production, we'll remove
+      // the child from the parent and move on.
+      // This is an issue that is safely recoverable 95% of the time. If this allows corruption
+      // of the view hierarchy and causes bugs or a crash after this point, there will be logs
+      // indicating that this happened.
+      // This is likely *only* necessary because of Fabric's LayoutAnimations implementation.
+      // If we can fix the bug there, or remove the need for LayoutAnimation index adjustment
+      // entirely, we can just throw this exception without regression user experience.
+      logViewHierarchy(parentView, true);
+      ReactSoftException.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "Tried to remove view ["
+                  + tag
+                  + "] of parent ["
+                  + parentTag
+                  + "] at index "
+                  + index
+                  + ", but got view tag "
+                  + actualTag
+                  + " - actual index of view: "
+                  + tagActualIndex));
+      index = tagActualIndex;
+    }
 
     try {
       viewGroupManager.removeViewAt(parentView, index);
@@ -264,6 +473,8 @@ public class MountingManager {
       // enough that we shouldn't try to change this invariant, without a lot of thought.
       int childCount = viewGroupManager.getChildCount(parentView);
 
+      logViewHierarchy(parentView, true);
+
       throw new IllegalStateException(
           "Cannot remove child at index "
               + index
@@ -273,6 +484,27 @@ public class MountingManager {
               + childCount
               + " children in parent. Warning: childCount may be incorrect!",
           e);
+    }
+
+    // Display children after deleting any
+    if (SHOW_CHANGED_VIEW_HIERARCHIES) {
+      final int finalIndex = index;
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              FLog.e(
+                  TAG,
+                  "removeViewAt: ["
+                      + tag
+                      + "] -> ["
+                      + parentTag
+                      + "] idx: "
+                      + finalIndex
+                      + " AFTER");
+              logViewHierarchy(parentView, false);
+            }
+          });
     }
   }
 
@@ -396,11 +628,20 @@ public class MountingManager {
       return;
     }
 
-    View view = viewState.mView;
-    if (view != null) {
-      dropView(view);
-    } else {
-      mTagToViewState.remove(reactTag);
+    // To delete we simply remove the tag from the registry.
+    // In the past we called dropView here, but we want to rely on either
+    // (1) the correct set of MountInstructions being sent to the platform
+    // and/or (2) dropView being called by stopSurface.
+    // If Views are orphaned at this stage and leaked, it's a problem in
+    // the differ or LayoutAnimations, not MountingManager.
+    // Additionally, as documented in `dropView`, we cannot always trust a
+    // view's children to be up-to-date.
+    mTagToViewState.remove(reactTag);
+
+    // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
+    ViewManager viewManager = viewState.mViewManager;
+    if (!viewState.mIsRoot && viewManager != null) {
+      viewManager.onDropViewInstance(viewState.mView);
     }
   }
 
@@ -409,10 +650,7 @@ public class MountingManager {
     UiThreadUtil.assertOnUiThread();
     ViewState viewState = getViewState(reactTag);
     @Nullable ReadableNativeMap newState = stateWrapper == null ? null : stateWrapper.getState();
-    if ((viewState.mCurrentState != null && viewState.mCurrentState.equals(newState))
-        || (viewState.mCurrentState == null && stateWrapper == null)) {
-      return;
-    }
+
     viewState.mCurrentState = newState;
 
     ViewManager viewManager = viewState.mViewManager;

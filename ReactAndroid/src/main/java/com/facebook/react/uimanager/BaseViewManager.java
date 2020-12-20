@@ -96,6 +96,15 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
+  @ReactProp(name = ViewProps.SHADOW_COLOR, defaultInt = Color.BLACK, customType = "Color")
+  public void setShadowColor(@NonNull T view, int shadowColor) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.setOutlineAmbientShadowColor(shadowColor);
+      view.setOutlineSpotShadowColor(shadowColor);
+    }
+  }
+
+  @Override
   @ReactProp(name = ViewProps.Z_INDEX)
   public void setZIndex(@NonNull T view, float zIndex) {
     int integerZIndex = Math.round(zIndex);
@@ -174,8 +183,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
               && accessibilityState.getType(STATE_CHECKED) == ReadableType.String)) {
         updateViewContentDescription(view);
         break;
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-          && view.isAccessibilityFocused()) {
+      } else if (view.isAccessibilityFocused()) {
         // Internally Talkback ONLY uses TYPE_VIEW_CLICKED for "checked" and
         // "selected" announcements. Send a click event to make sure Talkback
         // get notified for the state changes that don't happen upon users' click.

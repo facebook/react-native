@@ -15,6 +15,7 @@ import type {SchemaType} from '../../../CodegenSchema.js';
 const NO_PROPS_NO_EVENTS: SchemaType = {
   modules: {
     NoPropsNoEvents: {
+      type: 'Component',
       components: {
         NoPropsNoEventsComponent: {
           extendsProps: [
@@ -35,6 +36,7 @@ const NO_PROPS_NO_EVENTS: SchemaType = {
 const INTERFACE_ONLY: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         InterfaceOnlyComponent: {
           interfaceOnly: true,
@@ -56,9 +58,11 @@ const INTERFACE_ONLY: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -85,6 +89,7 @@ const INTERFACE_ONLY: SchemaType = {
 const EVENTS_WITH_PAPER_NAME: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         InterfaceOnlyComponent: {
           interfaceOnly: true,
@@ -107,9 +112,11 @@ const EVENTS_WITH_PAPER_NAME: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -126,9 +133,11 @@ const EVENTS_WITH_PAPER_NAME: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -146,6 +155,7 @@ const EVENTS_WITH_PAPER_NAME: SchemaType = {
 const BOOLEAN_PROP: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         BooleanPropNativeComponent: {
           extendsProps: [
@@ -175,6 +185,7 @@ const BOOLEAN_PROP: SchemaType = {
 const STRING_PROP: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         StringPropComponent: {
           extendsProps: [
@@ -212,6 +223,7 @@ const STRING_PROP: SchemaType = {
 const INTEGER_PROPS: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         IntegerPropNativeComponent: {
           extendsProps: [
@@ -257,6 +269,7 @@ const INTEGER_PROPS: SchemaType = {
 const FLOAT_PROPS: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         FloatPropNativeComponent: {
           extendsProps: [
@@ -326,6 +339,7 @@ const FLOAT_PROPS: SchemaType = {
 const DOUBLE_PROPS: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         DoublePropNativeComponent: {
           extendsProps: [
@@ -395,6 +409,7 @@ const DOUBLE_PROPS: SchemaType = {
 const COLOR_PROP: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         ColorPropNativeComponent: {
           extendsProps: [
@@ -424,6 +439,7 @@ const COLOR_PROP: SchemaType = {
 const IMAGE_PROP: SchemaType = {
   modules: {
     Slider: {
+      type: 'Component',
       components: {
         ImagePropNativeComponent: {
           extendsProps: [
@@ -453,6 +469,7 @@ const IMAGE_PROP: SchemaType = {
 const POINT_PROP: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         PointPropNativeComponent: {
           extendsProps: [
@@ -482,6 +499,7 @@ const POINT_PROP: SchemaType = {
 const INSETS_PROP: SchemaType = {
   modules: {
     ScrollView: {
+      type: 'Component',
       components: {
         InsetsPropNativeComponent: {
           extendsProps: [
@@ -511,6 +529,7 @@ const INSETS_PROP: SchemaType = {
 const ARRAY_PROPS: SchemaType = {
   modules: {
     Slider: {
+      type: 'Component',
       components: {
         ArrayPropsNativeComponent: {
           extendsProps: [
@@ -602,14 +621,7 @@ const ARRAY_PROPS: SchemaType = {
                 elementType: {
                   type: 'StringEnumTypeAnnotation',
                   default: 'small',
-                  options: [
-                    {
-                      name: 'small',
-                    },
-                    {
-                      name: 'large',
-                    },
-                  ],
+                  options: ['small', 'large'],
                 },
               },
             },
@@ -702,6 +714,7 @@ const ARRAY_PROPS: SchemaType = {
 const ARRAY_PROPS_WITH_NESTED_OBJECT: SchemaType = {
   modules: {
     Slider: {
+      type: 'Component',
       components: {
         ArrayPropsNativeComponent: {
           extendsProps: [
@@ -768,6 +781,7 @@ const ARRAY_PROPS_WITH_NESTED_OBJECT: SchemaType = {
 const OBJECT_PROPS: SchemaType = {
   modules: {
     ObjectPropsNativeComponent: {
+      type: 'Component',
       components: {
         ObjectProps: {
           extendsProps: [
@@ -822,11 +836,7 @@ const OBJECT_PROPS: SchemaType = {
                     typeAnnotation: {
                       type: 'StringEnumTypeAnnotation',
                       default: 'option1',
-                      options: [
-                        {
-                          name: 'option1',
-                        },
-                      ],
+                      options: ['option1'],
                     },
                   },
                   {
@@ -835,11 +845,7 @@ const OBJECT_PROPS: SchemaType = {
                     typeAnnotation: {
                       type: 'Int32EnumTypeAnnotation',
                       default: 0,
-                      options: [
-                        {
-                          value: 0,
-                        },
-                      ],
+                      options: [0],
                     },
                   },
                   {
@@ -963,6 +969,7 @@ const OBJECT_PROPS: SchemaType = {
 const MULTI_NATIVE_PROP: SchemaType = {
   modules: {
     Slider: {
+      type: 'Component',
       components: {
         ImageColorPropNativeComponent: {
           extendsProps: [
@@ -1016,6 +1023,7 @@ const MULTI_NATIVE_PROP: SchemaType = {
 const STRING_ENUM_PROP: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         StringEnumPropsNativeComponent: {
           extendsProps: [
@@ -1032,17 +1040,7 @@ const STRING_ENUM_PROP: SchemaType = {
               typeAnnotation: {
                 type: 'StringEnumTypeAnnotation',
                 default: 'center',
-                options: [
-                  {
-                    name: 'top',
-                  },
-                  {
-                    name: 'center',
-                  },
-                  {
-                    name: 'bottom-right',
-                  },
-                ],
+                options: ['top', 'center', 'bottom-right'],
               },
             },
           ],
@@ -1056,6 +1054,7 @@ const STRING_ENUM_PROP: SchemaType = {
 const INT32_ENUM_PROP: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         Int32EnumPropsNativeComponent: {
           extendsProps: [
@@ -1072,17 +1071,7 @@ const INT32_ENUM_PROP: SchemaType = {
               typeAnnotation: {
                 type: 'Int32EnumTypeAnnotation',
                 default: 0,
-                options: [
-                  {
-                    value: 0,
-                  },
-                  {
-                    value: 1,
-                  },
-                  {
-                    value: 2,
-                  },
-                ],
+                options: [0, 1, 2],
               },
             },
           ],
@@ -1096,6 +1085,7 @@ const INT32_ENUM_PROP: SchemaType = {
 const EVENT_PROPS: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         EventsNativeComponent: {
           extendsProps: [
@@ -1115,24 +1105,32 @@ const EVENT_PROPS: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                     {
-                      type: 'StringTypeAnnotation',
                       name: 'source',
                       optional: true,
+                      typeAnnotation: {
+                        type: 'StringTypeAnnotation',
+                      },
                     },
                     {
-                      type: 'Int32TypeAnnotation',
                       name: 'progress',
                       optional: true,
+                      typeAnnotation: {
+                        type: 'Int32TypeAnnotation',
+                      },
                     },
                     {
-                      type: 'FloatTypeAnnotation',
                       name: 'scale',
                       optional: true,
+                      typeAnnotation: {
+                        type: 'FloatTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -1148,9 +1146,11 @@ const EVENT_PROPS: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -1166,17 +1166,12 @@ const EVENT_PROPS: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'StringEnumTypeAnnotation',
                       name: 'orientation',
                       optional: false,
-                      options: [
-                        {
-                          name: 'landscape',
-                        },
-                        {
-                          name: 'portrait',
-                        },
-                      ],
+                      typeAnnotation: {
+                        type: 'StringEnumTypeAnnotation',
+                        options: ['landscape', 'portrait'],
+                      },
                     },
                   ],
                 },
@@ -1211,6 +1206,7 @@ const EVENT_PROPS: SchemaType = {
 const EVENT_NESTED_OBJECT_PROPS: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         EventsNestedObjectNativeComponent: {
           extendsProps: [
@@ -1230,33 +1226,43 @@ const EVENT_NESTED_OBJECT_PROPS: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'ObjectTypeAnnotation',
                       name: 'location',
                       optional: false,
-                      properties: [
-                        {
-                          type: 'ObjectTypeAnnotation',
-                          name: 'source',
-                          optional: false,
-                          properties: [
-                            {
-                              type: 'StringTypeAnnotation',
-                              name: 'url',
-                              optional: false,
+                      typeAnnotation: {
+                        type: 'ObjectTypeAnnotation',
+                        properties: [
+                          {
+                            name: 'source',
+                            optional: false,
+                            typeAnnotation: {
+                              type: 'ObjectTypeAnnotation',
+                              properties: [
+                                {
+                                  name: 'url',
+                                  optional: false,
+                                  typeAnnotation: {
+                                    type: 'StringTypeAnnotation',
+                                  },
+                                },
+                              ],
                             },
-                          ],
-                        },
-                        {
-                          type: 'Int32TypeAnnotation',
-                          name: 'x',
-                          optional: false,
-                        },
-                        {
-                          type: 'Int32TypeAnnotation',
-                          name: 'y',
-                          optional: false,
-                        },
-                      ],
+                          },
+                          {
+                            name: 'x',
+                            optional: false,
+                            typeAnnotation: {
+                              type: 'Int32TypeAnnotation',
+                            },
+                          },
+                          {
+                            name: 'y',
+                            optional: false,
+                            typeAnnotation: {
+                              type: 'Int32TypeAnnotation',
+                            },
+                          },
+                        ],
+                      },
                     },
                   ],
                 },
@@ -1283,6 +1289,7 @@ const EVENT_NESTED_OBJECT_PROPS: SchemaType = {
 const TWO_COMPONENTS_SAME_FILE: SchemaType = {
   modules: {
     MyComponents: {
+      type: 'Component',
       components: {
         MultiComponent1NativeComponent: {
           extendsProps: [
@@ -1333,6 +1340,7 @@ const TWO_COMPONENTS_SAME_FILE: SchemaType = {
 const TWO_COMPONENTS_DIFFERENT_FILES: SchemaType = {
   modules: {
     ComponentFile1: {
+      type: 'Component',
       components: {
         MultiFile1NativeComponent: {
           extendsProps: [
@@ -1358,6 +1366,7 @@ const TWO_COMPONENTS_DIFFERENT_FILES: SchemaType = {
     },
 
     ComponentFile2: {
+      type: 'Component',
       components: {
         MultiFile2NativeComponent: {
           extendsProps: [
@@ -1387,6 +1396,7 @@ const TWO_COMPONENTS_DIFFERENT_FILES: SchemaType = {
 const COMMANDS: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         CommandNativeComponent: {
           extendsProps: [
@@ -1404,6 +1414,9 @@ const COMMANDS: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 params: [],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
             },
             {
@@ -1414,35 +1427,43 @@ const COMMANDS: SchemaType = {
                 params: [
                   {
                     name: 'x',
+                    optional: false,
                     typeAnnotation: {
                       type: 'Int32TypeAnnotation',
                     },
                   },
                   {
                     name: 'y',
+                    optional: false,
                     typeAnnotation: {
                       type: 'FloatTypeAnnotation',
                     },
                   },
                   {
                     name: 'z',
+                    optional: false,
                     typeAnnotation: {
                       type: 'DoubleTypeAnnotation',
                     },
                   },
                   {
                     name: 'message',
+                    optional: false,
                     typeAnnotation: {
                       type: 'StringTypeAnnotation',
                     },
                   },
                   {
                     name: 'animated',
+                    optional: false,
                     typeAnnotation: {
                       type: 'BooleanTypeAnnotation',
                     },
                   },
                 ],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
             },
           ],
@@ -1455,6 +1476,7 @@ const COMMANDS: SchemaType = {
 const COMMANDS_AND_PROPS: SchemaType = {
   modules: {
     Switch: {
+      type: 'Component',
       components: {
         CommandNativeComponent: {
           extendsProps: [
@@ -1483,12 +1505,16 @@ const COMMANDS_AND_PROPS: SchemaType = {
                 params: [
                   {
                     name: 'rootTag',
+                    optional: false,
                     typeAnnotation: {
-                      type: 'ReservedFunctionValueTypeAnnotation',
+                      type: 'ReservedTypeAnnotation',
                       name: 'RootTag',
                     },
                   },
                 ],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
             },
             {
@@ -1499,17 +1525,22 @@ const COMMANDS_AND_PROPS: SchemaType = {
                 params: [
                   {
                     name: 'x',
+                    optional: false,
                     typeAnnotation: {
                       type: 'Int32TypeAnnotation',
                     },
                   },
                   {
                     name: 'y',
+                    optional: false,
                     typeAnnotation: {
                       type: 'Int32TypeAnnotation',
                     },
                   },
                 ],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
             },
           ],
@@ -1522,6 +1553,7 @@ const COMMANDS_AND_PROPS: SchemaType = {
 const EXCLUDE_ANDROID: SchemaType = {
   modules: {
     ExcludedAndroid: {
+      type: 'Component',
       components: {
         ExcludedAndroidComponent: {
           excludedPlatforms: ['android'],
@@ -1543,6 +1575,7 @@ const EXCLUDE_ANDROID: SchemaType = {
 const EXCLUDE_ANDROID_IOS: SchemaType = {
   modules: {
     ExcludedAndroidIos: {
+      type: 'Component',
       components: {
         ExcludedAndroidIosComponent: {
           excludedPlatforms: ['android', 'iOS'],

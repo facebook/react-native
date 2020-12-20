@@ -49,8 +49,9 @@ public class RemoveDeleteMultiMountItem implements MountItem {
       int flags = mMetadata[i + FLAGS_INDEX];
       if ((flags & REMOVE_FLAG) != 0) {
         int parentTag = mMetadata[i + PARENT_TAG_INDEX];
+        int tag = mMetadata[i + TAG_INDEX];
         int index = mMetadata[i + VIEW_INDEX_INDEX];
-        mountingManager.removeViewAt(parentTag, index);
+        mountingManager.removeViewAt(tag, parentTag, index);
       }
     }
 

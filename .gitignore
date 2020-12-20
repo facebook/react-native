@@ -23,10 +23,13 @@ project.xcworkspace
 
 # Gradle
 /build/
-/RNTester/android/app/build/
-/RNTester/android/app/gradle/
-/RNTester/android/app/gradlew
-/RNTester/android/app/gradlew.bat
+/packages/react-native-codegen/android/build/
+/packages/react-native-codegen/android/gradlePlugin-build/gradlePlugin/build
+/packages/rn-tester/android/app/.cxx/
+/packages/rn-tester/android/app/build/
+/packages/rn-tester/android/app/gradle/
+/packages/rn-tester/android/app/gradlew
+/packages/rn-tester/android/app/gradlew.bat
 /ReactAndroid/build/
 /ReactAndroid/gradle/
 /ReactAndroid/gradlew
@@ -35,6 +38,8 @@ project.xcworkspace
 # Buck
 .buckd
 buck-out
+/.lsp.buckd
+/.lsp-buck-out
 /ReactAndroid/src/main/jni/prebuilt/lib/
 /ReactAndroid/src/main/gen
 
@@ -75,7 +80,8 @@ package-lock.json
 
 # ReactCommon subdir shouldn't have Xcode project
 /ReactCommon/**/*.xcodeproj
-RNTester/build
+/packages/rn-tester/build
+/packages/rn-tester/android/app/build/*
 
 # Libs that shouldn't have Xcode project
 /Libraries/FBLazyVector/**/*.xcodeproj
@@ -87,16 +93,16 @@ RNTester/build
 # CocoaPods
 /template/ios/Pods/
 /template/ios/Podfile.lock
-/RNTester/Gemfile.lock
+/packages/rn-tester/Gemfile.lock
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
-RNTester/Pods/*
-!RNTester/Pods/__offline_mirrors
+/packages/rn-tester/Pods/*
+!/packages/rn-tester/Pods/__offline_mirrors__
 
 # react-native-codegen
+/Libraries/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
 /ReactCommon/fabric/components/rncore/
-/schema-native-modules.json
 /schema-rncore.json
 
 # Visual studio

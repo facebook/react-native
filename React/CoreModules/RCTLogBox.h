@@ -6,7 +6,14 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "RCTLogBoxView.h"
 
 @interface RCTLogBox : NSObject
+
+#if RCT_DEV_MENU
+
+- (void)setRCTLogBoxView:(RCTLogBoxView *)view;
+
+#endif
 
 @end

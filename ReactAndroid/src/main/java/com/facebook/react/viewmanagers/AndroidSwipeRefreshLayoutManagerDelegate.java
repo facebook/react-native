@@ -15,7 +15,6 @@ import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class AndroidSwipeRefreshLayoutManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & AndroidSwipeRefreshLayoutManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public AndroidSwipeRefreshLayoutManagerDelegate(U viewManager) {

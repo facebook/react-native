@@ -19,6 +19,10 @@ export const RootTagContext: React$Context<RootTag> = React.createContext<RootTa
   0,
 );
 
+if (__DEV__) {
+  RootTagContext.displayName = 'RootTagContext';
+}
+
 /**
  * Intended to only be used by `AppContainer`.
  */

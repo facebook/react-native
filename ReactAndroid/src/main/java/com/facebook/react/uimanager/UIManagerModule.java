@@ -39,6 +39,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
@@ -51,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Native module to allow JS to create and update native Views.
@@ -119,7 +121,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
   private final List<UIManagerModuleListener> mListeners = new ArrayList<>();
-  private final List<UIManagerListener> mUIManagerListeners = new ArrayList<>();
+  private final CopyOnWriteArrayList<UIManagerListener> mUIManagerListeners =
+      new CopyOnWriteArrayList<>();
   private @Nullable Map<String, WritableMap> mViewManagerConstantsCache;
   private volatile int mViewManagerConstantsCacheSize;
 
@@ -196,7 +199,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   /**
    * This method gives an access to the {@link UIImplementation} object that can be used to execute
    * operations on the view hierarchy.
+   *
+   * @deprecated This method will not be supported by the new architecture of react native.
    */
+  @Deprecated
   public UIImplementation getUIImplementation() {
     return mUIImplementation;
   }
@@ -237,6 +243,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
     mEventDispatcher.onCatalystInstanceDestroyed();
+    mUIImplementation.onCatalystInstanceDestroyed();
 
     getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
     YogaNodePool.get().clear();
@@ -291,6 +298,15 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   @Deprecated
   public void preComputeConstantsForViewManager(List<String> viewManagerNames) {
+    // TODO T81145457 - Implement pre-initialization of ViewManagers in Fabric Android
+    if (ReactFeatureFlags.enableExperimentalStaticViewConfigs) {
+      preInitializeViewManagers(viewManagerNames);
+      // When Static view configs are enabled it is not necessary to pre-compute the constants for
+      // viewManagers, although the pre-initialization of viewManager objects is still necessary
+      // for performance reasons.
+      return;
+    }
+
     Map<String, WritableMap> constantsMap = new ArrayMap<>();
     for (String viewManagerName : viewManagerNames) {
       WritableMap constants = computeConstantsForViewManager(viewManagerName);
@@ -307,6 +323,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     // accessed - write one, read multiple times, and then throw the data away.
     mViewManagerConstantsCacheSize = viewManagerNames.size();
     mViewManagerConstantsCache = Collections.unmodifiableMap(constantsMap);
+  }
+
+  private void preInitializeViewManagers(List<String> viewManagerNames) {
+    for (String viewManagerName : viewManagerNames) {
+      mUIImplementation.resolveViewManager(viewManagerName);
+    }
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
@@ -355,18 +377,28 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   /** Resolves Direct Event name exposed to JS from the one known to the Native side. */
+  @Deprecated
   public CustomEventNamesResolver getDirectEventNamesResolver() {
     return new CustomEventNamesResolver() {
       @Override
-      public @Nullable String resolveCustomEventName(String eventName) {
-        Map<String, String> customEventType =
-            (Map<String, String>) mCustomDirectEvents.get(eventName);
-        if (customEventType != null) {
-          return customEventType.get("registrationName");
-        }
-        return eventName;
+      public @Nullable String resolveCustomEventName(@Nullable String eventName) {
+        return resolveCustomDirectEventName(eventName);
       }
     };
+  }
+
+  @Override
+  @Deprecated
+  @Nullable
+  public String resolveCustomDirectEventName(@Nullable String eventName) {
+    if (eventName != null) {
+      Map<String, String> customEventType =
+          (Map<String, String>) mCustomDirectEvents.get(eventName);
+      if (customEventType != null) {
+        return customEventType.get("registrationName");
+      }
+    }
+    return eventName;
   }
 
   @Override
@@ -434,6 +466,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       final WritableMap initialProps,
       int widthMeasureSpec,
       int heightMeasureSpec) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void stopSurface(final int surfaceId) {
     throw new UnsupportedOperationException();
   }
 
@@ -906,10 +943,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   /**
    * Updates the styles of the {@link ReactShadowNode} based on the Measure specs received by
-   * parameters.
+   * parameters. offsetX and offsetY aren't used in non-Fabric, so they're ignored here.
    */
   public void updateRootLayoutSpecs(
-      final int rootViewTag, final int widthMeasureSpec, final int heightMeasureSpec) {
+      final int rootViewTag,
+      final int widthMeasureSpec,
+      final int heightMeasureSpec,
+      int offsetX,
+      int offsetY) {
     ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     reactApplicationContext.runOnNativeModulesQueueThread(
         new GuardedRunnable(reactApplicationContext) {
@@ -944,5 +985,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         .getUIViewOperationQueue()
         .getNativeViewHierarchyManager()
         .resolveView(tag);
+  }
+
+  @Override
+  public void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event) {
+    getReactApplicationContext()
+        .getJSModule(RCTEventEmitter.class)
+        .receiveEvent(targetTag, eventName, event);
   }
 }

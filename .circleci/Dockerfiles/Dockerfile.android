@@ -14,7 +14,7 @@
 # and build a Android application that can be used to run the
 # tests specified in the scripts/ directory.
 #
-FROM reactnativecommunity/react-native-android:2019-10-18
+FROM reactnativecommunity/react-native-android:2.1
 
 LABEL Description="React Native Android Test Image"
 LABEL maintainer="Héctor Ramos <hector@fb.com>"
@@ -25,11 +25,13 @@ ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
 
 ADD .buckconfig /app/.buckconfig
 ADD .buckjavaargs /app/.buckjavaargs
-ADD tools /app/tools
+ADD Libraries /app/Libraries
 ADD ReactAndroid /app/ReactAndroid
 ADD ReactCommon /app/ReactCommon
 ADD React /app/React
 ADD keystores /app/keystores
+ADD packages/react-native-codegen /app/packages/react-native-codegen
+ADD tools /app/tools
 
 WORKDIR /app
 
@@ -49,4 +51,3 @@ RUN yarn
 RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
 
 RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1
-

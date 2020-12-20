@@ -17,7 +17,7 @@
     <img src="https://circleci.com/gh/facebook/react-native.svg?style=shield" alt="Current CircleCI build status." />
   </a>
   <a href="https://www.npmjs.org/package/react-native">
-    <img src="https://badge.fury.io/js/react-native.svg" alt="Current npm package version." />
+    <img src="https://img.shields.io/npm/v/react-native?color=brightgreen&label=npm%20package" alt="Current npm package version." />
   </a>
   <a href="https://reactnative.dev/docs/contributing">
     <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome!" />
@@ -36,7 +36,7 @@
   <span> · </span>
   <a href="https://reactnative.dev/docs/contributing">Contribute</a>
   <span> · </span>
-  <a href="https://reactnative.dev/en/help">Community</a>
+  <a href="https://reactnative.dev/help">Community</a>
   <span> · </span>
   <a href="https://github.com/facebook/react-native/blob/master/.github/SUPPORT.md">Support</a>
 </h3>
@@ -71,15 +71,15 @@ React Native apps may target iOS 10.0 and Android 4.1 (API 16) or newer. You may
 
 ## 🎉 Building your first React Native app
 
-Follow the [Getting Started guide](https://reactnative.dev/docs/getting-started.html). The recommended way to install React Native depends on your project. Here you can find short guides for the most common scenarios:
+Follow the [Getting Started guide](https://reactnative.dev/docs/getting-started). The recommended way to install React Native depends on your project. Here you can find short guides for the most common scenarios:
 
 - [Trying out React Native][hello-world]
 - [Creating a New Application][new-app]
 - [Adding React Native to an Existing Application][existing]
 
 [hello-world]: https://snack.expo.io/@hramos/hello,-world!
-[new-app]: https://reactnative.dev/docs/getting-started.html
-[existing]: https://reactnative.dev/docs/integration-with-existing-apps.html
+[new-app]: https://reactnative.dev/docs/getting-started
+[existing]: https://reactnative.dev/docs/integration-with-existing-apps
 
 ## 📖 Documentation
 
@@ -89,7 +89,7 @@ The React Native documentation discusses components, APIs, and topics that are s
 
 The source for the React Native documentation and website is hosted on a separate repo, [**@facebook/react-native-website**][repo-website].
 
-[docs]: https://reactnative.dev/docs/getting-started.html
+[docs]: https://reactnative.dev/docs/getting-started
 [r-docs]: https://reactjs.org/docs/getting-started.html
 [repo-website]: https://github.com/facebook/react-native-website
 

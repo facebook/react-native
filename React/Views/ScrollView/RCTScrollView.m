@@ -11,6 +11,7 @@
 
 #import "RCTConvert.h"
 #import "RCTLog.h"
+#import "RCTRefreshControl.h"
 #import "RCTScrollEvent.h"
 #import "RCTUIManager.h"
 #import "RCTUIManagerObserverCoordinator.h"
@@ -18,10 +19,6 @@
 #import "RCTUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
-
-#if !TARGET_OS_TV
-#import "RCTRefreshControl.h"
-#endif
 
 /**
  * Include a custom scroll view subclass because we want to limit certain
@@ -31,10 +28,8 @@
 @interface RCTCustomScrollView : UIScrollView <UIGestureRecognizerDelegate>
 
 @property (nonatomic, assign) BOOL centerContent;
-#if !TARGET_OS_TV
 @property (nonatomic, strong) UIView<RCTCustomRefreshContolProtocol> *customRefreshControl;
 @property (nonatomic, assign) BOOL pinchGestureEnabled;
-#endif
 
 @end
 
@@ -52,9 +47,7 @@
       self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
     }
 
-#if !TARGET_OS_TV
     _pinchGestureEnabled = YES;
-#endif
   }
   return self;
 }
@@ -223,14 +216,23 @@
   }
 }
 
-#if !TARGET_OS_TV
 - (void)setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)refreshControl
 {
   if (_customRefreshControl) {
     [_customRefreshControl removeFromSuperview];
   }
   _customRefreshControl = refreshControl;
-  [self addSubview:_customRefreshControl];
+  // We have to set this because we can't always guarantee the
+  // `RCTCustomRefreshContolProtocol`'s superview will always be of class
+  // `UIScrollView` like we were previously
+  if ([_customRefreshControl respondsToSelector:@selector(setScrollView:)]) {
+    _customRefreshControl.scrollView = self;
+  }
+  if ([refreshControl isKindOfClass:UIRefreshControl.class]) {
+    self.refreshControl = (UIRefreshControl *)refreshControl;
+  } else {
+    [self addSubview:_customRefreshControl];
+  }
 }
 
 - (void)setPinchGestureEnabled:(BOOL)pinchGestureEnabled
@@ -246,7 +248,6 @@
   // in the setter gets overridden when the view loads.
   self.pinchGestureRecognizer.enabled = _pinchGestureEnabled;
 }
-#endif // TARGET_OS_TV
 
 - (BOOL)shouldGroupAccessibilityChildren
 {
@@ -260,7 +261,7 @@
 @end
 
 @implementation RCTScrollView {
-  RCTEventDispatcher *_eventDispatcher;
+  id<RCTEventDispatcherProtocol> _eventDispatcher;
   CGRect _prevFirstVisibleFrame;
   __weak UIView *_firstVisibleView;
   RCTCustomScrollView *_scrollView;
@@ -274,7 +275,7 @@
   NSHashTable *_scrollListeners;
 }
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
 {
   RCTAssertParam(eventDispatcher);
 
@@ -299,7 +300,6 @@
 #endif
 
     _automaticallyAdjustContentInsets = YES;
-    _DEPRECATED_sendUpdatedChildFrames = NO;
     _contentInset = UIEdgeInsetsZero;
     _contentSize = CGSizeZero;
     _lastClippedToRect = CGRectNull;
@@ -342,15 +342,12 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 - (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:view atIndex:atIndex];
-#if !TARGET_OS_TV
   if ([view conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
     [_scrollView setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)view];
     if (![view isKindOfClass:[UIRefreshControl class]] && [view conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
       [self addScrollListener:(UIView<UIScrollViewDelegate> *)view];
     }
-  } else
-#endif
-  {
+  } else {
     RCTAssert(
         _contentView == nil,
         @"RCTScrollView may only contain a single subview, the already set subview looks like: %@",
@@ -364,16 +361,13 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 - (void)removeReactSubview:(UIView *)subview
 {
   [super removeReactSubview:subview];
-#if !TARGET_OS_TV
   if ([subview conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
     [_scrollView setCustomRefreshControl:nil];
     if (![subview isKindOfClass:[UIRefreshControl class]] &&
         [subview conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
       [self removeScrollListener:(UIView<UIScrollViewDelegate> *)subview];
     }
-  } else
-#endif
-  {
+  } else {
     RCTAssert(_contentView == subview, @"Attempted to remove non-existent subview");
     _contentView = nil;
   }
@@ -422,7 +416,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 #if !TARGET_OS_TV
   // Adjust the refresh control frame if the scrollview layout changes.
   UIView<RCTCustomRefreshContolProtocol> *refreshControl = _scrollView.customRefreshControl;
-  if (refreshControl && refreshControl.isRefreshing) {
+  if (refreshControl && refreshControl.isRefreshing && ![refreshControl isKindOfClass:UIRefreshControl.class]) {
     refreshControl.frame =
         (CGRect){_scrollView.contentOffset, {_scrollView.frame.size.width, refreshControl.frame.size.height}};
   }
@@ -593,48 +587,12 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
    */
   if (_allowNextScrollNoMatterWhat ||
       (_scrollEventThrottle > 0 && _scrollEventThrottle < MAX(0.017, now - _lastScrollDispatchTime))) {
-    if (_DEPRECATED_sendUpdatedChildFrames) {
-      // Calculate changed frames
-      RCT_SEND_SCROLL_EVENT(onScroll, (@{@"updatedChildFrames" : [self calculateChildFramesData]}));
-    } else {
-      RCT_SEND_SCROLL_EVENT(onScroll, nil);
-    }
-
+    RCT_SEND_SCROLL_EVENT(onScroll, nil);
     // Update dispatch time
     _lastScrollDispatchTime = now;
     _allowNextScrollNoMatterWhat = NO;
   }
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidScroll : scrollView);
-}
-
-- (NSArray<NSDictionary *> *)calculateChildFramesData
-{
-  NSMutableArray<NSDictionary *> *updatedChildFrames = [NSMutableArray new];
-  [[_contentView reactSubviews] enumerateObjectsUsingBlock:^(UIView *subview, NSUInteger idx, __unused BOOL *stop) {
-    // Check if new or changed
-    CGRect newFrame = subview.frame;
-    BOOL frameChanged = NO;
-    if (self->_cachedChildFrames.count <= idx) {
-      frameChanged = YES;
-      [self->_cachedChildFrames addObject:[NSValue valueWithCGRect:newFrame]];
-    } else if (!CGRectEqualToRect(newFrame, [self->_cachedChildFrames[idx] CGRectValue])) {
-      frameChanged = YES;
-      self->_cachedChildFrames[idx] = [NSValue valueWithCGRect:newFrame];
-    }
-
-    // Create JS frame object
-    if (frameChanged) {
-      [updatedChildFrames addObject:@{
-        @"index" : @(idx),
-        @"x" : @(newFrame.origin.x),
-        @"y" : @(newFrame.origin.y),
-        @"width" : @(newFrame.size.width),
-        @"height" : @(newFrame.size.height),
-      }];
-    }
-  }];
-
-  return updatedChildFrames;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
@@ -1021,10 +979,8 @@ RCT_SET_AND_PRESERVE_OFFSET(setKeyboardDismissMode, keyboardDismissMode, UIScrol
 RCT_SET_AND_PRESERVE_OFFSET(setMaximumZoomScale, maximumZoomScale, CGFloat)
 RCT_SET_AND_PRESERVE_OFFSET(setMinimumZoomScale, minimumZoomScale, CGFloat)
 RCT_SET_AND_PRESERVE_OFFSET(setScrollEnabled, isScrollEnabled, BOOL)
-#if !TARGET_OS_TV
 RCT_SET_AND_PRESERVE_OFFSET(setPagingEnabled, isPagingEnabled, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setScrollsToTop, scrollsToTop, BOOL)
-#endif
 RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
@@ -1066,9 +1022,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
 
 @end
 
-@implementation RCTEventDispatcher (RCTScrollView)
-
-- (void)sendFakeScrollEvent:(NSNumber *)reactTag
+void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNumber *reactTag)
 {
   // Use the selector here in case the onScroll block property is ever renamed
   NSString *eventName = NSStringFromSelector(@selector(onScroll));
@@ -1081,7 +1035,5 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
                                                           scrollViewZoomScale:0
                                                                      userData:nil
                                                                 coalescingKey:0];
-  [self sendEvent:fakeScrollEvent];
+  [eventDispatcher sendEvent:fakeScrollEvent];
 }
-
-@end

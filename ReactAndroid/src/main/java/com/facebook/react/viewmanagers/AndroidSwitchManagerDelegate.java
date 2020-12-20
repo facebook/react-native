@@ -15,7 +15,6 @@ import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class AndroidSwitchManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & AndroidSwitchManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public AndroidSwitchManagerDelegate(U viewManager) {
