@@ -1,0 +1,36 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "警告彈窗",
+"checkbox"         =    "核取方塊",
+"combobox"         =    "組合框",
+"menu"             =    "功能表",
+"menubar"          =    "功能表列",
+"menuitem"         =    "功能表項目",
+"progressbar"      =    "進度列",
+"radio"            =    "選項按鈕",
+"radiogroup"       =    "選項按鈕組",
+"scrollbar"        =    "捲軸",
+"spinbutton"       =    "旋轉按鈕",
+"switch"           =    "開關",
+"tab"              =    "索引標籤",
+"tablist"          =    "索引標籤清單",
+"timer"            =    "計時器",
+"toolbar"          =    "工具列",
+"header"           =    "標題",
+"image"            =    "圖片",
+"imagebutton"      =    "按鈕，圖片",
+"link"             =    "連結",
+"search"           =    "搜尋方塊",
+"summary"          =    "摘要總結",
+
+// stateDescriptions
+"checked"          =    "已選取",
+"unchecked"        =    "未選取",
+"busy"             =    "忙",
+"expanded"         =    "展開",
+"collapsed"        =    "折疊",
+"mixed"            =    "混合",

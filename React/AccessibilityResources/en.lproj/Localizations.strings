@@ -1,0 +1,36 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "Alert",
+"checkbox"         =    "Checkbox",
+"combobox"         =    "Combo box",
+"menu"             =    "Menu",
+"menubar"          =    "Menu bar",
+"menuitem"         =    "Menu item",
+"progressbar"      =    "Progress bar",
+"radio"            =    "Radio button",
+"radiogroup"       =    "Radio group",
+"scrollbar"        =    "Scroll bar",
+"spinbutton"       =    "Spin button",
+"switch"           =    "Switch",
+"tab"              =    "Tab",
+"tablist"          =    "Tab list",
+"timer"            =    "Timer",
+"toolbar"          =    "Tool Bar",
+"header"           =    "Title",
+"image"            =    "Image",
+"imagebutton"      =    "Button, Image",
+"link"             =    "Link",
+"search"           =    "Search field",
+"summary"          =    "Summary",
+
+// stateDescriptions
+"checked"          =    "Checked",
+"unchecked"        =    "Unchecked",
+"busy"             =    "Busy",
+"expanded"         =    "Expanded",
+"collapsed"        =    "Collapsed",
+"mixed"            =    "Mixed",

@@ -1,0 +1,37 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "Alarm",
+"checkbox"         =    "Kontrollkästchen",
+"combobox"         =    "Kombinationsfeld",
+"menu"             =    "Menü",
+"menubar"          =    "Menüleiste",
+"menuitem"         =    "Menüpunkt",
+"progressbar"      =    "Fortschrittsanzeige",
+"radio"            =    "Optionsschaltfläche",
+"radiogroup"       =    "Optionsfeldgruppe",
+"scrollbar"        =    "Scroll-Leiste",
+"spinbutton"       =    "Drehfeld",
+"switch"           =    "Schalter",
+"tab"              =    "Tab",
+"tablist"          =    "Tab-Liste",
+"timer"            =    "Timer",
+"toolbar"          =    "Symbolleiste",
+"header"           =    "Titel",
+"image"            =    "Bild",
+"imagebutton"      =    "Taste, Bild",
+"link"             =    "Verbinden",
+"search"           =    "Suchfeld",
+"summary"          =    "Zusammenfassung",
+
+// stateDescriptions
+"checked"          =    "Aktiviert",
+"unchecked"        =    "Nicht aktiviert",
+"busy"             =    "Beschäftigt",
+"expanded"         =    "Eingeblendet",
+"collapsed"        =    "Ausgeblendet",
+"mixed"            =    "Gemischt",
+ 

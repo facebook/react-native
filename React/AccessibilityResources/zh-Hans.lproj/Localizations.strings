@@ -1,0 +1,36 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "警告弹窗",
+"checkbox"         =    "复选框",
+"combobox"         =    "组合框",
+"menu"             =    "菜单",
+"menubar"          =    "菜单栏",
+"menuitem"         =    "菜单项",
+"progressbar"      =    "进度条",
+"radio"            =    "单选按钮",
+"radiogroup"       =    "选项按钮组",
+"scrollbar"        =    "滚动条",
+"spinbutton"       =    "旋转按钮",
+"switch"           =    "开关",
+"tab"              =    "选项卡",
+"tablist"          =    "选项卡列表",
+"timer"            =    "计时器",
+"toolbar"          =    "工具栏",
+"header"           =    "标题",
+"image"            =    "图片",
+"imagebutton"      =    "按钮, 图片",
+"link"             =    "链接",
+"search"           =    "搜索框",
+"summary"          =    "简要总结",
+
+// stateDescriptions
+"checked"          =    "已选中",
+"unchecked"        =    "未选中",
+"busy"             =    "忙",
+"expanded"         =    "展开",
+"collapsed"        =    "折叠",
+"mixed"            =    "混合",

@@ -1,0 +1,36 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "Alarm",
+"checkbox"         =    "Selectievakje",
+"combobox"         =    "Combo box",
+"menu"             =    "Menu",
+"menubar"          =    "Menubalk",
+"menuitem"         =    "Menu-item",
+"progressbar"      =    "Voortgangsbalk",
+"radio"            =    "Radioknop",
+"radiogroup"       =    "Radiogroep",
+"scrollbar"        =    "Scrollbalk",
+"spinbutton"       =    "Draaiknop",
+"switch"           =    "Schakelaar",
+"tab"              =    "Tabblad",
+"tablist"          =    "Lijst van tabbladen",
+"timer"            =    "Timer",
+"toolbar"          =    "Taakbalk",
+"header"           =    "Titel",
+"image"            =    "Afbeelding",
+"imagebutton"      =    "Knop, afbeelding",
+"link"             =    "Koppelen",
+"search"           =    "Zoekveld",
+"summary"          =    "Samenvatting",
+
+// stateDescriptions
+"checked"          =    "Gecontroleerd",
+"unchecked"        =    "Niet gekozen",
+"busy"             =    "In gebruik",
+"expanded"         =    "Uitgebreid",
+"collapsed"        =    "Ingestort",
+"mixed"            =    "Gemist",

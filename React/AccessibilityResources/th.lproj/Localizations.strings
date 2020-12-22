@@ -1,0 +1,38 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "การแจ้งเตือน",
+"checkbox"         =    "กล่องทำเครื่องหมาย",
+"combobox"         =    "กล่องคอมโบ",
+"menu"             =    "เมนู",
+"menubar"          =    "แถบเมนู",
+"menuitem"         =    "รายการเมนู",
+"progressbar"      =    "แถบแสดงความคืบหน้า",
+"radio"            =    "ปุ่มวิทยุ",
+"radiogroup"       =    "กลุ่มวิทยุ",
+"scrollbar"        =    "แถบเลื่อน",
+"spinbutton"       =    "ปุ่มหมุน",
+"switch"           =    "เปลี่ยน",
+"tab"              =    "แท็บ",
+"tablist"          =    "รายการแท็บ",
+"timer"            =    "นาฬิกาจับเวลา",
+"toolbar"          =    "แถบเครื่องมือ",
+"header"           =    "ชื่อ",
+"image"            =    "รูปภาพ",
+"imagebutton"      =    "ปุ่ม, รูปภาพ",
+"link"             =    "ลิงก์",
+"search"           =    "ช่องค้นหา",
+"summary"          =    "สรุป",
+
+// stateDescriptions
+"checked"          =    "ตรวจสอบแล้ว",
+"unchecked"        =    "ไม่ได้รับการเลือกตั้ง",
+"busy"             =    "ไม่ว่าง",
+"expanded"         =    "ขยาย",
+"collapsed"        =    "ยุบ",
+"mixed"            =    "ผสม",
+
+

@@ -1,0 +1,36 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "Оповещение",
+"checkbox"         =    "Флажок",
+"combobox"         =    "Выпадающий список",
+"menu"             =    "Меню",
+"menubar"          =    "Строка меню",
+"menuitem"         =    "Пункт меню",
+"progressbar"      =    "Индикатор выполнения",
+"radio"            =    "Радиокнопка",
+"radiogroup"       =    "Группа радиокнопок",
+"scrollbar"        =    "Полоса прокрутки",
+"spinbutton"       =    "Счетчик",
+"switch"           =    "Переключатель",
+"tab"              =    "Вкладка",
+"tablist"          =    "Список вкладок",
+"timer"            =    "Таймер",
+"toolbar"          =    "Панель инструментов",
+"header"           =    "Название",
+"image"            =    "Изображение",
+"imagebutton"      =    "Кнопка, изображение",
+"link"             =    "Связать",
+"search"           =    "Поле поиска",
+"summary"          =    "Общие сведения",
+
+// stateDescriptions
+"checked"          =    "Отмечено",
+"unchecked"        =    "Не избран",
+"busy"             =    "Занято",
+"expanded"         =    "Развернуто",
+"collapsed"        =    "Свернуто",
+"mixed"            =    "Смешанные",

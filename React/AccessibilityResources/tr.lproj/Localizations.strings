@@ -1,0 +1,36 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "Uyarı",
+"checkbox"         =    "Onay kutusu",
+"combobox"         =    "Birleşik giriş kutusu",
+"menu"             =    "Menü",
+"menubar"          =    "Menü çubuğu",
+"menuitem"         =    "Menü öğesi",
+"progressbar"      =    "İlerleme çubuğu",
+"radio"            =    "Radyo düğmesi",
+"radiogroup"       =    "Radyo grubu",
+"scrollbar"        =    "Kaydırma çubuğu",
+"spinbutton"       =    "Değer değiştirme düğmesi",
+"switch"           =    "Anahtar",
+"tab"              =    "Sekme",
+"tablist"          =    "Sekme listesi",
+"timer"            =    "Zamanlayıcı",
+"toolbar"          =    "Araç Çubuğu",
+"header"           =    "Başlık",
+"image"            =    "Görüntü",
+"imagebutton"      =    "Düğme, Görüntü",
+"link"             =    "Bağlantı",
+"search"           =    "Arama alanı",
+"summary"          =    "Özet",
+
+// stateDescriptions
+"checked"          =    "İşaretli",
+"unchecked"        =    "Seçilmedi",
+"busy"             =    "Meşgul",
+"expanded"         =    "Genişletilmiş",
+"collapsed"        =    "Küçültülmüş",
+"mixed"            =    "Karışık",

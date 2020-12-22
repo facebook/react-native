@@ -1,0 +1,37 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "Cảnh báo",
+"checkbox"         =    "Ô chọn",
+"combobox"         =    "Hộp tổ hợp",
+"menu"             =    "Menu",
+"menubar"          =    "Thanh Menu",
+"menuitem"         =    "Mục trên Menu",
+"progressbar"      =    "Thanh tiến độ",
+"radio"            =    "Nút radio",
+"radiogroup"       =    "Nhóm Radio",
+"scrollbar"        =    "Thanh cuốn",
+"spinbutton"       =    "Nút xoay",
+"switch"           =    "Công tắc",
+"tab"              =    "tab",
+"tablist"          =    "Danh sách thẻ",
+"timer"            =    "Hẹn giờ",
+"toolbar"          =    "Thanh công cụ",
+"header"           =    "Tiêu đề",
+"image"            =    "Hình ảnh",
+"imagebutton"      =    "Nút ấn, Hình ảnh",
+"link"             =    "Liên kết",
+"search"           =    "Trường tìm kiếm",
+"summary"          =    "Tóm tắt",
+
+// stateDescriptions
+"checked"          =    "Đã kiểm tra",
+"unchecked"        =    "Không được bầu",
+"busy"             =    "Bận",
+"expanded"         =    "Mở rộng",
+"collapsed"        =    "Thu nhỏ",
+"mixed"            =    "Hỗn hợp",
+

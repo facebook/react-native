@@ -1,0 +1,36 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "Alarm",
+"checkbox"         =    "Pole wyboru",
+"combobox"         =    "Pole wyboru",
+"menu"             =    "Menu",
+"menubar"          =    "Pasek menu",
+"menuitem"         =    "Element menu",
+"progressbar"      =    "Pasek postępu",
+"radio"            =    "Przycisk opcji",
+"radiogroup"       =    "Grupa opcji",
+"scrollbar"        =    "Pasek przewijania",
+"spinbutton"       =    "Spinner",
+"switch"           =    "Przełącznik",
+"tab"              =    "Zakładka",
+"tablist"          =    "Lista zakładek",
+"timer"            =    "Timer",
+"toolbar"          =    "Pasek narzędzi",
+"header"           =    "Tytuł",
+"image"            =    "Obraz",
+"imagebutton"      =    "Przycisk, obraz",
+"link"             =    "Połącz",
+"search"           =    "Pole wyszukiwania",
+"summary"          =    "Podsumowanie",
+
+// stateDescriptions
+"checked"          =    "Zaznaczony",
+"unchecked"        =    "Nie wybrany",
+"busy"             =    "Zajęty",
+"expanded"         =    "Rozwinięty",
+"collapsed"        =    "Zwinięty",
+"mixed"            =    "Połączony",

@@ -1,0 +1,36 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "경고 팝업",
+"checkbox"         =    "체크 박스",
+"combobox"         =    "콤보 박스",
+"menu"             =    "메뉴",
+"menubar"          =    "메뉴 바",
+"menuitem"         =    "메뉴 항목",
+"progressbar"      =    "진행도 표시 줄",
+"radio"            =    "단일 선택 버튼",
+"radiogroup"       =    "옵션 버튼 그룹",
+"scrollbar"        =    "스크롤 바",
+"spinbutton"       =    "회전 버튼",
+"switch"           =    "스위치",
+"tab"              =    "탭",
+"tablist"          =    "탭 목록",
+"timer"            =    "스톱워치",
+"toolbar"          =    "툴바",
+"header"           =    "타이틀",
+"image"            =    "이미지",
+"imagebutton"      =    "버튼, 이미지",
+"link"             =    "링크",
+"search"           =    "검색창",
+"summary"          =    "간단한 요약",
+
+// stateDescriptions
+"checked"          =    "선택 완료",
+"unchecked"        =    "선출되지 않음",
+"busy"             =    "바쁨",
+"expanded"         =    "펼치기",
+"collapsed"        =    "접기",
+"mixed"            =    "혼합",

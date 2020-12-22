@@ -1,0 +1,37 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "警告ポップアップ",
+"checkbox"         =    "チェックボックス",
+"combobox"         =    "ドロップダウン",
+"menu"             =    "メニュー",
+"menubar"          =    "メニューバー",
+"menuitem"         =    "メニュー項目",
+"progressbar"      =    "プログレスバー",
+"radio"            =    "ラジオボタン",
+"radiogroup"       =    "オプションボタン",
+"scrollbar"        =    "スクロールバー",
+"spinbutton"       =    "ローテーションボタン",
+"switch"           =    "スイッチ",
+"tab"              =    "タブ",
+"tablist"          =    "タブリスト",
+"timer"            =    "タイマー",
+"toolbar"          =    "ツールバー",
+"header"           =    "タイトル",
+"image"            =    "画像",
+"imagebutton"      =    "ボタン、画像",
+"link"             =    "リンク",
+"search"           =    "検索ボックス",
+"summary"          =    "簡単なまとめ",
+
+// stateDescriptions
+"checked"          =    "選択済み",
+"unchecked"        =    "選出されない",
+"busy"             =    "ビジー",
+"expanded"         =    "展開する",
+"collapsed"        =    "折りたたむ",
+"mixed"            =    "ミックス",
+

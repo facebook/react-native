@@ -1,0 +1,38 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "Alerte",
+"checkbox"         =    "Case à cocher",
+"combobox"         =    "Zone de liste modifiable",
+"menu"             =    "Menu",
+"menubar"          =    "Barre de menu",
+"menuitem"         =    "Élément de menu",
+"progressbar"      =    "Barre de progression",
+"radio"            =    "Bouton radio",
+"radiogroup"       =    "Groupe de cases d’option",
+"scrollbar"        =    "Barre de défilement",
+"spinbutton"       =    "Toupie",
+"switch"           =    "Interrupteur",
+"tab"              =    "Onglet",
+"tablist"          =    "Liste d’onglets",
+"timer"            =    "Minuteur",
+"toolbar"          =    "Barre d’outils",
+"header"           =    "Titre",
+"image"            =    "Image",
+"imagebutton"      =    "Bouton, Image",
+"link"             =    "Lien",
+"search"           =    "Zone de recherche",
+"summary"          =    "Résumé",
+
+// stateDescriptions
+"checked"          =    "Vérifié",
+"unchecked"        =    "Non vérifié",
+"busy"             =    "Occupé",
+"expanded"         =    "Développé",
+"collapsed"        =    "Réduit",
+"mixed"            =    "Mixte",
+
+
