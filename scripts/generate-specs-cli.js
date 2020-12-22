@@ -23,11 +23,9 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
 
-const USE_FABRIC = process.env.USE_FABRIC != null && !!process.env.USE_FABRIC;
-
 const GENERATORS = {
   android: ['componentsAndroid', 'modulesAndroid'],
-  ios: ['modulesIOS'],
+  ios: ['componentsIOS', 'modulesIOS'],
 };
 
 function generateSpec(

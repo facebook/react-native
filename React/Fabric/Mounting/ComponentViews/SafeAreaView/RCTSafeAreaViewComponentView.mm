@@ -10,7 +10,6 @@
 #import <React/RCTUtils.h>
 #import <react/renderer/components/safeareaview/SafeAreaViewComponentDescriptor.h>
 #import <react/renderer/components/safeareaview/SafeAreaViewState.h>
-#import "FBRCTFabricComponentsPlugins.h"
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
 
