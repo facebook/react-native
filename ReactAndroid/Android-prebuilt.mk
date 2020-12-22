@@ -85,10 +85,10 @@ LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_ANDROID_SRC_DIR)/java/com/facebook/react/turbomodule/core/jni
 include $(PREBUILT_SHARED_LIBRARY)
 
-# react_codegen_reactandroidspec
+# react_codegen_rncore
 include $(CLEAR_VARS)
-LOCAL_MODULE := react_codegen_reactandroidspec
-LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_codegen_reactandroidspec.so
+LOCAL_MODULE := react_codegen_rncore
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_codegen_rncore.so
 LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_GENERATED_SRC_DIR)/codegen/jni
 include $(PREBUILT_SHARED_LIBRARY)
