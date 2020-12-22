@@ -102,8 +102,7 @@ package-lock.json
 # react-native-codegen
 /Libraries/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
-/ReactCommon/fabric/components/rncore/
-/schema-rncore.json
+/ReactCommon/react/renderer/components/rncore/
 
 # Visual studio
 .vscode

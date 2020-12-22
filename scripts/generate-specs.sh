@@ -5,18 +5,18 @@
 # LICENSE file in the root directory of this source tree.
 
 # This script collects the JavaScript spec definitions for core
-# native modules, then uses react-native-codegen to generate
-# native code.
+# native modules and components, then uses react-native-codegen
+# to generate native code.
 # The script will use the local react-native-codegen package by
 # default. Optionally, set the CODEGEN_PATH to point to the
 # desired codegen library (e.g. when using react-native-codegen
 # from npm).
 #
 # Usage:
-#   ./scripts/generate-native-modules-specs.sh
+#   ./scripts/generate-specs.sh
 #
-# Example:
-#  CODEGEN_PATH=.. ./scripts/generate-native-modules-specs.sh
+# Examples:
+#  CODEGEN_PATH=.. ./scripts/generate-specs.sh
 
 # shellcheck disable=SC2038
 
@@ -27,6 +27,7 @@ TEMP_DIR=$(mktemp -d /tmp/react-native-codegen-XXXXXXXX)
 RN_DIR=$(cd "$THIS_DIR/.." && pwd)
 CODEGEN_PATH="${CODEGEN_PATH:-$(cd "$RN_DIR/packages/react-native-codegen" && pwd)}"
 YARN_BINARY="${YARN_BINARY:-$(command -v yarn)}"
+USE_FABRIC="${USE_FABRIC:-0}"
 
 cleanup () {
   set +e
@@ -38,12 +39,14 @@ describe () {
   printf "\\n\\n>>>>> %s\\n\\n\\n" "$1"
 }
 
-run_codegen () {
-  SRCS_DIR=$1
-  LIBRARY_NAME=$2
-  OUTPUT_DIR=$3
+main() {
+  SRCS_DIR=$(cd "$RN_DIR/Libraries" && pwd)
 
-  SCHEMA_FILE="$TEMP_DIR/schema-$LIBRARY_NAME.json"
+  OUTPUT_DIR="$TEMP_DIR/out"
+  COMPONENTS_DIR="$RN_DIR/ReactCommon/react/renderer/components/rncore"
+  MODULES_DIR="$RN_DIR/Libraries/FBReactNativeSpec/FBReactNativeSpec"
+
+  SCHEMA_FILE="$TEMP_DIR/schema.json"
 
   if [ ! -d "$CODEGEN_PATH/lib" ]; then
     describe "Building react-native-codegen package"
@@ -58,21 +61,13 @@ run_codegen () {
 
   describe "Generating native code from schema (iOS)"
   pushd "$RN_DIR" >/dev/null || exit
-    "$YARN_BINARY" --silent node scripts/generate-native-modules-specs-cli.js ios "$SCHEMA_FILE" "$OUTPUT_DIR"
+    USE_FABRIC="$USE_FABRIC" "$YARN_BINARY" --silent node scripts/generate-specs-cli.js ios "$SCHEMA_FILE" "$OUTPUT_DIR"
   popd >/dev/null || exit
-}
 
-# Handle Core Modules
-run_codegen_core_modules () {
-  LIBRARY_NAME="FBReactNativeSpec"
-  SRCS_DIR=$(cd "$RN_DIR/Libraries" && pwd)
-  OUTPUT_DIR="$SRCS_DIR/$LIBRARY_NAME/$LIBRARY_NAME"
-
-  run_codegen "$SRCS_DIR" "$LIBRARY_NAME" "$OUTPUT_DIR"
-}
-
-main() {
-  run_codegen_core_modules
+  mkdir -p "$COMPONENTS_DIR" "$MODULES_DIR"
+  mv "$OUTPUT_DIR/FBReactNativeSpec.h" "$OUTPUT_DIR/FBReactNativeSpec-generated.mm" "$MODULES_DIR"
+  find "$OUTPUT_DIR" -type f | xargs sed -i '' 's/FBReactNativeSpec/rncore/g'
+  cp -R "$OUTPUT_DIR/." "$COMPONENTS_DIR"
 }
 
 trap cleanup EXIT
