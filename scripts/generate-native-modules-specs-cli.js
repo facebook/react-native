@@ -23,8 +23,10 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
 
+const USE_FABRIC = process.env.USE_FABRIC != null && !!process.env.USE_FABRIC;
+
 const GENERATORS = {
-  android: ['modulesAndroid'],
+  android: ['componentsAndroid', 'modulesAndroid'],
   ios: ['modulesIOS'],
 };
 
@@ -72,6 +74,21 @@ function generateSpec(
       generators: GENERATORS[platform],
     },
   );
+
+  if (platform === 'android') {
+    // Move all components C++ files to a structured jni folder for now.
+    // Note: this should've been done by RNCodegen's generators, but:
+    // * the generators don't support platform option yet
+    // * this subdir structure is Android-only, not applicable to iOS
+    const files = fs.readdirSync(outputDirectory);
+    const jniOutputDirectory = `${outputDirectory}/jni/react/renderer/components/${libraryName}`;
+    mkdirp.sync(jniOutputDirectory);
+    files
+      .filter(f => f.endsWith('.h') || f.endsWith('.cpp'))
+      .forEach(f => {
+        fs.renameSync(`${outputDirectory}/${f}`, `${jniOutputDirectory}/${f}`);
+      });
+  }
 }
 
 function main() {

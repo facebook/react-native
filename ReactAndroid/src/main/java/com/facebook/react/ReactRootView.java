@@ -27,6 +27,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -41,7 +42,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -53,10 +53,10 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerHelper;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Default root view for catalyst apps. Provides the ability to listen for size changes so that a UI
@@ -99,6 +99,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private int mLastOffsetX = Integer.MIN_VALUE;
   private int mLastOffsetY = Integer.MIN_VALUE;
   private @UIManagerType int mUIManagerType = DEFAULT;
+  private final AtomicInteger mState = new AtomicInteger(STATE_STOPPED);
 
   public ReactRootView(Context context) {
     super(context);
@@ -122,6 +123,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.onMeasure");
+    ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ON_MEASURE_START);
     try {
       boolean measureSpecsUpdated =
           widthMeasureSpec != mWidthMeasureSpec || heightMeasureSpec != mHeightMeasureSpec;
@@ -171,6 +173,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mLastHeight = height;
 
     } finally {
+      ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ON_MEASURE_END);
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
@@ -188,7 +191,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
@@ -276,7 +279,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
@@ -412,6 +415,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return appProperties != null ? appProperties.getString("surfaceID") : null;
   }
 
+  public AtomicInteger getState() {
+    return mState;
+  }
+
+  @UiThread
   public static Point getViewportOffset(View v) {
     int[] locationInWindow = new int[2];
     v.getLocationInWindow(locationInWindow);
@@ -437,7 +445,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
    */
   private void updateRootLayoutSpecs(
       boolean measureSpecsChanged, final int widthMeasureSpec, final int heightMeasureSpec) {
+    ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_UPDATE_LAYOUT_SPECS_START);
     if (mReactInstanceManager == null) {
+      ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_UPDATE_LAYOUT_SPECS_END);
       FLog.w(TAG, "Unable to update root layout specs for uninitialized ReactInstanceManager");
       return;
     }
@@ -466,6 +476,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         mLastOffsetY = offsetY;
       }
     }
+
+    ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_UPDATE_LAYOUT_SPECS_END);
   }
 
   /**
@@ -483,7 +495,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     // to be committed via the Scheduler, which will cause mounting instructions
     // to be queued up and synchronously executed to delete and remove
     // all the views in the hierarchy.
-    if (mReactInstanceManager != null && ReactFeatureFlags.enableStopSurfaceOnRootViewUnmount) {
+    if (mReactInstanceManager != null) {
       final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
       if (reactApplicationContext != null && getUIManagerType() == FABRIC) {
         @Nullable
@@ -623,16 +635,18 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   private void attachToReactInstanceManager() {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachToReactInstanceManager");
-
-    if (mIsAttachedToInstance) {
-      return;
-    }
+    ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ATTACH_TO_REACT_INSTANCE_MANAGER_START);
 
     try {
+      if (mIsAttachedToInstance) {
+        return;
+      }
+
       mIsAttachedToInstance = true;
       Assertions.assertNotNull(mReactInstanceManager).attachRootView(this);
       getViewTreeObserver().addOnGlobalLayoutListener(getCustomGlobalLayoutListener());
     } finally {
+      ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ATTACH_TO_REACT_INSTANCE_MANAGER_END);
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
@@ -756,6 +770,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         return;
       }
       mDeviceRotation = rotation;
+      DisplayMetricsHolder.initDisplayMetrics(getContext().getApplicationContext());
       emitOrientationChanged(rotation);
     }
 

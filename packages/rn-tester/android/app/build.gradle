@@ -66,7 +66,7 @@ plugins {
  *   // Root dir for all JS files for the app. Defaults to `root` above.
  *   jsRootDir: "../..",
  *
- *   // Enable Fabric at build time and runtime.
+ *   // Enable Fabric at runtime.
  *   enableFabric: true,
  *
  *   // Java package name to use for any codegen artifacts produced during build time.
@@ -113,7 +113,7 @@ def enableProguardInReleaseBuilds = true
 def enableCodegen = project.ext.react.enableCodegen
 
 /**
- * Build and enable Fabric in RN Tester app.
+ * Enable Fabric in RN Tester app.
  */
 def enableFabric = project.ext.react.enableFabric
 

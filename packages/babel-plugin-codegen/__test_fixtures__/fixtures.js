@@ -103,8 +103,72 @@ export default (codegenNativeComponent<ModuleProps>('Module', {
 }): NativeType);
 `;
 
+const SAMPLE_TURBO_MODULE_SINGLE_DEFAULT_EXPORT = `
+// @flow
+
+import type {RootTag, TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  // Exported methods.
+  +getConstants: () => {|
+    const1: boolean,
+    const2: number,
+    const3: string,
+  |};
+  +voidFunc: () => void;
+  +getBool: (arg: boolean) => boolean;
+  +getNumber: (arg: number) => number;
+  +getString: (arg: string) => string;
+  +getArray: (arg: Array<any>) => Array<any>;
+  +getObject: (arg: Object) => Object;
+  +getRootTag: (arg: RootTag) => RootTag;
+  +getValue: (x: number, y: string, z: Object) => Object;
+  +getValueWithCallback: (callback: (value: string) => void) => void;
+  +getValueWithPromise: (error: boolean) => Promise<string>;
+}
+
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'SampleTurboModule',
+): Spec);
+`;
+
+const SAMPLE_TURBO_MODULE_VARIABLE_ASSIGNMENT = `
+// @flow
+
+import type {RootTag, TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  // Exported methods.
+  +getConstants: () => {|
+    const1: boolean,
+    const2: number,
+    const3: string,
+  |};
+  +voidFunc: () => void;
+  +getBool: (arg: boolean) => boolean;
+  +getNumber: (arg: number) => number;
+  +getString: (arg: string) => string;
+  +getArray: (arg: Array<any>) => Array<any>;
+  +getObject: (arg: Object) => Object;
+  +getRootTag: (arg: RootTag) => RootTag;
+  +getValue: (x: number, y: string, z: Object) => Object;
+  +getValueWithCallback: (callback: (value: string) => void) => void;
+  +getValueWithPromise: (error: boolean) => Promise<string>;
+}
+
+const module = TurboModuleRegistry.getEnforcing<Spec>(
+  'SampleTurboModule',
+);
+
+export default (module: Spec);
+`;
+
 module.exports = {
   'NotANativeComponent.js': NOT_A_NATIVE_COMPONENT,
   'FullNativeComponent.js': FULL_NATIVE_COMPONENT,
   'FullTypedNativeComponent.js': FULL_NATIVE_COMPONENT_WITH_TYPE_EXPORT,
+  'NativeSampleTurboModule0.js': SAMPLE_TURBO_MODULE_SINGLE_DEFAULT_EXPORT,
+  'NativeSampleTurboModule1.js': SAMPLE_TURBO_MODULE_VARIABLE_ASSIGNMENT,
 };

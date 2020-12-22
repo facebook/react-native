@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_roo
 rn_android_library(
     name = "devsupport",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     manifest = "AndroidManifest.xml",
@@ -46,6 +47,7 @@ rn_android_library(
 rn_android_library(
     name = "interfaces",
     srcs = glob(["interfaces/*.java"]),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [

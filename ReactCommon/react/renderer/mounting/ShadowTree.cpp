@@ -223,11 +223,8 @@ ShadowTree::ShadowTree(
     LayoutContext const &layoutContext,
     RootComponentDescriptor const &rootComponentDescriptor,
     ShadowTreeDelegate const &delegate,
-    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate,
-    bool enableReparentingDetection)
-    : surfaceId_(surfaceId),
-      delegate_(delegate),
-      enableReparentingDetection_(enableReparentingDetection) {
+    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate)
+    : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
 
@@ -249,7 +246,7 @@ ShadowTree::ShadowTree(
       rootShadowNode, ShadowTreeRevision::Number{0}, TransactionTelemetry{}};
 
   mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
-      currentRevision_, mountingOverrideDelegate, enableReparentingDetection);
+      currentRevision_, mountingOverrideDelegate);
 }
 
 ShadowTree::~ShadowTree() {
@@ -302,6 +299,7 @@ CommitStatus ShadowTree::tryCommit(
     oldRevision = currentRevision_;
   }
 
+  auto oldRootShadowNode = oldRevision.rootShadowNode;
   auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
 
   if (!newRootShadowNode ||
@@ -340,6 +338,13 @@ CommitStatus ShadowTree::tryCommit(
     }
 
     auto newRevisionNumber = oldRevision.number + 1;
+
+    newRootShadowNode = delegate_.shadowTreeWillCommit(
+        *this, oldRootShadowNode, newRootShadowNode);
+
+    if (!newRootShadowNode) {
+      return CommitStatus::Cancelled;
+    }
 
     {
       std::lock_guard<std::mutex> dispatchLock(EventEmitter::DispatchMutex());

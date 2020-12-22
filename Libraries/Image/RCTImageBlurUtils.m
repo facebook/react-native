@@ -49,8 +49,14 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   boxSize |= 1; // Ensure boxSize is odd
 
   //create temp buffer
-  void *tempBuffer = malloc((size_t)vImageBoxConvolve_ARGB8888(&buffer1, &buffer2, NULL, 0, 0, boxSize, boxSize,
-                                                               NULL, kvImageEdgeExtend + kvImageGetTempBufferSize));
+  vImage_Error tempBufferSize = vImageBoxConvolve_ARGB8888(&buffer1, &buffer2, NULL, 0, 0, boxSize, boxSize,
+                                                             NULL, kvImageGetTempBufferSize | kvImageEdgeExtend);
+  if (tempBufferSize < 0) {
+    free(buffer1.data);
+    free(buffer2.data);
+    return inputImage;
+  }
+  void *tempBuffer = malloc(tempBufferSize);
   if (!tempBuffer) {
     // CWE - 391 : Unchecked error condition
     // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html

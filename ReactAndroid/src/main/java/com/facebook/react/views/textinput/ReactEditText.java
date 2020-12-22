@@ -419,11 +419,10 @@ public class ReactEditText extends AppCompatEditText
   @Override
   public void setInputType(int type) {
     Typeface tf = super.getTypeface();
-    // Input type password defaults to monospace font, so we need to re-apply the font
-    super.setTypeface(tf);
-
     super.setInputType(type);
     mStagedInputType = type;
+    // Input type password defaults to monospace font, so we need to re-apply the font
+    super.setTypeface(tf);
 
     /**
      * If set forces multiline on input, because of a restriction on Android source that enables
@@ -655,12 +654,10 @@ public class ReactEditText extends AppCompatEditText
 
     List<TextLayoutManager.SetSpanOperation> ops = new ArrayList<>();
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (!Float.isNaN(mTextAttributes.getLetterSpacing())) {
-        ops.add(
-            new TextLayoutManager.SetSpanOperation(
-                start, end, new CustomLetterSpacingSpan(mTextAttributes.getLetterSpacing())));
-      }
+    if (!Float.isNaN(mTextAttributes.getLetterSpacing())) {
+      ops.add(
+          new TextLayoutManager.SetSpanOperation(
+              start, end, new CustomLetterSpacingSpan(mTextAttributes.getLetterSpacing())));
     }
     ops.add(
         new TextLayoutManager.SetSpanOperation(
@@ -948,11 +945,9 @@ public class ReactEditText extends AppCompatEditText
     // `Float.NaN`.
     setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.getEffectiveFontSize());
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
-      if (!Float.isNaN(effectiveLetterSpacing)) {
-        setLetterSpacing(effectiveLetterSpacing);
-      }
+    float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
+    if (!Float.isNaN(effectiveLetterSpacing)) {
+      setLetterSpacing(effectiveLetterSpacing);
     }
   }
 

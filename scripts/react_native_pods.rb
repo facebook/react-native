@@ -62,7 +62,7 @@ def use_react_native! (options={})
   end
 
   if hermes_enabled
-    pod 'React-Core/Hermes', :path => "#{prefix}/"
+    pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
     pod 'hermes-engine'
     pod 'libevent', :podspec => "#{prefix}/third-party-podspecs/libevent.podspec"
   end
@@ -98,6 +98,10 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configurations => configurations
 end
 
+def has_pod(installer, name)
+  installer.pods_project.pod_group(name) != nil
+end
+
 # Post Install processing for Flipper
 def flipper_post_install(installer)
   installer.pods_project.targets.each do |target|
@@ -109,16 +113,34 @@ def flipper_post_install(installer)
   end
 end
 
-# Pre Install processing for Native Modules
-def codegen_pre_install(installer, options={})
-  prefix = options[:path] ||= "../node_modules/react-native"
-  codegen_path = options[:codegen_path] ||= "../node_modules/react-native-codegen"
+def exclude_architectures(installer)
+  projects = installer.aggregate_targets
+    .map{ |t| t.user_project }
+    .uniq{ |p| p.path }
+    .push(installer.pods_project)
 
-  Dir.mktmpdir do |dir|
-    native_module_spec_name = "FBReactNativeSpec"
-    schema_file = dir + "/schema-#{native_module_spec_name}.json"
-    srcs_dir = "#{prefix}/Libraries"
-    schema_generated = system("node #{codegen_path}/lib/cli/combine/combine-js-to-schema-cli.js #{schema_file} #{srcs_dir}")
-    specs_generated = system("node #{prefix}/scripts/generate-native-modules-specs-cli.js ios #{schema_file} #{srcs_dir}/#{native_module_spec_name}/#{native_module_spec_name}")
+  arm_value = `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i
+
+  # Hermes does not support `i386` architecture
+  excluded_archs_default = has_pod(installer, 'hermes-engine') ? "i386" : ""
+
+  projects.each do |project|
+    project.build_configurations.each do |config|
+      if arm_value == 1 then
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
+      else
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64 " + excluded_archs_default
+      end
+    end
+
+    project.save()
   end
+end
+
+def react_native_post_install(installer)
+  if has_pod(installer, 'Flipper')
+    flipper_post_install(installer)
+  end
+
+  exclude_architectures(installer)
 end

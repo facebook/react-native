@@ -82,6 +82,11 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
           .yogaNode_.isDirty() == yogaNode_.isDirty());
 
+  if (getTraits().check(ShadowNodeTraits::Trait::
+                            YogaLayoutableKindMutatesStylesAfterCloning)) {
+    yogaNode_.setDirty(true);
+  }
+
   if (fragment.props) {
     updateYogaProps();
   }

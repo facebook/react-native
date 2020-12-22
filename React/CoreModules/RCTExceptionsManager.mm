@@ -23,8 +23,7 @@
 
 @implementation RCTExceptionsManager
 
-@synthesize bridge = _bridge;
-@synthesize turboModuleRegistry = _turboModuleRegistry;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -42,13 +41,8 @@ RCT_EXPORT_MODULE()
     suppressRedBox:(BOOL)suppressRedBox
 {
   if (!suppressRedBox) {
-    // TODO T5287269 - Delete _bridge case when TM ships.
-    if (_bridge) {
-      [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
-    } else {
-      RCTRedBox *redbox = [_turboModuleRegistry moduleForName:"RCTRedBox"];
-      [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
-    }
+    RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
+    [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
   }
 
   if (_delegate) {
@@ -64,13 +58,8 @@ RCT_EXPORT_MODULE()
      suppressRedBox:(BOOL)suppressRedBox
 {
   if (!suppressRedBox) {
-    // TODO T5287269 - Delete _bridge case when TM ships.
-    if (_bridge) {
-      [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
-    } else {
-      RCTRedBox *redbox = [_turboModuleRegistry moduleForName:"RCTRedBox"];
-      [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
-    }
+    RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
+    [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
   }
 
   if (_delegate) {
@@ -111,13 +100,8 @@ RCT_EXPORT_METHOD(updateExceptionMessage
                   : (NSArray<NSDictionary *> *)stack exceptionId
                   : (double)exceptionId)
 {
-  // TODO T5287269 - Delete _bridge case when TM ships.
-  if (_bridge) {
-    [_bridge.redBox updateErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
-  } else {
-    RCTRedBox *redbox = [_turboModuleRegistry moduleForName:"RCTRedBox"];
-    [redbox updateErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
-  }
+  RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
+  [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
 
   if (_delegate && [_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
     [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];

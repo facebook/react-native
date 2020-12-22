@@ -81,9 +81,9 @@ struct AnimationConfig {
 // This corresponds exactly with JS.
 struct LayoutAnimationConfig {
   double duration; // ms
-  better::optional<AnimationConfig> createConfig;
-  better::optional<AnimationConfig> updateConfig;
-  better::optional<AnimationConfig> deleteConfig;
+  AnimationConfig createConfig;
+  AnimationConfig updateConfig;
+  AnimationConfig deleteConfig;
 };
 
 struct AnimationKeyFrame {
@@ -103,6 +103,9 @@ struct AnimationKeyFrame {
   ShadowView viewStart;
   ShadowView viewEnd;
 
+  // ShadowView representing the previous frame of the animation.
+  ShadowView viewPrev;
+
   // If an animation interrupts an existing one, the starting state may actually
   // be halfway through the intended transition.
   double initialProgress;
@@ -115,7 +118,6 @@ class LayoutAnimationCallbackWrapper {
   LayoutAnimationCallbackWrapper(jsi::Function &&callback)
       : callback_(std::make_shared<jsi::Function>(std::move(callback))) {}
   LayoutAnimationCallbackWrapper() : callback_(nullptr) {}
-  ~LayoutAnimationCallbackWrapper() {}
 
   // Copy and assignment-copy constructors should copy callback_, and not
   // std::move it. Copying is desirable, otherwise the shared_ptr and
@@ -131,7 +133,7 @@ class LayoutAnimationCallbackWrapper {
     }
 
     std::weak_ptr<jsi::Function> callable = callback_;
-    std::shared_ptr<bool> callComplete = callComplete_;
+    std::shared_ptr<std::atomic_bool> callComplete = callComplete_;
 
     runtimeExecutor(
         [=, callComplete = std::move(callComplete)](jsi::Runtime &runtime) {
@@ -147,7 +149,8 @@ class LayoutAnimationCallbackWrapper {
   }
 
  private:
-  std::shared_ptr<bool> callComplete_ = std::make_shared<bool>(false);
+  std::shared_ptr<std::atomic_bool> callComplete_ =
+      std::make_shared<std::atomic_bool>(false);
   std::shared_ptr<jsi::Function> callback_;
 };
 
@@ -220,10 +223,9 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       ShadowViewMutation const &mutation,
       bool skipLastAnimation = false) const;
 
-  std::vector<std::tuple<AnimationKeyFrame, AnimationConfig, LayoutAnimation *>>
-  getAndEraseConflictingAnimations(
+  std::vector<AnimationKeyFrame> getAndEraseConflictingAnimations(
       SurfaceId surfaceId,
-      ShadowViewMutationList &mutations,
+      ShadowViewMutationList const &mutations,
       bool deletesOnly = false) const;
 
   mutable std::mutex surfaceIdsToStopMutex_;
@@ -242,7 +244,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   ShadowView createInterpolatedShadowView(
       double progress,
-      AnimationConfig const &animationConfig,
       ShadowView startingView,
       ShadowView finalView) const;
 
@@ -252,11 +253,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       SurfaceId surfaceId,
       ShadowViewMutation::List &mutationsList,
       uint64_t now) const = 0;
-
-  virtual double getProgressThroughAnimation(
-      AnimationKeyFrame const &keyFrame,
-      LayoutAnimation const *layoutAnimation,
-      ShadowView const &animationStateView) const = 0;
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable better::optional<LayoutAnimation> currentAnimation_{};

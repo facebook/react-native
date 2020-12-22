@@ -23,6 +23,12 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
+  /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
+  public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
+
+  /** Enable TurboModule JS Codegen. */
+  public static volatile boolean useTurboModuleJSCodegen = false;
+
   /*
    * This feature flag enables logs for Fabric
    */
@@ -43,18 +49,6 @@ public class ReactFeatureFlags {
   public static boolean useViewManagerDelegatesForCommands = false;
 
   /**
-   * This react flag enables a custom algorithm for the getChildVisibleRect() method in the classes
-   * ReactViewGroup, ReactHorizontalScrollView and ReactScrollView.
-   *
-   * <p>This new algorithm clip child rects if overflow is set to ViewProps.HIDDEN. More details in
-   * https://github.com/facebook/react-native/issues/23870 and
-   * https://github.com/facebook/react-native/pull/26334
-   *
-   * <p>The react flag is disabled by default because this is increasing ANRs (T57363204)
-   */
-  public static boolean clipChildRectsIfOverflowIsHidden = false;
-
-  /**
    * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
    * remove this when bug is fixed
    */
@@ -63,18 +57,24 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
-  /** Feature flag to use stopSurface when ReactRootView is unmounted. */
-  public static boolean enableStopSurfaceOnRootViewUnmount = false;
+  /** Use lock-free data structures for Fabric MountItems. */
+  public static boolean enableLockFreeMountInstructions = false;
 
-  /** Use experimental SetState retry mechanism in view? */
-  public static boolean enableExperimentalStateUpdateRetry = false;
+  /** Temporary flag for FB-internal workaround for RN:Litho interop in non-Fabric RN. */
+  public static boolean enableNonFabricRNLithoForceLayout = true;
 
-  /** Enable caching of Spannable objects using equality of ReadableNativeMaps */
-  public static boolean enableSpannableCacheByReadableNativeMapEquality = true;
+  /** Disable UI update operations in non-Fabric renderer after catalyst instance was destroyed */
+  public static boolean disableNonFabricViewOperationsOnCatalystDestroy = false;
 
-  /** Disable customDrawOrder in ReactViewGroup under Fabric only. */
-  public static boolean disableCustomDrawOrderFabric = false;
+  /**
+   * Fixes race-condition in the initialization of RN surface. TODO T78832286: remove this flag once
+   * we verify the fix is correct in production
+   */
+  public static boolean enableStartSurfaceRaceConditionFix = false;
 
-  /** Potential bugfix for crashes caused by mutating the view hierarchy during onDraw. */
-  public static boolean enableDrawMutationFix = true;
+  /** Enables the usage of an experimental optimized iterator for ReadableNativeMaps. */
+  public static boolean enableExperimentalReadableNativeMapIterator = false;
+
+  /** Enables Static ViewConfig in RN Android native code. */
+  public static boolean enableExperimentalStaticViewConfigs = false;
 }

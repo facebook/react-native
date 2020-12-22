@@ -491,8 +491,9 @@ export default class Pressability {
       },
 
       onResponderMove: (event: PressEvent): void => {
-        if (this._config.onPressMove != null) {
-          this._config.onPressMove(event);
+        const {onPressMove} = this._config;
+        if (onPressMove != null) {
+          onPressMove(event);
         }
 
         // Region may not have finished being measured, yet.
@@ -655,10 +656,10 @@ export default class Pressability {
       prevState === 'NOT_RESPONDER' &&
       nextState === 'RESPONDER_INACTIVE_PRESS_IN';
 
-    const isActivationTransiton =
+    const isActivationTransition =
       !isActivationSignal(prevState) && isActivationSignal(nextState);
 
-    if (isInitialTransition || isActivationTransiton) {
+    if (isInitialTransition || isActivationTransition) {
       this._measureResponderRegion();
     }
 
@@ -704,11 +705,8 @@ export default class Pressability {
 
   _activate(event: PressEvent): void {
     const {onPressIn} = this._config;
-    const touch = getTouchFromPressEvent(event);
-    this._touchActivatePosition = {
-      pageX: touch.pageX,
-      pageY: touch.pageY,
-    };
+    const {pageX, pageY} = getTouchFromPressEvent(event);
+    this._touchActivatePosition = {pageX, pageY};
     this._touchActivateTime = Date.now();
     if (onPressIn != null) {
       onPressIn(event);

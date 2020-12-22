@@ -22,13 +22,14 @@ interface NativeCommands {
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('NativeComponentRegistry');
 
 const {
   dispatchCommand
 } = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
-const ModuleViewConfig = {
+let nativeComponentName = 'RCTModule';
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'RCTModule',
   bubblingEventTypes: {
     topBubblingEventDefinedInlineNull: {
@@ -48,11 +49,7 @@ const ModuleViewConfig = {
     onDirectEventDefinedInlineNull: true,
     onBubblingEventDefinedInlineNull: true
   }
-};
-let nativeComponentName = 'RCTModule';
-registerGeneratedViewConfig(nativeComponentName, ModuleViewConfig);
-export const __INTERNAL_VIEW_CONFIG = ModuleViewConfig;
-export default nativeComponentName;
+}));
 export const Commands = {
   hotspotUpdate(ref, x, y) {
     dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
@@ -87,13 +84,14 @@ interface NativeCommands {
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('NativeComponentRegistry');
 
 const {
   dispatchCommand
 } = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
-const ModuleViewConfig = {
+let nativeComponentName = 'RCTModule';
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'RCTModule',
   bubblingEventTypes: {
     topBubblingEventDefinedInlineNull: {
@@ -113,11 +111,7 @@ const ModuleViewConfig = {
     onDirectEventDefinedInlineNull: true,
     onBubblingEventDefinedInlineNull: true
   }
-};
-let nativeComponentName = 'RCTModule';
-registerGeneratedViewConfig(nativeComponentName, ModuleViewConfig);
-export const __INTERNAL_VIEW_CONFIG = ModuleViewConfig;
-export default nativeComponentName;
+}));
 export const Commands = {
   hotspotUpdate(ref, x, y) {
     dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
@@ -128,6 +122,501 @@ export const Commands = {
   }
 
 };"
+`;
+
+exports[`Babel plugin inline view configs can inline config for NativeSampleTurboModule0.js 1`] = `
+"// @flow
+import type { RootTag, TurboModule } from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+export interface Spec extends TurboModule {
+  // Exported methods.
+  +getConstants: () => {|
+    const1: boolean,
+    const2: number,
+    const3: string,
+  |},
+  +voidFunc: () => void,
+  +getBool: (arg: boolean) => boolean,
+  +getNumber: (arg: number) => number,
+  +getString: (arg: string) => string,
+  +getArray: (arg: Array<any>) => Array<any>,
+  +getObject: (arg: Object) => Object,
+  +getRootTag: (arg: RootTag) => RootTag,
+  +getValue: (x: number, y: string, z: Object) => Object,
+  +getValueWithCallback: (callback: (value: string) => void) => void,
+  +getValueWithPromise: (error: boolean) => Promise<string>,
+}
+export default (TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule', __getModuleSchema()): Spec);
+
+function __getModuleSchema() {
+  if (!(global.RN$JSTurboModuleCodegenEnabled === true)) {
+    return undefined;
+  }
+
+  return {
+    \\"type\\": \\"NativeModule\\",
+    \\"aliases\\": {},
+    \\"spec\\": {
+      \\"properties\\": [{
+        \\"name\\": \\"getConstants\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"ObjectTypeAnnotation\\",
+            \\"properties\\": [{
+              \\"name\\": \\"const1\\",
+              \\"optional\\": false,
+              \\"typeAnnotation\\": {
+                \\"type\\": \\"BooleanTypeAnnotation\\"
+              }
+            }, {
+              \\"name\\": \\"const2\\",
+              \\"optional\\": false,
+              \\"typeAnnotation\\": {
+                \\"type\\": \\"NumberTypeAnnotation\\"
+              }
+            }, {
+              \\"name\\": \\"const3\\",
+              \\"optional\\": false,
+              \\"typeAnnotation\\": {
+                \\"type\\": \\"StringTypeAnnotation\\"
+              }
+            }]
+          },
+          \\"params\\": []
+        }
+      }, {
+        \\"name\\": \\"voidFunc\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"VoidTypeAnnotation\\"
+          },
+          \\"params\\": []
+        }
+      }, {
+        \\"name\\": \\"getBool\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"BooleanTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"arg\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"BooleanTypeAnnotation\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getNumber\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"NumberTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"arg\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"NumberTypeAnnotation\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getString\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"StringTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"arg\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"StringTypeAnnotation\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getArray\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"ArrayTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"arg\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"ArrayTypeAnnotation\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getObject\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"GenericObjectTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"arg\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"GenericObjectTypeAnnotation\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getRootTag\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"ReservedTypeAnnotation\\",
+            \\"name\\": \\"RootTag\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"arg\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"ReservedTypeAnnotation\\",
+              \\"name\\": \\"RootTag\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getValue\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"GenericObjectTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"x\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"NumberTypeAnnotation\\"
+            }
+          }, {
+            \\"name\\": \\"y\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"StringTypeAnnotation\\"
+            }
+          }, {
+            \\"name\\": \\"z\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"GenericObjectTypeAnnotation\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getValueWithCallback\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"VoidTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"callback\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"FunctionTypeAnnotation\\",
+              \\"returnTypeAnnotation\\": {
+                \\"type\\": \\"VoidTypeAnnotation\\"
+              },
+              \\"params\\": [{
+                \\"name\\": \\"value\\",
+                \\"optional\\": false,
+                \\"typeAnnotation\\": {
+                  \\"type\\": \\"StringTypeAnnotation\\"
+                }
+              }]
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getValueWithPromise\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"PromiseTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"error\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"BooleanTypeAnnotation\\"
+            }
+          }]
+        }
+      }]
+    },
+    \\"moduleNames\\": [\\"SampleTurboModule\\"]
+  };
+}"
+`;
+
+exports[`Babel plugin inline view configs can inline config for NativeSampleTurboModule1.js 1`] = `
+"// @flow
+import type { RootTag, TurboModule } from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+export interface Spec extends TurboModule {
+  // Exported methods.
+  +getConstants: () => {|
+    const1: boolean,
+    const2: number,
+    const3: string,
+  |},
+  +voidFunc: () => void,
+  +getBool: (arg: boolean) => boolean,
+  +getNumber: (arg: number) => number,
+  +getString: (arg: string) => string,
+  +getArray: (arg: Array<any>) => Array<any>,
+  +getObject: (arg: Object) => Object,
+  +getRootTag: (arg: RootTag) => RootTag,
+  +getValue: (x: number, y: string, z: Object) => Object,
+  +getValueWithCallback: (callback: (value: string) => void) => void,
+  +getValueWithPromise: (error: boolean) => Promise<string>,
+}
+const module = TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule', __getModuleSchema());
+export default (module: Spec);
+
+function __getModuleSchema() {
+  if (!(global.RN$JSTurboModuleCodegenEnabled === true)) {
+    return undefined;
+  }
+
+  return {
+    \\"type\\": \\"NativeModule\\",
+    \\"aliases\\": {},
+    \\"spec\\": {
+      \\"properties\\": [{
+        \\"name\\": \\"getConstants\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"ObjectTypeAnnotation\\",
+            \\"properties\\": [{
+              \\"name\\": \\"const1\\",
+              \\"optional\\": false,
+              \\"typeAnnotation\\": {
+                \\"type\\": \\"BooleanTypeAnnotation\\"
+              }
+            }, {
+              \\"name\\": \\"const2\\",
+              \\"optional\\": false,
+              \\"typeAnnotation\\": {
+                \\"type\\": \\"NumberTypeAnnotation\\"
+              }
+            }, {
+              \\"name\\": \\"const3\\",
+              \\"optional\\": false,
+              \\"typeAnnotation\\": {
+                \\"type\\": \\"StringTypeAnnotation\\"
+              }
+            }]
+          },
+          \\"params\\": []
+        }
+      }, {
+        \\"name\\": \\"voidFunc\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"VoidTypeAnnotation\\"
+          },
+          \\"params\\": []
+        }
+      }, {
+        \\"name\\": \\"getBool\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"BooleanTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"arg\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"BooleanTypeAnnotation\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getNumber\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"NumberTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"arg\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"NumberTypeAnnotation\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getString\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"StringTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"arg\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"StringTypeAnnotation\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getArray\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"ArrayTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"arg\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"ArrayTypeAnnotation\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getObject\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"GenericObjectTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"arg\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"GenericObjectTypeAnnotation\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getRootTag\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"ReservedTypeAnnotation\\",
+            \\"name\\": \\"RootTag\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"arg\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"ReservedTypeAnnotation\\",
+              \\"name\\": \\"RootTag\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getValue\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"GenericObjectTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"x\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"NumberTypeAnnotation\\"
+            }
+          }, {
+            \\"name\\": \\"y\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"StringTypeAnnotation\\"
+            }
+          }, {
+            \\"name\\": \\"z\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"GenericObjectTypeAnnotation\\"
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getValueWithCallback\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"VoidTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"callback\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"FunctionTypeAnnotation\\",
+              \\"returnTypeAnnotation\\": {
+                \\"type\\": \\"VoidTypeAnnotation\\"
+              },
+              \\"params\\": [{
+                \\"name\\": \\"value\\",
+                \\"optional\\": false,
+                \\"typeAnnotation\\": {
+                  \\"type\\": \\"StringTypeAnnotation\\"
+                }
+              }]
+            }
+          }]
+        }
+      }, {
+        \\"name\\": \\"getValueWithPromise\\",
+        \\"optional\\": false,
+        \\"typeAnnotation\\": {
+          \\"type\\": \\"FunctionTypeAnnotation\\",
+          \\"returnTypeAnnotation\\": {
+            \\"type\\": \\"PromiseTypeAnnotation\\"
+          },
+          \\"params\\": [{
+            \\"name\\": \\"error\\",
+            \\"optional\\": false,
+            \\"typeAnnotation\\": {
+              \\"type\\": \\"BooleanTypeAnnotation\\"
+            }
+          }]
+        }
+      }]
+    },
+    \\"moduleNames\\": [\\"SampleTurboModule\\"]
+  };
+}"
 `;
 
 exports[`Babel plugin inline view configs can inline config for NotANativeComponent.js 1`] = `

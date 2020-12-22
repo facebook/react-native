@@ -140,7 +140,7 @@ public class RNTesterApplication extends Application implements ReactApplication
                             final List<ReactPackage> packages = reactInstanceManager.getPackages();
 
                             return new TurboModuleManager(
-                                jsContext,
+                                reactApplicationContext.getCatalystInstance().getRuntimeExecutor(),
                                 new RNTesterTurboModuleManagerDelegate(
                                     reactApplicationContext, packages),
                                 reactApplicationContext

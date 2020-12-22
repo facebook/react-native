@@ -21,15 +21,14 @@ namespace react {
 
 MountingCoordinator::MountingCoordinator(
     ShadowTreeRevision baseRevision,
-    std::weak_ptr<MountingOverrideDelegate const> delegate,
-    bool enableReparentingDetection)
+    std::weak_ptr<MountingOverrideDelegate const> delegate)
     : surfaceId_(baseRevision.rootShadowNode->getSurfaceId()),
       baseRevision_(baseRevision),
       mountingOverrideDelegate_(delegate),
-      telemetryController_(*this),
-      enableReparentingDetection_(enableReparentingDetection) {
+      telemetryController_(*this) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
-  stubViewTree_ = stubViewTreeFromShadowNode(*baseRevision_.rootShadowNode);
+  stubViewTree_ = buildStubViewTreeWithoutUsingDifferentiator(
+      *baseRevision_.rootShadowNode);
 #endif
 }
 
@@ -93,9 +92,7 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     telemetry.willDiff();
 
     auto mutations = calculateShadowViewMutations(
-        *baseRevision_.rootShadowNode,
-        *lastRevision_->rootShadowNode,
-        enableReparentingDetection_);
+        *baseRevision_.rootShadowNode, *lastRevision_->rootShadowNode);
 
     telemetry.didDiff();
 
@@ -142,8 +139,8 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     // tree therefore we cannot validate the validity of the mutation
     // instructions.
     if (!shouldOverridePullTransaction && lastRevision_.has_value()) {
-      auto stubViewTree =
-          stubViewTreeFromShadowNode(*lastRevision_->rootShadowNode);
+      auto stubViewTree = buildStubViewTreeWithoutUsingDifferentiator(
+          *lastRevision_->rootShadowNode);
 
       bool treesEqual = stubViewTree_ == stubViewTree;
 

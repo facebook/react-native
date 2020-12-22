@@ -20,7 +20,7 @@ const {ParserError} = require('./errors');
  *
  * TODO(T71778680): Flow type AST Nodes
  */
-export type TypeDeclarationMap = {|[declarationName: string]: $FlowFixMe|};
+export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
 function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
@@ -47,13 +47,13 @@ export type ASTNode = Object;
 const invariant = require('invariant');
 
 type TypeAliasResolutionStatus =
-  | $ReadOnly<{|
+  | $ReadOnly<{
       successful: true,
       aliasName: string,
-    |}>
-  | $ReadOnly<{|
+    }>
+  | $ReadOnly<{
       successful: false,
-    |}>;
+    }>;
 
 function resolveTypeAnnotation(
   // TODO(T71778680): This is an Flow TypeAnnotation. Flow-type this
@@ -137,9 +137,39 @@ function createParserErrorCapturer(): [
   return [errors, guard];
 }
 
+// TODO(T71778680): Flow-type ASTNodes.
+function visit(
+  astNode: $FlowFixMe,
+  visitor: {
+    [type: string]: (node: $FlowFixMe) => void,
+  },
+) {
+  const queue = [astNode];
+  while (queue.length !== 0) {
+    let item = queue.shift();
+
+    if (!(typeof item === 'object' && item != null)) {
+      continue;
+    }
+
+    if (
+      typeof item.type === 'string' &&
+      typeof visitor[item.type] === 'function'
+    ) {
+      // Don't visit any children
+      visitor[item.type](item);
+    } else if (Array.isArray(item)) {
+      queue.push(...item);
+    } else {
+      queue.push(...Object.values(item));
+    }
+  }
+}
+
 module.exports = {
   getValueFromTypes,
   resolveTypeAnnotation,
   createParserErrorCapturer,
   getTypes,
+  visit,
 };
