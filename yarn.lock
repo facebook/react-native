@@ -827,12 +827,12 @@
     slash "^3.0.0"
     strip-ansi "^6.0.0"
 
-"@jest/create-cache-key-function@^26.5.0":
-  version "26.6.2"
-  resolved "https://registry.yarnpkg.com/@jest/create-cache-key-function/-/create-cache-key-function-26.6.2.tgz#04cf439207a4fd12418d8aee551cddc86f9ac5f5"
-  integrity sha512-LgEuqU1f/7WEIPYqwLPIvvHuc1sB6gMVbT6zWhin3txYUNYK/kGQrC1F2WR4gR34YlI9bBtViTm5z98RqVZAaw==
+"@jest/create-cache-key-function@^27.0.0-next.1":
+  version "27.0.0-next.1"
+  resolved "https://registry.yarnpkg.com/@jest/create-cache-key-function/-/create-cache-key-function-27.0.0-next.1.tgz#32dad36d2725025dca7616ec4fa27cf145883796"
+  integrity sha512-w/+iXybtNvjdUJ9fobL0WkgMrqBLh41NGBHSPgDf/FE3PqYt6zQBCNVWNJYCuHDHxJsc0nMsmn2uKAMjOSvyQA==
   dependencies:
-    "@jest/types" "^26.6.2"
+    "@jest/types" "^27.0.0-next.1"
 
 "@jest/environment@^26.6.2":
   version "26.6.2"
@@ -961,6 +961,17 @@
   version "26.6.2"
   resolved "https://registry.yarnpkg.com/@jest/types/-/types-26.6.2.tgz#bef5a532030e1d88a2f5a6d933f84e97226ed48e"
   integrity sha512-fC6QCp7Sc5sX6g8Tvbmj4XUTbyrik0akgRy03yjXbQaBWWNWGE7SGtJk98m0N8nzegD/7SggrUlivxo5ax4KWQ==
+  dependencies:
+    "@types/istanbul-lib-coverage" "^2.0.0"
+    "@types/istanbul-reports" "^3.0.0"
+    "@types/node" "*"
+    "@types/yargs" "^15.0.0"
+    chalk "^4.0.0"
+
+"@jest/types@^27.0.0-next.1":
+  version "27.0.0-next.1"
+  resolved "https://registry.yarnpkg.com/@jest/types/-/types-27.0.0-next.1.tgz#e194976623088495929f06467e64e669ab780e60"
+  integrity sha512-jlXg6eU9du4FO1HZ/A7idx7SLpBDxHja4E0DmDcWWe0DEYKIKlTvKfJwoK8Px3bJILqPdnmhMusmmcpXTkCRQQ==
   dependencies:
     "@types/istanbul-lib-coverage" "^2.0.0"
     "@types/istanbul-reports" "^3.0.0"
