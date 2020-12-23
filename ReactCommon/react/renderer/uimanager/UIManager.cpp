@@ -128,16 +128,6 @@ void UIManager::clearJSResponder() const {
 
 ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
     ShadowNode const &shadowNode) const {
-  auto findNewestChildInParent =
-      [&](auto const &parentNode) -> ShadowNode::Shared {
-    for (auto const &child : parentNode.getChildren()) {
-      if (ShadowNode::sameFamily(*child, shadowNode)) {
-        return child;
-      }
-    }
-    return nullptr;
-  };
-
   auto ancestorShadowNode = ShadowNode::Shared{};
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
@@ -154,7 +144,8 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
     return nullptr;
   }
 
-  return findNewestChildInParent(ancestors.rbegin()->first.get());
+  auto pair = ancestors.rbegin();
+  return pair->first.get().getChildren().at(pair->second);
 }
 
 ShadowNode::Shared UIManager::findNodeAtPoint(
