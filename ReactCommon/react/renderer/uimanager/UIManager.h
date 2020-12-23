@@ -74,6 +74,9 @@ class UIManager final : public ShadowTreeDelegate {
   void registerCommitHook(UIManagerCommitHook const &commitHook) const;
   void unregisterCommitHook(UIManagerCommitHook const &commitHook) const;
 
+  ShadowNode::Shared getNewestCloneOfShadowNode(
+      ShadowNode const &shadowNode) const;
+
 #pragma mark - ShadowTreeDelegate
 
   void shadowTreeDidFinishTransaction(
@@ -124,9 +127,6 @@ class UIManager final : public ShadowTreeDelegate {
   ShadowNode::Shared findNodeAtPoint(
       ShadowNode::Shared const &shadowNode,
       Point point) const;
-
-  ShadowNode::Shared getNewestCloneOfShadowNode(
-      ShadowNode const &shadowNode) const;
 
   /*
    * Returns layout metrics of given `shadowNode` relative to
