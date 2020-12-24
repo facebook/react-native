@@ -423,7 +423,7 @@ jobs:
           steps:
             - run:
                 name: Generate RNTesterPods Workspace
-                command: cd packages/rn-tester && bundle exec pod install --verbose
+                command: cd packages/rn-tester && USE_FABRIC=1 bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
