@@ -103,8 +103,8 @@ def rn_codegen_cli():
         )
 
 def rn_codegen_modules(
+        name,
         native_module_spec_name,
-        name = "",
         library_labels = [],
         schema_target = ""):
     generate_fixtures_rule_name = "generate_fixtures_modules-{}".format(name)
@@ -157,7 +157,7 @@ def rn_codegen_modules(
     )
 
     rn_android_library(
-        name = "generated_java_modules-{}".format(name),
+        name = "{}".format(native_module_spec_name),
         srcs = [
             ":{}".format(generate_module_java_zip_name),
         ],
@@ -176,7 +176,7 @@ def rn_codegen_modules(
     )
 
     rn_xplat_cxx_library(
-        name = "generated_java_modules-{}-jni".format(name),
+        name = "{}-jni".format(native_module_spec_name),
         srcs = [
             ":{}".format(generate_module_jni_cpp_name),
         ],
@@ -229,7 +229,7 @@ def rn_codegen_modules(
         )
 
         rn_apple_library(
-            name = "generated_objcpp_modules-{}Apple".format(name),
+            name = "{}Apple".format(native_module_spec_name),
             extension_api_only = True,
             header_namespace = "",
             sdks = (IOS),

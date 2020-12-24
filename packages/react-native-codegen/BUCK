@@ -94,8 +94,8 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
+        ":FBReactNativeTestSpec",
         ":generated_components-codegen_tests",
-        ":generated_objcpp_modules-codegen_tests",
     ],
 )
 
