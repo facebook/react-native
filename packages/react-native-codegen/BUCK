@@ -9,22 +9,6 @@ SETUP_ENV_DEPS = [] if IS_OSS_BUILD else [
     "//xplat/js:setup_env",
 ]
 
-fb_native.sh_binary(
-    name = "codegen_rn_modules_tests",
-    main = "src/cli/verify_with_old_codegen.sh",
-    visibility = ["PUBLIC"],
-    resources = [
-        "src/cli/verify_with_old_codegen.js",
-        "src/cli/verify_with_old_codegen.sh",
-    ] + SETUP_ENV_DEPS,
-)
-
-fb_native.sh_test(
-    name = "verify_all_modules_with_old_codegen",
-    test = "src/cli/verify_all_modules_with_old_codegen.sh",
-    visibility = ["PUBLIC"],
-)
-
 fb_native.genrule(
     name = "codegen_tests_schema",
     srcs = glob(
