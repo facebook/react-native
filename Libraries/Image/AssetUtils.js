@@ -10,11 +10,12 @@
 
 'use strict';
 
-const PixelRatio = require('../Utilities/PixelRatio');
-function AssetSourcePickScale(
-  scales: Array<number>,
-  deviceScale?: number,
-): number {
+import PixelRatio from '../Utilities/PixelRatio';
+
+let cacheBreaker;
+let warnIfCacheBreakerUnset = true;
+
+export function pickScale(scales: Array<number>, deviceScale?: number): number {
   if (deviceScale == null) {
     deviceScale = PixelRatio.get();
   }
@@ -30,4 +31,16 @@ function AssetSourcePickScale(
   // in which case we default to 1
   return scales[scales.length - 1] || 1;
 }
-module.exports = AssetSourcePickScale;
+
+export function setUrlCacheBreaker(appendage: string) {
+  cacheBreaker = appendage;
+}
+
+export function getUrlCacheBreaker(): string {
+  if (__DEV__ && warnIfCacheBreakerUnset && cacheBreaker == null) {
+    warnIfCacheBreakerUnset = false;
+    console.warn('AssetUtils.getUrlCacheBreaker: Cache breaker value is unset');
+    return '';
+  }
+  return cacheBreaker;
+}
