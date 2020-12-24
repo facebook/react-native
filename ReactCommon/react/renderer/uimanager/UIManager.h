@@ -83,11 +83,6 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override;
 
-  /*
-   * Temporary flags.
-   */
-  bool experimentEnableStateUpdateWithAutorepeat{false};
-
   RootShadowNode::Unshared shadowTreeWillCommit(
       ShadowTree const &shadowTree,
       RootShadowNode::Shared const &oldRootShadowNode,
@@ -143,7 +138,6 @@ class UIManager final : public ShadowTreeDelegate {
    * and performs a commit.
    */
   void updateState(StateUpdate const &stateUpdate) const;
-  void updateStateWithAutorepeat(StateUpdate const &stateUpdate) const;
 
   void dispatchCommand(
       const ShadowNode::Shared &shadowNode,

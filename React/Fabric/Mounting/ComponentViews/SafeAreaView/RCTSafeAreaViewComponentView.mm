@@ -61,7 +61,7 @@ using namespace facebook::react;
   auto newPadding = RCTEdgeInsetsFromUIEdgeInsets(insets);
   auto threshold = 1.0 / RCTScreenScale() + 0.01; // Size of a pixel plus some small threshold.
 
-  _state->updateStateWithAutorepeat(
+  _state->updateState(
       [=](SafeAreaViewShadowNode::ConcreteState::Data const &oldData)
           -> SafeAreaViewShadowNode::ConcreteState::SharedData {
         auto oldPadding = oldData.padding;
@@ -74,7 +74,7 @@ using namespace facebook::react;
 
         auto newData = oldData;
         newData.padding = newPadding;
-        return std::make_shared<SafeAreaViewShadowNode::ConcreteState::Data>(newData);
+        return std::make_shared<SafeAreaViewShadowNode::ConcreteState::Data const>(newData);
       });
 }
 

@@ -311,7 +311,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   _state->updateState([contentOffset](ScrollViewShadowNode::ConcreteState::Data const &data) {
     auto newData = data;
     newData.contentOffset = contentOffset;
-    return newData;
+    return std::make_shared<ScrollViewShadowNode::ConcreteState::Data const>(newData);
   });
 }
 
