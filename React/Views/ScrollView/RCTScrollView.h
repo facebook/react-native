@@ -68,7 +68,7 @@
 
 @interface RCTScrollView (Internal)
 
-- (void)updateContentOffsetIfNeeded;
+- (void)updateContentSizeIfNeeded;
 
 @end
 
