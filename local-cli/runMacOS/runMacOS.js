@@ -87,7 +87,7 @@ async function run(xcodeProject, scheme, args) {
   );
 
   child_process.exec(
-    'open -b ' + bundleID + ' -a ' + appPath,
+    'open -b ' + bundleID + ' -a ' + '"' + appPath + '"',
     (error, stdout, stderr) => {
       if (error) {
         logger.error('Failed to launch the app', stderr);
