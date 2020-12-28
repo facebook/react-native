@@ -28,4 +28,4 @@ export interface Spec extends TurboModule {
   ) => Promise<void>;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>('IntentAndroid'): Spec);
+export default (TurboModuleRegistry.get<Spec>('IntentAndroid'): ?Spec);

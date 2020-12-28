@@ -15,7 +15,9 @@ import * as React from 'react';
 type Value = {horizontal: boolean} | null;
 
 const ScrollViewContext: React.Context<Value> = React.createContext(null);
-
+if (__DEV__) {
+  ScrollViewContext.displayName = 'ScrollViewContext';
+}
 export default ScrollViewContext;
 
 export const HORIZONTAL: Value = Object.freeze({horizontal: true});

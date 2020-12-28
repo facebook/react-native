@@ -10,6 +10,8 @@
 
 'use strict';
 
+const {ParserError} = require('./errors');
+
 /**
  * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
  * declaration type. Unfortunately, we don't have those types, because flow-parser
@@ -18,7 +20,26 @@
  *
  * TODO(T71778680): Flow type AST Nodes
  */
-export type TypeDeclarationMap = {|[declarationName: string]: $FlowFixMe|};
+export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
+
+function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
+  return ast.body.reduce((types, node) => {
+    if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
+      if (
+        node.declaration.type === 'TypeAlias' ||
+        node.declaration.type === 'InterfaceDeclaration'
+      ) {
+        types[node.declaration.id.name] = node.declaration;
+      }
+    } else if (
+      node.type === 'TypeAlias' ||
+      node.type === 'InterfaceDeclaration'
+    ) {
+      types[node.id.name] = node;
+    }
+    return types;
+  }, {});
+}
 
 // $FlowFixMe there's no flowtype for ASTs
 export type ASTNode = Object;
@@ -26,13 +47,13 @@ export type ASTNode = Object;
 const invariant = require('invariant');
 
 type TypeAliasResolutionStatus =
-  | $ReadOnly<{|
+  | $ReadOnly<{
       successful: true,
       aliasName: string,
-    |}>
-  | $ReadOnly<{|
+    }>
+  | $ReadOnly<{
       successful: false,
-    |}>;
+    }>;
 
 function resolveTypeAnnotation(
   // TODO(T71778680): This is an Flow TypeAnnotation. Flow-type this
@@ -72,6 +93,7 @@ function resolveTypeAnnotation(
         resolvedTypeAnnotation.type === 'TypeAlias',
         `GenericTypeAnnotation '${node.id.name}' must resolve to a TypeAlias. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`,
       );
+
       node = resolvedTypeAnnotation.right;
     } else {
       break;
@@ -92,7 +114,62 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
   return value;
 }
 
+export type ParserErrorCapturer = <T>(fn: () => T) => ?T;
+
+function createParserErrorCapturer(): [
+  Array<ParserError>,
+  ParserErrorCapturer,
+] {
+  const errors = [];
+  function guard<T>(fn: () => T): ?T {
+    try {
+      return fn();
+    } catch (error) {
+      if (!(error instanceof ParserError)) {
+        throw error;
+      }
+      errors.push(error);
+
+      return null;
+    }
+  }
+
+  return [errors, guard];
+}
+
+// TODO(T71778680): Flow-type ASTNodes.
+function visit(
+  astNode: $FlowFixMe,
+  visitor: {
+    [type: string]: (node: $FlowFixMe) => void,
+  },
+) {
+  const queue = [astNode];
+  while (queue.length !== 0) {
+    let item = queue.shift();
+
+    if (!(typeof item === 'object' && item != null)) {
+      continue;
+    }
+
+    if (
+      typeof item.type === 'string' &&
+      typeof visitor[item.type] === 'function'
+    ) {
+      // Don't visit any children
+      visitor[item.type](item);
+    } else if (Array.isArray(item)) {
+      queue.push(...item);
+    } else {
+      queue.push(...Object.values(item));
+    }
+  }
+}
+
 module.exports = {
   getValueFromTypes,
   resolveTypeAnnotation,
+  createParserErrorCapturer,
+  getTypes,
+  visit,
 };

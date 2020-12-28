@@ -31,7 +31,6 @@ export interface Spec extends TurboModule {
    *    - 'dark-content'
    *    - 'light-content'
    */
-  // eslint-disable-next-line @react-native/codegen/react-native-modules
   +setStyle: (statusBarStyle?: ?string, animated: boolean) => void;
   /**
    *  - withAnimation can be: 'none' | 'fade' | 'slide'

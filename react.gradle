@@ -159,12 +159,21 @@ afterEvaluate {
             def devEnabled = !(config."devDisabledIn${targetName}"
                 || targetName.toLowerCase().contains("release"))
 
-            def extraArgs = config.extraPackagerArgs ?: [];
+            def extraArgs = []
 
             if (bundleConfig) {
-                extraArgs = extraArgs.clone()
-                extraArgs.add("--config");
-                extraArgs.add(bundleConfig);
+                extraArgs.add("--config")
+                extraArgs.add(bundleConfig)
+            }
+
+            // Hermes doesn't require JS minification.
+            if (enableHermes && !devEnabled) {
+                extraArgs.add("--minify")
+                extraArgs.add("false")
+            }
+
+            if (config.extraPackagerArgs) {
+                extraArgs.addAll(config.extraPackagerArgs)
             }
 
             commandLine(*execCommand, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
@@ -302,6 +311,11 @@ afterEvaluate {
             enabled(currentBundleTask.enabled)
         }
 
+        // mergeResources task runs before the bundle file is copied to the intermediate asset directory from Android plugin 4.1+.
+        // This ensures to copy the bundle file before mergeResources task starts
+        def mergeResourcesTask = tasks.findByName("merge${targetName}Resources")
+        mergeResourcesTask.dependsOn(currentAssetsCopyTask)
+
         packageTask.dependsOn(currentAssetsCopyTask)
         if (buildPreBundleTask != null) {
             buildPreBundleTask.dependsOn(currentAssetsCopyTask)
@@ -310,7 +324,7 @@ afterEvaluate {
         // Delete the VM related libraries that this build doesn't need.
         // The application can manage this manually by setting 'enableVmCleanup: false'
         //
-        // This should really be done by packaging all Hermes releated libs into
+        // This should really be done by packaging all Hermes related libs into
         // two separate HermesDebug and HermesRelease AARs, but until then we'll
         // kludge it by deleting the .so files out of the /transforms/ directory.
         def isRelease = targetName.toLowerCase().contains("release")

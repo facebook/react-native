@@ -37,6 +37,13 @@ class ShadowTree final {
     Cancelled,
   };
 
+  struct CommitOptions {
+    bool enableStateReconciliation{false};
+    // Lambda called inside `tryCommit`. If false is returned, commit is
+    // cancelled.
+    std::function<bool()> shouldCancel;
+  };
+
   /*
    * Creates a new shadow tree instance.
    */
@@ -46,8 +53,7 @@ class ShadowTree final {
       LayoutContext const &layoutContext,
       RootComponentDescriptor const &rootComponentDescriptor,
       ShadowTreeDelegate const &delegate,
-      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate,
-      bool enableReparentingDetection = false);
+      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate);
 
   ~ShadowTree();
 
@@ -63,14 +69,14 @@ class ShadowTree final {
    */
   CommitStatus tryCommit(
       ShadowTreeCommitTransaction transaction,
-      bool enableStateReconciliation = false) const;
+      CommitOptions commitOptions = {false}) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
   CommitStatus commit(
       ShadowTreeCommitTransaction transaction,
-      bool enableStateReconciliation = false) const;
+      CommitOptions commitOptions = {false}) const;
 
   /*
    * Returns a `ShadowTreeRevision` representing the momentary state of
@@ -92,14 +98,6 @@ class ShadowTree final {
 
   MountingCoordinator::Shared getMountingCoordinator() const;
 
-  /*
-   * Temporary.
-   * Do not use.
-   */
-  void setEnableReparentingDetection(bool value) {
-    enableReparentingDetection_ = value;
-  }
-
  private:
   void emitLayoutEvents(
       std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
@@ -109,7 +107,6 @@ class ShadowTree final {
   mutable better::shared_mutex commitMutex_;
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
-  bool enableReparentingDetection_{false};
 };
 
 } // namespace react

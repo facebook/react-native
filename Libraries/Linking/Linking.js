@@ -16,6 +16,7 @@ import Platform from '../Utilities/Platform';
 import NativeLinkingManager from './NativeLinkingManager';
 import NativeIntentAndroid from './NativeIntentAndroid';
 import invariant from 'invariant';
+import nullthrows from 'nullthrows';
 
 /**
  * `Linking` gives you a general interface to interact with both incoming
@@ -25,7 +26,7 @@ import invariant from 'invariant';
  */
 class Linking extends NativeEventEmitter {
   constructor() {
-    super(Platform.OS === 'ios' ? NativeLinkingManager : undefined);
+    super(Platform.OS === 'ios' ? nullthrows(NativeLinkingManager) : undefined);
   }
 
   /**
@@ -55,9 +56,9 @@ class Linking extends NativeEventEmitter {
   openURL(url: string): Promise<void> {
     this._validateURL(url);
     if (Platform.OS === 'android') {
-      return NativeIntentAndroid.openURL(url);
+      return nullthrows(NativeIntentAndroid).openURL(url);
     } else {
-      return NativeLinkingManager.openURL(url);
+      return nullthrows(NativeLinkingManager).openURL(url);
     }
   }
 
@@ -69,9 +70,9 @@ class Linking extends NativeEventEmitter {
   canOpenURL(url: string): Promise<boolean> {
     this._validateURL(url);
     if (Platform.OS === 'android') {
-      return NativeIntentAndroid.canOpenURL(url);
+      return nullthrows(NativeIntentAndroid).canOpenURL(url);
     } else {
-      return NativeLinkingManager.canOpenURL(url);
+      return nullthrows(NativeLinkingManager).canOpenURL(url);
     }
   }
 
@@ -82,9 +83,9 @@ class Linking extends NativeEventEmitter {
    */
   openSettings(): Promise<void> {
     if (Platform.OS === 'android') {
-      return NativeIntentAndroid.openSettings();
+      return nullthrows(NativeIntentAndroid).openSettings();
     } else {
-      return NativeLinkingManager.openSettings();
+      return nullthrows(NativeLinkingManager).openSettings();
     }
   }
 
@@ -97,9 +98,9 @@ class Linking extends NativeEventEmitter {
   getInitialURL(): Promise<?string> {
     return Platform.OS === 'android'
       ? InteractionManager.runAfterInteractions().then(() =>
-          NativeIntentAndroid.getInitialURL(),
+          nullthrows(NativeIntentAndroid).getInitialURL(),
         )
-      : NativeLinkingManager.getInitialURL();
+      : nullthrows(NativeLinkingManager).getInitialURL();
   }
 
   /*
@@ -118,7 +119,7 @@ class Linking extends NativeEventEmitter {
     }>,
   ): Promise<void> {
     if (Platform.OS === 'android') {
-      return NativeIntentAndroid.sendIntent(action, extras);
+      return nullthrows(NativeIntentAndroid).sendIntent(action, extras);
     } else {
       return new Promise((resolve, reject) => reject(new Error('Unsupported')));
     }

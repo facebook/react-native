@@ -223,11 +223,8 @@ ShadowTree::ShadowTree(
     LayoutContext const &layoutContext,
     RootComponentDescriptor const &rootComponentDescriptor,
     ShadowTreeDelegate const &delegate,
-    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate,
-    bool enableReparentingDetection)
-    : surfaceId_(surfaceId),
-      delegate_(delegate),
-      enableReparentingDetection_(enableReparentingDetection) {
+    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate)
+    : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
 
@@ -249,7 +246,7 @@ ShadowTree::ShadowTree(
       rootShadowNode, ShadowTreeRevision::Number{0}, TransactionTelemetry{}};
 
   mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
-      currentRevision_, mountingOverrideDelegate, enableReparentingDetection);
+      currentRevision_, mountingOverrideDelegate);
 }
 
 ShadowTree::~ShadowTree() {
@@ -266,7 +263,7 @@ MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
 
 CommitStatus ShadowTree::commit(
     ShadowTreeCommitTransaction transaction,
-    bool enableStateReconciliation) const {
+    CommitOptions commitOptions) const {
   SystraceSection s("ShadowTree::commit");
 
   int attempts = 0;
@@ -274,7 +271,7 @@ CommitStatus ShadowTree::commit(
   while (true) {
     attempts++;
 
-    auto status = tryCommit(transaction, enableStateReconciliation);
+    auto status = tryCommit(transaction, commitOptions);
     if (status != CommitStatus::Failed) {
       return status;
     }
@@ -287,7 +284,7 @@ CommitStatus ShadowTree::commit(
 
 CommitStatus ShadowTree::tryCommit(
     ShadowTreeCommitTransaction transaction,
-    bool enableStateReconciliation) const {
+    CommitOptions commitOptions) const {
   SystraceSection s("ShadowTree::tryCommit");
 
   auto telemetry = TransactionTelemetry{};
@@ -302,13 +299,15 @@ CommitStatus ShadowTree::tryCommit(
     oldRevision = currentRevision_;
   }
 
+  auto oldRootShadowNode = oldRevision.rootShadowNode;
   auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
 
-  if (!newRootShadowNode) {
+  if (!newRootShadowNode ||
+      (commitOptions.shouldCancel && commitOptions.shouldCancel())) {
     return CommitStatus::Cancelled;
   }
 
-  if (enableStateReconciliation) {
+  if (commitOptions.enableStateReconciliation) {
     auto updatedNewRootShadowNode =
         progressState(*newRootShadowNode, *oldRevision.rootShadowNode);
     if (updatedNewRootShadowNode) {
@@ -340,6 +339,13 @@ CommitStatus ShadowTree::tryCommit(
 
     auto newRevisionNumber = oldRevision.number + 1;
 
+    newRootShadowNode = delegate_.shadowTreeWillCommit(
+        *this, oldRootShadowNode, newRootShadowNode);
+
+    if (!newRootShadowNode) {
+      return CommitStatus::Cancelled;
+    }
+
     {
       std::lock_guard<std::mutex> dispatchLock(EventEmitter::DispatchMutex());
 
@@ -355,6 +361,10 @@ CommitStatus ShadowTree::tryCommit(
         ShadowTreeRevision{newRootShadowNode, newRevisionNumber, telemetry};
 
     currentRevision_ = newRevision;
+  }
+
+  if (commitOptions.shouldCancel && commitOptions.shouldCancel()) {
+    return CommitStatus::Cancelled;
   }
 
   emitLayoutEvents(affectedLayoutableNodes);

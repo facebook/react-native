@@ -11,6 +11,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTFollyConvert.h>
+#import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
@@ -66,6 +67,8 @@ static void RCTPerformMountInstructions(
 
         UIView<RCTComponentViewProtocol> *newChildComponentView = newChildViewDescriptor.view;
 
+        RCTAssert(newChildShadowView.props, @"`newChildShadowView.props` must not be null.");
+
         [newChildComponentView updateProps:newChildShadowView.props oldProps:oldChildShadowView.props];
         [newChildComponentView updateEventEmitter:newChildShadowView.eventEmitter];
         [newChildComponentView updateState:newChildShadowView.state oldState:oldChildShadowView.state];
@@ -93,6 +96,8 @@ static void RCTPerformMountInstructions(
         UIView<RCTComponentViewProtocol> *newChildComponentView = newChildViewDescriptor.view;
 
         auto mask = RNComponentViewUpdateMask{};
+
+        RCTAssert(newChildShadowView.props, @"`newChildShadowView.props` must not be null.");
 
         if (oldChildShadowView.props != newChildShadowView.props) {
           [newChildComponentView updateProps:newChildShadowView.props oldProps:oldChildShadowView.props];
@@ -222,9 +227,25 @@ static void RCTPerformMountInstructions(
   UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
   SharedProps oldProps = [componentView props];
   SharedProps newProps = componentDescriptor.cloneProps(oldProps, RawProps(convertIdToFollyDynamic(props)));
-  [componentView setPropKeysManagedByAnimated:nil];
+
+  NSSet<NSString *> *propKeys = componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN ?: [NSSet new];
+  propKeys = [propKeys setByAddingObjectsFromArray:props.allKeys];
+  componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   [componentView updateProps:newProps oldProps:oldProps];
-  [componentView setPropKeysManagedByAnimated:[NSSet setWithArray:props.allKeys]];
+  componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = propKeys;
+
+  const auto &newViewProps = *std::static_pointer_cast<const ViewProps>(newProps);
+
+  if (props[@"transform"] &&
+      !CATransform3DEqualToTransform(
+          RCTCATransform3DFromTransformMatrix(newViewProps.transform), componentView.layer.transform)) {
+    RCTLogWarn(@"transform was not applied during [RCTViewComponentView updateProps:oldProps:]");
+    componentView.layer.transform = RCTCATransform3DFromTransformMatrix(newViewProps.transform);
+  }
+  if (props[@"opacity"] && componentView.layer.opacity != (float)newViewProps.opacity) {
+    RCTLogWarn(@"opacity was not applied during [RCTViewComponentView updateProps:oldProps:]");
+    componentView.layer.opacity = newViewProps.opacity;
+  }
 }
 
 - (void)synchronouslyDispatchCommandOnUIThread:(ReactTag)reactTag

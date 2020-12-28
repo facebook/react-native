@@ -104,14 +104,15 @@ static uint64_t monotonicTimeGetCurrentNanoseconds(void)
   NSMutableArray *_pendingDecodes;
   NSInteger _scheduledDecodes;
   NSUInteger _activeBytes;
+  std::mutex _loadersMutex;
   __weak id<RCTImageRedirectProtocol> _redirectDelegate;
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 @synthesize maxConcurrentLoadingTasks = _maxConcurrentLoadingTasks;
 @synthesize maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks;
 @synthesize maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes;
-@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -184,26 +185,29 @@ RCT_EXPORT_MODULE()
   }
 
   if (!_loaders) {
-    // Get loaders, sorted in reverse priority order (highest priority first)
+    std::unique_lock<std::mutex> guard(_loadersMutex);
+    if (!_loaders) {
 
-    if (_loadersProvider) {
-      _loaders = _loadersProvider();
-    } else {
-      RCTAssert(_bridge, @"Trying to find RCTImageURLLoaders and bridge not set.");
-      _loaders = [_bridge modulesConformingToProtocol:@protocol(RCTImageURLLoader)];
-    }
-
-    _loaders = [_loaders sortedArrayUsingComparator:^NSComparisonResult(id<RCTImageURLLoader> a, id<RCTImageURLLoader> b) {
-      float priorityA = [a respondsToSelector:@selector(loaderPriority)] ? [a loaderPriority] : 0;
-      float priorityB = [b respondsToSelector:@selector(loaderPriority)] ? [b loaderPriority] : 0;
-      if (priorityA > priorityB) {
-        return NSOrderedAscending;
-      } else if (priorityA < priorityB) {
-        return NSOrderedDescending;
+      // Get loaders, sorted in reverse priority order (highest priority first)
+      if (_loadersProvider) {
+        _loaders = _loadersProvider();
       } else {
-        return NSOrderedSame;
+        RCTAssert(_bridge, @"Trying to find RCTImageURLLoaders and bridge not set.");
+        _loaders = [_bridge modulesConformingToProtocol:@protocol(RCTImageURLLoader)];
       }
-    }];
+
+      _loaders = [_loaders sortedArrayUsingComparator:^NSComparisonResult(id<RCTImageURLLoader> a, id<RCTImageURLLoader> b) {
+        float priorityA = [a respondsToSelector:@selector(loaderPriority)] ? [a loaderPriority] : 0;
+        float priorityB = [b respondsToSelector:@selector(loaderPriority)] ? [b loaderPriority] : 0;
+        if (priorityA > priorityB) {
+          return NSOrderedAscending;
+        } else if (priorityA < priorityB) {
+          return NSOrderedDescending;
+        } else {
+          return NSOrderedSame;
+        }
+      }];
+    }
   }
 
   if (RCT_DEBUG) {
@@ -640,18 +644,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                      progressBlock:(RCTImageLoaderProgressBlock)progressHandler
                                    completionBlock:(void (^)(NSError *error, id imageOrData, NSURLResponse *response))completionHandler
 {
-  // Check if networking module is available
-  if (RCT_DEBUG && ![_bridge respondsToSelector:@selector(networking)]
-      && ![_turboModuleRegistry moduleForName:"RCTNetworking"]) {
+  RCTNetworking *networking = [_moduleRegistry moduleForName:"Networking"];
+  if (RCT_DEBUG && !networking) {
     RCTLogError(@"No suitable image URL loader found for %@. You may need to "
                 " import the RCTNetwork library in order to load images.",
                 request.URL.absoluteString);
     return NULL;
-  }
-
-  RCTNetworking *networking = [_bridge networking];
-  if (!networking) {
-    networking = [_turboModuleRegistry moduleForName:"RCTNetworking"];
   }
 
   // Check if networking module can load image
@@ -835,12 +833,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   return [[RCTImageURLLoaderRequest alloc] initWithRequestId:loaderRequest.requestId imageURL:imageURLRequest.URL cancellationBlock:cancellationBlock];
 }
 
-- (NSString *)loaderModuleNameForRequestUrl:(NSURL *)url {
+- (BOOL)shouldEnablePerfLoggingForRequestUrl:(NSURL *)url {
   id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:url];
-  if ([loadHandler respondsToSelector:@selector(loaderModuleNameForRequestUrl:)]) {
-    return [(id<RCTImageURLLoaderWithAttribution>)loadHandler loaderModuleNameForRequestUrl:url];
+  if ([loadHandler respondsToSelector:@selector(shouldEnablePerfLogging)]) {
+    return [(id<RCTImageURLLoaderWithAttribution>)loadHandler shouldEnablePerfLogging];
   }
-  return nil;
+  return NO;
 }
 
 - (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(UIView *)imageView
@@ -1193,10 +1191,29 @@ RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject)
 {
+  [self prefetchImageWithMetadata:uri queryRootName:nil rootTag:0 resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(prefetchImageWithMetadata:(NSString *)uri
+                  queryRootName:(NSString *)queryRootName
+                  rootTag:(double)rootTag
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject)
+{
   NSURLRequest *request = [RCTConvert NSURLRequest:uri];
   [self loadImageWithURLRequest:request
-   priority:RCTImageLoaderPriorityPrefetch
-   callback:^(NSError *error, UIImage *image) {
+                           size:CGSizeZero
+                          scale:1
+                        clipped:YES
+                     resizeMode:RCTResizeModeStretch
+                       priority:RCTImageLoaderPriorityPrefetch
+                    attribution:{
+                                  .queryRootName = queryRootName ? [queryRootName UTF8String] : "",
+                                  .surfaceId = (int)rootTag,
+                                }
+                  progressBlock:nil
+               partialLoadBlock:nil
+                       completionBlock:^(NSError *error, UIImage *image, id completionMetadata) {
      if (error) {
        reject(@"E_PREFETCH_FAILURE", nil, error);
        return;

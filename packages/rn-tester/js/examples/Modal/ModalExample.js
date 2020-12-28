@@ -21,6 +21,7 @@ const {
   Text,
   TouchableHighlight,
   View,
+  ScrollView,
 } = require('react-native');
 
 const Item = Picker.Item;
@@ -78,9 +79,12 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
     animationType: 'none',
     modalVisible: false,
     transparent: false,
+    hardwareAccelerated: false,
+    statusBarTranslucent: false,
     presentationStyle: 'fullScreen',
     selectedSupportedOrientation: '0',
     currentOrientation: 'unknown',
+    action: '',
   };
 
   _setModalVisible = visible => {
@@ -95,9 +99,38 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
     this.setState({transparent: !this.state.transparent});
   };
 
+  _toggleHardwareAccelerated = () => {
+    this.setState({hardwareAccelerated: !this.state.hardwareAccelerated});
+  };
+
+  _toggleStatusBarTranslucent = () => {
+    this.setState({statusBarTranslucent: !this.state.statusBarTranslucent});
+  };
+
   renderSwitch() {
     if (Platform.isTV) {
       return null;
+    }
+    if (Platform.OS === 'android') {
+      return (
+        <>
+          <Text style={styles.rowTitle}>Hardware Accelerated</Text>
+          <Switch
+            value={this.state.hardwareAccelerated}
+            onValueChange={this._toggleHardwareAccelerated}
+          />
+          <Text style={styles.rowTitle}>Status Bar Translucent</Text>
+          <Switch
+            value={this.state.statusBarTranslucent}
+            onValueChange={this._toggleStatusBarTranslucent}
+          />
+          <Text style={styles.rowTitle}>Transparent</Text>
+          <Switch
+            value={this.state.transparent}
+            onValueChange={this._toggleTransparent}
+          />
+        </>
+      );
     }
     return (
       <Switch
@@ -121,11 +154,13 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
     };
 
     return (
-      <View>
+      <ScrollView contentContainerStyle={styles.ScrollView}>
         <Modal
           animationType={this.state.animationType}
           presentationStyle={this.state.presentationStyle}
           transparent={this.state.transparent}
+          hardwareAccelerated={this.state.hardwareAccelerated}
+          statusBarTranslucent={this.state.statusBarTranslucent}
           visible={this.state.modalVisible}
           onRequestClose={() => this._setModalVisible(false)}
           supportedOrientations={
@@ -135,7 +170,13 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
           }
           onOrientationChange={evt =>
             this.setState({currentOrientation: evt.nativeEvent.orientation})
-          }>
+          }
+          onDismiss={() => {
+            if (this.state.action === 'onDismiss') alert(this.state.action);
+          }}
+          onShow={() => {
+            if (this.state.action === 'onShow') alert(this.state.action);
+          }}>
           <View style={[styles.container, modalBackgroundStyle]}>
             <View
               style={[styles.innerContainer, innerContainerTransparentStyle]}>
@@ -181,15 +222,12 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
           </Button>
         </View>
 
-        <View style={styles.row}>
-          <Text style={styles.rowTitle}>Transparent</Text>
-          {this.renderSwitch()}
-        </View>
+        <View style={styles.row}>{this.renderSwitch()}</View>
         {this.renderPickers()}
         <Button onPress={this._setModalVisible.bind(this, true)}>
           Present
         </Button>
-      </View>
+      </ScrollView>
     );
   }
   renderPickers() {
@@ -219,7 +257,7 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
           <Picker
             selectedValue={this.state.selectedSupportedOrientation}
             onValueChange={(_, i) =>
-              this.setState({selectedSupportedOrientation: i})
+              this.setState({selectedSupportedOrientation: i.toString()})
             }
             itemStyle={styles.pickerItem}>
             <Item label="Portrait" value={'0'} />
@@ -229,6 +267,28 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
             <Item label="Portrait and landscape" value={'4'} />
             <Item label="Default supportedOrientations" value={'5'} />
           </Picker>
+        </View>
+
+        <View>
+          <Text style={styles.rowTitle}>Actions</Text>
+          {Platform.OS === 'ios' ? (
+            <Picker
+              selectedValue={this.state.action}
+              onValueChange={action => this.setState({action})}
+              itemStyle={styles.pickerItem}>
+              <Item label="None" value="" />
+              <Item label="On Dismiss" value="onDismiss" />
+              <Item label="On Show" value="onShow" />
+            </Picker>
+          ) : (
+            <Picker
+              selectedValue={this.state.action}
+              onValueChange={action => this.setState({action})}
+              itemStyle={styles.pickerItem}>
+              <Item label="None" value="" />
+              <Item label="On Show" value="onShow" />
+            </Picker>
+          )}
         </View>
       </View>
     );
@@ -281,5 +341,9 @@ const styles = StyleSheet.create({
   },
   pickerItem: {
     fontSize: 16,
+  },
+  ScrollView: {
+    paddingTop: 10,
+    paddingBottom: 100,
   },
 });

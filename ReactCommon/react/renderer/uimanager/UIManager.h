@@ -25,6 +25,7 @@ namespace facebook {
 namespace react {
 
 class UIManagerBinding;
+class UIManagerCommitHook;
 
 class UIManager final : public ShadowTreeDelegate {
  public:
@@ -67,16 +68,25 @@ class UIManager final : public ShadowTreeDelegate {
       std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
       const;
 
+  /*
+   * Registers and unregisters a commit hook.
+   */
+  void registerCommitHook(UIManagerCommitHook const &commitHook) const;
+  void unregisterCommitHook(UIManagerCommitHook const &commitHook) const;
+
+  ShadowNode::Shared getNewestCloneOfShadowNode(
+      ShadowNode const &shadowNode) const;
+
 #pragma mark - ShadowTreeDelegate
 
   void shadowTreeDidFinishTransaction(
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override;
 
-  /*
-   * Temporary flags.
-   */
-  bool experimentEnableStateUpdateWithAutorepeat{false};
+  RootShadowNode::Unshared shadowTreeWillCommit(
+      ShadowTree const &shadowTree,
+      RootShadowNode::Shared const &oldRootShadowNode,
+      RootShadowNode::Unshared const &newRootShadowNode) const override;
 
  private:
   friend class UIManagerBinding;
@@ -100,10 +110,8 @@ class UIManager final : public ShadowTreeDelegate {
 
   void completeSurface(
       SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildren) const;
-
-  void setNativeProps(ShadowNode const &shadowNode, RawProps const &rawProps)
-      const;
+      SharedShadowNodeUnsharedList const &rootChildren,
+      ShadowTree::CommitOptions commitOptions) const;
 
   void setJSResponder(
       const ShadowNode::Shared &shadowNode,
@@ -114,9 +122,6 @@ class UIManager final : public ShadowTreeDelegate {
   ShadowNode::Shared findNodeAtPoint(
       ShadowNode::Shared const &shadowNode,
       Point point) const;
-
-  ShadowNode::Shared getNewestCloneOfShadowNode(
-      ShadowNode const &shadowNode) const;
 
   /*
    * Returns layout metrics of given `shadowNode` relative to
@@ -133,7 +138,6 @@ class UIManager final : public ShadowTreeDelegate {
    * and performs a commit.
    */
   void updateState(StateUpdate const &stateUpdate) const;
-  void updateStateWithAutorepeat(StateUpdate const &stateUpdate) const;
 
   void dispatchCommand(
       const ShadowNode::Shared &shadowNode,
@@ -158,6 +162,15 @@ class UIManager final : public ShadowTreeDelegate {
   UIManagerBinding *uiManagerBinding_;
   ShadowTreeRegistry shadowTreeRegistry_{};
   BackgroundExecutor backgroundExecutor_{};
+
+  // Used only when BackgroundExecutor is enabled.
+  // Property is used to keep count of `completeRoot` events to
+  // determine whether a commit should be cancelled. Only to be used
+  // inside UIManagerBinding.
+  std::atomic_uint_fast8_t completeRootEventCounter_{0};
+
+  mutable better::shared_mutex commitHookMutex_;
+  mutable std::vector<UIManagerCommitHook const *> commitHooks_;
 };
 
 } // namespace react

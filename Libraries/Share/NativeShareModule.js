@@ -17,7 +17,6 @@ export interface Spec extends TurboModule {
   +getConstants: () => {||};
   +share: (
     content: {|title?: string, message?: string|},
-    // eslint-disable-next-line @react-native/codegen/react-native-modules
     dialogTitle?: string,
   ) => Promise<{|action: string|}>;
 }

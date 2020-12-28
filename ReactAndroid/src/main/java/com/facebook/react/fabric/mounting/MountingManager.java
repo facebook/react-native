@@ -8,7 +8,6 @@
 package com.facebook.react.fabric.mounting;
 
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
-import static com.facebook.infer.annotation.ThreadConfined.UI;
 
 import android.content.Context;
 import android.view.View;
@@ -100,25 +99,37 @@ public class MountingManager {
    * @param reactRootTag
    * @param rootView
    */
-  @ThreadConfined(UI)
-  public void addRootView(int reactRootTag, @NonNull View rootView) {
-    if (rootView.getId() != View.NO_ID) {
-      throw new IllegalViewOperationException(
-          "Trying to add a root view with an explicit id already set. React Native uses "
-              + "the id field to track react tags and will overwrite this field. If that is fine, "
-              + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
-    }
-
+  @AnyThread
+  public void addRootView(final int reactRootTag, @NonNull final View rootView) {
     mTagToViewState.put(
         reactRootTag, new ViewState(reactRootTag, rootView, mRootViewManager, true));
-    rootView.setId(reactRootTag);
+
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            if (rootView.getId() != View.NO_ID) {
+              FLog.e(
+                  TAG,
+                  "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
+                  rootView.getId(),
+                  reactRootTag);
+              throw new IllegalViewOperationException(
+                  "Trying to add a root view with an explicit id already set. React Native uses "
+                      + "the id field to track react tags and will overwrite this field. If that is fine, "
+                      + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+            }
+            rootView.setId(reactRootTag);
+          }
+        });
   }
 
-  /** Delete rootView and all children/ */
+  /** Delete rootView and all children recursively. */
   @UiThread
   public void deleteRootView(int reactRootTag) {
-    if (mTagToViewState.containsKey(reactRootTag)) {
-      dropView(mTagToViewState.get(reactRootTag).mView, true);
+    ViewState rootViewState = mTagToViewState.get(reactRootTag);
+    if (rootViewState != null && rootViewState.mView != null) {
+      dropView(rootViewState.mView, true);
     }
   }
 
@@ -262,12 +273,17 @@ public class MountingManager {
     }
   }
 
-  private @NonNull ViewState getViewState(int tag) {
+  @NonNull
+  private ViewState getViewState(int tag) {
     ViewState viewState = mTagToViewState.get(tag);
     if (viewState == null) {
       throw new RetryableMountingLayerException("Unable to find viewState view for tag " + tag);
     }
     return viewState;
+  }
+
+  public boolean getViewExists(int tag) {
+    return mTagToViewState.get(tag) != null;
   }
 
   private @Nullable ViewState getNullableViewState(int tag) {

@@ -12,7 +12,6 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/debug/SystraceSection.h>
-#include <react/utils/ThreadStorage.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
 #include <limits>
@@ -20,6 +19,8 @@
 
 namespace facebook {
 namespace react {
+
+thread_local LayoutContext threadLocalLayoutContext;
 
 static void applyLayoutConstraints(
     YGStyle &yogaStyle,
@@ -80,6 +81,11 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   assert(
       static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
           .yogaNode_.isDirty() == yogaNode_.isDirty());
+
+  if (getTraits().check(ShadowNodeTraits::Trait::
+                            YogaLayoutableKindMutatesStylesAfterCloning)) {
+    yogaNode_.setDirty(true);
+  }
 
   if (fragment.props) {
     updateYogaProps();
@@ -332,7 +338,7 @@ void YogaLayoutableShadowNode::layoutTree(
 
   applyLayoutConstraints(yogaNode_.getStyle(), layoutConstraints);
 
-  ThreadStorage<LayoutContext>::getInstance().set(layoutContext);
+  threadLocalLayoutContext = layoutContext;
 
   if (layoutContext.swapLeftAndRightInRTL) {
     swapLeftAndRightInTree(*this);
@@ -492,10 +498,8 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
       break;
   }
 
-  auto layoutContext = ThreadStorage<LayoutContext>::getInstance().get();
-
   auto size = shadowNodeRawPtr->measureContent(
-      layoutContext.value_or(LayoutContext{}), {minimumSize, maximumSize});
+      threadLocalLayoutContext, {minimumSize, maximumSize});
 
   return YGSize{yogaFloatFromFloat(size.width),
                 yogaFloatFromFloat(size.height)};

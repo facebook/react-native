@@ -15,8 +15,8 @@
 #import <react/renderer/components/iospicker/PickerProps.h>
 #import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
 #import "RCTConversions.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 

@@ -34,7 +34,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PixelUtil;
@@ -546,9 +545,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
-    return ReactFeatureFlags.clipChildRectsIfOverflowIsHidden
-        ? ReactClippingViewGroupHelper.getChildVisibleRectHelper(child, r, offset, this, mOverflow)
-        : super.getChildVisibleRect(child, r, offset);
+    return super.getChildVisibleRect(child, r, offset);
   }
 
   private int getSnapInterval() {
@@ -817,7 +814,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
 
     // get the nearest snap points to the target offset
-    if (mSnapOffsets != null) {
+    if (mSnapOffsets != null && !mSnapOffsets.isEmpty()) {
       firstOffset = mSnapOffsets.get(0);
       lastOffset = mSnapOffsets.get(mSnapOffsets.size() - 1);
 

@@ -28,6 +28,18 @@ using namespace facebook::react;
 
 static CGFloat const kClippingLeeway = 44.0;
 
+static UIScrollViewKeyboardDismissMode RCTUIKeyboardDismissModeFromProps(ScrollViewProps const &props)
+{
+  switch (props.keyboardDismissMode) {
+    case ScrollViewKeyboardDismissMode::None:
+      return UIScrollViewKeyboardDismissModeNone;
+    case ScrollViewKeyboardDismissMode::OnDrag:
+      return UIScrollViewKeyboardDismissModeOnDrag;
+    case ScrollViewKeyboardDismissMode::Interactive:
+      return UIScrollViewKeyboardDismissModeInteractive;
+  }
+}
+
 static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
 {
   static uint16_t coalescingKey = 0;
@@ -43,12 +55,16 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   [[RCTBridge currentBridge].eventDispatcher sendEvent:scrollEvent];
 }
 
-@interface RCTScrollViewComponentView () <UIScrollViewDelegate, RCTScrollViewProtocol, RCTScrollableProtocol>
+@interface RCTScrollViewComponentView () <
+    UIScrollViewDelegate,
+    RCTScrollViewProtocol,
+    RCTScrollableProtocol,
+    RCTEnhancedScrollViewOverridingDelegate>
 
 @end
 
 @implementation RCTScrollViewComponentView {
-  ScrollViewShadowNode::ConcreteStateTeller _stateTeller;
+  ScrollViewShadowNode::ConcreteState::Shared _state;
   CGSize _contentSize;
   NSTimeInterval _lastScrollEventDispatchTime;
   NSTimeInterval _scrollEventThrottle;
@@ -83,6 +99,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delaysContentTouches = NO;
+    ((RCTEnhancedScrollView *)_scrollView).overridingDelegate = self;
     _isUserTriggeredScrolling = NO;
     [self addSubview:_scrollView];
 
@@ -150,7 +167,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   MAP_SCROLL_VIEW_PROP(decelerationRate);
   MAP_SCROLL_VIEW_PROP(directionalLockEnabled);
   // MAP_SCROLL_VIEW_PROP(indicatorStyle);
-  // MAP_SCROLL_VIEW_PROP(keyboardDismissMode);
   MAP_SCROLL_VIEW_PROP(maximumZoomScale);
   MAP_SCROLL_VIEW_PROP(minimumZoomScale);
   MAP_SCROLL_VIEW_PROP(scrollEnabled);
@@ -219,6 +235,10 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   MAP_SCROLL_VIEW_PROP(disableIntervalMomentum);
   MAP_SCROLL_VIEW_PROP(snapToInterval);
 
+  if (oldScrollViewProps.keyboardDismissMode != newScrollViewProps.keyboardDismissMode) {
+    scrollView.keyboardDismissMode = RCTUIKeyboardDismissModeFromProps(newScrollViewProps);
+  }
+
   // MAP_SCROLL_VIEW_PROP(scrollIndicatorInsets);
 
   [super updateProps:props oldProps:oldProps];
@@ -227,8 +247,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
   assert(std::dynamic_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state));
-  _stateTeller.setConcreteState(state);
-  auto data = _stateTeller.getData().value();
+  _state = std::static_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state);
+  auto &data = _state->getData();
 
   auto contentOffset = RCTCGPointFromPoint(data.contentOffset);
   if (!oldState && !CGPointEqualToPoint(contentOffset, CGPointZero)) {
@@ -284,11 +304,14 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)_updateStateWithContentOffset
 {
+  if (!_state) {
+    return;
+  }
   auto contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
-  _stateTeller.updateState([contentOffset](ScrollViewShadowNode::ConcreteState::Data const &data) {
+  _state->updateState([contentOffset](ScrollViewShadowNode::ConcreteState::Data const &data) {
     auto newData = data;
     newData.contentOffset = contentOffset;
-    return newData;
+    return std::make_shared<ScrollViewShadowNode::ConcreteState::Data const>(newData);
   });
 }
 
@@ -296,12 +319,19 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 {
   const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
   _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
-  _stateTeller.invalidate();
+  _state.reset();
   _isUserTriggeredScrolling = NO;
   [super prepareForRecycle];
 }
 
 #pragma mark - UIScrollViewDelegate
+
+- (BOOL)touchesShouldCancelInContentView:(__unused UIView *)view
+{
+  // Historically, `UIScrollView`s in React Native do not cancel touches
+  // started on `UIControl`-based views (as normal iOS `UIScrollView`s do).
+  return YES;
+}
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
@@ -392,6 +422,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
   [self _forceDispatchNextScrollEvent];
+  [self scrollViewDidScroll:scrollView];
 
   if (!_eventEmitter) {
     return;
@@ -424,7 +455,12 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   [self _updateStateWithContentOffset];
 }
 
-#pragma mark - UIScrollViewDelegate
+- (UIView *)viewForZoomingInScrollView:(__unused UIScrollView *)scrollView
+{
+  return _containerView;
+}
+
+#pragma mark -
 
 - (void)_forceDispatchNextScrollEvent
 {
@@ -445,7 +481,32 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)scrollTo:(double)x y:(double)y animated:(BOOL)animated
 {
-  [_scrollView setContentOffset:CGPointMake(x, y) animated:animated];
+  CGPoint offset = CGPointMake(x, y);
+  if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
+    CGRect maxRect = CGRectMake(
+        fmin(-_scrollView.contentInset.left, 0),
+        fmin(-_scrollView.contentInset.top, 0),
+        fmax(
+            _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right +
+                fmax(_scrollView.contentInset.left, 0),
+            0.01),
+        fmax(
+            _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom +
+                fmax(_scrollView.contentInset.top, 0),
+            0.01)); // Make width and height greater than 0
+
+    const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
+    if (!CGRectContainsPoint(maxRect, offset) && !props.scrollToOverflowEnabled) {
+      CGFloat localX = fmax(offset.x, CGRectGetMinX(maxRect));
+      localX = fmin(localX, CGRectGetMaxX(maxRect));
+      CGFloat localY = fmax(offset.y, CGRectGetMinY(maxRect));
+      localY = fmin(localY, CGRectGetMaxY(maxRect));
+      offset = CGPointMake(localX, localY);
+    }
+
+    [self _forceDispatchNextScrollEvent];
+    [_scrollView setContentOffset:offset animated:animated];
+  }
 }
 
 - (void)scrollToEnd:(BOOL)animated
@@ -569,7 +630,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)zoomToRect:(CGRect)rect animated:(BOOL)animated
 {
-  // Not implemented.
+  [_scrollView zoomToRect:rect animated:animated];
 }
 
 - (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener

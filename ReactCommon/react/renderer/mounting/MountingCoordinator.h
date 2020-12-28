@@ -45,8 +45,7 @@ class MountingCoordinator final {
    */
   MountingCoordinator(
       ShadowTreeRevision baseRevision,
-      std::weak_ptr<MountingOverrideDelegate const> delegate,
-      bool enableReparentingDetection = false);
+      std::weak_ptr<MountingOverrideDelegate const> delegate);
 
   /*
    * Returns the id of the surface that the coordinator belongs to.
@@ -113,8 +112,6 @@ class MountingCoordinator final {
   std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate_;
 
   TelemetryController telemetryController_;
-
-  bool enableReparentingDetection_{false}; // temporary
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   mutable StubViewTree stubViewTree_; // Protected by `mutex_`.

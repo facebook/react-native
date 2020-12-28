@@ -26,8 +26,7 @@ static void testShadowNodeTreeLifeCycle(
     uint_fast32_t seed,
     int treeSize,
     int repeats,
-    int stages,
-    bool useFlattener) {
+    int stages) {
   auto entropy = seed == 0 ? Entropy() : Entropy(seed);
 
   auto eventDispatcher = EventDispatcher::Shared{};
@@ -74,7 +73,7 @@ static void testShadowNodeTreeLifeCycle(
                 SharedShadowNodeList{singleRootChildNode})}));
 
     // Building an initial view hierarchy.
-    auto viewTree = stubViewTreeFromShadowNode(*emptyRootNode);
+    auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
     viewTree.mutate(
         calculateShadowViewMutations(*emptyRootNode, *currentRootNode));
 
@@ -102,12 +101,12 @@ static void testShadowNodeTreeLifeCycle(
       allNodes.push_back(nextRootNode);
 
       // Calculating mutations.
-      auto mutations = calculateShadowViewMutations(
-          *currentRootNode, *nextRootNode, useFlattener);
+      auto mutations =
+          calculateShadowViewMutations(*currentRootNode, *nextRootNode);
 
-      // If using flattener: make sure that in a single frame, a DELETE for a
+      // Make sure that in a single frame, a DELETE for a
       // view is not followed by a CREATE for the same view.
-      if (useFlattener) {
+      {
         std::vector<int> deletedTags{};
         for (auto const &mutation : mutations) {
           if (mutation.type == ShadowViewMutation::Type::Delete) {
@@ -132,7 +131,8 @@ static void testShadowNodeTreeLifeCycle(
       viewTree.mutate(mutations);
 
       // Building a view tree to compare with.
-      auto rebuiltViewTree = stubViewTreeFromShadowNode(*nextRootNode);
+      auto rebuiltViewTree =
+          buildStubViewTreeWithoutUsingDifferentiator(*nextRootNode);
 
       // Comparing the newly built tree with the updated one.
       if (rebuiltViewTree != viewTree) {
@@ -174,31 +174,12 @@ static void testShadowNodeTreeLifeCycle(
 
 using namespace facebook::react;
 
-TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMoves) {
-  testShadowNodeTreeLifeCycle(
-      /* seed */ 0,
-      /* size */ 512,
-      /* repeats */ 32,
-      /* stages */ 32,
-      false);
-}
-
-TEST(MountingTest, stableSmallerTreeMoreIterationsOptimizedMoves) {
-  testShadowNodeTreeLifeCycle(
-      /* seed */ 0,
-      /* size */ 16,
-      /* repeats */ 512,
-      /* stages */ 32,
-      false);
-}
-
 TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMovesFlattener) {
   testShadowNodeTreeLifeCycle(
       /* seed */ 0,
       /* size */ 512,
       /* repeats */ 32,
-      /* stages */ 32,
-      true);
+      /* stages */ 32);
 }
 
 TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMovesFlattener2) {
@@ -206,8 +187,7 @@ TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMovesFlattener2) {
       /* seed */ 1,
       /* size */ 512,
       /* repeats */ 32,
-      /* stages */ 32,
-      true);
+      /* stages */ 32);
 }
 
 TEST(MountingTest, stableSmallerTreeMoreIterationsOptimizedMovesFlattener) {
@@ -215,6 +195,5 @@ TEST(MountingTest, stableSmallerTreeMoreIterationsOptimizedMovesFlattener) {
       /* seed */ 0,
       /* size */ 16,
       /* repeats */ 512,
-      /* stages */ 32,
-      true);
+      /* stages */ 32);
 }

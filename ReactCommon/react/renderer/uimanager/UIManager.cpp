@@ -10,6 +10,7 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/uimanager/UIManagerCommitHook.h>
 
 #include <glog/logging.h>
 
@@ -92,7 +93,8 @@ void UIManager::appendChild(
 
 void UIManager::completeSurface(
     SurfaceId surfaceId,
-    const SharedShadowNodeUnsharedList &rootChildren) const {
+    SharedShadowNodeUnsharedList const &rootChildren,
+    ShadowTree::CommitOptions commitOptions) const {
   SystraceSection s("UIManager::completeSurface");
 
   shadowTreeRegistry_.visit(surfaceId, [&](ShadowTree const &shadowTree) {
@@ -105,7 +107,7 @@ void UIManager::completeSurface(
                   /* .children = */ rootChildren,
               });
         },
-        true);
+        commitOptions);
   });
 }
 
@@ -126,16 +128,6 @@ void UIManager::clearJSResponder() const {
 
 ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
     ShadowNode const &shadowNode) const {
-  auto findNewestChildInParent =
-      [&](auto const &parentNode) -> ShadowNode::Shared {
-    for (auto const &child : parentNode.getChildren()) {
-      if (ShadowNode::sameFamily(*child, shadowNode)) {
-        return child;
-      }
-    }
-    return nullptr;
-  };
-
   auto ancestorShadowNode = ShadowNode::Shared{};
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
@@ -152,7 +144,8 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
     return nullptr;
   }
 
-  return findNewestChildInParent(ancestors.rbegin()->first.get());
+  auto pair = ancestors.rbegin();
+  return pair->first.get().getChildren().at(pair->second);
 }
 
 ShadowNode::Shared UIManager::findNodeAtPoint(
@@ -160,31 +153,6 @@ ShadowNode::Shared UIManager::findNodeAtPoint(
     Point point) const {
   return LayoutableShadowNode::findNodeAtPoint(
       getNewestCloneOfShadowNode(*node), point);
-}
-
-void UIManager::setNativeProps(
-    ShadowNode const &shadowNode,
-    RawProps const &rawProps) const {
-  SystraceSection s("UIManager::setNativeProps");
-
-  auto &componentDescriptor = shadowNode.getComponentDescriptor();
-  auto props = componentDescriptor.cloneProps(shadowNode.getProps(), rawProps);
-
-  shadowTreeRegistry_.visit(
-      shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        shadowTree.tryCommit(
-            [&](RootShadowNode const &oldRootShadowNode) {
-              return std::static_pointer_cast<RootShadowNode>(
-                  oldRootShadowNode.cloneTree(
-                      shadowNode.getFamily(),
-                      [&](ShadowNode const &oldShadowNode) {
-                        return oldShadowNode.clone({
-                            /* .props = */ props,
-                        });
-                      }));
-            },
-            true);
-      });
 }
 
 LayoutMetrics UIManager::getRelativeLayoutMetrics(
@@ -223,8 +191,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
       shadowNode.getFamily(), *layoutableAncestorShadowNode, policy);
 }
 
-void UIManager::updateStateWithAutorepeat(
-    StateUpdate const &stateUpdate) const {
+void UIManager::updateState(StateUpdate const &stateUpdate) const {
   auto &callback = stateUpdate.callback;
   auto &family = stateUpdate.family;
   auto &componentDescriptor = family->getComponentDescriptor();
@@ -259,43 +226,6 @@ void UIManager::updateStateWithAutorepeat(
           return isValid ? std::static_pointer_cast<RootShadowNode>(rootNode)
                          : nullptr;
         });
-      });
-}
-
-void UIManager::updateState(StateUpdate const &stateUpdate) const {
-  if (stateUpdate.autorepeat || experimentEnableStateUpdateWithAutorepeat) {
-    updateStateWithAutorepeat(stateUpdate);
-    return;
-  }
-
-  auto &callback = stateUpdate.callback;
-  auto &family = stateUpdate.family;
-  auto &componentDescriptor = family->getComponentDescriptor();
-
-  shadowTreeRegistry_.visit(
-      family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        auto status = shadowTree.tryCommit([&](RootShadowNode const
-                                                   &oldRootShadowNode) {
-          return std::static_pointer_cast<RootShadowNode>(
-              oldRootShadowNode.cloneTree(
-                  *family, [&](ShadowNode const &oldShadowNode) {
-                    auto newData =
-                        callback(oldShadowNode.getState()->getDataPointer());
-                    auto newState =
-                        componentDescriptor.createState(*family, newData);
-
-                    return oldShadowNode.clone({
-                        /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                        /* .children = */
-                        ShadowNodeFragment::childrenPlaceholder(),
-                        /* .state = */ newState,
-                    });
-                  }));
-        });
-        if (status != ShadowTree::CommitStatus::Succeeded &&
-            stateUpdate.failureCallback) {
-          stateUpdate.failureCallback();
-        }
       });
 }
 
@@ -354,7 +284,42 @@ ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
   return shadowTreeRegistry_;
 }
 
+void UIManager::registerCommitHook(
+    UIManagerCommitHook const &commitHook) const {
+  std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
+  assert(
+      std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook) ==
+      commitHooks_.end());
+  commitHook.commitHookWasRegistered(*this);
+  commitHooks_.push_back(&commitHook);
+}
+
+void UIManager::unregisterCommitHook(
+    UIManagerCommitHook const &commitHook) const {
+  std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
+  auto iterator =
+      std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook);
+  assert(iterator != commitHooks_.end());
+  commitHooks_.erase(iterator);
+  commitHook.commitHookWasUnregistered(*this);
+}
+
 #pragma mark - ShadowTreeDelegate
+
+RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
+    ShadowTree const &shadowTree,
+    RootShadowNode::Shared const &oldRootShadowNode,
+    RootShadowNode::Unshared const &newRootShadowNode) const {
+  std::shared_lock<better::shared_mutex> lock(commitHookMutex_);
+
+  auto resultRootShadowNode = newRootShadowNode;
+  for (auto const *commitHook : commitHooks_) {
+    resultRootShadowNode = commitHook->shadowTreeWillCommit(
+        shadowTree, oldRootShadowNode, resultRootShadowNode);
+  }
+
+  return resultRootShadowNode;
+}
 
 void UIManager::shadowTreeDidFinishTransaction(
     ShadowTree const &shadowTree,
