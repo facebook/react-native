@@ -122,6 +122,7 @@ def rn_extra_build_flags():
 
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
+    _ = kwargs.pop("autoglob", False)
     _ = kwargs.pop("is_androidx", False)
     if react_native_target(
         "java/com/facebook/react/uimanager/annotations:annotations",
@@ -165,6 +166,7 @@ def rn_apple_library(*args, **kwargs):
     kwargs.setdefault("target_sdk_version", "10.0")
 
     # Unsupported kwargs
+    _ = kwargs.pop("autoglob", False)
     _ = kwargs.pop("plugins_only", False)
     _ = kwargs.pop("enable_exceptions", False)
     _ = kwargs.pop("extension_api_only", False)
