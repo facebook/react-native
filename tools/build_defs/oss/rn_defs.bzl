@@ -193,7 +193,8 @@ def rn_genrule(*args, **kwargs):
 def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     vm_args = vm_args or []
 
-    is_androidx = kwargs.pop("is_androidx", False)
+    _ = kwargs.pop("autoglob", False)
+    _ = kwargs.pop("is_androidx", False)
 
     kwargs["deps"] = kwargs.pop("deps", []) + [
         react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
