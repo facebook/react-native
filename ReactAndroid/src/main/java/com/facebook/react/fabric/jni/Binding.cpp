@@ -11,7 +11,6 @@
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
-#include <better/set.h>
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -437,22 +436,12 @@ void Binding::installFabricUIManager(
 
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
-  collapseDeleteCreateMountingInstructions_ =
-      reactNativeConfig_->getBool(
-          "react_fabric:enabled_collapse_delete_create_mounting_instructions") &&
-      !reactNativeConfig_->getBool(
-          "react_fabric:enable_reparenting_detection_android") &&
-      !reactNativeConfig_->getBool(
-          "react_fabric:enabled_layout_animations_android");
 
   useIntBufferBatchMountItem_ = reactNativeConfig_->getBool(
       "react_fabric:use_int_buffer_batch_mountitem_android");
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
-
-  bool enableLayoutAnimations = reactNativeConfig_->getBool(
-      "react_fabric:enabled_layout_animations_android");
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
@@ -467,10 +456,8 @@ void Binding::installFabricUIManager(
     toolbox.backgroundExecutor = backgroundExecutor_->get();
   }
 
-  if (enableLayoutAnimations) {
-    animationDriver_ =
-        std::make_shared<LayoutAnimationDriver>(runtimeExecutor, this);
-  }
+  animationDriver_ =
+      std::make_shared<LayoutAnimationDriver>(runtimeExecutor, this);
   scheduler_ = std::make_shared<Scheduler>(
       toolbox, (animationDriver_ ? animationDriver_.get() : nullptr), this);
 }
@@ -1224,33 +1211,6 @@ void Binding::schedulerDidFinishTransaction(
   auto surfaceId = mountingTransaction->getSurfaceId();
   auto &mutations = mountingTransaction->getMutations();
 
-  facebook::better::set<Tag> createAndDeleteTagsToProcess;
-  // When collapseDeleteCreateMountingInstructions_ is enabled, the
-  // createAndDeleteTagsToProcess set will contain all the tags belonging to
-  // CREATE and DELETE mutation instructions that needs to be processed. If a
-  // CREATE or DELETE mutation instruction does not belong in the set, it means
-  // that the we received a pair of mutation instructions: DELETE - CREATE and
-  // it is not necessary to create or delete on the screen.
-  if (collapseDeleteCreateMountingInstructions_) {
-    for (const auto &mutation : mutations) {
-      if (mutation.type == ShadowViewMutation::Delete) {
-        // TAG on 'Delete' mutation instructions are part of the
-        // oldChildShadowView
-        createAndDeleteTagsToProcess.insert(mutation.oldChildShadowView.tag);
-      } else if (mutation.type == ShadowViewMutation::Create) {
-        // TAG on 'Create' mutation instructions are part of the
-        // newChildShadowView
-        Tag tag = mutation.newChildShadowView.tag;
-        if (createAndDeleteTagsToProcess.find(tag) ==
-            createAndDeleteTagsToProcess.end()) {
-          createAndDeleteTagsToProcess.insert(tag);
-        } else {
-          createAndDeleteTagsToProcess.erase(tag);
-        }
-      }
-    }
-  }
-
   auto revisionNumber = telemetry.getRevisionNumber();
 
   std::vector<local_ref<jobject>> queue;
@@ -1270,23 +1230,6 @@ void Binding::schedulerDidFinishTransaction(
   for (const auto &mutation : mutations) {
     auto oldChildShadowView = mutation.oldChildShadowView;
     auto newChildShadowView = mutation.newChildShadowView;
-    auto mutationType = mutation.type;
-
-    if (collapseDeleteCreateMountingInstructions_ &&
-        (mutationType == ShadowViewMutation::Create ||
-         mutationType == ShadowViewMutation::Delete) &&
-        createAndDeleteTagsToProcess.size() > 0) {
-      // The TAG on 'Delete' mutation instructions are part of the
-      // oldChildShadowView. On the other side, the TAG on 'Create' mutation
-      // instructions are part of the newChildShadowView
-      Tag tag = mutationType == ShadowViewMutation::Create
-          ? mutation.newChildShadowView.tag
-          : mutation.oldChildShadowView.tag;
-      if (createAndDeleteTagsToProcess.find(tag) ==
-          createAndDeleteTagsToProcess.end()) {
-        continue;
-      }
-    }
 
     bool isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
         oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;

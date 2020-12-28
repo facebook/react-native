@@ -49,6 +49,8 @@ type Options = $ReadOnly<{
 }>;
 
 type Generators =
+  | 'componentsAndroid'
+  | 'componentsIOS'
   | 'descriptors'
   | 'events'
   | 'props'
@@ -74,6 +76,29 @@ const GENERATORS = {
     generatePropsJavaDelegate.generate,
   ],
   // TODO: Refactor this to consolidate various C++ output variation instead of forking per platform.
+  componentsAndroid: [
+    // JNI/C++ files
+    generateComponentDescriptorH.generate,
+    generateEventEmitterCpp.generate,
+    generateEventEmitterH.generate,
+    generatePropsCpp.generate,
+    generatePropsH.generate,
+    generateShadowNodeCpp.generate,
+    generateShadowNodeH.generate,
+    // Java files
+    generatePropsJavaInterface.generate,
+    generatePropsJavaDelegate.generate,
+  ],
+  componentsIOS: [
+    generateComponentDescriptorH.generate,
+    generateEventEmitterCpp.generate,
+    generateEventEmitterH.generate,
+    generateComponentHObjCpp.generate,
+    generatePropsCpp.generate,
+    generatePropsH.generate,
+    generateShadowNodeCpp.generate,
+    generateShadowNodeH.generate,
+  ],
   modulesAndroid: [
     GenerateModuleJniCpp.generate,
     GenerateModuleJniH.generate,

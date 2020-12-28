@@ -82,6 +82,7 @@ public class CodegenPlugin implements Plugin<Project> {
 
               task.getInputs()
                   .files(project.fileTree(ImmutableMap.of("dir", extension.codegenDir())));
+              task.getInputs().files(extension.codegenGenerateNativeModuleSpecsCLI());
               task.getInputs().files(generatedSchemaFile);
               task.getOutputs().dir(generatedSrcDir);
 

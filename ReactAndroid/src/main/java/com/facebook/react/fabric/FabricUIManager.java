@@ -248,7 +248,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mMountingManager.addRootView(rootTag, rootView);
     mReactContextForRootTag.put(rootTag, reactContext);
 
-    Point viewportOffset = ReactRootView.getViewportOffset(rootView);
+    // If startSurface is executed in the UIThread then, it uses the ViewportOffset from the View,
+    // Otherwise Fabric relies on calling {@link Binding#setConstraints} method to update the
+    // ViewportOffset during measurement or onLayout.
+    @SuppressLint("WrongThread")
+    Point viewportOffset =
+        UiThreadUtil.isOnUiThread() ? ReactRootView.getViewportOffset(rootView) : new Point(0, 0);
 
     mBinding.startSurfaceWithConstraints(
         rootTag,

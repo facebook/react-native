@@ -27,7 +27,8 @@ MountingCoordinator::MountingCoordinator(
       mountingOverrideDelegate_(delegate),
       telemetryController_(*this) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
-  stubViewTree_ = stubViewTreeFromShadowNode(*baseRevision_.rootShadowNode);
+  stubViewTree_ = buildStubViewTreeWithoutUsingDifferentiator(
+      *baseRevision_.rootShadowNode);
 #endif
 }
 
@@ -138,8 +139,8 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     // tree therefore we cannot validate the validity of the mutation
     // instructions.
     if (!shouldOverridePullTransaction && lastRevision_.has_value()) {
-      auto stubViewTree =
-          stubViewTreeFromShadowNode(*lastRevision_->rootShadowNode);
+      auto stubViewTree = buildStubViewTreeWithoutUsingDifferentiator(
+          *lastRevision_->rootShadowNode);
 
       bool treesEqual = stubViewTree_ == stubViewTree;
 

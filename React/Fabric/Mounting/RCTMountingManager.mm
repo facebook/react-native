@@ -67,6 +67,8 @@ static void RCTPerformMountInstructions(
 
         UIView<RCTComponentViewProtocol> *newChildComponentView = newChildViewDescriptor.view;
 
+        RCTAssert(newChildShadowView.props, @"`newChildShadowView.props` must not be null.");
+
         [newChildComponentView updateProps:newChildShadowView.props oldProps:oldChildShadowView.props];
         [newChildComponentView updateEventEmitter:newChildShadowView.eventEmitter];
         [newChildComponentView updateState:newChildShadowView.state oldState:oldChildShadowView.state];
@@ -94,6 +96,8 @@ static void RCTPerformMountInstructions(
         UIView<RCTComponentViewProtocol> *newChildComponentView = newChildViewDescriptor.view;
 
         auto mask = RNComponentViewUpdateMask{};
+
+        RCTAssert(newChildShadowView.props, @"`newChildShadowView.props` must not be null.");
 
         if (oldChildShadowView.props != newChildShadowView.props) {
           [newChildComponentView updateProps:newChildShadowView.props oldProps:oldChildShadowView.props];

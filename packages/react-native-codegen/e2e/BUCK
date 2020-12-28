@@ -5,7 +5,7 @@ react_native_module_flow_types_library(
     android_package_name = "com.facebook.fbreact.specs",
     js_srcs = glob(
         [
-            "../../__test_fixtures__/modules/*.js",
+            "./__test_fixtures__/modules/*.js",
         ],
     ),
 )

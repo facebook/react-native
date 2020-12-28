@@ -55,7 +55,6 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       const jsi::Value *args,
       size_t argCount);
 
-  static void enablePromiseAsyncDispatch(bool enable);
   jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &propName)
       override;
 
@@ -63,11 +62,6 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
   jni::global_ref<JTurboModule> instance_;
   std::shared_ptr<CallInvoker> nativeInvoker_;
   folly::Optional<TurboModuleSchema> turboModuleSchema_;
-
-  /**
-   * Experiments
-   */
-  static bool isPromiseAsyncDispatchEnabled_;
 
   JNIArgs convertJSIArgsToJNIArgs(
       JNIEnv *env,
