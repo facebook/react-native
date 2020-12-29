@@ -164,6 +164,7 @@ static NSString *CAMediaTimingFunctionNameFromRCTAnimationType(RCTAnimationType 
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
       context.duration = duration;
       context.timingFunction = timingFunction;
+      context.allowsImplicitAnimation = YES;
       
       if (animations != nil) {
         animations();
