@@ -37,8 +37,13 @@ export type AnimatedComponentType<
   Instance,
 >;
 
+type AnimatedComponentOptions = {
+  collapsable?: boolean,
+};
+
 function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
   Component: React.AbstractComponent<Props, Instance>,
+  options?: AnimatedComponentOptions,
 ): AnimatedComponentType<Props, Instance> {
   invariant(
     typeof Component !== 'function' ||
@@ -79,6 +84,9 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     }
 
     _isFabric = (): boolean => {
+      // When called during the first render, `_component` is always null.
+      // Therefore, even if a component is rendered in Fabric, we can't detect
+      // that until ref is set, which happens sometime after the first render.
       if (this._component == null) {
         return false;
       }
@@ -213,23 +221,28 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       const {style: passthruStyle = {}, ...passthruProps} =
         this.props.passthroughAnimatedPropExplicitValues || {};
       const mergedStyle = {...style, ...passthruStyle};
+      const forceNativeId =
+        props.collapsable ??
+        (this._propsAnimated.__isNative ||
+          this._isFabric() ||
+          options?.collapsable === false);
+      // The native driver updates views directly through the UI thread so we
+      // have to make sure the view doesn't get optimized away because it cannot
+      // go through the NativeViewHierarchyManager since it operates on the shadow
+      // thread. TODO: T68258846
+      const collapsableProps = forceNativeId
+        ? {
+            nativeID: props.nativeID ?? 'animatedComponent',
+            collapsable: false,
+          }
+        : {};
       return (
         <Component
           {...props}
           {...passthruProps}
+          {...collapsableProps}
           style={mergedStyle}
           ref={this._setComponentRef}
-          nativeID={
-            props.nativeID ??
-            (this._isFabric() ? 'animatedComponent' : undefined)
-          } /* TODO: T68258846. */
-          // The native driver updates views directly through the UI thread so we
-          // have to make sure the view doesn't get optimized away because it cannot
-          // go through the NativeViewHierarchyManager since it operates on the shadow
-          // thread.
-          collapsable={
-            this._propsAnimated.__isNative ? false : props.collapsable
-          }
         />
       );
     }
