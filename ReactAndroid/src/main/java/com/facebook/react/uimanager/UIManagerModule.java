@@ -15,6 +15,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 import com.facebook.common.logging.FLog;
@@ -208,7 +209,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public String getName() {
+  public @NonNull String getName() {
     return NAME;
   }
 
