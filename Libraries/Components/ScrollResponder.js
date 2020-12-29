@@ -678,8 +678,8 @@ const ScrollResponderMixin = {
     this.preventNegativeScrollOffset = false;
   },
 
-  scrollResponderTextInputFocusError: function(msg: string) {
-    console.error('Error measuring text field: ', msg);
+  scrollResponderTextInputFocusError: function() {
+    console.warn('Error measuring text field.');
   },
 
   /**
