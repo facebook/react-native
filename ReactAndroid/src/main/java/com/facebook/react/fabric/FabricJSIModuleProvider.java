@@ -8,7 +8,6 @@
 package com.facebook.react.fabric;
 
 import androidx.annotation.NonNull;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
@@ -34,9 +33,10 @@ import com.facebook.react.fabric.mounting.mountitems.UpdatePaddingMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateStateMountItem;
 import com.facebook.react.uimanager.StateWrapper;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.systrace.Systrace;
 
 public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
@@ -44,14 +44,17 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   @NonNull private final ReactApplicationContext mReactApplicationContext;
   @NonNull private final ComponentFactory mComponentFactory;
   @NonNull private final ReactNativeConfig mConfig;
+  @NonNull private final ViewManagerRegistry mViewManagerRegistry;
 
   public FabricJSIModuleProvider(
       @NonNull ReactApplicationContext reactApplicationContext,
       @NonNull ComponentFactory componentFactory,
-      @NonNull ReactNativeConfig config) {
+      @NonNull ReactNativeConfig config,
+      @NonNull ViewManagerRegistry viewManagerRegistry) {
     mReactApplicationContext = reactApplicationContext;
     mComponentFactory = componentFactory;
     mConfig = config;
+    mViewManagerRegistry = viewManagerRegistry;
   }
 
   @Override
@@ -87,15 +90,10 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   private FabricUIManager createUIManager(@NonNull EventBeatManager eventBeatManager) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.createUIManager");
-    UIManagerModule nativeModule =
-        Assertions.assertNotNull(mReactApplicationContext.getNativeModule(UIManagerModule.class));
-    EventDispatcher eventDispatcher = nativeModule.getEventDispatcher();
+    EventDispatcher eventDispatcher = new EventDispatcherImpl(mReactApplicationContext);
     FabricUIManager fabricUIManager =
         new FabricUIManager(
-            mReactApplicationContext,
-            nativeModule.getViewManagerRegistry_DO_NOT_USE(),
-            eventDispatcher,
-            eventBeatManager);
+            mReactApplicationContext, mViewManagerRegistry, eventDispatcher, eventBeatManager);
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return fabricUIManager;
