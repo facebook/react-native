@@ -294,14 +294,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Helper method to pre-compute the constants for a view manager. This method ensures that we
    * don't block for getting the constants for view managers during TTI
    *
-   * @deprecated this method will not be available in FabricUIManager class.
+   * @deprecated this method will be removed in the future
    * @param viewManagerNames {@link List<String>} names of ViewManagers
    */
   @Deprecated
-  public void preComputeConstantsForViewManager(List<String> viewManagerNames) {
-    // TODO T81145457 - Implement pre-initialization of ViewManagers in Fabric Android
+  @Override
+  public void preInitializeViewManagers(List<String> viewManagerNames) {
     if (ReactFeatureFlags.enableExperimentalStaticViewConfigs) {
-      preInitializeViewManagers(viewManagerNames);
+      for (String viewManagerName : viewManagerNames) {
+        mUIImplementation.resolveViewManager(viewManagerName);
+      }
       // When Static view configs are enabled it is not necessary to pre-compute the constants for
       // viewManagers, although the pre-initialization of viewManager objects is still necessary
       // for performance reasons.
@@ -324,12 +326,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     // accessed - write one, read multiple times, and then throw the data away.
     mViewManagerConstantsCacheSize = viewManagerNames.size();
     mViewManagerConstantsCache = Collections.unmodifiableMap(constantsMap);
-  }
-
-  private void preInitializeViewManagers(List<String> viewManagerNames) {
-    for (String viewManagerName : viewManagerNames) {
-      mUIImplementation.resolveViewManager(viewManagerName);
-    }
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)

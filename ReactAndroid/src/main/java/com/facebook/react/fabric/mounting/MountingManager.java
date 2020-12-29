@@ -782,6 +782,10 @@ public class MountingManager {
     return viewState == null ? null : viewState.mEventEmitter;
   }
 
+  public void initializeViewManager(String componentName) {
+    mViewManagerRegistry.get(componentName);
+  }
+
   /**
    * This class holds view state for react tags. Objects of this class are stored into the {@link
    * #mTagToViewState}, and they should be updated in the same thread.
