@@ -120,7 +120,7 @@ module.exports = {
 
   rules: {
     // General
-    'comma-dangle': [1, 'always-multiline'], // allow or disallow trailing commas
+    'comma-dangle': 0, // allow or disallow trailing commas, disabled in favour of prettier "trailingComma" option
     'no-cond-assign': 1, // disallow assignment in conditional expressions
     'no-console': 0, // disallow use of console (off by default in the node environment)
     'no-const-assign': 2, // disallow assignment to const-declared variables
