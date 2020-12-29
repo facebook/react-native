@@ -395,6 +395,7 @@ module.exports = {
         'com.facebook.react.bridge.ReactMethod',
         'com.facebook.react.bridge.ReactModuleWithSpec',
         'com.facebook.react.turbomodule.core.interfaces.TurboModule',
+        'com.facebook.proguard.annotations.DoNotStrip',
       ]);
 
       const methods = properties.map(method => {
@@ -443,7 +444,7 @@ module.exports = {
 
         const methodJavaAnnotation = `@ReactMethod${
           isSyncMethod ? '(isBlockingSynchronousMethod = true)' : ''
-        }`;
+        }\n  @DoNotStrip`;
         const methodBody = method.optional
           ? getFalsyReturnStatementFromReturnType(
               methodTypeAnnotation.returnTypeAnnotation,
