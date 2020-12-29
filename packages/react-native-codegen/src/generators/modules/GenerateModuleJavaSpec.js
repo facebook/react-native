@@ -371,10 +371,11 @@ module.exports = {
     packageName?: string,
   ): FilesOutput {
     const files = new Map();
-    const normalizedPackageName =
-      packageName != null ? packageName : 'com.facebook.fbreact.specs';
-    const outputDir = `java/${normalizedPackageName.replace(/\./g, '/')}`;
     const nativeModules = getModules(schema);
+
+    const normalizedPackageName =
+      packageName == null ? 'com.facebook.fbreact.specs' : packageName;
+    const outputDir = `java/${normalizedPackageName.replace(/\./g, '/')}`;
 
     Object.keys(nativeModules).forEach(hasteModuleName => {
       const {
