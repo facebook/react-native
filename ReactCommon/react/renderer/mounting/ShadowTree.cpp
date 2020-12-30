@@ -299,6 +299,7 @@ CommitStatus ShadowTree::tryCommit(
     oldRevision = currentRevision_;
   }
 
+  auto oldRootShadowNode = oldRevision.rootShadowNode;
   auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
 
   if (!newRootShadowNode ||
@@ -337,6 +338,13 @@ CommitStatus ShadowTree::tryCommit(
     }
 
     auto newRevisionNumber = oldRevision.number + 1;
+
+    newRootShadowNode = delegate_.shadowTreeWillCommit(
+        *this, oldRootShadowNode, newRootShadowNode);
+
+    if (!newRootShadowNode) {
+      return CommitStatus::Cancelled;
+    }
 
     {
       std::lock_guard<std::mutex> dispatchLock(EventEmitter::DispatchMutex());

@@ -31,7 +31,7 @@ void RCTSetCustomNSURLSessionConfigurationProvider(NSURLSessionConfigurationProv
   std::mutex _mutex;
 }
 
-@synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 @synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
@@ -80,7 +80,7 @@ RCT_EXPORT_MODULE()
 
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
-    callbackQueue.underlyingQueue = [[_bridge networking] methodQueue];
+    callbackQueue.underlyingQueue = [[_moduleRegistry moduleForName:"Networking"] methodQueue];
     NSURLSessionConfiguration *configuration;
     if (urlSessionConfigurationProvider) {
       configuration = urlSessionConfigurationProvider();

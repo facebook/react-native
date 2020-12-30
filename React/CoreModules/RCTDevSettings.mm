@@ -358,11 +358,11 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 {
   __weak __typeof(self) weakSelf = self;
-  [self.bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:title
-                                                           handler:^{
-                                                             [weakSelf sendEventWithName:@"didPressMenuItem"
-                                                                                    body:@{@"title" : title}];
-                                                           }]];
+  [(RCTDevMenu *)[self.moduleRegistry moduleForName:"DevMenu"]
+      addItem:[RCTDevMenuItem buttonItemWithTitle:title
+                                          handler:^{
+                                            [weakSelf sendEventWithName:@"didPressMenuItem" body:@{@"title" : title}];
+                                          }]];
 }
 
 - (BOOL)isElementInspectorShown
@@ -463,7 +463,8 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
     if ([self isElementInspectorShown]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      [[self.moduleRegistry moduleForName:"EventDispatcher"]  sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+      [[self.moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"toggleElementInspector"
+                                                                                body:nil];
 #pragma clang diagnostic pop
     }
   });

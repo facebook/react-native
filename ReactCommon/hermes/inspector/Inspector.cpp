@@ -85,7 +85,7 @@ namespace debugger = ::facebook::hermes::debugger;
  */
 
 // TODO: read this out of an env variable or config
-static constexpr bool kShouldLog = true;
+static constexpr bool kShouldLog = false;
 
 // Logging state transitions is done outside of transition() in a macro so that
 // function and line numbers in the log will be accurate.

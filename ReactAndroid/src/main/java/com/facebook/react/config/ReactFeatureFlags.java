@@ -29,11 +29,6 @@ public class ReactFeatureFlags {
   /** Enable TurboModule JS Codegen. */
   public static volatile boolean useTurboModuleJSCodegen = false;
 
-  /**
-   * Enable the fix to validate the TurboReactPackage's module info before resolving a TurboModule.
-   */
-  public static volatile boolean enableTurboModulePackageInfoValidation = false;
-
   /*
    * This feature flag enables logs for Fabric
    */
@@ -64,9 +59,6 @@ public class ReactFeatureFlags {
 
   /** Use lock-free data structures for Fabric MountItems. */
   public static boolean enableLockFreeMountInstructions = false;
-
-  /** Temporary flag for FB-internal workaround for RN:Litho interop in non-Fabric RN. */
-  public static boolean enableNonFabricRNLithoForceLayout = true;
 
   /** Disable UI update operations in non-Fabric renderer after catalyst instance was destroyed */
   public static boolean disableNonFabricViewOperationsOnCatalystDestroy = false;

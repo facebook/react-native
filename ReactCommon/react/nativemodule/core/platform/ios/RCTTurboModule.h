@@ -90,8 +90,11 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       NSMutableArray *retainedObjectsForInvocation);
 
   using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper);
-  jsi::Value
-  createPromise(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> jsInvoker, PromiseInvocationBlock invoke);
+  jsi::Value createPromise(
+      jsi::Runtime &runtime,
+      std::shared_ptr<react::CallInvoker> jsInvoker,
+      std::string methodName,
+      PromiseInvocationBlock invoke);
 };
 
 } // namespace react

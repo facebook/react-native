@@ -330,6 +330,7 @@ const ScrollResponderMixin = {
    * Invoke this from an `onResponderRelease` event.
    */
   scrollResponderHandleResponderRelease: function(e: PressEvent) {
+    this.state.isTouching = e.nativeEvent.touches.length !== 0;
     this.props.onResponderRelease && this.props.onResponderRelease(e);
 
     if (typeof e.target === 'number') {
@@ -677,8 +678,8 @@ const ScrollResponderMixin = {
     this.preventNegativeScrollOffset = false;
   },
 
-  scrollResponderTextInputFocusError: function(msg: string) {
-    console.error('Error measuring text field: ', msg);
+  scrollResponderTextInputFocusError: function() {
+    console.warn('Error measuring text field.');
   },
 
   /**
