@@ -7,16 +7,10 @@
 # This script collects the JavaScript spec definitions for core
 # native modules and components, then uses react-native-codegen
 # to generate native code.
-# The script will use the local react-native-codegen package by
-# default. Optionally, set the CODEGEN_PATH to point to the
-# desired codegen library (e.g. when using react-native-codegen
-# from npm).
 #
 # Usage:
 #   ./scripts/generate-specs.sh
 #
-# Examples:
-#  CODEGEN_PATH=.. ./scripts/generate-specs.sh
 
 # shellcheck disable=SC2038
 
@@ -25,7 +19,6 @@ set -e
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 TEMP_DIR=$(mktemp -d /tmp/react-native-codegen-XXXXXXXX)
 RN_DIR=$(cd "$THIS_DIR/.." && pwd)
-CODEGEN_PATH="${CODEGEN_PATH:-$(cd "$RN_DIR/packages/react-native-codegen" && pwd)}"
 YARN_BINARY="${YARN_BINARY:-$(command -v yarn)}"
 USE_FABRIC="${USE_FABRIC:-0}"
 
@@ -48,6 +41,18 @@ main() {
 
   SCHEMA_FILE="$TEMP_DIR/schema.json"
 
+  CODEGEN_REPO_PATH="$RN_DIR/packages/react-native-codegen"
+  CODEGEN_NPM_PATH="$RN_DIR/../react-native-codegen"
+
+  if [ -d "$CODEGEN_REPO_PATH" ]; then
+    CODEGEN_PATH=$(cd "$CODEGEN_REPO_PATH" && pwd)
+  elif [ -d "$CODEGEN_NPM_PATH" ]; then
+    CODEGEN_PATH=$(cd "$CODEGEN_NPM_PATH" && pwd)
+  else
+    echo "Error: Could not determine react-native-codegen location. Try running 'yarn install' or 'npm install' in your project root." 1>&2
+    exit 1
+  fi
+
   if [ ! -d "$CODEGEN_PATH/lib" ]; then
     describe "Building react-native-codegen package"
     pushd "$CODEGEN_PATH" >/dev/null || exit
@@ -61,7 +66,7 @@ main() {
 
   describe "Generating native code from schema (iOS)"
   pushd "$RN_DIR" >/dev/null || exit
-    USE_FABRIC="$USE_FABRIC" "$YARN_BINARY" --silent node scripts/generate-specs-cli.js ios "$SCHEMA_FILE" "$OUTPUT_DIR"
+    "$YARN_BINARY" --silent node scripts/generate-specs-cli.js ios "$SCHEMA_FILE" "$OUTPUT_DIR"
   popd >/dev/null || exit
 
   mkdir -p "$COMPONENTS_DIR" "$MODULES_DIR"
