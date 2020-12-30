@@ -197,7 +197,7 @@ export type ReactNativeEventTarget = {
   ...
 };
 
-export type ReactFaricEventTouch = {
+export type ReactFabricEventTouch = {
   identifier: number,
   locationX: number,
   locationY: number,
@@ -211,10 +211,10 @@ export type ReactFaricEventTouch = {
   ...
 };
 
-export type ReactFaricEvent = {
-  touches: Array<ReactFaricEventTouch>,
-  changedTouches: Array<ReactFaricEventTouch>,
-  targetTouches: Array<ReactFaricEventTouch>,
+export type ReactFabricEvent = {
+  touches: Array<ReactFabricEventTouch>,
+  changedTouches: Array<ReactFabricEventTouch>,
+  targetTouches: Array<ReactFabricEventTouch>,
   target: number,
   ...
 };
