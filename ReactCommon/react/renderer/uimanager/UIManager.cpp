@@ -128,16 +128,6 @@ void UIManager::clearJSResponder() const {
 
 ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
     ShadowNode const &shadowNode) const {
-  auto findNewestChildInParent =
-      [&](auto const &parentNode) -> ShadowNode::Shared {
-    for (auto const &child : parentNode.getChildren()) {
-      if (ShadowNode::sameFamily(*child, shadowNode)) {
-        return child;
-      }
-    }
-    return nullptr;
-  };
-
   auto ancestorShadowNode = ShadowNode::Shared{};
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
@@ -154,7 +144,8 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
     return nullptr;
   }
 
-  return findNewestChildInParent(ancestors.rbegin()->first.get());
+  auto pair = ancestors.rbegin();
+  return pair->first.get().getChildren().at(pair->second);
 }
 
 ShadowNode::Shared UIManager::findNodeAtPoint(
@@ -200,8 +191,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
       shadowNode.getFamily(), *layoutableAncestorShadowNode, policy);
 }
 
-void UIManager::updateStateWithAutorepeat(
-    StateUpdate const &stateUpdate) const {
+void UIManager::updateState(StateUpdate const &stateUpdate) const {
   auto &callback = stateUpdate.callback;
   auto &family = stateUpdate.family;
   auto &componentDescriptor = family->getComponentDescriptor();
@@ -236,43 +226,6 @@ void UIManager::updateStateWithAutorepeat(
           return isValid ? std::static_pointer_cast<RootShadowNode>(rootNode)
                          : nullptr;
         });
-      });
-}
-
-void UIManager::updateState(StateUpdate const &stateUpdate) const {
-  if (stateUpdate.autorepeat || experimentEnableStateUpdateWithAutorepeat) {
-    updateStateWithAutorepeat(stateUpdate);
-    return;
-  }
-
-  auto &callback = stateUpdate.callback;
-  auto &family = stateUpdate.family;
-  auto &componentDescriptor = family->getComponentDescriptor();
-
-  shadowTreeRegistry_.visit(
-      family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        auto status = shadowTree.tryCommit([&](RootShadowNode const
-                                                   &oldRootShadowNode) {
-          return std::static_pointer_cast<RootShadowNode>(
-              oldRootShadowNode.cloneTree(
-                  *family, [&](ShadowNode const &oldShadowNode) {
-                    auto newData =
-                        callback(oldShadowNode.getState()->getDataPointer());
-                    auto newState =
-                        componentDescriptor.createState(*family, newData);
-
-                    return oldShadowNode.clone({
-                        /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                        /* .children = */
-                        ShadowNodeFragment::childrenPlaceholder(),
-                        /* .state = */ newState,
-                    });
-                  }));
-        });
-        if (status != ShadowTree::CommitStatus::Succeeded &&
-            stateUpdate.failureCallback) {
-          stateUpdate.failureCallback();
-        }
       });
 }
 

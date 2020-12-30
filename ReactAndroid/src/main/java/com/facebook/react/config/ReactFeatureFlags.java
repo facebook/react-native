@@ -60,9 +60,6 @@ public class ReactFeatureFlags {
   /** Use lock-free data structures for Fabric MountItems. */
   public static boolean enableLockFreeMountInstructions = false;
 
-  /** Temporary flag for FB-internal workaround for RN:Litho interop in non-Fabric RN. */
-  public static boolean enableNonFabricRNLithoForceLayout = true;
-
   /** Disable UI update operations in non-Fabric renderer after catalyst instance was destroyed */
   public static boolean disableNonFabricViewOperationsOnCatalystDestroy = false;
 

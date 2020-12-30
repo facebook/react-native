@@ -415,9 +415,17 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   BOOL canBePrevented = [self canBePreventedByGestureRecognizer:otherGestureRecognizer];
   if (canBePrevented) {
-    [self reset];
+    [self _cancelTouches];
   }
   return NO;
+}
+
+#pragma mark -
+
+- (void)_cancelTouches
+{
+  [self setEnabled:NO];
+  [self setEnabled:YES];
 }
 
 @end

@@ -230,6 +230,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @Override
+  public void preInitializeViewManagers(List<String> viewManagerNames) {
+    for (String viewManagerName : viewManagerNames) {
+      mMountingManager.initializeViewManager(viewManagerName);
+    }
+  }
+
+  @Override
   @AnyThread
   @ThreadConfined(ANY)
   public <T extends View> int startSurface(

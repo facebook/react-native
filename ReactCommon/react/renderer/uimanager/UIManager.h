@@ -74,16 +74,14 @@ class UIManager final : public ShadowTreeDelegate {
   void registerCommitHook(UIManagerCommitHook const &commitHook) const;
   void unregisterCommitHook(UIManagerCommitHook const &commitHook) const;
 
+  ShadowNode::Shared getNewestCloneOfShadowNode(
+      ShadowNode const &shadowNode) const;
+
 #pragma mark - ShadowTreeDelegate
 
   void shadowTreeDidFinishTransaction(
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override;
-
-  /*
-   * Temporary flags.
-   */
-  bool experimentEnableStateUpdateWithAutorepeat{false};
 
   RootShadowNode::Unshared shadowTreeWillCommit(
       ShadowTree const &shadowTree,
@@ -125,9 +123,6 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowNode::Shared const &shadowNode,
       Point point) const;
 
-  ShadowNode::Shared getNewestCloneOfShadowNode(
-      ShadowNode const &shadowNode) const;
-
   /*
    * Returns layout metrics of given `shadowNode` relative to
    * `ancestorShadowNode` (relative to the root node in case if provided
@@ -143,7 +138,6 @@ class UIManager final : public ShadowTreeDelegate {
    * and performs a commit.
    */
   void updateState(StateUpdate const &stateUpdate) const;
-  void updateStateWithAutorepeat(StateUpdate const &stateUpdate) const;
 
   void dispatchCommand(
       const ShadowNode::Shared &shadowNode,

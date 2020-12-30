@@ -31,6 +31,7 @@ fb_native.genrule(
 
 rn_codegen_modules(
     name = "FBReactNativeSpec",
+    android_package_name = "com.facebook.fbreact.specs",
     library_labels = ["supermodule:xplat/default/public.react_native.infra"],
     native_module_spec_name = "FBReactNativeSpec",
     schema_target = ":react_native_codegen_schema",
