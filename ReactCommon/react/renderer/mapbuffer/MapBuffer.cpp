@@ -14,5 +14,9 @@ MapBuffer::MapBuffer() {}
 
 MapBuffer::~MapBuffer() {}
 
+int MapBuffer::getSize() {
+  return 0;
+}
+
 } // namespace react
 } // namespace facebook
