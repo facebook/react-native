@@ -127,7 +127,7 @@ def useIntlJsc = false
 
 android {
     compileSdkVersion 29
-
+    ndkVersion "20.1.5948944"
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
