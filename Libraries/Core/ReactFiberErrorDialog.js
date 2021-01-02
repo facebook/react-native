@@ -12,6 +12,7 @@ export type CapturedError = {
   +componentStack: string,
   +error: mixed,
   +errorBoundary: ?{...},
+  +errorBoundaryFound: ?boolean,
   ...
 };
 
@@ -24,7 +25,7 @@ import {handleException, SyntheticError} from './ExceptionsManager';
  * trace within the native redbox component.
  */
 function showErrorDialog(capturedError: CapturedError): boolean {
-  const {componentStack, error} = capturedError;
+  const {componentStack, error, errorBoundaryFound} = capturedError;
 
   let errorToHandle;
 
@@ -39,6 +40,7 @@ function showErrorDialog(capturedError: CapturedError): boolean {
   try {
     errorToHandle.componentStack = componentStack;
     errorToHandle.isComponentError = true;
+    errorToHandle.isErrorBoundaryFound = errorBoundaryFound;
   } catch (e) {}
   handleException(errorToHandle, false);
 

@@ -109,6 +109,7 @@ function reportException(
       LogBoxData.addException({
         ...data,
         isComponentError: !!e.isComponentError,
+        isErrorBoundaryFound: !!e.isErrorBoundaryFound,
       });
     }
 

@@ -22,6 +22,7 @@ const METRO_ERROR_FORMAT = /^(?:InternalError Metro has encountered an error:) (
 
 export type ExtendedExceptionData = ExceptionData & {
   isComponentError: boolean,
+  isErrorBoundaryFound: boolean,
   ...
 };
 export type Category = string;
@@ -288,7 +289,10 @@ export function parseLogBoxException(
   }
 
   const componentStack = error.componentStack;
-  if (error.isFatal || error.isComponentError) {
+  if (
+    error.isFatal ||
+    (error.isComponentError && !error.isErrorBoundaryFound)
+  ) {
     return {
       level: 'fatal',
       stack: error.stack,
