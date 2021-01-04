@@ -20,7 +20,7 @@ import invariant from 'invariant';
 import {isAsyncDebugging} from './DebugEnvironment';
 
 type AppearanceListener = (preferences: AppearancePreferences) => void;
-const eventEmitter = new EventEmitter();
+const eventEmitter = new EventEmitter<$FlowFixMe>();
 
 if (NativeAppearance) {
   const nativeEventEmitter = new NativeEventEmitter<$FlowFixMe>(

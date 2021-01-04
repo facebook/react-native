@@ -142,7 +142,7 @@ function throwMissingNativeModule() {
   );
 }
 
-class MissingNativeAppStateShim extends EventEmitter {
+class MissingNativeAppStateShim extends EventEmitter<$FlowFixMe> {
   // AppState
   isAvailable: boolean = false;
   currentState: ?string = null;
@@ -156,7 +156,7 @@ class MissingNativeAppStateShim extends EventEmitter {
   }
 
   // EventEmitter
-  addListener() {
+  addListener(): any {
     throwMissingNativeModule();
   }
 
