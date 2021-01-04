@@ -8,8 +8,16 @@
 # native modules and components, then uses react-native-codegen
 # to generate native code.
 #
+# Optionally, set these envvars to override defaults:
+# - SRCS_DIR: Path to JavaScript sources
+# - CODEGEN_MODULES_LIBRARY_NAME: Defaults to FBReactNativeSpec
+# - CODEGEN_MODULES_OUTPUT_DIR: Defaults to Libraries/$CODEGEN_MODULES_LIBRARY_NAME/$CODEGEN_MODULES_LIBRARY_NAME
+# - CODEGEN_COMPONENTS_LIBRARY_NAME: Defaults to rncore
+# - CODEGEN_COMPONENTS_OUTPUT_DIR: Defaults to ReactCommon/react/renderer/components/$CODEGEN_COMPONENTS_LIBRARY_NAME
+#
 # Usage:
 #   ./scripts/generate-specs.sh
+#   SRCS_DIR=myapp/js CODEGEN_MODULES_LIBRARY_NAME=MySpecs CODEGEN_MODULES_OUTPUT_DIR=myapp/MySpecs ./scripts/generate-specs.sh
 #
 
 # shellcheck disable=SC2038
@@ -33,12 +41,16 @@ describe () {
 }
 
 main() {
-  SRCS_DIR=$(cd "$RN_DIR/Libraries" && pwd)
+  SRCS_DIR=${SRCS_DIR:-$(cd "$RN_DIR/Libraries" && pwd)}
+  CODEGEN_MODULES_LIBRARY_NAME=${CODEGEN_MODULES_LIBRARY_NAME:-FBReactNativeSpec}
 
-  OUTPUT_DIR="$TEMP_DIR/out"
-  COMPONENTS_DIR="$RN_DIR/ReactCommon/react/renderer/components/rncore"
-  MODULES_DIR="$RN_DIR/Libraries/FBReactNativeSpec/FBReactNativeSpec"
+  CODEGEN_COMPONENTS_LIBRARY_NAME=${CODEGEN_COMPONENTS_LIBRARY_NAME:-rncore}
+  CODEGEN_MODULES_OUTPUT_DIR=${CODEGEN_MODULES_OUTPUT_DIR:-"$RN_DIR/Libraries/$CODEGEN_MODULES_LIBRARY_NAME/$CODEGEN_MODULES_LIBRARY_NAME"}
+  # TODO: $CODEGEN_COMPONENTS_PATH should be programmatically specified, and may change with use_frameworks! support.
+  CODEGEN_COMPONENTS_PATH="ReactCommon/react/renderer/components"
+  CODEGEN_COMPONENTS_OUTPUT_DIR=${CODEGEN_COMPONENTS_OUTPUT_DIR:-"$RN_DIR/$CODEGEN_COMPONENTS_PATH/$CODEGEN_COMPONENTS_LIBRARY_NAME"}
 
+  TEMP_OUTPUT_DIR="$TEMP_DIR/out"
   SCHEMA_FILE="$TEMP_DIR/schema.json"
 
   CODEGEN_REPO_PATH="$RN_DIR/packages/react-native-codegen"
@@ -66,13 +78,13 @@ main() {
 
   describe "Generating native code from schema (iOS)"
   pushd "$RN_DIR" >/dev/null || exit
-    "$YARN_BINARY" --silent node scripts/generate-specs-cli.js ios "$SCHEMA_FILE" "$OUTPUT_DIR"
+    "$YARN_BINARY" --silent node scripts/generate-specs-cli.js ios "$SCHEMA_FILE" "$TEMP_OUTPUT_DIR" "$CODEGEN_MODULES_LIBRARY_NAME"
   popd >/dev/null || exit
 
-  mkdir -p "$COMPONENTS_DIR" "$MODULES_DIR"
-  mv "$OUTPUT_DIR/FBReactNativeSpec.h" "$OUTPUT_DIR/FBReactNativeSpec-generated.mm" "$MODULES_DIR"
-  find "$OUTPUT_DIR" -type f | xargs sed -i '' 's/FBReactNativeSpec/rncore/g'
-  cp -R "$OUTPUT_DIR/." "$COMPONENTS_DIR"
+  mkdir -p "$CODEGEN_COMPONENTS_OUTPUT_DIR" "$CODEGEN_MODULES_OUTPUT_DIR"
+  mv "$TEMP_OUTPUT_DIR/$CODEGEN_MODULES_LIBRARY_NAME.h" "$TEMP_OUTPUT_DIR/$CODEGEN_MODULES_LIBRARY_NAME-generated.mm" "$CODEGEN_MODULES_OUTPUT_DIR"
+  find "$TEMP_OUTPUT_DIR" -type f | xargs sed -i '' "s/$CODEGEN_MODULES_LIBRARY_NAME/$CODEGEN_COMPONENTS_LIBRARY_NAME/g"
+  cp -R "$TEMP_OUTPUT_DIR/." "$CODEGEN_COMPONENTS_OUTPUT_DIR"
 }
 
 trap cleanup EXIT
