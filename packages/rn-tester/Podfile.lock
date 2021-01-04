@@ -798,7 +798,7 @@ SPEC CHECKSUMS:
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: fe973c09b2299b5e8154186ecf1f6554b4f70987
-  FBReactNativeSpec: cc83b1f9c1a764577c37a7009d002b8afb36f192
+  FBReactNativeSpec: d0504078deb2ffa0fbee5032382f4ef165a1c8a8
   Flipper: be611d4b742d8c87fbae2ca5f44603a02539e365
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: e4493b013c02d9347d5e0cb4d128680239f6c78a
