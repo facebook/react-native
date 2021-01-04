@@ -34,7 +34,9 @@ const DEFAULT_NATIVE_EVENT_EMITTER_OPTIONS = {
  * Abstract base class for implementing event-emitting modules. This implements
  * a subset of the standard EventEmitter node module API.
  */
-export default class NativeEventEmitter extends EventEmitter {
+export default class NativeEventEmitter<
+  _GenericArgumentPlaceholder,
+> extends EventEmitter {
   _nativeModule: ?NativeModule;
   _disableCallsIntoModule: boolean;
 

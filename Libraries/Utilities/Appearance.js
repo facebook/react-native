@@ -23,7 +23,9 @@ type AppearanceListener = (preferences: AppearancePreferences) => void;
 const eventEmitter = new EventEmitter();
 
 if (NativeAppearance) {
-  const nativeEventEmitter = new NativeEventEmitter(NativeAppearance);
+  const nativeEventEmitter = new NativeEventEmitter<$FlowFixMe>(
+    NativeAppearance,
+  );
   nativeEventEmitter.addListener(
     'appearanceChanged',
     (newAppearance: AppearancePreferences) => {

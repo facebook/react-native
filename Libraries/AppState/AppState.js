@@ -22,7 +22,7 @@ import invariant from 'invariant';
  *
  * See https://reactnative.dev/docs/appstate.html
  */
-class AppState extends NativeEventEmitter {
+class AppState extends NativeEventEmitter<$FlowFixMe> {
   _eventHandlers: Object;
   _supportedEvents = ['change', 'memoryWarning', 'blur', 'focus'];
   currentState: ?string;

@@ -31,7 +31,7 @@ import RCTModalHostView from './RCTModalHostViewNativeComponent';
 
 const ModalEventEmitter =
   Platform.OS === 'ios' && NativeModalManager != null
-    ? new NativeEventEmitter(NativeModalManager)
+    ? new NativeEventEmitter<$FlowFixMe>(NativeModalManager)
     : null;
 
 /**

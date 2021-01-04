@@ -16,7 +16,7 @@ import type {NativeResponseType} from './XMLHttpRequest';
 import convertRequestBody from './convertRequestBody';
 import type {RequestBody} from './convertRequestBody';
 
-class RCTNetworking extends NativeEventEmitter {
+class RCTNetworking extends NativeEventEmitter<$FlowFixMe> {
   constructor() {
     const disableCallsIntoModule =
       typeof global.__disableRCTNetworkingExtraneousModuleCalls === 'function'

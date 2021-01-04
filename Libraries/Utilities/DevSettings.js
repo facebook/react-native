@@ -17,7 +17,8 @@ interface IDevSettings {
   onFastRefresh(): void;
 }
 
-class DevSettings extends NativeEventEmitter implements IDevSettings {
+class DevSettings extends NativeEventEmitter<$FlowFixMe>
+  implements IDevSettings {
   _menuItems: Map<string, () => mixed>;
 
   constructor() {
