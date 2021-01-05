@@ -22,7 +22,7 @@ import invariant from 'invariant';
  *
  * See https://reactnative.dev/docs/appstate.html
  */
-class AppState extends NativeEventEmitter {
+class AppState extends NativeEventEmitter<$FlowFixMe> {
   _eventHandlers: Object;
   _supportedEvents = ['change', 'memoryWarning', 'blur', 'focus'];
   currentState: ?string;
@@ -142,7 +142,7 @@ function throwMissingNativeModule() {
   );
 }
 
-class MissingNativeAppStateShim extends EventEmitter {
+class MissingNativeAppStateShim extends EventEmitter<$FlowFixMe> {
   // AppState
   isAvailable: boolean = false;
   currentState: ?string = null;
@@ -156,7 +156,7 @@ class MissingNativeAppStateShim extends EventEmitter {
   }
 
   // EventEmitter
-  addListener() {
+  addListener(): any {
     throwMissingNativeModule();
   }
 

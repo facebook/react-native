@@ -1297,3 +1297,40 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_O
   }
 }"
 `;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNSAFE_OBJECT 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'getUnsafeObject',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'GenericObjectTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'o',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'GenericObjectTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleNames': [
+        'SampleTurboModule'
+      ]
+    }
+  }
+}"
+`;

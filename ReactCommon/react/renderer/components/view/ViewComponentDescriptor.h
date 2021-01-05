@@ -25,7 +25,15 @@ class ViewComponentDescriptor
       float animationProgress,
       const SharedProps &props,
       const SharedProps &newProps) const override {
+#ifdef ANDROID
+    // On Android only, the merged props should have the same RawProps as the
+    // final props struct
+    SharedProps interpolatedPropsShared =
+        (newProps != nullptr ? cloneProps(newProps, newProps->rawProps)
+                             : cloneProps(newProps, {}));
+#else
     SharedProps interpolatedPropsShared = cloneProps(newProps, {});
+#endif
 
     interpolateViewProps(
         animationProgress, props, newProps, interpolatedPropsShared);

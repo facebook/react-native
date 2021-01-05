@@ -67,8 +67,7 @@ Scheduler::Scheduler(
       statePipe,
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
-      eventOwnerBox,
-      reactNativeConfig_->getBool("react_fabric:enable_v2_event_coalescing"));
+      eventOwnerBox);
 
   // Casting to `std::shared_ptr<EventDispatcher const>`.
   auto eventDispatcher =
@@ -109,15 +108,9 @@ Scheduler::Scheduler(
 #ifdef ANDROID
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
-  uiManager_->experimentEnableStateUpdateWithAutorepeat =
-      reactNativeConfig_->getBool(
-          "react_fabric:enable_state_update_with_autorepeat_android");
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
-  uiManager_->experimentEnableStateUpdateWithAutorepeat =
-      reactNativeConfig_->getBool(
-          "react_fabric:enable_state_update_with_autorepeat_ios");
 #endif
 }
 

@@ -24,7 +24,7 @@ import nullthrows from 'nullthrows';
  *
  * See https://reactnative.dev/docs/linking.html
  */
-class Linking extends NativeEventEmitter {
+class Linking extends NativeEventEmitter<$FlowFixMe> {
   constructor() {
     super(Platform.OS === 'ios' ? nullthrows(NativeLinkingManager) : undefined);
   }

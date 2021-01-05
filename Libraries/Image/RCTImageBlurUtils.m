@@ -34,12 +34,13 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   buffer1.rowBytes = buffer2.rowBytes = CGImageGetBytesPerRow(imageRef);
   size_t bytes = buffer1.rowBytes * buffer1.height;
   buffer1.data = malloc(bytes);
+  if (!buffer1.data) {
+    return inputImage;
+  }
   buffer2.data = malloc(bytes);
-  if (!buffer1.data || !buffer2.data) {
-    // CWE - 391 : Unchecked error condition
-    // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
-    // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
-    abort();
+  if (!buffer2.data) {
+    free(buffer1.data);
+    return inputImage;
   }
 
   // A description of how to compute the box kernel width from the Gaussian
@@ -58,10 +59,9 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   }
   void *tempBuffer = malloc(tempBufferSize);
   if (!tempBuffer) {
-    // CWE - 391 : Unchecked error condition
-    // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
-    // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
-    abort();
+    free(buffer1.data);
+    free(buffer2.data);
+    return inputImage;
   }
 
   //copy image data

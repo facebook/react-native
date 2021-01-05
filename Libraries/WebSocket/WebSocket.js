@@ -64,7 +64,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
   CLOSED: number = CLOSED;
 
   _socketId: number;
-  _eventEmitter: NativeEventEmitter;
+  _eventEmitter: NativeEventEmitter<$FlowFixMe>;
   _subscriptions: Array<EventSubscription>;
   _binaryType: ?BinaryType;
 

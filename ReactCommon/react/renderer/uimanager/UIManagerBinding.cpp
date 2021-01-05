@@ -7,10 +7,10 @@
 
 #include "UIManagerBinding.h"
 
-#include <react/renderer/debug/SystraceSection.h>
-
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
+#include <react/renderer/core/LayoutableShadowNode.h>
+#include <react/renderer/debug/SystraceSection.h>
 
 namespace facebook {
 namespace react {
@@ -594,10 +594,9 @@ jsi::Value UIManagerBinding::get(
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept->jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNodeFromValue(runtime, arguments[0]),
-              nullptr,
-              {/* .includeTransform = */ true});
+              *shadowNode, nullptr, {/* .includeTransform = */ true});
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
 
@@ -605,12 +604,20 @@ jsi::Value UIManagerBinding::get(
             onSuccessFunction.call(runtime, {0, 0, 0, 0, 0, 0});
             return jsi::Value::undefined();
           }
+          auto newestCloneOfShadowNode =
+              uiManager->getNewestCloneOfShadowNode(*shadowNode);
+
+          auto layoutableShadowNode = traitCast<LayoutableShadowNode const *>(
+              newestCloneOfShadowNode.get());
+          Point originRelativeToParent = layoutableShadowNode
+              ? layoutableShadowNode->getLayoutMetrics().frame.origin
+              : Point();
 
           auto frame = layoutMetrics.frame;
           onSuccessFunction.call(
               runtime,
-              {0,
-               0,
+              {jsi::Value{runtime, (double)originRelativeToParent.x},
+               jsi::Value{runtime, (double)originRelativeToParent.y},
                jsi::Value{runtime, (double)frame.size.width},
                jsi::Value{runtime, (double)frame.size.height},
                jsi::Value{runtime, (double)frame.origin.x},

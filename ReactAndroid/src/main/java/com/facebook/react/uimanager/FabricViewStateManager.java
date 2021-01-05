@@ -79,10 +79,9 @@ public class FabricViewStateManager {
     if (stateUpdate == null) {
       return;
     }
-    stateWrapper.updateState(
-        stateUpdate,
-        // Failure callback - this is run if the updateState call fails
-        failureRunnable);
+
+    // TODO: State update cannot fail; remove `failureRunnable` and custom retrying logic.
+    stateWrapper.updateState(stateUpdate);
   }
 
   public void setState(final StateUpdateCallback stateUpdateCallback) {

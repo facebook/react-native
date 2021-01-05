@@ -77,12 +77,15 @@ const GENERATORS = {
   ],
   // TODO: Refactor this to consolidate various C++ output variation instead of forking per platform.
   componentsAndroid: [
-    // TODO: enable C++ output below:
-    // generateComponentDescriptorH.generate,
-    // generateEventEmitterCpp.generate,
-    // generateEventEmitterH.generate,
-    // generatePropsCpp.generate,
-    // generatePropsH.generate,
+    // JNI/C++ files
+    generateComponentDescriptorH.generate,
+    generateEventEmitterCpp.generate,
+    generateEventEmitterH.generate,
+    generatePropsCpp.generate,
+    generatePropsH.generate,
+    generateShadowNodeCpp.generate,
+    generateShadowNodeH.generate,
+    // Java files
     generatePropsJavaInterface.generate,
     generatePropsJavaDelegate.generate,
   ],
@@ -93,6 +96,8 @@ const GENERATORS = {
     generateComponentHObjCpp.generate,
     generatePropsCpp.generate,
     generatePropsH.generate,
+    generateShadowNodeCpp.generate,
+    generateShadowNodeH.generate,
   ],
   modulesAndroid: [
     GenerateModuleJniCpp.generate,

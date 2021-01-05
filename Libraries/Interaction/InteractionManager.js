@@ -21,7 +21,7 @@ import EventEmitter from '../vendor/emitter/EventEmitter';
 export type Handle = number;
 import type {Task} from './TaskQueue';
 
-const _emitter = new EventEmitter();
+const _emitter = new EventEmitter<$FlowFixMe>();
 
 const DEBUG_DELAY: 0 = 0;
 const DEBUG: false = false;
