@@ -15,6 +15,7 @@ import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {
   WithDefault,
   DirectEventHandler,
+  BubblingEventHandler,
   Int32,
 } from '../Types/CodegenTypes';
 
@@ -85,6 +86,14 @@ type NativeProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/modal.html#onshow
    */
   onShow?: ?DirectEventHandler<null>,
+
+  /**
+   * The `onDismiss` prop allows passing a function that will be called once
+   * the modal has been dismissed.
+   *
+   * See https://reactnative.dev/docs/modal.html#ondismiss
+   */
+  onDismiss?: ?BubblingEventHandler<null>,
 
   /**
    * Deprecated. Use the `animationType` prop instead.
