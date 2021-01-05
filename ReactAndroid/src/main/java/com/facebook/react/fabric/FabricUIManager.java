@@ -26,7 +26,6 @@ import android.graphics.Point;
 import android.os.SystemClock;
 import android.view.View;
 import androidx.annotation.AnyThread;
-import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -87,7 +86,6 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.systrace.Systrace;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -133,7 +131,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @NonNull
   private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
 
-  // Concurrent MountItem data-structures, experimental. TODO: T79662803
   @NonNull
   private final ConcurrentLinkedQueue<DispatchCommandMountItem> mViewCommandMountItemsConcurrent =
       new ConcurrentLinkedQueue<>();
@@ -145,24 +142,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @NonNull
   private final ConcurrentLinkedQueue<PreAllocateViewMountItem> mPreMountItemsConcurrent =
       new ConcurrentLinkedQueue<>();
-
-  // Non-concurrent MountItem data-structures
-  @NonNull private final Object mViewCommandMountItemsLock = new Object();
-  @NonNull private final Object mMountItemsLock = new Object();
-  @NonNull private final Object mPreMountItemsLock = new Object();
-
-  @GuardedBy("mViewCommandMountItemsLock")
-  @NonNull
-  private List<DispatchCommandMountItem> mViewCommandMountItems = new ArrayList<>();
-
-  @GuardedBy("mMountItemsLock")
-  @NonNull
-  private List<MountItem> mMountItems = new ArrayList<>();
-
-  @GuardedBy("mPreMountItemsLock")
-  @NonNull
-  private ArrayDeque<PreAllocateViewMountItem> mPreMountItems =
-      new ArrayDeque<>(PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY);
 
   @ThreadConfined(UI)
   @NonNull
@@ -807,50 +786,17 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @UiThread
   @ThreadConfined(UI)
   private List<DispatchCommandMountItem> getAndResetViewCommandMountItems() {
-    if (ReactFeatureFlags.enableLockFreeMountInstructions) {
-      return drainConcurrentItemQueue(mViewCommandMountItemsConcurrent);
-    }
-
-    synchronized (mViewCommandMountItemsLock) {
-      List<DispatchCommandMountItem> result = mViewCommandMountItems;
-      if (result.isEmpty()) {
-        return null;
-      }
-      mViewCommandMountItems = new ArrayList<>();
-      return result;
-    }
+    return drainConcurrentItemQueue(mViewCommandMountItemsConcurrent);
   }
 
   @UiThread
   @ThreadConfined(UI)
   private List<MountItem> getAndResetMountItems() {
-    if (ReactFeatureFlags.enableLockFreeMountInstructions) {
-      return drainConcurrentItemQueue(mMountItemsConcurrent);
-    }
-
-    synchronized (mMountItemsLock) {
-      List<MountItem> result = mMountItems;
-      if (result.isEmpty()) {
-        return null;
-      }
-      mMountItems = new ArrayList<>();
-      return result;
-    }
+    return drainConcurrentItemQueue(mMountItemsConcurrent);
   }
 
   private Collection<PreAllocateViewMountItem> getAndResetPreMountItems() {
-    if (ReactFeatureFlags.enableLockFreeMountInstructions) {
-      return drainConcurrentItemQueue(mPreMountItemsConcurrent);
-    }
-
-    synchronized (mPreMountItemsLock) {
-      ArrayDeque<PreAllocateViewMountItem> result = mPreMountItems;
-      if (result.isEmpty()) {
-        return null;
-      }
-      mPreMountItems = new ArrayDeque<>(PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY);
-      return result;
-    }
+    return drainConcurrentItemQueue(mPreMountItemsConcurrent);
   }
 
   /**
@@ -1051,16 +997,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           break;
         }
 
-        PreAllocateViewMountItem preMountItemToDispatch = null;
-        if (ReactFeatureFlags.enableLockFreeMountInstructions) {
-          preMountItemToDispatch = mPreMountItemsConcurrent.poll();
-        } else {
-          synchronized (mPreMountItemsLock) {
-            if (!mPreMountItems.isEmpty()) {
-              preMountItemToDispatch = mPreMountItems.pollFirst();
-            }
-          }
-        }
+        PreAllocateViewMountItem preMountItemToDispatch = mPreMountItemsConcurrent.poll();
+
         // If list is empty, `poll` will return null, or var will never be set
         if (preMountItemToDispatch == null) {
           break;
@@ -1268,13 +1206,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * @param mountItem
    */
   private void addMountItem(MountItem mountItem) {
-    if (ReactFeatureFlags.enableLockFreeMountInstructions) {
-      mMountItemsConcurrent.add(mountItem);
-    } else {
-      synchronized (mMountItemsLock) {
-        mMountItems.add(mountItem);
-      }
-    }
+    mMountItemsConcurrent.add(mountItem);
   }
 
   /**
@@ -1283,13 +1215,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * @param mountItem
    */
   private void addPreAllocateMountItem(PreAllocateViewMountItem mountItem) {
-    if (ReactFeatureFlags.enableLockFreeMountInstructions) {
-      mPreMountItemsConcurrent.add(mountItem);
-    } else {
-      synchronized (mPreMountItemsLock) {
-        mPreMountItems.add(mountItem);
-      }
-    }
+    mPreMountItemsConcurrent.add(mountItem);
   }
 
   /**
@@ -1298,13 +1224,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * @param mountItem
    */
   private void addViewCommandMountItem(DispatchCommandMountItem mountItem) {
-    if (ReactFeatureFlags.enableLockFreeMountInstructions) {
-      mViewCommandMountItemsConcurrent.add(mountItem);
-    } else {
-      synchronized (mViewCommandMountItemsLock) {
-        mViewCommandMountItems.add(mountItem);
-      }
-    }
+    mViewCommandMountItemsConcurrent.add(mountItem);
   }
 
   private class DispatchUIFrameCallback extends GuardedFrameCallback {

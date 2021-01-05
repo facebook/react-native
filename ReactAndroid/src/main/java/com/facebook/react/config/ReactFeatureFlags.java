@@ -57,9 +57,6 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
-  /** Use lock-free data structures for Fabric MountItems. */
-  public static boolean enableLockFreeMountInstructions = false;
-
   /** Disable UI update operations in non-Fabric renderer after catalyst instance was destroyed */
   public static boolean disableNonFabricViewOperationsOnCatalystDestroy = false;
 
