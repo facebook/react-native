@@ -57,22 +57,13 @@ import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.mounting.MountingManager;
-import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
-import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchIntCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountItem;
-import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
 import com.facebook.react.fabric.mounting.mountitems.IntBufferBatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
-import com.facebook.react.fabric.mounting.mountitems.RemoveDeleteMultiMountItem;
 import com.facebook.react.fabric.mounting.mountitems.SendAccessibilityEvent;
-import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem;
-import com.facebook.react.fabric.mounting.mountitems.UpdateLayoutMountItem;
-import com.facebook.react.fabric.mounting.mountitems.UpdatePaddingMountItem;
-import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
-import com.facebook.react.fabric.mounting.mountitems.UpdateStateMountItem;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.PixelUtil;
@@ -356,100 +347,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
-  private MountItem createMountItem(
-      String componentName,
-      @Nullable ReadableMap props,
-      @Nullable Object stateWrapper,
-      int reactRootTag,
-      int reactTag,
-      boolean isLayoutable) {
-    String component = getFabricComponentName(componentName);
-
-    // This could be null if teardown/navigation away from a surface on the main thread happens
-    // while a commit is being processed in a different thread. By contract we expect this to be
-    // possible at teardown, but this race should *never* happen at startup.
-    @Nullable ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
-
-    return new CreateMountItem(
-        reactContext,
-        reactRootTag,
-        reactTag,
-        component,
-        props,
-        (StateWrapper) stateWrapper,
-        isLayoutable);
-  }
-
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  @AnyThread
-  @ThreadConfined(ANY)
-  private MountItem insertMountItem(int reactTag, int parentReactTag, int index) {
-    return new InsertMountItem(reactTag, parentReactTag, index);
-  }
-
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  @AnyThread
-  @ThreadConfined(ANY)
-  private MountItem removeDeleteMultiMountItem(int[] metadata) {
-    return new RemoveDeleteMultiMountItem(metadata);
-  }
-
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  @AnyThread
-  @ThreadConfined(ANY)
-  private MountItem updateLayoutMountItem(
-      int reactTag, int x, int y, int width, int height, int layoutDirection) {
-    return new UpdateLayoutMountItem(reactTag, x, y, width, height, layoutDirection);
-  }
-
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  @AnyThread
-  @ThreadConfined(ANY)
-  private MountItem updatePaddingMountItem(int reactTag, int left, int top, int right, int bottom) {
-    return new UpdatePaddingMountItem(reactTag, left, top, right, bottom);
-  }
-
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  @AnyThread
-  @ThreadConfined(ANY)
-  private MountItem updatePropsMountItem(int reactTag, ReadableMap map) {
-    return new UpdatePropsMountItem(reactTag, map);
-  }
-
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  @AnyThread
-  @ThreadConfined(ANY)
-  private MountItem updateStateMountItem(int reactTag, @Nullable Object stateWrapper) {
-    return new UpdateStateMountItem(reactTag, (StateWrapper) stateWrapper);
-  }
-
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  @AnyThread
-  @ThreadConfined(ANY)
-  private MountItem updateEventEmitterMountItem(int reactTag, Object eventEmitter) {
-    return new UpdateEventEmitterMountItem(reactTag, (EventEmitterWrapper) eventEmitter);
-  }
-
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  @AnyThread
-  @ThreadConfined(ANY)
-  private MountItem createBatchMountItem(
-      int rootTag, MountItem[] items, int size, int commitNumber) {
-    return new BatchMountItem(rootTag, items, size, commitNumber);
-  }
-
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  @AnyThread
-  @ThreadConfined(ANY)
   private MountItem createIntBufferBatchMountItem(
       int rootTag, int[] intBuffer, Object[] objBuffer, int commitNumber) {
     // This could be null if teardown/navigation away from a surface on the main thread happens
@@ -599,7 +496,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           @Override
           public void execute(@NonNull MountingManager mountingManager) {
             try {
-              updatePropsMountItem(reactTag, props).execute(mountingManager);
+              mountingManager.updateProps(reactTag, props);
             } catch (Exception ex) {
               // TODO T42943890: Fix animations in Fabric and remove this try/catch
               ReactSoftException.logSoftException(
@@ -664,12 +561,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // When Binding.cpp calls scheduleMountItems during a commit phase, it always calls with
     // a BatchMountItem. No other sites call into this with a BatchMountItem, and Binding.cpp only
     // calls scheduleMountItems with a BatchMountItem.
-    boolean isClassicBatchMountItem = mountItem instanceof BatchMountItem;
-    boolean isIntBufferMountItem = mountItem instanceof IntBufferBatchMountItem;
-    boolean isBatchMountItem = isClassicBatchMountItem || isIntBufferMountItem;
+    boolean isBatchMountItem = mountItem instanceof IntBufferBatchMountItem;
     boolean shouldSchedule =
-        (isClassicBatchMountItem && ((BatchMountItem) mountItem).shouldSchedule())
-            || (isIntBufferMountItem && ((IntBufferBatchMountItem) mountItem).shouldSchedule())
+        (isBatchMountItem && ((IntBufferBatchMountItem) mountItem).shouldSchedule())
             || (!isBatchMountItem && mountItem != null);
 
     // In case of sync rendering, this could be called on the UI thread. Otherwise,
@@ -939,16 +833,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         }
 
         try {
-          // Make sure surface associated with this MountItem has been started, and not stopped.
-          // TODO T68118357: clean up this logic and simplify this method overall
-          if (mountItem instanceof BatchMountItem) {
-            BatchMountItem batchMountItem = (BatchMountItem) mountItem;
-            if (!isSurfaceActiveForExecution(
-                batchMountItem.getRootTag(), "dispatchMountItems BatchMountItem")) {
-              continue;
-            }
-          }
-
           // Make sure surface associated with this MountItem has been started, and not stopped.
           // TODO T68118357: clean up this logic and simplify this method overall
           if (mountItem instanceof IntBufferBatchMountItem) {
