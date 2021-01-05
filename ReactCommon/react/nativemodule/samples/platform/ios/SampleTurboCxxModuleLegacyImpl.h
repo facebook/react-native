@@ -31,7 +31,6 @@ class SampleTurboCxxModuleLegacyImpl
   std::string getString(const std::string &arg);
   folly::dynamic getArray(const folly::dynamic &arg);
   folly::dynamic getObject(const folly::dynamic &arg);
-  folly::dynamic getUnsafeObject(const folly::dynamic &arg);
   double getRootTag(double arg);
   folly::dynamic
   getValue(double x, const std::string &y, const folly::dynamic &z);

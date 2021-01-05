@@ -1623,15 +1623,7 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   }
   ComponentDescriptor const &componentDescriptor =
       getComponentDescriptorForShadowView(startingView);
-
-  // Base the mutated view on the finalView, so that the following stay
-  // consistent:
-  // - state
-  // - eventEmitter
-  // For now, we do not allow interpolation of state. And we probably never
-  // will, so make sure we always keep the mounting layer consistent with the
-  // "final" state.
-  auto mutatedShadowView = ShadowView(finalView);
+  auto mutatedShadowView = ShadowView(startingView);
 
   if (startingView.props == nullptr || finalView.props == nullptr) {
     return finalView;

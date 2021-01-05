@@ -22,12 +22,7 @@ describe('GenerateModuleCpp', () => {
 
       it(`can generate fixture ${fixtureName}`, () => {
         expect(
-          generator.generate(
-            fixtureName,
-            fixture,
-            'SampleSpec',
-            'com.facebook.fbreact.specs',
-          ),
+          generator.generate(fixtureName, fixture, 'SampleSpec'),
         ).toMatchSnapshot();
       });
     });

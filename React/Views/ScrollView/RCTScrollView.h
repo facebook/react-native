@@ -29,6 +29,12 @@
 @property (nonatomic, readonly) UIView *contentView;
 
 /**
+ * If the `contentSize` is not specified (or is specified as {0, 0}, then the
+ * `contentSize` will automatically be determined by the size of the subview.
+ */
+@property (nonatomic, assign) CGSize contentSize;
+
+/**
  * The underlying scrollView (TODO: can we remove this?)
  */
 @property (nonatomic, readonly) UIScrollView *scrollView;
@@ -62,7 +68,7 @@
 
 @interface RCTScrollView (Internal)
 
-- (void)updateContentSizeIfNeeded;
+- (void)updateContentOffsetIfNeeded;
 
 @end
 

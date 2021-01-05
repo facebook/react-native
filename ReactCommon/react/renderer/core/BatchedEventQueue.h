@@ -21,7 +21,8 @@ class BatchedEventQueue final : public EventQueue {
   BatchedEventQueue(
       EventPipe eventPipe,
       StatePipe statePipe,
-      std::unique_ptr<EventBeat> eventBeat);
+      std::unique_ptr<EventBeat> eventBeat,
+      bool enableV2EventCoalescing);
 
   void onEnqueue() const override;
 
@@ -31,6 +32,9 @@ class BatchedEventQueue final : public EventQueue {
    * Can be called on any thread.
    */
   void enqueueUniqueEvent(const RawEvent &rawEvent) const;
+
+ private:
+  bool const enableV2EventCoalescing_;
 };
 
 } // namespace react

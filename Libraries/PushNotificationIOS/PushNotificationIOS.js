@@ -14,7 +14,7 @@ import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativePushNotificationManagerIOS from './NativePushNotificationManagerIOS';
 import invariant from 'invariant';
 
-const PushNotificationEmitter = new NativeEventEmitter<$FlowFixMe>(
+const PushNotificationEmitter = new NativeEventEmitter(
   NativePushNotificationManagerIOS,
 );
 

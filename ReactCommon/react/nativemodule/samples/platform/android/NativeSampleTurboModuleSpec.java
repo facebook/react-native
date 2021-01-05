@@ -42,9 +42,6 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   @ReactMethod(isBlockingSynchronousMethod = true)
   public abstract WritableMap getObject(ReadableMap arg);
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public abstract WritableMap getUnsafeObject(ReadableMap arg);
-
   @ReactMethod
   public abstract void voidFunc();
 

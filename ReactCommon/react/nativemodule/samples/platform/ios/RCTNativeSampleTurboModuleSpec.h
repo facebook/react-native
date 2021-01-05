@@ -26,7 +26,6 @@
 - (NSString *)getString:(NSString *)arg;
 - (NSArray<id<NSObject>> *)getArray:(NSArray *)arg;
 - (NSDictionary *)getObject:(NSDictionary *)arg;
-- (NSDictionary *)getUnsafeObject:(NSDictionary *)arg;
 - (NSNumber *)getRootTag:(double)arg;
 - (NSDictionary *)getValue:(double)x y:(NSString *)y z:(NSDictionary *)z;
 - (void)getValueWithCallback:(RCTResponseSenderBlock)callback;

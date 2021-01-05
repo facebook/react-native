@@ -10,7 +10,6 @@
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/conversions.h>
-#include <react/utils/LayoutManager.h>
 
 using namespace facebook::jni;
 
@@ -41,30 +40,64 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
     int64_t cacheId,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
+  const jni::global_ref<jobject> &fabricUIManager =
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+
   auto env = Environment::current();
   auto attachmentPositions = env->NewFloatArray(0);
+
+  static auto measure =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jlong(
+              jint,
+              jstring,
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloatArray)>("measure");
+
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
 
+  local_ref<JString> componentName = make_jstring("RCTText");
   folly::dynamic cacheIdMap = folly::dynamic::object;
   cacheIdMap["cacheId"] = cacheId;
+  local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
+      ReadableNativeMap::newObjectCxxArgs(cacheIdMap);
+  local_ref<ReadableNativeMap::javaobject> paragraphAttributesRNM =
+      ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes));
 
-  auto size = measureAndroidComponent(
-      contextContainer_,
+  local_ref<ReadableMap::javaobject> attributedStringRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(attributedStringRNM.get()));
+  local_ref<ReadableMap::javaobject> paragraphAttributesRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
+  auto size = yogaMeassureToSize(measure(
+      fabricUIManager,
       -1, // TODO: we should pass rootTag in
-      "RCTText",
-      cacheIdMap,
-      toDynamic(paragraphAttributes),
+      componentName.get(),
+      attributedStringRM.get(),
+      paragraphAttributesRM.get(),
       nullptr,
       minimumSize.width,
       maximumSize.width,
       minimumSize.height,
       maximumSize.height,
-      attachmentPositions);
+      attachmentPositions));
 
   // Clean up allocated ref - it still takes up space in the JNI ref table even
   // though it's 0 length
   env->DeleteLocalRef(attachmentPositions);
+
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  componentName.reset();
+  attributedStringRM.reset();
+  attributedStringRNM.reset();
+  paragraphAttributesRM.reset();
+  paragraphAttributesRNM.reset();
 
   // TODO: currently we do not support attachments for cached IDs - should we?
   auto attachments = TextMeasurement::Attachments{};
@@ -126,6 +159,9 @@ TextMeasurement TextLayoutManager::doMeasure(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
+  const jni::global_ref<jobject> &fabricUIManager =
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+
   int attachmentsCount = 0;
   for (auto fragment : attributedString.getFragments()) {
     if (fragment.isAttachment()) {
@@ -135,22 +171,46 @@ TextMeasurement TextLayoutManager::doMeasure(
   auto env = Environment::current();
   auto attachmentPositions = env->NewFloatArray(attachmentsCount * 2);
 
+  static auto measure =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jlong(
+              jint,
+              jstring,
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloatArray)>("measure");
+
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
 
   auto serializedAttributedString = toDynamic(attributedString);
-  auto size = measureAndroidComponent(
-      contextContainer_,
+  local_ref<JString> componentName = make_jstring("RCTText");
+  local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
+      ReadableNativeMap::newObjectCxxArgs(serializedAttributedString);
+  local_ref<ReadableNativeMap::javaobject> paragraphAttributesRNM =
+      ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes));
+
+  local_ref<ReadableMap::javaobject> attributedStringRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(attributedStringRNM.get()));
+  local_ref<ReadableMap::javaobject> paragraphAttributesRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
+  auto size = yogaMeassureToSize(measure(
+      fabricUIManager,
       -1, // TODO: we should pass rootTag in
-      "RCTText",
-      serializedAttributedString,
-      toDynamic(paragraphAttributes),
+      componentName.get(),
+      attributedStringRM.get(),
+      paragraphAttributesRM.get(),
       nullptr,
       minimumSize.width,
       maximumSize.width,
       minimumSize.height,
       maximumSize.height,
-      attachmentPositions);
+      attachmentPositions));
 
   jfloat *attachmentData = env->GetFloatArrayElements(attachmentPositions, 0);
 
@@ -178,6 +238,13 @@ TextMeasurement TextLayoutManager::doMeasure(
   env->ReleaseFloatArrayElements(
       attachmentPositions, attachmentData, JNI_ABORT);
   env->DeleteLocalRef(attachmentPositions);
+
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  componentName.reset();
+  attributedStringRM.reset();
+  attributedStringRNM.reset();
+  paragraphAttributesRM.reset();
+  paragraphAttributesRNM.reset();
 
   return TextMeasurement{size, attachments};
 }

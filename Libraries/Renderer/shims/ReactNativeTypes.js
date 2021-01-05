@@ -5,15 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict
+ * @flow
  */
 
-import type {
-  ElementRef,
-  ElementType,
-  MixedElement,
-  AbstractComponent,
-} from 'react';
+import type {ElementRef, AbstractComponent} from 'react';
 
 export type MeasureOnSuccessCallback = (
   x: number,
@@ -38,32 +33,22 @@ export type MeasureLayoutOnSuccessCallback = (
   height: number,
 ) => void;
 
-type AttributeType<T, V> =
+type AttributeType<T> =
   | true
   | $ReadOnly<{|
       diff?: (arg1: T, arg2: T) => boolean,
-      process?: (arg1: V) => T,
+      process?: (arg1: any) => any,
     |}>;
 
-// We either force that `diff` and `process` always use mixed,
-// or we allow them to define specific types and use this hack
-type AnyAttributeType = AttributeType<$FlowFixMe, $FlowFixMe>;
-
 type AttributeConfiguration = $ReadOnly<{
-  [propName: string]: AnyAttributeType,
-  style: $ReadOnly<{
-    [propName: string]: AnyAttributeType,
-    ...,
-  }>,
+  [propName: string]: AttributeType<any>,
+  style: $ReadOnly<{[propName: string]: AttributeType<any>, ...}>,
   ...
 }>;
 
 type PartialAttributeConfiguration = $ReadOnly<{
-  [propName: string]: AnyAttributeType,
-  style?: $ReadOnly<{
-    [propName: string]: AnyAttributeType,
-    ...,
-  }>,
+  [propName: string]: AttributeType<any>,
+  style?: $ReadOnly<{[propName: string]: AttributeType<any>, ...}>,
   ...
 }>;
 
@@ -109,7 +94,7 @@ export type NativeMethods = {
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void,
   ): void,
-  setNativeProps(nativeProps: {...}): void,
+  setNativeProps(nativeProps: Object): void,
   ...
 };
 
@@ -133,11 +118,9 @@ type InspectorDataSource = $ReadOnly<{|
 |}>;
 
 type InspectorDataGetter = (
-  <TElementType: ElementType>(
-    componentOrHandle: ElementRef<TElementType> | number,
-  ) => ?number,
+  (componentOrHandle: any) => ?number,
 ) => $ReadOnly<{|
-  measure: (callback: MeasureOnSuccessCallback) => void,
+  measure: Function,
   props: InspectorDataProps,
   source: InspectorDataSource,
 |}>;
@@ -169,63 +152,52 @@ export type TouchedViewDataAtPoint = $ReadOnly<{|
  * Provide minimal Flow typing for the high-level RN API and call it a day.
  */
 export type ReactNativeType = {
-  findHostInstance_DEPRECATED<TElementType: ElementType>(
-    componentOrHandle: ?(ElementRef<TElementType> | number),
+  findHostInstance_DEPRECATED(
+    componentOrHandle: any,
   ): ?ElementRef<HostComponent<mixed>>,
-  findNodeHandle<TElementType: ElementType>(
-    componentOrHandle: ?(ElementRef<TElementType> | number),
-  ): ?number,
-  dispatchCommand(
-    handle: ElementRef<HostComponent<mixed>>,
-    command: string,
-    args: Array<mixed>,
-  ): void,
+  findNodeHandle(componentOrHandle: any): ?number,
+  dispatchCommand(handle: any, command: string, args: Array<any>): void,
   render(
-    element: MixedElement,
-    containerTag: number,
-    callback: ?() => void,
-  ): ?ElementRef<ElementType>,
-  unmountComponentAtNode(containerTag: number): void,
-  unmountComponentAtNodeAndRemoveContainer(containerTag: number): void,
-  unstable_batchedUpdates: <T>(fn: (T) => void, bookkeeping: T) => void,
+    element: React$Element<any>,
+    containerTag: any,
+    callback: ?Function,
+  ): any,
+  unmountComponentAtNode(containerTag: number): any,
+  unmountComponentAtNodeAndRemoveContainer(containerTag: number): any,
+  // TODO (bvaughn) Add types
+  unstable_batchedUpdates: any,
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: SecretInternalsType,
   ...
 };
 
 export type ReactFabricType = {
-  findHostInstance_DEPRECATED<TElementType: ElementType>(
-    componentOrHandle: ?(ElementRef<TElementType> | number),
+  findHostInstance_DEPRECATED(
+    componentOrHandle: any,
   ): ?ElementRef<HostComponent<mixed>>,
-  findNodeHandle<TElementType: ElementType>(
-    componentOrHandle: ?(ElementRef<TElementType> | number),
-  ): ?number,
-  dispatchCommand(
-    handle: ElementRef<HostComponent<mixed>>,
-    command: string,
-    args: Array<mixed>,
-  ): void,
+  findNodeHandle(componentOrHandle: any): ?number,
+  dispatchCommand(handle: any, command: string, args: Array<any>): void,
   render(
-    element: MixedElement,
-    containerTag: number,
-    callback: ?() => void,
-  ): ?ElementRef<ElementType>,
-  unmountComponentAtNode(containerTag: number): void,
+    element: React$Element<any>,
+    containerTag: any,
+    callback: ?Function,
+  ): any,
+  unmountComponentAtNode(containerTag: number): any,
   ...
 };
 
 export type ReactNativeEventTarget = {
-  node: {...},
+  node: Object,
   canonical: {
     _nativeTag: number,
     viewConfig: ViewConfig,
-    currentProps: {...},
-    _internalInstanceHandle: {...},
+    currentProps: Object,
+    _internalInstanceHandle: Object,
     ...
   },
   ...
 };
 
-export type ReactFabricEventTouch = {
+export type ReactFaricEventTouch = {
   identifier: number,
   locationX: number,
   locationY: number,
@@ -239,10 +211,10 @@ export type ReactFabricEventTouch = {
   ...
 };
 
-export type ReactFabricEvent = {
-  touches: Array<ReactFabricEventTouch>,
-  changedTouches: Array<ReactFabricEventTouch>,
-  targetTouches: Array<ReactFabricEventTouch>,
+export type ReactFaricEvent = {
+  touches: Array<ReactFaricEventTouch>,
+  changedTouches: Array<ReactFaricEventTouch>,
+  targetTouches: Array<ReactFaricEventTouch>,
   target: number,
   ...
 };

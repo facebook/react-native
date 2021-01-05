@@ -64,15 +64,14 @@ local_ref<JArrayClass<jstring>> ReadableNativeMap::importKeys() {
     return JArrayClass<jstring>::newArray(0);
   }
   auto pairs = map_.items();
-  jint size = map_.size();
-  auto jarray = JArrayClass<jstring>::newArray(size);
-  jint i = 0;
   for (auto &pair : pairs) {
-    auto value = pair.first.asString();
-    keys_.value().push_back(value);
-    (*jarray)[i++] = make_jstring(value);
+    keys_.value().push_back(pair.first.asString());
   }
-
+  jint size = keys_.value().size();
+  auto jarray = JArrayClass<jstring>::newArray(size);
+  for (jint ii = 0; ii < size; ii++) {
+    (*jarray)[ii] = make_jstring(keys_.value()[ii].getString());
+  }
   return jarray;
 }
 

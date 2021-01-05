@@ -10,6 +10,7 @@
 #include <cassert>
 #include <string>
 
+#include <folly/Optional.h>
 #include <jsi/jsi.h>
 
 #include <ReactCommon/CallInvoker.h>

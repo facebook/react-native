@@ -26,7 +26,7 @@
 
   RCTAssert([scrollView isKindOfClass:[RCTScrollView class]], @"Unexpected view hierarchy of RCTScrollView component.");
 
-  [scrollView updateContentSizeIfNeeded];
+  [scrollView updateContentOffsetIfNeeded];
 }
 
 @end

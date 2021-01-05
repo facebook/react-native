@@ -7,14 +7,8 @@
 
 #include <memory>
 
-#include <assert.h>
 #include <gtest/gtest.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
 
-using namespace facebook::react;
-
-// Dummy test to create setup of tests
-TEST(MapBufferTest, testMapCreation) {
-  auto buffer = MapBuffer();
-  assert(buffer.getSize() == 0);
+TEST(MapBufferTest, testSomething) {
+  // TODO
 }

@@ -16,6 +16,6 @@ import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
 /**
  * Use `StatusBar` for mutating the status bar.
  */
-class StatusBarIOS extends NativeEventEmitter<$FlowFixMe> {}
+class StatusBarIOS extends NativeEventEmitter {}
 
 module.exports = (new StatusBarIOS(NativeStatusBarManagerIOS): StatusBarIOS);

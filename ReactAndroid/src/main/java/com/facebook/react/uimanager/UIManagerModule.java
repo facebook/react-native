@@ -15,7 +15,6 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
 import android.view.View;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 import com.facebook.common.logging.FLog;
@@ -209,7 +208,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public @NonNull String getName() {
+  public String getName() {
     return NAME;
   }
 
@@ -294,16 +293,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Helper method to pre-compute the constants for a view manager. This method ensures that we
    * don't block for getting the constants for view managers during TTI
    *
-   * @deprecated this method will be removed in the future
+   * @deprecated this method will not be available in FabricUIManager class.
    * @param viewManagerNames {@link List<String>} names of ViewManagers
    */
   @Deprecated
-  @Override
-  public void preInitializeViewManagers(List<String> viewManagerNames) {
+  public void preComputeConstantsForViewManager(List<String> viewManagerNames) {
+    // TODO T81145457 - Implement pre-initialization of ViewManagers in Fabric Android
     if (ReactFeatureFlags.enableExperimentalStaticViewConfigs) {
-      for (String viewManagerName : viewManagerNames) {
-        mUIImplementation.resolveViewManager(viewManagerName);
-      }
+      preInitializeViewManagers(viewManagerNames);
       // When Static view configs are enabled it is not necessary to pre-compute the constants for
       // viewManagers, although the pre-initialization of viewManager objects is still necessary
       // for performance reasons.
@@ -326,6 +323,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     // accessed - write one, read multiple times, and then throw the data away.
     mViewManagerConstantsCacheSize = viewManagerNames.size();
     mViewManagerConstantsCache = Collections.unmodifiableMap(constantsMap);
+  }
+
+  private void preInitializeViewManagers(List<String> viewManagerNames) {
+    for (String viewManagerName : viewManagerNames) {
+      mUIImplementation.resolveViewManager(viewManagerName);
+    }
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
