@@ -5,6 +5,7 @@ fb_native.android_library(
     name = "okio",
     visibility = ["//ReactAndroid/..."],
     exported_deps = [
+        ":okio-binary",
         react_native_dep("third-party/java/kotlin:kotlin-stdlib"),
     ],
 )
