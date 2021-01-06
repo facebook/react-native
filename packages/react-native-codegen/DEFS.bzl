@@ -105,6 +105,7 @@ def rn_codegen_cli():
 def rn_codegen_modules(
         name,
         native_module_spec_name,
+        android_package_name,
         library_labels = [],
         schema_target = ""):
     generate_fixtures_rule_name = "generate_fixtures_modules-{}".format(name)
@@ -118,7 +119,13 @@ def rn_codegen_modules(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name, native_module_spec_name),
+        cmd = "$(exe {generator_script}) $(location {schema_target}) {library_name} $OUT {native_module_spec_name} {android_package_name}".format(
+            generator_script = react_native_root_target("packages/react-native-codegen:generate_all_from_schema"),
+            schema_target = schema_target,
+            library_name = name,
+            native_module_spec_name = native_module_spec_name,
+            android_package_name = android_package_name,
+        ),
         out = "codegenfiles-{}".format(name),
         labels = ["codegen_rule"],
     )
@@ -128,9 +135,10 @@ def rn_codegen_modules(
     ##################
     fb_native.genrule(
         name = generate_module_java_name,
-        # TODO: support different package name internally.
-        # Right now, it's hardcoded to `com.facebook.fbreact.specs`.
-        cmd = "mkdir -p $OUT/com/facebook/fbreact/specs && cp -r $(location :{})/java/com/facebook/fbreact/specs/* $OUT/com/facebook/fbreact/specs/".format(generate_fixtures_rule_name),
+        cmd = "mkdir -p $OUT/{spec_path} && cp -r $(location {generator_target})/java/{spec_path}/* $OUT/{spec_path}/".format(
+            spec_path = android_package_name.replace(".", "/"),
+            generator_target = ":" + generate_fixtures_rule_name,
+        ),
         out = "src",
         labels = ["codegen_rule"],
     )

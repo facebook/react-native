@@ -19,7 +19,7 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 
 const args = process.argv.slice(2);
-if (args.length !== 4) {
+if (args.length < 4) {
   throw new Error(
     `Expected to receive path to schema, library name, output directory and module spec name. Received ${args.join(
       ', ',

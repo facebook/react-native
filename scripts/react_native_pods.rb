@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 def use_react_native! (options={})
-  # The prefix to the react-native
+  # The prefix to react-native
   prefix = options[:path] ||= "../node_modules/react-native"
 
   # Include Fabric dependencies
@@ -143,4 +143,58 @@ def react_native_post_install(installer)
   end
 
   exclude_architectures(installer)
+end
+
+def use_react_native_codegen!(spec, options={})
+  # The path to react-native (e.g. react_native_path)
+  prefix = options[:path] ||= File.join(__dir__, "..")
+
+  # The path to JavaScript files
+  srcs_dir = options[:srcs_dir] ||= File.join(prefix, "Libraries")
+
+  # Library name (e.g. FBReactNativeSpec)
+  codegen_modules_library_name = spec.name
+  codegen_modules_output_dir = options[:codegen_modules_output_dir] ||= File.join(prefix, "Libraries/#{codegen_modules_library_name}/#{codegen_modules_library_name}")
+
+  # Run the codegen as part of the Xcode build pipeline.
+  env_vars = "SRCS_DIR=#{srcs_dir}"
+  env_vars += " CODEGEN_MODULES_OUTPUT_DIR=#{codegen_modules_output_dir}"
+  if ENV['USE_FABRIC'] == '1'
+    # We use a different library name for components, as well as an additional set of files.
+    # Eventually, we want these to be part of the same library as #{codegen_modules_library_name} above.
+    codegen_components_library_name = "rncore"
+    codegen_components_output_dir = File.join(prefix, "ReactCommon/react/renderer/components/#{codegen_components_library_name}")
+    env_vars += " CODEGEN_COMPONENTS_OUTPUT_DIR=#{codegen_components_output_dir}"
+  end
+  spec.script_phase = {
+    :name => 'Generate Specs',
+    :input_files => [srcs_dir],
+    :output_files => ["$(DERIVED_FILE_DIR)/codegen-#{codegen_modules_library_name}.log"],
+    :script => "bash -c '#{env_vars} CODEGEN_MODULES_LIBRARY_NAME=#{codegen_modules_library_name} #{File.join(__dir__, "generate-specs.sh")}' | tee \"${SCRIPT_OUTPUT_FILE_0}\"",
+    :execution_position => :before_compile,
+    :show_env_vars_in_log => true
+  }
+
+  # Since the generated files are not guaranteed to exist when CocoaPods is run, we need to create
+  # empty files to ensure the references are included in the resulting Pods Xcode project.
+  mkdir_command = "mkdir -p #{codegen_modules_output_dir}"
+  generated_filenames = [ "#{codegen_modules_library_name}.h", "#{codegen_modules_library_name}-generated.mm" ]
+  generated_files = generated_filenames.map { |filename| File.join(codegen_modules_output_dir, filename) }
+
+  if ENV['USE_FABRIC'] == '1'
+    mkdir_command += " #{codegen_components_output_dir}"
+    components_generated_filenames = [
+      "ComponentDescriptors.h",
+      "EventEmitters.cpp",
+      "EventEmitters.h",
+      "Props.cpp",
+      "Props.h",
+      "RCTComponentViewHelpers.h",
+      "ShadowNodes.cpp",
+      "ShadowNodes.h"
+    ]
+    generated_files = generated_files.concat(components_generated_filenames.map { |filename| File.join(codegen_components_output_dir, filename) })
+  end
+
+  spec.prepare_command = "#{mkdir_command} && touch #{generated_files.reduce() { |str, file| str + " " + file }}"
 end

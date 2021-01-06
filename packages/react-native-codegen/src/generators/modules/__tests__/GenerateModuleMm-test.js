@@ -21,7 +21,12 @@ describe('GenerateModuleMm', () => {
       const fixture = fixtures[fixtureName];
 
       it(`can generate fixture ${fixtureName}`, () => {
-        const output = generator.generate(fixtureName, fixture, 'SampleSpec');
+        const output = generator.generate(
+          fixtureName,
+          fixture,
+          'SampleSpec',
+          'com.facebook.fbreact.specs',
+        );
         expect(
           new Map([
             ['SampleSpec-generated.mm', output.get('SampleSpec-generated.mm')],

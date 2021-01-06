@@ -67,8 +67,7 @@ Scheduler::Scheduler(
       statePipe,
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
-      eventOwnerBox,
-      reactNativeConfig_->getBool("react_fabric:enable_v2_event_coalescing"));
+      eventOwnerBox);
 
   // Casting to `std::shared_ptr<EventDispatcher const>`.
   auto eventDispatcher =

@@ -34,4 +34,9 @@ allprojects {
         google()
         jcenter()
     }
+
+    // used to override ndk path on CI
+    if (System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
+      setProperty("ANDROID_NDK_VERSION", System.getenv("LOCAL_ANDROID_NDK_VERSION"))
+    }
 }

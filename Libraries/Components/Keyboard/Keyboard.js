@@ -15,7 +15,7 @@ import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import NativeKeyboardObserver from './NativeKeyboardObserver';
 import invariant from 'invariant';
-const KeyboardEventEmitter: NativeEventEmitter = new NativeEventEmitter(
+const KeyboardEventEmitter: NativeEventEmitter<$FlowFixMe> = new NativeEventEmitter(
   NativeKeyboardObserver,
 );
 

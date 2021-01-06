@@ -28,6 +28,7 @@ rn_codegen_components(
 
 rn_codegen_modules(
     name = "codegen_tests",
+    android_package_name = "com.facebook.fbreact.specs",
     native_module_spec_name = "FBReactNativeTestSpec",
     schema_target = ":codegen_tests_schema",
 )

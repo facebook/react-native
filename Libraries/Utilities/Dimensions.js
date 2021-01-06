@@ -24,7 +24,7 @@ type DimensionsValue = {
   ...
 };
 
-const eventEmitter = new EventEmitter();
+const eventEmitter = new EventEmitter<$FlowFixMe>();
 let dimensionsInitialized = false;
 let dimensions: DimensionsValue;
 

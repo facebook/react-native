@@ -197,6 +197,7 @@ function translateTypeAnnotation(
             type: 'FloatTypeAnnotation',
           });
         }
+        case 'UnsafeObject':
         case 'Object': {
           return wrapNullable(nullable, {
             type: 'GenericObjectTypeAnnotation',
