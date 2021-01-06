@@ -533,7 +533,7 @@ public class MountingManager {
       // View Managers are responsible for dealing with initial state and props.
       view =
           viewManager.createView(
-              themedReactContext, propsDiffMap, stateWrapper, mJSResponderHandler);
+              reactTag, themedReactContext, propsDiffMap, stateWrapper, mJSResponderHandler);
       view.setId(reactTag);
     }
 
