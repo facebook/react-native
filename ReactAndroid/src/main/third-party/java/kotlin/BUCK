@@ -38,7 +38,7 @@ rn_prebuilt_jar(
 
 fb_native.remote_file(
     name = "jetbrains-annotations.jar",
-    sha1 = "6229be3465805c99db1142ad75e6c6ddeac0b04c",
+    sha1 = "919f0dfe192fb4e063e7dacadee7f8bb9a2672a9",
     url = "mvn:org.jetbrains:annotations:jar:13.0",
 )
 
