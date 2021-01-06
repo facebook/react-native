@@ -246,6 +246,15 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         }
       }
     }
+
+    // Expose the testID prop as the resource-id name of the view. Black-box E2E/UI testing
+    // frameworks, which interact with the UI through the accessibility framework, do not have
+    // access to view tags. This allows developers/testers to avoid polluting the
+    // content-description with test identifiers.
+    final String testId = (String) host.getTag(R.id.react_test_id);
+    if (testId != null) {
+      info.setViewIdResourceName(testId);
+    }
   }
 
   @Override
@@ -425,7 +434,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     if (!ViewCompat.hasAccessibilityDelegate(view)
         && (view.getTag(R.id.accessibility_role) != null
             || view.getTag(R.id.accessibility_state) != null
-            || view.getTag(R.id.accessibility_actions) != null)) {
+            || view.getTag(R.id.accessibility_actions) != null
+            || view.getTag(R.id.react_test_id) != null)) {
       ViewCompat.setAccessibilityDelegate(view, new ReactAccessibilityDelegate());
     }
   }
