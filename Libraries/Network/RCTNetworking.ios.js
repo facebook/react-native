@@ -16,6 +16,7 @@ import type {NativeResponseType} from './XMLHttpRequest';
 import convertRequestBody from './convertRequestBody';
 import type {RequestBody} from './convertRequestBody';
 
+// FIXME: use typed events
 class RCTNetworking extends NativeEventEmitter<$FlowFixMe> {
   constructor() {
     const disableCallsIntoModule =

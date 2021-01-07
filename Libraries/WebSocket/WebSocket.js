@@ -11,10 +11,11 @@
 'use strict';
 
 import Blob from '../Blob/Blob';
+import type {BlobData} from '../Blob/BlobTypes';
 import BlobManager from '../Blob/BlobManager';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import binaryToBase64 from '../Utilities/binaryToBase64';
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeWebSocketModule from './NativeWebSocketModule';
 import WebSocketEvent from './WebSocketEvent';
 import base64 from 'base64-js';
@@ -46,6 +47,17 @@ const WEBSOCKET_EVENTS = ['close', 'error', 'message', 'open'];
 
 let nextWebSocketId = 0;
 
+type WebSocketEventDefinitions = {
+  websocketOpen: [{id: number, protocol: string}],
+  websocketClosed: [{id: number, code: number, reason: string}],
+  websocketMessage: [
+    | {type: 'binary', id: number, data: string}
+    | {type: 'text', id: number, data: string}
+    | {type: 'blob', id: number, data: BlobData},
+  ],
+  websocketFailed: [{id: number, message: string}],
+};
+
 /**
  * Browser-compatible WebSockets implementation.
  *
@@ -64,7 +76,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
   CLOSED: number = CLOSED;
 
   _socketId: number;
-  _eventEmitter: NativeEventEmitter<$FlowFixMe>;
+  _eventEmitter: NativeEventEmitter<WebSocketEventDefinitions>;
   _subscriptions: Array<EventSubscription>;
   _binaryType: ?BinaryType;
 
