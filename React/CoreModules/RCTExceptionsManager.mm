@@ -23,7 +23,6 @@
 
 @implementation RCTExceptionsManager
 
-@synthesize bridge = _bridge;
 @synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()

@@ -233,6 +233,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   id<RCTTurboModuleRegistry> _turboModuleRegistry;
 
   RCTModuleRegistry *_objCModuleRegistry;
+  RCTViewRegistry *_viewRegistry_DEPRECATED;
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
@@ -282,6 +283,8 @@ struct RCTInstanceCallback : public InstanceCallback {
     _moduleDataByID = [NSMutableArray new];
     _objCModuleRegistry = [RCTModuleRegistry new];
     [_objCModuleRegistry setBridge:self];
+    _viewRegistry_DEPRECATED = [RCTViewRegistry new];
+    [_viewRegistry_DEPRECATED setBridge:self];
 
     [RCTBridge setCurrentBridge:self];
 
@@ -750,7 +753,10 @@ struct RCTInstanceCallback : public InstanceCallback {
     // TODO #13258411: can we defer this until config generation?
     int32_t moduleDataId = getUniqueId();
     BridgeNativeModulePerfLogger::moduleDataCreateStart([moduleName UTF8String], moduleDataId);
-    moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass bridge:self moduleRegistry:_objCModuleRegistry];
+    moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
+                                                     bridge:self
+                                             moduleRegistry:_objCModuleRegistry
+                                    viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED];
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -815,7 +821,8 @@ struct RCTInstanceCallback : public InstanceCallback {
     BridgeNativeModulePerfLogger::moduleDataCreateStart([moduleName UTF8String], moduleDataId);
     RCTModuleData *moduleData = [[RCTModuleData alloc] initWithModuleInstance:module
                                                                        bridge:self
-                                                               moduleRegistry:_objCModuleRegistry];
+                                                               moduleRegistry:_objCModuleRegistry
+                                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED];
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -868,7 +875,8 @@ struct RCTInstanceCallback : public InstanceCallback {
       BridgeNativeModulePerfLogger::moduleDataCreateStart([moduleName UTF8String], moduleDataId);
       moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
                                                        bridge:self
-                                               moduleRegistry:_objCModuleRegistry];
+                                               moduleRegistry:_objCModuleRegistry
+                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED];
       BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
       _moduleDataByName[moduleName] = moduleData;

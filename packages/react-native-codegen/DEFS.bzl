@@ -103,8 +103,9 @@ def rn_codegen_cli():
         )
 
 def rn_codegen_modules(
+        name,
         native_module_spec_name,
-        name = "",
+        android_package_name,
         library_labels = [],
         schema_target = ""):
     generate_fixtures_rule_name = "generate_fixtures_modules-{}".format(name)
@@ -118,7 +119,13 @@ def rn_codegen_modules(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name, native_module_spec_name),
+        cmd = "$(exe {generator_script}) $(location {schema_target}) {library_name} $OUT {native_module_spec_name} {android_package_name}".format(
+            generator_script = react_native_root_target("packages/react-native-codegen:generate_all_from_schema"),
+            schema_target = schema_target,
+            library_name = name,
+            native_module_spec_name = native_module_spec_name,
+            android_package_name = android_package_name,
+        ),
         out = "codegenfiles-{}".format(name),
         labels = ["codegen_rule"],
     )
@@ -128,9 +135,10 @@ def rn_codegen_modules(
     ##################
     fb_native.genrule(
         name = generate_module_java_name,
-        # TODO: support different package name internally.
-        # Right now, it's hardcoded to `com.facebook.fbreact.specs`.
-        cmd = "mkdir -p $OUT/com/facebook/fbreact/specs && cp -r $(location :{})/java/com/facebook/fbreact/specs/* $OUT/com/facebook/fbreact/specs/".format(generate_fixtures_rule_name),
+        cmd = "mkdir -p $OUT/{spec_path} && cp -r $(location {generator_target})/java/{spec_path}/* $OUT/{spec_path}/".format(
+            spec_path = android_package_name.replace(".", "/"),
+            generator_target = ":" + generate_fixtures_rule_name,
+        ),
         out = "src",
         labels = ["codegen_rule"],
     )
@@ -157,7 +165,7 @@ def rn_codegen_modules(
     )
 
     rn_android_library(
-        name = "generated_java_modules-{}".format(name),
+        name = "{}".format(native_module_spec_name),
         srcs = [
             ":{}".format(generate_module_java_zip_name),
         ],
@@ -176,7 +184,7 @@ def rn_codegen_modules(
     )
 
     rn_xplat_cxx_library(
-        name = "generated_java_modules-{}-jni".format(name),
+        name = "{}-jni".format(native_module_spec_name),
         srcs = [
             ":{}".format(generate_module_jni_cpp_name),
         ],
@@ -229,7 +237,7 @@ def rn_codegen_modules(
         )
 
         rn_apple_library(
-            name = "generated_objcpp_modules-{}Apple".format(name),
+            name = "{}Apple".format(native_module_spec_name),
             extension_api_only = True,
             header_namespace = "",
             sdks = (IOS),
@@ -470,7 +478,7 @@ def rn_codegen_components(
     # Android handling
     ##################
     if is_running_buck_project():
-        rn_android_library(name = "generated_components_java-{}".format(name))
+        rn_android_library(name = "generated_components_java-{}".format(name), autoglob = False)
     else:
         rn_android_library(
             name = "generated_components_java-{}".format(name),

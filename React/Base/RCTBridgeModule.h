@@ -6,12 +6,14 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import <React/RCTDefines.h>
 
 @class RCTBridge;
 @protocol RCTBridgeMethod;
 @class RCTModuleRegistry;
+@class RCTViewRegistry;
 
 /**
  * The type of a block that is capable of sending a response to a bridged
@@ -121,6 +123,17 @@ RCT_EXTERN_C_END
  * `@objc var moduleRegistry: RCTModuleRegistry!` to your module.
  */
 @property (nonatomic, weak, readonly) RCTModuleRegistry *moduleRegistry;
+
+/**
+ * A reference to the RCTViewRegistry. Useful for modules that query UIViews,
+ * given a react tag. This API is deprecated, and only exists to help migrate
+ * NativeModules to Venice.
+ *
+ * To implement this in your module, just add `@synthesize
+ * viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;`. If using Swift, add
+ * `@objc var viewRegistry_DEPRECATED: RCTViewRegistry!` to your module.
+ */
+@property (nonatomic, weak, readonly) RCTViewRegistry *viewRegistry_DEPRECATED;
 
 /**
  * A reference to the RCTBridge. Useful for modules that require access
@@ -391,4 +404,16 @@ RCT_EXTERN_C_END
 
 - (id)moduleForName:(const char *)moduleName;
 - (id)moduleForName:(const char *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad;
+@end
+
+typedef UIView * (^RCTBridgelessComponentViewProvider)(NSNumber *);
+
+/**
+ * A class that allows NativeModules to query for views, given React Tags.
+ */
+@interface RCTViewRegistry : NSObject
+- (void)setBridge:(RCTBridge *)bridge;
+- (void)setBridgelessComponentViewProvider:(RCTBridgelessComponentViewProvider)bridgelessComponentViewProvider;
+
+- (UIView *)viewForReactTag:(NSNumber *)reactTag;
 @end

@@ -16,6 +16,7 @@
 
 @property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, weak) RCTModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) RCTViewRegistry *viewRegistry_DEPRECATED;
 
 - (instancetype)initWithDisabledObservation;
 

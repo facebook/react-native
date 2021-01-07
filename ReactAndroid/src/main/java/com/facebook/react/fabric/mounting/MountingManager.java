@@ -533,7 +533,7 @@ public class MountingManager {
       // View Managers are responsible for dealing with initial state and props.
       view =
           viewManager.createView(
-              themedReactContext, propsDiffMap, stateWrapper, mJSResponderHandler);
+              reactTag, themedReactContext, propsDiffMap, stateWrapper, mJSResponderHandler);
       view.setId(reactTag);
     }
 
@@ -780,6 +780,10 @@ public class MountingManager {
   public @Nullable EventEmitterWrapper getEventEmitter(int reactTag) {
     ViewState viewState = getNullableViewState(reactTag);
     return viewState == null ? null : viewState.mEventEmitter;
+  }
+
+  public void initializeViewManager(String componentName) {
+    mViewManagerRegistry.get(componentName);
   }
 
   /**

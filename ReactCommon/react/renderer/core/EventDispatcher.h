@@ -37,8 +37,7 @@ class EventDispatcher {
       StatePipe const &statePipe,
       EventBeat::Factory const &synchonousEventBeatFactory,
       EventBeat::Factory const &asynchonousEventBeatFactory,
-      EventBeat::SharedOwnerBox const &ownerBox,
-      bool enableV2EventCoalescing);
+      EventBeat::SharedOwnerBox const &ownerBox);
 
   /*
    * Dispatches a raw event with given priority using event-delivery pipe.

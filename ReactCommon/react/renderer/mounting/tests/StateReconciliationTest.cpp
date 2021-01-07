@@ -24,6 +24,13 @@ using namespace facebook::react;
 
 class DummyShadowTreeDelegate : public ShadowTreeDelegate {
  public:
+  virtual RootShadowNode::Unshared shadowTreeWillCommit(
+      ShadowTree const &shadowTree,
+      RootShadowNode::Shared const &oldRootShadowNode,
+      RootShadowNode::Unshared const &newRootShadowNode) const override {
+    return newRootShadowNode;
+  };
+
   virtual void shadowTreeDidFinishTransaction(
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override{};
