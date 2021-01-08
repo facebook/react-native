@@ -201,6 +201,7 @@ def rn_codegen_modules(
             "-std=c++14",
             "-Wall",
         ],
+        force_static = True,
         preprocessor_flags = [
             "-DLOG_TAG=\"ReactNative\"",
             "-DWITH_FBSYSTRACE=1",
