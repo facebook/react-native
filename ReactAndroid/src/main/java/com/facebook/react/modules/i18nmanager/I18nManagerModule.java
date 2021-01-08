@@ -8,12 +8,12 @@
 package com.facebook.react.modules.i18nmanager;
 
 import android.content.Context;
+import android.os.Build;
 import com.facebook.react.bridge.ContextBaseJavaModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
-import android.os.Build;
 import java.util.Locale;
 import java.util.Map;
 
