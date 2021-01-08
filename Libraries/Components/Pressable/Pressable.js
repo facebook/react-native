@@ -25,7 +25,12 @@ import type {
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import usePressability from '../../Pressability/usePressability';
 import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect';
-import type {LayoutEvent, PressEvent} from '../../Types/CoreEventTypes';
+import type {
+  LayoutEvent,
+  PressEvent,
+  BlurEvent,
+  FocusEvent,
+} from '../../Types/CoreEventTypes';
 import View from '../View/View';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
@@ -106,6 +111,16 @@ type Props = $ReadOnly<{|
   onPressOut?: ?(event: PressEvent) => void,
 
   /**
+   * Called after the element loses focus.
+   */
+  onBlur?: ?(event: BlurEvent) => mixed,
+
+  /**
+   * Called after the element is focused.
+   */
+  onFocus?: ?(event: FocusEvent) => mixed,
+
+  /**
    * Either view styles or a function that receives a boolean reflecting whether
    * the component is currently pressed and returns view styles.
    */
@@ -154,6 +169,8 @@ function Pressable(props: Props, forwardedRef): React.Node {
     onPress,
     onPressIn,
     onPressOut,
+    onBlur,
+    onFocus,
     pressRetentionOffset,
     style,
     testOnly_pressed,
@@ -207,6 +224,8 @@ function Pressable(props: Props, forwardedRef): React.Node {
           onPressOut(event);
         }
       },
+      onBlur,
+      onFocus,
     }),
     [
       android_disableSound,
@@ -218,6 +237,8 @@ function Pressable(props: Props, forwardedRef): React.Node {
       onPress,
       onPressIn,
       onPressOut,
+      onBlur,
+      onFocus,
       pressRetentionOffset,
       setPressed,
       unstable_pressDelay,

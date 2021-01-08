@@ -11,10 +11,14 @@
 'use strict';
 
 import type {ViewProps} from './ViewPropTypes';
-
+import type {BlurEvent, FocusEvent} from '../../Types/CoreEventTypes';
 const React = require('react');
 import ViewNativeComponent from './ViewNativeComponent';
 const TextAncestor = require('../../Text/TextAncestor');
+const TextInputState = require('../TextInput/TextInputState');
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+const setAndForwardRef = require('../../Utilities/setAndForwardRef');
+const {useRef} = React;
 
 export type Props = ViewProps;
 
@@ -29,9 +33,37 @@ const View: React.AbstractComponent<
   ViewProps,
   React.ElementRef<typeof ViewNativeComponent>,
 > = React.forwardRef((props: ViewProps, forwardedRef) => {
+  const viewRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
+
+  const _setNativeRef = setAndForwardRef({
+    getForwardedRef: () => forwardedRef,
+    setLocalRef: ref => {
+      viewRef.current = ref;
+    },
+  });
+
+  const _onBlur = (event: BlurEvent) => {
+    TextInputState.blurInput(viewRef.current);
+    if (props.onBlur) {
+      props.onBlur(event);
+    }
+  };
+
+  const _onFocus = (event: FocusEvent) => {
+    TextInputState.focusInput(viewRef.current);
+    if (props.onFocus) {
+      props.onFocus(event);
+    }
+  };
+
   return (
     <TextAncestor.Provider value={false}>
-      <ViewNativeComponent {...props} ref={forwardedRef} />
+      <ViewNativeComponent
+        {...props}
+        onBlur={_onBlur}
+        onFocus={_onFocus}
+        ref={_setNativeRef}
+      />
     </TextAncestor.Provider>
   );
 });

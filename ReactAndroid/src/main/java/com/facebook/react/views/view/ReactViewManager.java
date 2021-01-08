@@ -29,6 +29,8 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.common.ReactViewBlurEvent;
+import com.facebook.react.views.common.ReactViewFocusEvent;
 import com.facebook.yoga.YogaConstants;
 import java.util.Locale;
 import java.util.Map;
@@ -234,8 +236,7 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
             @Override
             public void onClick(View v) {
               final EventDispatcher mEventDispatcher =
-                  UIManagerHelper.getEventDispatcherForReactTag(
-                      (ReactContext) view.getContext(), view.getId());
+                  getEventDispatcher((ReactContext) view.getContext(), view);
               if (mEventDispatcher == null) {
                 return;
               }
@@ -252,6 +253,27 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
       // Don't set view.setFocusable(false) because we might still want it to be focusable for
       // accessibility reasons
     }
+  }
+
+  private static EventDispatcher getEventDispatcher(
+      ReactContext reactContext, ReactViewGroup view) {
+    return UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.getId());
+  }
+
+  @Override
+  protected void addEventEmitters(
+      final ThemedReactContext reactContext, final ReactViewGroup view) {
+    view.setOnFocusChangeListener(
+        new View.OnFocusChangeListener() {
+          public void onFocusChange(View v, boolean hasFocus) {
+            EventDispatcher eventDispatcher = getEventDispatcher(reactContext, view);
+            if (hasFocus) {
+              eventDispatcher.dispatchEvent(new ReactViewFocusEvent(view.getId()));
+            } else {
+              eventDispatcher.dispatchEvent(new ReactViewBlurEvent(view.getId()));
+            }
+          }
+        });
   }
 
   @ReactProp(name = ViewProps.OVERFLOW)

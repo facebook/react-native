@@ -59,6 +59,8 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.common.ReactViewBlurEvent;
+import com.facebook.react.views.common.ReactViewFocusEvent;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
@@ -974,9 +976,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           public void onFocusChange(View v, boolean hasFocus) {
             EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
             if (hasFocus) {
-              eventDispatcher.dispatchEvent(new ReactTextInputFocusEvent(editText.getId()));
+              eventDispatcher.dispatchEvent(new ReactViewFocusEvent(editText.getId()));
             } else {
-              eventDispatcher.dispatchEvent(new ReactTextInputBlurEvent(editText.getId()));
+              eventDispatcher.dispatchEvent(new ReactViewBlurEvent(editText.getId()));
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputEndEditingEvent(

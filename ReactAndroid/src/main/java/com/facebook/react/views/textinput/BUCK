@@ -21,6 +21,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
+        react_native_target("java/com/facebook/react/views/common:common"),
         react_native_target("java/com/facebook/react/views/imagehelper:imagehelper"),
         react_native_target("java/com/facebook/react/views/scroll:scroll"),
         react_native_target("java/com/facebook/react/views/text:text"),
