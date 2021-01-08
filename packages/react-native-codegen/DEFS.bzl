@@ -119,11 +119,10 @@ def rn_codegen_modules(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe {generator_script}) $(location {schema_target}) {library_name} $OUT {native_module_spec_name} {android_package_name}".format(
+        cmd = "$(exe {generator_script}) $(location {schema_target}) {library_name} $OUT {android_package_name}".format(
             generator_script = react_native_root_target("packages/react-native-codegen:generate_all_from_schema"),
             schema_target = schema_target,
-            library_name = name,
-            native_module_spec_name = native_module_spec_name,
+            library_name = native_module_spec_name,
             android_package_name = android_package_name,
         ),
         out = "codegenfiles-{}".format(name),
@@ -285,7 +284,7 @@ def rn_codegen_components(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe {}) $(location {}) {} $OUT {}".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name, name),
+        cmd = "$(exe {}) $(location {}) {} $OUT".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name),
         out = "codegenfiles-{}".format(name),
         labels = ["codegen_rule"],
     )

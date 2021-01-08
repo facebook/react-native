@@ -97,7 +97,6 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
     packageName?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
@@ -113,7 +112,7 @@ module.exports = {
       .map(hasteModuleName => ModuleClassDeclarationTemplate({hasteModuleName}))
       .join('\n');
 
-    const fileName = `${moduleSpecName}.h`;
+    const fileName = `${libraryName}.h`;
     const replacedTemplate = HeaderFileTemplate({
       modules: modules,
       libraryName: libraryName.replace(/-/g, '_'),
