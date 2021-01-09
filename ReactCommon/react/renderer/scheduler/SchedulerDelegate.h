@@ -41,6 +41,10 @@ class SchedulerDelegate {
       std::string const &commandName,
       folly::dynamic const args) = 0;
 
+  virtual void schedulerDidSendAccessibilityEvent(
+      const ShadowView &shadowView,
+      std::string const &eventType) = 0;
+
   /*
    * Set JS responder for a view
    */

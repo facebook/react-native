@@ -238,6 +238,14 @@ void UIManager::dispatchCommand(
   }
 }
 
+void UIManager::sendAccessibilityEvent(
+    const ShadowNode::Shared &shadowNode,
+    std::string const &eventType) {
+  if (delegate_) {
+    delegate_->uiManagerDidSendAccessibilityEvent(shadowNode, eventType);
+  }
+}
+
 void UIManager::configureNextLayoutAnimation(
     jsi::Runtime &runtime,
     RawValue const &config,

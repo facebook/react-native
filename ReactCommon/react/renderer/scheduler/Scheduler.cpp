@@ -359,6 +359,17 @@ void Scheduler::uiManagerDidDispatchCommand(
   }
 }
 
+void Scheduler::uiManagerDidSendAccessibilityEvent(
+    const ShadowNode::Shared &shadowNode,
+    std::string const &eventType) {
+  SystraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
+
+  if (delegate_) {
+    auto shadowView = ShadowView(*shadowNode);
+    delegate_->schedulerDidSendAccessibilityEvent(shadowView, eventType);
+  }
+}
+
 /*
  * Set JS responder for a view
  */
