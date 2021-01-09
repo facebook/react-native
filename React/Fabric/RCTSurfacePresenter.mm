@@ -465,6 +465,15 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   [self->_mountingManager dispatchCommand:tag commandName:commandStr args:argsArray];
 }
 
+- (void)schedulerDidSendAccessibilityEvent:(const facebook::react::ShadowView &)shadowView
+                                 eventType:(const std::string &)eventType
+{
+  ReactTag tag = shadowView.tag;
+  NSString *eventTypeStr = [[NSString alloc] initWithUTF8String:eventType.c_str()];
+
+  [self->_mountingManager sendAccessibilityEvent:tag eventType:eventTypeStr];
+}
+
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
 {
   std::unique_lock<better::shared_mutex> lock(_observerListMutex);

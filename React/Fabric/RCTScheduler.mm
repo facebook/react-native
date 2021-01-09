@@ -59,6 +59,12 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     // Does nothing for now.
   }
 
+  void schedulerDidSendAccessibilityEvent(const ShadowView &shadowView, std::string const &eventType) override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidSendAccessibilityEvent:shadowView eventType:eventType];
+  }
+
  private:
   void *scheduler_;
 };
