@@ -1071,6 +1071,26 @@ void Binding::schedulerDidDispatchCommand(
       localJavaUIManager, shadowView.tag, command.get(), argsArray.get());
 }
 
+void Binding::schedulerDidSendAccessibilityEvent(
+    const ShadowView &shadowView,
+    std::string const &eventType) {
+  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
+  if (!localJavaUIManager) {
+    LOG(ERROR)
+        << "Binding::schedulerDidDispatchCommand: JavaUIManager disappeared";
+    return;
+  }
+
+  local_ref<JString> eventTypeStr = make_jstring(eventType);
+
+  static auto sendAccessibilityEventFromJS =
+      jni::findClassStatic(Binding::UIManagerJavaDescriptor)
+          ->getMethod<void(jint, jstring)>("sendAccessibilityEventFromJS");
+
+  sendAccessibilityEventFromJS(
+      localJavaUIManager, shadowView.tag, eventTypeStr.get());
+}
+
 void Binding::schedulerDidSetJSResponder(
     SurfaceId surfaceId,
     const ShadowView &shadowView,
