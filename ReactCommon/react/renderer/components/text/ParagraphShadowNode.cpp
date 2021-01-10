@@ -112,9 +112,10 @@ void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
     return;
   }
 
-  setStateData(ParagraphState{content.attributedString,
-                              content.paragraphAttributes,
-                              textLayoutManager_});
+  setStateData(ParagraphState{
+      content.attributedString,
+      content.paragraphAttributes,
+      textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode
