@@ -181,7 +181,7 @@ module.exports = function({parse, types: t}) {
            * call.
            */
 
-          // Disabling TurobModule processing for react-native-web NPM module
+          // Disabling TurboModule processing for react-native-web NPM module
           // Workaround for T80868008, can remove after fixed
           const enableTurboModuleJSCodegen =
             this.filename.indexOf('/node_modules/react-native-web') === -1;
