@@ -3531,8 +3531,8 @@ static void YGNodelayoutImpl(
                 YGNodeBoundAxisWithinMinAndMax(
                     node,
                     crossAxis,
-                    YGFloatOptional{totalLineCrossDim +
-                                    paddingAndBorderAxisCross},
+                    YGFloatOptional{
+                        totalLineCrossDim + paddingAndBorderAxisCross},
                     crossAxisownerSize)
                     .unwrap()),
             paddingAndBorderAxisCross),

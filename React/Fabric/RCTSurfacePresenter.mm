@@ -51,11 +51,12 @@ static inline LayoutConstraints RCTGetLayoutConstraintsForSize(CGSize minimumSiz
 
 static inline LayoutContext RCTGetLayoutContext(CGPoint viewportOffset)
 {
-  return {.pointScaleFactor = RCTScreenScale(),
-          .swapLeftAndRightInRTL =
-              [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL],
-          .fontSizeMultiplier = RCTFontSizeMultiplier(),
-          .viewportOffset = RCTPointFromCGPoint(viewportOffset)};
+  return {
+      .pointScaleFactor = RCTScreenScale(),
+      .swapLeftAndRightInRTL =
+          [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL],
+      .fontSizeMultiplier = RCTFontSizeMultiplier(),
+      .viewportOffset = RCTPointFromCGPoint(viewportOffset)};
 }
 
 static dispatch_queue_t RCTGetBackgroundQueue()
