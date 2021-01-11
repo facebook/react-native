@@ -102,7 +102,7 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
   } else if (mountItemType == CppMountItem::Type::UpdatePadding) {
     return 5; // tag, top, left, bottom, right
   } else if (mountItemType == CppMountItem::Type::UpdateLayout) {
-    return 6; // tag, x, y, w, h, layoutDirection
+    return 7; // tag, x, y, w, h, layoutDirection, DisplayType
   } else if (mountItemType == CppMountItem::Type::UpdateEventEmitter) {
     return 1; // tag
   } else {
@@ -714,7 +714,7 @@ void Binding::schedulerDidFinishTransaction(
   int intBufferPosition = 0;
   int objBufferPosition = 0;
   int prevMountItemType = -1;
-  jint temp[6];
+  jint temp[7];
   for (int i = 0; i < cppCommonMountItems.size(); i++) {
     const auto &mountItem = cppCommonMountItems[i];
     const auto &mountItemType = mountItem.type;
@@ -879,6 +879,8 @@ void Binding::schedulerDidFinishTransaction(
       int h = round(frame.size.height * pointScaleFactor);
       int layoutDirection =
           toInt(mountItem.newChildShadowView.layoutMetrics.layoutDirection);
+      int displayType =
+          toInt(mountItem.newChildShadowView.layoutMetrics.displayType);
 
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = x;
@@ -886,8 +888,9 @@ void Binding::schedulerDidFinishTransaction(
       temp[3] = w;
       temp[4] = h;
       temp[5] = layoutDirection;
-      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 6, temp);
-      intBufferPosition += 6;
+      temp[6] = displayType;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 7, temp);
+      intBufferPosition += 7;
     }
   }
   if (cppUpdateEventEmitterMountItems.size() > 0) {

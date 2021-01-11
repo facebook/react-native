@@ -563,7 +563,7 @@ public class MountingManager {
   }
 
   @UiThread
-  public void updateLayout(int reactTag, int x, int y, int width, int height) {
+  public void updateLayout(int reactTag, int x, int y, int width, int height, int displayType) {
     UiThreadUtil.assertOnUiThread();
 
     ViewState viewState = getViewState(reactTag);
@@ -589,6 +589,12 @@ public class MountingManager {
     // TODO: T31905686 Check if the parent of the view has to layout the view, or the child has
     // to lay itself out. see NativeViewHierarchyManager.updateLayout
     viewToUpdate.layout(x, y, x + width, y + height);
+
+    // displayType: 0 represents display: 'none'
+    int visibility = displayType == 0 ? View.INVISIBLE : View.VISIBLE;
+    if (viewToUpdate.getVisibility() != visibility) {
+      viewToUpdate.setVisibility(visibility);
+    }
   }
 
   @UiThread
