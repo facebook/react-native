@@ -202,6 +202,10 @@ public class ReactModalHostView extends ViewGroup
     mPropertyRequiresNewDialog = true;
   }
 
+  void setEventDispatcher(EventDispatcher eventDispatcher) {
+    mHostView.setEventDispatcher(eventDispatcher);
+  }
+
   @Override
   public void onHostResume() {
     // We show the dialog again when the host resumes
@@ -393,6 +397,7 @@ public class ReactModalHostView extends ViewGroup
     private boolean hasAdjustedSize = false;
     private int viewWidth;
     private int viewHeight;
+    private EventDispatcher mEventDispatcher;
 
     private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
 
@@ -400,6 +405,10 @@ public class ReactModalHostView extends ViewGroup
 
     public DialogRootViewGroup(Context context) {
       super(context);
+    }
+
+    private void setEventDispatcher(EventDispatcher eventDispatcher) {
+      mEventDispatcher = eventDispatcher;
     }
 
     @Override
@@ -494,13 +503,13 @@ public class ReactModalHostView extends ViewGroup
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-      mJSTouchDispatcher.handleTouchEvent(event, getEventDispatcher());
+      mJSTouchDispatcher.handleTouchEvent(event, mEventDispatcher);
       return super.onInterceptTouchEvent(event);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-      mJSTouchDispatcher.handleTouchEvent(event, getEventDispatcher());
+      mJSTouchDispatcher.handleTouchEvent(event, mEventDispatcher);
       super.onTouchEvent(event);
       // In case when there is no children interested in handling touch event, we return true from
       // the root view in order to receive subsequent events related to that gesture
@@ -509,18 +518,13 @@ public class ReactModalHostView extends ViewGroup
 
     @Override
     public void onChildStartedNativeGesture(MotionEvent androidEvent) {
-      mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, getEventDispatcher());
+      mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, mEventDispatcher);
     }
 
     @Override
     public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
       // No-op - override in order to still receive events to onInterceptTouchEvent
       // even when some other view disallow that
-    }
-
-    private EventDispatcher getEventDispatcher() {
-      ReactContext reactContext = getReactContext();
-      return reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     }
 
     @Override

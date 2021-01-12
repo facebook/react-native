@@ -242,26 +242,28 @@ def getNdkBuildName() {
 }
 
 def findNdkBuildFullPath() {
+    // android.ndkDirectory should return project.android.ndkVersion ndkDirectory
+    def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
+    if (ndkDir) {
+        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+    }
+
     // we allow to provide full path to ndk-build tool
     if (hasProperty("ndk.command")) {
         return property("ndk.command")
     }
     // or just a path to the containing directory
     if (hasProperty("ndk.path")) {
-        def ndkDir = property("ndk.path")
+        ndkDir = property("ndk.path")
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
 
+    // @TODO ANDROID_NDK && ndk.dir is deprecated and will be removed in the future.
     if (System.getenv("ANDROID_NDK") != null) {
-        def ndkDir = System.getenv("ANDROID_NDK")
+        ndkDir = System.getenv("ANDROID_NDK")
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
 
-    def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
-
-    if (ndkDir) {
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
     return null
 }
 
@@ -377,7 +379,7 @@ task extractJNIFiles {
 
 android {
     compileSdkVersion 29
-
+    ndkVersion ANDROID_NDK_VERSION
     compileOptions {
         sourceCompatibility(JavaVersion.VERSION_1_8)
         targetCompatibility(JavaVersion.VERSION_1_8)

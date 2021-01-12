@@ -35,31 +35,72 @@ void ViewEventEmitter::onAccessibilityEscape() const {
 #pragma mark - Layout
 
 void ViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
-  // Due to State Reconciliation, `onLayout` can be called potentially many
-  // times with identical layoutMetrics. Ensure that the JS event is only
-  // dispatched when the value changes.
+  // A copy of a shared pointer (`layoutEventState_`) establishes shared
+  // ownership that will be captured by lambda.
+  auto layoutEventState = layoutEventState_;
+
+  // Dispatched `frame` values to JavaScript thread are throttled here.
+  // Basic ideas:
+  //  - Scheduling a lambda with some value that already was dispatched, does
+  //    nothing.
+  //  - If some lambda is already in flight, we don't schedule another;
+  //  - When a lambda is being executed on the JavaScript thread, the *most
+  //    recent* `frame` value is used (not the value that was current at the
+  //    moment of scheduling the lambda).
+  //
+  // This implies the following caveats:
+  //  - Some events can be skipped;
+  //  - When values change rapidly, even events with different values
+  //    can be skipped (only the very last will be delivered).
+  //  - Ordering is preserved.
+
   {
-    std::lock_guard<std::mutex> guard(layoutMetricsMutex_);
-    if (lastLayoutMetrics_ == layoutMetrics) {
+    std::lock_guard<std::mutex> guard(layoutEventState->mutex);
+
+    // If a *particular* `frame` was already dispatched to the JavaScript side,
+    // no other work is required.
+    if (layoutEventState->frame == layoutMetrics.frame &&
+        layoutEventState->wasDispatched) {
       return;
     }
-    lastLayoutMetrics_ = layoutMetrics;
+
+    // If the *particular* `frame` was not already dispatched *or*
+    // some *other* `frame` was dispatched before,
+    // we need to schedule the dispatching.
+    layoutEventState->wasDispatched = false;
+    layoutEventState->frame = layoutMetrics.frame;
+
+    // Something is already in flight, dispatching another event is not
+    // required.
+    if (layoutEventState->isDispatching) {
+      return;
+    }
+
+    layoutEventState->isDispatching = true;
   }
 
-  auto expectedEventCount = ++*eventCounter_;
-
-  // dispatchUniqueEvent only drops consecutive onLayout events to the same
-  // node. We want to drop *any* unprocessed onLayout events when there's a
-  // newer one.
   dispatchEvent(
       "layout",
-      [frame = layoutMetrics.frame,
-       expectedEventCount,
-       eventCounter = eventCounter_](jsi::Runtime &runtime) {
-        auto actualEventCount = eventCounter->load();
-        if (expectedEventCount != actualEventCount) {
-          // Drop stale events
-          return jsi::Value::null();
+      [layoutEventState](jsi::Runtime &runtime) {
+        auto frame = Rect{};
+
+        {
+          std::lock_guard<std::mutex> guard(layoutEventState->mutex);
+
+          layoutEventState->isDispatching = false;
+
+          // If some *particular* `frame` was already dispatched before,
+          // and since then there were no other new values of the `frame`
+          // observed, do nothing.
+          if (layoutEventState->wasDispatched) {
+            return jsi::Value::null();
+          }
+
+          frame = layoutEventState->frame;
+
+          // If some *particular* `frame` was *not* already dispatched before,
+          // it's time to dispatch it and mark as dispatched.
+          layoutEventState->wasDispatched = true;
         }
 
         auto layout = jsi::Object(runtime);
@@ -70,7 +111,8 @@ void ViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
         auto payload = jsi::Object(runtime);
         payload.setProperty(runtime, "layout", std::move(layout));
         return jsi::Value(std::move(payload));
-      });
+      },
+      EventPriority::AsynchronousUnbatched);
 }
 
 } // namespace react

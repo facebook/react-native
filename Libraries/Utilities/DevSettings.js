@@ -17,7 +17,12 @@ interface IDevSettings {
   onFastRefresh(): void;
 }
 
-class DevSettings extends NativeEventEmitter implements IDevSettings {
+type DevSettingsEventDefinitions = {
+  didPressMenuItem: [{title: string}],
+};
+
+class DevSettings extends NativeEventEmitter<DevSettingsEventDefinitions>
+  implements IDevSettings {
   _menuItems: Map<string, () => mixed>;
 
   constructor() {

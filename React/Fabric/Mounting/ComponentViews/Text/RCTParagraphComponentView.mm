@@ -74,8 +74,9 @@ using namespace facebook::react;
 
 + (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders
 {
-  return {concreteComponentDescriptorProvider<RawTextComponentDescriptor>(),
-          concreteComponentDescriptorProvider<TextComponentDescriptor>()};
+  return {
+      concreteComponentDescriptorProvider<RawTextComponentDescriptor>(),
+      concreteComponentDescriptorProvider<TextComponentDescriptor>()};
 }
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps

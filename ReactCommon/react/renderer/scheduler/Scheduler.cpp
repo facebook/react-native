@@ -67,8 +67,7 @@ Scheduler::Scheduler(
       statePipe,
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
-      eventOwnerBox,
-      reactNativeConfig_->getBool("react_fabric:enable_v2_event_coalescing"));
+      eventOwnerBox);
 
   // Casting to `std::shared_ptr<EventDispatcher const>`.
   auto eventDispatcher =
@@ -357,6 +356,17 @@ void Scheduler::uiManagerDidDispatchCommand(
   if (delegate_) {
     auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
+  }
+}
+
+void Scheduler::uiManagerDidSendAccessibilityEvent(
+    const ShadowNode::Shared &shadowNode,
+    std::string const &eventType) {
+  SystraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
+
+  if (delegate_) {
+    auto shadowView = ShadowView(*shadowNode);
+    delegate_->schedulerDidSendAccessibilityEvent(shadowView, eventType);
   }
 }
 

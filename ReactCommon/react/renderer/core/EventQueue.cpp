@@ -48,10 +48,6 @@ void EventQueue::enqueueStateUpdate(const StateUpdate &stateUpdate) const {
   onEnqueue();
 }
 
-void EventQueue::onEnqueue() const {
-  // Default implementation does nothing.
-}
-
 void EventQueue::onBeat(jsi::Runtime &runtime) const {
   flushEvents(runtime);
   flushStateUpdates();

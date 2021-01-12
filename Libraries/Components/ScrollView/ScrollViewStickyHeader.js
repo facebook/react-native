@@ -177,7 +177,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
     // Fabric Detection
     // eslint-disable-next-line dot-notation
     const isFabric = !!(
-      this._ref && this._ref['_internalInstanceHandle']?.stateNode?.canonical
+      this._ref && this._ref._internalInstanceHandle?.stateNode?.canonical
     );
 
     // Initially and in the case of updated props or layout, we
