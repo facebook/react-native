@@ -41,57 +41,174 @@ module.exports = {
     'characters',
   ]): React$PropType$Primitive<'none' | 'sentences' | 'words' | 'characters'>),
   /**
-   * Determines which content to suggest on auto complete, e.g.`username`.
-   * To disable auto complete, use `off`.
-   *
-   * *Android Only*
-   *
-   * The following values work on Android only:
-   *
-   * - `username`
-   * - `password`
-   * - `email`
-   * - `name`
-   * - `tel`
-   * - `street-address`
-   * - `postal-code`
-   * - `cc-number`
-   * - `cc-csc`
-   * - `cc-exp`
-   * - `cc-exp-month`
-   * - `cc-exp-year`
-   * - `off`
-   *
-   * @platform android
-   */
+    Specifies autocomplete hints for the system, so it can provide autofill. On
+    Android, the system will always attempt to offer autofill by using
+    heuristics to identify the type of content. To disable autocomplete, set
+    `autoCompleteType` to `off`.
+
+    Possible values for `autoCompleteType`, defined by the [W3C autocomplete standard](https://www.w3.org/TR/WCAG21/#input-purposes) are:
+
+    - `off`
+    - `name`
+    - `honorific-prefix`
+    - `given-name`
+    - `additional-name`
+    - `family-name`
+    - `honorific-suffix`
+    - `username`
+    - `new-password`
+    - `current-password`
+    - `street-address`
+    - `address-line1`
+    - `address-level2`
+    - `address-level1`
+    - `country`
+    - `country-name`
+    - `postal-code`
+    - `cc-name`
+    - `cc-given-name`
+    - `cc-additional-name`
+    - `cc-family-name`
+    - `cc-number`
+    - `cc-exp`
+    - `cc-exp-month`
+    - `cc-exp-year`
+    - `cc-exp-csc`
+    - `bday`
+    - `bday-day`
+    - `bday-month`
+    - `bday-year`
+    - `sex`
+    - `tel`
+    - `tel-country-code`
+    - `tel-national`
+    - `email`
+
+    Some extra included Android additions that the W3C autocomplete standard doesn't define are:
+
+    - `otp`
+    - `otp-char-1`
+    - `otp-char-2`
+    - `otp-char-3`
+    - `otp-char-4`
+    - `otp-char-5`
+    - `otp-char-6`
+    - `otp-char-7`
+    - `otp-char-8`
+    - `tel-device`
+    - `cc-exp-day`
+    - `extended-address`
+    - `postal-code-extended`
+    - `additional-name-inititial`
+    - `new-username`
+    - `password`
+
+    @platform android
+    */
   autoCompleteType: (PropTypes.oneOf([
-    'cc-csc',
+    'off',
+    'name',
+    'honorific-prefix',
+    'given-name',
+    'additional-name',
+    'family-name',
+    'honorific-suffix',
+    'username',
+    'new-password',
+    'current-password',
+    'street-address',
+    'address-line1',
+    'address-level2',
+    'address-level1',
+    'country',
+    'country-name',
+    'postal-code',
+    'cc-name',
+    'cc-given-name',
+    'cc-additional-name',
+    'cc-family-name',
+    'cc-number',
     'cc-exp',
     'cc-exp-month',
     'cc-exp-year',
-    'cc-number',
-    'email',
-    'name',
-    'password',
-    'postal-code',
-    'street-address',
+    'cc-exp-csc',
+    'bday',
+    'bday-day',
+    'bday-month',
+    'bday-year',
+    'sex',
     'tel',
-    'username',
-    'off',
+    'tel-country-code',
+    'tel-national',
+    'email',
+    'otp',
+    'otp-char-1',
+    'otp-char-2',
+    'otp-char-3',
+    'otp-char-4',
+    'otp-char-5',
+    'otp-char-6',
+    'otp-char-7',
+    'otp-char-8',
+    'tel-device',
+    'cc-exp-day',
+    'extended-address',
+    'postal-code-extended',
+    'additional-name-inititial',
+    'new-username',
+    'password',
   ]): React$PropType$Primitive<
-    | 'cc-csc'
+    | 'off'
+    | 'name'
+    | 'honorific-prefix'
+    | 'given-name'
+    | 'additional-name'
+    | 'family-name'
+    | 'honorific-suffix'
+    | 'username'
+    | 'new-password'
+    | 'current-password'
+    | 'street-address'
+    | 'address-line1'
+    | 'address-level2'
+    | 'address-level1'
+    | 'country'
+    | 'country-name'
+    | 'postal-code'
+    | 'cc-name'
+    | 'cc-given-name'
+    | 'cc-additional-name'
+    | 'cc-family-name'
+    | 'cc-number'
     | 'cc-exp'
     | 'cc-exp-month'
     | 'cc-exp-year'
-    | 'cc-number'
-    | 'email'
-    | 'name'
-    | 'password'
-    | 'postal-code'
-    | 'street-address'
+    | 'cc-exp-csc'
+    | 'bday'
+    | 'bday-day'
+    | 'bday-month'
+    | 'bday-year'
+    | 'sex'
     | 'tel'
-    | 'username'
-    | 'off',
+    | 'tel-country-code'
+    | 'tel-national'
+    | 'email'
+    | 'otp'
+    | 'otp-char-1'
+    | 'otp-char-2'
+    | 'otp-char-3'
+    | 'otp-char-4'
+    | 'otp-char-5'
+    | 'otp-char-6'
+    | 'otp-char-7'
+    | 'otp-char-8'
+    | 'tel-device'
+    | 'cc-exp-day'
+    | 'extended-address'
+    | 'postal-code-extended'
+    | 'additional-name-inititial'
+    | 'new-username'
+    | 'password',
   >),
   /**
    * If `false`, disables auto-correct. The default value is `true`.

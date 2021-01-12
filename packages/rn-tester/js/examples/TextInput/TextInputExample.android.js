@@ -424,4 +424,28 @@ exports.examples = ([
       return <ToggleDefaultPaddingExample />;
     },
   },
+  {
+    title: 'Auto Complete Type',
+    render: function(): React.Node {
+      return (
+        <View>
+          <TextInput
+            autoCompleteType="off"
+            placeholder="autoCompleteType 'off'"
+            style={styles.singleLine}
+          />
+          <TextInput
+            autoCompleteType="email"
+            placeholder="autoCompleteType 'email'"
+            style={styles.singleLine}
+          />
+          <TextInput
+            autoCompleteType="otp"
+            placeholder="autoCompleteType 'otp'"
+            style={styles.singleLine}
+          />
+        </View>
+      );
+    },
+  },
 ]: Array<RNTesterExampleModuleItem>);

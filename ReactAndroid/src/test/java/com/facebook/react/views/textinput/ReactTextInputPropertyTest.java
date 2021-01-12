@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.textinput;
 
+import static com.facebook.react.views.textinput.AutoCompleteType.NAME_FULL;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import android.content.res.ColorStateList;
@@ -17,8 +18,12 @@ import android.text.InputType;
 import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+
+import androidx.autofill.HintConstants;
+
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -38,7 +43,7 @@ import org.robolectric.RuntimeEnvironment;
 
 /** Verify {@link EditText} view property being applied properly by {@link ReactTextInputManager} */
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
+@PowerMockIgnore({"org.powermock.*", "org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactTextInputPropertyTest {
 
   @Rule public PowerMockRule rule = new PowerMockRule();
@@ -392,5 +397,226 @@ public class ReactTextInputPropertyTest {
     mManager.updateProperties(view, buildStyles("selection", null));
     assertThat(view.getSelectionStart()).isEqualTo(5);
     assertThat(view.getSelectionEnd()).isEqualTo(10);
+  }
+
+  @Test
+  public void testAutoCompleteType() {
+    ReactEditText view = mManager.createViewInstance(mThemedContext);
+
+    // no hints
+
+    mManager.updateProperties(view, buildStyles());
+    assertThat(view.getAutofillHints()).isNull();
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", "off"));
+    assertThat(view.getAutofillHints()).isNull();
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_NO);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", null));
+    assertThat(view.getAutofillHints()).isNull();
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_AUTO);
+
+    // hints
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NAME_FULL.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PERSON_NAME);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NAME_HONORIFIC_PREFIX.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PERSON_NAME_PREFIX);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NAME_GIVEN.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PERSON_NAME_GIVEN);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NAME_ADDITIONAL.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PERSON_NAME_MIDDLE);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NAME_FAMILY.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PERSON_NAME_FAMILY);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NAME_HONORIFIC_SUFFIX.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PERSON_NAME_SUFFIX);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.USERNAME.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_USERNAME);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.PASSWORD_NEW.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_NEW_PASSWORD);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.PASSWORD_CURRENT.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PASSWORD);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.ADDRESS_FULL.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.ADDRESS_LINE_1.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_STREET_ADDRESS);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.ADDRESS_LOCALITY.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_LOCALITY);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.ADDRESS_REGION.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_REGION);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.ADDRESS_COUNTRY.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_COUNTRY);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.ADDRESS_POSTAL_CODE.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_POSTAL_CODE);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.CREDIT_CARD_NAME_FULL.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PERSON_NAME);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.CREDIT_CARD_NAME_GIVEN.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PERSON_NAME_GIVEN);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.CREDIT_CARD_NAME_ADDITIONAL.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PERSON_NAME_MIDDLE);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.CREDIT_CARD_NAME_FAMILY.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PERSON_NAME_FAMILY);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.CREDIT_CARD_NUMBER.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.CREDIT_CARD_EXPIRATION_DATE.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.CREDIT_CARD_EXPIRATION_MONTH.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.CREDIT_CARD_EXPIRATION_YEAR.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.CREDIT_CARD_SECURITY_CODE.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.BIRTH_DATE_FULL.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_BIRTH_DATE_FULL);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.BIRTH_DATE_DAY.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_BIRTH_DATE_DAY);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.BIRTH_DATE_MONTH.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_BIRTH_DATE_MONTH);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.BIRTH_DATE_YEAR.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_BIRTH_DATE_YEAR);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.GENDER.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_GENDER);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.TELELPHONE_NUMBER.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PHONE_NUMBER);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.TELELPHONE_NUMBER_COUNTRY_CODE.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PHONE_COUNTRY_CODE);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.TELELPHONE_NUMBER_NATIONAL.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PHONE_NATIONAL);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.EMAIL.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_EMAIL_ADDRESS);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_OTP.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_SMS_OTP);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_OTP_CHAR_1.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.generateSmsOtpHintForCharacterPosition(1));
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_OTP_CHAR_2.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.generateSmsOtpHintForCharacterPosition(2));
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_OTP_CHAR_3.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.generateSmsOtpHintForCharacterPosition(3));
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_OTP_CHAR_4.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.generateSmsOtpHintForCharacterPosition(4));
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_OTP_CHAR_5.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.generateSmsOtpHintForCharacterPosition(5));
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_OTP_CHAR_6.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.generateSmsOtpHintForCharacterPosition(6));
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_OTP_CHAR_7.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.generateSmsOtpHintForCharacterPosition(7));
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_OTP_CHAR_8.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.generateSmsOtpHintForCharacterPosition(8));
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_TELEPHONE_NUMBER_DEVICE.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PHONE_NUMBER_DEVICE);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_CREDIT_CARD_EXPIRATION_DAY.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DAY);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_ADDRESS_EXTENDED_ADDRESS.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_EXTENDED_ADDRESS);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_ADDRESS_EXTENDED_POSTAL_CODE.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_EXTENDED_POSTAL_CODE);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_NAME_ADDITIONAL_INITIAL.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PERSON_NAME_MIDDLE_INITIAL);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_USERNAME_NEW.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_NEW_USERNAME);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
+
+    mManager.updateProperties(view, buildStyles("autoCompleteType", AutoCompleteType.NON_W3C_PASSWORD.toString()));
+    assertThat(view.getAutofillHints()).containsExactly(HintConstants.AUTOFILL_HINT_PASSWORD);
+    assertThat(view.getImportantForAutofill()).isEqualTo(View.IMPORTANT_FOR_AUTOFILL_YES);
   }
 }
