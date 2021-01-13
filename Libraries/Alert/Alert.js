@@ -47,6 +47,11 @@ class Alert {
     buttons?: Buttons,
     options?: Options,
   ): void {
+    if (buttons && !buttons.length) {
+      throw new Error(
+        'Alert.alert function 3rd argument must be of type array',
+      );
+    }
     if (Platform.OS === 'ios') {
       Alert.prompt(title, message, buttons, 'default');
     } else if (Platform.OS === 'android') {
