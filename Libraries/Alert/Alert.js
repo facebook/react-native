@@ -47,6 +47,7 @@ class Alert {
     buttons?: Buttons,
     options?: Options,
   ): void {
+    if(buttons && !buttons.lenght) throw new Error("Alert.alert function `buttons` parameter must be of type array")
     if (Platform.OS === 'ios') {
       Alert.prompt(title, message, buttons, 'default');
     } else if (Platform.OS === 'android') {
@@ -67,8 +68,7 @@ class Alert {
       // At most three buttons (neutral, negative, positive). Ignore rest.
       // The text 'OK' should be probably localized. iOS Alert does that in native.
       const defaultPositiveText = 'OK';
-      const validButtons: Buttons =
-        buttons && buttons.length
+      const validButtons: Buttons = buttons
         ? buttons.slice(0, 3)
         : [{text: defaultPositiveText}];
       const buttonPositive = validButtons.pop();
