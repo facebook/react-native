@@ -67,7 +67,8 @@ class Alert {
       // At most three buttons (neutral, negative, positive). Ignore rest.
       // The text 'OK' should be probably localized. iOS Alert does that in native.
       const defaultPositiveText = 'OK';
-      const validButtons: Buttons = (buttons && buttons.length)
+      const validButtons: Buttons = 
+        buttons && buttons.length
         ? buttons.slice(0, 3)
         : [{text: defaultPositiveText}];
       const buttonPositive = validButtons.pop();
