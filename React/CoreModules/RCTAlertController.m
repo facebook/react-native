@@ -20,7 +20,15 @@
 - (UIWindow *)alertWindow
 {
   if (_alertWindow == nil) {
-    _alertWindow = [[UIWindow alloc] initWithFrame:RCTSharedApplication().keyWindow.bounds];
+      if (@available(iOS 13, *)) {
+        UIWindowScene *windowScene = [self windowScene];
+        if (windowScene != nil) {
+          _alertWindow = [[UIWindow alloc] initWithWindowScene:windowScene];
+        }
+    }
+    if (_alertWindow == nil) {
+      _alertWindow = [[UIWindow alloc] initWithFrame:RCTSharedApplication().keyWindow.bounds];
+    }
     _alertWindow.rootViewController = [UIViewController new];
     _alertWindow.windowLevel = UIWindowLevelAlert + 1;
   }
@@ -36,6 +44,19 @@
 - (void)hide
 {
   _alertWindow = nil;
+}
+
+- (UIWindowScene * _Nullable)windowScene API_AVAILABLE(ios(13))
+{
+    NSSet<UIScene *> *connectedScenes = RCTSharedApplication().connectedScenes;
+    for (UIScene *scene in connectedScenes) {
+        BOOL isActive = scene.activationState == UISceneActivationStateForegroundActive;
+        BOOL isWindowScene = [scene isKindOfClass: [UIWindowScene class]];
+        if (isActive && isWindowScene) {
+            return (UIWindowScene *) scene;
+        }
+    }
+    return nil;
 }
 
 @end
