@@ -43,6 +43,7 @@ export const NativeText: HostComponent<NativeTextProps> = (createReactNativeComp
       onTextLayout: true,
       onInlineViewLayout: true,
       dataDetectorType: true,
+      android_hyphenationFrequency: true,
     },
     directEventTypes: {
       topTextLayout: {
