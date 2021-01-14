@@ -109,10 +109,10 @@ static uint64_t monotonicTimeGetCurrentNanoseconds(void)
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 @synthesize maxConcurrentLoadingTasks = _maxConcurrentLoadingTasks;
 @synthesize maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks;
 @synthesize maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes;
-@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -644,18 +644,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                      progressBlock:(RCTImageLoaderProgressBlock)progressHandler
                                    completionBlock:(void (^)(NSError *error, id imageOrData, NSURLResponse *response))completionHandler
 {
-  // Check if networking module is available
-  if (RCT_DEBUG && ![_bridge respondsToSelector:@selector(networking)]
-      && ![_turboModuleRegistry moduleForName:"RCTNetworking"]) {
+  RCTNetworking *networking = [_moduleRegistry moduleForName:"Networking"];
+  if (RCT_DEBUG && !networking) {
     RCTLogError(@"No suitable image URL loader found for %@. You may need to "
                 " import the RCTNetwork library in order to load images.",
                 request.URL.absoluteString);
     return NULL;
-  }
-
-  RCTNetworking *networking = [_bridge networking];
-  if (!networking) {
-    networking = [_turboModuleRegistry moduleForName:"RCTNetworking"];
   }
 
   // Check if networking module can load image

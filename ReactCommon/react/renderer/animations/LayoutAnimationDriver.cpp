@@ -74,7 +74,7 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
       // Create the mutation instruction
       auto updateMutation = ShadowViewMutation::UpdateMutation(
-          keyframe.parentView, keyframe.viewPrev, mutatedShadowView, -1);
+          keyframe.viewPrev, mutatedShadowView);
 
       // All generated Update mutations must have an "old" and "new"
       // ShadowView. Checking for nonzero tag doesn't guarantee that the views
@@ -119,12 +119,12 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
           // Copy so that if something else mutates the inflight animations, it
           // won't change this mutation after this point.
-          auto mutation =
-              ShadowViewMutation{finalMutationForKeyFrame.type,
-                                 finalMutationForKeyFrame.parentShadowView,
-                                 keyframe.viewPrev,
-                                 finalMutationForKeyFrame.newChildShadowView,
-                                 finalMutationForKeyFrame.index};
+          auto mutation = ShadowViewMutation{
+              finalMutationForKeyFrame.type,
+              finalMutationForKeyFrame.parentShadowView,
+              keyframe.viewPrev,
+              finalMutationForKeyFrame.newChildShadowView,
+              finalMutationForKeyFrame.index};
           assert(mutation.oldChildShadowView.tag != 0);
           assert(
               mutation.newChildShadowView.tag != 0 ||
@@ -136,11 +136,12 @@ void LayoutAnimationDriver::animationMutationsForFrame(
           // mounting layer is the same as the one on the ShadowTree. This is
           // mostly to make the MountingCoordinator StubViewTree assertions
           // pass.
-          auto mutation = ShadowViewMutation{ShadowViewMutation::Type::Update,
-                                             keyframe.parentView,
-                                             keyframe.viewPrev,
-                                             keyframe.viewEnd,
-                                             -1};
+          auto mutation = ShadowViewMutation{
+              ShadowViewMutation::Type::Update,
+              keyframe.parentView,
+              keyframe.viewPrev,
+              keyframe.viewEnd,
+              -1};
           assert(mutation.oldChildShadowView.tag != 0);
           assert(mutation.newChildShadowView.tag != 0);
           mutationsList.push_back(mutation);

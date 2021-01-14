@@ -127,6 +127,14 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       const SharedProps &props,
       const SharedProps &newProps) const override {
     // By default, this does nothing.
+#ifdef ANDROID
+    // On Android only, the merged props should have the same RawProps as the
+    // final props struct
+    if (newProps != nullptr) {
+      return cloneProps(newProps, newProps->rawProps);
+    }
+#endif
+
     return cloneProps(newProps, {});
   };
 

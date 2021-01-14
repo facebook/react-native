@@ -52,11 +52,7 @@ public class UIManagerHelper {
       @UIManagerType int uiManagerType,
       boolean returnNullIfCatalystIsInactive) {
     if (context.isBridgeless()) {
-      @Nullable
-      UIManager uiManager =
-          context.getJSIModule(JSIModuleType.UIManager) != null
-              ? (UIManager) context.getJSIModule(JSIModuleType.UIManager)
-              : null;
+      @Nullable UIManager uiManager = (UIManager) context.getJSIModule(JSIModuleType.UIManager);
       if (uiManager == null) {
         ReactSoftException.logSoftException(
             "UIManagerHelper",
@@ -115,7 +111,17 @@ public class UIManagerHelper {
       return ((EventDispatcherProvider) context).getEventDispatcher();
     }
     UIManager uiManager = getUIManager(context, uiManagerType, false);
-    return uiManager == null ? null : (EventDispatcher) uiManager.getEventDispatcher();
+    if (uiManager == null) {
+      return null;
+    }
+    EventDispatcher eventDispatcher = (EventDispatcher) uiManager.getEventDispatcher();
+    if (eventDispatcher == null) {
+      ReactSoftException.logSoftException(
+          "UIManagerHelper",
+          new IllegalStateException(
+              "Cannot get EventDispatcher for UIManagerType " + uiManagerType));
+    }
+    return eventDispatcher;
   }
 
   /**

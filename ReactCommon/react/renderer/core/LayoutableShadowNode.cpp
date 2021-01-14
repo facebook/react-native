@@ -159,13 +159,6 @@ Point LayoutableShadowNode::getContentOriginOffset() const {
   return {0, 0};
 }
 
-LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
-    LayoutableShadowNode const &ancestorLayoutableShadowNode,
-    LayoutInspectingPolicy policy) const {
-  return computeRelativeLayoutMetrics(
-      getFamily(), ancestorLayoutableShadowNode, policy);
-}
-
 LayoutableShadowNode::UnsharedList
 LayoutableShadowNode::getLayoutableChildNodes() const {
   LayoutableShadowNode::UnsharedList layoutableChildren;

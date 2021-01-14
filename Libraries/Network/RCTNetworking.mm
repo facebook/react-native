@@ -157,6 +157,11 @@ static NSString *RCTGenerateFormBoundary()
 
 RCT_EXPORT_MODULE()
 
+- (instancetype)init
+{
+  return [super initWithDisabledObservation];
+}
+
 - (instancetype)initWithHandlersProvider:(NSArray<id<RCTURLRequestHandler>> * (^)(void))getHandlers
 {
   if (self = [super initWithDisabledObservation]) {

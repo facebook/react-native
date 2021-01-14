@@ -57,8 +57,8 @@ static void testShadowNodeTreeLifeCycle(
 
     // Applying size constraints.
     emptyRootNode = emptyRootNode->clone(
-        LayoutConstraints{Size{512, 0},
-                          Size{512, std::numeric_limits<Float>::infinity()}},
+        LayoutConstraints{
+            Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
         LayoutContext{});
 
     // Generation of a random tree.
@@ -73,7 +73,7 @@ static void testShadowNodeTreeLifeCycle(
                 SharedShadowNodeList{singleRootChildNode})}));
 
     // Building an initial view hierarchy.
-    auto viewTree = stubViewTreeFromShadowNode(*emptyRootNode);
+    auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
     viewTree.mutate(
         calculateShadowViewMutations(*emptyRootNode, *currentRootNode));
 
@@ -131,7 +131,8 @@ static void testShadowNodeTreeLifeCycle(
       viewTree.mutate(mutations);
 
       // Building a view tree to compare with.
-      auto rebuiltViewTree = stubViewTreeFromShadowNode(*nextRootNode);
+      auto rebuiltViewTree =
+          buildStubViewTreeWithoutUsingDifferentiator(*nextRootNode);
 
       // Comparing the newly built tree with the updated one.
       if (rebuiltViewTree != viewTree) {

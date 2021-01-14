@@ -25,6 +25,7 @@ namespace facebook {
 namespace react {
 
 class UIManagerBinding;
+class UIManagerCommitHook;
 
 class UIManager final : public ShadowTreeDelegate {
  public:
@@ -67,16 +68,25 @@ class UIManager final : public ShadowTreeDelegate {
       std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
       const;
 
+  /*
+   * Registers and unregisters a commit hook.
+   */
+  void registerCommitHook(UIManagerCommitHook const &commitHook) const;
+  void unregisterCommitHook(UIManagerCommitHook const &commitHook) const;
+
+  ShadowNode::Shared getNewestCloneOfShadowNode(
+      ShadowNode const &shadowNode) const;
+
 #pragma mark - ShadowTreeDelegate
 
   void shadowTreeDidFinishTransaction(
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override;
 
-  /*
-   * Temporary flags.
-   */
-  bool experimentEnableStateUpdateWithAutorepeat{false};
+  RootShadowNode::Unshared shadowTreeWillCommit(
+      ShadowTree const &shadowTree,
+      RootShadowNode::Shared const &oldRootShadowNode,
+      RootShadowNode::Unshared const &newRootShadowNode) const override;
 
  private:
   friend class UIManagerBinding;
@@ -113,9 +123,6 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowNode::Shared const &shadowNode,
       Point point) const;
 
-  ShadowNode::Shared getNewestCloneOfShadowNode(
-      ShadowNode const &shadowNode) const;
-
   /*
    * Returns layout metrics of given `shadowNode` relative to
    * `ancestorShadowNode` (relative to the root node in case if provided
@@ -131,12 +138,15 @@ class UIManager final : public ShadowTreeDelegate {
    * and performs a commit.
    */
   void updateState(StateUpdate const &stateUpdate) const;
-  void updateStateWithAutorepeat(StateUpdate const &stateUpdate) const;
 
   void dispatchCommand(
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) const;
+
+  void sendAccessibilityEvent(
+      const ShadowNode::Shared &shadowNode,
+      std::string const &eventType);
 
   /**
    * Configure a LayoutAnimation to happen on the next commit.
@@ -162,6 +172,9 @@ class UIManager final : public ShadowTreeDelegate {
   // determine whether a commit should be cancelled. Only to be used
   // inside UIManagerBinding.
   std::atomic_uint_fast8_t completeRootEventCounter_{0};
+
+  mutable better::shared_mutex commitHookMutex_;
+  mutable std::vector<UIManagerCommitHook const *> commitHooks_;
 };
 
 } // namespace react

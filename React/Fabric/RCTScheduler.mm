@@ -59,6 +59,12 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     // Does nothing for now.
   }
 
+  void schedulerDidSendAccessibilityEvent(const ShadowView &shadowView, std::string const &eventType) override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidSendAccessibilityEvent:shadowView eventType:eventType];
+  }
+
  private:
   void *scheduler_;
 };
@@ -83,8 +89,8 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
     [scheduler onAllAnimationsComplete];
   }
 
-  void activityDidChange(RunLoopObserver::Delegate const *delegate, RunLoopObserver::Activity activity) const
-      noexcept override
+  void activityDidChange(RunLoopObserver::Delegate const *delegate, RunLoopObserver::Activity activity)
+      const noexcept override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler animationTick];

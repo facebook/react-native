@@ -34,7 +34,7 @@ public class CodegenPluginExtension {
   }
 
   public File codegenGenerateNativeModuleSpecsCLI() {
-    return new File(this.reactNativeRootDir, "scripts/generate-native-modules-specs-cli.js");
+    return new File(this.reactNativeRootDir, "scripts/generate-specs-cli.js");
   }
 
   private String projectPathToLibraryName(final String projectPath) {

@@ -22,10 +22,11 @@ SharedColor colorFromComponents(ColorComponents components) {
 ColorComponents colorComponentsFromColor(SharedColor sharedColor) {
   float ratio = 256;
   Color color = *sharedColor;
-  return ColorComponents{(float)((color >> 16) & 0xff) / ratio,
-                         (float)((color >> 8) & 0xff) / ratio,
-                         (float)((color >> 0) & 0xff) / ratio,
-                         (float)((color >> 24) & 0xff) / ratio};
+  return ColorComponents{
+      (float)((color >> 16) & 0xff) / ratio,
+      (float)((color >> 8) & 0xff) / ratio,
+      (float)((color >> 0) & 0xff) / ratio,
+      (float)((color >> 24) & 0xff) / ratio};
 }
 
 SharedColor clearColor() {

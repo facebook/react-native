@@ -43,12 +43,9 @@ jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
     jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
-    bool enablePromiseAsyncDispatch,
     bool enableJSCodegen) {
   auto jsCallInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
   auto nativeCallInvoker = nativeCallInvokerHolder->cthis()->getCallInvoker();
-
-  JavaTurboModule::enablePromiseAsyncDispatch(enablePromiseAsyncDispatch);
 
   return makeCxxInstance(
       jThis,

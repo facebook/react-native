@@ -34,7 +34,7 @@ export type PointData = $Shape<{
  * Example:
  * const flowId = UserFlow.newFlowId(QuickLogItentifiersExample.EXAMPLE_EVENT);
  * ...
- * UserFlow.start(flowId, "user_click");
+ * UserFlow.start(flowId, {triggerSource: "user_click", cancelOnBackground: true});
  * ...
  * UserFlow.addAnnotation(flowId, "cached", "true");
  * ...
@@ -65,12 +65,27 @@ const UserFlow = {
     };
   },
 
-  start(flowId: FlowId, triggerSource: string): void {
+  /**
+   * Starts new flow.
+   * Example:
+   * UserFlow.start(flowId, {triggerSource: 'user_click', cancelOnBackground: true})
+   *
+   * Specify triggerSource as a place where your flow has started.
+   * Specify if flow should be automatically cancelled if applicaton goes to background.
+   * It is recommended to use true for cancelOnBackground - this reduces amount of lost flows due to instrumentation mistakes.
+   * Only if you know that your flow should survive app backgrounding - use false. This includes cases of tracking cross application interactions.
+   *
+   */
+  start(
+    flowId: FlowId,
+    options: {triggerSource: string, cancelOnBackground: boolean},
+  ): void {
     if (global.nativeUserFlowStart) {
       global.nativeUserFlowStart(
         flowId.markerId,
         flowId.instanceKey,
-        triggerSource,
+        options.triggerSource,
+        options.cancelOnBackground,
       );
     }
   },

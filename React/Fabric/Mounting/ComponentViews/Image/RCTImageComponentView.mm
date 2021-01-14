@@ -7,6 +7,7 @@
 
 #import "RCTImageComponentView.h"
 
+#import <React/RCTAssert.h>
 #import <React/RCTConversions.h>
 #import <React/RCTImageBlurUtils.h>
 #import <React/RCTImageResponseObserverProxy.h>
@@ -76,6 +77,11 @@ using namespace facebook::react;
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
+  RCTAssert(state, @"`state` must not be null.");
+  RCTAssert(
+      std::dynamic_pointer_cast<ImageShadowNode::ConcreteState const>(state),
+      @"`state` must be a pointer to `ImageShadowNode::ConcreteState`.");
+
   auto oldImageState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(_state);
   auto newImageState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
 
