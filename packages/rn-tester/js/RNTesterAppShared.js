@@ -53,9 +53,11 @@ const DisplayIfVisible = ({isVisible, children}) =>
     </View>
   ) : null;
 
-// Disable yellowbox so that they don't cover the API's tab and make it
-// unaccessible for detox.
-console.disableYellowBox = true;
+// Disable yellowbox when detox/jest is running so that they don't cover the
+// API's tab and make it inaccessible for detox.
+if (process.env.JEST_WORKER_ID !== undefined) {
+  console.disableYellowBox = true;
+}
 
 type ExampleListsContainerProps = $ReadOnly<{|
   theme: RNTesterTheme,
