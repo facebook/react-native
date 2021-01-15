@@ -104,33 +104,6 @@ class PermissionsAndroid {
   |} = PERMISSION_REQUEST_RESULT;
 
   /**
-   * DEPRECATED - use check
-   *
-   * Returns a promise resolving to a boolean value as to whether the specified
-   * permissions has been granted
-   *
-   * @deprecated
-   */
-  checkPermission(permission: PermissionType): Promise<boolean> {
-    console.warn(
-      '"PermissionsAndroid.checkPermission" is deprecated. Use "PermissionsAndroid.check" instead',
-    );
-    if (Platform.OS !== 'android') {
-      console.warn(
-        '"PermissionsAndroid" module works only for Android platform.',
-      );
-      return Promise.resolve(false);
-    }
-
-    invariant(
-      NativePermissionsAndroid,
-      'PermissionsAndroid is not installed correctly.',
-    );
-
-    return NativePermissionsAndroid.checkPermission(permission);
-  }
-
-  /**
    * Returns a promise resolving to a boolean value as to whether the specified
    * permissions has been granted
    *
@@ -150,38 +123,6 @@ class PermissionsAndroid {
     );
 
     return NativePermissionsAndroid.checkPermission(permission);
-  }
-
-  /**
-   * DEPRECATED - use request
-   *
-   * Prompts the user to enable a permission and returns a promise resolving to a
-   * boolean value indicating whether the user allowed or denied the request
-   *
-   * If the optional rationale argument is included (which is an object with a
-   * `title` and `message`), this function checks with the OS whether it is
-   * necessary to show a dialog explaining why the permission is needed
-   * (https://developer.android.com/training/permissions/requesting.html#explain)
-   * and then shows the system permission dialog
-   *
-   * @deprecated
-   */
-  async requestPermission(
-    permission: PermissionType,
-    rationale?: Rationale,
-  ): Promise<boolean> {
-    console.warn(
-      '"PermissionsAndroid.requestPermission" is deprecated. Use "PermissionsAndroid.request" instead',
-    );
-    if (Platform.OS !== 'android') {
-      console.warn(
-        '"PermissionsAndroid" module works only for Android platform.',
-      );
-      return Promise.resolve(false);
-    }
-
-    const response = await this.request(permission, rationale);
-    return response === this.RESULTS.GRANTED;
   }
 
   /**
