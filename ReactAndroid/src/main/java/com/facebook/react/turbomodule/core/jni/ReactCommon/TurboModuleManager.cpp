@@ -70,7 +70,8 @@ void TurboModuleManager::installJSIBindings() {
          jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
          nativeCallInvoker_ = std::weak_ptr<CallInvoker>(nativeCallInvoker_),
          delegate_ = jni::make_weak(delegate_),
-         javaPart_ = jni::make_weak(javaPart_)](const std::string &name) -> std::shared_ptr<TurboModule> {
+         javaPart_ = jni::make_weak(javaPart_)](
+            const std::string &name) -> std::shared_ptr<TurboModule> {
       auto turboModuleCache = turboModuleCache_.lock();
       auto jsCallInvoker = jsCallInvoker_.lock();
       auto nativeCallInvoker = nativeCallInvoker_.lock();
