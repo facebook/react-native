@@ -639,9 +639,10 @@ jobs:
           paths:
             - C:\Users\circleci\AppData\Local\Yarn
 
+      # Try to install the SDK up to 3 times, since network flakiness can cause install failures
       - run:
           name: Install Android SDK Tools
-          command: choco install android-sdk
+          command: choco install android-sdk; if (!$?) { choco install android-sdk }; if (!$?) { choco install android-sdk }
 
       - run:
           name: Setup Android SDKs
