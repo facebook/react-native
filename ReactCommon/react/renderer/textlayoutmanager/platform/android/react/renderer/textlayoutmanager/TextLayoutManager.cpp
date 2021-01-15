@@ -166,8 +166,8 @@ TextMeasurement TextLayoutManager::doMeasure(
         float width = (float)fragment["width"].getDouble();
         float height = (float)fragment["height"].getDouble();
 
-        auto rect = facebook::react::Rect{{left, top},
-                                          facebook::react::Size{width, height}};
+        auto rect = facebook::react::Rect{
+            {left, top}, facebook::react::Size{width, height}};
         attachments.push_back(TextMeasurement::Attachment{rect, false});
         attachmentIndex++;
       }

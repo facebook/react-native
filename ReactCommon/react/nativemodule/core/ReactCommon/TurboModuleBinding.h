@@ -28,8 +28,7 @@ class TurboModuleBinding {
    */
   static void install(
       jsi::Runtime &runtime,
-      const TurboModuleProviderFunctionType &&moduleProvider,
-      bool enableJSTurboModuleCodegen);
+      const TurboModuleProviderFunctionType &&moduleProvider);
 
   TurboModuleBinding(const TurboModuleProviderFunctionType &&moduleProvider);
   virtual ~TurboModuleBinding();
@@ -37,9 +36,7 @@ class TurboModuleBinding {
   /**
    * Get an TurboModule instance for the given module name.
    */
-  std::shared_ptr<TurboModule> getModule(
-      const std::string &name,
-      const jsi::Value *schema);
+  std::shared_ptr<TurboModule> getModule(const std::string &name);
 
  private:
   /**

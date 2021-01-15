@@ -2,7 +2,7 @@
 
 exports[`GenerateModuleJniH can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "jni/SampleSpec.h" => "
+  "jni/COMPLEX_OBJECTS.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -68,7 +68,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 exports[`GenerateModuleJniH can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "jni/SampleSpec.h" => "
+  "jni/EMPTY_NATIVE_MODULES.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -134,7 +134,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 exports[`GenerateModuleJniH can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
 Map {
-  "jni/SampleSpec.h" => "
+  "jni/NATIVE_MODULES_WITH_TYPE_ALIASES.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -200,7 +200,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 exports[`GenerateModuleJniH can generate fixture REAL_MODULE_EXAMPLE 1`] = `
 Map {
-  "jni/SampleSpec.h" => "
+  "jni/REAL_MODULE_EXAMPLE.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -274,7 +274,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 exports[`GenerateModuleJniH can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "jni/SampleSpec.h" => "
+  "jni/SIMPLE_NATIVE_MODULES.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -340,7 +340,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 exports[`GenerateModuleJniH can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "jni/SampleSpec.h" => "
+  "jni/TWO_MODULES_DIFFERENT_FILES.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *

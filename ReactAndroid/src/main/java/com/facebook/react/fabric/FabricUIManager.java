@@ -25,6 +25,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.os.SystemClock;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -1002,6 +1003,23 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @AnyThread
   @ThreadConfined(ANY)
   public void sendAccessibilityEvent(int reactTag, int eventType) {
+    addMountItem(new SendAccessibilityEvent(reactTag, eventType));
+  }
+
+  @AnyThread
+  @ThreadConfined(ANY)
+  public void sendAccessibilityEventFromJS(int reactTag, String eventTypeJS) {
+    int eventType;
+    if ("focus".equals(eventTypeJS)) {
+      eventType = AccessibilityEvent.TYPE_VIEW_FOCUSED;
+    } else if ("windowStateChange".equals(eventTypeJS)) {
+      eventType = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
+    } else if ("click".equals(eventTypeJS)) {
+      eventType = AccessibilityEvent.TYPE_VIEW_CLICKED;
+    } else {
+      throw new IllegalArgumentException(
+          "sendAccessibilityEventFromJS: invalid eventType " + eventTypeJS);
+    }
     addMountItem(new SendAccessibilityEvent(reactTag, eventType));
   }
 

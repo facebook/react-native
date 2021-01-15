@@ -45,8 +45,8 @@ bool operator!=(StubView const &lhs, StubView const &rhs) {
 
 std::string getDebugName(StubView const &stubView) {
   return std::string{"Stub"} +
-      std::string{stubView.componentHandle ? stubView.componentName
-                                           : "[invalid]"};
+      std::string{
+          stubView.componentHandle ? stubView.componentName : "[invalid]"};
 }
 
 std::vector<DebugStringConvertibleObject> getDebugProps(

@@ -98,12 +98,13 @@ TEST(StateReconciliationTest, testStateReconciliation) {
   auto eventDispatcher = EventDispatcher::Shared{};
   auto rootComponentDescriptor =
       ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr};
-  ShadowTree shadowTree{SurfaceId{11},
-                        LayoutConstraints{},
-                        LayoutContext{},
-                        rootComponentDescriptor,
-                        shadowTreeDelegate,
-                        {}};
+  ShadowTree shadowTree{
+      SurfaceId{11},
+      LayoutConstraints{},
+      LayoutContext{},
+      rootComponentDescriptor,
+      shadowTreeDelegate,
+      {}};
 
   shadowTree.commit(
       [&](RootShadowNode const &oldRootShadowNode) {
@@ -121,9 +122,10 @@ TEST(StateReconciliationTest, testStateReconciliation) {
 
   auto rootShadowNodeState2 =
       shadowNode->cloneTree(family, [&](ShadowNode const &oldShadowNode) {
-        return oldShadowNode.clone({ShadowNodeFragment::propsPlaceholder(),
-                                    ShadowNodeFragment::childrenPlaceholder(),
-                                    state2});
+        return oldShadowNode.clone(
+            {ShadowNodeFragment::propsPlaceholder(),
+             ShadowNodeFragment::childrenPlaceholder(),
+             state2});
       });
 
   EXPECT_EQ(
@@ -143,9 +145,10 @@ TEST(StateReconciliationTest, testStateReconciliation) {
 
   auto rootShadowNodeState3 = rootShadowNodeState2->cloneTree(
       family, [&](ShadowNode const &oldShadowNode) {
-        return oldShadowNode.clone({ShadowNodeFragment::propsPlaceholder(),
-                                    ShadowNodeFragment::childrenPlaceholder(),
-                                    state3});
+        return oldShadowNode.clone(
+            {ShadowNodeFragment::propsPlaceholder(),
+             ShadowNodeFragment::childrenPlaceholder(),
+             state3});
       });
 
   EXPECT_EQ(

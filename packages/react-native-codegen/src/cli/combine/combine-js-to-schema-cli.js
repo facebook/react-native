@@ -32,6 +32,7 @@ function filterJSFile(file) {
   );
 }
 
+console.log('[JS] Codegen args: ' + process.argv.join(' '));
 const allFiles = [];
 fileList.forEach(file => {
   if (fs.lstatSync(file).isDirectory()) {

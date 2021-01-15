@@ -451,9 +451,10 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
   auto oldNode =
       static_cast<YogaLayoutableShadowNode *>(oldYogaNode->getContext());
 
-  auto clonedNode = oldNode->clone({ShadowNodeFragment::propsPlaceholder(),
-                                    ShadowNodeFragment::childrenPlaceholder(),
-                                    oldNode->getState()});
+  auto clonedNode = oldNode->clone(
+      {ShadowNodeFragment::propsPlaceholder(),
+       ShadowNodeFragment::childrenPlaceholder(),
+       oldNode->getState()});
   parentNode->replaceChild(*oldNode, clonedNode, childIndex);
   return &static_cast<YogaLayoutableShadowNode &>(*clonedNode).yogaNode_;
 }
@@ -471,8 +472,9 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
       static_cast<YogaLayoutableShadowNode *>(yogaNode->getContext());
 
   auto minimumSize = Size{0, 0};
-  auto maximumSize = Size{std::numeric_limits<Float>::infinity(),
-                          std::numeric_limits<Float>::infinity()};
+  auto maximumSize = Size{
+      std::numeric_limits<Float>::infinity(),
+      std::numeric_limits<Float>::infinity()};
 
   switch (widthMode) {
     case YGMeasureModeUndefined:
@@ -501,8 +503,8 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
   auto size = shadowNodeRawPtr->measureContent(
       threadLocalLayoutContext, {minimumSize, maximumSize});
 
-  return YGSize{yogaFloatFromFloat(size.width),
-                yogaFloatFromFloat(size.height)};
+  return YGSize{
+      yogaFloatFromFloat(size.width), yogaFloatFromFloat(size.height)};
 }
 
 #ifdef RN_DEBUG_YOGA_LOGGER

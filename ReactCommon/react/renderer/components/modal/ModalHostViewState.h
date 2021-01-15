@@ -32,8 +32,9 @@ class ModalHostViewState final {
   ModalHostViewState(
       ModalHostViewState const &previousState,
       folly::dynamic data)
-      : screenSize(Size{(Float)data["screenWidth"].getDouble(),
-                        (Float)data["screenHeight"].getDouble()}){};
+      : screenSize(Size{
+            (Float)data["screenWidth"].getDouble(),
+            (Float)data["screenHeight"].getDouble()}){};
 #endif
 
   const Size screenSize{};

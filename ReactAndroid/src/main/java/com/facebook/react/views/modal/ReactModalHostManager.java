@@ -122,6 +122,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
               dispatcher.dispatchEvent(new ShowEvent(view.getId()));
             }
           });
+      view.setEventDispatcher(dispatcher);
     }
   }
 

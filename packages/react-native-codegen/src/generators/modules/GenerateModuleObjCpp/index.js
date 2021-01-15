@@ -113,7 +113,6 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
     packageName?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
@@ -191,13 +190,13 @@ module.exports = {
       );
     }
 
-    const headerFileName = `${moduleSpecName}.h`;
+    const headerFileName = `${libraryName}.h`;
     const headerFile = HeaderFileTemplate({
       moduleDeclarations: moduleDeclarations.join('\n'),
       structInlineMethods: structInlineMethods.join('\n'),
     });
 
-    const sourceFileName = `${moduleSpecName}-generated.mm`;
+    const sourceFileName = `${libraryName}-generated.mm`;
     const sourceFile = SourceFileTemplate({
       headerFileName,
       moduleImplementations: moduleImplementations.join('\n'),

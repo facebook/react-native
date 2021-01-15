@@ -44,8 +44,8 @@ static ShadowNode::Shared makeNode(
                          : nonFlattenedDefaultProps(componentDescriptor);
 
   return componentDescriptor.createShadowNode(
-      ShadowNodeFragment{props,
-                         std::make_shared<SharedShadowNodeList>(children)},
+      ShadowNodeFragment{
+          props, std::make_shared<SharedShadowNodeList>(children)},
       componentDescriptor.createFamily({tag, SurfaceId(1), nullptr}, nullptr));
 }
 
@@ -80,8 +80,8 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
 
   // Applying size constraints.
   emptyRootNode = emptyRootNode->clone(
-      LayoutConstraints{Size{512, 0},
-                        Size{512, std::numeric_limits<Float>::infinity()}},
+      LayoutConstraints{
+          Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
       LayoutContext{});
 
   auto childA = makeNode(viewComponentDescriptor, 100, {});
@@ -101,22 +101,23 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
 
   // Construct "identical" shadow nodes: they differ only in children.
   auto shadowNodeV1 = viewComponentDescriptor.createShadowNode(
-      ShadowNodeFragment{generateDefaultProps(viewComponentDescriptor),
-                         std::make_shared<SharedShadowNodeList>(
-                             SharedShadowNodeList{childB, childC, childD})},
+      ShadowNodeFragment{
+          generateDefaultProps(viewComponentDescriptor),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{childB, childC, childD})},
       family);
   auto shadowNodeV2 = shadowNodeV1->clone(ShadowNodeFragment{
       generateDefaultProps(viewComponentDescriptor),
       std::make_shared<SharedShadowNodeList>(
           SharedShadowNodeList{childA, childB, childC, childD})});
-  auto shadowNodeV3 = shadowNodeV2->clone(
-      ShadowNodeFragment{generateDefaultProps(viewComponentDescriptor),
-                         std::make_shared<SharedShadowNodeList>(
-                             SharedShadowNodeList{childB, childC, childD})});
-  auto shadowNodeV4 = shadowNodeV3->clone(
-      ShadowNodeFragment{generateDefaultProps(viewComponentDescriptor),
-                         std::make_shared<SharedShadowNodeList>(
-                             SharedShadowNodeList{childB, childD, childE})});
+  auto shadowNodeV3 = shadowNodeV2->clone(ShadowNodeFragment{
+      generateDefaultProps(viewComponentDescriptor),
+      std::make_shared<SharedShadowNodeList>(
+          SharedShadowNodeList{childB, childC, childD})});
+  auto shadowNodeV4 = shadowNodeV3->clone(ShadowNodeFragment{
+      generateDefaultProps(viewComponentDescriptor),
+      std::make_shared<SharedShadowNodeList>(
+          SharedShadowNodeList{childB, childD, childE})});
   auto shadowNodeV5 = shadowNodeV4->clone(ShadowNodeFragment{
       generateDefaultProps(viewComponentDescriptor),
       std::make_shared<SharedShadowNodeList>(
@@ -127,52 +128,53 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
           childB, childA, childD, childF, childE, childC})});
   auto shadowNodeV7 = shadowNodeV6->clone(ShadowNodeFragment{
       generateDefaultProps(viewComponentDescriptor),
-      std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{childF,
-                                                                  childE,
-                                                                  childC,
-                                                                  childD,
-                                                                  childG,
-                                                                  childH,
-                                                                  childI,
-                                                                  childJ,
-                                                                  childK})});
+      std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{
+          childF,
+          childE,
+          childC,
+          childD,
+          childG,
+          childH,
+          childI,
+          childJ,
+          childK})});
 
   // Injecting a tree into the root node.
   auto rootNodeV1 = std::static_pointer_cast<RootShadowNode const>(
-      emptyRootNode->ShadowNode::clone(
-          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                             std::make_shared<SharedShadowNodeList>(
-                                 SharedShadowNodeList{shadowNodeV1})}));
+      emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
+          ShadowNodeFragment::propsPlaceholder(),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{shadowNodeV1})}));
   auto rootNodeV2 = std::static_pointer_cast<RootShadowNode const>(
-      rootNodeV1->ShadowNode::clone(
-          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                             std::make_shared<SharedShadowNodeList>(
-                                 SharedShadowNodeList{shadowNodeV2})}));
+      rootNodeV1->ShadowNode::clone(ShadowNodeFragment{
+          ShadowNodeFragment::propsPlaceholder(),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{shadowNodeV2})}));
   auto rootNodeV3 = std::static_pointer_cast<RootShadowNode const>(
-      rootNodeV2->ShadowNode::clone(
-          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                             std::make_shared<SharedShadowNodeList>(
-                                 SharedShadowNodeList{shadowNodeV3})}));
+      rootNodeV2->ShadowNode::clone(ShadowNodeFragment{
+          ShadowNodeFragment::propsPlaceholder(),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{shadowNodeV3})}));
   auto rootNodeV4 = std::static_pointer_cast<RootShadowNode const>(
-      rootNodeV3->ShadowNode::clone(
-          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                             std::make_shared<SharedShadowNodeList>(
-                                 SharedShadowNodeList{shadowNodeV4})}));
+      rootNodeV3->ShadowNode::clone(ShadowNodeFragment{
+          ShadowNodeFragment::propsPlaceholder(),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{shadowNodeV4})}));
   auto rootNodeV5 = std::static_pointer_cast<RootShadowNode const>(
-      rootNodeV4->ShadowNode::clone(
-          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                             std::make_shared<SharedShadowNodeList>(
-                                 SharedShadowNodeList{shadowNodeV5})}));
+      rootNodeV4->ShadowNode::clone(ShadowNodeFragment{
+          ShadowNodeFragment::propsPlaceholder(),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{shadowNodeV5})}));
   auto rootNodeV6 = std::static_pointer_cast<RootShadowNode const>(
-      rootNodeV5->ShadowNode::clone(
-          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                             std::make_shared<SharedShadowNodeList>(
-                                 SharedShadowNodeList{shadowNodeV6})}));
+      rootNodeV5->ShadowNode::clone(ShadowNodeFragment{
+          ShadowNodeFragment::propsPlaceholder(),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{shadowNodeV6})}));
   auto rootNodeV7 = std::static_pointer_cast<RootShadowNode const>(
-      rootNodeV6->ShadowNode::clone(
-          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                             std::make_shared<SharedShadowNodeList>(
-                                 SharedShadowNodeList{shadowNodeV7})}));
+      rootNodeV6->ShadowNode::clone(ShadowNodeFragment{
+          ShadowNodeFragment::propsPlaceholder(),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{shadowNodeV7})}));
 
   // Layout
   std::vector<LayoutableShadowNode const *> affectedLayoutableNodesV1{};
@@ -383,8 +385,8 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
 
   // Applying size constraints.
   emptyRootNode = emptyRootNode->clone(
-      LayoutConstraints{Size{512, 0},
-                        Size{512, std::numeric_limits<Float>::infinity()}},
+      LayoutConstraints{
+          Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
       LayoutContext{});
 
   auto childA = makeNode(viewComponentDescriptor, 100, {});
@@ -535,30 +537,30 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
 
   // Injecting a tree into the root node.
   auto rootNodeV1 = std::static_pointer_cast<RootShadowNode const>(
-      emptyRootNode->ShadowNode::clone(
-          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                             std::make_shared<SharedShadowNodeList>(
-                                 SharedShadowNodeList{shadowNodeV1})}));
+      emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
+          ShadowNodeFragment::propsPlaceholder(),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{shadowNodeV1})}));
   auto rootNodeV2 = std::static_pointer_cast<RootShadowNode const>(
-      rootNodeV1->ShadowNode::clone(
-          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                             std::make_shared<SharedShadowNodeList>(
-                                 SharedShadowNodeList{shadowNodeV2})}));
+      rootNodeV1->ShadowNode::clone(ShadowNodeFragment{
+          ShadowNodeFragment::propsPlaceholder(),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{shadowNodeV2})}));
   auto rootNodeV3 = std::static_pointer_cast<RootShadowNode const>(
-      rootNodeV2->ShadowNode::clone(
-          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                             std::make_shared<SharedShadowNodeList>(
-                                 SharedShadowNodeList{shadowNodeV3})}));
+      rootNodeV2->ShadowNode::clone(ShadowNodeFragment{
+          ShadowNodeFragment::propsPlaceholder(),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{shadowNodeV3})}));
   auto rootNodeV4 = std::static_pointer_cast<RootShadowNode const>(
-      rootNodeV3->ShadowNode::clone(
-          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                             std::make_shared<SharedShadowNodeList>(
-                                 SharedShadowNodeList{shadowNodeV4})}));
+      rootNodeV3->ShadowNode::clone(ShadowNodeFragment{
+          ShadowNodeFragment::propsPlaceholder(),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{shadowNodeV4})}));
   auto rootNodeV5 = std::static_pointer_cast<RootShadowNode const>(
-      rootNodeV4->ShadowNode::clone(
-          ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                             std::make_shared<SharedShadowNodeList>(
-                                 SharedShadowNodeList{shadowNodeV5})}));
+      rootNodeV4->ShadowNode::clone(ShadowNodeFragment{
+          ShadowNodeFragment::propsPlaceholder(),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{shadowNodeV5})}));
 
   // Layout
   std::vector<LayoutableShadowNode const *> affectedLayoutableNodesV1{};

@@ -21,9 +21,7 @@ describe('GenerateEventEmitterCpp', () => {
       const fixture = fixtures[fixtureName];
 
       it(`can generate fixture ${fixtureName}`, () => {
-        expect(
-          generator.generate(fixtureName, fixture, 'SampleSpec'),
-        ).toMatchSnapshot();
+        expect(generator.generate(fixtureName, fixture)).toMatchSnapshot();
       });
     });
 });

@@ -38,6 +38,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)dispatchCommand:(ReactTag)reactTag commandName:(NSString *)commandName args:(NSArray *)args;
 
+/**
+ * Dispatch an accessibility event to be performed on the main thread.
+ * Can be called from any thread.
+ */
+- (void)sendAccessibilityEvent:(ReactTag)reactTag eventType:(NSString *)eventType;
+
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
                              changedProps:(NSDictionary *)props
                       componentDescriptor:(const facebook::react::ComponentDescriptor &)componentDescriptor;

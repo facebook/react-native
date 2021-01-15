@@ -136,6 +136,10 @@ class Binding : public jni::HybridClass<Binding>,
       std::string const &commandName,
       folly::dynamic const args) override;
 
+  void schedulerDidSendAccessibilityEvent(
+      const ShadowView &shadowView,
+      std::string const &eventType) override;
+
   void schedulerDidSetJSResponder(
       SurfaceId surfaceId,
       const ShadowView &shadowView,

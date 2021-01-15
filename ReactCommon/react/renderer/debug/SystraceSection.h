@@ -29,7 +29,7 @@ struct ConcreteSystraceSection {
   template <typename... ConvertsToStringPiece>
   explicit ConcreteSystraceSection(
       const char *name,
-      ConvertsToStringPiece &&... args)
+      ConvertsToStringPiece &&...args)
       : m_section(TRACE_TAG_REACT_CXX_BRIDGE, name, args...) {}
 
  private:
@@ -42,7 +42,7 @@ struct DummySystraceSection {
   template <typename... ConvertsToStringPiece>
   explicit DummySystraceSection(
       const char *name,
-      ConvertsToStringPiece &&... args) {}
+      ConvertsToStringPiece &&...args) {}
 };
 using SystraceSection = DummySystraceSection;
 #endif

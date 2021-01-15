@@ -64,8 +64,8 @@ class RawPropsParser final {
   /*
    * To be used by `RawProps` only.
    */
-  RawValue const *at(RawProps const &rawProps, RawPropsKey const &key) const
-      noexcept;
+  RawValue const *at(RawProps const &rawProps, RawPropsKey const &key)
+      const noexcept;
 
   mutable better::small_vector<RawPropsKey, kNumberOfPropsPerComponentSoftCap>
       keys_{};

@@ -24,12 +24,14 @@ describe('GenerateModuleMm', () => {
         const output = generator.generate(
           fixtureName,
           fixture,
-          'SampleSpec',
           'com.facebook.fbreact.specs',
         );
         expect(
           new Map([
-            ['SampleSpec-generated.mm', output.get('SampleSpec-generated.mm')],
+            [
+              `${fixtureName}-generated.mm`,
+              output.get(`${fixtureName}-generated.mm`),
+            ],
           ]),
         ).toMatchSnapshot();
       });

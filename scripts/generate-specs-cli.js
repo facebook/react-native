@@ -35,7 +35,6 @@ function generateSpec(
   libraryName,
   packageName,
 ) {
-  const moduleSpecName = libraryName;
   const schemaText = fs.readFileSync(schemaPath, 'utf-8');
 
   if (schemaText == null) {
@@ -43,13 +42,7 @@ function generateSpec(
   }
 
   if (!outputDirectory) {
-    outputDirectory = path.resolve(
-      __dirname,
-      '..',
-      'Libraries',
-      libraryName,
-      moduleSpecName,
-    );
+    outputDirectory = path.resolve(__dirname, '..', 'Libraries', libraryName);
   }
   mkdirp.sync(outputDirectory);
 
@@ -65,7 +58,6 @@ function generateSpec(
       libraryName,
       schema,
       outputDirectory,
-      moduleSpecName,
       packageName,
     },
     {

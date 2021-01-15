@@ -15,7 +15,8 @@ load(
 )
 
 fb_native.genrule(
-    name = "react_native_codegen_schema",
+    # The schema name must have the following format: "codegen_rn_modules_schema_{native_module_spec_name}"
+    name = "codegen_rn_modules_schema_FBReactNativeSpec",
     srcs = glob(
         [
             "**/*.js",
@@ -26,7 +27,10 @@ fb_native.genrule(
     ),
     cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/react-native-codegen:write_to_json")),
     out = "schema.json",
-    labels = ["codegen_rule"],
+    labels = [
+        "codegen_rule",
+        "react_native_schema_target",
+    ],
 )
 
 rn_codegen_modules(
@@ -34,11 +38,11 @@ rn_codegen_modules(
     android_package_name = "com.facebook.fbreact.specs",
     library_labels = ["supermodule:xplat/default/public.react_native.infra"],
     native_module_spec_name = "FBReactNativeSpec",
-    schema_target = ":react_native_codegen_schema",
+    schema_target = ":codegen_rn_modules_schema_FBReactNativeSpec",
 )
 
 rn_codegen_components(
     name = "FBReactNativeComponentSpec",
     library_labels = ["supermodule:xplat/default/public.react_native.infra"],
-    schema_target = ":react_native_codegen_schema",
+    schema_target = ":codegen_rn_modules_schema_FBReactNativeSpec",
 )

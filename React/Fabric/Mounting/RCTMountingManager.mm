@@ -180,6 +180,22 @@ static void RCTPerformMountInstructions(
   });
 }
 
+- (void)sendAccessibilityEvent:(ReactTag)reactTag eventType:(NSString *)eventType
+{
+  if (RCTIsMainQueue()) {
+    // Already on the proper thread, so:
+    // * No need to do a thread jump;
+    // * No need to allocate a block.
+    [self synchronouslyDispatchAccessbilityEventOnUIThread:reactTag eventType:eventType];
+    return;
+  }
+
+  RCTExecuteOnMainQueue(^{
+    RCTAssertMainQueue();
+    [self synchronouslyDispatchAccessbilityEventOnUIThread:reactTag eventType:eventType];
+  });
+}
+
 - (void)initiateTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
 {
   SystraceSection s("-[RCTMountingManager initiateTransaction:]");
@@ -255,6 +271,14 @@ static void RCTPerformMountInstructions(
   RCTAssertMainQueue();
   UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
   [componentView handleCommand:commandName args:args];
+}
+
+- (void)synchronouslyDispatchAccessbilityEventOnUIThread:(ReactTag)reactTag eventType:(NSString *)eventType
+{
+  if ([@"focus" isEqualToString:eventType]) {
+    UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, componentView);
+  }
 }
 
 @end

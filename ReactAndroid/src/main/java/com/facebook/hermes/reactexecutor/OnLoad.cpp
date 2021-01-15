@@ -7,7 +7,9 @@
 
 #include <../instrumentation/HermesMemoryDumper.h>
 #include <HermesExecutorFactory.h>
+#include <android/log.h>
 #include <fbjni/fbjni.h>
+#include <glog/logging.h>
 #include <hermes/Public/GCConfig.h>
 #include <hermes/Public/RuntimeConfig.h>
 #include <jni.h>
@@ -20,6 +22,13 @@
 
 namespace facebook {
 namespace react {
+
+static void hermesFatalHandler(const std::string &reason) {
+  LOG(ERROR) << "Hermes Fatal: " << reason << "\n";
+  __android_log_assert(nullptr, "Hermes", "%s", reason.c_str());
+}
+
+static std::once_flag flag;
 
 static ::hermes::vm::RuntimeConfig makeRuntimeConfig(jlong heapSizeMB) {
   namespace vm = ::hermes::vm;
@@ -62,6 +71,9 @@ class HermesExecutorHolder
       jni::alias_ref<jclass>) {
     JReactMarker::setLogPerfMarkerIfNeeded();
 
+    std::call_once(flag, []() {
+      facebook::hermes::HermesRuntime::setFatalHandler(hermesFatalHandler);
+    });
     return makeCxxInstance(
         std::make_unique<HermesExecutorFactory>(installBindings));
   }
@@ -71,6 +83,9 @@ class HermesExecutorHolder
       jlong heapSizeMB) {
     JReactMarker::setLogPerfMarkerIfNeeded();
     auto runtimeConfig = makeRuntimeConfig(heapSizeMB);
+    std::call_once(flag, []() {
+      facebook::hermes::HermesRuntime::setFatalHandler(hermesFatalHandler);
+    });
     return makeCxxInstance(std::make_unique<HermesExecutorFactory>(
         installBindings, JSIExecutor::defaultTimeoutInvoker, runtimeConfig));
   }

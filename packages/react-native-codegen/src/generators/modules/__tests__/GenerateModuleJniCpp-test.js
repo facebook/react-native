@@ -25,7 +25,6 @@ describe('GenerateModuleJniCpp', () => {
           generator.generate(
             fixtureName,
             fixture,
-            'SampleSpec',
             'com.facebook.fbreact.specs',
           ),
         ).toMatchSnapshot();

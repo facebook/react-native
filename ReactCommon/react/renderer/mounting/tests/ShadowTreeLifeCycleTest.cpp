@@ -57,8 +57,8 @@ static void testShadowNodeTreeLifeCycle(
 
     // Applying size constraints.
     emptyRootNode = emptyRootNode->clone(
-        LayoutConstraints{Size{512, 0},
-                          Size{512, std::numeric_limits<Float>::infinity()}},
+        LayoutConstraints{
+            Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
         LayoutContext{});
 
     // Generation of a random tree.
