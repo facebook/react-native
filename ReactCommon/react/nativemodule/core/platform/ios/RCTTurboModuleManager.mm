@@ -776,7 +776,7 @@ static Class getFallbackClassFromName(const char *name)
   };
 
   runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
-    react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider), RCTTurboModuleJSCodegenEnabled());
+    react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
   });
 }
 

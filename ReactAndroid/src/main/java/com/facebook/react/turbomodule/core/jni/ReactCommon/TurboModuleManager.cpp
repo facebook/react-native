@@ -26,23 +26,20 @@ TurboModuleManager::TurboModuleManager(
     RuntimeExecutor runtimeExecutor,
     std::shared_ptr<CallInvoker> jsCallInvoker,
     std::shared_ptr<CallInvoker> nativeCallInvoker,
-    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
-    bool enableJSCodegen)
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate)
     : javaPart_(jni::make_global(jThis)),
       runtimeExecutor_(runtimeExecutor),
       jsCallInvoker_(jsCallInvoker),
       nativeCallInvoker_(nativeCallInvoker),
       delegate_(jni::make_global(delegate)),
-      turboModuleCache_(std::make_shared<TurboModuleCache>()),
-      enableJSCodegen_(enableJSCodegen) {}
+      turboModuleCache_(std::make_shared<TurboModuleCache>()) {}
 
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jni::alias_ref<jhybridobject> jThis,
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
     jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
-    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
-    bool enableJSCodegen) {
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate) {
   auto jsCallInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
   auto nativeCallInvoker = nativeCallInvokerHolder->cthis()->getCallInvoker();
 
@@ -51,8 +48,7 @@ jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
       runtimeExecutor->cthis()->get(),
       jsCallInvoker,
       nativeCallInvoker,
-      delegate,
-      enableJSCodegen);
+      delegate);
 }
 
 void TurboModuleManager::registerNatives() {
@@ -74,8 +70,7 @@ void TurboModuleManager::installJSIBindings() {
          jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
          nativeCallInvoker_ = std::weak_ptr<CallInvoker>(nativeCallInvoker_),
          delegate_ = jni::make_weak(delegate_),
-         javaPart_ = jni::make_weak(javaPart_)](
-            const std::string &name) -> std::shared_ptr<TurboModule> {
+         javaPart_ = jni::make_weak(javaPart_)](const std::string &name) -> std::shared_ptr<TurboModule> {
       auto turboModuleCache = turboModuleCache_.lock();
       auto jsCallInvoker = jsCallInvoker_.lock();
       auto nativeCallInvoker = nativeCallInvoker_.lock();
@@ -146,8 +141,7 @@ void TurboModuleManager::installJSIBindings() {
       return nullptr;
     };
 
-    TurboModuleBinding::install(
-        runtime, std::move(turboModuleProvider), enableJSCodegen_);
+    TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
   });
 }
 

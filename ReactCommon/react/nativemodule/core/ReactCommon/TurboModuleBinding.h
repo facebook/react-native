@@ -28,8 +28,7 @@ class TurboModuleBinding {
    */
   static void install(
       jsi::Runtime &runtime,
-      const TurboModuleProviderFunctionType &&moduleProvider,
-      bool enableJSTurboModuleCodegen);
+      const TurboModuleProviderFunctionType &&moduleProvider);
 
   TurboModuleBinding(const TurboModuleProviderFunctionType &&moduleProvider);
   virtual ~TurboModuleBinding();
