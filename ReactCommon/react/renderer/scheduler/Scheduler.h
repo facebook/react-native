@@ -111,6 +111,9 @@ class Scheduler final : public UIManagerDelegate {
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) override;
+  void uiManagerDidSendAccessibilityEvent(
+      const ShadowNode::Shared &shadowNode,
+      std::string const &eventType) override;
   void uiManagerDidSetJSResponder(
       SurfaceId surfaceId,
       const ShadowNode::Shared &shadowView,
@@ -137,7 +140,6 @@ class Scheduler final : public UIManagerDelegate {
   /*
    * Temporary flags.
    */
-  bool enableReparentingDetection_{false};
   bool removeOutstandingSurfacesOnDestruction_{false};
 };
 

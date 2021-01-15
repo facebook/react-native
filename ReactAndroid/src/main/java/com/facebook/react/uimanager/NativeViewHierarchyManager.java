@@ -278,7 +278,7 @@ public class NativeViewHierarchyManager {
     try {
       ViewManager viewManager = mViewManagers.get(className);
 
-      View view = viewManager.createView(themedContext, null, null, mJSResponderHandler);
+      View view = viewManager.createView(tag, themedContext, null, null, mJSResponderHandler);
       mTagsToViews.put(tag, view);
       mTagsToViewManagers.put(tag, viewManager);
 

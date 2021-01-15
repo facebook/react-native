@@ -11,7 +11,7 @@
 'use strict';
 
 import ReactNativeViewViewConfig from '../../Components/View/ReactNativeViewViewConfig';
-import type {ReactNativeBaseComponentViewConfig} from '../../Renderer/shims/ReactNativeTypes';
+import {type ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 
 const RCTPickerViewConfig = {
   uiViewClassName: 'RCTPicker',
@@ -38,4 +38,4 @@ const RCTPickerViewConfig = {
   },
 };
 
-module.exports = (RCTPickerViewConfig: ReactNativeBaseComponentViewConfig<>);
+module.exports = (RCTPickerViewConfig: ViewConfig);

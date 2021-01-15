@@ -186,7 +186,7 @@ const ScrollResponderMixin = {
 
     if (
       this.props.keyboardShouldPersistTaps === 'handled' &&
-      currentlyFocusedInput != null &&
+      this.scrollResponderKeyboardIsDismissible() &&
       e.target !== currentlyFocusedInput
     ) {
       return true;
@@ -223,7 +223,6 @@ const ScrollResponderMixin = {
     // and a new touch starts with a non-textinput target (in which case the
     // first tap should be sent to the scroll view and dismiss the keyboard,
     // then the second tap goes to the actual interior view)
-    const currentlyFocusedTextInput = TextInputState.currentlyFocusedInput();
     const {keyboardShouldPersistTaps} = this.props;
     const keyboardNeverPersistTaps =
       !keyboardShouldPersistTaps || keyboardShouldPersistTaps === 'never';
@@ -240,7 +239,7 @@ const ScrollResponderMixin = {
 
     if (
       keyboardNeverPersistTaps &&
-      currentlyFocusedTextInput != null &&
+      this.scrollResponderKeyboardIsDismissible() &&
       e.target != null &&
       !TextInputState.isTextInput(e.target)
     ) {
@@ -248,6 +247,31 @@ const ScrollResponderMixin = {
     }
 
     return false;
+  },
+
+  /**
+   * Do we consider there to be a dismissible soft-keyboard open?
+   */
+  scrollResponderKeyboardIsDismissible: function(): boolean {
+    const currentlyFocusedInput = TextInputState.currentlyFocusedInput();
+
+    // We cannot dismiss the keyboard without an input to blur, even if a soft
+    // keyboard is open (e.g. when keyboard is open due to a native component
+    // not participating in TextInputState). It's also possible that the
+    // currently focused input isn't a TextInput (such as by calling ref.focus
+    // on a non-TextInput).
+    const hasFocusedTextInput =
+      currentlyFocusedInput != null &&
+      TextInputState.isTextInput(currentlyFocusedInput);
+
+    // Even if an input is focused, we may not have a keyboard to dismiss. E.g
+    // when using a physical keyboard. Ensure we have an event for an opened
+    // keyboard, except on Android where setting windowSoftInputMode to
+    // adjustNone leads to missing keyboard events.
+    const softKeyboardMayBeOpen =
+      this.keyboardWillOpenTo != null || Platform.OS === 'android';
+
+    return hasFocusedTextInput && softKeyboardMayBeOpen;
   },
 
   /**
@@ -306,6 +330,7 @@ const ScrollResponderMixin = {
    * Invoke this from an `onResponderRelease` event.
    */
   scrollResponderHandleResponderRelease: function(e: PressEvent) {
+    this.state.isTouching = e.nativeEvent.touches.length !== 0;
     this.props.onResponderRelease && this.props.onResponderRelease(e);
 
     if (typeof e.target === 'number') {
@@ -324,7 +349,7 @@ const ScrollResponderMixin = {
     if (
       this.props.keyboardShouldPersistTaps !== true &&
       this.props.keyboardShouldPersistTaps !== 'always' &&
-      currentlyFocusedTextInput != null &&
+      this.scrollResponderKeyboardIsDismissible() &&
       e.target !== currentlyFocusedTextInput &&
       !this.state.observedScrollSinceBecomingResponder &&
       !this.state.becameResponderWhileAnimating
@@ -653,8 +678,8 @@ const ScrollResponderMixin = {
     this.preventNegativeScrollOffset = false;
   },
 
-  scrollResponderTextInputFocusError: function(msg: string) {
-    console.error('Error measuring text field: ', msg);
+  scrollResponderTextInputFocusError: function() {
+    console.warn('Error measuring text field.');
   },
 
   /**

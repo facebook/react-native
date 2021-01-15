@@ -35,10 +35,6 @@ class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
       SurfaceId surfaceId,
       ShadowViewMutation::List &mutationsList,
       uint64_t now) const override;
-  virtual double getProgressThroughAnimation(
-      AnimationKeyFrame const &keyFrame,
-      LayoutAnimation const *layoutAnimation,
-      ShadowView const &animationStateView) const override;
 };
 
 } // namespace react

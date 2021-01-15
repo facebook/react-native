@@ -15,6 +15,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 import com.facebook.common.logging.FLog;
@@ -39,6 +40,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
@@ -207,7 +209,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public String getName() {
+  public @NonNull String getName() {
     return NAME;
   }
 
@@ -242,6 +244,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
     mEventDispatcher.onCatalystInstanceDestroyed();
+    mUIImplementation.onCatalystInstanceDestroyed();
 
     getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
     YogaNodePool.get().clear();
@@ -291,11 +294,22 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Helper method to pre-compute the constants for a view manager. This method ensures that we
    * don't block for getting the constants for view managers during TTI
    *
-   * @deprecated this method will not be available in FabricUIManager class.
+   * @deprecated this method will be removed in the future
    * @param viewManagerNames {@link List<String>} names of ViewManagers
    */
   @Deprecated
-  public void preComputeConstantsForViewManager(List<String> viewManagerNames) {
+  @Override
+  public void preInitializeViewManagers(List<String> viewManagerNames) {
+    if (ReactFeatureFlags.enableExperimentalStaticViewConfigs) {
+      for (String viewManagerName : viewManagerNames) {
+        mUIImplementation.resolveViewManager(viewManagerName);
+      }
+      // When Static view configs are enabled it is not necessary to pre-compute the constants for
+      // viewManagers, although the pre-initialization of viewManager objects is still necessary
+      // for performance reasons.
+      return;
+    }
+
     Map<String, WritableMap> constantsMap = new ArrayMap<>();
     for (String viewManagerName : viewManagerNames) {
       WritableMap constants = computeConstantsForViewManager(viewManagerName);

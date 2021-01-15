@@ -968,6 +968,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Override
   protected void addEventEmitters(
       final ThemedReactContext reactContext, final ReactEditText editText) {
+    editText.setEventDispatcher(getEventDispatcher(reactContext, editText));
     editText.addTextChangedListener(new ReactTextInputTextWatcher(reactContext, editText));
     editText.setOnFocusChangeListener(
         new View.OnFocusChangeListener() {

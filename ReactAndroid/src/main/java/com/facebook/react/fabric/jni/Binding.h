@@ -136,6 +136,10 @@ class Binding : public jni::HybridClass<Binding>,
       std::string const &commandName,
       folly::dynamic const args) override;
 
+  void schedulerDidSendAccessibilityEvent(
+      const ShadowView &shadowView,
+      std::string const &eventType) override;
+
   void schedulerDidSetJSResponder(
       SurfaceId surfaceId,
       const ShadowView &shadowView,
@@ -169,15 +173,9 @@ class Binding : public jni::HybridClass<Binding>,
   float pointScaleFactor_ = 1;
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
-  bool useIntBufferBatchMountItem_{false};
-  bool collapseDeleteCreateMountingInstructions_{false};
   bool disablePreallocateViews_{false};
   bool disableVirtualNodePreallocation_{false};
   bool enableFabricLogs_{false};
-
- private:
-  void schedulerDidFinishTransactionIntBuffer(
-      MountingCoordinator::Shared const &mountingCoordinator);
 };
 
 } // namespace react

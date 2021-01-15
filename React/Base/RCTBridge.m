@@ -135,28 +135,6 @@ void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
   turboModuleSharedMutexInitEnabled = enabled;
 }
 
-static BOOL turboModuleBlockCopyEnabled = NO;
-BOOL RCTTurboModuleBlockCopyEnabled(void)
-{
-  return turboModuleBlockCopyEnabled;
-}
-
-void RCTEnableTurboModuleBlockCopy(BOOL enabled)
-{
-  turboModuleBlockCopyEnabled = enabled;
-}
-
-static BOOL turboModuleJSCodegenEnabled = NO;
-BOOL RCTTurboModuleJSCodegenEnabled(void)
-{
-  return turboModuleJSCodegenEnabled;
-}
-
-void RCTEnableTurboModuleJSCodegen(BOOL enabled)
-{
-  turboModuleJSCodegenEnabled = enabled;
-}
-
 @interface RCTBridge () <RCTReloadListener>
 @end
 

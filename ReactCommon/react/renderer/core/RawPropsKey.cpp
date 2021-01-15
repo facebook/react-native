@@ -15,8 +15,8 @@
 namespace facebook {
 namespace react {
 
-void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length) const
-    noexcept {
+void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length)
+    const noexcept {
   *length = 0;
 
   // Prefix

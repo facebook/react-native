@@ -26,6 +26,7 @@ type NativeTextProps = $ReadOnly<{
 export const NativeText: HostComponent<NativeTextProps> = (createReactNativeComponentClass(
   'RCTText',
   () => ({
+    // $FlowFixMe[incompatible-call]
     validAttributes: {
       ...ReactNativeViewAttributes.UIView,
       isHighlighted: true,
@@ -42,6 +43,7 @@ export const NativeText: HostComponent<NativeTextProps> = (createReactNativeComp
       onTextLayout: true,
       onInlineViewLayout: true,
       dataDetectorType: true,
+      android_hyphenationFrequency: true,
     },
     directEventTypes: {
       topTextLayout: {
@@ -56,9 +58,11 @@ export const NativeText: HostComponent<NativeTextProps> = (createReactNativeComp
 ): any);
 
 export const NativeVirtualText: HostComponent<NativeTextProps> =
+  !global.RN$Bridgeless &&
   UIManager.getViewManagerConfig('RCTVirtualText') == null
     ? NativeText
     : (createReactNativeComponentClass('RCTVirtualText', () => ({
+        // $FlowFixMe[incompatible-call]
         validAttributes: {
           ...ReactNativeViewAttributes.UIView,
           isHighlighted: true,

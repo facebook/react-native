@@ -285,7 +285,7 @@ module.exports = {
 
     'react/display-name': 0,
     'react/jsx-boolean-value': 0,
-    'react/jsx-no-comment-textnodes': 1,
+    'react/jsx-no-comment-textnodes': 2,
     'react/jsx-no-duplicate-props': 2,
     'react/jsx-no-undef': 2,
     'react/jsx-sort-props': 0,

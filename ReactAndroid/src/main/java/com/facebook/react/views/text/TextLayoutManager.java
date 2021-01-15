@@ -29,7 +29,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -64,9 +63,7 @@ public class TextLayoutManager {
   private static final String INCLUDE_FONT_PADDING_KEY = "includeFontPadding";
   private static final String TEXT_BREAK_STRATEGY_KEY = "textBreakStrategy";
   private static final String MAXIMUM_NUMBER_OF_LINES_KEY = "maximumNumberOfLines";
-  private static final LruCache<String, Spannable> sSpannableCache =
-      new LruCache<>(spannableCacheSize);
-  private static final LruCache<ReadableNativeMap, Spannable> sSpannableCacheV2 =
+  private static final LruCache<ReadableNativeMap, Spannable> sSpannableCache =
       new LruCache<>(spannableCacheSize);
   private static final ConcurrentHashMap<Integer, Spannable> sTagToSpannableCache =
       new ConcurrentHashMap<>();
@@ -195,25 +192,11 @@ public class TextLayoutManager {
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
 
     Spannable preparedSpannableText;
-    String attributedStringPayload = "";
 
-    boolean cacheByReadableNativeMap =
-        ReactFeatureFlags.enableSpannableCacheByReadableNativeMapEquality;
-    // TODO: T74600554 Cleanup this experiment once positive impact is confirmed in production
-    if (cacheByReadableNativeMap) {
-      synchronized (sSpannableCacheLock) {
-        preparedSpannableText = sSpannableCacheV2.get((ReadableNativeMap) attributedString);
-        if (preparedSpannableText != null) {
-          return preparedSpannableText;
-        }
-      }
-    } else {
-      attributedStringPayload = attributedString.toString();
-      synchronized (sSpannableCacheLock) {
-        preparedSpannableText = sSpannableCache.get(attributedStringPayload);
-        if (preparedSpannableText != null) {
-          return preparedSpannableText;
-        }
+    synchronized (sSpannableCacheLock) {
+      preparedSpannableText = sSpannableCache.get((ReadableNativeMap) attributedString);
+      if (preparedSpannableText != null) {
+        return preparedSpannableText;
       }
     }
 
@@ -221,15 +204,10 @@ public class TextLayoutManager {
         createSpannableFromAttributedString(
             context, attributedString, reactTextViewManagerCallback);
 
-    if (cacheByReadableNativeMap) {
-      synchronized (sSpannableCacheLock) {
-        sSpannableCacheV2.put((ReadableNativeMap) attributedString, preparedSpannableText);
-      }
-    } else {
-      synchronized (sSpannableCacheLock) {
-        sSpannableCache.put(attributedStringPayload, preparedSpannableText);
-      }
+    synchronized (sSpannableCacheLock) {
+      sSpannableCache.put((ReadableNativeMap) attributedString, preparedSpannableText);
     }
+
     return preparedSpannableText;
   }
 

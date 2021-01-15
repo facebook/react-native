@@ -45,6 +45,7 @@ export type StructParameterRecord = $ReadOnly<{
 
 type ReturnJSType =
   | 'VoidKind'
+  | 'BooleanKind'
   | 'PromiseKind'
   | 'ObjectKind'
   | 'ArrayKind'
@@ -371,7 +372,7 @@ function getReturnJSType(
     case 'Int32TypeAnnotation':
       return 'NumberKind';
     case 'BooleanTypeAnnotation':
-      return 'NumberKind';
+      return 'BooleanKind';
     case 'GenericObjectTypeAnnotation':
       return 'ObjectKind';
     default:

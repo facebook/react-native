@@ -53,39 +53,6 @@ function isCodegenDeclaration(declaration) {
   return false;
 }
 
-function isTurboModuleRequire(path) {
-  if (path.node.type !== 'CallExpression') {
-    return false;
-  }
-
-  const callExpression = path.node;
-
-  if (callExpression.callee.type !== 'MemberExpression') {
-    return false;
-  }
-
-  const memberExpression = callExpression.callee;
-  if (
-    !(
-      memberExpression.object.type === 'Identifier' &&
-      memberExpression.object.name === 'TurboModuleRegistry'
-    )
-  ) {
-    return false;
-  }
-
-  if (
-    !(
-      memberExpression.property.type === 'Identifier' &&
-      (memberExpression.property.name === 'get' ||
-        memberExpression.property.name === 'getEnforcing')
-    )
-  ) {
-    return false;
-  }
-  return true;
-}
-
 module.exports = function({parse, types: t}) {
   return {
     pre(state) {
@@ -94,11 +61,6 @@ module.exports = function({parse, types: t}) {
       this.defaultExport = null;
       this.commandsExport = null;
       this.codeInserted = false;
-
-      /**
-       * TurboModule JS Codegen State
-       */
-      this.turboModuleRequireCallExpressions = [];
     },
     visitor: {
       ExportNamedDeclaration(path) {
@@ -157,12 +119,6 @@ module.exports = function({parse, types: t}) {
         }
       },
 
-      CallExpression(path) {
-        if (isTurboModuleRequire(path)) {
-          this.turboModuleRequireCallExpressions.push(path);
-        }
-      },
-
       Program: {
         exit(path) {
           if (this.defaultExport) {
@@ -174,47 +130,6 @@ module.exports = function({parse, types: t}) {
               this.commandsExport.remove();
             }
             this.codeInserted = true;
-          }
-
-          /**
-           * Insert the TurboModule schema into the TurboModuleRegistry.(get|getEnforcing)
-           * call.
-           */
-          if (this.turboModuleRequireCallExpressions.length > 0) {
-            const schema = parseString(this.code, this.filename);
-            const hasteModuleName = basename(this.filename).replace(
-              /\.js$/,
-              '',
-            );
-            const actualSchema = schema.modules[hasteModuleName];
-
-            if (actualSchema.type !== 'NativeModule') {
-              throw path.buildCodeFrameError(
-                `Detected NativeModule require in module '${hasteModuleName}', but generated schema wasn't for a NativeModule.`,
-              );
-            }
-
-            path.pushContainer(
-              'body',
-              parse(
-                `function __getModuleSchema() {
-                  if (!(global.RN$JSTurboModuleCodegenEnabled === true)) {
-                    return undefined;
-                  }
-
-                  return ${JSON.stringify(actualSchema, null, 2)};
-                }`,
-              ).program.body[0],
-            );
-
-            this.turboModuleRequireCallExpressions.forEach(
-              callExpressionPath => {
-                callExpressionPath.pushContainer(
-                  'arguments',
-                  t.callExpression(t.identifier('__getModuleSchema'), []),
-                );
-              },
-            );
           }
         },
       },

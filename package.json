@@ -17,6 +17,7 @@
     "!template/node_modules",
     "!template/package-lock.json",
     "!template/yarn.lock",
+    "android",
     "cli.js",
     "flow",
     "flow-typed",
@@ -27,7 +28,6 @@
     "Libraries",
     "LICENSE",
     "local-cli",
-    "packages/react-native-codegen",
     "React-Core.podspec",
     "react-native.config.js",
     "react.gradle",
@@ -38,7 +38,8 @@
     "README.md",
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
-    "scripts/generate-native-modules-specs-cli.js",
+    "scripts/generate-specs.sh",
+    "scripts/generate-specs-cli.js",
     "scripts/ios-configure-glog.sh",
     "scripts/launchPackager.bat",
     "scripts/launchPackager.command",
@@ -59,6 +60,7 @@
     "flow-check-android": "flow check --flowconfig-name .flowconfig.android",
     "lint": "eslint .",
     "lint-ci": "./scripts/circleci/analyze_code.sh && yarn shellcheck",
+    "lint-java": "node ./scripts/lint-java.js",
     "shellcheck": "./scripts/circleci/analyze_scripts.sh",
     "clang-format": "clang-format -i --glob=*/**/*.{h,cpp,m,mm}",
     "format": "npm run prettier && npm run clang-format",
@@ -87,9 +89,9 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^26.5.0",
-    "@react-native-community/cli": "^4.13.0",
-    "@react-native-community/cli-platform-android": "^4.13.0",
-    "@react-native-community/cli-platform-ios": "^4.13.0",
+    "@react-native-community/cli": "^5.0.1-alpha.0",
+    "@react-native-community/cli-platform-android": "^5.0.1-alpha.0",
+    "@react-native-community/cli-platform-ios": "^5.0.1-alpha.0",
     "@react-native/assets": "1.0.0",
     "@react-native/normalize-color": "1.0.0",
     "@react-native/polyfills": "1.0.0",
@@ -118,7 +120,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.138.0",
+    "flow-bin": "^0.142.0",
     "react": "17.0.1"
   },
   "detox": {
