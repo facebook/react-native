@@ -1,0 +1,37 @@
+/*
+  Localizable.strings
+  React
+*/
+
+// roleDescriptions
+"alert"            =    "Peringatan",
+"checkbox"         =    "Kotak centang",
+"combobox"         =    "Combo box",
+"menu"             =    "Menu",
+"menubar"          =    "Bilah menu",
+"menuitem"         =    "Item menu",
+"progressbar"      =    "Bilah progres",
+"radio"            =    "Tombol radio",
+"radiogroup"       =    "Grup radio",
+"scrollbar"        =    "Bilah gulir",
+"spinbutton"       =    "Tombol putar",
+"switch"           =    "Beralih",
+"tab"              =    "Tab",
+"tablist"          =    "Daftar tab",
+"timer"            =    "Pengatur waktu",
+"toolbar"          =    "Bilah Aat",
+"header"           =    "Judul",
+"image"            =    "Gambar",
+"imagebutton"      =    "Tombol, Gambar",
+"link"             =    "Tautkan",
+"search"           =    "Bidang pencarian",
+"summary"          =    "Ringkasan",
+
+// stateDescriptions
+"checked"          =    "Diperiksa",
+"unchecked"        =    "Tidak terpilih",
+"busy"             =    "Sibuk",
+"expanded"         =    "Diperluas",
+"collapsed"        =    "Diciutkan",
+"mixed"            =    "Campuran",
+
