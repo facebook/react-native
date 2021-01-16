@@ -30,8 +30,7 @@ class SafeAreaViewShadowNode final : public ConcreteViewShadowNode<
  public:
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
-    traits.set(
-        ShadowNodeTraits::Trait::YogaLayoutableKindMutatesStylesAfterCloning);
+    traits.set(ShadowNodeTraits::Trait::DirtyYogaNode);
     return traits;
   }
 };
