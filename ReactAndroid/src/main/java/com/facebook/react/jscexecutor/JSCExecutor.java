@@ -16,6 +16,7 @@ import com.facebook.soloader.SoLoader;
 @DoNotStrip
 /* package */ public class JSCExecutor extends JavaScriptExecutor {
   private static boolean loaded = false;
+
   static {
     loadLibrary();
   }
