@@ -22,6 +22,7 @@ namespace facebook {
 namespace react {
 
 using CommitStatus = ShadowTree::CommitStatus;
+using CommitMode = ShadowTree::CommitMode;
 
 /*
  * Generates (possibly) a new tree where all nodes with non-obsolete `State`
@@ -257,6 +258,29 @@ Tag ShadowTree::getSurfaceId() const {
   return surfaceId_;
 }
 
+void ShadowTree::setCommitMode(CommitMode commitMode) const {
+  auto revision = ShadowTreeRevision{};
+
+  {
+    std::unique_lock<better::shared_mutex> lock(commitMutex_);
+    if (commitMode_ == commitMode) {
+      return;
+    }
+
+    commitMode_ = commitMode;
+    revision = currentRevision_;
+  }
+
+  if (commitMode == CommitMode::Normal) {
+    mount(revision);
+  }
+}
+
+CommitMode ShadowTree::getCommitMode() const {
+  std::shared_lock<better::shared_mutex> lock(commitMutex_);
+  return commitMode_;
+}
+
 MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
   return mountingCoordinator_;
 }
@@ -290,12 +314,14 @@ CommitStatus ShadowTree::tryCommit(
   auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();
 
+  CommitMode commitMode;
   auto oldRevision = ShadowTreeRevision{};
   auto newRevision = ShadowTreeRevision{};
 
   {
     // Reading `currentRevision_` in shared manner.
     std::shared_lock<better::shared_mutex> lock(commitMutex_);
+    commitMode = commitMode_;
     oldRevision = currentRevision_;
   }
 
@@ -369,9 +395,9 @@ CommitStatus ShadowTree::tryCommit(
 
   emitLayoutEvents(affectedLayoutableNodes);
 
-  mountingCoordinator_->push(newRevision);
-
-  notifyDelegatesOfUpdates();
+  if (commitMode == CommitMode::Normal) {
+    mount(newRevision);
+  }
 
   return CommitStatus::Succeeded;
 }
@@ -379,6 +405,11 @@ CommitStatus ShadowTree::tryCommit(
 ShadowTreeRevision ShadowTree::getCurrentRevision() const {
   std::shared_lock<better::shared_mutex> lock(commitMutex_);
   return currentRevision_;
+}
+
+void ShadowTree::mount(ShadowTreeRevision const &revision) const {
+  mountingCoordinator_->push(revision);
+  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
 }
 
 void ShadowTree::commitEmptyTree() const {
