@@ -14,9 +14,17 @@ import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
-/* package */ class JSCExecutor extends JavaScriptExecutor {
+/* package */ public class JSCExecutor extends JavaScriptExecutor {
+  private static boolean loaded = false;
   static {
-    SoLoader.loadLibrary("jscexecutor");
+    loadLibrary();
+  }
+
+  public static void loadLibrary() throws UnsatisfiedLinkError {
+    if (!loaded) {
+      SoLoader.loadLibrary("jscexecutor");
+    }
+    loaded = true;
   }
 
   /* package */ JSCExecutor(ReadableNativeMap jscConfig) {
