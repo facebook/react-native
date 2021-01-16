@@ -28,6 +28,7 @@ THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOUR
 TEMP_DIR=$(mktemp -d /tmp/react-native-codegen-XXXXXXXX)
 RN_DIR=$(cd "$THIS_DIR/.." && pwd)
 YARN_BINARY="${YARN_BINARY:-$(command -v yarn)}"
+NODE_BINARY="${NODE_BINARY:-$(command -v node)}"
 USE_FABRIC="${USE_FABRIC:-0}"
 
 cleanup () {
@@ -74,11 +75,11 @@ main() {
   fi
 
   describe "Generating schema from flow types"
-  "$YARN_BINARY" node "$CODEGEN_PATH/lib/cli/combine/combine-js-to-schema-cli.js" "$SCHEMA_FILE" "$SRCS_DIR"
+  "$NODE_BINARY" "$CODEGEN_PATH/lib/cli/combine/combine-js-to-schema-cli.js" "$SCHEMA_FILE" "$SRCS_DIR"
 
   describe "Generating native code from schema (iOS)"
   pushd "$RN_DIR" >/dev/null || exit
-    "$YARN_BINARY" --silent node scripts/generate-specs-cli.js ios "$SCHEMA_FILE" "$TEMP_OUTPUT_DIR" "$CODEGEN_MODULES_LIBRARY_NAME"
+    "$NODE_BINARY" scripts/generate-specs-cli.js ios "$SCHEMA_FILE" "$TEMP_OUTPUT_DIR" "$CODEGEN_MODULES_LIBRARY_NAME"
   popd >/dev/null || exit
 
   mkdir -p "$CODEGEN_COMPONENTS_OUTPUT_DIR" "$CODEGEN_MODULES_OUTPUT_DIR"
