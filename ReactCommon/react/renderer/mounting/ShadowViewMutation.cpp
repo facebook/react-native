@@ -10,14 +10,16 @@
 namespace facebook {
 namespace react {
 
-ShadowViewMutation ShadowViewMutation::CreateMutation(ShadowView shadowView) {
+ShadowViewMutation ShadowViewMutation::CreateMutation(
+    ShadowView shadowView,
+    bool recreated) {
   return {
       /* .type = */ Create,
       /* .parentShadowView = */ {},
       /* .oldChildShadowView = */ {},
       /* .newChildShadowView = */ shadowView,
       /* .index = */ -1,
-  };
+      /* .recreated = */ recreated};
 }
 
 ShadowViewMutation ShadowViewMutation::DeleteMutation(ShadowView shadowView) {
@@ -27,6 +29,7 @@ ShadowViewMutation ShadowViewMutation::DeleteMutation(ShadowView shadowView) {
       /* .oldChildShadowView = */ shadowView,
       /* .newChildShadowView = */ {},
       /* .index = */ -1,
+      /* .recreated = */ false,
   };
 }
 
@@ -40,6 +43,7 @@ ShadowViewMutation ShadowViewMutation::InsertMutation(
       /* .oldChildShadowView = */ {},
       /* .newChildShadowView = */ childShadowView,
       /* .index = */ index,
+      /* .recreated = */ false,
   };
 }
 
@@ -53,7 +57,7 @@ ShadowViewMutation ShadowViewMutation::RemoveMutation(
       /* .oldChildShadowView = */ childShadowView,
       /* .newChildShadowView = */ {},
       /* .index = */ index,
-  };
+      /* .recreated = */ false};
 }
 
 ShadowViewMutation ShadowViewMutation::UpdateMutation(
@@ -65,7 +69,7 @@ ShadowViewMutation ShadowViewMutation::UpdateMutation(
       /* .oldChildShadowView = */ oldChildShadowView,
       /* .newChildShadowView = */ newChildShadowView,
       /* .index = */ -1,
-  };
+      /* .recreated = */ false};
 }
 
 #if RN_DEBUG_STRING_CONVERTIBLE

@@ -973,8 +973,8 @@ static void calculateShadowViewMutationsV2(
                   parentShadowView,
                   newChildPair.shadowView,
                   newChildPair.mountIndex));
-              createMutations.push_back(
-                  ShadowViewMutation::CreateMutation(newChildPair.shadowView));
+              createMutations.push_back(ShadowViewMutation::CreateMutation(
+                  newChildPair.shadowView, true));
             } else {
               removeMutations.push_back(ShadowViewMutation::RemoveMutation(
                   parentShadowView,
