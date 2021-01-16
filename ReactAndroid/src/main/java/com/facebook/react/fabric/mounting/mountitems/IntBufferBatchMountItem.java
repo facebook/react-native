@@ -231,7 +231,8 @@ public class IntBufferBatchMountItem implements MountItem {
           } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
             s.append(
                 String.format(
-                    "UPDATE LAYOUT [%d]: x:%d y:%d w:%d h:%d layoutDirection:%d\n",
+                    "UPDATE LAYOUT [%d]: x:%d y:%d w:%d h:%d layoutDirection:%d displayType:%d\n",
+                    mIntBuffer[i++],
                     mIntBuffer[i++],
                     mIntBuffer[i++],
                     mIntBuffer[i++],
