@@ -89,7 +89,7 @@
       loopCount = gifLoopCount.unsignedIntegerValue;
       if (@available(iOS 14, *)) {
       } else {
-      // A loop count of 1 means it should repeat twice, 2 means, thrice, etc.
+      // A loop count of 1 means it should animate twice, 2 means, thrice, etc.
         if (loopCount != 0) {
           loopCount++;
         }
