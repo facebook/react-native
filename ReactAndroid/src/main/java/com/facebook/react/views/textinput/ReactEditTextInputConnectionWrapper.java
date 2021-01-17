@@ -95,23 +95,22 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
     boolean noPreviousSelection = previousSelectionStart == previousSelectionEnd;
     boolean cursorDidNotMove = currentSelectionStart == previousSelectionStart;
     boolean cursorMovedBackwardsOrAtBeginningOfInput =
-      (currentSelectionStart < previousSelectionStart) || currentSelectionStart <= 0;
+        (currentSelectionStart < previousSelectionStart) || currentSelectionStart <= 0;
     int maxLength = mEditText.getLengthFilterValue();
     int textLength = text.length();
     boolean editTextAtMaxLength = mEditText.getText().length() == maxLength;
     boolean composingTextWasDeletedByUser = previousComposingTextLength - textLength == 1;
-    boolean composingTextDidAutoReset = previousComposingTextLength > 0 && (textLength == 1 &&
-      !composingTextWasDeletedByUser);
-    boolean composingTextIsShorterButDidNotReset = previousComposingTextLength > textLength &&
-      !composingTextDidAutoReset;
+    boolean composingTextDidAutoReset =
+        previousComposingTextLength > 0 && (textLength == 1 && !composingTextWasDeletedByUser);
+    boolean composingTextIsShorterButDidNotReset =
+        previousComposingTextLength > textLength && !composingTextDidAutoReset;
 
     if (editTextAtMaxLength && textLength != 0 && !composingTextIsShorterButDidNotReset) {
       key = String.valueOf(text.charAt(textLength - 1));
-    }
-    else if (cursorMovedBackwardsOrAtBeginningOfInput || (!noPreviousSelection && cursorDidNotMove)) {
+    } else if (cursorMovedBackwardsOrAtBeginningOfInput
+        || (!noPreviousSelection && cursorDidNotMove)) {
       key = BACKSPACE_KEY_VALUE;
-    }
-    else {
+    } else {
       key = String.valueOf(mEditText.getText().charAt(currentSelectionStart - 1));
     }
     dispatchKeyEventOrEnqueue(key);
