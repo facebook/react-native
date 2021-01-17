@@ -68,6 +68,8 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       ]),
     getObject: () =>
       NativeSampleTurboModule.getObject({a: 1, b: 'foo', c: null}),
+    getUnsafeObject: () =>
+      NativeSampleTurboModule.getObject({a: 1, b: 'foo', c: null}),
     getRootTag: () => NativeSampleTurboModule.getRootTag(this.context),
     getValue: () =>
       NativeSampleTurboModule.getValue(5, 'test', {a: 1, b: 'foo'}),

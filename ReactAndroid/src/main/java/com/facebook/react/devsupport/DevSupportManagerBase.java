@@ -102,7 +102,7 @@ public abstract class DevSupportManagerBase
   private final Context mApplicationContext;
   private final ShakeDetector mShakeDetector;
   private final BroadcastReceiver mReloadAppBroadcastReceiver;
-  private final DevServerHelper mDevServerHelper;
+  protected final DevServerHelper mDevServerHelper;
   private final LinkedHashMap<String, DevOptionHandler> mCustomDevOptions = new LinkedHashMap<>();
   private final ReactInstanceManagerDevHelper mReactInstanceManagerHelper;
   private final @Nullable String mJSAppBundleName;

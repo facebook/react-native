@@ -8,7 +8,6 @@
 package com.facebook.react.fabric.mounting;
 
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
-import static com.facebook.infer.annotation.ThreadConfined.UI;
 
 import android.content.Context;
 import android.view.View;
@@ -100,30 +99,37 @@ public class MountingManager {
    * @param reactRootTag
    * @param rootView
    */
-  @ThreadConfined(UI)
-  public void addRootView(int reactRootTag, @NonNull View rootView) {
-    if (rootView.getId() != View.NO_ID) {
-      FLog.e(
-          TAG,
-          "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
-          rootView.getId(),
-          reactRootTag);
-      throw new IllegalViewOperationException(
-          "Trying to add a root view with an explicit id already set. React Native uses "
-              + "the id field to track react tags and will overwrite this field. If that is fine, "
-              + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
-    }
-
+  @AnyThread
+  public void addRootView(final int reactRootTag, @NonNull final View rootView) {
     mTagToViewState.put(
         reactRootTag, new ViewState(reactRootTag, rootView, mRootViewManager, true));
-    rootView.setId(reactRootTag);
+
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            if (rootView.getId() != View.NO_ID) {
+              FLog.e(
+                  TAG,
+                  "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
+                  rootView.getId(),
+                  reactRootTag);
+              throw new IllegalViewOperationException(
+                  "Trying to add a root view with an explicit id already set. React Native uses "
+                      + "the id field to track react tags and will overwrite this field. If that is fine, "
+                      + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+            }
+            rootView.setId(reactRootTag);
+          }
+        });
   }
 
-  /** Delete rootView and all children/ */
+  /** Delete rootView and all children recursively. */
   @UiThread
   public void deleteRootView(int reactRootTag) {
-    if (mTagToViewState.containsKey(reactRootTag)) {
-      dropView(mTagToViewState.get(reactRootTag).mView, true);
+    ViewState rootViewState = mTagToViewState.get(reactRootTag);
+    if (rootViewState != null && rootViewState.mView != null) {
+      dropView(rootViewState.mView, true);
     }
   }
 
@@ -527,7 +533,7 @@ public class MountingManager {
       // View Managers are responsible for dealing with initial state and props.
       view =
           viewManager.createView(
-              themedReactContext, propsDiffMap, stateWrapper, mJSResponderHandler);
+              reactTag, themedReactContext, propsDiffMap, stateWrapper, mJSResponderHandler);
       view.setId(reactTag);
     }
 
@@ -557,7 +563,7 @@ public class MountingManager {
   }
 
   @UiThread
-  public void updateLayout(int reactTag, int x, int y, int width, int height) {
+  public void updateLayout(int reactTag, int x, int y, int width, int height, int displayType) {
     UiThreadUtil.assertOnUiThread();
 
     ViewState viewState = getViewState(reactTag);
@@ -583,6 +589,12 @@ public class MountingManager {
     // TODO: T31905686 Check if the parent of the view has to layout the view, or the child has
     // to lay itself out. see NativeViewHierarchyManager.updateLayout
     viewToUpdate.layout(x, y, x + width, y + height);
+
+    // displayType: 0 represents display: 'none'
+    int visibility = displayType == 0 ? View.INVISIBLE : View.VISIBLE;
+    if (viewToUpdate.getVisibility() != visibility) {
+      viewToUpdate.setVisibility(visibility);
+    }
   }
 
   @UiThread
@@ -774,6 +786,10 @@ public class MountingManager {
   public @Nullable EventEmitterWrapper getEventEmitter(int reactTag) {
     ViewState viewState = getNullableViewState(reactTag);
     return viewState == null ? null : viewState.mEventEmitter;
+  }
+
+  public void initializeViewManager(String componentName) {
+    mViewManagerRegistry.get(componentName);
   }
 
   /**

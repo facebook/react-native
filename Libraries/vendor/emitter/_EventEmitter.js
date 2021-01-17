@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @noflow
+ * @flow strict
  * @typecheck
  */
 
@@ -17,6 +17,21 @@ import EmitterSubscription from './_EmitterSubscription';
 import EventSubscriptionVendor from './_EventSubscriptionVendor';
 
 const sparseFilterPredicate = () => true;
+
+export interface IEventEmitter<EventDefinitions: {...}> {
+  addListener<K: $Keys<EventDefinitions>>(
+    eventType: K,
+    listener: (...$ElementType<EventDefinitions, K>) => mixed,
+    context: $FlowFixMe,
+  ): EmitterSubscription<EventDefinitions, K>;
+
+  removeAllListeners<K: $Keys<EventDefinitions>>(eventType: ?K): void;
+
+  emit<K: $Keys<EventDefinitions>>(
+    eventType: K,
+    ...args: $ElementType<EventDefinitions, K>
+  ): void;
+}
 
 /**
  * @class EventEmitter
@@ -31,8 +46,9 @@ const sparseFilterPredicate = () => true;
  * mechanism on top of which extra functionality can be composed. For example, a
  * more advanced emitter may use an EventHolder and EventFactory.
  */
-class EventEmitter {
-  _subscriber: EventSubscriptionVendor;
+class EventEmitter<EventDefinitions: {...}>
+  implements IEventEmitter<EventDefinitions> {
+  _subscriber: EventSubscriptionVendor<EventDefinitions>;
 
   /**
    * @constructor
@@ -40,8 +56,9 @@ class EventEmitter {
    * @param {EventSubscriptionVendor} subscriber - Optional subscriber instance
    *   to use. If omitted, a new subscriber will be created for the emitter.
    */
-  constructor(subscriber: ?EventSubscriptionVendor) {
-    this._subscriber = subscriber || new EventSubscriptionVendor();
+  constructor(subscriber: ?EventSubscriptionVendor<EventDefinitions>) {
+    this._subscriber =
+      subscriber || new EventSubscriptionVendor<EventDefinitions>();
   }
 
   /**
@@ -58,15 +75,16 @@ class EventEmitter {
    * @param {*} context - Optional context object to use when invoking the
    *   listener
    */
-  addListener(
-    eventType: string,
-    listener: Function,
-    context: ?Object,
-  ): EmitterSubscription {
+  addListener<K: $Keys<EventDefinitions>>(
+    eventType: K,
+    // FIXME: listeners should return void instead of mixed to prevent issues
+    listener: (...$ElementType<EventDefinitions, K>) => mixed,
+    context: $FlowFixMe,
+  ): EmitterSubscription<EventDefinitions, K> {
     return (this._subscriber.addSubscription(
       eventType,
       new EmitterSubscription(this, this._subscriber, listener, context),
-    ): any);
+    ): $FlowFixMe);
   }
 
   /**
@@ -76,7 +94,7 @@ class EventEmitter {
    * @param {?string} eventType - Optional name of the event whose registered
    *   listeners to remove
    */
-  removeAllListeners(eventType: ?string) {
+  removeAllListeners<K: $Keys<EventDefinitions>>(eventType: ?K): void {
     this._subscriber.removeAllSubscriptions(eventType);
   }
 
@@ -84,7 +102,9 @@ class EventEmitter {
    * Removes a specific subscription. Called by the `remove()` method of the
    * subscription itself to ensure any necessary cleanup is performed.
    */
-  removeSubscription(subscription: EmitterSubscription) {
+  removeSubscription<K: $Keys<EventDefinitions>>(
+    subscription: EmitterSubscription<EventDefinitions, K>,
+  ): void {
     invariant(
       subscription.emitter === this,
       'Subscription does not belong to this emitter.',
@@ -99,7 +119,7 @@ class EventEmitter {
    * @param {string} eventType - Name of the event to query
    * @returns {number}
    */
-  listenerCount(eventType: string): number {
+  listenerCount<K: $Keys<EventDefinitions>>(eventType: K): number {
     const subscriptions = this._subscriber.getSubscriptionsForType(eventType);
     return subscriptions
       ? // We filter out missing entries because the array is sparse.
@@ -124,7 +144,10 @@ class EventEmitter {
    *
    *   emitter.emit('someEvent', 'abc'); // logs 'abc'
    */
-  emit(eventType: string) {
+  emit<K: $Keys<EventDefinitions>>(
+    eventType: K,
+    ...args: $ElementType<EventDefinitions, K>
+  ): void {
     const subscriptions = this._subscriber.getSubscriptionsForType(eventType);
     if (subscriptions) {
       for (let i = 0, l = subscriptions.length; i < l; i++) {
@@ -132,10 +155,7 @@ class EventEmitter {
 
         // The subscription may have been removed during this event loop.
         if (subscription && subscription.listener) {
-          subscription.listener.apply(
-            subscription.context,
-            Array.prototype.slice.call(arguments, 1),
-          );
+          subscription.listener.apply(subscription.context, args);
         }
       }
     }
@@ -154,7 +174,11 @@ class EventEmitter {
    *   }); // removes the listener if already registered
    *
    */
-  removeListener(eventType: String, listener) {
+  removeListener<K: $Keys<EventDefinitions>>(
+    eventType: K,
+    // FIXME: listeners should return void instead of mixed to prevent issues
+    listener: (...$ElementType<EventDefinitions, K>) => mixed,
+  ): void {
     const subscriptions = this._subscriber.getSubscriptionsForType(eventType);
     if (subscriptions) {
       for (let i = 0, l = subscriptions.length; i < l; i++) {

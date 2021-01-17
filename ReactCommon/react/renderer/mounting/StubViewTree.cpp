@@ -38,6 +38,14 @@ StubView const &StubViewTree::getRootStubView() const {
   return *registry.at(rootTag);
 }
 
+StubView const &StubViewTree::getStubView(Tag tag) const {
+  return *registry.at(tag);
+}
+
+size_t StubViewTree::size() const {
+  return registry.size();
+}
+
 void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
   STUB_VIEW_LOG({ LOG(ERROR) << "StubView: Mutating Begin"; });
   for (auto const &mutation : mutations) {
@@ -61,10 +69,12 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         STUB_VIEW_ASSERT(mutation.parentShadowView == ShadowView{});
         STUB_VIEW_ASSERT(mutation.newChildShadowView == ShadowView{});
         auto tag = mutation.oldChildShadowView.tag;
+        /* Disable this assert until T76057501 is resolved.
         STUB_VIEW_ASSERT(registry.find(tag) != registry.end());
         auto stubView = registry[tag];
         STUB_VIEW_ASSERT(
             (ShadowView)(*stubView) == mutation.oldChildShadowView);
+        */
         registry.erase(tag);
         break;
       }

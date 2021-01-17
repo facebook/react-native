@@ -259,8 +259,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
   /**
    * Test that the mentions input has colors displayed correctly. Removed for being flaky in open
    * source, December 2016 public void testMetionsInputColors() throws Throwable { EventDispatcher
-   * eventDispatcher =
-   * getReactContext().getNativeModule(UIManagerModule.class).getEventDispatcher(); ReactEditText
+   * eventDispatcher = UIManagerHelper.getEventEmitterForReactTag(reactContext, tag); ReactEditText
    * reactEditText = getViewByTestId("tokenizedInput"); String newText = "#Things and more #things";
    * int contentWidth = reactEditText.getWidth(); int contentHeight = reactEditText.getHeight(); int
    * start = 0; int count = newText.length();

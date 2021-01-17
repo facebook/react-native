@@ -38,13 +38,13 @@ function getModules(): SchemaType {
 describe('GenerateModuleObjCpp', () => {
   it('can generate a header file NativeModule specs', () => {
     const libName = 'RNCodegenModuleFixtures';
-    const output = generator.generate(libName, getModules(), libName);
+    const output = generator.generate(libName, getModules());
     expect(output.get(libName + '.h')).toMatchSnapshot();
   });
 
   it('can generate an implementation file NativeModule specs', () => {
     const libName = 'RNCodegenModuleFixtures';
-    const output = generator.generate(libName, getModules(), libName);
+    const output = generator.generate(libName, getModules());
     expect(output.get(libName + '-generated.mm')).toMatchSnapshot();
   });
 });

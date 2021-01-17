@@ -18,6 +18,8 @@ Pod::Spec.new do |spec|
   spec.source_files = 'double-conversion/*.{h,cc}'
   spec.compiler_flags = '-Wno-unreachable-code'
 
+  spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/DoubleConversion\"" }
+
   # Pinning to the same version as React.podspec.
   spec.platforms = { :ios => "10.0" }
 

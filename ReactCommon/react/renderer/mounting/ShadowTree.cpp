@@ -22,6 +22,7 @@ namespace facebook {
 namespace react {
 
 using CommitStatus = ShadowTree::CommitStatus;
+using CommitMode = ShadowTree::CommitMode;
 
 /*
  * Generates (possibly) a new tree where all nodes with non-obsolete `State`
@@ -223,20 +224,17 @@ ShadowTree::ShadowTree(
     LayoutContext const &layoutContext,
     RootComponentDescriptor const &rootComponentDescriptor,
     ShadowTreeDelegate const &delegate,
-    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate,
-    bool enableReparentingDetection)
-    : surfaceId_(surfaceId),
-      delegate_(delegate),
-      enableReparentingDetection_(enableReparentingDetection) {
+    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate)
+    : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
 
   const auto props = std::make_shared<const RootProps>(
       *RootShadowNode::defaultSharedProps(), layoutConstraints, layoutContext);
 
-  auto family = rootComponentDescriptor.createFamily(
-      ShadowNodeFamilyFragment{surfaceId, surfaceId, noopEventEmitter},
-      nullptr);
+  auto const fragment =
+      ShadowNodeFamilyFragment{surfaceId, surfaceId, noopEventEmitter};
+  auto family = rootComponentDescriptor.createFamily(fragment, nullptr);
 
   auto rootShadowNode = std::static_pointer_cast<const RootShadowNode>(
       rootComponentDescriptor.createShadowNode(
@@ -249,7 +247,7 @@ ShadowTree::ShadowTree(
       rootShadowNode, ShadowTreeRevision::Number{0}, TransactionTelemetry{}};
 
   mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
-      currentRevision_, mountingOverrideDelegate, enableReparentingDetection);
+      currentRevision_, mountingOverrideDelegate);
 }
 
 ShadowTree::~ShadowTree() {
@@ -258,6 +256,29 @@ ShadowTree::~ShadowTree() {
 
 Tag ShadowTree::getSurfaceId() const {
   return surfaceId_;
+}
+
+void ShadowTree::setCommitMode(CommitMode commitMode) const {
+  auto revision = ShadowTreeRevision{};
+
+  {
+    std::unique_lock<better::shared_mutex> lock(commitMutex_);
+    if (commitMode_ == commitMode) {
+      return;
+    }
+
+    commitMode_ = commitMode;
+    revision = currentRevision_;
+  }
+
+  if (commitMode == CommitMode::Normal) {
+    mount(revision);
+  }
+}
+
+CommitMode ShadowTree::getCommitMode() const {
+  std::shared_lock<better::shared_mutex> lock(commitMutex_);
+  return commitMode_;
 }
 
 MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
@@ -293,15 +314,18 @@ CommitStatus ShadowTree::tryCommit(
   auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();
 
+  CommitMode commitMode;
   auto oldRevision = ShadowTreeRevision{};
   auto newRevision = ShadowTreeRevision{};
 
   {
     // Reading `currentRevision_` in shared manner.
     std::shared_lock<better::shared_mutex> lock(commitMutex_);
+    commitMode = commitMode_;
     oldRevision = currentRevision_;
   }
 
+  auto oldRootShadowNode = oldRevision.rootShadowNode;
   auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
 
   if (!newRootShadowNode ||
@@ -341,6 +365,13 @@ CommitStatus ShadowTree::tryCommit(
 
     auto newRevisionNumber = oldRevision.number + 1;
 
+    newRootShadowNode = delegate_.shadowTreeWillCommit(
+        *this, oldRootShadowNode, newRootShadowNode);
+
+    if (!newRootShadowNode) {
+      return CommitStatus::Cancelled;
+    }
+
     {
       std::lock_guard<std::mutex> dispatchLock(EventEmitter::DispatchMutex());
 
@@ -364,9 +395,9 @@ CommitStatus ShadowTree::tryCommit(
 
   emitLayoutEvents(affectedLayoutableNodes);
 
-  mountingCoordinator_->push(newRevision);
-
-  notifyDelegatesOfUpdates();
+  if (commitMode == CommitMode::Normal) {
+    mount(newRevision);
+  }
 
   return CommitStatus::Succeeded;
 }
@@ -374,6 +405,11 @@ CommitStatus ShadowTree::tryCommit(
 ShadowTreeRevision ShadowTree::getCurrentRevision() const {
   std::shared_lock<better::shared_mutex> lock(commitMutex_);
   return currentRevision_;
+}
+
+void ShadowTree::mount(ShadowTreeRevision const &revision) const {
+  mountingCoordinator_->push(revision);
+  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
 }
 
 void ShadowTree::commitEmptyTree() const {

@@ -24,8 +24,8 @@ const mkdirp = require('mkdirp');
 const path = require('path');
 
 const GENERATORS = {
-  android: ['modulesAndroid'],
-  ios: ['modulesIOS'],
+  android: ['componentsAndroid', 'modulesAndroid'],
+  ios: ['componentsIOS', 'modulesIOS'],
 };
 
 function generateSpec(
@@ -35,7 +35,6 @@ function generateSpec(
   libraryName,
   packageName,
 ) {
-  const moduleSpecName = libraryName;
   const schemaText = fs.readFileSync(schemaPath, 'utf-8');
 
   if (schemaText == null) {
@@ -43,13 +42,7 @@ function generateSpec(
   }
 
   if (!outputDirectory) {
-    outputDirectory = path.resolve(
-      __dirname,
-      '..',
-      'Libraries',
-      libraryName,
-      moduleSpecName,
-    );
+    outputDirectory = path.resolve(__dirname, '..', 'Libraries', libraryName);
   }
   mkdirp.sync(outputDirectory);
 
@@ -65,13 +58,27 @@ function generateSpec(
       libraryName,
       schema,
       outputDirectory,
-      moduleSpecName,
       packageName,
     },
     {
       generators: GENERATORS[platform],
     },
   );
+
+  if (platform === 'android') {
+    // Move all components C++ files to a structured jni folder for now.
+    // Note: this should've been done by RNCodegen's generators, but:
+    // * the generators don't support platform option yet
+    // * this subdir structure is Android-only, not applicable to iOS
+    const files = fs.readdirSync(outputDirectory);
+    const jniOutputDirectory = `${outputDirectory}/jni/react/renderer/components/${libraryName}`;
+    mkdirp.sync(jniOutputDirectory);
+    files
+      .filter(f => f.endsWith('.h') || f.endsWith('.cpp'))
+      .forEach(f => {
+        fs.renameSync(`${outputDirectory}/${f}`, `${jniOutputDirectory}/${f}`);
+      });
+  }
 }
 
 function main() {

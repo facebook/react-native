@@ -32,52 +32,70 @@ function getConstants(): Object {
   return NativeUIManagerConstants;
 }
 
+function getViewManagerConfig(viewManagerName: string): any {
+  if (
+    viewManagerConfigs[viewManagerName] === undefined &&
+    NativeUIManager.getConstantsForViewManager
+  ) {
+    try {
+      viewManagerConfigs[
+        viewManagerName
+      ] = NativeUIManager.getConstantsForViewManager(viewManagerName);
+    } catch (e) {
+      viewManagerConfigs[viewManagerName] = null;
+    }
+  }
+
+  const config = viewManagerConfigs[viewManagerName];
+  if (config) {
+    return config;
+  }
+
+  // If we're in the Chrome Debugger, let's not even try calling the sync
+  // method.
+  if (!global.nativeCallSyncHook) {
+    return config;
+  }
+
+  if (
+    NativeUIManager.lazilyLoadView &&
+    !triedLoadingConfig.has(viewManagerName)
+  ) {
+    const result = NativeUIManager.lazilyLoadView(viewManagerName);
+    triedLoadingConfig.add(viewManagerName);
+    if (result != null && result.viewConfig != null) {
+      getConstants()[viewManagerName] = result.viewConfig;
+      lazifyViewManagerConfig(viewManagerName);
+    }
+  }
+
+  return viewManagerConfigs[viewManagerName];
+}
+
 /* $FlowFixMe(>=0.123.0 site=react_native_fb) This comment suppresses an error
  * found when Flow v0.123.0 was deployed. To see the error, delete this comment
  * and run Flow. */
 const UIManagerJS = {
   ...NativeUIManager,
+  createView(
+    reactTag: ?number,
+    viewName: string,
+    rootTag: number,
+    props: Object,
+  ): void {
+    if (Platform.OS === 'ios' && viewManagerConfigs[viewName] === undefined) {
+      // This is necessary to force the initialization of native viewManager
+      // classes in iOS when using static ViewConfigs
+      getViewManagerConfig(viewName);
+    }
+
+    NativeUIManager.createView(reactTag, viewName, rootTag, props);
+  },
   getConstants(): Object {
     return getConstants();
   },
-  getViewManagerConfig: function(viewManagerName: string): any {
-    if (
-      viewManagerConfigs[viewManagerName] === undefined &&
-      NativeUIManager.getConstantsForViewManager
-    ) {
-      try {
-        viewManagerConfigs[
-          viewManagerName
-        ] = NativeUIManager.getConstantsForViewManager(viewManagerName);
-      } catch (e) {
-        viewManagerConfigs[viewManagerName] = null;
-      }
-    }
-
-    const config = viewManagerConfigs[viewManagerName];
-    if (config) {
-      return config;
-    }
-
-    // If we're in the Chrome Debugger, let's not even try calling the sync
-    // method.
-    if (!global.nativeCallSyncHook) {
-      return config;
-    }
-
-    if (
-      NativeUIManager.lazilyLoadView &&
-      !triedLoadingConfig.has(viewManagerName)
-    ) {
-      const result = NativeUIManager.lazilyLoadView(viewManagerName);
-      triedLoadingConfig.add(viewManagerName);
-      if (result.viewConfig) {
-        getConstants()[viewManagerName] = result.viewConfig;
-        lazifyViewManagerConfig(viewManagerName);
-      }
-    }
-
-    return viewManagerConfigs[viewManagerName];
+  getViewManagerConfig(viewManagerName: string): any {
+    return getViewManagerConfig(viewManagerName);
   },
 };
 

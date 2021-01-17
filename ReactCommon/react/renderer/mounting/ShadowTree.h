@@ -31,10 +31,26 @@ using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
  */
 class ShadowTree final {
  public:
+  /*
+   * Represents a result of a `commit` operation.
+   */
   enum class CommitStatus {
     Succeeded,
     Failed,
     Cancelled,
+  };
+
+  /*
+   * Represents commits' side-effects propagation mode.
+   */
+  enum class CommitMode {
+    // Commits' side-effects are observable via `MountingCoordinator`.
+    // The rendering pipeline fully works end-to-end.
+    Normal,
+
+    // Commits' side-effects are *not* observable via `MountingCoordinator`.
+    // The mounting phase is skipped in the rendering pipeline.
+    Suspended,
   };
 
   struct CommitOptions {
@@ -53,8 +69,7 @@ class ShadowTree final {
       LayoutContext const &layoutContext,
       RootComponentDescriptor const &rootComponentDescriptor,
       ShadowTreeDelegate const &delegate,
-      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate,
-      bool enableReparentingDetection = false);
+      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate);
 
   ~ShadowTree();
 
@@ -62,6 +77,14 @@ class ShadowTree final {
    * Returns the `SurfaceId` associated with the shadow tree.
    */
   SurfaceId getSurfaceId() const;
+
+  /*
+   * Sets and gets the commit mode.
+   * Changing commit mode from `Suspended` to `Normal` will flush all suspended
+   * changes to `MountingCoordinator`.
+   */
+  void setCommitMode(CommitMode commitMode) const;
+  CommitMode getCommitMode() const;
 
   /*
    * Performs commit calling `transaction` function with a `oldRootShadowNode`
@@ -99,24 +122,19 @@ class ShadowTree final {
 
   MountingCoordinator::Shared getMountingCoordinator() const;
 
-  /*
-   * Temporary.
-   * Do not use.
-   */
-  void setEnableReparentingDetection(bool value) {
-    enableReparentingDetection_ = value;
-  }
-
  private:
+  void mount(ShadowTreeRevision const &revision) const;
+
   void emitLayoutEvents(
       std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
 
   SurfaceId const surfaceId_;
   ShadowTreeDelegate const &delegate_;
   mutable better::shared_mutex commitMutex_;
+  mutable CommitMode commitMode_{
+      CommitMode::Normal}; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
-  bool enableReparentingDetection_{false};
 };
 
 } // namespace react

@@ -157,11 +157,16 @@ public class IntBufferBatchMountItem implements MountItem {
         } else if (type == INSTRUCTION_UPDATE_STATE) {
           mountingManager.updateState(mIntBuffer[i++], castToState(mObjBuffer[j++]));
         } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
-          mountingManager.updateLayout(
-              mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
-
+          int reactTag = mIntBuffer[i++];
+          int x = mIntBuffer[i++];
+          int y = mIntBuffer[i++];
+          int width = mIntBuffer[i++];
+          int height = mIntBuffer[i++];
           // The final buffer, layoutDirection, seems unused?
           i++;
+          int displayType = mIntBuffer[i++];
+          mountingManager.updateLayout(reactTag, x, y, width, height, displayType);
+
         } else if (type == INSTRUCTION_UPDATE_PADDING) {
           mountingManager.updatePadding(
               mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
@@ -226,7 +231,8 @@ public class IntBufferBatchMountItem implements MountItem {
           } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
             s.append(
                 String.format(
-                    "UPDATE LAYOUT [%d]: x:%d y:%d w:%d h:%d layoutDirection:%d\n",
+                    "UPDATE LAYOUT [%d]: x:%d y:%d w:%d h:%d layoutDirection:%d displayType:%d\n",
+                    mIntBuffer[i++],
                     mIntBuffer[i++],
                     mIntBuffer[i++],
                     mIntBuffer[i++],
