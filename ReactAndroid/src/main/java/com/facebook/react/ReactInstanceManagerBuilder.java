@@ -314,7 +314,6 @@ public class ReactInstanceManagerBuilder {
 
       // Otherwise use Hermes
       try {
-        // libhermes must be loaded explicitly to invoke its JNI_OnLoad.
         HermesExecutor.loadLibrary();
         return new HermesExecutorFactory();
       } catch (UnsatisfiedLinkError hermesE) {
