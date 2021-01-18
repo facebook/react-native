@@ -9,6 +9,10 @@ set -e
 PLATFORM_NAME="${PLATFORM_NAME:-iphoneos}"
 CURRENT_ARCH="${CURRENT_ARCH}"
 
+# Fix build on Apple Silicon
+wget -O config.guess 'https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD'
+wget -O config.sub 'https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD'
+
 if [ -z "$CURRENT_ARCH" ] || [ "$CURRENT_ARCH" == "undefined_arch" ]; then
     # Xcode 10 beta sets CURRENT_ARCH to "undefined_arch", this leads to incorrect linker arg.
     # it's better to rely on platform name as fallback because architecture differs between simulator and device
