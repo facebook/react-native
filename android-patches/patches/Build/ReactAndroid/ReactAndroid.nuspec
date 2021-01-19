@@ -1,12 +1,11 @@
 --- "E:\\github\\rnm-63-fresh\\ReactAndroid\\ReactAndroid.nuspec"	1969-12-31 16:00:00.000000000 -0800
 +++ "E:\\github\\rnm-63\\ReactAndroid\\ReactAndroid.nuspec"	2020-10-27 20:20:54.071789900 -0700
-@@ -0,0 +1,141 @@
+@@ -0,0 +1,140 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 +  <metadata>
 +    <id>OfficeReact.Android</id>
 +    <version>$buildNumber$</version>
-+    <version>0.63</version>
 +    <description>Contains Android Implementation of React-Native</description>
 +    <authors>Microsoft</authors>
 +    <projectUrl>https://github.com/microsoft/react-native</projectUrl>
