@@ -678,8 +678,7 @@ static void calculateShadowViewMutationsFlattener(
           !newTreeNodePair.inOtherTree) {
         if (newTreeNodePair.isConcreteView) {
           mutationInstructionContainer.createMutations.push_back(
-              ShadowViewMutation::CreateMutation(
-                  newTreeNodePair.shadowView, true));
+              ShadowViewMutation::CreateMutation(newTreeNodePair.shadowView));
         } else {
           mutationInstructionContainer.deleteMutations.push_back(
               ShadowViewMutation::DeleteMutation(newTreeNodePair.shadowView));
@@ -974,8 +973,8 @@ static void calculateShadowViewMutationsV2(
                   parentShadowView,
                   newChildPair.shadowView,
                   newChildPair.mountIndex));
-              createMutations.push_back(ShadowViewMutation::CreateMutation(
-                  newChildPair.shadowView, true));
+              createMutations.push_back(
+                  ShadowViewMutation::CreateMutation(newChildPair.shadowView));
             } else {
               removeMutations.push_back(ShadowViewMutation::RemoveMutation(
                   parentShadowView,
@@ -1209,8 +1208,8 @@ static void calculateShadowViewMutationsV2(
           // but not Remove
           if (oldChildPair.isConcreteView != newChildPair.isConcreteView) {
             if (newChildPair.isConcreteView) {
-              createMutations.push_back(ShadowViewMutation::CreateMutation(
-                  newChildPair.shadowView, true));
+              createMutations.push_back(
+                  ShadowViewMutation::CreateMutation(newChildPair.shadowView));
             } else {
               removeMutations.push_back(ShadowViewMutation::RemoveMutation(
                   parentShadowView,

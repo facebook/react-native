@@ -553,7 +553,7 @@ void Binding::schedulerDidFinishTransaction(
     switch (mutationType) {
       case ShadowViewMutation::Create: {
         if (disablePreallocateViews_ ||
-            newChildShadowView.props->revision > 1 || mutation.recreated) {
+            newChildShadowView.props->revision > 1) {
           cppCommonMountItems.push_back(
               CppMountItem::CreateMountItem(newChildShadowView));
         }
