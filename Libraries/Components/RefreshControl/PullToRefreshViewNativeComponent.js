@@ -11,7 +11,7 @@
 'use strict';
 
 import type {
-  DirectEventHandler, 
+  DirectEventHandler,
   Float,
   WithDefault,
 } from '../../Types/CodegenTypes';
