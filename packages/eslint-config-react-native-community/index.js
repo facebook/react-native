@@ -95,6 +95,7 @@ module.exports = {
     EventTarget: false,
     exports: false,
     fetch: false,
+    FileReader: false,
     FormData: false,
     global: false,
     Headers: false,
