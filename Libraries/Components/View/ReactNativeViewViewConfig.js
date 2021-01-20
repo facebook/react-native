@@ -94,8 +94,14 @@ const ReactNativeViewConfig: ViewConfig = {
     topAccessibilityAction: {
       registrationName: 'onAccessibilityAction',
     },
+    onAccessibilityBlur: {
+      registrationName: 'onAccessibilityBlur',
+    },
     topAccessibilityEscape: {
       registrationName: 'onAccessibilityEscape',
+    },
+    onAccessibilityFocus: {
+      registrationName: 'onAccessibilityFocus',
     },
     topAccessibilityTap: {
       registrationName: 'onAccessibilityTap',
@@ -193,7 +199,9 @@ const ReactNativeViewConfig: ViewConfig = {
     nativeID: true,
     needsOffscreenAlphaCompositing: true,
     onAccessibilityAction: true,
+    onAccessibilityBlur: true,
     onAccessibilityEscape: true,
+    onAccessibilityFocus: true,
     onAccessibilityTap: true,
     onLayout: true,
     onMagicTap: true,

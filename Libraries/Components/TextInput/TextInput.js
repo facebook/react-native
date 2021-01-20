@@ -23,12 +23,12 @@ const invariant = require('invariant');
 const nullthrows = require('nullthrows');
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {ViewProps} from '../View/ViewPropTypes';
-import type {SyntheticEvent, ScrollEvent} from '../../Types/CoreEventTypes';
+import type {ScrollEvent, SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {PressEvent} from '../../Types/CoreEventTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
 const {useLayoutEffect, useRef, useState} = React;
@@ -96,6 +96,8 @@ type TargetEvent = SyntheticEvent<
 
 export type BlurEvent = TargetEvent;
 export type FocusEvent = TargetEvent;
+export type AccessibilityBlurEvent = TargetEvent;
+export type AccessibilityFocusEvent = TargetEvent;
 
 type Selection = $ReadOnly<{|
   start: number,
@@ -710,6 +712,25 @@ export type Props = $ReadOnly<{|
   forwardedRef?: ?ReactRefSetter<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
   >,
+
+   /**
+   * When `accessible` is true and VoiceOver (iOS) or TalkBack (Android) is
+   * enabled, this event is fired immediately once the element loses the screen
+   * reader focus.
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityblur
+   */
+
+  onAccessibilityBlur?: ?(event: AccessibilityBlurEvent) => mixed,
+
+  /**
+   * When `accessible` is true and VoiceOver (iOS) or TalkBack (Android) is
+   * enabled, this event is fired immediately once the element gains the screen
+   * reader focus.
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityfocus
+   */
+  onAccessibilityFocus?: ?(event: AccessibilityFocusEvent) => mixed,
 |}>;
 
 type ImperativeMethods = $ReadOnly<{|

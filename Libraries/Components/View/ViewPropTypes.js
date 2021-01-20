@@ -10,23 +10,25 @@
 
 'use strict';
 
+import type {Node} from 'react';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BlurEvent,
   FocusEvent,
-  MouseEvent,
-  PressEvent,
   Layout,
   LayoutEvent,
+  MouseEvent,
+  PressEvent,
 } from '../../Types/CoreEventTypes';
-import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
-import type {Node} from 'react';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
-  AccessibilityRole,
-  AccessibilityState,
-  AccessibilityValue,
   AccessibilityActionEvent,
   AccessibilityActionInfo,
+  AccessibilityBlurEvent,
+  AccessibilityFocusEvent,
+  AccessibilityRole,
+  AccessibilityState,
+  AccessibilityValue
 } from './ViewAccessibility';
 
 export type ViewLayout = Layout;
@@ -81,6 +83,25 @@ type DirectEventProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view.html#onaccessibilityescape
    */
   onAccessibilityEscape?: ?() => mixed,
+
+   /**
+   * When `accessible` is true and VoiceOver (iOS) or TalkBack (Android) is
+   * enabled, this event is fired immediately once the element loses the screen
+   * reader focus.
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityblur
+   */
+
+  onAccessibilityBlur?: ?(event: AccessibilityBlurEvent) => mixed,
+
+  /**
+   * When `accessible` is true and VoiceOver (iOS) or TalkBack (Android) is
+   * enabled, this event is fired immediately once the element gains the screen
+   * reader focus.
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityfocus
+   */
+  onAccessibilityFocus?: ?(event: AccessibilityFocusEvent) => mixed,
 |}>;
 
 type MouseEventProps = $ReadOnly<{|

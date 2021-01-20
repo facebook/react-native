@@ -21,8 +21,17 @@ const View = require('./View/View');
 
 const invariant = require('invariant');
 
-import type {PressEvent} from '../Types/CoreEventTypes';
 import type {ColorValue} from '../StyleSheet/StyleSheet';
+import type {PressEvent, SyntheticEvent} from '../Types/CoreEventTypes';
+
+type TargetEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+  |}>,
+>;
+
+type AccessibilityBlurEvent = TargetEvent;
+type AccessibilityFocusEvent = TargetEvent;
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -134,6 +143,24 @@ type ButtonProps = $ReadOnly<{|
     Used to locate this view in end-to-end tests.
    */
   testID?: ?string,
+
+  /**
+   * When `accessible` is true and VoiceOver (iOS) or TalkBack (Android) is
+   * enabled, this event is fired immediately once the element loses the screen
+   * reader focus.
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityblur
+   */
+  onAccessibilityBlur: (event?: AccessibilityBlurEvent) => mixed,
+
+  /**
+   * When `accessible` is true and VoiceOver (iOS) or TalkBack (Android) is
+   * enabled, this event is fired immediately once the element gains the screen
+   * reader focus.
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityfocus
+   */
+  onAccessibilityFocus: (event?: AccessibilityFocusEvent) => mixed,
 |}>;
 
 /**
@@ -251,6 +278,8 @@ class Button extends React.Component<ButtonProps> {
   render(): React.Node {
     const {
       accessibilityLabel,
+      onAccessibilityBlur,
+      onAccessibilityFocus,
       color,
       onPress,
       touchSoundDisabled,
@@ -292,6 +321,8 @@ class Button extends React.Component<ButtonProps> {
         accessibilityLabel={accessibilityLabel}
         accessibilityRole="button"
         accessibilityState={accessibilityState}
+        onAccessibilityBlur={onAccessibilityBlur}
+        onAccessibilityFocus={onAccessibilityFocus}
         hasTVPreferredFocus={hasTVPreferredFocus}
         nextFocusDown={nextFocusDown}
         nextFocusForward={nextFocusForward}

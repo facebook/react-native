@@ -10,16 +10,16 @@
 
 'use strict';
 
+import * as React from 'react';
+import View from '../../Components/View/View';
 import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import StyleSheet, {type ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 import Platform from '../../Utilities/Platform';
-import View from '../../Components/View/View';
-import * as React from 'react';
+import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 
 type AndroidProps = $ReadOnly<{|
   nextFocusDown?: ?number,
@@ -299,6 +299,8 @@ class TouchableHighlight extends React.Component<Props, State> {
         accessibilityLiveRegion={this.props.accessibilityLiveRegion}
         accessibilityViewIsModal={this.props.accessibilityViewIsModal}
         accessibilityElementsHidden={this.props.accessibilityElementsHidden}
+        onAccessibilityBlur={this.props.onAccessibilityBlur}
+        onAccessibilityFocus={this.props.onAccessibilityFocus}
         style={StyleSheet.compose(
           this.props.style,
           this.state.extraStyles?.underlay,

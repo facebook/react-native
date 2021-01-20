@@ -750,6 +750,35 @@ class SetAccessibilityFocusExample extends React.Component<{}> {
   }
 }
 
+
+class AccessibilityFocusAndBlurExample extends React.Component<{}> {
+  state = {
+    isFocused: false
+  }
+
+  render () {
+    const handleFocus = () => {
+      this.setState({ isFocused: true })
+    }
+
+    const handleBlur = () => {
+      this.setState({ isFocused: true })
+    }
+
+    return (
+      <View
+        accessible={true}
+        accessibilityLabel="View to focus."
+        onAccessibilityFocus={handleFocus}
+        onAccessibilityBlur={handleBlur}>
+        <Text>Accessible view with Accessibility Focus/Blur events</Text>
+        <Text>View is {this.state.isFocused ? 'focused' : 'not focused'}</Text>
+      </View>
+    );
+  }
+}
+
+
 class EnabledExamples extends React.Component<{}> {
   render() {
     return (
@@ -892,6 +921,12 @@ exports.examples = [
     render(): React.Element<typeof SetAccessibilityFocusExample> {
       return <SetAccessibilityFocusExample />;
     },
+  },
+  {
+    title: 'Accessibility Focus/Blur events',
+    render(): React.Element<typeof AccessibilityFocusAndBlurExample> {
+      return <AccessibilityFocusAndBlurExample />;
+    }
   },
   {
     title: 'Check if these properties are enabled',

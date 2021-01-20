@@ -84,3 +84,12 @@ export type AccessibilityValue = $ReadOnly<{|
    */
   text?: string,
 |}>;
+
+type TargetEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+  |}>,
+>;
+
+export type AccessibilityBlurEvent = TargetEvent;
+export type AccessibilityFocusEvent = TargetEvent;
