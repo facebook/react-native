@@ -42,6 +42,8 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.yoga.YogaMeasureMode;
+import java.util.LinkedHashMap;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -52,13 +54,15 @@ public class MountingManager {
   public static final String TAG = MountingManager.class.getSimpleName();
   private static final boolean SHOW_CHANGED_VIEW_HIERARCHIES = ReactBuildConfig.DEBUG && false;
 
-  @NonNull private final ConcurrentHashMap<Integer, ViewState> mTagToViewState;
+  @NonNull private final ConcurrentHashMap<Integer, ViewState> mTagToViewState; // any thread
+  @NonNull private final LinkedHashMap<Integer, TreeSet<Integer>> mRootTagToTags; // UI thread only
   @NonNull private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   @NonNull private final ViewManagerRegistry mViewManagerRegistry;
   @NonNull private final RootViewManager mRootViewManager = new RootViewManager();
 
   public MountingManager(@NonNull ViewManagerRegistry viewManagerRegistry) {
     mTagToViewState = new ConcurrentHashMap<>();
+    mRootTagToTags = new LinkedHashMap<>();
     mViewManagerRegistry = viewManagerRegistry;
   }
 
@@ -120,6 +124,7 @@ public class MountingManager {
                       + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
             }
             rootView.setId(reactRootTag);
+            mRootTagToTags.put(reactRootTag, new TreeSet<Integer>());
           }
         });
   }
@@ -130,6 +135,17 @@ public class MountingManager {
     ViewState rootViewState = mTagToViewState.get(reactRootTag);
     if (rootViewState != null && rootViewState.mView != null) {
       dropView(rootViewState.mView, true);
+    }
+
+    // Iterate through all tags of reactRootTag, delete all retained Views associated with tags
+    // Tags that could be left-over, even after `dropView` is called: PreAllocated Views that were
+    // never properly deleted, for example. There might be other causes of leaks as well.
+    // This doesn't remove Views from the View Hierarchy, it just ensures that we don't leak
+    // memory by holding onto native Views.
+    TreeSet<Integer> tags = mRootTagToTags.get(reactRootTag);
+    mRootTagToTags.remove(reactRootTag);
+    for (int tag : tags) {
+      mTagToViewState.remove(tag);
     }
   }
 
@@ -512,6 +528,7 @@ public class MountingManager {
   public void createView(
       @NonNull ThemedReactContext themedReactContext,
       @NonNull String componentName,
+      int rootTag,
       int reactTag,
       @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
@@ -542,6 +559,7 @@ public class MountingManager {
     viewState.mCurrentState = (stateWrapper != null ? stateWrapper.getState() : null);
 
     mTagToViewState.put(reactTag, viewState);
+    mRootTagToTags.get(rootTag).add(reactTag);
   }
 
   @UiThread
@@ -622,7 +640,7 @@ public class MountingManager {
   }
 
   @UiThread
-  public void deleteView(int reactTag) {
+  public void deleteView(int rootTag, int reactTag) {
     UiThreadUtil.assertOnUiThread();
     ViewState viewState = getNullableViewState(reactTag);
 
@@ -643,6 +661,7 @@ public class MountingManager {
     // Additionally, as documented in `dropView`, we cannot always trust a
     // view's children to be up-to-date.
     mTagToViewState.remove(reactTag);
+    mRootTagToTags.get(rootTag).remove(reactTag);
 
     // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
     ViewManager viewManager = viewState.mViewManager;
@@ -675,6 +694,7 @@ public class MountingManager {
   public void preallocateView(
       @NonNull ThemedReactContext reactContext,
       String componentName,
+      int rootTag,
       int reactTag,
       @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
@@ -685,7 +705,12 @@ public class MountingManager {
           "View for component " + componentName + " with tag " + reactTag + " already exists.");
     }
 
-    createView(reactContext, componentName, reactTag, props, stateWrapper, isLayoutable);
+    // Views can be preallocated before the surface is started
+    if (mRootTagToTags.get(rootTag) == null) {
+      mRootTagToTags.put(rootTag, new TreeSet<Integer>());
+    }
+
+    createView(reactContext, componentName, rootTag, reactTag, props, stateWrapper, isLayoutable);
   }
 
   @UiThread

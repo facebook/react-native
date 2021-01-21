@@ -64,7 +64,7 @@ public class PreAllocateViewMountItem implements MountItem {
               + mRootTag);
     }
     mountingManager.preallocateView(
-        mContext, mComponent, mReactTag, mProps, mStateWrapper, mIsLayoutable);
+        mContext, mComponent, mRootTag, mReactTag, mProps, mStateWrapper, mIsLayoutable);
   }
 
   @Override

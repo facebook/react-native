@@ -140,12 +140,13 @@ public class IntBufferBatchMountItem implements MountItem {
           mountingManager.createView(
               mContext,
               componentName,
+              mRootTag,
               mIntBuffer[i++],
               castToProps(mObjBuffer[j++]),
               castToState(mObjBuffer[j++]),
               mIntBuffer[i++] == 1);
         } else if (type == INSTRUCTION_DELETE) {
-          mountingManager.deleteView(mIntBuffer[i++]);
+          mountingManager.deleteView(mRootTag, mIntBuffer[i++]);
         } else if (type == INSTRUCTION_INSERT) {
           int tag = mIntBuffer[i++];
           int parentTag = mIntBuffer[i++];
