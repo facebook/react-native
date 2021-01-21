@@ -45,18 +45,6 @@ const ReactNativeViewConfig = {
         captured: 'onFocusCapture',
       },
     },
-    topKeyUp: {
-      phasedRegistrationNames: {
-        bubbled: 'onKeyUp',
-        captured: 'onKeyUpCapture',
-      },
-    },
-    topKeyDown: {
-      phasedRegistrationNames: {
-        bubbled: 'onKeyDown',
-        captured: 'onKeyDownCapture',
-      },
-    },
     topKeyPress: {
       phasedRegistrationNames: {
         bubbled: 'onKeyPress',
@@ -117,6 +105,12 @@ const ReactNativeViewConfig = {
     },
     topMagicTap: {
       registrationName: 'onMagicTap',
+    },
+    topKeyUp: {
+      registrationName: 'onKeyUp',
+    },
+    topKeyDown: {
+      registrationName: 'onKeyDown',
     },
     // Events for react-native-gesture-handler (T45765076)
     // Remove once this library can handle JS View Configs

@@ -23,6 +23,11 @@ const invariant = require('invariant');
 import type {PressEvent, KeyEvent} from '../Types/CoreEventTypes';
 import type {FocusEvent, BlurEvent} from './TextInput/TextInput'; // TODO(OSS Candidate ISS#2710739)
 import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
+import type {
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+  AccessibilityRole,
+} from './View/ViewAccessibility';
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -93,6 +98,20 @@ type ButtonProps = $ReadOnly<{|
    * Hint text to display blindness accessibility features
    */
   accessibilityHint?: ?string, // TODO(OSS Candidate ISS#2710739)
+
+  // TODO(OSS Candidate ISS#2710739)
+  /**
+   * Custom accessibility role -- otherwise we use button
+   */
+  accessibilityRole?: ?AccessibilityRole,
+
+  // TODO(OSS Candidate ISS#2710739)
+  /**
+   * Accessibility action handlers
+   */
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
+
   /**
    * If true, disable all interactions for this component.
    */
@@ -171,6 +190,9 @@ class Button extends React.Component<ButtonProps> {
     const {
       accessibilityLabel,
       accessibilityHint, // TODO(OSS Candidate ISS#2710739)
+      accessibilityRole, // TODO(OSS Candidate ISS#2710739)
+      accessibilityActions, // TODO(OSS Candidate ISS#2710739)
+      onAccessibilityAction, // TODO(OSS Candidate ISS#2710739)
       color,
       onPress,
       touchSoundDisabled,
@@ -220,8 +242,10 @@ class Button extends React.Component<ButtonProps> {
       <Touchable
         accessibilityLabel={accessibilityLabel}
         accessibilityHint={accessibilityHint} // TODO(OSS Candidate ISS#2710739)
-        accessibilityRole="button"
+        accessibilityRole={accessibilityRole || 'button'} // TODO(OSS Candidate ISS#2710739)
         accessibilityState={accessibilityState}
+        accessibilityActions={accessibilityActions}
+        onAccessibilityAction={onAccessibilityAction}
         hasTVPreferredFocus={hasTVPreferredFocus}
         nextFocusDown={nextFocusDown}
         nextFocusForward={nextFocusForward}

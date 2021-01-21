@@ -45,7 +45,9 @@ export type AccessibilityRole =
   | 'tab'
   | 'tablist'
   | 'timer'
-  | 'toolbar';
+  | 'toolbar'
+  | 'popupbutton'
+  | 'menubutton';
 
 // the info associated with an accessibility action
 export type AccessibilityActionInfo = $ReadOnly<{

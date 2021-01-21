@@ -57,6 +57,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   }, // ]TODO(OSS Candidate ISS#2710739)
   {
+    key: 'AccessibilityShowMenu',
+    module: require('../examples/AccessibilityShowMenu/AccessibilityShowMenu'),
+    supportsTVOS: false,
+  }, // ]TODO(OSS Candidate ISS#2710739)
+  {
     key: 'ImageExample',
     module: require('../examples/Image/ImageExample'),
     supportsTVOS: true,

@@ -1358,6 +1358,8 @@ RCT_ENUM_CONVERTER(
       @"disclosure": NSAccessibilityDisclosureTriangleRole,
       @"group": NSAccessibilityGroupRole,
       @"list": NSAccessibilityListRole,
+      @"popupbutton": NSAccessibilityPopUpButtonRole,
+      @"menubutton": NSAccessibilityMenuButtonRole,
     };
   });
 
