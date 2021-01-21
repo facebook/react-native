@@ -40,6 +40,18 @@ static UIScrollViewKeyboardDismissMode RCTUIKeyboardDismissModeFromProps(ScrollV
   }
 }
 
+static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(ScrollViewProps const &props)
+{
+  switch (props.indicatorStyle) {
+    case ScrollViewIndicatorStyle::Default:
+      return UIScrollViewIndicatorStyleDefault;
+    case ScrollViewIndicatorStyle::Black:
+      return UIScrollViewIndicatorStyleBlack;
+    case ScrollViewIndicatorStyle::White:
+      return UIScrollViewIndicatorStyleWhite;
+  }
+}
+
 static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
 {
   static uint16_t coalescingKey = 0;
@@ -166,7 +178,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   // MAP_SCROLL_VIEW_PROP(automaticallyAdjustContentInsets);
   MAP_SCROLL_VIEW_PROP(decelerationRate);
   MAP_SCROLL_VIEW_PROP(directionalLockEnabled);
-  // MAP_SCROLL_VIEW_PROP(indicatorStyle);
   MAP_SCROLL_VIEW_PROP(maximumZoomScale);
   MAP_SCROLL_VIEW_PROP(minimumZoomScale);
   MAP_SCROLL_VIEW_PROP(scrollEnabled);
@@ -178,6 +189,10 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
   if (oldScrollViewProps.scrollIndicatorInsets != newScrollViewProps.scrollIndicatorInsets) {
     _scrollView.scrollIndicatorInsets = RCTUIEdgeInsetsFromEdgeInsets(newScrollViewProps.scrollIndicatorInsets);
+  }
+
+  if (oldScrollViewProps.indicatorStyle != newScrollViewProps.indicatorStyle) {
+    _scrollView.indicatorStyle = RCTUIScrollViewIndicatorStyleFromProps(newScrollViewProps);
   }
 
   if (oldScrollViewProps.scrollEventThrottle != newScrollViewProps.scrollEventThrottle) {
