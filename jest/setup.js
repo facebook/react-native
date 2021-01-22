@@ -323,6 +323,13 @@ jest
         isRTL: false,
         doLeftAndRightSwapInRTL: true,
       }),
+      localeIdentifier: 'en_US',
+    },
+    SettingsManager: {
+      settings: {
+        AppleLocale: 'en-US',
+        AppleLanguages: ['en-US'],
+      },
     },
   }))
   .mock('../Libraries/NativeComponent/NativeComponentRegistry', () => {
