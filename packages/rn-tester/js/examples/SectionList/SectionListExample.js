@@ -108,6 +108,9 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
       this._sectionListRef.scrollToLocation({sectionIndex, itemIndex});
   }
 
+  _setBooleanValue: string => boolean => void = key => value =>
+    this.setState({[key]: value});
+
   render(): React.Node {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = item =>
@@ -136,10 +139,26 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
             value={this.state.filterText}
           />
           <View style={styles.optionSection}>
-            {renderSmallSwitchOption(this, 'virtualized')}
-            {renderSmallSwitchOption(this, 'logViewable')}
-            {renderSmallSwitchOption(this, 'debug')}
-            {renderSmallSwitchOption(this, 'inverted')}
+            {renderSmallSwitchOption(
+              'virtualized',
+              this.state.virtualized,
+              this._setBooleanValue('virtualized'),
+            )}
+            {renderSmallSwitchOption(
+              'Log Viewable',
+              this.state.logViewable,
+              this._setBooleanValue('logViewable'),
+            )}
+            {renderSmallSwitchOption(
+              'Debug',
+              this.state.debug,
+              this._setBooleanValue('debug'),
+            )}
+            {renderSmallSwitchOption(
+              'Inverted',
+              this.state.inverted,
+              this._setBooleanValue('inverted'),
+            )}
             <Spindicator value={this._scrollPos} />
           </View>
           <View style={styles.scrollToRow}>
