@@ -108,13 +108,13 @@ def rn_codegen_modules(
         android_package_name,
         library_labels = [],
         schema_target = ""):
-    generate_fixtures_rule_name = "generate_fixtures_modules-{}".format(name)
-    generate_module_hobjcpp_name = "generate_module_hobjcpp-{}".format(name)
-    generate_module_mm_name = "generate_module_mm-{}".format(name)
-    generate_module_java_name = "generate_module_java-{}".format(name)
-    generate_module_java_zip_name = "generate_module_java_zip-{}".format(name)
-    generate_module_jni_h_name = "generate_module_jni_h-{}".format(name)
-    generate_module_jni_cpp_name = "generate_module_jni_cpp-{}".format(name)
+    generate_fixtures_rule_name = "{}-codegen-modules".format(native_module_spec_name)
+    generate_module_hobjcpp_name = "{}-codegen-modules-hobjcpp".format(native_module_spec_name)
+    generate_module_mm_name = "{}-codegen-modules-mm".format(native_module_spec_name)
+    generate_module_java_name = "{}-codegen-modules-java".format(native_module_spec_name)
+    generate_module_java_zip_name = "{}-codegen-modules-java_zip".format(native_module_spec_name)
+    generate_module_jni_h_name = "{}-codegen-modules-jni_h".format(native_module_spec_name)
+    generate_module_jni_cpp_name = "{}-codegen-modules-jni_cpp".format(native_module_spec_name)
 
     fb_native.genrule(
         name = generate_fixtures_rule_name,
