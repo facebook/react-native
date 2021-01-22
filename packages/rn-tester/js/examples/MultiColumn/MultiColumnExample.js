@@ -167,8 +167,18 @@ class MultiColumnExample extends React.PureComponent<
       );
     }
   };
+
   _pressItem = (key: string) => {
-    pressItem(this, key);
+    const index = Number(key);
+    const itemState = pressItem(this.state.data[index]);
+    this.setState(state => ({
+      ...state,
+      data: [
+        ...state.data.slice(0, index),
+        itemState,
+        ...state.data.slice(index + 1),
+      ],
+    }));
   };
 }
 

@@ -281,10 +281,21 @@ class FlatListExample extends React.PureComponent<Props, State> {
       );
     }
   };
+
   _pressItem = (key: string) => {
     this._listRef && this._listRef.recordInteraction();
-    pressItem(this, key);
+    const index = Number(key);
+    const itemState = pressItem(this.state.data[index]);
+    this.setState(state => ({
+      ...state,
+      data: [
+        ...state.data.slice(0, index),
+        itemState,
+        ...state.data.slice(index + 1),
+      ],
+    }));
   };
+
   _listRef: React.ElementRef<typeof Animated.FlatList>;
 }
 

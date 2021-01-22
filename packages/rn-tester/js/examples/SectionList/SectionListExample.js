@@ -286,7 +286,19 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
   };
 
   _pressItem = (key: string) => {
-    !isNaN(key) && pressItem(this, key);
+    if (isNaN(key)) {
+      return;
+    }
+    const index = Number(key);
+    const itemState = pressItem(this.state.data[index]);
+    this.setState(state => ({
+      ...state,
+      data: [
+        ...state.data.slice(0, index),
+        itemState,
+        ...state.data.slice(index + 1),
+      ],
+    }));
   };
 }
 
