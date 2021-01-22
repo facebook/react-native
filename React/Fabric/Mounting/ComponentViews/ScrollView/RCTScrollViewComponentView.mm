@@ -280,7 +280,26 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
   _contentSize = contentSize;
   _containerView.frame = CGRect{CGPointZero, contentSize};
-  _scrollView.contentSize = contentSize;
+
+  [self _preserveContentOffsetIfNeededWithBlock:^{
+    self->_scrollView.contentSize = contentSize;
+  }];
+}
+
+/*
+ * Disables programmatical changing of ScrollView's `contentOffset` if a touch gesture is in progress.
+ */
+- (void)_preserveContentOffsetIfNeededWithBlock:(void (^)())block
+{
+  if (!block) {
+    return;
+  }
+
+  if (!_isUserTriggeredScrolling) {
+    return block();
+  }
+
+  [((RCTEnhancedScrollView *)_scrollView) preserveContentOffsetWithBlock:block];
 }
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
