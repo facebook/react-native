@@ -15,8 +15,11 @@ load(
 )
 
 fb_native.genrule(
-    # The schema name must have the following format: "codegen_rn_modules_schema_{native_module_spec_name}"
-    name = "codegen_rn_modules_schema_FBReactNativeSpec",
+    # The schema name must have the following format: "{name}-codegen-modules-schema"
+    # Why: Internally, we have build scripts that find all NativeModule schemas in the
+    # dependencies of an app, and build TurboModuleManager delegates. Those scripts assume
+    # that all schema targets have the aforementioned naming scheme.
+    name = "FBReactNativeSpec-codegen-modules-schema",
     srcs = glob(
         [
             "**/*.js",
@@ -38,11 +41,17 @@ rn_codegen_modules(
     android_package_name = "com.facebook.fbreact.specs",
     library_labels = ["supermodule:xplat/default/public.react_native.infra"],
     native_module_spec_name = "FBReactNativeSpec",
-    schema_target = ":codegen_rn_modules_schema_FBReactNativeSpec",
+    schema_target = ":FBReactNativeSpec-codegen-modules-schema",
 )
 
 rn_codegen_components(
     name = "FBReactNativeComponentSpec",
     library_labels = ["supermodule:xplat/default/public.react_native.infra"],
-    schema_target = ":codegen_rn_modules_schema_FBReactNativeSpec",
+    # Why does FBReactNativeComponentSpec depend on -codegen-modules-schema?
+    # The module codegen schema also contains components. We cannot change the name
+    # of the schema target, because internally, we have infra that depends on how
+    # it's named.
+    #
+    # TODO(T83341482): Clean up how OSS NativeModule codegen is declared
+    schema_target = ":FBReactNativeSpec-codegen-modules-schema",
 )
