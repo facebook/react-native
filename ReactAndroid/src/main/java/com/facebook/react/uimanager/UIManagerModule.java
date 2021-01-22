@@ -724,8 +724,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void dispatchViewManagerCommand(
       int reactTag, Dynamic commandId, @Nullable ReadableArray commandArgs) {
-    // TODO: this is a temporary approach to support ViewManagerCommands in Fabric until
-    // the dispatchViewManagerCommand() method is supported by Fabric JS API.
+    // Fabric dispatchCommands should go through the JSI API - this will crash in Fabric.
     @Nullable
     UIManager uiManager =
         UIManagerHelper.getUIManager(

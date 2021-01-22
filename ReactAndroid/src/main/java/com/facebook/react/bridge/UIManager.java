@@ -84,7 +84,7 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * layout-related propertied won't be handled properly. Make sure you know what you're doing
    * before calling this method :)
    *
-   * @param tag {@link int} that identifies the view that will be updated
+   * @param reactTag {@link int} that identifies the view that will be updated
    * @param props {@link ReadableMap} props that should be immediately updated in view
    */
   @UiThread
