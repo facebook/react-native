@@ -14,6 +14,7 @@ StubView::operator ShadowView() const {
   auto shadowView = ShadowView{};
   shadowView.componentName = componentName;
   shadowView.componentHandle = componentHandle;
+  shadowView.surfaceId = surfaceId;
   shadowView.tag = tag;
   shadowView.props = props;
   shadowView.eventEmitter = eventEmitter;
@@ -25,6 +26,7 @@ StubView::operator ShadowView() const {
 void StubView::update(ShadowView const &shadowView) {
   componentName = shadowView.componentName;
   componentHandle = shadowView.componentHandle;
+  surfaceId = shadowView.surfaceId;
   tag = shadowView.tag;
   props = shadowView.props;
   eventEmitter = shadowView.eventEmitter;
@@ -53,6 +55,7 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
     StubView const &stubView,
     DebugStringConvertibleOptions options) {
   return {
+      {"surfaceId", getDebugDescription(stubView.surfaceId, options)},
       {"tag", getDebugDescription(stubView.tag, options)},
       {"props", getDebugDescription(stubView.props, options)},
       {"eventEmitter", getDebugDescription(stubView.eventEmitter, options)},
