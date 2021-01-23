@@ -21,18 +21,30 @@ public abstract class Event<T extends Event> {
   private static int sUniqueID = 0;
 
   private boolean mInitialized;
+  private int mSurfaceId;
   private int mViewTag;
   private long mTimestampMs;
   private int mUniqueID = sUniqueID++;
 
   protected Event() {}
 
+  @Deprecated
   protected Event(int viewTag) {
     init(viewTag);
   }
 
-  /** This method needs to be called before event is sent to event dispatcher. */
+  protected Event(int surfaceId, int viewTag) {
+    init(surfaceId, viewTag);
+  }
+
+  @Deprecated
   protected void init(int viewTag) {
+    init(-1, viewTag);
+  }
+
+  /** This method needs to be called before event is sent to event dispatcher. */
+  protected void init(int surfaceId, int viewTag) {
+    mSurfaceId = surfaceId;
     mViewTag = viewTag;
     mTimestampMs = SystemClock.uptimeMillis();
     mInitialized = true;
@@ -41,6 +53,11 @@ public abstract class Event<T extends Event> {
   /** @return the view id for the view that generated this event */
   public final int getViewTag() {
     return mViewTag;
+  }
+
+  /** @return the surfaceId for the view that generated this event */
+  public final int getSurfaceId() {
+    return mSurfaceId;
   }
 
   /**
@@ -100,6 +117,17 @@ public abstract class Event<T extends Event> {
   /** @return the name of this event as registered in JS */
   public abstract String getEventName();
 
-  /** Dispatch this event to JS using the given event emitter. */
+  /**
+   * Dispatch this event to JS using the given event emitter. Compatible with old and new renderer.
+   */
+  @Deprecated
   public abstract void dispatch(RCTEventEmitter rctEventEmitter);
+
+  /**
+   * Dispatch this event to JS using a V2 EventEmitter. Events must explicitly override this, by
+   * default it uses the V1 dispatcher.
+   */
+  public void dispatchV2(RCTModernEventEmitter rctEventEmitter) {
+    dispatch(rctEventEmitter);
+  }
 }

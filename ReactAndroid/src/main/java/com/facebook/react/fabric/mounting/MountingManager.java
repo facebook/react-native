@@ -311,8 +311,9 @@ public class MountingManager {
 
   @AnyThread
   @ThreadConfined(ANY)
-  public @Nullable EventEmitterWrapper getEventEmitter(int reactTag) {
-    SurfaceMountingManager surfaceMountingManager = getSurfaceManagerForView(reactTag);
+  public @Nullable EventEmitterWrapper getEventEmitter(int surfaceId, int reactTag) {
+    SurfaceMountingManager surfaceMountingManager =
+        (surfaceId == -1 ? getSurfaceManagerForView(reactTag) : getSurfaceManager(surfaceId));
     if (surfaceMountingManager == null) {
       return null;
     }

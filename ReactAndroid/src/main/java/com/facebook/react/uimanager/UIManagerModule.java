@@ -87,6 +87,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ReactModule(name = UIManagerModule.NAME)
 public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
+  public static final String TAG = UIManagerModule.class.getSimpleName();
 
   /** Enables lazy discovery of a specific {@link ViewManager} by its name. */
   public interface ViewManagerResolver {
@@ -993,9 +994,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event) {
+  public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap event) {
+    receiveEvent(-1, reactTag, eventName, event);
+  }
+
+  @Override
+  public void receiveEvent(
+      int surfaceId, int reactTag, String eventName, @Nullable WritableMap event) {
+    assert ViewUtil.getUIManagerType(reactTag) == DEFAULT;
     getReactApplicationContext()
         .getJSModule(RCTEventEmitter.class)
-        .receiveEvent(targetTag, eventName, event);
+        .receiveEvent(reactTag, eventName, event);
   }
 }
