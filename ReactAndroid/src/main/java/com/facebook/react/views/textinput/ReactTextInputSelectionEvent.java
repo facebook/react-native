@@ -11,6 +11,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.events.RCTModernEventEmitter;
 
 /** Event emitted by EditText native view when the text selection changes. */
 /* package */ class ReactTextInputSelectionEvent extends Event<ReactTextInputSelectionEvent> {
@@ -20,8 +21,14 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
   private int mSelectionStart;
   private int mSelectionEnd;
 
+  @Deprecated
   public ReactTextInputSelectionEvent(int viewId, int selectionStart, int selectionEnd) {
-    super(viewId);
+    this(-1, viewId, selectionStart, selectionEnd);
+  }
+
+  public ReactTextInputSelectionEvent(
+      int surfaceId, int viewId, int selectionStart, int selectionEnd) {
+    super(surfaceId, viewId);
     mSelectionStart = selectionStart;
     mSelectionEnd = selectionEnd;
   }
@@ -34,6 +41,12 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
+  }
+
+  @Override
+  public void dispatchV2(RCTModernEventEmitter rctEventEmitter) {
+    rctEventEmitter.receiveEvent(
+        getSurfaceId(), getViewTag(), getEventName(), serializeEventData());
   }
 
   private WritableMap serializeEventData() {

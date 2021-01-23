@@ -11,6 +11,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.events.RCTModernEventEmitter;
 
 /** Event emitted by EditText native view when content size changes. */
 public class ReactContentSizeChangedEvent extends Event<ReactTextChangedEvent> {
@@ -20,8 +21,14 @@ public class ReactContentSizeChangedEvent extends Event<ReactTextChangedEvent> {
   private float mContentWidth;
   private float mContentHeight;
 
+  @Deprecated
   public ReactContentSizeChangedEvent(int viewId, float contentSizeWidth, float contentSizeHeight) {
-    super(viewId);
+    this(-1, viewId, contentSizeWidth, contentSizeHeight);
+  }
+
+  public ReactContentSizeChangedEvent(
+      int surfaceId, int viewId, float contentSizeWidth, float contentSizeHeight) {
+    super(surfaceId, viewId);
     mContentWidth = contentSizeWidth;
     mContentHeight = contentSizeHeight;
   }
@@ -34,6 +41,12 @@ public class ReactContentSizeChangedEvent extends Event<ReactTextChangedEvent> {
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
+  }
+
+  @Override
+  public void dispatchV2(RCTModernEventEmitter rctEventEmitter) {
+    rctEventEmitter.receiveEvent(
+        getSurfaceId(), getViewTag(), getEventName(), serializeEventData());
   }
 
   private WritableMap serializeEventData() {

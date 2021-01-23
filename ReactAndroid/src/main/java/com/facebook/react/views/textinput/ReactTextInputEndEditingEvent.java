@@ -11,6 +11,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.events.RCTModernEventEmitter;
 
 /**
  * Event emitted by EditText native view when text editing ends, because of the user leaving the
@@ -22,8 +23,13 @@ class ReactTextInputEndEditingEvent extends Event<ReactTextInputEndEditingEvent>
 
   private String mText;
 
+  @Deprecated
   public ReactTextInputEndEditingEvent(int viewId, String text) {
-    super(viewId);
+    this(-1, viewId, text);
+  }
+
+  public ReactTextInputEndEditingEvent(int surfaceId, int viewId, String text) {
+    super(surfaceId, viewId);
     mText = text;
   }
 
@@ -40,6 +46,12 @@ class ReactTextInputEndEditingEvent extends Event<ReactTextInputEndEditingEvent>
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
+  }
+
+  @Override
+  public void dispatchV2(RCTModernEventEmitter rctEventEmitter) {
+    rctEventEmitter.receiveEvent(
+        getSurfaceId(), getViewTag(), getEventName(), serializeEventData());
   }
 
   private WritableMap serializeEventData() {

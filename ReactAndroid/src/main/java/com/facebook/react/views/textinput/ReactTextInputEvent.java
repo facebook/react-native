@@ -11,6 +11,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.events.RCTModernEventEmitter;
 
 /**
  * Event emitted by EditText native view when text changes. VisibleForTesting from {@link
@@ -25,9 +26,15 @@ public class ReactTextInputEvent extends Event<ReactTextInputEvent> {
   private int mRangeStart;
   private int mRangeEnd;
 
+  @Deprecated
   public ReactTextInputEvent(
       int viewId, String text, String previousText, int rangeStart, int rangeEnd) {
-    super(viewId);
+    this(-1, viewId, text, previousText, rangeStart, rangeEnd);
+  }
+
+  public ReactTextInputEvent(
+      int surfaceId, int viewId, String text, String previousText, int rangeStart, int rangeEnd) {
+    super(surfaceId, viewId);
     mText = text;
     mPreviousText = previousText;
     mRangeStart = rangeStart;
@@ -48,6 +55,12 @@ public class ReactTextInputEvent extends Event<ReactTextInputEvent> {
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
+  }
+
+  @Override
+  public void dispatchV2(RCTModernEventEmitter rctEventEmitter) {
+    rctEventEmitter.receiveEvent(
+        getSurfaceId(), getViewTag(), getEventName(), serializeEventData());
   }
 
   private WritableMap serializeEventData() {

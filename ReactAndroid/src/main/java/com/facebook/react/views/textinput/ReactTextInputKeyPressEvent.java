@@ -11,6 +11,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.events.RCTModernEventEmitter;
 
 /** Event emitted by EditText native view when key pressed */
 public class ReactTextInputKeyPressEvent extends Event<ReactTextInputEvent> {
@@ -19,8 +20,13 @@ public class ReactTextInputKeyPressEvent extends Event<ReactTextInputEvent> {
 
   private String mKey;
 
+  @Deprecated
   ReactTextInputKeyPressEvent(int viewId, final String key) {
-    super(viewId);
+    this(-1, viewId, key);
+  }
+
+  ReactTextInputKeyPressEvent(int surfaceId, int viewId, final String key) {
+    super(surfaceId, viewId);
     mKey = key;
   }
 
@@ -38,6 +44,12 @@ public class ReactTextInputKeyPressEvent extends Event<ReactTextInputEvent> {
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
+  }
+
+  @Override
+  public void dispatchV2(RCTModernEventEmitter rctEventEmitter) {
+    rctEventEmitter.receiveEvent(
+        getSurfaceId(), getViewTag(), getEventName(), serializeEventData());
   }
 
   private WritableMap serializeEventData() {
