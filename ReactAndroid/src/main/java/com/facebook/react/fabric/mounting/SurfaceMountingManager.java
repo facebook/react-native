@@ -43,6 +43,7 @@ import javax.annotation.Nullable;
 
 public class SurfaceMountingManager {
   public static final String TAG = SurfaceMountingManager.class.getSimpleName();
+
   private static final boolean SHOW_CHANGED_VIEW_HIERARCHIES = ReactBuildConfig.DEBUG && false;
   private static final long KEEPALIVE_MILLISECONDS = 1000;
 

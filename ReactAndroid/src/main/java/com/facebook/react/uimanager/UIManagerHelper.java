@@ -151,6 +151,42 @@ public class UIManagerHelper {
   }
 
   /**
+   * @return Get the ThemedReactContext associated with a View, if possible, and then call
+   *     getSurfaceId on it. See above (getReactContext) for additional context.
+   */
+  public static int getSurfaceId(View view) {
+    int reactTag = view.getId();
+
+    // In non-Fabric we don't have (or use) SurfaceId
+    if (getUIManagerType(reactTag) == UIManagerType.DEFAULT) {
+      return -1;
+    }
+
+    Context context = view.getContext();
+    if (!(context instanceof ThemedReactContext) && context instanceof ContextWrapper) {
+      context = ((ContextWrapper) context).getBaseContext();
+    }
+
+    int surfaceId = getSurfaceId(context);
+
+    // All Fabric-managed Views (should) have a ThemedReactContext attached.
+    if (surfaceId == -1) {
+      ReactSoftException.logSoftException(
+          "UIManagerHelper",
+          new IllegalStateException(
+              "Fabric View [" + reactTag + "] does not have SurfaceId associated with it"));
+    }
+    return surfaceId;
+  }
+
+  public static int getSurfaceId(Context context) {
+    if (context instanceof ThemedReactContext) {
+      return ((ThemedReactContext) context).getSurfaceId();
+    }
+    return -1;
+  }
+
+  /**
    * @return the default padding used by Android EditText's. This method returns the padding in an
    *     array to avoid extra classloading during hot-path of RN Android.
    */

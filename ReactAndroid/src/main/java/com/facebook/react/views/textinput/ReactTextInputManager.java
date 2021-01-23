@@ -1131,8 +1131,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     @Override
     public void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert) {
       if (mPreviousHoriz != horiz || mPreviousVert != vert) {
+        int surfaceId = UIManagerHelper.getSurfaceId(mReactEditText);
         ScrollEvent event =
             ScrollEvent.obtain(
+                surfaceId,
                 mReactEditText.getId(),
                 ScrollEventType.SCROLL,
                 horiz,
