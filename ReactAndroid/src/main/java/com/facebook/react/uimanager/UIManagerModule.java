@@ -436,6 +436,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Registers a new root view. JS can use the returned tag with manageChildren to add/remove
    * children to this view.
    *
+   * <p>Calling addRootView through UIManagerModule calls addRootView in the non-Fabric renderer,
+   * always. This is deprecated in favor of calling startSurface in Fabric, which must be done
+   * directly through the FabricUIManager.
+   *
    * <p>Note that this must be called after getWidth()/getHeight() actually return something. See
    * CatalystApplicationFragment as an example.
    *

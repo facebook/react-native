@@ -18,9 +18,10 @@ import java.util.List;
 
 public interface UIManager extends JSIModule, PerformanceCounter {
 
-  /** Registers a new root view. */
+  /** Registers a new root view. @Deprecated call startSurface instead */
   @UiThread
   @ThreadConfined(UI)
+  @Deprecated
   <T extends View> int addRootView(
       final T rootView, WritableMap initialProps, @Nullable String initialUITemplate);
 

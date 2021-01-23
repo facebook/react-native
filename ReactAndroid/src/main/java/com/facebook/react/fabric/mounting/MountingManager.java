@@ -107,7 +107,7 @@ public class MountingManager {
    * @param rootView
    */
   @AnyThread
-  public void addRootView(
+  public void startSurface(
       final int surfaceId, @NonNull final View rootView, ThemedReactContext themedReactContext) {
     SurfaceMountingManager surfaceMountingManager =
         new SurfaceMountingManager(
