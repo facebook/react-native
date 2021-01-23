@@ -13,6 +13,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.events.RCTModernEventEmitter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -35,8 +36,35 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   private final int mLoaded;
   private final int mTotal;
 
+  @Deprecated
   public static final ImageLoadEvent createLoadStartEvent(int viewId) {
-    return new ImageLoadEvent(viewId, ON_LOAD_START);
+    return createLoadStartEvent(-1, viewId);
+  }
+
+  @Deprecated
+  public static final ImageLoadEvent createProgressEvent(
+      int viewId, @Nullable String imageUri, int loaded, int total) {
+    return createProgressEvent(-1, viewId, imageUri, loaded, total);
+  }
+
+  @Deprecated
+  public static final ImageLoadEvent createLoadEvent(
+      int viewId, @Nullable String imageUri, int width, int height) {
+    return createLoadEvent(-1, viewId, imageUri, width, height);
+  }
+
+  @Deprecated
+  public static final ImageLoadEvent createErrorEvent(int viewId, Throwable throwable) {
+    return createErrorEvent(-1, viewId, throwable);
+  }
+
+  @Deprecated
+  public static final ImageLoadEvent createLoadEndEvent(int viewId) {
+    return createLoadEndEvent(-1, viewId);
+  }
+
+  public static final ImageLoadEvent createLoadStartEvent(int surfaceId, int viewId) {
+    return new ImageLoadEvent(surfaceId, viewId, ON_LOAD_START);
   }
 
   /**
@@ -45,28 +73,31 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
    * @param total Amount that `loaded` will be when the image is fully loaded.
    */
   public static final ImageLoadEvent createProgressEvent(
-      int viewId, @Nullable String imageUri, int loaded, int total) {
-    return new ImageLoadEvent(viewId, ON_PROGRESS, null, imageUri, 0, 0, loaded, total);
+      int surfaceId, int viewId, @Nullable String imageUri, int loaded, int total) {
+    return new ImageLoadEvent(surfaceId, viewId, ON_PROGRESS, null, imageUri, 0, 0, loaded, total);
   }
 
   public static final ImageLoadEvent createLoadEvent(
-      int viewId, @Nullable String imageUri, int width, int height) {
-    return new ImageLoadEvent(viewId, ON_LOAD, null, imageUri, width, height, 0, 0);
+      int surfaceId, int viewId, @Nullable String imageUri, int width, int height) {
+    return new ImageLoadEvent(surfaceId, viewId, ON_LOAD, null, imageUri, width, height, 0, 0);
   }
 
-  public static final ImageLoadEvent createErrorEvent(int viewId, Throwable throwable) {
-    return new ImageLoadEvent(viewId, ON_ERROR, throwable.getMessage(), null, 0, 0, 0, 0);
+  public static final ImageLoadEvent createErrorEvent(
+      int surfaceId, int viewId, Throwable throwable) {
+    return new ImageLoadEvent(
+        surfaceId, viewId, ON_ERROR, throwable.getMessage(), null, 0, 0, 0, 0);
   }
 
-  public static final ImageLoadEvent createLoadEndEvent(int viewId) {
-    return new ImageLoadEvent(viewId, ON_LOAD_END);
+  public static final ImageLoadEvent createLoadEndEvent(int surfaceId, int viewId) {
+    return new ImageLoadEvent(surfaceId, viewId, ON_LOAD_END);
   }
 
-  private ImageLoadEvent(int viewId, @ImageEventType int eventType) {
-    this(viewId, eventType, null, null, 0, 0, 0, 0);
+  private ImageLoadEvent(int surfaceId, int viewId, @ImageEventType int eventType) {
+    this(surfaceId, viewId, eventType, null, null, 0, 0, 0, 0);
   }
 
   private ImageLoadEvent(
+      int surfaceId,
       int viewId,
       @ImageEventType int eventType,
       @Nullable String errorMessage,
@@ -75,7 +106,7 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
       int height,
       int loaded,
       int total) {
-    super(viewId);
+    super(surfaceId, viewId);
     mEventType = eventType;
     mErrorMessage = errorMessage;
     mSourceUri = sourceUri;
@@ -116,6 +147,15 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
+    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), getEventData());
+  }
+
+  @Override
+  public void dispatchV2(RCTModernEventEmitter rctEventEmitter) {
+    rctEventEmitter.receiveEvent(getSurfaceId(), getViewTag(), getEventName(), getEventData());
+  }
+
+  private WritableMap getEventData() {
     WritableMap eventData = null;
 
     switch (mEventType) {
@@ -134,7 +174,7 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
         break;
     }
 
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), eventData);
+    return eventData;
   }
 
   private WritableMap createEventDataSource() {
