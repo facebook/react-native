@@ -766,6 +766,9 @@ public class SurfaceMountingManager {
   }
 
   private @Nullable ViewState getNullableViewState(int tag) {
+    if (mTagToViewState == null) {
+      return null;
+    }
     return mTagToViewState.get(tag);
   }
 
