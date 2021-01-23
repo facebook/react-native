@@ -13,6 +13,7 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
+/** Deprecated in favor of RCTModernEventEmitter, which extends this interface. */
 @DoNotStrip
 @Deprecated
 public interface RCTEventEmitter extends JavaScriptModule {

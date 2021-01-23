@@ -9,6 +9,7 @@ package com.facebook.react.fabric.events;
 
 import static com.facebook.react.uimanager.events.TouchesHelper.CHANGED_TOUCHES_KEY;
 import static com.facebook.react.uimanager.events.TouchesHelper.TARGET_KEY;
+import static com.facebook.react.uimanager.events.TouchesHelper.TARGET_SURFACE_KEY;
 import static com.facebook.react.uimanager.events.TouchesHelper.TOP_TOUCH_CANCEL_KEY;
 import static com.facebook.react.uimanager.events.TouchesHelper.TOP_TOUCH_END_KEY;
 import static com.facebook.react.uimanager.events.TouchesHelper.TOUCHES_KEY;
@@ -76,14 +77,15 @@ public class FabricEventEmitter implements RCTModernEventEmitter {
       touch.putArray(TOUCHES_KEY, copyWritableArray(touches));
       WritableMap nativeEvent = touch;
       int rootNodeID = 0;
-      int target = nativeEvent.getInt(TARGET_KEY);
-      if (target < 1) {
+      int targetSurfaceId = nativeEvent.getInt(TARGET_SURFACE_KEY);
+      int targetReactTag = nativeEvent.getInt(TARGET_KEY);
+      if (targetReactTag < 1) {
         FLog.e(TAG, "A view is reporting that a touch occurred on tag zero.");
       } else {
-        rootNodeID = target;
+        rootNodeID = targetReactTag;
       }
 
-      receiveEvent(rootNodeID, eventTopLevelType, touch);
+      receiveEvent(targetSurfaceId, rootNodeID, eventTopLevelType, touch);
     }
   }
 

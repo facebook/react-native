@@ -263,6 +263,11 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
     mReactEventEmitter.register(uiManagerType, eventEmitter);
   }
 
+  public void registerEventEmitter(
+      @UIManagerType int uiManagerType, RCTModernEventEmitter eventEmitter) {
+    mReactEventEmitter.register(uiManagerType, eventEmitter);
+  }
+
   public void unregisterEventEmitter(@UIManagerType int uiManagerType) {
     mReactEventEmitter.unregister(uiManagerType);
   }
@@ -361,7 +366,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
               }
               Systrace.endAsyncFlow(
                   Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, event.getEventName(), event.getUniqueID());
-              event.dispatch(mReactEventEmitter);
+              event.dispatchV2(mReactEventEmitter);
               event.dispose();
             }
             clearEventsToDispatch();
