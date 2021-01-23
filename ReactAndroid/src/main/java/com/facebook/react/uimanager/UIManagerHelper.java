@@ -93,7 +93,13 @@ public class UIManagerHelper {
    */
   @Nullable
   public static EventDispatcher getEventDispatcherForReactTag(ReactContext context, int reactTag) {
-    return getEventDispatcher(context, getUIManagerType(reactTag));
+    EventDispatcher eventDispatcher = getEventDispatcher(context, getUIManagerType(reactTag));
+    if (eventDispatcher == null) {
+      ReactSoftException.logSoftException(
+          "UIManagerHelper",
+          new IllegalStateException("Cannot get EventDispatcher for reactTag " + reactTag));
+    }
+    return eventDispatcher;
   }
 
   /**
@@ -112,6 +118,10 @@ public class UIManagerHelper {
     }
     UIManager uiManager = getUIManager(context, uiManagerType, false);
     if (uiManager == null) {
+      ReactSoftException.logSoftException(
+          "UIManagerHelper",
+          new ReactNoCrashSoftException(
+              "Unable to find UIManager for UIManagerType " + uiManagerType));
       return null;
     }
     EventDispatcher eventDispatcher = (EventDispatcher) uiManager.getEventDispatcher();
