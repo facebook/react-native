@@ -188,7 +188,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     ThemedReactContext reactContext =
         new ThemedReactContext(
-            mReactApplicationContext, rootView.getContext(), reactRootView.getSurfaceID());
+            mReactApplicationContext, rootView.getContext(), reactRootView.getSurfaceID(), rootTag);
     mMountingManager.startSurface(rootTag, rootView, reactContext);
     String moduleName = reactRootView.getJSModuleName();
     if (ENABLE_FABRIC_LOGS) {
@@ -220,7 +220,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     Context context = rootView.getContext();
     ThemedReactContext reactContext =
-        new ThemedReactContext(mReactApplicationContext, context, moduleName);
+        new ThemedReactContext(mReactApplicationContext, context, moduleName, rootTag);
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }

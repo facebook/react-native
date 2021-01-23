@@ -451,9 +451,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.addRootView");
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+
+    // We pass in a surfaceId of -1 here - it is used only in Fabric.
     final ThemedReactContext themedRootContext =
         new ThemedReactContext(
-            reactApplicationContext, rootView.getContext(), ((ReactRoot) rootView).getSurfaceID());
+            reactApplicationContext,
+            rootView.getContext(),
+            ((ReactRoot) rootView).getSurfaceID(),
+            -1);
 
     mUIImplementation.registerRootView(rootView, tag, themedRootContext);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);

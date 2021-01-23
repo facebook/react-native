@@ -20,9 +20,9 @@ public interface ReactCallerContextFactory {
   /**
    * This method will be called at the time {@link ReactImageManager} creates {@link ReactImageView}
    *
-   * @param surfaceID {@link String} used to log the name of the surface
+   * @param surfaceName {@link String} used to log the name of the surface
    * @return an {@link Object} that represents the CallerContext.
    */
   @Nullable
-  Object getOrCreateCallerContext(@Nullable String surfaceID, @Nullable String analyticTag);
+  Object getOrCreateCallerContext(@Nullable String surfaceName, @Nullable String analyticTag);
 }
