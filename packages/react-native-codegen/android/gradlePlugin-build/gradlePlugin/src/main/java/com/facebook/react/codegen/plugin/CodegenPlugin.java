@@ -12,7 +12,6 @@ import com.facebook.react.codegen.generator.JavaGenerator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.File;
-import org.apache.log4j.Logger;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -24,8 +23,6 @@ import org.gradle.api.tasks.Exec;
  * more information: https://docs.gradle.org/6.5.1/javadoc/org/gradle/api/Project.html
  */
 public class CodegenPlugin implements Plugin<Project> {
-
-  Logger logger = Logger.getLogger(getClass());
 
   public void apply(final Project project) {
     final CodegenPluginExtension extension =
@@ -49,8 +46,6 @@ public class CodegenPlugin implements Plugin<Project> {
                   s -> {
                     generatedSrcDir.delete();
                     generatedSrcDir.mkdirs();
-                    logger.warn(
-                        "[Gradle] Codegen command on execution: " + ((Exec) s).getCommandLine());
                   });
 
               task.getInputs()
@@ -65,13 +60,15 @@ public class CodegenPlugin implements Plugin<Project> {
                               ImmutableList.of("**/*.js"))));
               task.getOutputs().file(generatedSchemaFile);
 
-              task.executable("yarn")
-                  .args(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
-                  .args(extension.codegenGenerateSchemaCLI().getAbsolutePath())
-                  .args(generatedSchemaFile.getAbsolutePath())
-                  .args(extension.jsRootDir.getAbsolutePath());
-
-              logger.warn("[Gradle] Codegen command on configure: " + task.getCommandLine());
+              ImmutableList<String> execCommands =
+                  new ImmutableList.Builder<String>()
+                      .add("yarn")
+                      .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
+                      .add(extension.codegenGenerateSchemaCLI().getAbsolutePath())
+                      .add(generatedSchemaFile.getAbsolutePath())
+                      .add(extension.jsRootDir.getAbsolutePath())
+                      .build();
+              task.commandLine(execCommands);
             });
 
     // 3. Task: generate Java code from schema.
