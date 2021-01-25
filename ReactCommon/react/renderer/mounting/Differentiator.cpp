@@ -774,14 +774,14 @@ static void calculateShadowViewMutationsV2(
   auto updateMutations = ShadowViewMutation::List{};
   auto downwardMutations = ShadowViewMutation::List{};
   auto destructiveDownwardMutations = ShadowViewMutation::List{};
-  auto mutationInstructionContainer =
-      OrderedMutationInstructionContainer{createMutations,
-                                          deleteMutations,
-                                          insertMutations,
-                                          removeMutations,
-                                          updateMutations,
-                                          downwardMutations,
-                                          destructiveDownwardMutations};
+  auto mutationInstructionContainer = OrderedMutationInstructionContainer{
+      createMutations,
+      deleteMutations,
+      insertMutations,
+      removeMutations,
+      updateMutations,
+      downwardMutations,
+      destructiveDownwardMutations};
 
   DEBUG_LOGS({
     LOG(ERROR) << "Differ Entry: Child Pairs of node: [" << parentShadowView.tag

@@ -13,9 +13,23 @@
 import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
 
+type StatusBarFrameChangeEvent = {
+  frame: {
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  },
+};
+
+type StatusBarIOSEventDefinitions = {
+  statusBarFrameDidChange: [StatusBarFrameChangeEvent],
+  statusBarFrameWillChange: [StatusBarFrameChangeEvent],
+};
+
 /**
  * Use `StatusBar` for mutating the status bar.
  */
-class StatusBarIOS extends NativeEventEmitter<$FlowFixMe> {}
+class StatusBarIOS extends NativeEventEmitter<StatusBarIOSEventDefinitions> {}
 
 module.exports = (new StatusBarIOS(NativeStatusBarManagerIOS): StatusBarIOS);

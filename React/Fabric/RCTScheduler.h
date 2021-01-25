@@ -31,6 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
                         commandName:(std::string const &)commandName
                                args:(folly::dynamic const)args;
 
+- (void)schedulerDidSendAccessibilityEvent:(facebook::react::ShadowView const &)shadowView
+                                 eventType:(std::string const &)eventType;
+
 @end
 
 /**

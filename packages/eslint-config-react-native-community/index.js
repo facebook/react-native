@@ -81,6 +81,7 @@ module.exports = {
     __DEV__: true,
     __dirname: false,
     __fbBatchedBridgeConfig: false,
+    AbortController: false,
     alert: false,
     cancelAnimationFrame: false,
     cancelIdleCallback: false,

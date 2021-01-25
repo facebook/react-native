@@ -18,13 +18,17 @@ import NativeIntentAndroid from './NativeIntentAndroid';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 
+type LinkingEventDefinitions = {
+  url: [{url: string}],
+};
+
 /**
  * `Linking` gives you a general interface to interact with both incoming
  * and outgoing app links.
  *
  * See https://reactnative.dev/docs/linking.html
  */
-class Linking extends NativeEventEmitter<$FlowFixMe> {
+class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
   constructor() {
     super(Platform.OS === 'ios' ? nullthrows(NativeLinkingManager) : undefined);
   }
@@ -35,8 +39,12 @@ class Linking extends NativeEventEmitter<$FlowFixMe> {
    *
    * See https://reactnative.dev/docs/linking.html#addeventlistener
    */
-  addEventListener<T>(type: string, handler: T) {
-    this.addListener(type, handler);
+  addEventListener<K: $Keys<LinkingEventDefinitions>>(
+    eventType: K,
+    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
+    context: $FlowFixMe,
+  ): void {
+    this.addListener(eventType, listener);
   }
 
   /**
@@ -44,8 +52,11 @@ class Linking extends NativeEventEmitter<$FlowFixMe> {
    *
    * See https://reactnative.dev/docs/linking.html#removeeventlistener
    */
-  removeEventListener<T>(type: string, handler: T) {
-    this.removeListener(type, handler);
+  removeEventListener<K: $Keys<LinkingEventDefinitions>>(
+    eventType: K,
+    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
+  ): void {
+    this.removeListener(eventType, listener);
   }
 
   /**

@@ -185,9 +185,9 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
   auto unifiedComponentName = componentNameByReactViewName(viewName);
   auto const &componentDescriptor = this->at(unifiedComponentName);
 
-  auto family = componentDescriptor.createFamily(
-      ShadowNodeFamilyFragment{tag, surfaceId, nullptr},
-      std::move(eventTarget));
+  auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
+  auto family =
+      componentDescriptor.createFamily(fragment, std::move(eventTarget));
   auto const props =
       componentDescriptor.cloneProps(nullptr, RawProps(propsDynamic));
   auto const state =

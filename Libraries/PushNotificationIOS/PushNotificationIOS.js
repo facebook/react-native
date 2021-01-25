@@ -14,7 +14,31 @@ import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativePushNotificationManagerIOS from './NativePushNotificationManagerIOS';
 import invariant from 'invariant';
 
-const PushNotificationEmitter = new NativeEventEmitter<$FlowFixMe>(
+type NativePushNotificationIOSEventDefinitions = {
+  remoteNotificationReceived: [
+    {
+      notificationId: string,
+      remote: boolean,
+      ...
+    },
+  ],
+  remoteNotificationsRegistered: [
+    {
+      deviceToken?: ?string,
+      ...
+    },
+  ],
+  remoteNotificationRegistrationError: [
+    {
+      message: string,
+      code: number,
+      details: {...},
+    },
+  ],
+  localNotificationReceived: [{...}],
+};
+
+const PushNotificationEmitter = new NativeEventEmitter<NativePushNotificationIOSEventDefinitions>(
   NativePushNotificationManagerIOS,
 );
 

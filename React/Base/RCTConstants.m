@@ -54,3 +54,18 @@ void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 {
   RCTExperimentPreemptiveViewAllocationDisabled = value;
 }
+
+/*
+ * Release resources when app enters background
+ */
+static BOOL RCTExperimentReleaseResourcesWhenBackgrounded = NO;
+
+BOOL RCTExperimentGetReleaseResourcesWhenBackgrounded()
+{
+  return RCTExperimentReleaseResourcesWhenBackgrounded;
+}
+
+void RCTExperimentSetReleaseResourcesWhenBackgrounded(BOOL value)
+{
+  RCTExperimentReleaseResourcesWhenBackgrounded = value;
+}

@@ -55,9 +55,11 @@ export default function splitLayoutProps(
         case 'bottom':
         case 'top':
         case 'transform':
+          // $FlowFixMe[cannot-write]
           outer[prop] = props[prop];
           break;
         default:
+          // $FlowFixMe[cannot-write]
           inner[prop] = props[prop];
           break;
       }

@@ -27,13 +27,7 @@ TurboModuleBinding::TurboModuleBinding(
 
 void TurboModuleBinding::install(
     jsi::Runtime &runtime,
-    const TurboModuleProviderFunctionType &&moduleProvider,
-    bool enableJSTurboModuleCodegen) {
-  runtime.global().setProperty(
-      runtime,
-      "RN$JSTurboModuleCodegenEnabled",
-      jsi::Value(enableJSTurboModuleCodegen));
-
+    const TurboModuleProviderFunctionType &&moduleProvider) {
   runtime.global().setProperty(
       runtime,
       "__turboModuleProxy",
@@ -56,12 +50,11 @@ TurboModuleBinding::~TurboModuleBinding() {
 }
 
 std::shared_ptr<TurboModule> TurboModuleBinding::getModule(
-    const std::string &name,
-    const jsi::Value *schema) {
+    const std::string &name) {
   std::shared_ptr<TurboModule> module = nullptr;
   {
     SystraceSection s("TurboModuleBinding::getModule", "module", name);
-    module = moduleProvider_(name, schema);
+    module = moduleProvider_(name);
   }
   return module;
 }
@@ -78,10 +71,7 @@ jsi::Value TurboModuleBinding::jsProxy(
   std::string moduleName = args[0].getString(runtime).utf8(runtime);
   jsi::Value nullSchema = jsi::Value::undefined();
 
-  std::shared_ptr<TurboModule> module =
-      (count >= 2 ? getModule(moduleName, &args[1])
-                  : getModule(moduleName, &nullSchema));
-
+  std::shared_ptr<TurboModule> module = getModule(moduleName);
   if (module == nullptr) {
     return jsi::Value::null();
   }

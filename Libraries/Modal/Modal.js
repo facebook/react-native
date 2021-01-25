@@ -29,9 +29,13 @@ import type {DirectEventHandler} from '../Types/CodegenTypes';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
 
+type ModalEventDefinitions = {
+  modalDismissed: [{modalID: number}],
+};
+
 const ModalEventEmitter =
   Platform.OS === 'ios' && NativeModalManager != null
-    ? new NativeEventEmitter<$FlowFixMe>(NativeModalManager)
+    ? new NativeEventEmitter<ModalEventDefinitions>(NativeModalManager)
     : null;
 
 /**

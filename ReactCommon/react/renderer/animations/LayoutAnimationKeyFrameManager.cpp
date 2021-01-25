@@ -119,12 +119,13 @@ static better::optional<AnimationConfig> parseAnimationConfig(
     double defaultDuration,
     bool parsePropertyType) {
   if (config.empty() || !config.isObject()) {
-    return AnimationConfig{AnimationType::Linear,
-                           AnimationProperty::NotApplicable,
-                           defaultDuration,
-                           0,
-                           0,
-                           0};
+    return AnimationConfig{
+        AnimationType::Linear,
+        AnimationProperty::NotApplicable,
+        defaultDuration,
+        0,
+        0,
+        0};
   }
 
   auto const typeIt = config.find("type");
@@ -219,12 +220,13 @@ static better::optional<AnimationConfig> parseAnimationConfig(
     }
   }
 
-  return better::optional<AnimationConfig>(AnimationConfig{*animationType,
-                                                           animationProperty,
-                                                           duration,
-                                                           delay,
-                                                           springDamping,
-                                                           initialVelocity});
+  return better::optional<AnimationConfig>(AnimationConfig{
+      *animationType,
+      animationProperty,
+      duration,
+      delay,
+      springDamping,
+      initialVelocity});
 }
 
 // Parse animation config from JS
@@ -291,14 +293,14 @@ void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
   if (layoutAnimationConfig) {
     std::lock_guard<std::mutex> lock(currentAnimationMutex_);
 
-    currentAnimation_ = better::optional<LayoutAnimation>{
-        LayoutAnimation{-1,
-                        0,
-                        false,
-                        *layoutAnimationConfig,
-                        successCallback,
-                        failureCallback,
-                        {}}};
+    currentAnimation_ = better::optional<LayoutAnimation>{LayoutAnimation{
+        -1,
+        0,
+        false,
+        *layoutAnimationConfig,
+        successCallback,
+        failureCallback,
+        {}}};
   } else {
     LOG(ERROR) << "Parsing LayoutAnimationConfig failed: "
                << (folly::dynamic)config;
@@ -372,8 +374,9 @@ LayoutAnimationKeyFrameManager::calculateAnimationProgress(
   } else if (mutationConfig.animationType == AnimationType::EaseInEaseOut) {
     // This is a combination of accelerate+decelerate.
     // The animation starts and ends slowly, and speeds up in the middle.
-    return {linearTimeProgression,
-            cos((linearTimeProgression + 1.0) * PI) / 2 + 0.5};
+    return {
+        linearTimeProgression,
+        cos((linearTimeProgression + 1.0) * PI) / 2 + 0.5};
   } else if (mutationConfig.animationType == AnimationType::Spring) {
     // Using mSpringDamping in this equation is not really the exact
     // mathematical springDamping, but a good approximation We need to replace
@@ -926,13 +929,13 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             mutationConfig.animationType != AnimationType::None;
 
         if (wasInsertedTagRemoved && haveConfiguration) {
-          movesToAnimate.push_back(
-              AnimationKeyFrame{{},
-                                AnimationConfigurationType::Update,
-                                mutation.newChildShadowView.tag,
-                                mutation.parentShadowView,
-                                movedIt->second.oldChildShadowView,
-                                mutation.newChildShadowView});
+          movesToAnimate.push_back(AnimationKeyFrame{
+              {},
+              AnimationConfigurationType::Update,
+              mutation.newChildShadowView.tag,
+              mutation.parentShadowView,
+              movedIt->second.oldChildShadowView,
+              mutation.newChildShadowView});
         }
 
         // Creates and inserts should also be executed immediately.
@@ -1019,14 +1022,15 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               viewStart.props = props;
             }
 
-            keyFrame = AnimationKeyFrame{{},
-                                         AnimationConfigurationType::Create,
-                                         tag,
-                                         parent,
-                                         viewStart,
-                                         viewFinal,
-                                         baselineShadowView,
-                                         0};
+            keyFrame = AnimationKeyFrame{
+                {},
+                AnimationConfigurationType::Create,
+                tag,
+                parent,
+                viewStart,
+                viewFinal,
+                baselineShadowView,
+                0};
           } else if (mutation.type == ShadowViewMutation::Type::Delete) {
             if (mutationConfig.animationProperty ==
                     AnimationProperty::Opacity &&
@@ -1221,12 +1225,12 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
         if (keyFrame.finalMutationForKeyFrame.hasValue()) {
           auto &finalMutation = *keyFrame.finalMutationForKeyFrame;
-          auto mutationInstruction =
-              ShadowViewMutation{finalMutation.type,
-                                 finalMutation.parentShadowView,
-                                 keyFrame.viewPrev,
-                                 finalMutation.newChildShadowView,
-                                 finalMutation.index};
+          auto mutationInstruction = ShadowViewMutation{
+              finalMutation.type,
+              finalMutation.parentShadowView,
+              keyFrame.viewPrev,
+              finalMutation.newChildShadowView,
+              finalMutation.index};
           PrintMutationInstruction(
               "Queueing up final mutation instruction - update:",
               mutationInstruction);
@@ -1409,11 +1413,12 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       for (auto const &keyFrame : conflictingAnimations) {
         if (keyFrame.finalMutationForKeyFrame.hasValue()) {
           auto &finalMutation = (*keyFrame.finalMutationForKeyFrame);
-          auto mutation = ShadowViewMutation{finalMutation.type,
-                                             finalMutation.parentShadowView,
-                                             keyFrame.viewPrev,
-                                             finalMutation.newChildShadowView,
-                                             finalMutation.index};
+          auto mutation = ShadowViewMutation{
+              finalMutation.type,
+              finalMutation.parentShadowView,
+              keyFrame.viewPrev,
+              finalMutation.newChildShadowView,
+              finalMutation.index};
           PrintMutationInstruction(
               "No Animation: Queueing up final conflicting mutation instruction",
               mutation);

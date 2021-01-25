@@ -144,6 +144,10 @@ class UIManager final : public ShadowTreeDelegate {
       std::string const &commandName,
       folly::dynamic const args) const;
 
+  void sendAccessibilityEvent(
+      const ShadowNode::Shared &shadowNode,
+      std::string const &eventType);
+
   /**
    * Configure a LayoutAnimation to happen on the next commit.
    * This API configures a global LayoutAnimation starting from the root node.

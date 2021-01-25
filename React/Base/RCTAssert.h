@@ -154,13 +154,12 @@ RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *>
  */
 #if DEBUG
 
-#define RCTAssertThread(thread, format...)                                                                          \
-  _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"") RCTAssert(     \
-      [(id)thread isKindOfClass:[NSString class]]                                                                   \
-          ? [RCTCurrentThreadName() isEqualToString:(NSString *)thread]                                             \
-          : [(id)thread isKindOfClass:[NSThread class]] ? [NSThread currentThread] == (NSThread *)thread            \
-                                                        : dispatch_get_current_queue() == (dispatch_queue_t)thread, \
-      format);                                                                                                      \
+#define RCTAssertThread(thread, format...)                                                                            \
+  _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"") RCTAssert(       \
+      [(id)thread isKindOfClass:[NSString class]]       ? [RCTCurrentThreadName() isEqualToString:(NSString *)thread] \
+          : [(id)thread isKindOfClass:[NSThread class]] ? [NSThread currentThread] == (NSThread *)thread              \
+                                                        : dispatch_get_current_queue() == (dispatch_queue_t)thread,   \
+      format);                                                                                                        \
   _Pragma("clang diagnostic pop")
 
 #else

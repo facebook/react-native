@@ -97,7 +97,12 @@ Scheduler::Scheduler(
           componentDescriptorRegistry_));
 
   delegate_ = delegate;
+  commitHooks_ = schedulerToolbox.commitHooks;
   uiManager_ = uiManager;
+
+  for (auto commitHook : commitHooks_) {
+    uiManager->registerCommitHook(*commitHook);
+  }
 
   if (animationDelegate != nullptr) {
     animationDelegate->setComponentDescriptorRegistry(
@@ -117,6 +122,10 @@ Scheduler::Scheduler(
 Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
+
+  for (auto commitHook : commitHooks_) {
+    uiManager_->unregisterCommitHook(*commitHook);
+  }
 
   // All Surfaces must be explicitly stopped before destroying `Scheduler`.
   // The idea is that `UIManager` is allowed to call `Scheduler` only if the
@@ -356,6 +365,17 @@ void Scheduler::uiManagerDidDispatchCommand(
   if (delegate_) {
     auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
+  }
+}
+
+void Scheduler::uiManagerDidSendAccessibilityEvent(
+    const ShadowNode::Shared &shadowNode,
+    std::string const &eventType) {
+  SystraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
+
+  if (delegate_) {
+    auto shadowView = ShadowView(*shadowNode);
+    delegate_->schedulerDidSendAccessibilityEvent(shadowView, eventType);
   }
 }
 

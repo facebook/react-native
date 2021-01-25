@@ -111,6 +111,9 @@ class Scheduler final : public UIManagerDelegate {
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) override;
+  void uiManagerDidSendAccessibilityEvent(
+      const ShadowNode::Shared &shadowNode,
+      std::string const &eventType) override;
   void uiManagerDidSetJSResponder(
       SurfaceId surfaceId,
       const ShadowNode::Shared &shadowView,
@@ -124,6 +127,8 @@ class Scheduler final : public UIManagerDelegate {
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
+
+  std::vector<std::shared_ptr<UIManagerCommitHook const>> commitHooks_;
 
   /*
    * At some point, we have to have an owning shared pointer to something that

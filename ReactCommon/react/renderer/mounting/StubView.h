@@ -31,6 +31,7 @@ class StubView final {
 
   ComponentName componentName;
   ComponentHandle componentHandle;
+  SurfaceId surfaceId;
   Tag tag;
   SharedProps props;
   SharedEventEmitter eventEmitter;

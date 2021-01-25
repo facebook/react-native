@@ -56,6 +56,10 @@ class MultiColumnExample extends React.PureComponent<
   _onChangeNumColumns = numColumns => {
     this.setState(() => ({numColumns: Number(numColumns)}));
   };
+
+  _setBooleanValue: string => boolean => void = key => value =>
+    this.setState({[key]: value});
+
   render(): React.Node {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = item =>
@@ -81,9 +85,21 @@ class MultiColumnExample extends React.PureComponent<
             />
           </View>
           <View style={styles.row}>
-            {renderSmallSwitchOption(this, 'virtualized')}
-            {renderSmallSwitchOption(this, 'fixedHeight')}
-            {renderSmallSwitchOption(this, 'logViewable')}
+            {renderSmallSwitchOption(
+              'Virtualized',
+              this.state.virtualized,
+              this._setBooleanValue('virtualized'),
+            )}
+            {renderSmallSwitchOption(
+              'Fixed Height',
+              this.state.fixedHeight,
+              this._setBooleanValue('fixedHeight'),
+            )}
+            {renderSmallSwitchOption(
+              'Log Viewable',
+              this.state.logViewable,
+              this._setBooleanValue('logViewable'),
+            )}
           </View>
         </View>
         <SeparatorComponent />
@@ -151,8 +167,18 @@ class MultiColumnExample extends React.PureComponent<
       );
     }
   };
+
   _pressItem = (key: string) => {
-    pressItem(this, key);
+    const index = Number(key);
+    const itemState = pressItem(this.state.data[index]);
+    this.setState(state => ({
+      ...state,
+      data: [
+        ...state.data.slice(0, index),
+        itemState,
+        ...state.data.slice(index + 1),
+      ],
+    }));
   };
 }
 
