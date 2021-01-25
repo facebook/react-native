@@ -67,7 +67,6 @@ class ShadowTree final {
       SurfaceId surfaceId,
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext,
-      RootComponentDescriptor const &rootComponentDescriptor,
       ShadowTreeDelegate const &delegate,
       std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate);
 

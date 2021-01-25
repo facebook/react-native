@@ -76,9 +76,6 @@ Scheduler::Scheduler(
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
       eventDispatcher, schedulerToolbox.contextContainer);
 
-  rootComponentDescriptor_ = std::make_unique<const RootComponentDescriptor>(
-      ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
-
   uiManager->setBackgroundExecutor(schedulerToolbox.backgroundExecutor);
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
@@ -188,7 +185,6 @@ void Scheduler::startSurface(
       surfaceId,
       layoutConstraints,
       layoutContext,
-      *rootComponentDescriptor_,
       *uiManager_,
       mountingOverrideDelegate);
 

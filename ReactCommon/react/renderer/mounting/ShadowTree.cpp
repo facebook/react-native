@@ -222,22 +222,26 @@ ShadowTree::ShadowTree(
     SurfaceId surfaceId,
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext,
-    RootComponentDescriptor const &rootComponentDescriptor,
     ShadowTreeDelegate const &delegate,
     std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate)
     : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
 
+  static auto globalRootComponentDescriptor =
+      std::make_unique<RootComponentDescriptor const>(
+          ComponentDescriptorParameters{
+              EventDispatcher::Shared{}, nullptr, nullptr});
+
   const auto props = std::make_shared<const RootProps>(
       *RootShadowNode::defaultSharedProps(), layoutConstraints, layoutContext);
 
   auto const fragment =
       ShadowNodeFamilyFragment{surfaceId, surfaceId, noopEventEmitter};
-  auto family = rootComponentDescriptor.createFamily(fragment, nullptr);
+  auto family = globalRootComponentDescriptor->createFamily(fragment, nullptr);
 
   auto rootShadowNode = std::static_pointer_cast<const RootShadowNode>(
-      rootComponentDescriptor.createShadowNode(
+      globalRootComponentDescriptor->createShadowNode(
           ShadowNodeFragment{
               /* .props = */ props,
           },

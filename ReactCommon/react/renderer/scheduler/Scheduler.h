@@ -123,7 +123,6 @@ class Scheduler final : public UIManagerDelegate {
  private:
   SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
-  std::unique_ptr<const RootComponentDescriptor> rootComponentDescriptor_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
