@@ -869,11 +869,20 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int offsetY) {
 
     if (ENABLE_FABRIC_LOGS) {
-      FLog.d(TAG, "Updating Root Layout Specs");
+      FLog.d(TAG, "Updating Root Layout Specs for [%d]", surfaceId);
     }
 
-    SurfaceMountingManager surfaceMountingManager =
-        mMountingManager.getSurfaceManagerEnforced(surfaceId, "updateRootLayoutSpecs");
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+
+    // TODO T83615646: make this a hard-crash in the future.
+    if (surfaceMountingManager == null) {
+      ReactSoftException.logSoftException(
+          TAG,
+          new IllegalViewOperationException(
+              "Cannot updateRootLayoutSpecs on surfaceId that does not exist: " + surfaceId));
+      return;
+    }
+
     ThemedReactContext reactContext = surfaceMountingManager.getContext();
     boolean isRTL = false;
     boolean doLeftAndRightSwapInRTL = false;
