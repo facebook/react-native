@@ -44,7 +44,7 @@ public class ReactContentSizeChangedEvent extends Event<ReactTextChangedEvent> {
   }
 
   @Override
-  public void dispatchV2(RCTModernEventEmitter rctEventEmitter) {
+  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
     rctEventEmitter.receiveEvent(
         getSurfaceId(), getViewTag(), getEventName(), serializeEventData());
   }

@@ -127,7 +127,7 @@ public abstract class Event<T extends Event> {
    * Dispatch this event to JS using a V2 EventEmitter. Events must explicitly override this, by
    * default it uses the V1 dispatcher.
    */
-  public void dispatchV2(RCTModernEventEmitter rctEventEmitter) {
+  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
     dispatch(rctEventEmitter);
   }
 }

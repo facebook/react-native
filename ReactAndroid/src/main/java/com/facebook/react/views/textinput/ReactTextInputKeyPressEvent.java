@@ -47,7 +47,7 @@ public class ReactTextInputKeyPressEvent extends Event<ReactTextInputEvent> {
   }
 
   @Override
-  public void dispatchV2(RCTModernEventEmitter rctEventEmitter) {
+  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
     rctEventEmitter.receiveEvent(
         getSurfaceId(), getViewTag(), getEventName(), serializeEventData());
   }

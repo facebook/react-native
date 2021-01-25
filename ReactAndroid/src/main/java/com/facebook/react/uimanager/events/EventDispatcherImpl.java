@@ -366,7 +366,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
               }
               Systrace.endAsyncFlow(
                   Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, event.getEventName(), event.getUniqueID());
-              event.dispatchV2(mReactEventEmitter);
+              event.dispatchModern(mReactEventEmitter);
               event.dispose();
             }
             clearEventsToDispatch();

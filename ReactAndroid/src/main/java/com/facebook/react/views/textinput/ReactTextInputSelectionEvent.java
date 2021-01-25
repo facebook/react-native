@@ -44,7 +44,7 @@ import com.facebook.react.uimanager.events.RCTModernEventEmitter;
   }
 
   @Override
-  public void dispatchV2(RCTModernEventEmitter rctEventEmitter) {
+  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
     rctEventEmitter.receiveEvent(
         getSurfaceId(), getViewTag(), getEventName(), serializeEventData());
   }

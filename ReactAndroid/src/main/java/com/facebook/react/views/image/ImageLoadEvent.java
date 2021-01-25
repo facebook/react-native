@@ -151,7 +151,7 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   }
 
   @Override
-  public void dispatchV2(RCTModernEventEmitter rctEventEmitter) {
+  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
     rctEventEmitter.receiveEvent(getSurfaceId(), getViewTag(), getEventName(), getEventData());
   }
 
