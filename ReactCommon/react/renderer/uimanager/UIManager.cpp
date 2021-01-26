@@ -10,6 +10,7 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 
 #include <glog/logging.h>
@@ -279,8 +280,16 @@ void UIManager::setBackgroundExecutor(
 }
 
 void UIManager::visitBinding(
-    std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
-    const {
+    std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
+    jsi::Runtime &runtime) const {
+  if (extractUIManagerBindingOnDemand_) {
+    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+    if (uiManagerBinding) {
+      callback(*uiManagerBinding_);
+    }
+    return;
+  }
+
   if (!uiManagerBinding_) {
     return;
   }

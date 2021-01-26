@@ -31,6 +31,12 @@ class UIManagerBinding : public jsi::HostObject {
   static std::shared_ptr<UIManagerBinding> createAndInstallIfNeeded(
       jsi::Runtime &runtime);
 
+  /*
+   * Returns a pointer to UIManagerBinding previously installed into a runtime.
+   * Thread synchronization must be enforced externally.
+   */
+  static std::shared_ptr<UIManagerBinding> getBinding(jsi::Runtime &runtime);
+
   ~UIManagerBinding();
 
   /*

@@ -50,10 +50,12 @@ Scheduler::Scheduler(
                        const EventTarget *eventTarget,
                        const std::string &type,
                        const ValueFactory &payloadFactory) {
-    uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
-      uiManagerBinding.dispatchEvent(
-          runtime, eventTarget, type, payloadFactory);
-    });
+    uiManager->visitBinding(
+        [&](UIManagerBinding const &uiManagerBinding) {
+          uiManagerBinding.dispatchEvent(
+              runtime, eventTarget, type, payloadFactory);
+        },
+        runtime);
   };
 
   auto statePipe = [uiManager](StateUpdate const &stateUpdate) {
@@ -114,6 +116,9 @@ Scheduler::Scheduler(
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
 #endif
+
+  uiManager->extractUIManagerBindingOnDemand_ = reactNativeConfig_->getBool(
+      "react_fabric:extract_uimanagerbinding_on_demand");
 }
 
 Scheduler::~Scheduler() {
@@ -187,10 +192,12 @@ void Scheduler::startSurface(
   uiManager->getShadowTreeRegistry().add(std::move(shadowTree));
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
-    uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
-      uiManagerBinding.startSurface(
-          runtime, surfaceId, moduleName, initialProps);
-    });
+    uiManager->visitBinding(
+        [&](UIManagerBinding const &uiManagerBinding) {
+          uiManagerBinding.startSurface(
+              runtime, surfaceId, moduleName, initialProps);
+        },
+        runtime);
   });
 }
 
@@ -254,9 +261,11 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
   // fail silently.
   auto uiManager = uiManager_;
   runtimeExecutor_([=](jsi::Runtime &runtime) {
-    uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
-      uiManagerBinding.stopSurface(runtime, surfaceId);
-    });
+    uiManager->visitBinding(
+        [&](UIManagerBinding const &uiManagerBinding) {
+          uiManagerBinding.stopSurface(runtime, surfaceId);
+        },
+        runtime);
   });
 }
 
