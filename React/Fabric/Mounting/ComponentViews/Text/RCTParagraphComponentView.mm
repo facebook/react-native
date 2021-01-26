@@ -36,7 +36,6 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const ParagraphProps>();
     _props = defaultProps;
 
-    self.isAccessibilityElement = YES;
     self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
   }
@@ -126,23 +125,22 @@ using namespace facebook::react;
 
 #pragma mark - Accessibility
 
-- (NSString *)accessibilityLabel
+- (BOOL)isAccessibilityElement
 {
-  NSString *superAccessibilityLabel = RCTNSStringFromStringNilIfEmpty(_props->accessibilityLabel);
-  if (superAccessibilityLabel) {
-    return superAccessibilityLabel;
-  }
-
-  if (!_state) {
-    return nil;
-  }
-
-  return RCTNSStringFromString(_state->getData().attributedString.getString());
+  // All accessibility functionality of the component is implemented in `accessibilityElements` method below.
+  // Hence to avoid calling all other methods from `UIAccessibilityContainer` protocol (most of them have default
+  // implementations), we return here `NO`.
+  return NO;
 }
 
 - (NSArray *)accessibilityElements
 {
-  if (!_state) {
+  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+
+  // If the component is not `accessible`, we return an empty array.
+  // We do this because logically all nested <Text> components represent the content of the <Paragraph> component;
+  // in other words, all nested <Text> components individually have no sense without the <Paragraph>.
+  if (!_state || !paragraphProps.accessible) {
     return [NSArray new];
   }
 
@@ -159,7 +157,6 @@ using namespace facebook::react;
                                                                                            view:self];
   }
 
-  self.isAccessibilityElement = NO;
   return _accessibilityProvider.accessibilityElements;
 }
 
@@ -167,6 +164,8 @@ using namespace facebook::react;
 {
   return [super accessibilityTraits] | UIAccessibilityTraitStaticText;
 }
+
+#pragma mark - RCTTouchableComponentViewProtocol
 
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
 {
