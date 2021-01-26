@@ -45,7 +45,6 @@ public class SurfaceMountingManager {
   public static final String TAG = SurfaceMountingManager.class.getSimpleName();
 
   private static final boolean SHOW_CHANGED_VIEW_HIERARCHIES = ReactBuildConfig.DEBUG && false;
-  private static final long KEEPALIVE_MILLISECONDS = 1000;
 
   private volatile boolean mIsStopped = false;
 
@@ -82,11 +81,6 @@ public class SurfaceMountingManager {
 
   public boolean isStopped() {
     return mIsStopped;
-  }
-
-  public boolean shouldKeepAliveStoppedSurface() {
-    assert mIsStopped;
-    return (System.currentTimeMillis() - mLastSuccessfulQueryTime) < KEEPALIVE_MILLISECONDS;
   }
 
   public ThemedReactContext getContext() {

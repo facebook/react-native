@@ -182,7 +182,8 @@ public class IntBufferBatchMountItem implements MountItem {
     endMarkers();
   }
 
-  public int getRootTag() {
+  @Override
+  public int getSurfaceId() {
     return mSurfaceId;
   }
 

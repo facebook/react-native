@@ -33,6 +33,7 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class responsible for actually dispatching view updates enqueued via {@link
@@ -40,12 +41,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MountingManager {
   public static final String TAG = MountingManager.class.getSimpleName();
+  private static final int MAX_STOPPED_SURFACE_IDS_LENGTH = 15;
 
   @NonNull
   private final ConcurrentHashMap<Integer, SurfaceMountingManager> mSurfaceIdToManager =
       new ConcurrentHashMap<>(); // any thread
 
-  private volatile int mNumStaleSurfaces = 0;
+  private final CopyOnWriteArrayList<Integer> mStoppedSurfaceIds = new CopyOnWriteArrayList<>();
 
   @Nullable private SurfaceMountingManager mMostRecentSurfaceMountingManager;
 
@@ -53,50 +55,11 @@ public class MountingManager {
   @NonNull private final ViewManagerRegistry mViewManagerRegistry;
   @NonNull private final RootViewManager mRootViewManager = new RootViewManager();
 
+  private volatile int mStoppedSurfaceCacheLastId = View.NO_ID;
+  private volatile boolean mStoppedSurfaceCacheLastResult = false;
+
   public MountingManager(@NonNull ViewManagerRegistry viewManagerRegistry) {
     mViewManagerRegistry = viewManagerRegistry;
-  }
-
-  /**
-   * Evict stale SurfaceManagers.
-   *
-   * <p>The reasoning here is that we want SurfaceManagers to stay around for a little while after
-   * the Surface is stopped, to gracefully handle race conditions with (1) native libraries like
-   * NativeAnimatedModule, (2) events emitted to nodes on the surface, (3) queued imperative calls
-   * like dispatchCommand or sendAccessibilityEvent.
-   *
-   * <p>Without keeping the SurfaceManager around, those race conditions would result in us not
-   * being able to resolve a tag at all, meaning some operation is happening with a totally invalid,
-   * unknown tag. However, we want to fail gracefully since it's common for operations to be queued
-   * up and races to happen with StopSurface. This way, we can distinguish between those race
-   * conditions and other totally invalid operations on non-existing nodes.
-   */
-  @UiThread
-  public void evictStaleSurfaces() {
-    UiThreadUtil.assertOnUiThread();
-
-    if (mNumStaleSurfaces == 0) {
-      return;
-    }
-
-    mNumStaleSurfaces = 0;
-
-    for (Map.Entry<Integer, SurfaceMountingManager> entry : mSurfaceIdToManager.entrySet()) {
-      SurfaceMountingManager surfaceMountingManager = entry.getValue();
-      int surfacedId = entry.getKey();
-      if (surfaceMountingManager.isStopped()) {
-        if (surfaceMountingManager.shouldKeepAliveStoppedSurface()) {
-          mNumStaleSurfaces++;
-        } else {
-          FLog.e(TAG, "Evicting stale SurfaceMountingManager: [%d]", surfacedId);
-          mSurfaceIdToManager.remove(surfacedId);
-
-          if (surfaceMountingManager == mMostRecentSurfaceMountingManager) {
-            mMostRecentSurfaceMountingManager = null;
-          }
-        }
-      }
-    }
   }
 
   /**
@@ -136,10 +99,20 @@ public class MountingManager {
 
   @AnyThread
   public void stopSurface(final int surfaceId) {
+    mStoppedSurfaceCacheLastId = View.NO_ID;
+
     SurfaceMountingManager surfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
     if (surfaceMountingManager != null) {
+      // Maximum number of stopped surfaces to keep track of
+      while (mStoppedSurfaceIds.size() >= MAX_STOPPED_SURFACE_IDS_LENGTH) {
+        Integer staleStoppedId = mStoppedSurfaceIds.get(0);
+        mSurfaceIdToManager.remove(staleStoppedId.intValue());
+        mStoppedSurfaceIds.remove(staleStoppedId);
+        FLog.d(TAG, "Removing stale SurfaceMountingManager: [%d]", staleStoppedId.intValue());
+      }
+      mStoppedSurfaceIds.add(surfaceId);
+
       surfaceMountingManager.stopSurface();
-      mNumStaleSurfaces++;
 
       if (surfaceMountingManager == mMostRecentSurfaceMountingManager) {
         mMostRecentSurfaceMountingManager = null;
@@ -150,10 +123,6 @@ public class MountingManager {
           new IllegalViewOperationException(
               "Cannot call StopSurface on non-existent surface: [" + surfaceId + "]"));
     }
-
-    // We do not evict surfaces right away; the SurfaceMountingManager will stay in memory for a bit
-    // longer. See SurfaceMountingManager.stopSurface and
-    // evictStaleSurfaces for more details.
   }
 
   @Nullable
@@ -174,6 +143,33 @@ public class MountingManager {
     }
 
     return surfaceMountingManager;
+  }
+
+  public boolean surfaceIsStopped(int surfaceId) {
+    if (surfaceId == View.NO_ID) {
+      return false;
+    }
+    if (surfaceId == mStoppedSurfaceCacheLastId) {
+      return mStoppedSurfaceCacheLastResult;
+    }
+
+    boolean res = surfaceIsStoppedImpl(surfaceId);
+    mStoppedSurfaceCacheLastResult = res;
+    mStoppedSurfaceCacheLastId = surfaceId;
+    return res;
+  }
+
+  private boolean surfaceIsStoppedImpl(int surfaceId) {
+    if (mStoppedSurfaceIds.contains(surfaceId)) {
+      return true;
+    }
+
+    SurfaceMountingManager surfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
+    if (surfaceMountingManager != null && surfaceMountingManager.isStopped()) {
+      return true;
+    }
+
+    return false;
   }
 
   /**

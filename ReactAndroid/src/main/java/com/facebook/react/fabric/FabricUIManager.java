@@ -95,7 +95,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
   // development environment. DO NOT ENABLE THIS ON PRODUCTION OR YOU WILL BE FIRED!
-  public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false;
+  public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false && ReactBuildConfig.DEBUG;
   public static final boolean ENABLE_FABRIC_LOGS =
       ReactFeatureFlags.enableFabricLogs
           || PrinterHolder.getPrinter()
@@ -482,6 +482,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
                   new ReactNoCrashSoftException(
                       "Caught exception in synchronouslyUpdateViewOnUIThread", ex));
             }
+          }
+
+          @Override
+          public int getSurfaceId() {
+            return View.NO_ID;
           }
         };
 
@@ -905,13 +910,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
-    receiveEvent(-1, reactTag, eventName, params);
+    receiveEvent(View.NO_ID, reactTag, eventName, params);
   }
 
   @Override
   public void receiveEvent(
       int surfaceId, int reactTag, String eventName, @Nullable WritableMap params) {
-    if (ReactBuildConfig.DEBUG && surfaceId == -1) {
+    if (ReactBuildConfig.DEBUG && surfaceId == View.NO_ID) {
       FLog.d(TAG, "Emitted event without surfaceId: [%d] %s", reactTag, eventName);
     }
 
@@ -1004,7 +1009,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void sendAccessibilityEvent(int reactTag, int eventType) {
     // Can be called from native, not just JS - we need to migrate the native callsites
     // before removing this entirely.
-    addMountItem(new SendAccessibilityEvent(-1, reactTag, eventType));
+    addMountItem(new SendAccessibilityEvent(View.NO_ID, reactTag, eventType));
   }
 
   @DoNotStrip
@@ -1045,6 +1050,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             mountingManager.setJSResponder(
                 surfaceId, reactTag, initialReactTag, blockNativeResponder);
           }
+
+          @Override
+          public int getSurfaceId() {
+            return surfaceId;
+          }
         });
   }
 
@@ -1059,6 +1069,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           @Override
           public void execute(MountingManager mountingManager) {
             mountingManager.clearJSResponder();
+          }
+
+          @Override
+          public int getSurfaceId() {
+            return View.NO_ID;
           }
         });
   }
@@ -1108,29 +1123,25 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return performanceCounters;
   }
 
-  /**
-   * Abstraction between concurrent and non-concurrent MountItem list.
-   *
-   * @param mountItem
-   */
   private void addMountItem(MountItem mountItem) {
     mMountItemsConcurrent.add(mountItem);
   }
 
-  /**
-   * Abstraction between concurrent and non-concurrent PreAllocateViewMountItem list.
-   *
-   * @param mountItem
-   */
   private void addPreAllocateMountItem(PreAllocateViewMountItem mountItem) {
-    mPreMountItemsConcurrent.add(mountItem);
+    // We do this check only for PreAllocateViewMountItem - and not DispatchMountItem or regular
+    // MountItem - because PreAllocateViewMountItem is not batched, and is relatively more expensive
+    // both to queue, to drain, and to execute.
+    if (!mMountingManager.surfaceIsStopped(mountItem.getSurfaceId())) {
+      mPreMountItemsConcurrent.add(mountItem);
+    } else if (IS_DEVELOPMENT_ENVIRONMENT) {
+      FLog.e(
+          TAG,
+          "Not queueing PreAllocateMountItem: surfaceId stopped: [%d] - %s",
+          mountItem.getSurfaceId(),
+          mountItem.toString());
+    }
   }
 
-  /**
-   * Abstraction between concurrent and non-concurrent DispatchCommandMountItem list.
-   *
-   * @param mountItem
-   */
   private void addViewCommandMountItem(DispatchCommandMountItem mountItem) {
     mViewCommandMountItemsConcurrent.add(mountItem);
   }
@@ -1167,13 +1178,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
       try {
         dispatchPreMountItems(frameTimeNanos);
-        boolean dispatchedMountItems = tryDispatchMountItems();
-
-        // Only if we did no work (besides preallocation) and have time left, evict stale
-        // SurfaceMountingManagers
-        if (!dispatchedMountItems && !haveExceededNonBatchedFrameTime(frameTimeNanos)) {
-          mMountingManager.evictStaleSurfaces();
-        }
+        tryDispatchMountItems();
       } catch (Exception ex) {
         FLog.e(TAG, "Exception thrown when executing UIFrameGuarded", ex);
         stop();
