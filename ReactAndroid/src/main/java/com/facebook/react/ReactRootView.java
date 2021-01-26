@@ -646,6 +646,16 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachToReactInstanceManager");
     ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ATTACH_TO_REACT_INSTANCE_MANAGER_START);
 
+    // React Native requires that the RootView id be managed entirely by React Native, and will
+    // crash in addRootView/startSurface if the native View id isn't set to NO_ID.
+    if (getId() != View.NO_ID) {
+      throw new IllegalViewOperationException(
+          "Trying to attach a ReactRootView with an explicit id already set to ["
+              + getId()
+              + "]. React Native uses the id field to track react tags and will overwrite this"
+              + " field. If that is fine, explicitly overwrite the id field to View.NO_ID.");
+    }
+
     try {
       if (mIsAttachedToInstance) {
         return;
