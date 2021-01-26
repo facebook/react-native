@@ -41,7 +41,7 @@ type NativeProps = $ReadOnly<{|
    */
   progressBackgroundColor?: ?ColorValue,
   /**
-   * Size of the refresh indicator, see RefreshControl.SIZE.
+   * Size of the refresh indicator.
    */
   size?: WithDefault<'default' | 'large', 'default'>,
   /**
