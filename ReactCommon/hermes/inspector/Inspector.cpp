@@ -32,6 +32,7 @@ namespace futures {
 
 SemiFuture<Unit> sleep(Duration, Timekeeper *) {
   LOG(FATAL) << "folly::futures::sleep() not implemented";
+  return SemiFuture<Unit>();
 }
 
 } // namespace futures
@@ -40,6 +41,7 @@ namespace detail {
 
 std::shared_ptr<Timekeeper> getTimekeeperSingleton() {
   LOG(FATAL) << "folly::detail::getTimekeeperSingleton() not implemented";
+  return nullptr;
 }
 
 } // namespace detail
