@@ -252,7 +252,7 @@ public class MountingManager {
    */
   public void sendAccessibilityEvent(int surfaceId, int reactTag, int eventType) {
     UiThreadUtil.assertOnUiThread();
-    if (surfaceId != -1) {
+    if (surfaceId == View.NO_ID) {
       getSurfaceManagerForViewEnforced(reactTag).sendAccessibilityEvent(reactTag, eventType);
     } else {
       getSurfaceManagerEnforced(surfaceId, "sendAccessibilityEvent")
