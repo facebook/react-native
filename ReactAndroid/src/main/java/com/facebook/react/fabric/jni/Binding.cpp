@@ -255,7 +255,9 @@ void Binding::startSurface(
       moduleName->toStdString(),
       initialProps->consume(),
       {},
-      context,
+      context);
+
+  scheduler->findMountingCoordinator(surfaceId)->setMountingOverrideDelegate(
       animationDriver_);
 }
 
@@ -306,7 +308,9 @@ void Binding::startSurfaceWithConstraints(
       moduleName->toStdString(),
       initialProps->consume(),
       constraints,
-      context,
+      context);
+
+  scheduler->findMountingCoordinator(surfaceId)->setMountingOverrideDelegate(
       animationDriver_);
 }
 

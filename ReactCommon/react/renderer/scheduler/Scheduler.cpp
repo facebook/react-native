@@ -176,17 +176,11 @@ void Scheduler::startSurface(
     const std::string &moduleName,
     const folly::dynamic &initialProps,
     const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext,
-    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate)
-    const {
+    const LayoutContext &layoutContext) const {
   SystraceSection s("Scheduler::startSurface");
 
   auto shadowTree = std::make_unique<ShadowTree>(
-      surfaceId,
-      layoutConstraints,
-      layoutContext,
-      *uiManager_,
-      mountingOverrideDelegate);
+      surfaceId, layoutConstraints, layoutContext, *uiManager_);
 
   auto uiManager = uiManager_;
 

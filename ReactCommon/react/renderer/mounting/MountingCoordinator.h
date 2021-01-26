@@ -43,9 +43,7 @@ class MountingCoordinator final {
    * The constructor is meant to be used only inside `ShadowTree`, and it's
    * `public` only to enable using with `std::make_shared<>`.
    */
-  MountingCoordinator(
-      ShadowTreeRevision baseRevision,
-      std::weak_ptr<MountingOverrideDelegate const> delegate);
+  MountingCoordinator(ShadowTreeRevision baseRevision);
 
   /*
    * Returns the id of the surface that the coordinator belongs to.
@@ -84,6 +82,9 @@ class MountingCoordinator final {
   void updateBaseRevision(ShadowTreeRevision const &baseRevision) const;
   void resetLatestRevision() const;
 
+  void setMountingOverrideDelegate(
+      std::weak_ptr<MountingOverrideDelegate const> delegate) const;
+
   /*
    * Methods from this section are meant to be used by `ShadowTree` only.
    */
@@ -109,7 +110,8 @@ class MountingCoordinator final {
   mutable better::optional<ShadowTreeRevision> lastRevision_{};
   mutable MountingTransaction::Number number_{0};
   mutable std::condition_variable signal_;
-  std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate_;
+  mutable std::weak_ptr<MountingOverrideDelegate const>
+      mountingOverrideDelegate_;
 
   TelemetryController telemetryController_;
 
