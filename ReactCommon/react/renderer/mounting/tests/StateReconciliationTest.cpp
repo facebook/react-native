@@ -10,7 +10,6 @@
 #include <gtest/gtest.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
-#include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/renderer/element/ComponentBuilder.h>
 #include <react/renderer/element/Element.h>
@@ -95,14 +94,10 @@ TEST(StateReconciliationTest, testStateReconciliation) {
   auto &family = shadowNodeAB->getFamily();
   auto state1 = shadowNodeAB->getState();
   auto shadowTreeDelegate = DummyShadowTreeDelegate{};
-  auto eventDispatcher = EventDispatcher::Shared{};
-  auto rootComponentDescriptor =
-      ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr};
   ShadowTree shadowTree{
       SurfaceId{11},
       LayoutConstraints{},
       LayoutContext{},
-      rootComponentDescriptor,
       shadowTreeDelegate,
       {}};
 

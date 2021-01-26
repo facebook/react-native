@@ -430,7 +430,7 @@ jsi::Value UIManagerBinding::get(
           runtime,
           name,
           2,
-          [uiManager, sharedUIManager = uiManager_](
+          [sharedUIManager = uiManager_](
               jsi::Runtime &runtime,
               jsi::Value const &thisValue,
               jsi::Value const *arguments,
@@ -439,28 +439,23 @@ jsi::Value UIManagerBinding::get(
             auto shadowNodeList =
                 shadowNodeListFromValue(runtime, arguments[1]);
 
-            if (sharedUIManager->backgroundExecutor_) {
-              sharedUIManager->completeRootEventCounter_ += 1;
-              sharedUIManager->backgroundExecutor_(
-                  [sharedUIManager,
-                   surfaceId,
-                   shadowNodeList,
-                   eventCount =
-                       sharedUIManager->completeRootEventCounter_.load()] {
-                    auto shouldCancel = [eventCount,
-                                         sharedUIManager]() -> bool {
-                      // If `eventCounter_` was incremented, another
-                      // `completeSurface` call has been scheduled and current
-                      // `completeSurface` should be cancelled.
-                      return sharedUIManager->completeRootEventCounter_ >
-                          eventCount;
-                    };
-                    sharedUIManager->completeSurface(
-                        surfaceId, shadowNodeList, {true, shouldCancel});
-                  });
-            } else {
-              uiManager->completeSurface(surfaceId, shadowNodeList, {true, {}});
-            }
+            sharedUIManager->completeRootEventCounter_ += 1;
+            sharedUIManager->backgroundExecutor_(
+                [sharedUIManager,
+                 surfaceId,
+                 shadowNodeList,
+                 eventCount =
+                     sharedUIManager->completeRootEventCounter_.load()] {
+                  auto shouldCancel = [eventCount, sharedUIManager]() -> bool {
+                    // If `eventCounter_` was incremented, another
+                    // `completeSurface` call has been scheduled and current
+                    // `completeSurface` should be cancelled.
+                    return sharedUIManager->completeRootEventCounter_ >
+                        eventCount;
+                  };
+                  sharedUIManager->completeSurface(
+                      surfaceId, shadowNodeList, {true, shouldCancel});
+                });
 
             return jsi::Value::undefined();
           });

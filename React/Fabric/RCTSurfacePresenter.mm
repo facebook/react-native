@@ -333,6 +333,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:release_resources_when_backgrounded_ios")) {
+    RCTExperimentSetReleaseResourcesWhenBackgrounded(YES);
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {

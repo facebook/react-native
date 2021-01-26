@@ -76,9 +76,6 @@ Scheduler::Scheduler(
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
       eventDispatcher, schedulerToolbox.contextContainer);
 
-  rootComponentDescriptor_ = std::make_unique<const RootComponentDescriptor>(
-      ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
-
   uiManager->setBackgroundExecutor(schedulerToolbox.backgroundExecutor);
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
@@ -97,7 +94,12 @@ Scheduler::Scheduler(
           componentDescriptorRegistry_));
 
   delegate_ = delegate;
+  commitHooks_ = schedulerToolbox.commitHooks;
   uiManager_ = uiManager;
+
+  for (auto commitHook : commitHooks_) {
+    uiManager->registerCommitHook(*commitHook);
+  }
 
   if (animationDelegate != nullptr) {
     animationDelegate->setComponentDescriptorRegistry(
@@ -117,6 +119,10 @@ Scheduler::Scheduler(
 Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
+
+  for (auto commitHook : commitHooks_) {
+    uiManager_->unregisterCommitHook(*commitHook);
+  }
 
   // All Surfaces must be explicitly stopped before destroying `Scheduler`.
   // The idea is that `UIManager` is allowed to call `Scheduler` only if the
@@ -179,7 +185,6 @@ void Scheduler::startSurface(
       surfaceId,
       layoutConstraints,
       layoutContext,
-      *rootComponentDescriptor_,
       *uiManager_,
       mountingOverrideDelegate);
 

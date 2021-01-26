@@ -31,6 +31,7 @@ public class TouchEvent extends Event<TouchEvent> {
   public static final long UNSET = Long.MIN_VALUE;
 
   public static TouchEvent obtain(
+      int surfaceId,
       int viewTag,
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
@@ -43,6 +44,7 @@ public class TouchEvent extends Event<TouchEvent> {
       event = new TouchEvent();
     }
     event.init(
+        surfaceId,
         viewTag,
         touchEventType,
         motionEventToCopy,
@@ -64,6 +66,7 @@ public class TouchEvent extends Event<TouchEvent> {
   private TouchEvent() {}
 
   private void init(
+      int surfaceId,
       int viewTag,
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
@@ -71,7 +74,7 @@ public class TouchEvent extends Event<TouchEvent> {
       float viewX,
       float viewY,
       TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
-    super.init(viewTag);
+    super.init(surfaceId, viewTag);
 
     SoftAssertions.assertCondition(
         gestureStartTime != UNSET, "Gesture start time must be initialized");
@@ -141,7 +144,11 @@ public class TouchEvent extends Event<TouchEvent> {
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     TouchesHelper.sendTouchEvent(
-        rctEventEmitter, Assertions.assertNotNull(mTouchEventType), getViewTag(), this);
+        rctEventEmitter,
+        Assertions.assertNotNull(mTouchEventType),
+        getSurfaceId(),
+        getViewTag(),
+        this);
   }
 
   public MotionEvent getMotionEvent() {

@@ -19,13 +19,17 @@ const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
 const {wrapModuleSchema} = require('./modules/schema');
-const {createParserErrorCapturer, visit} = require('./utils');
+const {
+  createParserErrorCapturer,
+  visit,
+  isModuleRegistryCall,
+} = require('./utils');
 const invariant = require('invariant');
 
 function getConfigType(
   // TODO(T71778680): Flow-type this node.
   ast: $FlowFixMe,
-): 'module' | 'component' {
+): 'module' | 'component' | 'none' {
   let isComponent = false;
   let isModule = false;
 
@@ -36,6 +40,10 @@ function getConfigType(
         node.callee.name === 'codegenNativeComponent'
       ) {
         isComponent = true;
+      }
+
+      if (isModuleRegistryCall(node)) {
+        isModule = true;
       }
     },
     InterfaceExtends(node) {
@@ -56,15 +64,19 @@ function getConfigType(
   } else if (isComponent) {
     return 'component';
   } else {
-    throw new Error(
-      'File neither contains a module declaration, nor a component declaration. ' +
-        'For module declarations, please make sure your file has an InterfaceDeclaration extending TurboModule. ' +
-        'For component declarations, please make sure your file has a default export calling the codegenNativeComponent<Props>(...) macro.',
-    );
+    return 'none';
   }
 }
 
 function buildSchema(contents: string, filename: ?string): SchemaType {
+  // Early return for non-Spec JavaScript files
+  if (
+    !contents.includes('codegenNativeComponent') &&
+    !contents.includes('TurboModule')
+  ) {
+    return {modules: {}};
+  }
+
   const ast = flowParser.parse(contents);
   const configType = getConfigType(ast);
 
@@ -103,8 +115,7 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
       return wrapModuleSchema(schema, hasteModuleName);
     }
     default:
-      (configType: empty);
-      throw new Error(`Unsupported config type '${configType}'`);
+      return {modules: {}};
   }
 }
 

@@ -97,6 +97,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
     options: ?{headers?: {origin?: string, ...}, ...},
   ) {
     super();
+    this.url = url;
     if (typeof protocols === 'string') {
       protocols = [protocols];
     }

@@ -1062,7 +1062,7 @@ void Binding::schedulerDidDispatchCommand(
 
   static auto dispatchCommand =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
-          ->getMethod<void(jint, jstring, ReadableArray::javaobject)>(
+          ->getMethod<void(jint, jint, jstring, ReadableArray::javaobject)>(
               "dispatchCommand");
 
   local_ref<JString> command = make_jstring(commandName);
@@ -1071,7 +1071,11 @@ void Binding::schedulerDidDispatchCommand(
       castReadableArray(ReadableNativeArray::newObjectCxxArgs(args));
 
   dispatchCommand(
-      localJavaUIManager, shadowView.tag, command.get(), argsArray.get());
+      localJavaUIManager,
+      shadowView.surfaceId,
+      shadowView.tag,
+      command.get(),
+      argsArray.get());
 }
 
 void Binding::schedulerDidSendAccessibilityEvent(
@@ -1088,10 +1092,14 @@ void Binding::schedulerDidSendAccessibilityEvent(
 
   static auto sendAccessibilityEventFromJS =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
-          ->getMethod<void(jint, jstring)>("sendAccessibilityEventFromJS");
+          ->getMethod<void(jint, jint, jstring)>(
+              "sendAccessibilityEventFromJS");
 
   sendAccessibilityEventFromJS(
-      localJavaUIManager, shadowView.tag, eventTypeStr.get());
+      localJavaUIManager,
+      shadowView.surfaceId,
+      shadowView.tag,
+      eventTypeStr.get());
 }
 
 void Binding::schedulerDidSetJSResponder(
@@ -1107,10 +1115,11 @@ void Binding::schedulerDidSetJSResponder(
 
   static auto setJSResponder =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
-          ->getMethod<void(jint, jint, jboolean)>("setJSResponder");
+          ->getMethod<void(jint, jint, jint, jboolean)>("setJSResponder");
 
   setJSResponder(
       localJavaUIManager,
+      shadowView.surfaceId,
       shadowView.tag,
       initialShadowView.tag,
       (jboolean)blockNativeResponder);
