@@ -69,6 +69,9 @@ jest
         };
       }
     }),
+    hasViewManagerConfig: jest.fn(name => {
+      return true;
+    }),
     measure: jest.fn(),
     manageChildren: jest.fn(),
     removeSubviewsFromContainerWithID: jest.fn(),
