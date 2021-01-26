@@ -69,10 +69,6 @@ type AndroidProps = $ReadOnly<{|
     | typeof RefreshLayoutConsts.SIZE.DEFAULT
     | typeof RefreshLayoutConsts.SIZE.LARGE
   ),
-  /**
-   * Progress view top offset
-   */
-  progressViewOffset?: ?number,
 |}>;
 
 export type RefreshControlProps = $ReadOnly<{|
@@ -89,6 +85,11 @@ export type RefreshControlProps = $ReadOnly<{|
    * Whether the view should be indicating an active refresh.
    */
   refreshing: boolean,
+
+  /**
+   * Progress view top offset
+   */
+  progressViewOffset?: ?number,
 |}>;
 
 /**
@@ -181,7 +182,6 @@ class RefreshControl extends React.Component<RefreshControlProps> {
         colors,
         progressBackgroundColor,
         size,
-        progressViewOffset,
         ...props
       } = this.props;
       return (
