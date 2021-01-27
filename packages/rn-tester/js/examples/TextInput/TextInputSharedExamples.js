@@ -457,6 +457,7 @@ module.exports = ([
     },
   },
   {
+    name: 'maxLength',
     title: "Live Re-Write (<sp>  ->  '_') + maxLength",
     render: function(): React.Node {
       return <RewriteExample />;
@@ -469,6 +470,7 @@ module.exports = ([
     },
   },
   {
+    name: 'clearInput',
     title: 'Live Re-Write (no spaces allowed) and clear',
     render: function(): React.Node {
       return <RewriteInvalidCharactersAndClearExample />;
