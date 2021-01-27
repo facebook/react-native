@@ -93,9 +93,11 @@ public class ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement {
 
 package com.facebook.react.viewmanagers.Slider;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReadableMap;
 import java.util.ArrayList;
 
+@DoNotStrip
 public class ArrayPropsNativeComponentProps {
   private ArrayList<String> mNames;
   private ArrayList<Boolean> mDisableds;
@@ -188,8 +190,10 @@ public class ArrayPropsNativeComponentPropsNativePrimitivesElement {
 
 package com.facebook.react.viewmanagers.Slider;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 
+@DoNotStrip
 public class ArrayPropsNativeComponentProps {
   private ArrayList<ArrayPropsNativeComponentPropsNativePrimitivesElement> mNativePrimitives;
   public ArrayList<ArrayPropsNativeComponentPropsNativePrimitivesElement> getNativePrimitives() {
@@ -213,6 +217,9 @@ Map {
 
 package com.facebook.react.viewmanagers.Switch;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class BooleanPropNativeComponentProps {
   private boolean mDisabled;
   public boolean getDisabled() {
@@ -237,7 +244,9 @@ Map {
 package com.facebook.react.viewmanagers.Switch;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class ColorPropNativeComponentProps {
   private @Nullable Integer mTintColor;
   public @Nullable Integer getTintColor() {
@@ -261,6 +270,9 @@ Map {
 
 package com.facebook.react.viewmanagers.Switch;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class CommandNativeComponentProps {
 
 
@@ -283,7 +295,9 @@ Map {
 package com.facebook.react.viewmanagers.Switch;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class CommandNativeComponentProps {
   private @Nullable String mAccessibilityHint;
   public @Nullable String getAccessibilityHint() {
@@ -307,6 +321,9 @@ Map {
 
 package com.facebook.react.viewmanagers.Switch;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class DoublePropNativeComponentProps {
   private double mBlurRadius;
   private double mBlurRadius2;
@@ -350,6 +367,9 @@ Map {
 
 package com.facebook.react.viewmanagers.Switch;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class EventsNestedObjectNativeComponentProps {
   private boolean mDisabled;
   public boolean getDisabled() {
@@ -373,6 +393,9 @@ Map {
 
 package com.facebook.react.viewmanagers.Switch;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class EventsNativeComponentProps {
   private boolean mDisabled;
   public boolean getDisabled() {
@@ -396,6 +419,9 @@ Map {
 
 package com.facebook.react.viewmanagers.Switch;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class InterfaceOnlyComponentProps {
 
 
@@ -421,6 +447,9 @@ Map {
 
 package com.facebook.react.viewmanagers.Switch;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class FloatPropNativeComponentProps {
   private float mBlurRadius;
   private float mBlurRadius2;
@@ -465,8 +494,10 @@ Map {
 package com.facebook.react.viewmanagers.Slider;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReadableMap;
 
+@DoNotStrip
 public class ImagePropNativeComponentProps {
   private @Nullable ReadableMap mThumbImage;
   public @Nullable ReadableMap getThumbImage() {
@@ -491,8 +522,10 @@ Map {
 package com.facebook.react.viewmanagers.ScrollView;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReadableMap;
 
+@DoNotStrip
 public class InsetsPropNativeComponentProps {
   private @Nullable ReadableMap mContentInset;
   public @Nullable ReadableMap getContentInset() {
@@ -517,7 +550,9 @@ Map {
 package com.facebook.react.viewmanagers.Switch;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class Int32EnumPropsNativeComponentProps {
   private @Nullable Integer mMaxInterval;
   public @Nullable Integer getMaxInterval() {
@@ -541,6 +576,9 @@ Map {
 
 package com.facebook.react.viewmanagers.Switch;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class IntegerPropNativeComponentProps {
   private int mProgress1;
   private int mProgress2;
@@ -573,7 +611,9 @@ Map {
 package com.facebook.react.viewmanagers.Switch;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class InterfaceOnlyComponentProps {
   private @Nullable String mAccessibilityHint;
   public @Nullable String getAccessibilityHint() {
@@ -598,8 +638,10 @@ Map {
 package com.facebook.react.viewmanagers.Slider;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReadableMap;
 
+@DoNotStrip
 public class ImageColorPropNativeComponentProps {
   private @Nullable ReadableMap mThumbImage;
   private @Nullable Integer mColor;
@@ -635,6 +677,9 @@ Map {
 
 package com.facebook.react.viewmanagers.NoPropsNoEvents;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class NoPropsNoEventsComponentProps {
 
 
@@ -839,6 +884,9 @@ public class ObjectPropsPropsObjectProp {
 
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class ObjectPropsProps {
   private ObjectPropsPropsObjectProp mObjectProp;
   public ObjectPropsPropsObjectProp getObjectProp() {
@@ -863,8 +911,10 @@ Map {
 package com.facebook.react.viewmanagers.Switch;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReadableMap;
 
+@DoNotStrip
 public class PointPropNativeComponentProps {
   private @Nullable ReadableMap mStartPoint;
   public @Nullable ReadableMap getStartPoint() {
@@ -889,7 +939,9 @@ Map {
 package com.facebook.react.viewmanagers.Switch;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class StringEnumPropsNativeComponentProps {
   private @Nullable String mAlignment;
   public @Nullable String getAlignment() {
@@ -914,7 +966,9 @@ Map {
 package com.facebook.react.viewmanagers.Switch;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class StringPropComponentProps {
   private @Nullable String mAccessibilityHint;
   private @Nullable String mAccessibilityRole;
@@ -942,6 +996,9 @@ Map {
 
 package com.facebook.react.viewmanagers.ComponentFile1;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class MultiFile1NativeComponentProps {
   private boolean mDisabled;
   public boolean getDisabled() {
@@ -960,6 +1017,9 @@ public class MultiFile1NativeComponentProps {
 
 package com.facebook.react.viewmanagers.ComponentFile2;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class MultiFile2NativeComponentProps {
   private boolean mDisabled;
   public boolean getDisabled() {
@@ -983,6 +1043,9 @@ Map {
 
 package com.facebook.react.viewmanagers.MyComponents;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class MultiComponent1NativeComponentProps {
   private boolean mDisabled;
   public boolean getDisabled() {
@@ -1001,6 +1064,9 @@ public class MultiComponent1NativeComponentProps {
 
 package com.facebook.react.viewmanagers.MyComponents;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class MultiComponent2NativeComponentProps {
   private boolean mDisabled;
   public boolean getDisabled() {

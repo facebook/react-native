@@ -236,6 +236,10 @@ function serializePojo(pojo: Pojo, basePackageName: string): string {
     importSet.add($import);
   };
 
+  if (pojo.isRoot) {
+    addImport('com.facebook.proguard.annotations.DoNotStrip');
+  }
+
   const indent = ' '.repeat(2);
 
   const members = pojo.properties
@@ -269,7 +273,7 @@ function serializePojo(pojo: Pojo, basePackageName: string): string {
 
 package ${basePackageName}.${pojo.namespace};
 ${imports === '' ? '' : `\n${imports}\n`}
-public class ${pojo.name} {
+${pojo.isRoot ? '@DoNotStrip\n' : ''}public class ${pojo.name} {
 ${members}
 ${getters}
 }
