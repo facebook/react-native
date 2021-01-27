@@ -28,6 +28,7 @@ export type Pojo = {
   name: string,
   namespace: string,
   properties: $ReadOnlyArray<PojoProperty>,
+  isRoot: boolean,
 };
 
 export type PojoProperty = NamedShape<PojoTypeAnnotation>;
@@ -93,14 +94,14 @@ export type PojoTypeAnnotation =
 
 class PojoCollector {
   _pojos: Map<string, Pojo> = new Map();
-  process(
+  _process(
     namespace: string,
     pojoName: string,
     typeAnnotation: PropTypeAnnotation,
   ): PojoTypeAnnotation {
     switch (typeAnnotation.type) {
       case 'ObjectTypeAnnotation': {
-        this._insertPojo(namespace, pojoName, typeAnnotation);
+        this._insertPojo(namespace, pojoName, typeAnnotation, false);
         return {
           type: 'PojoTypeAliasTypeAnnotation',
           name: pojoName,
@@ -117,7 +118,12 @@ class PojoCollector {
         const pojoElementType = (() => {
           switch (elementType.type) {
             case 'ObjectTypeAnnotation': {
-              this._insertPojo(namespace, `${pojoName}Element`, elementType);
+              this._insertPojo(
+                namespace,
+                `${pojoName}Element`,
+                elementType,
+                false,
+              );
               return {
                 type: 'PojoTypeAliasTypeAnnotation',
                 name: `${pojoName}Element`,
@@ -129,6 +135,7 @@ class PojoCollector {
                 namespace,
                 `${pojoName}ElementElement`,
                 objectTypeAnnotation,
+                false,
               );
               return {
                 type: 'ArrayTypeAnnotation',
@@ -153,17 +160,19 @@ class PojoCollector {
         return typeAnnotation;
     }
   }
+
   _insertPojo(
     namespace: string,
     pojoName: string,
     objectTypeAnnotation: ObjectTypeAnnotation<PropTypeAnnotation>,
+    isRoot: boolean,
   ) {
     const properties = objectTypeAnnotation.properties.map(property => {
       const propertyPojoName = pojoName + capitalize(property.name);
 
       return {
         ...property,
-        typeAnnotation: this.process(
+        typeAnnotation: this._process(
           namespace,
           propertyPojoName,
           property.typeAnnotation,
@@ -173,9 +182,18 @@ class PojoCollector {
 
     this._pojos.set(pojoName, {
       name: pojoName,
+      isRoot,
       namespace,
       properties,
     });
+  }
+
+  processPojo(
+    namespace: string,
+    pojoName: string,
+    objectTypeAnnotation: ObjectTypeAnnotation<PropTypeAnnotation>,
+  ) {
+    this._insertPojo(namespace, pojoName, objectTypeAnnotation, true);
   }
 
   getAllPojos(): $ReadOnlyArray<Pojo> {

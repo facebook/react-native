@@ -55,7 +55,7 @@ module.exports = {
 
           const {props} = component;
 
-          pojoCollector.process(
+          pojoCollector.processPojo(
             capitalize(hasteModuleName),
             `${capitalize(componentName)}Props`,
             {
