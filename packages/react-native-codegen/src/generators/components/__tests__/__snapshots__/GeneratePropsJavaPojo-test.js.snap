@@ -93,23 +93,22 @@ public class ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement {
 
 package com.facebook.react.viewmanagers.Slider;
 
-import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import java.util.ArrayList;
 
 public class ArrayPropsNativeComponentProps {
-  private ArrayList<@Nullable String> mNames;
+  private ArrayList<String> mNames;
   private ArrayList<Boolean> mDisableds;
   private ArrayList<Integer> mProgress;
   private ArrayList<Float> mRadii;
-  private ArrayList<@Nullable Integer> mColors;
-  private ArrayList<@Nullable ReadableMap> mSrcs;
-  private ArrayList<@Nullable ReadableMap> mPoints;
-  private ArrayList<@Nullable String> mSizes;
+  private ArrayList<Integer> mColors;
+  private ArrayList<ReadableMap> mSrcs;
+  private ArrayList<ReadableMap> mPoints;
+  private ArrayList<String> mSizes;
   private ArrayList<ArrayPropsNativeComponentPropsObjectElement> mObject;
   private ArrayList<ArrayPropsNativeComponentPropsArrayElement> mArray;
   private ArrayList<ArrayList<ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement>> mArrayOfArrayOfObject;
-  public ArrayList<@Nullable String> getNames() {
+  public ArrayList<String> getNames() {
     return mNames;
   }
   public ArrayList<Boolean> getDisableds() {
@@ -121,16 +120,16 @@ public class ArrayPropsNativeComponentProps {
   public ArrayList<Float> getRadii() {
     return mRadii;
   }
-  public ArrayList<@Nullable Integer> getColors() {
+  public ArrayList<Integer> getColors() {
     return mColors;
   }
-  public ArrayList<@Nullable ReadableMap> getSrcs() {
+  public ArrayList<ReadableMap> getSrcs() {
     return mSrcs;
   }
-  public ArrayList<@Nullable ReadableMap> getPoints() {
+  public ArrayList<ReadableMap> getPoints() {
     return mPoints;
   }
-  public ArrayList<@Nullable String> getSizes() {
+  public ArrayList<String> getSizes() {
     return mSizes;
   }
   public ArrayList<ArrayPropsNativeComponentPropsObjectElement> getObject() {
@@ -160,21 +159,20 @@ Map {
 
 package com.facebook.react.viewmanagers.Slider;
 
-import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import java.util.ArrayList;
 
 public class ArrayPropsNativeComponentPropsNativePrimitivesElement {
-  private ArrayList<@Nullable Integer> mColors;
-  private ArrayList<@Nullable ReadableMap> mSrcs;
-  private ArrayList<@Nullable ReadableMap> mPoints;
-  public ArrayList<@Nullable Integer> getColors() {
+  private ArrayList<Integer> mColors;
+  private ArrayList<ReadableMap> mSrcs;
+  private ArrayList<ReadableMap> mPoints;
+  public ArrayList<Integer> getColors() {
     return mColors;
   }
-  public ArrayList<@Nullable ReadableMap> getSrcs() {
+  public ArrayList<ReadableMap> getSrcs() {
     return mSrcs;
   }
-  public ArrayList<@Nullable ReadableMap> getPoints() {
+  public ArrayList<ReadableMap> getPoints() {
     return mPoints;
   }
 }
@@ -658,12 +656,11 @@ Map {
 
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
-import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 public class ObjectPropsPropsObjectPropObjectArrayProp {
-  private ArrayList<@Nullable String> mArray;
-  public ArrayList<@Nullable String> getArray() {
+  private ArrayList<String> mArray;
+  public ArrayList<String> getArray() {
     return mArray;
   }
 }

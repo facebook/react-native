@@ -122,8 +122,7 @@ function toJavaType(
             return 'Boolean';
           }
           case 'StringTypeAnnotation': {
-            importNullable();
-            return '@Nullable String';
+            return 'String';
           }
           case 'DoubleTypeAnnotation': {
             return 'Double';
@@ -140,8 +139,7 @@ function toJavaType(
            */
           // TODO: Make StringEnums type-safe in Pojos
           case 'StringEnumTypeAnnotation': {
-            importNullable();
-            return '@Nullable String';
+            return 'String';
           }
 
           /**
@@ -157,26 +155,22 @@ function toJavaType(
           case 'ReservedPropTypeAnnotation': {
             switch (elementType.name) {
               case 'ColorPrimitive':
-                importNullable();
-                return '@Nullable Integer';
+                return 'Integer';
 
               // TODO: Make ImageSourcePrimitive type-safe
               case 'ImageSourcePrimitive':
-                importNullable();
                 importReadableMap();
-                return '@Nullable ReadableMap';
+                return 'ReadableMap';
 
               // TODO: Make PointPrimitive type-safe
               case 'PointPrimitive':
-                importNullable();
                 importReadableMap();
-                return '@Nullable ReadableMap';
+                return 'ReadableMap';
 
               // TODO: Make EdgeInsetsPrimitive type-safe
               case 'EdgeInsetsPrimitive':
-                importNullable();
                 importReadableMap();
-                return '@Nullable ReadableMap';
+                return 'ReadableMap';
               default:
                 (elementType.name: empty);
                 throw new Error(
