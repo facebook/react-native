@@ -209,7 +209,7 @@ function translateParamTypeToJniType(
     case 'StringTypeAnnotation':
       return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
-      return !isRequired ? 'Ljava/lang/Boolean' : 'Z';
+      return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
     case 'NumberTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
     case 'DoubleTypeAnnotation':
@@ -261,7 +261,7 @@ function translateReturnTypeToJniType(
     case 'StringTypeAnnotation':
       return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
-      return nullable ? 'Ljava/lang/Boolean' : 'Z';
+      return nullable ? 'Ljava/lang/Boolean;' : 'Z';
     case 'NumberTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'DoubleTypeAnnotation':
