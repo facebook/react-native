@@ -55,6 +55,20 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
   return uiManagerObject.getHostObject<UIManagerBinding>(runtime);
 }
 
+std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
+    jsi::Runtime &runtime) {
+  auto uiManagerModuleName = "nativeFabricUIManager";
+
+  auto uiManagerValue =
+      runtime.global().getProperty(runtime, uiManagerModuleName);
+  if (uiManagerValue.isUndefined()) {
+    return nullptr;
+  }
+
+  auto uiManagerObject = uiManagerValue.asObject(runtime);
+  return uiManagerObject.getHostObject<UIManagerBinding>(runtime);
+}
+
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "
                << this << ").";

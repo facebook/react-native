@@ -38,7 +38,7 @@ type Props = $ReadOnly<{|
   activeOpacity?: ?number,
   style?: ?ViewStyleProp,
 
-  hostRef: React.Ref<typeof Animated.View>,
+  hostRef?: ?React.Ref<typeof Animated.View>,
 |}>;
 
 type State = $ReadOnly<{|
@@ -267,6 +267,6 @@ class TouchableOpacity extends React.Component<Props, State> {
   }
 }
 
-module.exports = (React.forwardRef((props, hostRef) => (
-  <TouchableOpacity {...props} hostRef={hostRef} />
-)): React.AbstractComponent<$ReadOnly<$Diff<Props, {|hostRef: mixed|}>>>);
+module.exports = (React.forwardRef((props, ref) => (
+  <TouchableOpacity {...props} hostRef={ref} />
+)): React.AbstractComponent<Props, React.ElementRef<typeof Animated.View>>);

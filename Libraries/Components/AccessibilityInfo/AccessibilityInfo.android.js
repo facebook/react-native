@@ -11,9 +11,12 @@
 'use strict';
 
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
-import UIManager from '../../ReactNative/UIManager';
 import NativeAccessibilityInfo from './NativeAccessibilityInfo';
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import {sendAccessibilityEvent} from '../../Renderer/shims/ReactNative';
+import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
+import {type ElementRef} from 'react';
 
 const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
 const TOUCH_EXPLORATION_EVENT = 'touchExplorationDidChange';
@@ -24,6 +27,8 @@ type AccessibilityEventDefinitions = {
   // alias for screenReaderChanged
   change: [boolean],
 };
+
+type AccessibilityEventTypes = 'focus';
 
 const _subscriptions = new Map();
 
@@ -148,10 +153,18 @@ const AccessibilityInfo = {
    * See https://reactnative.dev/docs/accessibilityinfo.html#setaccessibilityfocus
    */
   setAccessibilityFocus: function(reactTag: number): void {
-    UIManager.sendAccessibilityEvent(
-      reactTag,
-      UIManager.getConstants().AccessibilityEventTypes.typeViewFocused,
-    );
+    legacySendAccessibilityEvent(reactTag, 'focus');
+  },
+
+  /**
+   * Send a named accessibility event to a HostComponent.
+   */
+  sendAccessibilityEvent_unstable: function(
+    handle: ElementRef<HostComponent<mixed>>,
+    eventType: AccessibilityEventTypes,
+  ) {
+    // route through React renderer to distinguish between Fabric and non-Fabric handles
+    sendAccessibilityEvent(handle, eventType);
   },
 
   /**

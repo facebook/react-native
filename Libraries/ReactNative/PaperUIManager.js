@@ -97,6 +97,9 @@ const UIManagerJS = {
   getViewManagerConfig(viewManagerName: string): any {
     return getViewManagerConfig(viewManagerName);
   },
+  hasViewManagerConfig(viewManagerName: string): boolean {
+    return getViewManagerConfig(viewManagerName) != null;
+  },
 };
 
 // TODO (T45220498): Remove this.

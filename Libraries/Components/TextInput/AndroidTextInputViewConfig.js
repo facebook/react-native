@@ -11,7 +11,7 @@
 'use strict';
 
 import ReactNativeViewViewConfig from '../../Components/View/ReactNativeViewViewConfig';
-import {type ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
+import {type PartialViewConfig} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 const AndroidTextInputViewConfig = {
   uiViewClassName: 'AndroidTextInput',
@@ -58,6 +58,9 @@ const AndroidTextInputViewConfig = {
     ...ReactNativeViewViewConfig.validAttributes,
 
     maxFontSizeMultiplier: true,
+    adjustsFontSizeToFit: true,
+    minimumFontScale: true,
+    autoFocus: true,
     placeholder: true,
     inlineImagePadding: true,
     contextMenuHidden: true,
@@ -80,7 +83,7 @@ const AndroidTextInputViewConfig = {
     returnKeyType: true,
     keyboardType: true,
     multiline: true,
-    color: true,
+    color: {process: require('../../StyleSheet/processColor')},
     autoCompleteType: true,
     numberOfLines: true,
     letterSpacing: true,
@@ -111,4 +114,4 @@ const AndroidTextInputViewConfig = {
   },
 };
 
-module.exports = (AndroidTextInputViewConfig: ViewConfig);
+module.exports = (AndroidTextInputViewConfig: PartialViewConfig);

@@ -222,8 +222,7 @@ ShadowTree::ShadowTree(
     SurfaceId surfaceId,
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext,
-    ShadowTreeDelegate const &delegate,
-    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate)
+    ShadowTreeDelegate const &delegate)
     : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
@@ -250,8 +249,8 @@ ShadowTree::ShadowTree(
   currentRevision_ = ShadowTreeRevision{
       rootShadowNode, ShadowTreeRevision::Number{0}, TransactionTelemetry{}};
 
-  mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
-      currentRevision_, mountingOverrideDelegate);
+  mountingCoordinator_ =
+      std::make_shared<MountingCoordinator const>(currentRevision_);
 }
 
 ShadowTree::~ShadowTree() {

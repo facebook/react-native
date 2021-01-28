@@ -19,12 +19,9 @@
 namespace facebook {
 namespace react {
 
-MountingCoordinator::MountingCoordinator(
-    ShadowTreeRevision baseRevision,
-    std::weak_ptr<MountingOverrideDelegate const> delegate)
+MountingCoordinator::MountingCoordinator(ShadowTreeRevision baseRevision)
     : surfaceId_(baseRevision.rootShadowNode->getSurfaceId()),
       baseRevision_(baseRevision),
-      mountingOverrideDelegate_(delegate),
       telemetryController_(*this) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   stubViewTree_ = buildStubViewTreeWithoutUsingDifferentiator(
@@ -179,6 +176,12 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
 
 TelemetryController const &MountingCoordinator::getTelemetryController() const {
   return telemetryController_;
+}
+
+void MountingCoordinator::setMountingOverrideDelegate(
+    std::weak_ptr<MountingOverrideDelegate const> delegate) const {
+  std::lock_guard<std::mutex> lock(mutex_);
+  mountingOverrideDelegate_ = delegate;
 }
 
 } // namespace react

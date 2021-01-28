@@ -28,7 +28,7 @@ import type {
 
 import type {AliasResolver} from '../Utils';
 
-const {capitalize} = require('./Utils');
+const {capitalize} = require('../../Utils');
 const {
   unwrapNullable,
   wrapNullable,

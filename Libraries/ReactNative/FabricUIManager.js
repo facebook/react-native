@@ -57,6 +57,7 @@ export type Spec = {|
     // $FlowFixMe
     errorCallback: (error: Object) => void,
   ) => void,
+  +sendAccessibilityEvent: (node: Node, eventType: string) => void,
 |};
 
 const FabricUIManager: ?Spec = global.nativeFabricUIManager;

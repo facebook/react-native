@@ -156,8 +156,10 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   SystraceSection s("-[RCTScheduler startSurfaceWithSurfaceId:...]");
 
   auto props = convertIdToFollyDynamic(initialProps);
-  _scheduler->startSurface(
-      surfaceId, RCTStringFromNSString(moduleName), props, layoutConstraints, layoutContext, _animationDriver);
+  _scheduler->startSurface(surfaceId, RCTStringFromNSString(moduleName), props, layoutConstraints, layoutContext);
+
+  _scheduler->findMountingCoordinator(surfaceId)->setMountingOverrideDelegate(_animationDriver);
+
   _scheduler->renderTemplateToSurface(
       surfaceId, props.getDefault("navigationConfig").getDefault("initialUITemplate", "").getString());
 }

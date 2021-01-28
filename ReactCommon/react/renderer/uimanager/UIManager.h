@@ -65,8 +65,8 @@ class UIManager final : public ShadowTreeDelegate {
    * The callback is called synchronously on the same thread.
    */
   void visitBinding(
-      std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
-      const;
+      std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
+      jsi::Runtime &runtime) const;
 
   /*
    * Registers and unregisters a commit hook.
@@ -175,6 +175,8 @@ class UIManager final : public ShadowTreeDelegate {
 
   mutable better::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook const *> commitHooks_;
+
+  bool extractUIManagerBindingOnDemand_{};
 };
 
 } // namespace react
