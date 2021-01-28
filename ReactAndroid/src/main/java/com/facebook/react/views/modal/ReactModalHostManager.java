@@ -121,7 +121,8 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
           new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-              dispatcher.dispatchEvent(new ShowEvent(view.getId()));
+              dispatcher.dispatchEvent(
+                  new ShowEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId()));
             }
           });
       view.setEventDispatcher(dispatcher);
