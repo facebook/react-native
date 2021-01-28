@@ -104,7 +104,8 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   public void setIdentifier(ReactModalHostView view, int value) {}
 
   @Override
-  protected void addEventEmitters(ThemedReactContext reactContext, final ReactModalHostView view) {
+  protected void addEventEmitters(
+      final ThemedReactContext reactContext, final ReactModalHostView view) {
     final EventDispatcher dispatcher =
         UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.getId());
     if (dispatcher != null) {
@@ -112,7 +113,8 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
           new ReactModalHostView.OnRequestCloseListener() {
             @Override
             public void onRequestClose(DialogInterface dialog) {
-              dispatcher.dispatchEvent(new RequestCloseEvent(view.getId()));
+              dispatcher.dispatchEvent(
+                  new RequestCloseEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId()));
             }
           });
       view.setOnShowListener(
