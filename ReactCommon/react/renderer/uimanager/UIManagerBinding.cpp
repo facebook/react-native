@@ -452,20 +452,18 @@ jsi::Value UIManagerBinding::get(
             auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
             auto shadowNodeList =
                 shadowNodeListFromValue(runtime, arguments[1]);
-
-            sharedUIManager->completeRootEventCounter_ += 1;
+            static std::atomic_uint_fast8_t completeRootEventCounter{0};
+            completeRootEventCounter += 1;
             sharedUIManager->backgroundExecutor_(
                 [sharedUIManager,
                  surfaceId,
                  shadowNodeList,
-                 eventCount =
-                     sharedUIManager->completeRootEventCounter_.load()] {
-                  auto shouldCancel = [eventCount, sharedUIManager]() -> bool {
-                    // If `eventCounter_` was incremented, another
+                 eventCount = completeRootEventCounter.load()] {
+                  auto shouldCancel = [eventCount]() -> bool {
+                    // If `completeRootEventCounter` was incremented, another
                     // `completeSurface` call has been scheduled and current
                     // `completeSurface` should be cancelled.
-                    return sharedUIManager->completeRootEventCounter_ >
-                        eventCount;
+                    return completeRootEventCounter > eventCount;
                   };
                   sharedUIManager->completeSurface(
                       surfaceId, shadowNodeList, {true, shouldCancel});
