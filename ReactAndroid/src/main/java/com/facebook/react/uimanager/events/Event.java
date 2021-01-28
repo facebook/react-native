@@ -7,14 +7,26 @@
 
 package com.facebook.react.uimanager.events;
 
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 
 /**
  * A UI event that can be dispatched to JS.
  *
- * <p>For dispatching events {@link EventDispatcher#dispatchEvent} should be used. Once event object
- * is passed to the EventDispatched it should no longer be used as EventDispatcher may decide to
- * recycle that object (by calling {@link #dispose}).
+ * <p>For dispatching events {@code getEventData} should be used. Once event object is passed to the
+ * EventDispatched it should no longer be used as EventDispatcher may decide to recycle that object
+ * (by calling {@link #dispose}).
+ *
+ * <p>If you need advanced customizations and overriding only {@code getEventData} doesn't work for
+ * you, you must override both {@code dispatch} and {@code dispatchModern}. Both of these will be
+ * deleted in the distant future and it is highly recommended to use only {@code getEventData}.
+ *
+ * <p>Old, pre-Fabric Events only used viewTag as the identifier, but Fabric needs surfaceId as well
+ * as viewTag. You may use {@code UIManagerHelper.getSurfaceId} on a Fabric-managed View to get the
+ * surfaceId. Fabric will work without surfaceId - making {@code Event} backwards-compatible - but
+ * Events without SurfaceId are slightly slower to propagate.
  */
 public abstract class Event<T extends Event> {
 
@@ -119,15 +131,45 @@ public abstract class Event<T extends Event> {
 
   /**
    * Dispatch this event to JS using the given event emitter. Compatible with old and new renderer.
+   * Instead of using this or dispatchModern, it is recommended that you simply override
+   * `getEventData`. In the future
    */
   @Deprecated
-  public abstract void dispatch(RCTEventEmitter rctEventEmitter);
+  public void dispatch(RCTEventEmitter rctEventEmitter) {
+    WritableMap eventData = getEventData();
+    if (eventData == null) {
+      throw new IllegalViewOperationException(
+          "Event: you must return a valid, non-null value from `getEventData`, or override `dispatch` and `disatchModern`. Event: "
+              + getEventName());
+    }
+    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), eventData);
+  }
 
   /**
-   * Dispatch this event to JS using a V2 EventEmitter. Events must explicitly override this, by
-   * default it uses the V1 dispatcher.
+   * Can be overridden by classes to make migrating to RCTModernEventEmitter support easier. If this
+   * class returns null, the RCTEventEmitter interface will be used instead of
+   * RCTModernEventEmitter. In the future, returning null here will be an error.
    */
+  @Nullable
+  protected WritableMap getEventData() {
+    return null;
+  }
+
+  /**
+   * Dispatch this event to JS using a V2 EventEmitter. If surfaceId is not -1 and `getEventData` is
+   * non-null, this will use the RCTModernEventEmitter API. Otherwise, it falls back to the
+   * old-style dispatch function. For Event classes that need to do something different, this method
+   * can always be overridden entirely, but it is not recommended.
+   */
+  @Deprecated
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
+    if (getSurfaceId() != -1) {
+      WritableMap eventData = getEventData();
+      if (eventData != null) {
+        rctEventEmitter.receiveEvent(getSurfaceId(), getViewTag(), getEventName(), getEventData());
+        return;
+      }
+    }
     dispatch(rctEventEmitter);
   }
 }
