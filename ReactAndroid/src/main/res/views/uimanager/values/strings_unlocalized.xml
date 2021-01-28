@@ -69,6 +69,10 @@
     translatable="false"
     >Tab List</string>
   <string
+    name="text_description"
+    translatable="false"
+    >Text</string>
+  <string
     name="timer_description"
     translatable="false"
     >Timer</string>
