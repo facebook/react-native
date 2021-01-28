@@ -29,6 +29,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewManager;
@@ -136,7 +137,7 @@ public class SurfaceMountingManager {
     // Since this is called from the constructor, we know the surface cannot have stopped yet.
     mTagToViewState.put(mSurfaceId, new ViewState(mSurfaceId, rootView, mRootViewManager, true));
 
-    UiThreadUtil.runOnUiThread(
+    Runnable runnable =
         new Runnable() {
           @Override
           public void run() {
@@ -158,8 +159,18 @@ public class SurfaceMountingManager {
                       + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
             }
             rootView.setId(mSurfaceId);
+
+            if (rootView instanceof ReactRoot) {
+              ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
+            }
           }
-        });
+        };
+
+    if (UiThreadUtil.isOnUiThread()) {
+      runnable.run();
+    } else {
+      UiThreadUtil.runOnUiThread(runnable);
+    }
   }
 
   /**
