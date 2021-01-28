@@ -458,15 +458,15 @@ jsi::Value UIManagerBinding::get(
             mostRecentSurfaceId = surfaceId;
             sharedUIManager->backgroundExecutor_(
                 [=, eventCount = completeRootEventCounter.load()] {
-                  auto shouldCancel = [=]() -> bool {
+                  auto shouldYield = [=]() -> bool {
                     // If `completeRootEventCounter` was incremented, another
                     // `completeSurface` call has been scheduled and current
-                    // `completeSurface` should be cancelled.
+                    // `completeSurface` should yield to it.
                     return completeRootEventCounter > eventCount &&
                         mostRecentSurfaceId == surfaceId;
                   };
                   sharedUIManager->completeSurface(
-                      surfaceId, shadowNodeList, {true, shouldCancel});
+                      surfaceId, shadowNodeList, {true, shouldYield});
                 });
 
             return jsi::Value::undefined();
