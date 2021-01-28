@@ -13,6 +13,10 @@
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 import NativeAccessibilityManager from './NativeAccessibilityManager';
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import {sendAccessibilityEvent} from '../../Renderer/shims/ReactNative';
+import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
+import {type ElementRef} from 'react';
 
 const CHANGE_EVENT_NAME = {
   announcementFinished: 'announcementFinished',
@@ -40,6 +44,8 @@ type AccessibilityEventDefinitions = {
     },
   ],
 };
+
+type AccessibilityEventTypes = 'focus';
 
 const _subscriptions = new Map();
 
@@ -241,9 +247,18 @@ const AccessibilityInfo = {
    * See https://reactnative.dev/docs/accessibilityinfo.html#setaccessibilityfocus
    */
   setAccessibilityFocus: function(reactTag: number): void {
-    if (NativeAccessibilityManager) {
-      NativeAccessibilityManager.setAccessibilityFocus(reactTag);
-    }
+    legacySendAccessibilityEvent(reactTag, 'focus');
+  },
+
+  /**
+   * Send a named accessibility event to a HostComponent.
+   */
+  sendAccessibilityEvent_unstable: function(
+    handle: ElementRef<HostComponent<mixed>>,
+    eventType: AccessibilityEventTypes,
+  ) {
+    // route through React renderer to distinguish between Fabric and non-Fabric handles
+    sendAccessibilityEvent(handle, eventType);
   },
 
   /**

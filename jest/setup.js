@@ -127,6 +127,7 @@ jest
     isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
     removeEventListener: jest.fn(),
     setAccessibilityFocus: jest.fn(),
+    sendAccessibilityEvent_unstable: jest.fn(),
   }))
   .mock('../Libraries/Components/RefreshControl/RefreshControl', () =>
     jest.requireActual(
