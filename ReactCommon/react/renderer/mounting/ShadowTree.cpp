@@ -371,7 +371,8 @@ CommitStatus ShadowTree::tryCommit(
     newRootShadowNode = delegate_.shadowTreeWillCommit(
         *this, oldRootShadowNode, newRootShadowNode);
 
-    if (!newRootShadowNode) {
+    if (!newRootShadowNode ||
+        (commitOptions.shouldCancel && commitOptions.shouldCancel())) {
       return CommitStatus::Cancelled;
     }
 
@@ -390,10 +391,6 @@ CommitStatus ShadowTree::tryCommit(
         ShadowTreeRevision{newRootShadowNode, newRevisionNumber, telemetry};
 
     currentRevision_ = newRevision;
-  }
-
-  if (commitOptions.shouldCancel && commitOptions.shouldCancel()) {
-    return CommitStatus::Cancelled;
   }
 
   emitLayoutEvents(affectedLayoutableNodes);
