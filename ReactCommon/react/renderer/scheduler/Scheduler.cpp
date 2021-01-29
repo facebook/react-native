@@ -81,6 +81,7 @@ Scheduler::Scheduler(
 
   uiManager->setBackgroundExecutor(schedulerToolbox.backgroundExecutor);
   uiManager->setDelegate(this);
+  uiManager->setRuntimeExecutor(runtimeExecutor_);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
@@ -177,6 +178,16 @@ Scheduler::~Scheduler() {
       uiManager_->getShadowTreeRegistry().remove(surfaceId);
     }
   }
+}
+
+void Scheduler::registerSurface(
+    SurfaceHandler const &surfaceHandler) const noexcept {
+  surfaceHandler.setUIManager(uiManager_.get());
+}
+
+void Scheduler::unregisterSurface(
+    SurfaceHandler const &surfaceHandler) const noexcept {
+  surfaceHandler.setUIManager(nullptr);
 }
 
 void Scheduler::startSurface(

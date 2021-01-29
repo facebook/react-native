@@ -10,6 +10,8 @@
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
 
+#include <ReactCommon/RuntimeExecutor.h>
+
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/core/ShadowNode.h>
@@ -42,6 +44,8 @@ class UIManager final : public ShadowTreeDelegate {
   void setDelegate(UIManagerDelegate *delegate);
   UIManagerDelegate *getDelegate();
 
+  void setRuntimeExecutor(RuntimeExecutor const &runtimeExecutor);
+
   void setBackgroundExecutor(BackgroundExecutor const &backgroundExecutor);
 
   /**
@@ -54,7 +58,7 @@ class UIManager final : public ShadowTreeDelegate {
   /**
    * Execute stopSurface on any UIMAnagerAnimationDelegate.
    */
-  void stopSurfaceForAnimationDelegate(SurfaceId surfaceId);
+  void stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const;
 
   void animationTick();
 
@@ -77,6 +81,17 @@ class UIManager final : public ShadowTreeDelegate {
   ShadowNode::Shared getNewestCloneOfShadowNode(
       ShadowNode const &shadowNode) const;
 
+#pragma mark - Surface Start & Stop
+
+  ShadowTree const &startSurface(
+      SurfaceId surfaceId,
+      std::string const &moduleName,
+      folly::dynamic const &props,
+      LayoutConstraints const &layoutConstraints,
+      LayoutContext const &layoutContext) const;
+
+  void stopSurface(SurfaceId surfaceId) const;
+
 #pragma mark - ShadowTreeDelegate
 
   void shadowTreeDidFinishTransaction(
@@ -91,6 +106,7 @@ class UIManager final : public ShadowTreeDelegate {
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
+  friend class SurfaceHandler;
 
   ShadowNode::Shared createNode(
       Tag tag,
@@ -164,6 +180,7 @@ class UIManager final : public ShadowTreeDelegate {
   UIManagerDelegate *delegate_;
   UIManagerAnimationDelegate *animationDelegate_{nullptr};
   UIManagerBinding *uiManagerBinding_;
+  RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
   BackgroundExecutor backgroundExecutor_{};
 

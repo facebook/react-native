@@ -19,6 +19,7 @@
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
+#include <react/renderer/scheduler/SurfaceHandler.h>
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
@@ -39,6 +40,14 @@ class Scheduler final : public UIManagerDelegate {
   ~Scheduler();
 
 #pragma mark - Surface Management
+
+  /*
+   * Registers and unregisters a `SurfaceHandler` object in the `Scheduler`.
+   * All registered `SurfaceHandler` objects must be unregistered
+   * (with the same `Scheduler`) before their deallocation.
+   */
+  void registerSurface(SurfaceHandler const &surfaceHandler) const noexcept;
+  void unregisterSurface(SurfaceHandler const &surfaceHandler) const noexcept;
 
   void startSurface(
       SurfaceId surfaceId,
@@ -73,7 +82,7 @@ class Scheduler final : public UIManagerDelegate {
   /*
    * This is broken. Please do not use.
    * `ComponentDescriptor`s are not designed to be used outside of `UIManager`,
-   * there is no any garantees about their lifetime.
+   * there is no any guarantees about their lifetime.
    */
   ComponentDescriptor const *
   findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
@@ -119,6 +128,8 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerDidClearJSResponder() override;
 
  private:
+  friend class SurfaceHandler;
+
   SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   RuntimeExecutor runtimeExecutor_;
