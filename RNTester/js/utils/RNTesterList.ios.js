@@ -197,6 +197,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'TooltipExample',
+    module: require('../examples/Tooltip/TooltipExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'TouchableExample',
     module: require('../examples/Touchable/TouchableExample'),
     supportsTVOS: true,

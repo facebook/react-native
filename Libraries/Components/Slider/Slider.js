@@ -132,6 +132,10 @@ type Props = $ReadOnly<{|
    * Used to locate this view in UI automation tests.
    */
   testID?: ?string,
+  /**
+   * Specifies the tooltip.
+   */
+  tooltip?: ?string,
 |}>;
 
 /**

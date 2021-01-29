@@ -154,6 +154,10 @@ type ButtonProps = $ReadOnly<{|
    * For arrow keys, add "leftArrow", "rightArrow", "upArrow", "downArrow",
    */
   validKeysUp?: ?Array<string>,
+  /*
+   * Specifies the Tooltip for the view
+   */
+  tooltip?: string,
   // ]TODO(OSS Candidate ISS#2710739)
 |}>;
 
@@ -211,6 +215,7 @@ class Button extends React.Component<ButtonProps> {
       validKeysDown,
       validKeysUp,
       onKeyUp,
+      tooltip,
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -261,6 +266,7 @@ class Button extends React.Component<ButtonProps> {
         onKeyUp={onKeyUp}
         validKeysDown={validKeysDown}
         validKeysUp={validKeysUp}
+        tooltip={tooltip}
         touchSoundDisabled={touchSoundDisabled}>
         <View style={buttonStyles}>
           <Text style={textStyles} disabled={disabled}>

@@ -68,6 +68,7 @@ const viewConfig = {
     onTextLayout: true,
     onInlineViewLayout: true,
     dataDetectorType: true,
+    tooltip: true,
   },
   directEventTypes: {
     topTextLayout: {

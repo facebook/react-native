@@ -187,4 +187,13 @@ export type TextProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/text.html#supperhighlighting
    */
   suppressHighlighting?: ?boolean,
+
+  /**
+   * macOS Only
+   */
+
+  /**
+   * Specifies the Tooltip for the button view
+   */
+  tooltip?: ?string,
 |}>;
