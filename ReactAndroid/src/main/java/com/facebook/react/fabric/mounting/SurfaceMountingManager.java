@@ -147,7 +147,14 @@ public class SurfaceMountingManager {
               return;
             }
 
-            if (rootView.getId() != View.NO_ID) {
+            if (rootView.getId() == mSurfaceId) {
+              ReactSoftException.logSoftException(
+                  TAG,
+                  new IllegalViewOperationException(
+                      "Race condition in addRootView detected. Trying to set an id of ["
+                          + mSurfaceId
+                          + "] on the RootView, but that id has already been set. "));
+            } else if (rootView.getId() != View.NO_ID) {
               FLog.e(
                   TAG,
                   "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
