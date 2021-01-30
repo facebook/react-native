@@ -20,6 +20,7 @@
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/scheduler/SurfaceHandler.h>
+#include <react/renderer/scheduler/SurfaceManager.h>
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
@@ -130,6 +131,7 @@ class Scheduler final : public UIManagerDelegate {
  private:
   friend class SurfaceHandler;
 
+  SurfaceManager surfaceManager_;
   SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   RuntimeExecutor runtimeExecutor_;
@@ -151,6 +153,8 @@ class Scheduler final : public UIManagerDelegate {
    * Temporary flags.
    */
   bool removeOutstandingSurfacesOnDestruction_{false};
+
+  bool enableSurfaceManager_{false};
 };
 
 } // namespace react

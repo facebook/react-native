@@ -31,7 +31,8 @@ namespace react {
 Scheduler::Scheduler(
     SchedulerToolbox schedulerToolbox,
     UIManagerAnimationDelegate *animationDelegate,
-    SchedulerDelegate *delegate) {
+    SchedulerDelegate *delegate)
+    : surfaceManager_(*this) {
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
 
   reactNativeConfig_ =
@@ -116,9 +117,13 @@ Scheduler::Scheduler(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
   Constants::setPropsForwardingEnabled(reactNativeConfig_->getBool(
       "react_fabric:enable_props_forwarding_android"));
+  enableSurfaceManager_ = reactNativeConfig_->getBool(
+      "react_fabric:enable_surface_manager_android");
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
+  enableSurfaceManager_ =
+      reactNativeConfig_->getBool("react_fabric:enable_surface_manager_ios");
 #endif
 
   uiManager->extractUIManagerBindingOnDemand_ = reactNativeConfig_->getBool(
@@ -198,6 +203,12 @@ void Scheduler::startSurface(
     const LayoutContext &layoutContext) const {
   SystraceSection s("Scheduler::startSurface");
 
+  if (enableSurfaceManager_) {
+    surfaceManager_.startSurface(
+        surfaceId, moduleName, initialProps, layoutConstraints, layoutContext);
+    return;
+  }
+
   auto shadowTree = std::make_unique<ShadowTree>(
       surfaceId, layoutConstraints, layoutContext, *uiManager_);
 
@@ -255,6 +266,11 @@ void Scheduler::renderTemplateToSurface(
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("Scheduler::stopSurface");
 
+  if (enableSurfaceManager_) {
+    surfaceManager_.stopSurface(surfaceId);
+    return;
+  }
+
   // Stop any ongoing animations.
   uiManager_->stopSurfaceForAnimationDelegate(surfaceId);
 
@@ -289,6 +305,11 @@ Size Scheduler::measureSurface(
     const LayoutContext &layoutContext) const {
   SystraceSection s("Scheduler::measureSurface");
 
+  if (enableSurfaceManager_) {
+    return surfaceManager_.measureSurface(
+        surfaceId, layoutConstraints, layoutContext);
+  }
+
   auto currentRootShadowNode = RootShadowNode::Shared{};
   uiManager_->getShadowTreeRegistry().visit(
       surfaceId, [&](const ShadowTree &shadowTree) {
@@ -303,6 +324,10 @@ Size Scheduler::measureSurface(
 
 MountingCoordinator::Shared Scheduler::findMountingCoordinator(
     SurfaceId surfaceId) const {
+  if (enableSurfaceManager_) {
+    return surfaceManager_.findMountingCoordinator(surfaceId);
+  }
+
   MountingCoordinator::Shared mountingCoordinator = nullptr;
   uiManager_->getShadowTreeRegistry().visit(
       surfaceId, [&](const ShadowTree &shadowTree) {
@@ -315,6 +340,11 @@ void Scheduler::constraintSurfaceLayout(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
+  if (enableSurfaceManager_) {
+    return surfaceManager_.constraintSurfaceLayout(
+        surfaceId, layoutConstraints, layoutContext);
+  }
+
   SystraceSection s("Scheduler::constraintSurfaceLayout");
 
   uiManager_->getShadowTreeRegistry().visit(
