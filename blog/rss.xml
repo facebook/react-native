@@ -219,18 +219,18 @@
             <description><![CDATA[At Shoutem, we've been fortunate enough to work with React Native from its very beginnings. We decided we wanted to be part of the amazing community from day one. Soon enough, we realized it's almost impossible to keep up with the pace the community was growing and improving. That's why we decided to organize a monthly meeting where all major React Native contributors can briefly present what their efforts and plans are.]]></description>
         </item>
         <item>
-            <title><![CDATA[Better List Views in React Native]]></title>
-            <link>https://reactnative.dev/blog/2017/03/13/better-list-views</link>
-            <guid>Better List Views in React Native</guid>
-            <pubDate>Mon, 13 Mar 2017 00:00:00 GMT</pubDate>
-            <description><![CDATA[Many of you have started playing with some of our new List components already after our teaser announcement in the community group, but we are officially announcing them today! No more ListViews or DataSources, stale rows, ignored bugs, or excessive memory consumption - with the latest React Native March 2017 release candidate (0.43-rc.1) you can pick from the new suite of components what best fits your use-case, with great perf and feature sets out of the box:]]></description>
-        </item>
-        <item>
             <title><![CDATA[idx: The Existential Function]]></title>
             <link>https://reactnative.dev/blog/2017/03/13/idx-the-existential-function</link>
             <guid>idx: The Existential Function</guid>
             <pubDate>Mon, 13 Mar 2017 00:00:00 GMT</pubDate>
             <description><![CDATA[At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be null for a variety of reasons, from failed privacy checks to the mere fact that null happens to be the most flexible way to represent non-fatal errors.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Better List Views in React Native]]></title>
+            <link>https://reactnative.dev/blog/2017/03/13/better-list-views</link>
+            <guid>Better List Views in React Native</guid>
+            <pubDate>Mon, 13 Mar 2017 00:00:00 GMT</pubDate>
+            <description><![CDATA[Many of you have started playing with some of our new List components already after our teaser announcement in the community group, but we are officially announcing them today! No more ListViews or DataSources, stale rows, ignored bugs, or excessive memory consumption - with the latest React Native March 2017 release candidate (0.43-rc.1) you can pick from the new suite of components what best fits your use-case, with great perf and feature sets out of the box:]]></description>
         </item>
         <item>
             <title><![CDATA[Introducing Create React Native App]]></title>
