@@ -1,6 +1,6 @@
 PODS:
   - boost-for-react-native (1.63.0)
-  - CocoaAsyncSocket (7.6.4)
+  - CocoaAsyncSocket (7.6.5)
   - CocoaLibEvent (1.0.0)
   - DoubleConversion (1.1.6)
   - FBLazyVector (1000.0.0)
@@ -653,7 +653,7 @@ PODS:
 DEPENDENCIES:
   - DoubleConversion (from `../../third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../../Libraries/FBLazyVector`)
-  - FBReactNativeSpec (from `../../Libraries/FBReactNativeSpec`)
+  - FBReactNativeSpec (from `../../React/FBReactNativeSpec`)
   - Flipper (~> 0.54.0)
   - Flipper-DoubleConversion (= 1.1.7)
   - Flipper-Folly (~> 2.2)
@@ -730,7 +730,7 @@ EXTERNAL SOURCES:
   FBLazyVector:
     :path: "../../Libraries/FBLazyVector"
   FBReactNativeSpec:
-    :path: "../../Libraries/FBReactNativeSpec"
+    :path: "../../React/FBReactNativeSpec"
   glog:
     :podspec: "../../third-party-podspecs/glog.podspec"
   RCT-Folly:
@@ -794,11 +794,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
+  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  FBLazyVector: fe973c09b2299b5e8154186ecf1f6554b4f70987
-  FBReactNativeSpec: d0504078deb2ffa0fbee5032382f4ef165a1c8a8
+  FBLazyVector: 91e874a8823933a268c38765a88cbd5dba1fa024
+  FBReactNativeSpec: 58a907f57c40ca74a954abe86862baa5eb423c63
   Flipper: be611d4b742d8c87fbae2ca5f44603a02539e365
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: e4493b013c02d9347d5e0cb4d128680239f6c78a
@@ -813,7 +813,7 @@ SPEC CHECKSUMS:
   RCTTypeSafety: 4da4f9f218727257c50fd3bf2683a06cdb4fede3
   React: 87b3271d925336a94620915db5845c67c5dbbd77
   React-callinvoker: e9524d75cf0b7ae108868f8d34c0b8d7dc08ec03
-  React-Core: 40874579985cf440232e3f33ce172be1f04d4964
+  React-Core: c63389ffebc383f834a2cae4d1c120968ffb3cdb
   React-CoreModules: 87f011fa87190ffe979e443ce578ec93ec6ff4d4
   React-cxxreact: de6de17eac6bbaa4f9fad46b66e7f0c4aaaf863d
   React-Fabric: 911e4b13fbffce46820f18c3a3b7a2a966e9e425
