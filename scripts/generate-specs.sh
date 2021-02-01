@@ -27,7 +27,6 @@ set -e
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 TEMP_DIR=$(mktemp -d /tmp/react-native-codegen-XXXXXXXX)
 RN_DIR=$(cd "$THIS_DIR/.." && pwd)
-YARN_BINARY="${YARN_BINARY:-$(command -v yarn)}"
 NODE_BINARY="${NODE_BINARY:-$(command -v node)}"
 USE_FABRIC="${USE_FABRIC:-0}"
 
@@ -68,10 +67,7 @@ main() {
 
   if [ ! -d "$CODEGEN_PATH/lib" ]; then
     describe "Building react-native-codegen package"
-    pushd "$CODEGEN_PATH" >/dev/null || exit
-      "$YARN_BINARY"
-      "$YARN_BINARY" build
-    popd >/dev/null || exit
+    bash "$CODEGEN_PATH/scripts/oss/build.sh"
   fi
 
   describe "Generating schema from flow types"
