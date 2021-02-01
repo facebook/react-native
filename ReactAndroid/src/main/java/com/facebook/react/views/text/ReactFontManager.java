@@ -56,8 +56,8 @@ public class ReactFontManager {
 
   public @Nullable Typeface getTypeface(
       String fontFamilyName, int style, int weight, AssetManager assetManager) {
-    if (mCustomTypefaceCache.containsKey(fontFamilyName)) {
-      Typeface typeface = mCustomTypefaceCache.get(fontFamilyName);
+    Typeface typeface = mCustomTypefaceCache.get(fontFamilyName);
+    if (typeface != null) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && weight >= 100 && weight <= 1000) {
         return Typeface.create(typeface, weight, (style & Typeface.ITALIC) != 0);
       }
@@ -70,7 +70,7 @@ public class ReactFontManager {
       mFontCache.put(fontFamilyName, fontFamily);
     }
 
-    Typeface typeface = fontFamily.getTypeface(style);
+    typeface = fontFamily.getTypeface(style);
     if (typeface == null) {
       typeface = createTypeface(fontFamilyName, style, assetManager);
       if (typeface != null) {
