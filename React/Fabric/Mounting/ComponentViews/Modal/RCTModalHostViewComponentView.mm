@@ -19,7 +19,6 @@
 
 using namespace facebook::react;
 
-#if !TARGET_OS_TV
 static UIInterfaceOrientationMask supportedOrientationsMask(ModalHostViewSupportedOrientationsMask mask)
 {
   UIInterfaceOrientationMask supportedOrientations = 0;
@@ -54,7 +53,6 @@ static UIInterfaceOrientationMask supportedOrientationsMask(ModalHostViewSupport
 
   return supportedOrientations;
 }
-#endif
 
 static std::tuple<BOOL, UIModalTransitionStyle> animationConfiguration(ModalHostViewAnimationType const animation)
 {
@@ -100,9 +98,10 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 @implementation RCTModalHostViewComponentView {
   RCTFabricModalHostViewController *_viewController;
-  ModalHostViewShadowNode::ConcreteStateTeller _stateTeller;
+  ModalHostViewShadowNode::ConcreteState::Shared _state;
   BOOL _shouldAnimatePresentation;
   BOOL _isPresented;
+  UIView *_modalContentsSnapshot;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -163,9 +162,21 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   BOOL shouldBeHidden = _isPresented && !self.superview;
   if (shouldBeHidden) {
     _isPresented = NO;
+    // To animate dismissal of view controller, snapshot of
+    // view hierarchy needs to be added to the UIViewController.
+    [self.viewController.view addSubview:_modalContentsSnapshot];
     [self dismissViewController:self.viewController animated:_shouldAnimatePresentation];
   }
 }
+
+#pragma mark - RCTMountingTransactionObserving
+
+- (void)mountingTransactionWillMountWithMetadata:(MountingTransactionMetadata const &)metadata
+{
+  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
+}
+
+#pragma mark - UIView methods
 
 - (void)didMoveToWindow
 {
@@ -190,8 +201,10 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     eventEmitter->onOrientationChange(onOrientationChangeStruct(newBounds));
   }
 
-  auto newState = ModalHostViewState{RCTSizeFromCGSize(newBounds.size)};
-  _stateTeller.updateState(std::move(newState));
+  if (_state != nullptr) {
+    auto newState = ModalHostViewState{RCTSizeFromCGSize(newBounds.size)};
+    _state->updateState(std::move(newState));
+  }
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -204,7 +217,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  _stateTeller.invalidate();
+  _state.reset();
   _viewController = nil;
   _isPresented = NO;
 }
@@ -226,9 +239,10 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
+- (void)updateState:(facebook::react::State::Shared const &)state
+           oldState:(facebook::react::State::Shared const &)oldState
 {
-  _stateTeller.setConcreteState(state);
+  _state = std::static_pointer_cast<const ModalHostViewShadowNode::ConcreteState>(state);
 }
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index

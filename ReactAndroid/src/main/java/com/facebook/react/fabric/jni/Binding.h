@@ -26,6 +26,45 @@ namespace react {
 
 class Instance;
 
+struct CppMountItem final {
+#pragma mark - Designated Initializers
+  static CppMountItem CreateMountItem(ShadowView shadowView);
+  static CppMountItem DeleteMountItem(ShadowView shadowView);
+  static CppMountItem
+  InsertMountItem(ShadowView parentView, ShadowView shadowView, int index);
+  static CppMountItem
+  RemoveMountItem(ShadowView parentView, ShadowView shadowView, int index);
+  static CppMountItem UpdatePropsMountItem(ShadowView shadowView);
+  static CppMountItem UpdateStateMountItem(ShadowView shadowView);
+  static CppMountItem UpdateLayoutMountItem(ShadowView shadowView);
+  static CppMountItem UpdateEventEmitterMountItem(ShadowView shadowView);
+  static CppMountItem UpdatePaddingMountItem(ShadowView shadowView);
+
+#pragma mark - Type
+
+  enum Type {
+    Undefined = -1,
+    Multiple = 1,
+    Create = 2,
+    Delete = 4,
+    Insert = 8,
+    Remove = 16,
+    UpdateProps = 32,
+    UpdateState = 64,
+    UpdateLayout = 128,
+    UpdateEventEmitter = 256,
+    UpdatePadding = 512
+  };
+
+#pragma mark - Fields
+
+  Type type = {Create};
+  ShadowView parentShadowView = {};
+  ShadowView oldChildShadowView = {};
+  ShadowView newChildShadowView = {};
+  int index = {};
+};
+
 class Binding : public jni::HybridClass<Binding>,
                 public SchedulerDelegate,
                 public LayoutAnimationStatusDelegate {
@@ -97,6 +136,10 @@ class Binding : public jni::HybridClass<Binding>,
       std::string const &commandName,
       folly::dynamic const args) override;
 
+  void schedulerDidSendAccessibilityEvent(
+      const ShadowView &shadowView,
+      std::string const &eventType) override;
+
   void schedulerDidSetJSResponder(
       SurfaceId surfaceId,
       const ShadowView &shadowView,
@@ -130,7 +173,6 @@ class Binding : public jni::HybridClass<Binding>,
   float pointScaleFactor_ = 1;
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
-  bool collapseDeleteCreateMountingInstructions_{false};
   bool disablePreallocateViews_{false};
   bool disableVirtualNodePreallocation_{false};
   bool enableFabricLogs_{false};

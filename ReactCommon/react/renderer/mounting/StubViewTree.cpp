@@ -38,30 +38,27 @@ StubView const &StubViewTree::getRootStubView() const {
   return *registry.at(rootTag);
 }
 
-/**
- * ignoreDuplicateCreates: when stubs generates "fake" mutation instructions, in
- * some cases it can produce too many "create" instructions. We ignore
- * duplicates and treat them as noops. In the case of verifying actual diffing,
- * that assert is left on.
- *
- * @param mutations
- * @param ignoreDuplicateCreates
- */
-void StubViewTree::mutate(
-    ShadowViewMutationList const &mutations,
-    bool ignoreDuplicateCreates) {
+StubView const &StubViewTree::getStubView(Tag tag) const {
+  return *registry.at(tag);
+}
+
+size_t StubViewTree::size() const {
+  return registry.size();
+}
+
+void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
   STUB_VIEW_LOG({ LOG(ERROR) << "StubView: Mutating Begin"; });
   for (auto const &mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
         STUB_VIEW_ASSERT(mutation.parentShadowView == ShadowView{});
         STUB_VIEW_ASSERT(mutation.oldChildShadowView == ShadowView{});
+        STUB_VIEW_ASSERT(mutation.newChildShadowView.props);
         auto stubView = std::make_shared<StubView>();
+        stubView->update(mutation.newChildShadowView);
         auto tag = mutation.newChildShadowView.tag;
         STUB_VIEW_LOG({ LOG(ERROR) << "StubView: Create: " << tag; });
-        if (!ignoreDuplicateCreates) {
-          STUB_VIEW_ASSERT(registry.find(tag) == registry.end());
-        }
+        STUB_VIEW_ASSERT(registry.find(tag) == registry.end());
         registry[tag] = stubView;
         break;
       }
@@ -72,7 +69,12 @@ void StubViewTree::mutate(
         STUB_VIEW_ASSERT(mutation.parentShadowView == ShadowView{});
         STUB_VIEW_ASSERT(mutation.newChildShadowView == ShadowView{});
         auto tag = mutation.oldChildShadowView.tag;
+        /* Disable this assert until T76057501 is resolved.
         STUB_VIEW_ASSERT(registry.find(tag) != registry.end());
+        auto stubView = registry[tag];
+        STUB_VIEW_ASSERT(
+            (ShadowView)(*stubView) == mutation.oldChildShadowView);
+        */
         registry.erase(tag);
         break;
       }
@@ -83,13 +85,15 @@ void StubViewTree::mutate(
         STUB_VIEW_ASSERT(registry.find(parentTag) != registry.end());
         auto parentStubView = registry[parentTag];
         auto childTag = mutation.newChildShadowView.tag;
-        STUB_VIEW_LOG({
-          LOG(ERROR) << "StubView: Insert: " << childTag << " into "
-                     << parentTag << " at " << mutation.index;
-        });
         STUB_VIEW_ASSERT(registry.find(childTag) != registry.end());
         auto childStubView = registry[childTag];
         childStubView->update(mutation.newChildShadowView);
+        STUB_VIEW_LOG({
+          LOG(ERROR) << "StubView: Insert: " << childTag << " into "
+                     << parentTag << " at " << mutation.index << "("
+                     << parentStubView->children.size() << " children)";
+        });
+        STUB_VIEW_ASSERT(parentStubView->children.size() >= mutation.index);
         parentStubView->children.insert(
             parentStubView->children.begin() + mutation.index, childStubView);
         break;
@@ -106,6 +110,7 @@ void StubViewTree::mutate(
                      << parentTag << " at index " << mutation.index << " with "
                      << parentStubView->children.size() << " children";
         });
+        STUB_VIEW_ASSERT(parentStubView->children.size() > mutation.index);
         STUB_VIEW_ASSERT(registry.find(childTag) != registry.end());
         auto childStubView = registry[childTag];
         bool childIsCorrect =
@@ -113,9 +118,13 @@ void StubViewTree::mutate(
             parentStubView->children[mutation.index]->tag == childStubView->tag;
         STUB_VIEW_LOG({
           std::string strChildList = "";
+          int i = 0;
           for (auto const &child : parentStubView->children) {
+            strChildList.append(std::to_string(i));
+            strChildList.append(":");
             strChildList.append(std::to_string(child->tag));
             strChildList.append(", ");
+            i++;
           }
           LOG(ERROR) << "StubView: BEFORE REMOVE: Children of " << parentTag
                      << ": " << strChildList;
@@ -130,12 +139,18 @@ void StubViewTree::mutate(
         STUB_VIEW_LOG({
           LOG(ERROR) << "StubView: Update: " << mutation.newChildShadowView.tag;
         });
+        STUB_VIEW_ASSERT(mutation.oldChildShadowView.tag != 0);
+        STUB_VIEW_ASSERT(mutation.newChildShadowView.tag != 0);
+        STUB_VIEW_ASSERT(mutation.newChildShadowView.props);
         STUB_VIEW_ASSERT(
             mutation.newChildShadowView.tag == mutation.oldChildShadowView.tag);
         STUB_VIEW_ASSERT(
             registry.find(mutation.newChildShadowView.tag) != registry.end());
-        auto stubView = registry[mutation.newChildShadowView.tag];
-        stubView->update(mutation.newChildShadowView);
+        auto oldStubView = registry[mutation.newChildShadowView.tag];
+        STUB_VIEW_ASSERT(oldStubView->tag != 0);
+        STUB_VIEW_ASSERT(
+            (ShadowView)(*oldStubView) == mutation.oldChildShadowView);
+        oldStubView->update(mutation.newChildShadowView);
         break;
       }
     }

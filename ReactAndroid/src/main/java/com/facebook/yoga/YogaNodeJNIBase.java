@@ -116,6 +116,9 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   public YogaNodeJNIBase cloneWithChildren() {
     try {
       YogaNodeJNIBase clonedYogaNode = (YogaNodeJNIBase) super.clone();
+      if (clonedYogaNode.mChildren != null) {
+        clonedYogaNode.mChildren = new ArrayList<>(clonedYogaNode.mChildren);
+      }
       long clonedNativePointer = YogaNative.jni_YGNodeCloneJNI(mNativePointer);
       clonedYogaNode.mOwner = null;
       clonedYogaNode.mNativePointer = clonedNativePointer;

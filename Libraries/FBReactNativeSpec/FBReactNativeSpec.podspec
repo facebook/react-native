@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 require "json"
+require_relative "../../scripts/react_native_pods.rb"
 
 package = JSON.parse(File.read(File.join(__dir__, "..", "..", "package.json")))
 version = package['version']
@@ -26,10 +27,11 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "10.0", :tvos => "10.0" }
+  s.platforms              = { :ios => "10.0" }
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "**/*.{c,h,m,mm,cpp}"
+  s.exclude_files          = "jni"
   s.header_dir             = "FBReactNativeSpec"
 
   s.pod_target_xcconfig    = {
@@ -44,4 +46,6 @@ Pod::Spec.new do |s|
   s.dependency "React-Core", version
   s.dependency "React-jsi", version
   s.dependency "ReactCommon/turbomodule/core", version
+
+  use_react_native_codegen! (s)
 end

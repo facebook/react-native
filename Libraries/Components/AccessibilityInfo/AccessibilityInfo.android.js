@@ -11,18 +11,24 @@
 'use strict';
 
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
-import UIManager from '../../ReactNative/UIManager';
 import NativeAccessibilityInfo from './NativeAccessibilityInfo';
+import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import {sendAccessibilityEvent} from '../../Renderer/shims/ReactNative';
+import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
+import {type ElementRef} from 'react';
 
 const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
 const TOUCH_EXPLORATION_EVENT = 'touchExplorationDidChange';
 
-type ChangeEventName = $Keys<{
-  change: string,
-  reduceMotionChanged: string,
-  screenReaderChanged: string,
-  ...
-}>;
+type AccessibilityEventDefinitions = {
+  reduceMotionChanged: [boolean],
+  screenReaderChanged: [boolean],
+  // alias for screenReaderChanged
+  change: [boolean],
+};
+
+type AccessibilityEventTypes = 'focus';
 
 const _subscriptions = new Map();
 
@@ -98,7 +104,10 @@ const AccessibilityInfo = {
     return this.isScreenReaderEnabled;
   },
 
-  addEventListener: function<T>(eventName: ChangeEventName, handler: T): void {
+  addEventListener: function<K: $Keys<AccessibilityEventDefinitions>>(
+    eventName: K,
+    handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,
+  ): EventSubscription {
     let listener;
 
     if (eventName === 'change' || eventName === 'screenReaderChanged') {
@@ -113,18 +122,28 @@ const AccessibilityInfo = {
       );
     }
 
+    // $FlowFixMe[escaped-generic]
     _subscriptions.set(handler, listener);
+
+    return {
+      remove: () => {
+        // $FlowIssue flow does not recognize handler properly
+        AccessibilityInfo.removeEventListener<K>(eventName, handler);
+      },
+    };
   },
 
-  removeEventListener: function<T>(
-    eventName: ChangeEventName,
-    handler: T,
+  removeEventListener: function<K: $Keys<AccessibilityEventDefinitions>>(
+    eventName: K,
+    handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,
   ): void {
+    // $FlowFixMe[escaped-generic]
     const listener = _subscriptions.get(handler);
     if (!listener) {
       return;
     }
     listener.remove();
+    // $FlowFixMe[escaped-generic]
     _subscriptions.delete(handler);
   },
 
@@ -134,10 +153,18 @@ const AccessibilityInfo = {
    * See https://reactnative.dev/docs/accessibilityinfo.html#setaccessibilityfocus
    */
   setAccessibilityFocus: function(reactTag: number): void {
-    UIManager.sendAccessibilityEvent(
-      reactTag,
-      UIManager.getConstants().AccessibilityEventTypes.typeViewFocused,
-    );
+    legacySendAccessibilityEvent(reactTag, 'focus');
+  },
+
+  /**
+   * Send a named accessibility event to a HostComponent.
+   */
+  sendAccessibilityEvent_unstable: function(
+    handle: ElementRef<HostComponent<mixed>>,
+    eventType: AccessibilityEventTypes,
+  ) {
+    // route through React renderer to distinguish between Fabric and non-Fabric handles
+    sendAccessibilityEvent(handle, eventType);
   },
 
   /**

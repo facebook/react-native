@@ -26,6 +26,13 @@ class SafeAreaViewShadowNode final : public ConcreteViewShadowNode<
                                          ViewEventEmitter,
                                          SafeAreaViewState> {
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
+
+ public:
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::DirtyYogaNode);
+    return traits;
+  }
 };
 
 } // namespace react

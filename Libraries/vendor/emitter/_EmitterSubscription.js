@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
@@ -17,11 +17,13 @@ import type EventSubscriptionVendor from './_EventSubscriptionVendor';
 /**
  * EmitterSubscription represents a subscription with listener and context data.
  */
-class EmitterSubscription extends EventSubscription {
-  // $FlowFixMe[value-as-type]
-  emitter: EventEmitter;
-  listener: Function;
-  context: ?Object;
+class EmitterSubscription<
+  EventDefinitions: {...},
+  K: $Keys<EventDefinitions>,
+> extends EventSubscription<EventDefinitions, K> {
+  emitter: EventEmitter<EventDefinitions>;
+  listener: ?(...$ElementType<EventDefinitions, K>) => mixed;
+  context: ?$FlowFixMe;
 
   /**
    * @param {EventEmitter} emitter - The event emitter that registered this
@@ -34,11 +36,10 @@ class EmitterSubscription extends EventSubscription {
    *   listener
    */
   constructor(
-    // $FlowFixMe[value-as-type]
-    emitter: EventEmitter,
-    subscriber: EventSubscriptionVendor,
-    listener: Function,
-    context: ?Object,
+    emitter: EventEmitter<EventDefinitions>,
+    subscriber: EventSubscriptionVendor<EventDefinitions>,
+    listener: (...$ElementType<EventDefinitions, K>) => mixed,
+    context: ?$FlowFixMe,
   ) {
     super(subscriber);
     this.emitter = emitter;
@@ -52,7 +53,7 @@ class EmitterSubscription extends EventSubscription {
    * but deliberately not calling `super.remove()` as the responsibility
    * for removing the subscription lies with the EventEmitter.
    */
-  remove() {
+  remove(): void {
     this.emitter.removeSubscription(this);
   }
 }

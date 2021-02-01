@@ -24,7 +24,7 @@ class AnimatedDivision extends AnimatedWithChildren {
 
   constructor(a: AnimatedNode | number, b: AnimatedNode | number) {
     super();
-    if (b === 0) {
+    if (b === 0 || (b instanceof AnimatedNode && b.__getValue() === 0)) {
       console.error('Detected potential division by zero in AnimatedDivision');
     }
     this._a = typeof a === 'number' ? new AnimatedValue(a) : a;

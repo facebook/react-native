@@ -12,6 +12,11 @@
 
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 import NativeAccessibilityManager from './NativeAccessibilityManager';
+import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import {sendAccessibilityEvent} from '../../Renderer/shims/ReactNative';
+import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
+import {type ElementRef} from 'react';
 
 const CHANGE_EVENT_NAME = {
   announcementFinished: 'announcementFinished',
@@ -23,17 +28,24 @@ const CHANGE_EVENT_NAME = {
   screenReaderChanged: 'screenReaderChanged',
 };
 
-type ChangeEventName = $Keys<{
-  announcementFinished: string,
-  boldTextChanged: string,
-  change: string,
-  grayscaleChanged: string,
-  invertColorsChanged: string,
-  reduceMotionChanged: string,
-  reduceTransparencyChanged: string,
-  screenReaderChanged: string,
-  ...
-}>;
+type AccessibilityEventDefinitions = {
+  boldTextChanged: [boolean],
+  grayscaleChanged: [boolean],
+  invertColorsChanged: [boolean],
+  reduceMotionChanged: [boolean],
+  reduceTransparencyChanged: [boolean],
+  screenReaderChanged: [boolean],
+  // alias for screenReaderChanged
+  change: [boolean],
+  announcementFinished: [
+    {
+      announcement: string,
+      success: boolean,
+    },
+  ],
+};
+
+type AccessibilityEventTypes = 'focus';
 
 const _subscriptions = new Map();
 
@@ -202,28 +214,30 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#addeventlistener
    */
-  addEventListener: function<T>(
-    eventName: ChangeEventName,
-    handler: T,
-  ): {remove: () => void} {
-    let listener;
+  addEventListener: function<K: $Keys<AccessibilityEventDefinitions>>(
+    eventName: K,
+    handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,
+  ): EventSubscription {
+    let subscription: EventSubscription;
 
     if (eventName === 'change') {
-      listener = RCTDeviceEventEmitter.addListener(
+      subscription = RCTDeviceEventEmitter.addListener(
         CHANGE_EVENT_NAME.screenReaderChanged,
+        // $FlowFixMe[incompatible-call]
         handler,
       );
     } else if (CHANGE_EVENT_NAME[eventName]) {
-      listener = RCTDeviceEventEmitter.addListener(eventName, handler);
+      subscription = RCTDeviceEventEmitter.addListener(eventName, handler);
     }
 
-    _subscriptions.set(handler, listener);
+    // $FlowFixMe[escaped-generic]
+    _subscriptions.set(handler, subscription);
+
     return {
-      remove: AccessibilityInfo.removeEventListener.bind(
-        null,
-        eventName,
-        handler,
-      ),
+      remove: () => {
+        // $FlowIssue flow does not recognize handler properly
+        AccessibilityInfo.removeEventListener<K>(eventName, handler);
+      },
     };
   },
 
@@ -233,9 +247,18 @@ const AccessibilityInfo = {
    * See https://reactnative.dev/docs/accessibilityinfo.html#setaccessibilityfocus
    */
   setAccessibilityFocus: function(reactTag: number): void {
-    if (NativeAccessibilityManager) {
-      NativeAccessibilityManager.setAccessibilityFocus(reactTag);
-    }
+    legacySendAccessibilityEvent(reactTag, 'focus');
+  },
+
+  /**
+   * Send a named accessibility event to a HostComponent.
+   */
+  sendAccessibilityEvent_unstable: function(
+    handle: ElementRef<HostComponent<mixed>>,
+    eventType: AccessibilityEventTypes,
+  ) {
+    // route through React renderer to distinguish between Fabric and non-Fabric handles
+    sendAccessibilityEvent(handle, eventType);
   },
 
   /**
@@ -254,15 +277,17 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#removeeventlistener
    */
-  removeEventListener: function<T>(
-    eventName: ChangeEventName,
-    handler: T,
+  removeEventListener: function<K: $Keys<AccessibilityEventDefinitions>>(
+    eventName: K,
+    handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,
   ): void {
+    // $FlowFixMe[escaped-generic]
     const listener = _subscriptions.get(handler);
     if (!listener) {
       return;
     }
     listener.remove();
+    // $FlowFixMe[escaped-generic]
     _subscriptions.delete(handler);
   },
 };

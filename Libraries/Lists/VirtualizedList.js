@@ -1061,6 +1061,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       onScroll: this._onScroll,
       onScrollBeginDrag: this._onScrollBeginDrag,
       onScrollEndDrag: this._onScrollEndDrag,
+      onMomentumScrollBegin: this._onMomentumScrollBegin,
       onMomentumScrollEnd: this._onMomentumScrollEnd,
       scrollEventThrottle: this.props.scrollEventThrottle, // TODO: Android support
       invertStickyHeaders:
@@ -1662,6 +1663,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _onScrollEndDrag = (e): void => {
+    this._nestedChildLists.forEach(childList => {
+      childList.ref && childList.ref._onScrollEndDrag(e);
+    });
     const {velocity} = e.nativeEvent;
     if (velocity) {
       this._scrollMetrics.velocity = this._selectOffset(velocity);
@@ -1670,7 +1674,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this.props.onScrollEndDrag && this.props.onScrollEndDrag(e);
   };
 
+  _onMomentumScrollBegin = (e): void => {
+    this._nestedChildLists.forEach(childList => {
+      childList.ref && childList.ref._onMomentumScrollBegin(e);
+    });
+    this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
+  };
+
   _onMomentumScrollEnd = (e): void => {
+    this._nestedChildLists.forEach(childList => {
+      childList.ref && childList.ref._onMomentumScrollEnd(e);
+    });
     this._scrollMetrics.velocity = 0;
     this._computeBlankness();
     this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e);

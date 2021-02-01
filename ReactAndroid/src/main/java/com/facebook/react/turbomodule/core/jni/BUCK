@@ -1,4 +1,4 @@
-load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_target", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_target", "react_native_xplat_shared_library_target", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 rn_xplat_cxx_library(
     name = "jni",
@@ -33,8 +33,9 @@ rn_xplat_cxx_library(
     ],
     exported_deps = [
         ":callinvokerholder",
-        "//xplat/jsi:jsi",
-        react_native_xplat_target("turbomodule/core:core"),
+        react_native_xplat_shared_library_target("jsi:jsi"),
+        react_native_xplat_target("react/nativemodule/core:core"),
+        react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
         react_native_target("java/com/facebook/react/reactperflogger/jni:jni"),
     ],
 )

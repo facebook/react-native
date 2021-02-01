@@ -1,20 +1,18 @@
 /**
- * (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
- *
  * @flow strict
  * @format
  */
 
 declare module 'promise/setimmediate/es6-extensions' {
-  declare module.exports: Class<Promise>;
+  declare module.exports: typeof Promise;
 }
 
 declare module 'promise/setimmediate/done' {
-  declare module.exports: Class<Promise>;
+  declare module.exports: typeof Promise;
 }
 
 declare module 'promise/setimmediate/finally' {
-  declare module.exports: Class<Promise>;
+  declare module.exports: typeof Promise;
 }
 
 declare module 'promise/setimmediate/rejection-tracking' {

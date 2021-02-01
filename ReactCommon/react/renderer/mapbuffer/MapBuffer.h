@@ -31,6 +31,8 @@ class MapBuffer {
  public:
   MapBuffer();
   virtual ~MapBuffer();
+
+  int getSize();
 };
 
 } // namespace react

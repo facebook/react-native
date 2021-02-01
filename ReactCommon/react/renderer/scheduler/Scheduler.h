@@ -19,6 +19,8 @@
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
+#include <react/renderer/scheduler/SurfaceHandler.h>
+#include <react/renderer/scheduler/SurfaceManager.h>
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
@@ -40,14 +42,20 @@ class Scheduler final : public UIManagerDelegate {
 
 #pragma mark - Surface Management
 
+  /*
+   * Registers and unregisters a `SurfaceHandler` object in the `Scheduler`.
+   * All registered `SurfaceHandler` objects must be unregistered
+   * (with the same `Scheduler`) before their deallocation.
+   */
+  void registerSurface(SurfaceHandler const &surfaceHandler) const noexcept;
+  void unregisterSurface(SurfaceHandler const &surfaceHandler) const noexcept;
+
   void startSurface(
       SurfaceId surfaceId,
       const std::string &moduleName,
       const folly::dynamic &initialProps,
       const LayoutConstraints &layoutConstraints = {},
-      const LayoutContext &layoutContext = {},
-      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate =
-          {}) const;
+      const LayoutContext &layoutContext = {}) const;
 
   void renderTemplateToSurface(
       SurfaceId surfaceId,
@@ -75,7 +83,7 @@ class Scheduler final : public UIManagerDelegate {
   /*
    * This is broken. Please do not use.
    * `ComponentDescriptor`s are not designed to be used outside of `UIManager`,
-   * there is no any garantees about their lifetime.
+   * there is no any guarantees about their lifetime.
    */
   ComponentDescriptor const *
   findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
@@ -111,6 +119,9 @@ class Scheduler final : public UIManagerDelegate {
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) override;
+  void uiManagerDidSendAccessibilityEvent(
+      const ShadowNode::Shared &shadowNode,
+      std::string const &eventType) override;
   void uiManagerDidSetJSResponder(
       SurfaceId surfaceId,
       const ShadowNode::Shared &shadowView,
@@ -118,12 +129,16 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerDidClearJSResponder() override;
 
  private:
+  friend class SurfaceHandler;
+
+  SurfaceManager surfaceManager_;
   SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
-  std::unique_ptr<const RootComponentDescriptor> rootComponentDescriptor_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
+
+  std::vector<std::shared_ptr<UIManagerCommitHook const>> commitHooks_;
 
   /*
    * At some point, we have to have an owning shared pointer to something that
@@ -137,8 +152,9 @@ class Scheduler final : public UIManagerDelegate {
   /*
    * Temporary flags.
    */
-  bool enableReparentingDetection_{false};
   bool removeOutstandingSurfacesOnDestruction_{false};
+
+  bool enableSurfaceManager_{false};
 };
 
 } // namespace react

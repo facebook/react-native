@@ -194,6 +194,16 @@ function getSizeWithHeaders(
     );
 }
 
+function prefetchWithMetadata(
+  url: string,
+  queryRootName: string,
+  rootTag?: ?number,
+  callback: ?Function,
+): any {
+  // TODO: T79192300 Log queryRootName and rootTag
+  prefetch(url, callback);
+}
+
 function prefetch(url: string, callback: ?Function): any {
   const requestId = generateRequestId();
   callback && callback(requestId);
@@ -219,6 +229,7 @@ type ImageComponentStatics = $ReadOnly<{|
   getSize: typeof getSize,
   getSizeWithHeaders: typeof getSizeWithHeaders,
   prefetch: typeof prefetch,
+  prefetchWithMetadata: typeof prefetchWithMetadata,
   abortPrefetch: typeof abortPrefetch,
   queryCache: typeof queryCache,
   resolveAssetSource: typeof resolveAssetSource,
@@ -357,6 +368,17 @@ Image.getSizeWithHeaders = getSizeWithHeaders;
  * error found when Flow v0.89 was deployed. To see the error, delete this
  * comment and run Flow. */
 Image.prefetch = prefetch;
+
+/**
+ * Prefetches a remote image for later use by downloading it to the disk
+ * cache, and adds metadata for queryRootName and rootTag.
+ *
+ * See https://reactnative.dev/docs/image.html#prefetch
+ */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.prefetchWithMetadata = prefetchWithMetadata;
 
 /**
  * Abort prefetch request.

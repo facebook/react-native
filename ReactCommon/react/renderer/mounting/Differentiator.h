@@ -22,15 +22,7 @@ enum class ReparentMode { Flatten, Unflatten };
  */
 ShadowViewMutationList calculateShadowViewMutations(
     ShadowNode const &oldRootShadowNode,
-    ShadowNode const &newRootShadowNode,
-    bool enableReparentingDetection = false);
-
-/*
- * Generates a list of `ShadowViewNodePair`s that represents a layer of a
- * flattened view hierarchy.
- */
-ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
-    ShadowNode const &shadowNode);
+    ShadowNode const &newRootShadowNode);
 
 /**
  * Generates a list of `ShadowViewNodePair`s that represents a layer of a
@@ -40,6 +32,13 @@ ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
 ShadowViewNodePair::List sliceChildShadowNodeViewPairsV2(
     ShadowNode const &shadowNode,
     bool allowFlattened = false);
+
+/*
+ * Generates a list of `ShadowViewNodePair`s that represents a layer of a
+ * flattened view hierarchy. This is *only* used by unit tests currently.
+ */
+ShadowViewNodePair::List sliceChildShadowNodeViewPairsLegacy(
+    ShadowNode const &shadowNode);
 
 } // namespace react
 } // namespace facebook

@@ -33,6 +33,7 @@ const ActionSheetIOS = {
    * - `destructiveButtonIndex` (int or array of ints) - index or indices of destructive buttons in `options`
    * - `title` (string) - a title to show above the action sheet
    * - `message` (string) - a message to show below the title
+   * - `disabledButtonIndices` (array of numbers) - a list of button indices which should be disabled
    *
    * The 'callback' function takes one parameter, the zero-based index
    * of the selected item.
@@ -49,6 +50,7 @@ const ActionSheetIOS = {
       +anchor?: ?number,
       +tintColor?: ColorValue | ProcessedColorValue,
       +userInterfaceStyle?: string,
+      +disabledButtonIndices?: Array<number>,
     |},
     callback: (buttonIndex: number) => void,
   ) {
@@ -57,7 +59,7 @@ const ActionSheetIOS = {
       'Options must be a valid object',
     );
     invariant(typeof callback === 'function', 'Must provide a valid callback');
-    invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
+    invariant(RCTActionSheetManager, "ActionSheetManager doesn't exist");
 
     const {tintColor, destructiveButtonIndex, ...remainingOptions} = options;
     let destructiveButtonIndices = null;
@@ -123,7 +125,7 @@ const ActionSheetIOS = {
       typeof successCallback === 'function',
       'Must provide a valid successCallback',
     );
-    invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
+    invariant(RCTActionSheetManager, "ActionSheetManager doesn't exist");
     RCTActionSheetManager.showShareActionSheetWithOptions(
       {...options, tintColor: processColor(options.tintColor)},
       failureCallback,

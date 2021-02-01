@@ -12,7 +12,6 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/debug/SystraceSection.h>
-#include <react/utils/ThreadStorage.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
 #include <limits>
@@ -20,6 +19,8 @@
 
 namespace facebook {
 namespace react {
+
+thread_local LayoutContext threadLocalLayoutContext;
 
 static void applyLayoutConstraints(
     YGStyle &yogaStyle,
@@ -57,6 +58,13 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   // This is not a default for `YGNode`.
   yogaNode_.setDirty(true);
 
+  if (getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode)) {
+    assert(getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
+
+    yogaNode_.setMeasureFunc(
+        YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector);
+  }
+
   updateYogaProps();
   updateYogaChildren();
 
@@ -72,14 +80,26 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
           static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
               .yogaNode_,
           &initializeYogaConfig(yogaConfig_)) {
+  // Note, cloned `YGNode` instance (copied using copy-constructor) inherits
+  // dirty flag, measure function, and other properties being set originally in
+  // the `YogaLayoutableShadowNode` constructor above.
+
+  assert(
+      static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
+              .yogaNode_.isDirty() == yogaNode_.isDirty() &&
+      "Yoga node must inherit dirty flag.");
+
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
   updateYogaChildrenOwnersIfNeeded();
 
-  // Yoga node must inherit dirty flag.
-  assert(
-      static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
-          .yogaNode_.isDirty() == yogaNode_.isDirty());
+  // This is the only legit place where we can dirty cloned Yoga node.
+  // If we do it later, ancestor nodes will not be able to observe this and
+  // dirty (and clone) themselves as a result.
+  if (getTraits().check(ShadowNodeTraits::Trait::DirtyYogaNode) ||
+      getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode)) {
+    yogaNode_.setDirty(true);
+  }
 
   if (fragment.props) {
     updateYogaProps();
@@ -332,7 +352,7 @@ void YogaLayoutableShadowNode::layoutTree(
 
   applyLayoutConstraints(yogaNode_.getStyle(), layoutConstraints);
 
-  ThreadStorage<LayoutContext>::getInstance().set(layoutContext);
+  threadLocalLayoutContext = layoutContext;
 
   if (layoutContext.swapLeftAndRightInRTL) {
     swapLeftAndRightInTree(*this);
@@ -445,9 +465,10 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
   auto oldNode =
       static_cast<YogaLayoutableShadowNode *>(oldYogaNode->getContext());
 
-  auto clonedNode = oldNode->clone({ShadowNodeFragment::propsPlaceholder(),
-                                    ShadowNodeFragment::childrenPlaceholder(),
-                                    oldNode->getState()});
+  auto clonedNode = oldNode->clone(
+      {ShadowNodeFragment::propsPlaceholder(),
+       ShadowNodeFragment::childrenPlaceholder(),
+       oldNode->getState()});
   parentNode->replaceChild(*oldNode, clonedNode, childIndex);
   return &static_cast<YogaLayoutableShadowNode &>(*clonedNode).yogaNode_;
 }
@@ -465,8 +486,9 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
       static_cast<YogaLayoutableShadowNode *>(yogaNode->getContext());
 
   auto minimumSize = Size{0, 0};
-  auto maximumSize = Size{std::numeric_limits<Float>::infinity(),
-                          std::numeric_limits<Float>::infinity()};
+  auto maximumSize = Size{
+      std::numeric_limits<Float>::infinity(),
+      std::numeric_limits<Float>::infinity()};
 
   switch (widthMode) {
     case YGMeasureModeUndefined:
@@ -492,13 +514,11 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
       break;
   }
 
-  auto layoutContext = ThreadStorage<LayoutContext>::getInstance().get();
-
   auto size = shadowNodeRawPtr->measureContent(
-      layoutContext.value_or(LayoutContext{}), {minimumSize, maximumSize});
+      threadLocalLayoutContext, {minimumSize, maximumSize});
 
-  return YGSize{yogaFloatFromFloat(size.width),
-                yogaFloatFromFloat(size.height)};
+  return YGSize{
+      yogaFloatFromFloat(size.width), yogaFloatFromFloat(size.height)};
 }
 
 #ifdef RN_DEBUG_YOGA_LOGGER

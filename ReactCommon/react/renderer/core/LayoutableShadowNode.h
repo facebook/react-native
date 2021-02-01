@@ -123,21 +123,6 @@ class LayoutableShadowNode : public ShadowNode {
   virtual Point getContentOriginOffset() const;
 
   /*
-   * Returns layout metrics relatively to the given ancestor node.
-   * Uses `computeRelativeLayoutMetrics()` under the hood.
-   */
-  LayoutMetrics getRelativeLayoutMetrics(
-      ShadowNodeFamily const &descendantNodeFamily,
-      LayoutInspectingPolicy policy) const;
-
-  /*
-   * Returns layout metrics relatively to the given ancestor node.
-   */
-  LayoutMetrics getRelativeLayoutMetrics(
-      LayoutableShadowNode const &ancestorLayoutableShadowNode,
-      LayoutInspectingPolicy policy) const;
-
-  /*
    * Sets layout metrics for the shadow node.
    */
   void setLayoutMetrics(LayoutMetrics layoutMetrics);

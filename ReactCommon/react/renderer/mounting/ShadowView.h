@@ -40,6 +40,7 @@ struct ShadowView final {
 
   ComponentName componentName{};
   ComponentHandle componentHandle{};
+  SurfaceId surfaceId{};
   Tag tag{};
   Props::Shared props{};
   EventEmitter::Shared eventEmitter{};
@@ -70,7 +71,7 @@ struct ShadowViewNodePair final {
   bool flattened{false};
   bool isConcreteView{true};
 
-  int mountIndex{0};
+  size_t mountIndex{0};
 
   bool inOtherTree{false};
 

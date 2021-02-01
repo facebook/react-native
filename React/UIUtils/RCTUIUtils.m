@@ -16,7 +16,8 @@ RCTDimensions RCTGetDimensions(CGFloat fontScale)
 
   UIView *mainWindow;
   mainWindow = RCTKeyWindow();
-  CGSize windowSize = mainWindow.bounds.size;
+  // We fallback to screen size if a key window is not found.
+  CGSize windowSize = mainWindow ? mainWindow.bounds.size : screenSize;
 
   RCTDimensions result;
   typeof(result.screen) dimsScreen = {

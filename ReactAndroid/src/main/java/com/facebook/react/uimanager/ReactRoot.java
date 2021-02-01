@@ -11,9 +11,15 @@ import android.os.Bundle;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.common.UIManagerType;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Interface for the root native view of a React native application */
 public interface ReactRoot {
+
+  /** This constant represents that ReactRoot hasn't started yet or it has been destroyed. */
+  int STATE_STOPPED = 0;
+  /** This constant represents that ReactRoot has started. */
+  int STATE_STARTED = 1;
 
   /** Return cached launch properties for app */
   @Nullable
@@ -58,4 +64,12 @@ public interface ReactRoot {
   @Deprecated
   @Nullable
   String getSurfaceID();
+
+  /**
+   * This API is likely to change once the fix of T78832286 is confirmed TODO: T78832286 revisit
+   * this API
+   *
+   * @return an {@link AtomicInteger} that represents the state of the ReactRoot object. WARNING:
+   */
+  AtomicInteger getState();
 }

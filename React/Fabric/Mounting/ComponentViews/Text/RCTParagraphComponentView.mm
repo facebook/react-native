@@ -25,7 +25,7 @@
 using namespace facebook::react;
 
 @implementation RCTParagraphComponentView {
-  ParagraphShadowNode::ConcreteStateTeller _stateTeller;
+  ParagraphShadowNode::ConcreteState::Shared _state;
   ParagraphAttributes _paragraphAttributes;
   RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
 }
@@ -36,7 +36,6 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const ParagraphProps>();
     _props = defaultProps;
 
-    self.isAccessibilityElement = YES;
     self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
   }
@@ -58,12 +57,11 @@ using namespace facebook::react;
 
 - (NSAttributedString *_Nullable)attributedText
 {
-  auto data = _stateTeller.getData();
-  if (!data.hasValue()) {
+  if (!_state) {
     return nil;
   }
 
-  return RCTNSAttributedStringFromAttributedString(data.value().attributedString);
+  return RCTNSAttributedStringFromAttributedString(_state->getData().attributedString);
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -75,8 +73,9 @@ using namespace facebook::react;
 
 + (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders
 {
-  return {concreteComponentDescriptorProvider<RawTextComponentDescriptor>(),
-          concreteComponentDescriptorProvider<TextComponentDescriptor>()};
+  return {
+      concreteComponentDescriptorProvider<RawTextComponentDescriptor>(),
+      concreteComponentDescriptorProvider<TextComponentDescriptor>()};
 }
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
@@ -91,24 +90,23 @@ using namespace facebook::react;
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _stateTeller.setConcreteState(state);
+  _state = std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(state);
   [self setNeedsDisplay];
 }
 
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  _stateTeller.invalidate();
+  _state.reset();
 }
 
 - (void)drawRect:(CGRect)rect
 {
-  auto data = _stateTeller.getData();
-  if (!data.hasValue()) {
+  if (!_state) {
     return;
   }
 
-  auto textLayoutManager = data.value().layoutManager;
+  auto textLayoutManager = _state->getData().layoutManager;
   assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
 
   if (!textLayoutManager) {
@@ -120,32 +118,34 @@ using namespace facebook::react;
 
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  [nativeTextLayoutManager drawAttributedString:data.value().attributedString
+  [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
                             paragraphAttributes:_paragraphAttributes
                                           frame:frame];
 }
 
 #pragma mark - Accessibility
 
-- (NSString *)accessibilityLabel
+- (BOOL)isAccessibilityElement
 {
-  NSString *superAccessibilityLabel = RCTNSStringFromStringNilIfEmpty(_props->accessibilityLabel);
-  if (superAccessibilityLabel) {
-    return superAccessibilityLabel;
-  }
-
-  auto data = _stateTeller.getData();
-
-  if (!data.hasValue()) {
-    return nil;
-  }
-
-  return RCTNSStringFromString(data.value().attributedString.getString());
+  // All accessibility functionality of the component is implemented in `accessibilityElements` method below.
+  // Hence to avoid calling all other methods from `UIAccessibilityContainer` protocol (most of them have default
+  // implementations), we return here `NO`.
+  return NO;
 }
 
 - (NSArray *)accessibilityElements
 {
-  auto data = _stateTeller.getData().value();
+  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+
+  // If the component is not `accessible`, we return an empty array.
+  // We do this because logically all nested <Text> components represent the content of the <Paragraph> component;
+  // in other words, all nested <Text> components individually have no sense without the <Paragraph>.
+  if (!_state || !paragraphProps.accessible) {
+    return [NSArray new];
+  }
+
+  auto &data = _state->getData();
+
   if (![_accessibilityProvider isUpToDate:data.attributedString]) {
     RCTTextLayoutManager *textLayoutManager =
         (RCTTextLayoutManager *)unwrapManagedObject(data.layoutManager->getNativeTextLayoutManager());
@@ -157,7 +157,6 @@ using namespace facebook::react;
                                                                                            view:self];
   }
 
-  self.isAccessibilityElement = NO;
   return _accessibilityProvider.accessibilityElements;
 }
 
@@ -166,14 +165,15 @@ using namespace facebook::react;
   return [super accessibilityTraits] | UIAccessibilityTraitStaticText;
 }
 
+#pragma mark - RCTTouchableComponentViewProtocol
+
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
 {
-  auto data = _stateTeller.getData();
-  if (!data.hasValue()) {
+  if (!_state) {
     return _eventEmitter;
   }
 
-  auto textLayoutManager = data.value().layoutManager;
+  auto textLayoutManager = _state->getData().layoutManager;
 
   assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
 
@@ -185,7 +185,7 @@ using namespace facebook::react;
       (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  auto eventEmitter = [nativeTextLayoutManager getEventEmitterWithAttributeString:data.value().attributedString
+  auto eventEmitter = [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().attributedString
                                                               paragraphAttributes:_paragraphAttributes
                                                                             frame:frame
                                                                           atPoint:point];

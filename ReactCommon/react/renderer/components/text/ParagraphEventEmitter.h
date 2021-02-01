@@ -18,6 +18,10 @@ class ParagraphEventEmitter : public ViewEventEmitter {
   using ViewEventEmitter::ViewEventEmitter;
 
   void onTextLayout(LinesMeasurements const &linesMeasurements) const;
+
+ private:
+  mutable std::mutex linesMeasurementsMutex_;
+  mutable LinesMeasurements linesMeasurementsMetrics_;
 };
 
 } // namespace react

@@ -45,11 +45,12 @@ const APP_STATE_KEY = 'RNTesterAppState.v3';
 // TODO: Vendor AsyncStorage or create our own.
 LogBox.ignoreLogs([/AsyncStorage has been extracted from react-native/]);
 
-const DisplayIfVisible = ({isVisible, children}) => (
-  <View style={[styles.container, !isVisible && styles.hidden]}>
-    {children}
-  </View>
-);
+const DisplayIfVisible = ({isVisible, children}) =>
+  isVisible ? (
+    <View style={[styles.container, !isVisible && styles.hidden]}>
+      {children}
+    </View>
+  ) : null;
 
 type ExampleListsContainerProps = $ReadOnly<{|
   theme: RNTesterTheme,
@@ -139,13 +140,22 @@ const RNTesterApp = (): React.Node => {
 
   // Setup hardware back button press listener
   React.useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', () => {
+    const handleHardwareBackPress = () => {
       if (openExample) {
         handleBackPress();
         return true;
       }
       return false;
-    });
+    };
+
+    BackHandler.addEventListener('hardwareBackPress', handleHardwareBackPress);
+
+    return () => {
+      BackHandler.removeEventListener(
+        'hardwareBackPress',
+        handleHardwareBackPress,
+      );
+    };
   }, [openExample, handleBackPress]);
 
   const handleExampleCardPress = React.useCallback(

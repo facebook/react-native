@@ -131,6 +131,11 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
     return;
   }
 
+  // If props event counter is less than what we already have in state, skip it
+  if (getConcreteProps().mostRecentEventCount < state.mostRecentEventCount) {
+    return;
+  }
+
   // Store default TextAttributes in state.
   // In the case where the TextInput is completely empty (no value, no
   // defaultValue, no placeholder, no children) there are therefore no fragments
@@ -150,17 +155,18 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   // current attributedString unchanged, and pass in zero for the "event count"
   // so no changes are applied There's no way to prevent a state update from
   // flowing to Java, so we just ensure it's a noop in those cases.
-  setStateData(AndroidTextInputState{newEventCount,
-                                     newAttributedString,
-                                     reactTreeAttributedString,
-                                     getConcreteProps().paragraphAttributes,
-                                     defaultTextAttributes,
-                                     ShadowView(*this),
-                                     textLayoutManager_,
-                                     state.defaultThemePaddingStart,
-                                     state.defaultThemePaddingEnd,
-                                     state.defaultThemePaddingTop,
-                                     state.defaultThemePaddingBottom});
+  setStateData(AndroidTextInputState{
+      newEventCount,
+      newAttributedString,
+      reactTreeAttributedString,
+      getConcreteProps().paragraphAttributes,
+      defaultTextAttributes,
+      ShadowView(*this),
+      textLayoutManager_,
+      state.defaultThemePaddingStart,
+      state.defaultThemePaddingEnd,
+      state.defaultThemePaddingTop,
+      state.defaultThemePaddingBottom});
 }
 
 #pragma mark - LayoutableShadowNode

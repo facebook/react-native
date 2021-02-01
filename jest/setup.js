@@ -69,6 +69,9 @@ jest
         };
       }
     }),
+    hasViewManagerConfig: jest.fn(name => {
+      return true;
+    }),
     measure: jest.fn(),
     manageChildren: jest.fn(),
     removeSubviewsFromContainerWithID: jest.fn(),
@@ -124,6 +127,7 @@ jest
     isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
     removeEventListener: jest.fn(),
     setAccessibilityFocus: jest.fn(),
+    sendAccessibilityEvent_unstable: jest.fn(),
   }))
   .mock('../Libraries/Components/RefreshControl/RefreshControl', () =>
     jest.requireActual(
@@ -325,32 +329,19 @@ jest
       }),
     },
   }))
-  .mock('../Libraries/ReactNative/requireNativeComponent', () => {
-    const React = require('react');
-
-    return viewName => {
-      const Component = class extends React.Component {
-        render() {
-          return React.createElement(viewName, this.props, this.props.children);
-        }
-
-        // The methods that exist on host components
-        blur = jest.fn();
-        focus = jest.fn();
-        measure = jest.fn();
-        measureInWindow = jest.fn();
-        measureLayout = jest.fn();
-        setNativeProps = jest.fn();
-      };
-
-      if (viewName === 'RCTView') {
-        Component.displayName = 'View';
-      } else {
-        Component.displayName = viewName;
-      }
-
-      return Component;
+  .mock('../Libraries/NativeComponent/NativeComponentRegistry', () => {
+    return {
+      get: jest.fn((name, viewConfigProvider) => {
+        return jest.requireActual('./mockNativeComponent')(name);
+      }),
+      getWithFallback_DEPRECATED: jest.fn((name, viewConfigProvider) => {
+        return jest.requireActual('./mockNativeComponent')(name);
+      }),
+      setRuntimeConfigProvider: jest.fn(),
     };
+  })
+  .mock('../Libraries/ReactNative/requireNativeComponent', () => {
+    return jest.requireActual('./mockNativeComponent');
   })
   .mock(
     '../Libraries/Utilities/verifyComponentAttributeEquivalence',

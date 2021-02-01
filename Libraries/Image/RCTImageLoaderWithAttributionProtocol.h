@@ -9,14 +9,16 @@
 
 #import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTImageURLLoaderWithAttribution.h>
-#import <React/RCTImageLoaderInstrumentableProtocol.h>
 
 RCT_EXTERN BOOL RCTImageLoadingInstrumentationEnabled(void);
 RCT_EXTERN BOOL RCTImageLoadingPerfInstrumentationEnabled(void);
 RCT_EXTERN void RCTEnableImageLoadingInstrumentation(BOOL enabled);
 RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
 
-@protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol, RCTImageLoaderInstrumentableProtocol>
+RCT_EXTERN BOOL RCTGetImageLoadingPerfInstrumentationForFabricEnabled();
+RCT_EXTERN void RCTSetImageLoadingPerfInstrumentationForFabricEnabledBlock(BOOL (^getEnabled)());
+
+@protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol, RCTImageLoaderLoggableProtocol>
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
@@ -35,11 +37,6 @@ RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
                                      partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
                                       completionBlock:(RCTImageLoaderCompletionBlockWithMetadata)completionBlock;
 #endif
-
-/**
- * Image instrumentation - notify that the image content (UIImage) has been set on the native view.
- */
-- (void)trackURLImageContentDidSetForRequest:(RCTImageURLLoaderRequest *)loaderRequest;
 
 /**
  * Image instrumentation - start tracking the on-screen visibility of the native image view.

@@ -51,11 +51,12 @@ static inline LayoutConstraints RCTGetLayoutConstraintsForSize(CGSize minimumSiz
 
 static inline LayoutContext RCTGetLayoutContext(CGPoint viewportOffset)
 {
-  return {.pointScaleFactor = RCTScreenScale(),
-          .swapLeftAndRightInRTL =
-              [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL],
-          .fontSizeMultiplier = RCTFontSizeMultiplier(),
-          .viewportOffset = RCTPointFromCGPoint(viewportOffset)};
+  return {
+      .pointScaleFactor = RCTScreenScale(),
+      .swapLeftAndRightInRTL =
+          [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL],
+      .fontSizeMultiplier = RCTFontSizeMultiplier(),
+      .viewportOffset = RCTPointFromCGPoint(viewportOffset)};
 }
 
 static dispatch_queue_t RCTGetBackgroundQueue()
@@ -320,12 +321,20 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:sync_performance_flag_ios")) {
-    RCTExperimentSetSyncPerformanceFlag(YES);
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:scrollview_on_demand_mounting_ios")) {
     RCTExperimentSetOnDemandViewMounting(YES);
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:optimized_hit_testing_ios")) {
+    RCTExperimentSetOptimizedHitTesting(YES);
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:preemptive_view_allocation_disabled_ios")) {
+    RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:release_resources_when_backgrounded_ios")) {
+    RCTExperimentSetReleaseResourcesWhenBackgrounded(YES);
   }
 
   auto componentRegistryFactory =
@@ -459,6 +468,15 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   NSArray *argsArray = convertFollyDynamicToId(args);
 
   [self->_mountingManager dispatchCommand:tag commandName:commandStr args:argsArray];
+}
+
+- (void)schedulerDidSendAccessibilityEvent:(const facebook::react::ShadowView &)shadowView
+                                 eventType:(const std::string &)eventType
+{
+  ReactTag tag = shadowView.tag;
+  NSString *eventTypeStr = [[NSString alloc] initWithUTF8String:eventType.c_str()];
+
+  [self->_mountingManager sendAccessibilityEvent:tag eventType:eventTypeStr];
 }
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
