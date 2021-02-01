@@ -31,13 +31,12 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "**/*.{c,h,m,mm,cpp}"
-  s.exclude_files          = "jni"
   s.header_dir             = "FBReactNativeSpec"
 
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/Libraries/FBReactNativeSpec\" \"$(PODS_ROOT)/RCT-Folly\""
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/React/FBReactNativeSpec\" \"$(PODS_ROOT)/RCT-Folly\""
                              }
 
   s.dependency "RCT-Folly", folly_version

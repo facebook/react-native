@@ -1,6 +1,6 @@
 PODS:
   - boost-for-react-native (1.63.0)
-  - CocoaAsyncSocket (7.6.4)
+  - CocoaAsyncSocket (7.6.5)
   - CocoaLibEvent (1.0.0)
   - DoubleConversion (1.1.6)
   - FBLazyVector (1000.0.0)
@@ -653,7 +653,7 @@ PODS:
 DEPENDENCIES:
   - DoubleConversion (from `../../third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../../Libraries/FBLazyVector`)
-  - FBReactNativeSpec (from `../../Libraries/FBReactNativeSpec`)
+  - FBReactNativeSpec (from `../../React/FBReactNativeSpec`)
   - Flipper (~> 0.54.0)
   - Flipper-DoubleConversion (= 1.1.7)
   - Flipper-Folly (~> 2.2)
@@ -730,7 +730,7 @@ EXTERNAL SOURCES:
   FBLazyVector:
     :path: "../../Libraries/FBLazyVector"
   FBReactNativeSpec:
-    :path: "../../Libraries/FBReactNativeSpec"
+    :path: "../../React/FBReactNativeSpec"
   glog:
     :podspec: "../../third-party-podspecs/glog.podspec"
   RCT-Folly:
@@ -794,11 +794,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
+  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 91e874a8823933a268c38765a88cbd5dba1fa024
-  FBReactNativeSpec: 17a863c5e24969051850a3acab3a06069bb06e7f
+  FBReactNativeSpec: 58a907f57c40ca74a954abe86862baa5eb423c63
   Flipper: be611d4b742d8c87fbae2ca5f44603a02539e365
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: e4493b013c02d9347d5e0cb4d128680239f6c78a
@@ -808,12 +808,12 @@ SPEC CHECKSUMS:
   FlipperKit: ab353d41aea8aae2ea6daaf813e67496642f3d7d
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   OpenSSL-Universal: ff34003318d5e1163e9529b08470708e389ffcdd
-  RCT-Folly: b39288cedafe50da43317ec7d91bcc8cc0abbf33
+  RCT-Folly: ec7a233ccc97cc556cf7237f0db1ff65b986f27c
   RCTRequired: d3d4ce60e1e2282864d7560340690a3c8c646de1
   RCTTypeSafety: 4da4f9f218727257c50fd3bf2683a06cdb4fede3
   React: 63b1f2a4e0e908c95416fd54e9dcca5d409e2a45
   React-callinvoker: e9524d75cf0b7ae108868f8d34c0b8d7dc08ec03
-  React-Core: 2b2a8ac8bfb65779965456570a871f4cf5e5e03a
+  React-Core: c63389ffebc383f834a2cae4d1c120968ffb3cdb
   React-CoreModules: 87f011fa87190ffe979e443ce578ec93ec6ff4d4
   React-cxxreact: 14cce64344ab482615dfe82a2cbea6eb73be6481
   React-Fabric: 1744b2e94f5ed2ab247f3a55fd9762d55ed63f3b
