@@ -62,8 +62,8 @@ class ConcreteState : public State {
       Data &&newData,
       EventPriority priority = EventPriority::AsynchronousUnbatched) const {
     updateState(
-        [data = std::move(newData)](Data const &oldData) mutable -> SharedData {
-          return std::make_shared<Data const>(std::move(data));
+        [data{std::move(newData)}](Data const &oldData) -> SharedData {
+          return std::make_shared<Data const>(data);
         },
         priority);
   }
