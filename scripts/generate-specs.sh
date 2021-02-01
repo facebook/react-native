@@ -27,7 +27,7 @@ set -e
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 TEMP_DIR=$(mktemp -d /tmp/react-native-codegen-XXXXXXXX)
 RN_DIR=$(cd "$THIS_DIR/.." && pwd)
-NODE_BINARY="${NODE_BINARY:-$(command -v node)}"
+NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
 USE_FABRIC="${USE_FABRIC:-0}"
 
 cleanup () {
@@ -64,10 +64,15 @@ main() {
     echo "Error: Could not determine react-native-codegen location. Try running 'yarn install' or 'npm install' in your project root." 1>&2
     exit 1
   fi
-
+  
   if [ ! -d "$CODEGEN_PATH/lib" ]; then
     describe "Building react-native-codegen package"
     bash "$CODEGEN_PATH/scripts/oss/build.sh"
+  fi
+
+  if [ -z "$NODE_BINARY" ]; then
+    echo "Error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable." 1>&2
+    exit 1
   fi
 
   describe "Generating schema from flow types"
