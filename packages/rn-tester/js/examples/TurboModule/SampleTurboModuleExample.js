@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 import {

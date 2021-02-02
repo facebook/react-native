@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import EventEmitter from '../vendor/emitter/EventEmitter';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeAppearance, {

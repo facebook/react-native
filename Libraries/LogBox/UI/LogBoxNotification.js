@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import * as React from 'react';
 import Image from '../../Image/Image';
 import StyleSheet from '../../StyleSheet/StyleSheet';

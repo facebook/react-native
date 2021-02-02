@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 export default {
   unstable_UIManager: (null: ?any),
 };

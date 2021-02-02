@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import InteractionManager from '../Interaction/InteractionManager';
 import Platform from '../Utilities/Platform';

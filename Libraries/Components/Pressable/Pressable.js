@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import * as React from 'react';
 import {useMemo, useState, useRef, useImperativeHandle} from 'react';
 import useAndroidRippleForView, {

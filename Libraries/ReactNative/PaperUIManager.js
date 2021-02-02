@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const NativeModules = require('../BatchedBridge/NativeModules');
 const Platform = require('../Utilities/Platform');
 const UIManagerProperties = require('./UIManagerProperties');

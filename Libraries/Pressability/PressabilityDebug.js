@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import normalizeColor from '../StyleSheet/normalizeColor';
 import type {ColorValue} from '../StyleSheet/StyleSheet';
 

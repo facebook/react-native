@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const AppContainer = require('./AppContainer');
 import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';

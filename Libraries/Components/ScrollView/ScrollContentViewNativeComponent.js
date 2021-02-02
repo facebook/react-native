@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import {type HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import {type ViewProps as Props} from '../View/ViewPropTypes';

@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import type {DirectEventHandler, WithDefault} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';

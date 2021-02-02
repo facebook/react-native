@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const Platform = require('../Utilities/Platform');
 const deepDiffer = require('../Utilities/differ/deepDiffer');
 const React = require('react');

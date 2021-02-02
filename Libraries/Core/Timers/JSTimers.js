@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
 const Systrace = require('../../Performance/Systrace');
 

@@ -8,8 +8,6 @@
  * @flow strict
  */
 
-'use strict';
-
 export let isAsyncDebugging: boolean = false;
 
 if (__DEV__) {
