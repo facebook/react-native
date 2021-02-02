@@ -561,7 +561,7 @@ public class ReactEditText extends AppCompatEditText
       Integer endPosition = getSelectionEnd();
       setText(spannableStringBuilder);
       mMaximumTextLength = spannableStringBuilder.length();
-      maybeSetSelection(incrementAndGetEventCounter(), startPosition, endPosition);
+      maybeSetSelection(mNativeEventCount, startPosition, endPosition);
     }
     mDisableTextDiffing = false;
 
