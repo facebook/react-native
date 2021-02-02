@@ -102,7 +102,7 @@ class RewriteExample extends React.Component<$FlowFixMeProps, any> {
           multiline={false}
           maxLength={limit}
           onChangeText={text => {
-            text = text.replace(/ /g, '_');
+            text = text.replace(/ /g, '_').toUpperCase();
             this.setState({text});
           }}
           style={styles.default}
