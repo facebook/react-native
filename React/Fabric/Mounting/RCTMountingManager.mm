@@ -13,6 +13,7 @@
 #import <React/RCTFollyConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
+#import <react/renderer/components/root/RootShadowNode.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
 #import <react/renderer/debug/SystraceSection.h>
@@ -144,6 +145,29 @@ static void RCTPerformMountInstructions(
   }
 
   return self;
+}
+
+- (void)attachSurfaceToView:(UIView *)view surfaceId:(SurfaceId)surfaceId
+{
+  RCTAssertMainQueue();
+
+  RCTAssert(view.subviews.count == 0, @"The view must not have any subviews.");
+
+  RCTComponentViewDescriptor rootViewDescriptor =
+      [_componentViewRegistry dequeueComponentViewWithComponentHandle:RootShadowNode::Handle() tag:surfaceId];
+  [view addSubview:rootViewDescriptor.view];
+}
+
+- (void)detachSurfaceFromView:(UIView *)view surfaceId:(SurfaceId)surfaceId
+{
+  RCTAssertMainQueue();
+  RCTComponentViewDescriptor rootViewDescriptor = [_componentViewRegistry componentViewDescriptorWithTag:surfaceId];
+
+  [rootViewDescriptor.view removeFromSuperview];
+
+  [_componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
+                                                              tag:surfaceId
+                                          componentViewDescriptor:rootViewDescriptor];
 }
 
 - (void)scheduleTransaction:(MountingCoordinator::Shared const &)mountingCoordinator

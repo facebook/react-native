@@ -12,8 +12,8 @@
 
 const EventEmitter = require('./_EventEmitter');
 
+import type {EventSubscription} from './EventSubscription';
+
 export default EventEmitter;
 
-export interface EventSubscription {
-  remove(): void;
-}
+export type {EventSubscription};
