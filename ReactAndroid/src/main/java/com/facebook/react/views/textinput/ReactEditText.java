@@ -558,9 +558,10 @@ public class ReactEditText extends AppCompatEditText
       // try to update state if the wrapper is available. Temporarily disable
       // to prevent an infinite loop.
       Integer startPosition = getSelectionStart();
+      Integer endPosition = getSelectionEnd();
       setText(spannableStringBuilder);
       mMaximumTextLength = spannableStringBuilder.length();
-      setSelection(startPosition);
+      maybeSetSelection(incrementAndGetEventCounter(), startPosition, endPosition);
     }
     mDisableTextDiffing = false;
 
