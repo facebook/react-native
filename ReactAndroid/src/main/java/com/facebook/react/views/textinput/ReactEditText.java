@@ -111,7 +111,7 @@ public class ReactEditText extends AppCompatEditText
   private int mFontStyle = ReactTypefaceUtils.UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
-  private @Nullable Integer mMaximumTextLength = null;
+  private Integer mMaximumTextLength = 0;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
