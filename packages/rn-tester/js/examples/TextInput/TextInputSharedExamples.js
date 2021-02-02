@@ -91,16 +91,18 @@ class RewriteExample extends React.Component<$FlowFixMeProps, any> {
     this.state = {text: ''};
   }
   render() {
-    const limit = 100;
+    const limit = 20;
     const remainder = limit - this.state.text.length;
     const remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
           testID="rewrite_sp_underscore_input"
+          autoCorrect={false}
+          multiline={false}
           maxLength={limit}
           onChangeText={text => {
-            text = text.replace(/ /g, '_').toUpperCase();
+            text = text.replace(/ /g, '_');
             this.setState({text});
           }}
           style={styles.default}
@@ -120,40 +122,18 @@ class RewriteExampleInvalidCharacters extends React.Component<
 > {
   constructor(props) {
     super(props);
-    this.state = {text: '', selection: {start: -1, end: -1}};
+    this.state = {text: ''};
   }
-
-  onSelectionChangeHandler = ({nativeEvent: {selection}}) => {
-    const {start, end} = selection;
-    const {text} = this.state;
-    const maxEnd = text.length;
-    const validEnd = end > maxEnd ? maxEnd : end;
-    const validStart = start > maxEnd ? maxEnd : start;
-    const newSelection = {start: validStart, end: validEnd};
-    this.setState({selection: newSelection});
-  };
-
   render() {
-    const {
-      text,
-      selection: {start, end},
-    } = this.state;
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
           testID="rewrite_no_sp_input"
           autoCorrect={false}
-          multiline={true}
+          multiline={false}
           onChangeText={text => {
-            const newText = text.replace(/\s/g, '');
-            const newEnd = end - 1;
-            this.setState({
-              text: newText,
-              selection: {start: newEnd, end: newEnd},
-            });
+            this.setState({text: text.replace(/\s/g, '')});
           }}
-          onSelectionChange={this.onSelectionChangeHandler}
-          selection={{start: start, end: end}}
           style={styles.default}
           value={this.state.text}
         />
@@ -477,7 +457,8 @@ module.exports = ([
     },
   },
   {
-    title: "Live Re-Write (<sp>  ->  '_' -> toUpperCase) + maxLength",
+    name: 'maxLength',
+    title: "Live Re-Write (<sp>  ->  '_') + maxLength",
     render: function(): React.Node {
       return <RewriteExample />;
     },
