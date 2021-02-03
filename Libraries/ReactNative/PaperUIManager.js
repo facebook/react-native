@@ -40,6 +40,12 @@ function getViewManagerConfig(viewManagerName: string): any {
         viewManagerName
       ] = NativeUIManager.getConstantsForViewManager(viewManagerName);
     } catch (e) {
+      console.error(
+        "NativeUIManager.getConstantsForViewManager('" +
+          viewManagerName +
+          "') threw an exception.",
+        e,
+      );
       viewManagerConfigs[viewManagerName] = null;
     }
   }
