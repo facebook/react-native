@@ -639,9 +639,11 @@ jobs:
           paths:
             - C:\Users\circleci\AppData\Local\Yarn
 
+      # Try to install the SDK up to 3 times, since network flakiness can cause install failures
+      # Using a timeout of 9 mins, as circle ci will timeout if there is no output for 10 mins
       - run:
           name: Install Android SDK Tools
-          command: choco install android-sdk
+          command: choco install android-sdk --timeout 540; if (!$?) { choco install android-sdk --timeout 540 --force --forcedependencies}; if (!$?) { choco install android-sdk  --force --forcedependencies}
 
       - run:
           name: Setup Android SDKs
