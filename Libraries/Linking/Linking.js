@@ -8,6 +8,7 @@
  * @flow strict-local
  */
 
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import InteractionManager from '../Interaction/InteractionManager';
 import Platform from '../Utilities/Platform';
@@ -41,20 +42,8 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
     eventType: K,
     listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
     context: $FlowFixMe,
-  ): void {
-    this.addListener(eventType, listener);
-  }
-
-  /**
-   * Remove a handler by passing the `url` event type and the handler.
-   *
-   * See https://reactnative.dev/docs/linking.html#removeeventlistener
-   */
-  removeEventListener<K: $Keys<LinkingEventDefinitions>>(
-    eventType: K,
-    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
-  ): void {
-    this.removeListener(eventType, listener);
+  ): EventSubscription {
+    return this.addListener(eventType, listener);
   }
 
   /**
