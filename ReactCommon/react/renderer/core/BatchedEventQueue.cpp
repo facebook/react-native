@@ -17,8 +17,6 @@ BatchedEventQueue::BatchedEventQueue(
     : EventQueue(eventPipe, statePipe, std::move(eventBeat)) {}
 
 void BatchedEventQueue::onEnqueue() const {
-  EventQueue::onEnqueue();
-
   eventBeat_->request();
 }
 

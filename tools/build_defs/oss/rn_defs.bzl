@@ -163,7 +163,7 @@ def rn_android_prebuilt_aar(*args, **kwargs):
 def rn_apple_library(*args, **kwargs):
     kwargs.setdefault("link_whole", True)
     kwargs.setdefault("enable_exceptions", True)
-    kwargs.setdefault("target_sdk_version", "10.0")
+    kwargs.setdefault("target_sdk_version", "11.0")
 
     # Unsupported kwargs
     _ = kwargs.pop("autoglob", False)

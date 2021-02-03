@@ -11,6 +11,7 @@
 #include <jsi/jsi.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
+#include <react/renderer/core/Constants.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
@@ -30,7 +31,8 @@ namespace react {
 Scheduler::Scheduler(
     SchedulerToolbox schedulerToolbox,
     UIManagerAnimationDelegate *animationDelegate,
-    SchedulerDelegate *delegate) {
+    SchedulerDelegate *delegate)
+    : surfaceManager_(*this) {
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
 
   reactNativeConfig_ =
@@ -50,10 +52,12 @@ Scheduler::Scheduler(
                        const EventTarget *eventTarget,
                        const std::string &type,
                        const ValueFactory &payloadFactory) {
-    uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
-      uiManagerBinding.dispatchEvent(
-          runtime, eventTarget, type, payloadFactory);
-    });
+    uiManager->visitBinding(
+        [&](UIManagerBinding const &uiManagerBinding) {
+          uiManagerBinding.dispatchEvent(
+              runtime, eventTarget, type, payloadFactory);
+        },
+        runtime);
   };
 
   auto statePipe = [uiManager](StateUpdate const &stateUpdate) {
@@ -76,11 +80,9 @@ Scheduler::Scheduler(
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
       eventDispatcher, schedulerToolbox.contextContainer);
 
-  rootComponentDescriptor_ = std::make_unique<const RootComponentDescriptor>(
-      ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
-
   uiManager->setBackgroundExecutor(schedulerToolbox.backgroundExecutor);
   uiManager->setDelegate(this);
+  uiManager->setRuntimeExecutor(runtimeExecutor_);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
@@ -97,7 +99,12 @@ Scheduler::Scheduler(
           componentDescriptorRegistry_));
 
   delegate_ = delegate;
+  commitHooks_ = schedulerToolbox.commitHooks;
   uiManager_ = uiManager;
+
+  for (auto commitHook : commitHooks_) {
+    uiManager->registerCommitHook(*commitHook);
+  }
 
   if (animationDelegate != nullptr) {
     animationDelegate->setComponentDescriptorRegistry(
@@ -108,15 +115,28 @@ Scheduler::Scheduler(
 #ifdef ANDROID
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
+  Constants::setPropsForwardingEnabled(reactNativeConfig_->getBool(
+      "react_fabric:enable_props_forwarding_android"));
+  enableSurfaceManager_ = reactNativeConfig_->getBool(
+      "react_fabric:enable_surface_manager_android");
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
+  enableSurfaceManager_ =
+      reactNativeConfig_->getBool("react_fabric:enable_surface_manager_ios");
 #endif
+
+  uiManager->extractUIManagerBindingOnDemand_ = reactNativeConfig_->getBool(
+      "react_fabric:extract_uimanagerbinding_on_demand");
 }
 
 Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
+
+  for (auto commitHook : commitHooks_) {
+    uiManager_->unregisterCommitHook(*commitHook);
+  }
 
   // All Surfaces must be explicitly stopped before destroying `Scheduler`.
   // The idea is that `UIManager` is allowed to call `Scheduler` only if the
@@ -165,33 +185,44 @@ Scheduler::~Scheduler() {
   }
 }
 
+void Scheduler::registerSurface(
+    SurfaceHandler const &surfaceHandler) const noexcept {
+  surfaceHandler.setUIManager(uiManager_.get());
+}
+
+void Scheduler::unregisterSurface(
+    SurfaceHandler const &surfaceHandler) const noexcept {
+  surfaceHandler.setUIManager(nullptr);
+}
+
 void Scheduler::startSurface(
     SurfaceId surfaceId,
     const std::string &moduleName,
     const folly::dynamic &initialProps,
     const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext,
-    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate)
-    const {
+    const LayoutContext &layoutContext) const {
   SystraceSection s("Scheduler::startSurface");
 
+  if (enableSurfaceManager_) {
+    surfaceManager_.startSurface(
+        surfaceId, moduleName, initialProps, layoutConstraints, layoutContext);
+    return;
+  }
+
   auto shadowTree = std::make_unique<ShadowTree>(
-      surfaceId,
-      layoutConstraints,
-      layoutContext,
-      *rootComponentDescriptor_,
-      *uiManager_,
-      mountingOverrideDelegate);
+      surfaceId, layoutConstraints, layoutContext, *uiManager_);
 
   auto uiManager = uiManager_;
 
   uiManager->getShadowTreeRegistry().add(std::move(shadowTree));
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
-    uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
-      uiManagerBinding.startSurface(
-          runtime, surfaceId, moduleName, initialProps);
-    });
+    uiManager->visitBinding(
+        [&](UIManagerBinding const &uiManagerBinding) {
+          uiManagerBinding.startSurface(
+              runtime, surfaceId, moduleName, initialProps);
+        },
+        runtime);
   });
 }
 
@@ -235,6 +266,11 @@ void Scheduler::renderTemplateToSurface(
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("Scheduler::stopSurface");
 
+  if (enableSurfaceManager_) {
+    surfaceManager_.stopSurface(surfaceId);
+    return;
+  }
+
   // Stop any ongoing animations.
   uiManager_->stopSurfaceForAnimationDelegate(surfaceId);
 
@@ -255,9 +291,11 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
   // fail silently.
   auto uiManager = uiManager_;
   runtimeExecutor_([=](jsi::Runtime &runtime) {
-    uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
-      uiManagerBinding.stopSurface(runtime, surfaceId);
-    });
+    uiManager->visitBinding(
+        [&](UIManagerBinding const &uiManagerBinding) {
+          uiManagerBinding.stopSurface(runtime, surfaceId);
+        },
+        runtime);
   });
 }
 
@@ -266,6 +304,11 @@ Size Scheduler::measureSurface(
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
   SystraceSection s("Scheduler::measureSurface");
+
+  if (enableSurfaceManager_) {
+    return surfaceManager_.measureSurface(
+        surfaceId, layoutConstraints, layoutContext);
+  }
 
   auto currentRootShadowNode = RootShadowNode::Shared{};
   uiManager_->getShadowTreeRegistry().visit(
@@ -281,6 +324,10 @@ Size Scheduler::measureSurface(
 
 MountingCoordinator::Shared Scheduler::findMountingCoordinator(
     SurfaceId surfaceId) const {
+  if (enableSurfaceManager_) {
+    return surfaceManager_.findMountingCoordinator(surfaceId);
+  }
+
   MountingCoordinator::Shared mountingCoordinator = nullptr;
   uiManager_->getShadowTreeRegistry().visit(
       surfaceId, [&](const ShadowTree &shadowTree) {
@@ -293,6 +340,11 @@ void Scheduler::constraintSurfaceLayout(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
+  if (enableSurfaceManager_) {
+    return surfaceManager_.constraintSurfaceLayout(
+        surfaceId, layoutConstraints, layoutContext);
+  }
+
   SystraceSection s("Scheduler::constraintSurfaceLayout");
 
   uiManager_->getShadowTreeRegistry().visit(
@@ -356,6 +408,17 @@ void Scheduler::uiManagerDidDispatchCommand(
   if (delegate_) {
     auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
+  }
+}
+
+void Scheduler::uiManagerDidSendAccessibilityEvent(
+    const ShadowNode::Shared &shadowNode,
+    std::string const &eventType) {
+  SystraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
+
+  if (delegate_) {
+    auto shadowView = ShadowView(*shadowNode);
+    delegate_->schedulerDidSendAccessibilityEvent(shadowView, eventType);
   }
 }
 

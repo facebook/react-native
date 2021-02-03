@@ -34,6 +34,7 @@ import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.turbomodule.core.TurboModuleManager;
+import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
@@ -168,6 +169,13 @@ public class RNTesterApplication extends Application implements ReactApplication
                       public JSIModuleProvider<UIManager> getJSIModuleProvider() {
                         final ComponentFactory ComponentFactory = new ComponentFactory();
                         CoreComponentsRegistry.register(ComponentFactory);
+                        final ReactInstanceManager reactInstanceManager = getReactInstanceManager();
+
+                        ViewManagerRegistry viewManagerRegistry =
+                            new ViewManagerRegistry(
+                                reactInstanceManager.getOrCreateViewManagers(
+                                    reactApplicationContext));
+
                         return new FabricJSIModuleProvider(
                             reactApplicationContext,
                             ComponentFactory,
@@ -192,7 +200,8 @@ public class RNTesterApplication extends Application implements ReactApplication
                               public double getDouble(final String s) {
                                 return 0;
                               }
-                            });
+                            },
+                            viewManagerRegistry);
                       }
                     });
               }

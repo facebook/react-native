@@ -101,6 +101,7 @@ module.exports = {
 
     return generate(
       ast,
+      // $FlowFixMe[prop-missing] Error found when improving flow typing for libs
       {
         code: true,
         comments: false,

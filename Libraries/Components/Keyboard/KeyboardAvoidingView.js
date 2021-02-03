@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const Keyboard = require('./Keyboard');
 const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
 const Platform = require('../../Utilities/Platform');

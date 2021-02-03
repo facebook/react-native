@@ -8,8 +8,6 @@
  * @flow strict
  */
 
-'use strict';
-
 const Platform = require('../Utilities/Platform');
 
 import NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManagerAndroid';

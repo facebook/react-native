@@ -13,11 +13,8 @@
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModuleUtils.h>
 #include <fbjni/fbjni.h>
-#include <folly/Optional.h>
 #include <jsi/jsi.h>
 #include <react/jni/JCallback.h>
-
-#include "TurboModuleSchema.h"
 
 namespace facebook {
 namespace react {
@@ -44,7 +41,6 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
   };
 
   JavaTurboModule(const InitParams &params);
-  JavaTurboModule(const InitParams &params, TurboModuleSchema &&schema);
   virtual ~JavaTurboModule();
 
   jsi::Value invokeJavaMethod(
@@ -55,13 +51,9 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       const jsi::Value *args,
       size_t argCount);
 
-  jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &propName)
-      override;
-
  private:
   jni::global_ref<JTurboModule> instance_;
   std::shared_ptr<CallInvoker> nativeInvoker_;
-  folly::Optional<TurboModuleSchema> turboModuleSchema_;
 
   JNIArgs convertJSIArgsToJNIArgs(
       JNIEnv *env,

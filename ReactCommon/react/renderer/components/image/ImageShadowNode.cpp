@@ -35,10 +35,10 @@ void ImageShadowNode::updateStateIfNeeded() {
     return;
   }
 
-  auto state =
-      ImageState{imageSource,
-                 imageManager_->requestImage(imageSource, getSurfaceId()),
-                 getConcreteProps().blurRadius};
+  auto state = ImageState{
+      imageSource,
+      imageManager_->requestImage(imageSource, getSurfaceId()),
+      getConcreteProps().blurRadius};
   setStateData(std::move(state));
 }
 

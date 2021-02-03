@@ -34,8 +34,6 @@ class TextInputComponentDescriptor final
         std::static_pointer_cast<TextInputShadowNode>(shadowNode);
 
     concreteShadowNode->setTextLayoutManager(textLayoutManager_);
-    concreteShadowNode->dirtyLayout();
-    concreteShadowNode->enableMeasurement();
   }
 
  private:

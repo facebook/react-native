@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const Dimensions = require('../Utilities/Dimensions');
 const FrameRateLogger = require('../Interaction/FrameRateLogger');
 const Keyboard = require('./Keyboard/Keyboard');

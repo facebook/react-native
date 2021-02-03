@@ -282,6 +282,7 @@ static UIColor *defaultPlaceholderColor()
 - (void)_updatePlaceholder
 {
   _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self _placeholderTextAttributes]];
+  [self _invalidatePlaceholderVisibility];
 }
 
 - (NSDictionary<NSAttributedStringKey, id> *)_placeholderTextAttributes

@@ -8,11 +8,10 @@
  * @flow
  */
 
-'use strict';
-
 import * as React from 'react';
 
 export type RNTesterExampleModuleItem = $ReadOnly<{|
+  name?: string,
   title: string,
   platform?: string,
   description?: string,

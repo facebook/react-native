@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {____ViewStyle_Internal} from './StyleSheetTypes';
 
 export default function splitLayoutProps(
@@ -55,9 +53,11 @@ export default function splitLayoutProps(
         case 'bottom':
         case 'top':
         case 'transform':
+          // $FlowFixMe[cannot-write]
           outer[prop] = props[prop];
           break;
         default:
+          // $FlowFixMe[cannot-write]
           inner[prop] = props[prop];
           break;
       }

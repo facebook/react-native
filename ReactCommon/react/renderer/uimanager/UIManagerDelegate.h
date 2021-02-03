@@ -43,6 +43,15 @@ class UIManagerDelegate {
       folly::dynamic const args) = 0;
 
   /*
+   * Called when UIManager wants to dispatch some accessibility event
+   * to the mounting layer. eventType is platform-specific and not all
+   * platforms will necessarily implement the same set of events.
+   */
+  virtual void uiManagerDidSendAccessibilityEvent(
+      const ShadowNode::Shared &shadowNode,
+      std::string const &eventType) = 0;
+
+  /*
    * Set JS responder for a view
    */
   virtual void uiManagerDidSetJSResponder(

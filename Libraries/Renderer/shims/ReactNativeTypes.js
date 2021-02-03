@@ -180,6 +180,10 @@ export type ReactNativeType = {
     command: string,
     args: Array<mixed>,
   ): void,
+  sendAccessibilityEvent(
+    handle: ElementRef<HostComponent<mixed>>,
+    eventType: string,
+  ): void,
   render(
     element: MixedElement,
     containerTag: number,
@@ -203,6 +207,10 @@ export type ReactFabricType = {
     handle: ElementRef<HostComponent<mixed>>,
     command: string,
     args: Array<mixed>,
+  ): void,
+  sendAccessibilityEvent(
+    handle: ElementRef<HostComponent<mixed>>,
+    eventType: string,
   ): void,
   render(
     element: MixedElement,

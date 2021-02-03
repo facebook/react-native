@@ -51,11 +51,12 @@ static inline LayoutConstraints RCTGetLayoutConstraintsForSize(CGSize minimumSiz
 
 static inline LayoutContext RCTGetLayoutContext(CGPoint viewportOffset)
 {
-  return {.pointScaleFactor = RCTScreenScale(),
-          .swapLeftAndRightInRTL =
-              [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL],
-          .fontSizeMultiplier = RCTFontSizeMultiplier(),
-          .viewportOffset = RCTPointFromCGPoint(viewportOffset)};
+  return {
+      .pointScaleFactor = RCTScreenScale(),
+      .swapLeftAndRightInRTL =
+          [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL],
+      .fontSizeMultiplier = RCTFontSizeMultiplier(),
+      .viewportOffset = RCTPointFromCGPoint(viewportOffset)};
 }
 
 static dispatch_queue_t RCTGetBackgroundQueue()
@@ -332,6 +333,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:release_resources_when_backgrounded_ios")) {
+    RCTExperimentSetReleaseResourcesWhenBackgrounded(YES);
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
@@ -376,8 +381,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   RCTMountingManager *mountingManager = _mountingManager;
   RCTExecuteOnMainQueue(^{
-    [mountingManager.componentViewRegistry dequeueComponentViewWithComponentHandle:RootShadowNode::Handle()
-                                                                               tag:surface.rootTag];
+    [mountingManager attachSurfaceToView:surface.view surfaceId:surface.rootTag];
   });
 
   LayoutContext layoutContext = RCTGetLayoutContext(surface.viewportOffset);
@@ -397,15 +401,8 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
   RCTMountingManager *mountingManager = _mountingManager;
   RCTExecuteOnMainQueue(^{
-    surface.view.rootView = nil;
-    RCTComponentViewDescriptor rootViewDescriptor =
-        [mountingManager.componentViewRegistry componentViewDescriptorWithTag:surface.rootTag];
-    [mountingManager.componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
-                                                                               tag:surface.rootTag
-                                                           componentViewDescriptor:rootViewDescriptor];
+    [mountingManager detachSurfaceFromView:surface.view surfaceId:surface.rootTag];
   });
-
-  [surface _unsetStage:(RCTSurfaceStagePrepared | RCTSurfaceStageMounted)];
 }
 
 - (void)_startAllSurfacesWithScheduler:(RCTScheduler *)scheduler
@@ -447,10 +444,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (void)schedulerDidFinishTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
 {
-  RCTFabricSurface *surface = [_surfaceRegistry surfaceForRootTag:mountingCoordinator->getSurfaceId()];
-
-  [surface _setStage:RCTSurfaceStagePrepared];
-
   [_mountingManager scheduleTransaction:mountingCoordinator];
 }
 
@@ -463,6 +456,15 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   NSArray *argsArray = convertFollyDynamicToId(args);
 
   [self->_mountingManager dispatchCommand:tag commandName:commandStr args:argsArray];
+}
+
+- (void)schedulerDidSendAccessibilityEvent:(const facebook::react::ShadowView &)shadowView
+                                 eventType:(const std::string &)eventType
+{
+  ReactTag tag = shadowView.tag;
+  NSString *eventTypeStr = [[NSString alloc] initWithUTF8String:eventType.c_str()];
+
+  [self->_mountingManager sendAccessibilityEvent:tag eventType:eventTypeStr];
 }
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
@@ -494,17 +496,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 - (void)mountingManager:(RCTMountingManager *)mountingManager didMountComponentsWithRootTag:(ReactTag)rootTag
 {
   RCTAssertMainQueue();
-
-  RCTFabricSurface *surface = [_surfaceRegistry surfaceForRootTag:rootTag];
-  RCTSurfaceStage stage = surface.stage;
-  if (stage & RCTSurfaceStagePrepared) {
-    // We have to progress the stage only if the preparing phase is done.
-    if ([surface _setStage:RCTSurfaceStageMounted]) {
-      auto rootComponentViewDescriptor =
-          [_mountingManager.componentViewRegistry componentViewDescriptorWithTag:rootTag];
-      surface.view.rootView = (RCTSurfaceRootView *)rootComponentViewDescriptor.view;
-    }
-  }
 
   std::shared_lock<better::shared_mutex> lock(_observerListMutex);
   for (id<RCTSurfacePresenterObserver> observer in _observers) {

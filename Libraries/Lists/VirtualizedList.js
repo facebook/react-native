@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const Batchinator = require('../Interaction/Batchinator');
 const FillRateHelper = require('./FillRateHelper');
 const ReactNative = require('../Renderer/shims/ReactNative');

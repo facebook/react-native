@@ -122,7 +122,7 @@ class JSI_EXPORT HostObject {
   virtual void set(Runtime&, const PropNameID& name, const Value& value);
 
   // When JS wants a list of property names for the HostObject, it will
-  // call this method. If it throws an exception, the call will thow a
+  // call this method. If it throws an exception, the call will throw a
   // JS \c Error object. The default implementation returns empty vector.
   virtual std::vector<PropNameID> getPropertyNames(Runtime& rt);
 };

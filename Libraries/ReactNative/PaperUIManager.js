@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const NativeModules = require('../BatchedBridge/NativeModules');
 const Platform = require('../Utilities/Platform');
 const UIManagerProperties = require('./UIManagerProperties');
@@ -96,6 +94,9 @@ const UIManagerJS = {
   },
   getViewManagerConfig(viewManagerName: string): any {
     return getViewManagerConfig(viewManagerName);
+  },
+  hasViewManagerConfig(viewManagerName: string): boolean {
+    return getViewManagerConfig(viewManagerName) != null;
   },
 };
 

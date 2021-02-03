@@ -168,7 +168,13 @@ RCT_EXPORT_MODULE()
 - (void)showOnShake
 {
   if ([((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]) isShakeToShowDevMenuEnabled]) {
-    [self show];
+    for (UIWindow *window in [RCTSharedApplication() windows]) {
+      NSString *recursiveDescription = [window valueForKey:@"recursiveDescription"];
+      if ([recursiveDescription containsString:@"RCTView"]) {
+        [self show];
+        return;
+      }
+    }
   }
 }
 
@@ -318,9 +324,9 @@ RCT_EXPORT_MODULE()
   if (devSettings.isLiveReloadAvailable) {
     [items addObject:[RCTDevMenuItem
                          buttonItemWithTitleBlock:^NSString * {
-                           return devSettings.isDebuggingRemotely
-                               ? @"Systrace Unavailable"
-                               : devSettings.isProfilingEnabled ? @"Stop Systrace" : @"Start Systrace";
+                           return devSettings.isDebuggingRemotely ? @"Systrace Unavailable"
+                               : devSettings.isProfilingEnabled   ? @"Stop Systrace"
+                                                                  : @"Start Systrace";
                          }
                          handler:^{
                            if (devSettings.isDebuggingRemotely) {

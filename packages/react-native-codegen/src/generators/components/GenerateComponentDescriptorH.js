@@ -47,7 +47,6 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
     packageName?: string,
   ): FilesOutput {
     const fileName = 'ComponentDescriptors.h';

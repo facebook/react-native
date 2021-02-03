@@ -10,6 +10,7 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 
 #include <glog/logging.h>
@@ -34,9 +35,9 @@ SharedShadowNode UIManager::createNode(
   auto fallbackDescriptor =
       componentDescriptorRegistry_->getFallbackComponentDescriptor();
 
-  auto family = componentDescriptor.createFamily(
-      ShadowNodeFamilyFragment{tag, surfaceId, nullptr},
-      std::move(eventTarget));
+  auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
+  auto family =
+      componentDescriptor.createFamily(fragment, std::move(eventTarget));
   auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
   auto const state =
       componentDescriptor.createInitialState(ShadowNodeFragment{props}, family);
@@ -124,6 +125,62 @@ void UIManager::clearJSResponder() const {
   if (delegate_) {
     delegate_->uiManagerDidClearJSResponder();
   }
+}
+
+ShadowTree const &UIManager::startSurface(
+    SurfaceId surfaceId,
+    std::string const &moduleName,
+    folly::dynamic const &props,
+    LayoutConstraints const &layoutConstraints,
+    LayoutContext const &layoutContext) const {
+  SystraceSection s("UIManager::startSurface");
+
+  auto shadowTree = std::make_unique<ShadowTree>(
+      surfaceId, layoutConstraints, layoutContext, *this);
+  auto shadowTreePointer = shadowTree.get();
+  shadowTreeRegistry_.add(std::move(shadowTree));
+
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+    if (!uiManagerBinding) {
+      return;
+    }
+
+    uiManagerBinding->startSurface(runtime, surfaceId, moduleName, props);
+  });
+
+  return *shadowTreePointer;
+}
+
+void UIManager::stopSurface(SurfaceId surfaceId) const {
+  SystraceSection s("UIManager::stopSurface");
+
+  // Stop any ongoing animations.
+  stopSurfaceForAnimationDelegate(surfaceId);
+
+  // Waiting for all concurrent commits to be finished and unregistering the
+  // `ShadowTree`.
+  auto shadowTree = getShadowTreeRegistry().remove(surfaceId);
+
+  // As part of stopping a Surface, we need to properly destroy all
+  // mounted views, so we need to commit an empty tree to trigger all
+  // side-effects (including destroying and removing mounted views).
+  if (shadowTree) {
+    shadowTree->commitEmptyTree();
+  }
+
+  // We execute JavaScript/React part of the process at the very end to minimize
+  // any visible side-effects of stopping the Surface. Any possible commits from
+  // the JavaScript side will not be able to reference a `ShadowTree` and will
+  // fail silently.
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+    if (!uiManagerBinding) {
+      return;
+    }
+
+    uiManagerBinding->stopSurface(runtime, surfaceId);
+  });
 }
 
 ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
@@ -238,6 +295,14 @@ void UIManager::dispatchCommand(
   }
 }
 
+void UIManager::sendAccessibilityEvent(
+    const ShadowNode::Shared &shadowNode,
+    std::string const &eventType) {
+  if (delegate_) {
+    delegate_->uiManagerDidSendAccessibilityEvent(shadowNode, eventType);
+  }
+}
+
 void UIManager::configureNextLayoutAnimation(
     jsi::Runtime &runtime,
     RawValue const &config,
@@ -270,9 +335,21 @@ void UIManager::setBackgroundExecutor(
   backgroundExecutor_ = backgroundExecutor;
 }
 
+void UIManager::setRuntimeExecutor(RuntimeExecutor const &runtimeExecutor) {
+  runtimeExecutor_ = runtimeExecutor;
+}
+
 void UIManager::visitBinding(
-    std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
-    const {
+    std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
+    jsi::Runtime &runtime) const {
+  if (extractUIManagerBindingOnDemand_) {
+    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+    if (uiManagerBinding) {
+      callback(*uiManagerBinding_);
+    }
+    return;
+  }
+
   if (!uiManagerBinding_) {
     return;
   }
@@ -337,7 +414,7 @@ void UIManager::setAnimationDelegate(UIManagerAnimationDelegate *delegate) {
   animationDelegate_ = delegate;
 }
 
-void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) {
+void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
   if (animationDelegate_ != nullptr) {
     animationDelegate_->stopSurface(surfaceId);
   }

@@ -2,7 +2,7 @@
 
 exports[`GenerateModuleMm can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "SampleSpec-generated.mm" => "/**
+  "COMPLEX_OBJECTS-generated.mm" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -15,7 +15,7 @@ Map {
  * must have a single output. More files => more genrule()s => slower builds.
  */
 
-#import \\"SampleSpec.h\\"
+#import \\"COMPLEX_OBJECTS.h\\"
 
 @implementation RCTCxxConvert (NativeSampleTurboModule_SpecDifficultAE)
 + (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecDifficultAE:(id)json
@@ -95,7 +95,7 @@ namespace facebook {
 
 exports[`GenerateModuleMm can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec-generated.mm" => "/**
+  "EMPTY_NATIVE_MODULES-generated.mm" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -108,7 +108,7 @@ Map {
  * must have a single output. More files => more genrule()s => slower builds.
  */
 
-#import \\"SampleSpec.h\\"
+#import \\"EMPTY_NATIVE_MODULES.h\\"
 
 
 namespace facebook {
@@ -127,7 +127,7 @@ namespace facebook {
 
 exports[`GenerateModuleMm can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
 Map {
-  "SampleSpec-generated.mm" => "/**
+  "NATIVE_MODULES_WITH_TYPE_ALIASES-generated.mm" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -140,7 +140,7 @@ Map {
  * must have a single output. More files => more genrule()s => slower builds.
  */
 
-#import \\"SampleSpec.h\\"
+#import \\"NATIVE_MODULES_WITH_TYPE_ALIASES.h\\"
 
 @implementation RCTCxxConvert (AliasTurboModule_OptionsOffset)
 + (RCTManagedPointer *)JS_AliasTurboModule_OptionsOffset:(id)json
@@ -187,7 +187,7 @@ namespace facebook {
 
 exports[`GenerateModuleMm can generate fixture REAL_MODULE_EXAMPLE 1`] = `
 Map {
-  "SampleSpec-generated.mm" => "/**
+  "REAL_MODULE_EXAMPLE-generated.mm" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -200,7 +200,7 @@ Map {
  * must have a single output. More files => more genrule()s => slower builds.
  */
 
-#import \\"SampleSpec.h\\"
+#import \\"REAL_MODULE_EXAMPLE.h\\"
 
 @implementation RCTCxxConvert (NativeCameraRollManager_GetPhotosParams)
 + (RCTManagedPointer *)JS_NativeCameraRollManager_GetPhotosParams:(id)json
@@ -319,7 +319,7 @@ namespace facebook {
 
 exports[`GenerateModuleMm can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec-generated.mm" => "/**
+  "SIMPLE_NATIVE_MODULES-generated.mm" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -332,7 +332,7 @@ Map {
  * must have a single output. More files => more genrule()s => slower builds.
  */
 
-#import \\"SampleSpec.h\\"
+#import \\"SIMPLE_NATIVE_MODULES.h\\"
 
 
 namespace facebook {
@@ -343,7 +343,7 @@ namespace facebook {
     }
 
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getBool\\", @selector(getBool:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, BooleanKind, \\"getBool\\", @selector(getBool:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -426,7 +426,7 @@ namespace facebook {
 
 exports[`GenerateModuleMm can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "SampleSpec-generated.mm" => "/**
+  "TWO_MODULES_DIFFERENT_FILES-generated.mm" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -439,7 +439,7 @@ Map {
  * must have a single output. More files => more genrule()s => slower builds.
  */
 
-#import \\"SampleSpec.h\\"
+#import \\"TWO_MODULES_DIFFERENT_FILES.h\\"
 
 
 namespace facebook {

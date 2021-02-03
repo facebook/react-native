@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const BatchedBridge = require('../BatchedBridge/BatchedBridge');
 const TaskQueue = require('./TaskQueue');
 
@@ -21,7 +19,10 @@ import EventEmitter from '../vendor/emitter/EventEmitter';
 export type Handle = number;
 import type {Task} from './TaskQueue';
 
-const _emitter = new EventEmitter<$FlowFixMe>();
+const _emitter = new EventEmitter<{
+  interactionComplete: [],
+  interactionStart: [],
+}>();
 
 const DEBUG_DELAY: 0 = 0;
 const DEBUG: false = false;

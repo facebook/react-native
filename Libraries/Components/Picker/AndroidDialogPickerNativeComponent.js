@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import * as React from 'react';
 
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';

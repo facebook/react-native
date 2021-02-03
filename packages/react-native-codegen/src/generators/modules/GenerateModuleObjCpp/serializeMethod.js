@@ -22,7 +22,8 @@ import type {AliasResolver} from '../Utils';
 
 const invariant = require('invariant');
 const {StructCollector} = require('./StructCollector');
-const {capitalize, getNamespacedStructName} = require('./Utils');
+const {getNamespacedStructName} = require('./Utils');
+const {capitalize} = require('../../Utils');
 const {
   wrapNullable,
   unwrapNullable,
@@ -45,6 +46,7 @@ export type StructParameterRecord = $ReadOnly<{
 
 type ReturnJSType =
   | 'VoidKind'
+  | 'BooleanKind'
   | 'PromiseKind'
   | 'ObjectKind'
   | 'ArrayKind'
@@ -371,7 +373,7 @@ function getReturnJSType(
     case 'Int32TypeAnnotation':
       return 'NumberKind';
     case 'BooleanTypeAnnotation':
-      return 'NumberKind';
+      return 'BooleanKind';
     case 'GenericObjectTypeAnnotation':
       return 'ObjectKind';
     default:

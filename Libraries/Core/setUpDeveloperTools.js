@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import Platform from '../Utilities/Platform';
 
 declare var console: typeof console & {_isPolyfilled: boolean, ...};
