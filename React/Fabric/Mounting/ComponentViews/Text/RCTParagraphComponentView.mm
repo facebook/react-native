@@ -125,6 +125,11 @@ using namespace facebook::react;
 
 #pragma mark - Accessibility
 
+- (NSString *)accessibilityLabel
+{
+  return self.attributedText.string;
+}
+
 - (BOOL)isAccessibilityElement
 {
   // All accessibility functionality of the component is implemented in `accessibilityElements` method below.
