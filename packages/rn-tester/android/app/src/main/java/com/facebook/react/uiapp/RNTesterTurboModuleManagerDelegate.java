@@ -10,8 +10,8 @@ package com.facebook.react.uiapp;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.ReactPackageTurboModuleManagerDelegate;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.turbomodule.core.ReactPackageTurboModuleManagerDelegate;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
 
