@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import Colors from './components/Colors';
 import Header from './components/Header';
 import HermesBadge from './components/HermesBadge';

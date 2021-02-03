@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {
   BubblingEventHandler,

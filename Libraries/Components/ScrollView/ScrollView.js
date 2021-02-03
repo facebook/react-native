@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
@@ -444,10 +442,8 @@ export type Props = $ReadOnly<{|
    *     On android this is not supported and it will have the same behavior as 'none'.
    */
   keyboardDismissMode?: ?// default
-  (| 'none' // cross-platform
-    | 'on-drag'
-    | 'interactive'
-  ), // ios only
+  // cross-platform
+  ('none' | 'on-drag' | 'interactive'), // ios only
   /**
    * Determines when the keyboard should stay visible after a tap.
    *

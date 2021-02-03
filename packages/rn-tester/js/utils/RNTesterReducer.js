@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import type {RNTesterState, ComponentList} from '../types/RNTesterTypes';
 
 export const RNTesterActionsType = {

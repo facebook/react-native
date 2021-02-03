@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import type EventSubscription from '../vendor/emitter/_EventSubscription';
 import type EmitterSubscription from '../vendor/emitter/_EmitterSubscription';

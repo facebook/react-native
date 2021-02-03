@@ -73,17 +73,17 @@ using namespace facebook::react;
 
 - (BOOL)start
 {
-  if (![self _setStage:RCTSurfaceStageStarted]) {
+  if (![self _setStage:RCTSurfaceStageRunning]) {
     return NO;
   }
-  [_surfacePresenter registerSurface:self];
 
+  [_surfacePresenter registerSurface:self];
   return YES;
 }
 
 - (BOOL)stop
 {
-  if (![self _unsetStage:RCTSurfaceStageStarted]) {
+  if (![self _unsetStage:RCTSurfaceStageRunning]) {
     return NO;
   }
 

@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import EventEmitter from '../vendor/emitter/EventEmitter';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import NativeDeviceInfo, {

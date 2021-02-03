@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
 import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';

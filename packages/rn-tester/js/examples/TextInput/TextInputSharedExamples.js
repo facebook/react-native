@@ -470,7 +470,7 @@ module.exports = ([
     },
   },
   {
-    name: 'clearInput',
+    name: 'clearButton',
     title: 'Live Re-Write (no spaces allowed) and clear',
     render: function(): React.Node {
       return <RewriteInvalidCharactersAndClearExample />;

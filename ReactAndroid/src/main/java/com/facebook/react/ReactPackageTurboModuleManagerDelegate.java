@@ -5,17 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.turbomodule.core;
+package com.facebook.react;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.ReactPackage;
-import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.HashMap;

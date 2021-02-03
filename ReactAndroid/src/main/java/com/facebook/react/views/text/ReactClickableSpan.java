@@ -52,7 +52,8 @@ class ReactClickableSpan extends ClickableSpan implements ReactSpan {
     EventDispatcher eventDispatcher =
         UIManagerHelper.getEventDispatcherForReactTag(context, mReactTag);
     if (eventDispatcher != null) {
-      eventDispatcher.dispatchEvent(new ViewGroupClickEvent(mReactTag));
+      eventDispatcher.dispatchEvent(
+          new ViewGroupClickEvent(UIManagerHelper.getSurfaceId(context), mReactTag));
     }
   }
 

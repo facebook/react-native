@@ -26,29 +26,66 @@ export type LayoutAnimationConfig = LayoutAnimationConfig_;
 type OnAnimationDidEndCallback = () => void;
 type OnAnimationDidFailCallback = () => void;
 
+/**
+ * Configures the next commit to be animated.
+ *
+ * onAnimationDidEnd is guaranteed to be called when the animation completes.
+ * onAnimationDidFail is *never* called in the classic, pre-Fabric renderer,
+ * and never has been. In the new renderer (Fabric) it is called only if configuration
+ * parsing fails.
+ */
 function configureNext(
   config: LayoutAnimationConfig,
   onAnimationDidEnd?: OnAnimationDidEndCallback,
   onAnimationDidFail?: OnAnimationDidFailCallback,
 ) {
-  if (!Platform.isTesting) {
-    if (UIManager?.configureNextLayoutAnimation) {
-      UIManager.configureNextLayoutAnimation(
-        config,
-        onAnimationDidEnd ?? function() {},
-        onAnimationDidFail ??
-          function() {} /* this should never be called in Non-Fabric */,
-      );
-    }
-    const FabricUIManager: FabricUIManagerSpec = global?.nativeFabricUIManager;
-    if (FabricUIManager?.configureNextLayoutAnimation) {
-      global?.nativeFabricUIManager?.configureNextLayoutAnimation(
-        config,
-        onAnimationDidEnd ?? function() {},
-        onAnimationDidFail ??
-          function() {} /* this will only be called if configuration fails */,
-      );
-    }
+  if (Platform.isTesting) {
+    return;
+  }
+
+  if (UIManager?.configureNextLayoutAnimation) {
+    UIManager.configureNextLayoutAnimation(
+      config,
+      onAnimationDidEnd ?? function() {},
+      onAnimationDidFail ??
+        function() {} /* this should never be called in Non-Fabric */,
+    );
+  }
+
+  // In Fabric, LayoutAnimations are unconditionally enabled for Android, and
+  // conditionally enabled on iOS (pending fully shipping; this is a temporary state).
+  const FabricUIManager: FabricUIManagerSpec = global?.nativeFabricUIManager;
+  if (FabricUIManager?.configureNextLayoutAnimation) {
+    // Since LayoutAnimations may possibly be disabled for now on iOS, we race
+    // a setTimeout with animation completion, in case onComplete is never called
+    // from native. Once LayoutAnimations unconditionally ship everywhere, we can
+    // delete this mechanism.
+    // TODO: (T65643440) remove timeout once LayoutAnimation ships on iOS.
+    let animationCompletionHasRun = false;
+    const onAnimationComplete = () => {
+      if (Platform.OS === 'ios') {
+        if (animationCompletionHasRun) {
+          return;
+        }
+        animationCompletionHasRun = true;
+        clearTimeout(raceWithAnimationId);
+      }
+      onAnimationDidEnd?.();
+    };
+    const raceWithAnimationId =
+      Platform.OS === 'ios'
+        ? setTimeout(
+            onAnimationComplete,
+            (config.duration ?? 0) + 17 /* one frame + 1ms */,
+          )
+        : null;
+
+    global?.nativeFabricUIManager?.configureNextLayoutAnimation(
+      config,
+      onAnimationComplete,
+      onAnimationDidFail ??
+        function() {} /* this will only be called if configuration parsing fails */,
+    );
   }
 }
 

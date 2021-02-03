@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import UIManagerInjection from './UIManagerInjection';
 import type {Spec} from './NativeUIManager';
 

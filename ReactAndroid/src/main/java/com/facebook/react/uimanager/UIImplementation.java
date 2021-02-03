@@ -958,6 +958,7 @@ public class UIImplementation {
       if (frameDidChange && cssNode.shouldNotifyOnLayout()) {
         mEventDispatcher.dispatchEvent(
             OnLayoutEvent.obtain(
+                -1, /* surfaceId not used in classic renderer */
                 tag,
                 cssNode.getScreenX(),
                 cssNode.getScreenY(),

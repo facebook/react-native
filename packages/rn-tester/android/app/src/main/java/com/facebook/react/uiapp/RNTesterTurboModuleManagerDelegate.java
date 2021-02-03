@@ -10,8 +10,8 @@ package com.facebook.react.uiapp;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.ReactPackageTurboModuleManagerDelegate;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.turbomodule.core.ReactPackageTurboModuleManagerDelegate;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
 
@@ -24,9 +24,16 @@ public class RNTesterTurboModuleManagerDelegate extends ReactPackageTurboModuleM
   @VisibleForTesting
   native boolean canCreateTurboModule(String moduleName);
 
-  public RNTesterTurboModuleManagerDelegate(
+  private RNTesterTurboModuleManagerDelegate(
       ReactApplicationContext context, List<ReactPackage> packages) {
     super(context, packages);
+  }
+
+  public static class Builder extends ReactPackageTurboModuleManagerDelegate.Builder {
+    protected RNTesterTurboModuleManagerDelegate build(
+        ReactApplicationContext context, List<ReactPackage> packages) {
+      return new RNTesterTurboModuleManagerDelegate(context, packages);
+    }
   }
 
   @Override

@@ -8,8 +8,6 @@
  * @emails oncall+react_native
  */
 
-'use strict';
-
 import {getUrlCacheBreaker, setUrlCacheBreaker} from '../AssetUtils';
 
 describe('AssetUtils', () => {

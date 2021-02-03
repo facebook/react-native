@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import Dimensions from './Dimensions';
 import {type DisplayMetrics} from './NativeDeviceInfo';
 import {useEffect, useState} from 'react';

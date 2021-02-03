@@ -29,6 +29,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewManager;
@@ -136,7 +137,7 @@ public class SurfaceMountingManager {
     // Since this is called from the constructor, we know the surface cannot have stopped yet.
     mTagToViewState.put(mSurfaceId, new ViewState(mSurfaceId, rootView, mRootViewManager, true));
 
-    UiThreadUtil.runOnUiThread(
+    Runnable runnable =
         new Runnable() {
           @Override
           public void run() {
@@ -146,7 +147,14 @@ public class SurfaceMountingManager {
               return;
             }
 
-            if (rootView.getId() != View.NO_ID) {
+            if (rootView.getId() == mSurfaceId) {
+              ReactSoftException.logSoftException(
+                  TAG,
+                  new IllegalViewOperationException(
+                      "Race condition in addRootView detected. Trying to set an id of ["
+                          + mSurfaceId
+                          + "] on the RootView, but that id has already been set. "));
+            } else if (rootView.getId() != View.NO_ID) {
               FLog.e(
                   TAG,
                   "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
@@ -158,8 +166,18 @@ public class SurfaceMountingManager {
                       + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
             }
             rootView.setId(mSurfaceId);
+
+            if (rootView instanceof ReactRoot) {
+              ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
+            }
           }
-        });
+        };
+
+    if (UiThreadUtil.isOnUiThread()) {
+      runnable.run();
+    } else {
+      UiThreadUtil.runOnUiThread(runnable);
+    }
   }
 
   /**
