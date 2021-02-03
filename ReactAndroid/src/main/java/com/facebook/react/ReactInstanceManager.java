@@ -173,6 +173,7 @@ public class ReactInstanceManager {
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final @Nullable JSIModulePackage mJSIModulePackage;
+  private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
 
   private class ReactContextInitParams {
@@ -218,7 +219,8 @@ public class ReactInstanceManager {
       int minNumShakes,
       int minTimeLeftInFrameForNonBatchedOperationMs,
       @Nullable JSIModulePackage jsiModulePackage,
-      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers) {
+      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
+      @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder) {
     FLog.d(TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -249,6 +251,7 @@ public class ReactInstanceManager {
     mLifecycleState = initialLifecycleState;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
+    mTMMDelegateBuilder = tmmDelegateBuilder;
     synchronized (mPackages) {
       PrinterHolder.getPrinter()
           .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
