@@ -24,9 +24,16 @@ public class RNTesterTurboModuleManagerDelegate extends ReactPackageTurboModuleM
   @VisibleForTesting
   native boolean canCreateTurboModule(String moduleName);
 
-  public RNTesterTurboModuleManagerDelegate(
+  private RNTesterTurboModuleManagerDelegate(
       ReactApplicationContext context, List<ReactPackage> packages) {
     super(context, packages);
+  }
+
+  public static class Builder extends ReactPackageTurboModuleManagerDelegate.Builder {
+    protected RNTesterTurboModuleManagerDelegate build(
+        ReactApplicationContext context, List<ReactPackage> packages) {
+      return new RNTesterTurboModuleManagerDelegate(context, packages);
+    }
   }
 
   @Override
