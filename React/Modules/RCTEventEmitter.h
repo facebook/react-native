@@ -14,21 +14,21 @@
  */
 @interface RCTEventEmitter : NSObject <RCTBridgeModule, RCTJSInvokerModule>
 
-@property (nonatomic, weak) RCTBridge *bridge;
-@property (nonatomic, copy, nonnull) void (^invokeJS)(NSString *module, NSString *method, NSArray *args);
+@property (nonatomic, weak) RCTBridge * _Nullable bridge; // TODO(macOS ISS#2323203)
+@property (nonatomic, copy, nonnull) void (^invokeJS)(NSString * _Nullable module, NSString * _Nullable method, NSArray * _Nullable args); // TODO(macOS ISS#2323203)
 
 /**
  * Override this method to return an array of supported event names. Attempting
  * to observe or send an event that isn't included in this list will result in
  * an error.
  */
-- (NSArray<NSString *> *)supportedEvents;
+- (NSArray<NSString *> *_Nullable)supportedEvents; // TODO(macOS ISS#2323203)
 
 /**
  * Send an event that does not relate to a specific view, e.g. a navigation
  * or data update notification.
  */
-- (void)sendEventWithName:(NSString *)name body:(id)body;
+- (void)sendEventWithName:(NSString *_Nullable)name body:(id _Nullable )body; // TODO(macOS ISS#2323203)
 
 /**
  * These methods will be called when the first observer is added and when the
@@ -38,7 +38,7 @@
 - (void)startObserving;
 - (void)stopObserving;
 
-- (void)addListener:(NSString *)eventName;
+- (void)addListener:(NSString *_Nullable)eventName; // TODO(macOS ISS#2323203)
 - (void)removeListeners:(double)count;
 
 @end
