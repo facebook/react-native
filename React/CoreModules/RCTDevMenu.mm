@@ -152,6 +152,11 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+- (UIAlertController *)alertController
+{
+  return _actionSheet;
+}
+
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
@@ -192,7 +197,7 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)isActionSheetShown
 {
-  return _actionSheet != nil;
+  return _actionSheet.beingPresented;
 }
 
 - (void)addItem:(NSString *)title handler:(void (^)(void))handler
@@ -427,7 +432,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(show)
 {
-  if (_actionSheet || !_bridge || RCTRunningInAppExtension()) {
+  if ([self isActionSheetShown] || !_bridge || RCTRunningInAppExtension()) {
     return;
   }
 
