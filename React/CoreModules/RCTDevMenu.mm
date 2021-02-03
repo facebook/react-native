@@ -95,6 +95,7 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -135,14 +136,16 @@ RCT_EXPORT_MODULE()
     [commands registerKeyCommandWithInput:@"i"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(__unused UIKeyCommand *command) {
-                                     [weakSelf.bridge.devSettings toggleElementInspector];
+                                     [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
+                                         toggleElementInspector];
                                    }];
 
     // Reload in normal mode
     [commands registerKeyCommandWithInput:@"n"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(__unused UIKeyCommand *command) {
-                                     [weakSelf.bridge.devSettings setIsDebuggingRemotely:NO];
+                                     [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
+                                         setIsDebuggingRemotely:NO];
                                    }];
 #endif
   }
@@ -164,8 +167,14 @@ RCT_EXPORT_MODULE()
 
 - (void)showOnShake
 {
-  if ([_bridge.devSettings isShakeToShowDevMenuEnabled]) {
-    [self show];
+  if ([((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]) isShakeToShowDevMenuEnabled]) {
+    for (UIWindow *window in [RCTSharedApplication() windows]) {
+      NSString *recursiveDescription = [window valueForKey:@"recursiveDescription"];
+      if ([recursiveDescription containsString:@"RCTView"]) {
+        [self show];
+        return;
+      }
+    }
   }
 }
 
@@ -210,7 +219,7 @@ RCT_EXPORT_MODULE()
 
   // Add built-in items
   __weak RCTBridge *bridge = _bridge;
-  __weak RCTDevSettings *devSettings = _bridge.devSettings;
+  __weak RCTDevSettings *devSettings = [_moduleRegistry moduleForName:"DevSettings"];
   __weak RCTDevMenu *weakSelf = self;
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Reload"
@@ -315,9 +324,9 @@ RCT_EXPORT_MODULE()
   if (devSettings.isLiveReloadAvailable) {
     [items addObject:[RCTDevMenuItem
                          buttonItemWithTitleBlock:^NSString * {
-                           return devSettings.isDebuggingRemotely
-                               ? @"Systrace Unavailable"
-                               : devSettings.isProfilingEnabled ? @"Stop Systrace" : @"Start Systrace";
+                           return devSettings.isDebuggingRemotely ? @"Systrace Unavailable"
+                               : devSettings.isProfilingEnabled   ? @"Stop Systrace"
+                                                                  : @"Start Systrace";
                          }
                          handler:^{
                            if (devSettings.isDebuggingRemotely) {
@@ -469,12 +478,12 @@ RCT_EXPORT_METHOD(show)
 
 - (void)setShakeToShow:(BOOL)shakeToShow
 {
-  _bridge.devSettings.isShakeToShowDevMenuEnabled = shakeToShow;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isShakeToShowDevMenuEnabled = shakeToShow;
 }
 
 - (BOOL)shakeToShow
 {
-  return _bridge.devSettings.isShakeToShowDevMenuEnabled;
+  return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isShakeToShowDevMenuEnabled;
 }
 
 RCT_EXPORT_METHOD(reload)
@@ -486,29 +495,29 @@ RCT_EXPORT_METHOD(reload)
 RCT_EXPORT_METHOD(debugRemotely : (BOOL)enableDebug)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isDebuggingRemotely = enableDebug;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isDebuggingRemotely = enableDebug;
 }
 
 RCT_EXPORT_METHOD(setProfilingEnabled : (BOOL)enabled)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isProfilingEnabled = enabled;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isProfilingEnabled = enabled;
 }
 
 - (BOOL)profilingEnabled
 {
-  return _bridge.devSettings.isProfilingEnabled;
+  return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isProfilingEnabled;
 }
 
 RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isHotLoadingEnabled = enabled;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isHotLoadingEnabled = enabled;
 }
 
 - (BOOL)hotLoadingEnabled
 {
-  return _bridge.devSettings.isHotLoadingEnabled;
+  return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isHotLoadingEnabled;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

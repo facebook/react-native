@@ -97,9 +97,13 @@ Instrumentation& Runtime::instrumentation() {
       return std::unordered_map<std::string, int64_t>{};
     }
 
-    void collectGarbage() override {}
+    void collectGarbage(std::string) override {}
 
-    void startTrackingHeapObjectStackTraces() override {}
+    void startTrackingHeapObjectStackTraces(
+        std::function<void(
+            uint64_t,
+            std::chrono::microseconds,
+            std::vector<HeapStatsUpdate>)>) override {}
     void stopTrackingHeapObjectStackTraces() override {}
 
     void createSnapshotToFile(const std::string&) override {

@@ -10,6 +10,8 @@ package com.facebook.react.uimanager;
 import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.JSIModule;
+import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -25,20 +27,32 @@ import com.facebook.react.bridge.ReactContext;
 public class ThemedReactContext extends ReactContext {
 
   private final ReactApplicationContext mReactApplicationContext;
-  @Nullable private final String mSurfaceID;
+  @Nullable private final String mModuleName;
+  private final int mSurfaceId;
 
+  @Deprecated
   public ThemedReactContext(ReactApplicationContext reactApplicationContext, Context base) {
-    this(reactApplicationContext, base, null);
+    this(reactApplicationContext, base, null, -1);
+  }
+
+  @Deprecated
+  public ThemedReactContext(
+      ReactApplicationContext reactApplicationContext, Context base, @Nullable String moduleName) {
+    this(reactApplicationContext, base, moduleName, -1);
   }
 
   public ThemedReactContext(
-      ReactApplicationContext reactApplicationContext, Context base, @Nullable String surfaceID) {
+      ReactApplicationContext reactApplicationContext,
+      Context base,
+      @Nullable String moduleName,
+      int surfaceId) {
     super(base);
     if (reactApplicationContext.hasCatalystInstance()) {
       initializeWithInstance(reactApplicationContext.getCatalystInstance());
     }
     mReactApplicationContext = reactApplicationContext;
-    mSurfaceID = surfaceID;
+    mModuleName = moduleName;
+    mSurfaceId = surfaceId;
   }
 
   @Override
@@ -62,11 +76,27 @@ public class ThemedReactContext extends ReactContext {
   }
 
   /**
-   * @return a {@link String} that represents the ID of the js application that is being rendered
-   *     with this {@link ThemedReactContext}
+   * This is misnamed but has some uses out in the wild. It will be deleted in a future release of
+   * RN.
+   *
+   * @return a {@link String} that represents the module name of the js application that is being
+   *     rendered with this {@link ThemedReactContext}
    */
+  @Deprecated
   public @Nullable String getSurfaceID() {
-    return mSurfaceID;
+    return mModuleName;
+  }
+
+  /**
+   * @return a {@link String} that represents the module name of the js application that is being
+   *     rendered with this {@link ThemedReactContext}
+   */
+  public @Nullable String getModuleName() {
+    return mModuleName;
+  }
+
+  public int getSurfaceId() {
+    return mSurfaceId;
   }
 
   public ReactApplicationContext getReactApplicationContext() {
@@ -76,5 +106,13 @@ public class ThemedReactContext extends ReactContext {
   @Override
   public boolean isBridgeless() {
     return mReactApplicationContext.isBridgeless();
+  }
+
+  @Override
+  public JSIModule getJSIModule(JSIModuleType moduleType) {
+    if (isBridgeless()) {
+      return mReactApplicationContext.getJSIModule(moduleType);
+    }
+    return super.getJSIModule(moduleType);
   }
 }

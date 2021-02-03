@@ -8,8 +8,8 @@
 #import "RCTLegacyViewManagerInteropComponentView.h"
 
 #import <React/UIView+React.h>
-#import <react/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.h>
-#import <react/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewProps.h>
+#import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.h>
+#import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewProps.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import "RCTLegacyViewManagerInteropCoordinatorAdapter.h"
 
@@ -35,6 +35,17 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   }
 
   return self;
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  UIView *result = [super hitTest:point withEvent:event];
+
+  if (result == _adapter.paperView) {
+    return self;
+  }
+
+  return result;
 }
 
 + (NSMutableSet<NSString *> *)supportedViewManagers
@@ -87,6 +98,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   [_viewsToBeMounted removeAllObjects];
   [_viewsToBeUnmounted removeAllObjects];
   _state.reset();
+  self.contentView = nil;
   [super prepareForRecycle];
 }
 
@@ -100,7 +112,11 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  [_viewsToBeUnmounted addObject:childComponentView];
+  if (_adapter) {
+    [_adapter.paperView removeReactSubview:childComponentView];
+  } else {
+    [_viewsToBeUnmounted addObject:childComponentView];
+  }
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider

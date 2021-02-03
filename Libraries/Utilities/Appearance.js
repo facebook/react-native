@@ -5,10 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
-
-'use strict';
 
 import EventEmitter from '../vendor/emitter/EventEmitter';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
@@ -20,10 +18,18 @@ import invariant from 'invariant';
 import {isAsyncDebugging} from './DebugEnvironment';
 
 type AppearanceListener = (preferences: AppearancePreferences) => void;
-const eventEmitter = new EventEmitter();
+const eventEmitter = new EventEmitter<{
+  change: [AppearancePreferences],
+}>();
+
+type NativeAppearanceEventDefinitions = {
+  appearanceChanged: [AppearancePreferences],
+};
 
 if (NativeAppearance) {
-  const nativeEventEmitter = new NativeEventEmitter(NativeAppearance);
+  const nativeEventEmitter = new NativeEventEmitter<NativeAppearanceEventDefinitions>(
+    NativeAppearance,
+  );
   nativeEventEmitter.addListener(
     'appearanceChanged',
     (newAppearance: AppearancePreferences) => {

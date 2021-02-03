@@ -7,8 +7,6 @@
  * @format
  */
 
-'use strict';
-
 const Blob = require('./Blob');
 
 import NativeBlobModule from './NativeBlobModule';

@@ -305,19 +305,21 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     }
   }
 
-  @ReactProp(name = "contentOffset")
+  @ReactProp(name = "contentOffset", customType = "Point")
   public void setContentOffset(ReactScrollView view, ReadableMap value) {
     if (value != null) {
       double x = value.hasKey("x") ? value.getDouble("x") : 0;
       double y = value.hasKey("y") ? value.getDouble("y") : 0;
       view.reactScrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+    } else {
+      view.reactScrollTo(0, 0);
     }
   }
 
   @Override
   public Object updateState(
       ReactScrollView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    view.updateState(stateWrapper);
+    view.getFabricViewStateManager().setStateWrapper(stateWrapper);
     return null;
   }
 

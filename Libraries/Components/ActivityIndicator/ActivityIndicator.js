@@ -6,6 +6,7 @@
  *
  * @format
  * @flow
+ * @generate-docs
  */
 
 'use strict';
@@ -29,10 +30,10 @@ type IndicatorSize = number | 'small' | 'large';
 
 type IOSProps = $ReadOnly<{|
   /**
-   * Whether the indicator should hide when not animating (true by default).
-   *
-   * See https://reactnative.dev/docs/activityindicator.html#hideswhenstopped
-   */
+    Whether the indicator should hide when not animating.
+
+    @platform ios
+  */
   hidesWhenStopped?: ?boolean,
 |}>;
 type Props = $ReadOnly<{|
@@ -40,35 +41,39 @@ type Props = $ReadOnly<{|
   ...IOSProps,
 
   /**
-   * Whether to show the indicator (true, the default) or hide it (false).
-   *
-   * See https://reactnative.dev/docs/activityindicator.html#animating
+   	Whether to show the indicator (`true`) or hide it (`false`).
    */
   animating?: ?boolean,
 
   /**
-   * The foreground color of the spinner (default is gray).
-   *
-   * See https://reactnative.dev/docs/activityindicator.html#color
-   */
+    The foreground color of the spinner.
+
+    @default {@platform android} `null` (system accent default color)
+    @default {@platform ios} '#999999'
+  */
   color?: ?ColorValue,
 
   /**
-   * Size of the indicator (default is 'small').
-   * Passing a number to the size prop is only supported on Android.
-   *
-   * See https://reactnative.dev/docs/activityindicator.html#size
-   */
+    Size of the indicator.
+
+    @type enum(`'small'`, `'large'`)
+    @type {@platform android} number
+  */
   size?: ?IndicatorSize,
 |}>;
 
-/**
- * Displays a circular loading indicator.
- *
- * See https://reactnative.dev/docs/activityindicator.html
- */
-const ActivityIndicator = (props: Props, forwardedRef?: any) => {
-  const {onLayout, style, size, ...restProps} = props;
+const ActivityIndicator = (
+  {
+    animating = true,
+    color = Platform.OS === 'ios' ? GRAY : null,
+    hidesWhenStopped = true,
+    onLayout,
+    size = 'small',
+    style,
+    ...restProps
+  }: Props,
+  forwardedRef?: any,
+) => {
   let sizeStyle;
   let sizeProp;
 
@@ -82,11 +87,14 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
       sizeProp = 'large';
       break;
     default:
-      sizeStyle = {height: props.size, width: props.size};
+      sizeStyle = {height: size, width: size};
       break;
   }
 
   const nativeProps = {
+    animating,
+    color,
+    hidesWhenStopped,
     ...restProps,
     ref: forwardedRef,
     style: sizeStyle,
@@ -115,21 +123,73 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
   );
 };
 
+/**
+  Displays a circular loading indicator.
+
+  ```SnackPlayer name=ActivityIndicator%20Function%20Component%20Example
+  import React from "react";
+  import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+
+  const App = () => (
+    <View style={[styles.container, styles.horizontal]}>
+      <ActivityIndicator />
+      <ActivityIndicator size="large" />
+      <ActivityIndicator size="small" color="#0000ff" />
+      <ActivityIndicator size="large" color="#00ff00" />
+    </View>
+  );
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center"
+    },
+    horizontal: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      padding: 10
+    }
+  });
+  export default App;
+  ```
+
+  ```SnackPlayer name=ActivityIndicator%20Class%20Component%20Example
+  import React, { Component } from "react";
+  import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+
+  class App extends Component {
+    render() {
+      return (
+        <View style={[styles.container, styles.horizontal]}>
+          <ActivityIndicator />
+          <ActivityIndicator size="large" />
+          <ActivityIndicator size="small" color="#0000ff" />
+          <ActivityIndicator size="large" color="#00ff00" />
+        </View>
+      );
+    }
+  }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center"
+    },
+    horizontal: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      padding: 10
+    }
+  });
+  export default App;
+  ```
+*/
+
 const ActivityIndicatorWithRef: React.AbstractComponent<
   Props,
   HostComponent<mixed>,
 > = React.forwardRef(ActivityIndicator);
 ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
-
-/* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.89 was deployed. To see the error, delete this comment
- * and run Flow. */
-ActivityIndicatorWithRef.defaultProps = {
-  animating: true,
-  color: Platform.OS === 'ios' ? GRAY : null,
-  hidesWhenStopped: true,
-  size: 'small',
-};
 
 const styles = StyleSheet.create({
   container: {

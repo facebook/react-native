@@ -276,6 +276,9 @@ class JSCRuntime : public jsi::Runtime {
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
 #define _JSC_FAST_IS_ARRAY
 #endif
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
+#define _JSC_NO_ARRAY_BUFFERS
+#endif
 #endif
 #if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 #if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_11
@@ -283,6 +286,9 @@ class JSCRuntime : public jsi::Runtime {
 // true, this will be a compile-time error and it can be resolved when
 // we understand why.
 #define _JSC_FAST_IS_ARRAY
+#endif
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_12
+#define _JSC_NO_ARRAY_BUFFERS
 #endif
 #endif
 
@@ -922,24 +928,30 @@ bool JSCRuntime::isArray(const jsi::Object &obj) const {
 #endif
 }
 
-bool JSCRuntime::isArrayBuffer(const jsi::Object & /*obj*/) const {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
-  // auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj),
-  // nullptr);  return typedArrayType == kJSTypedArrayTypeArrayBuffer;
+bool JSCRuntime::isArrayBuffer(const jsi::Object &obj) const {
+#if defined(_JSC_NO_ARRAY_BUFFERS)
   throw std::runtime_error("Unsupported");
+#else
+  auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj), nullptr);
+  return typedArrayType == kJSTypedArrayTypeArrayBuffer;
+#endif
 }
 
-uint8_t *JSCRuntime::data(const jsi::ArrayBuffer & /*obj*/) {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
-  // return static_cast<uint8_t*>(
-  //    JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
+uint8_t *JSCRuntime::data(const jsi::ArrayBuffer &obj) {
+#if defined(_JSC_NO_ARRAY_BUFFERS)
   throw std::runtime_error("Unsupported");
+#else
+  return static_cast<uint8_t *>(
+      JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
+#endif
 }
 
-size_t JSCRuntime::size(const jsi::ArrayBuffer & /*obj*/) {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
-  // return JSObjectGetArrayBufferByteLength(ctx_, objectRef(obj), nullptr);
+size_t JSCRuntime::size(const jsi::ArrayBuffer &obj) {
+#if defined(_JSC_NO_ARRAY_BUFFERS)
   throw std::runtime_error("Unsupported");
+#else
+  return JSObjectGetArrayBufferByteLength(ctx_, objectRef(obj), nullptr);
+#endif
 }
 
 bool JSCRuntime::isFunction(const jsi::Object &obj) const {

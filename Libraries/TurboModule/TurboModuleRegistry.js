@@ -4,11 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
-
-'use strict';
 
 const NativeModules = require('../BatchedBridge/NativeModules');
 import type {TurboModule} from './RCTExport';
@@ -16,13 +14,13 @@ import invariant from 'invariant';
 
 const turboModuleProxy = global.__turboModuleProxy;
 
-export function get<T: TurboModule>(name: string): ?T {
+function requireModule<T: TurboModule>(name: string): ?T {
   // Bridgeless mode requires TurboModules
   if (!global.RN$Bridgeless) {
     // Backward compatibility layer during migration.
     const legacyModule = NativeModules[name];
     if (legacyModule != null) {
-      return ((legacyModule: any): T);
+      return ((legacyModule: $FlowFixMe): T);
     }
   }
 
@@ -34,8 +32,14 @@ export function get<T: TurboModule>(name: string): ?T {
   return null;
 }
 
+export function get<T: TurboModule>(name: string): ?T {
+  // $FlowFixMe[incompatible-call]
+  return requireModule<T>(name);
+}
+
 export function getEnforcing<T: TurboModule>(name: string): T {
-  const module = get(name);
+  // $FlowFixMe[incompatible-call]
+  const module = requireModule<T>(name);
   invariant(
     module != null,
     `TurboModuleRegistry.getEnforcing(...): '${name}' could not be found. ` +

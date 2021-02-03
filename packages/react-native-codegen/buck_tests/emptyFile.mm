@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <react/components/codegen_tests/ComponentDescriptors.h>
-#import <react/components/codegen_tests/ComponentViewHelpers.h>
+#import <react/renderer/components/codegen_tests/ComponentDescriptors.h>
+#import <react/renderer/components/codegen_tests/ComponentViewHelpers.h>
 #import <FBReactNativeTestSpec/FBReactNativeTestSpec.h>
 #import <FBReactNativeTestSpec/FBReactNativeTestSpec-generated.mm>
 

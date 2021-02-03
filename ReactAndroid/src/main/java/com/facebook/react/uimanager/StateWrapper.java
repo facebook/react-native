@@ -21,6 +21,9 @@ public interface StateWrapper {
    */
   ReadableNativeMap getState();
 
-  /** Pass a map of values back to the C++ layer. */
+  /**
+   * Pass a map of values back to the C++ layer. The operation is performed synchronously and cannot
+   * fail.
+   */
   void updateState(WritableMap map);
 }
