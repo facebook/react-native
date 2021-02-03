@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const DeprecatedImagePropType = require('../DeprecatedPropTypes/DeprecatedImagePropType');
 const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars

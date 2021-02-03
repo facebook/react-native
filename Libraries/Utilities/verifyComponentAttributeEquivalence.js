@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
 import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
 

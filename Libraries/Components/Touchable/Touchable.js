@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const BoundingDimensions = require('./BoundingDimensions');
 const Platform = require('../../Utilities/Platform');
 const Position = require('./Position');

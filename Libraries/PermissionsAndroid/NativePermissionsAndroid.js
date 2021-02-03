@@ -8,8 +8,6 @@
  * @flow strict
  */
 
-'use strict';
-
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 

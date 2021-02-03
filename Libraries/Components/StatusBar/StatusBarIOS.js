@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
 

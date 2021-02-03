@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 import NativeAccessibilityInfo from './NativeAccessibilityInfo';
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';

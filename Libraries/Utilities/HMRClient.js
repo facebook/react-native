@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const DevSettings = require('./DevSettings');
 const invariant = require('invariant');
 const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');

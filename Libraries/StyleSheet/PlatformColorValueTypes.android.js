@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import type {ColorValue} from './StyleSheet';
 import type {ProcessedColorValue} from './processColor';
 

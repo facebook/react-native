@@ -9,8 +9,6 @@
  * @emails oncall+react_native
  */
 
-'use strict';
-
 const NativeModules = require('../../../BatchedBridge/NativeModules');
 const LayoutAnimation = require('../../../LayoutAnimation/LayoutAnimation');
 const dismissKeyboard = require('../../../Utilities/dismissKeyboard');

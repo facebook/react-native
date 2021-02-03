@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import {isHoverEnabled} from './HoverState';
 import invariant from 'invariant';
 import SoundManager from '../Components/Sound/SoundManager';

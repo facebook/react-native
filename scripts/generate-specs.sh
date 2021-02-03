@@ -27,7 +27,7 @@ set -e
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 TEMP_DIR=$(mktemp -d /tmp/react-native-codegen-XXXXXXXX)
 RN_DIR=$(cd "$THIS_DIR/.." && pwd)
-YARN_BINARY="${YARN_BINARY:-$(command -v yarn || true)}"
+NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
 USE_FABRIC="${USE_FABRIC:-0}"
 
 cleanup () {
@@ -56,8 +56,8 @@ main() {
   CODEGEN_REPO_PATH="$RN_DIR/packages/react-native-codegen"
   CODEGEN_NPM_PATH="$RN_DIR/../react-native-codegen"
 
-  if [ -z "$YARN_BINARY" ]; then
-    echo "Error: Could not find yarn. Make sure it is in bash PATH or set the YARN_BINARY environment variable." 1>&2
+if [ -z "$NODE_BINARY" ]; then
+    echo "Error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable." 1>&2
     exit 1
   fi
 
@@ -72,18 +72,20 @@ main() {
 
   if [ ! -d "$CODEGEN_PATH/lib" ]; then
     describe "Building react-native-codegen package"
-    pushd "$CODEGEN_PATH" >/dev/null || exit 1
-      "$YARN_BINARY"
-      "$YARN_BINARY" build
-    popd >/dev/null || exit 1
+    bash "$CODEGEN_PATH/scripts/oss/build.sh"
+  fi
+
+  if [ -z "$NODE_BINARY" ]; then
+    echo "Error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable." 1>&2
+    exit 1
   fi
 
   describe "Generating schema from flow types"
-  "$YARN_BINARY" node "$CODEGEN_PATH/lib/cli/combine/combine-js-to-schema-cli.js" "$SCHEMA_FILE" "$SRCS_DIR"
+  "$NODE_BINARY" "$CODEGEN_PATH/lib/cli/combine/combine-js-to-schema-cli.js" "$SCHEMA_FILE" "$SRCS_DIR"
 
   describe "Generating native code from schema (iOS)"
   pushd "$RN_DIR" >/dev/null || exit 1
-    "$YARN_BINARY" --silent node scripts/generate-specs-cli.js ios "$SCHEMA_FILE" "$TEMP_OUTPUT_DIR" "$CODEGEN_MODULES_LIBRARY_NAME"
+    "$NODE_BINARY" scripts/generate-specs-cli.js ios "$SCHEMA_FILE" "$TEMP_OUTPUT_DIR" "$CODEGEN_MODULES_LIBRARY_NAME"
   popd >/dev/null || exit 1
 
   describe "Copying output to final directory"

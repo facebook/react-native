@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import {ReactNativeViewConfigRegistry} from 'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface';
 import {type ViewConfig} from './ReactNativeTypes';
 
