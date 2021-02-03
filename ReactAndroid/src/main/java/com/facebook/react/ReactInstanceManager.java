@@ -78,7 +78,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
-import com.facebook.react.devsupport.ReactInstanceManagerDevHelper;
+import com.facebook.react.devsupport.ReactInstanceDevHelper;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -282,8 +282,8 @@ public class ReactInstanceManager {
     }
   }
 
-  private ReactInstanceManagerDevHelper createDevHelperInterface() {
-    return new ReactInstanceManagerDevHelper() {
+  private ReactInstanceDevHelper createDevHelperInterface() {
+    return new ReactInstanceDevHelper() {
       @Override
       public void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
         ReactInstanceManager.this.onReloadWithJSDebugger(jsExecutorFactory);
