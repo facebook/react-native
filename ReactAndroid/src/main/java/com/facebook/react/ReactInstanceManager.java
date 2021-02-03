@@ -54,7 +54,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
-import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaJSExecutor;
@@ -93,6 +92,8 @@ import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.modules.fabric.ReactFabric;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.surface.ReactStage;
+import com.facebook.react.turbomodule.core.TurboModuleManager;
+import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
@@ -1292,9 +1293,19 @@ public class ReactInstanceManager {
           mJSIModulePackage.getJSIModules(
               reactContext, catalystInstance.getJavaScriptContextHolder()));
 
-      if (ReactFeatureFlags.useTurboModules) {
-        JSIModule turboModuleManager =
-            catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager);
+      if (ReactFeatureFlags.useTurboModules && mTMMDelegateBuilder != null) {
+        TurboModuleManagerDelegate tmmDelegate =
+            mTMMDelegateBuilder
+                .setPackages(mPackages)
+                .setReactApplicationContext(reactContext)
+                .build();
+
+        TurboModuleManager turboModuleManager =
+            new TurboModuleManager(
+                catalystInstance.getRuntimeExecutor(),
+                tmmDelegate,
+                catalystInstance.getJSCallInvokerHolder(),
+                catalystInstance.getNativeCallInvokerHolder());
 
         catalystInstance.setTurboModuleManager(turboModuleManager);
 
