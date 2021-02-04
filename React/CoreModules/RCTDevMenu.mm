@@ -12,6 +12,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTDevSettings.h>
+#import <React/RCTJSInvokerModule.h>
 #import <React/RCTKeyCommands.h>
 #import <React/RCTLog.h>
 #import <React/RCTReloadCommand.h>
@@ -85,7 +86,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
-@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, NativeDevMenuSpec>
+@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, NativeDevMenuSpec, RCTJSInvokerModule>
 
 @end
 
@@ -96,6 +97,7 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
 @synthesize bridge = _bridge;
 @synthesize moduleRegistry = _moduleRegistry;
+@synthesize invokeJS = _invokeJS;
 
 RCT_EXPORT_MODULE()
 
@@ -387,7 +389,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(show)
 {
-  if (_actionSheet || !_bridge || RCTRunningInAppExtension()) {
+  if (_actionSheet || RCTRunningInAppExtension()) {
     return;
   }
 
@@ -417,7 +419,11 @@ RCT_EXPORT_METHOD(show)
   _presentedItems = items;
   [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
 
-  [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter" method:@"emit" args:@[ @"RCTDevMenuShown" ] completion:NULL];
+  if (_bridge) {
+    [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter" method:@"emit" args:@[ @"RCTDevMenuShown" ] completion:NULL];
+  } else {
+    _invokeJS(@"RCTNativeAppEventEmitter", @"emit", @[ @"RCTDevMenuShown" ]);
+  }
 }
 
 - (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item
