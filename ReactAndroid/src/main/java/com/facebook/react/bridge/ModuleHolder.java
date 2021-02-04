@@ -50,7 +50,6 @@ public class ModuleHolder {
   private @Nullable @GuardedBy("this") NativeModule mModule;
 
   // These are used to communicate phases of creation and initialization across threads
-  private @GuardedBy("this") boolean mInitializable;
   private @GuardedBy("this") boolean mIsCreating;
   private @GuardedBy("this") boolean mIsInitializing;
 
@@ -89,7 +88,6 @@ public class ModuleHolder {
     boolean shouldInitializeNow = false;
     NativeModule module = null;
     synchronized (this) {
-      mInitializable = true;
       if (mModule != null) {
         Assertions.assertCondition(!mIsInitializing);
         shouldInitializeNow = true;
@@ -193,7 +191,7 @@ public class ModuleHolder {
       boolean shouldInitializeNow = false;
       synchronized (this) {
         mModule = module;
-        if (mInitializable && !mIsInitializing) {
+        if (!mIsInitializing) {
           shouldInitializeNow = true;
         }
       }
@@ -227,7 +225,7 @@ public class ModuleHolder {
       boolean shouldInitialize = false;
       // Check to see if another thread is initializing the object, if not claim the responsibility
       synchronized (this) {
-        if (mInitializable && !mIsInitializing) {
+        if (!mIsInitializing) {
           shouldInitialize = true;
           mIsInitializing = true;
         }
