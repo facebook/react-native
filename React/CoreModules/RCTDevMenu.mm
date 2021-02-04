@@ -315,40 +315,6 @@ RCT_EXPORT_MODULE()
                          }]];
   }
 
-  if (devSettings.isLiveReloadAvailable) {
-    [items addObject:[RCTDevMenuItem
-                         buttonItemWithTitleBlock:^NSString * {
-                           return devSettings.isDebuggingRemotely ? @"Systrace Unavailable"
-                               : devSettings.isProfilingEnabled   ? @"Stop Systrace"
-                                                                  : @"Start Systrace";
-                         }
-                         handler:^{
-                           if (devSettings.isDebuggingRemotely) {
-                             UIAlertController *alertController =
-                                 [UIAlertController alertControllerWithTitle:@"Systrace Unavailable"
-                                                                     message:@"Stop debugging to enable Systrace."
-                                                              preferredStyle:UIAlertControllerStyleAlert];
-                             __weak __typeof__(alertController) weakAlertController = alertController;
-                             [alertController
-                                 addAction:[UIAlertAction actionWithTitle:@"OK"
-                                                                    style:UIAlertActionStyleDefault
-                                                                  handler:^(__unused UIAlertAction *action) {
-                                                                    [weakAlertController
-                                                                        dismissViewControllerAnimated:YES
-                                                                                           completion:nil];
-                                                                  }]];
-                             [RCTPresentedViewController() presentViewController:alertController
-                                                                        animated:YES
-                                                                      completion:NULL];
-                           } else {
-                             devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
-                           }
-                         }]];
-    // "Live reload" which refreshes on every edit was removed in favor of "Fast Refresh".
-    // While native code for "Live reload" is still there, please don't add the option back.
-    // See D15958697 for more context.
-  }
-
   [items
       addObject:[RCTDevMenuItem
                     buttonItemWithTitleBlock:^NSString * {
