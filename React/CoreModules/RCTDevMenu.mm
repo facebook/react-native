@@ -233,12 +233,6 @@ RCT_EXPORT_MODULE()
       // For on-device debugging we link out to Flipper.
       // Since we're assuming Flipper is available, also include the DevTools.
       // Note: For parity with the Android code.
-
-      // Reset the old debugger setting so no one gets stuck.
-      // TODO: Remove in a few weeks.
-      if (devSettings.isDebuggingRemotely) {
-        devSettings.isDebuggingRemotely = false;
-      }
       [items addObject:[RCTDevMenuItem
                            buttonItemWithTitleBlock:^NSString * {
                              return @"Open Debugger";
