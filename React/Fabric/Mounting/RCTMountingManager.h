@@ -58,6 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)sendAccessibilityEvent:(ReactTag)reactTag eventType:(NSString *)eventType;
 
+- (void)setIsJSResponder:(BOOL)isJSResponder forShadowView:(facebook::react::ShadowView)shadowView;
+
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
                              changedProps:(NSDictionary *)props
                       componentDescriptor:(facebook::react::ComponentDescriptor const &)componentDescriptor;

@@ -45,18 +45,10 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
   }
 
-  void schedulerDidSetJSResponder(
-      SurfaceId surfaceId,
-      const ShadowView &shadowView,
-      const ShadowView &initialShadowView,
-      bool blockNativeResponder) override
+  void schedulerDidSetIsJSResponder(ShadowView const &shadowView, bool isJSResponder) override
   {
-    // Does nothing for now.
-  }
-
-  void schedulerDidClearJSResponder() override
-  {
-    // Does nothing for now.
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidSetIsJSResponder:isJSResponder forShadowView:shadowView];
   }
 
   void schedulerDidSendAccessibilityEvent(const ShadowView &shadowView, std::string const &eventType) override

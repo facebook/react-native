@@ -263,7 +263,7 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "setJSResponder") {
+  if (methodName == "setIsJSResponder") {
     return jsi::Function::createFromHostFunction(
         runtime,
         name,
@@ -273,7 +273,7 @@ jsi::Value UIManagerBinding::get(
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept -> jsi::Value {
-          uiManager->setJSResponder(
+          uiManager->setIsJSResponder(
               shadowNodeFromValue(runtime, arguments[0]),
               arguments[1].getBool());
 
@@ -307,22 +307,6 @@ jsi::Value UIManagerBinding::get(
           EventEmitter::DispatchMutex().unlock();
 
           onSuccessFunction.call(runtime, std::move(instanceHandle));
-          return jsi::Value::undefined();
-        });
-  }
-
-  if (methodName == "clearJSResponder") {
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        0,
-        [uiManager](
-            jsi::Runtime &runtime,
-            jsi::Value const &thisValue,
-            jsi::Value const *arguments,
-            size_t count) noexcept -> jsi::Value {
-          uiManager->clearJSResponder();
-
           return jsi::Value::undefined();
         });
   }

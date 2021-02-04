@@ -259,6 +259,15 @@ static void RCTPerformMountInstructions(
       });
 }
 
+- (void)setIsJSResponder:(BOOL)isJSResponder forShadowView:(facebook::react::ShadowView)shadowView
+{
+  RCTExecuteOnMainQueue(^{
+    UIView<RCTComponentViewProtocol> *componentView =
+        [self->_componentViewRegistry findComponentViewWithTag:shadowView.tag];
+    [componentView setIsJSResponder:isJSResponder];
+  });
+}
+
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
                              changedProps:(NSDictionary *)props
                       componentDescriptor:(const ComponentDescriptor &)componentDescriptor

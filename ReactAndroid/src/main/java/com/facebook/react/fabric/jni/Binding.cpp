@@ -1106,11 +1106,9 @@ void Binding::schedulerDidSendAccessibilityEvent(
       eventTypeStr.get());
 }
 
-void Binding::schedulerDidSetJSResponder(
-    SurfaceId surfaceId,
-    const ShadowView &shadowView,
-    const ShadowView &initialShadowView,
-    bool blockNativeResponder) {
+void Binding::schedulerDidSetIsJSResponder(
+    ShadowView const &shadowView,
+    bool isJSResponder) {
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
     LOG(ERROR) << "Binding::schedulerSetJSResponder: JavaUIManager disappeared";
@@ -1121,27 +1119,24 @@ void Binding::schedulerDidSetJSResponder(
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<void(jint, jint, jint, jboolean)>("setJSResponder");
 
-  setJSResponder(
-      localJavaUIManager,
-      shadowView.surfaceId,
-      shadowView.tag,
-      initialShadowView.tag,
-      (jboolean)blockNativeResponder);
-}
-
-void Binding::schedulerDidClearJSResponder() {
-  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
-  if (!localJavaUIManager) {
-    LOG(ERROR)
-        << "Binding::schedulerClearJSResponder: JavaUIManager disappeared";
-    return;
-  }
-
   static auto clearJSResponder =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<void()>("clearJSResponder");
 
-  clearJSResponder(localJavaUIManager);
+  if (isJSResponder) {
+    setJSResponder(
+        localJavaUIManager,
+        shadowView.surfaceId,
+        shadowView.tag,
+        // The closest non-flattened ancestor of the same value if the node is
+        // not flattened. For now, we don't support the case when the node can
+        // be flattened because the only component that uses this feature -
+        // ScrollView - cannot be flattened.
+        shadowView.tag,
+        (jboolean) true);
+  } else {
+    clearJSResponder(localJavaUIManager);
+  }
 }
 
 void Binding::registerNatives() {
