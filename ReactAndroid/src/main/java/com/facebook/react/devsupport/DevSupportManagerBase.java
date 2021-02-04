@@ -104,7 +104,7 @@ public abstract class DevSupportManagerBase
   private final BroadcastReceiver mReloadAppBroadcastReceiver;
   protected final DevServerHelper mDevServerHelper;
   private final LinkedHashMap<String, DevOptionHandler> mCustomDevOptions = new LinkedHashMap<>();
-  private final ReactInstanceManagerDevHelper mReactInstanceManagerHelper;
+  private final ReactInstanceDevHelper mReactInstanceDevHelper;
   private final @Nullable String mJSAppBundleName;
   private final File mJSBundleTempFile;
   private final File mJSSplitBundlesDir;
@@ -135,14 +135,14 @@ public abstract class DevSupportManagerBase
 
   public DevSupportManagerBase(
       Context applicationContext,
-      ReactInstanceManagerDevHelper reactInstanceManagerHelper,
+      ReactInstanceDevHelper reactInstanceDevHelper,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
       int minNumShakes) {
 
     this(
         applicationContext,
-        reactInstanceManagerHelper,
+        reactInstanceDevHelper,
         packagerPathForJSBundleName,
         enableOnCreate,
         null,
@@ -153,14 +153,14 @@ public abstract class DevSupportManagerBase
 
   public DevSupportManagerBase(
       Context applicationContext,
-      ReactInstanceManagerDevHelper reactInstanceManagerHelper,
+      ReactInstanceDevHelper reactInstanceDevHelper,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
       @Nullable RedBoxHandler redBoxHandler,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers) {
-    mReactInstanceManagerHelper = reactInstanceManagerHelper;
+    mReactInstanceDevHelper = reactInstanceDevHelper;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
@@ -223,7 +223,7 @@ public abstract class DevSupportManagerBase
     setDevSupportEnabled(enableOnCreate);
 
     mRedBoxHandler = redBoxHandler;
-    mDevLoadingViewController = new DevLoadingViewController(reactInstanceManagerHelper);
+    mDevLoadingViewController = new DevLoadingViewController(reactInstanceDevHelper);
 
     mExceptionLoggers.add(new JSExceptionLogger());
 
@@ -369,11 +369,11 @@ public abstract class DevSupportManagerBase
   }
 
   public @Nullable View createRootView(String appKey) {
-    return mReactInstanceManagerHelper.createRootView(appKey);
+    return mReactInstanceDevHelper.createRootView(appKey);
   }
 
   public void destroyRootView(View rootView) {
-    mReactInstanceManagerHelper.destroyRootView(rootView);
+    mReactInstanceDevHelper.destroyRootView(rootView);
   }
 
   private void hideDevOptionsDialog() {
@@ -393,7 +393,7 @@ public abstract class DevSupportManagerBase
           @Override
           public void run() {
             if (mRedBoxDialog == null) {
-              Activity context = mReactInstanceManagerHelper.getCurrentActivity();
+              Activity context = mReactInstanceDevHelper.getCurrentActivity();
               if (context == null || context.isFinishing()) {
                 FLog.e(
                     ReactConstants.TAG,
@@ -500,7 +500,7 @@ public abstract class DevSupportManagerBase
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            Activity context = mReactInstanceManagerHelper.getCurrentActivity();
+            Activity context = mReactInstanceDevHelper.getCurrentActivity();
             if (context == null || context.isFinishing()) {
               FLog.e(
                   ReactConstants.TAG,
@@ -537,7 +537,7 @@ public abstract class DevSupportManagerBase
           @Override
           public void onOptionSelected() {
             mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
-            mReactInstanceManagerHelper.toggleElementInspector();
+            mReactInstanceDevHelper.toggleElementInspector();
           }
         });
 
@@ -589,7 +589,7 @@ public abstract class DevSupportManagerBase
           public void onOptionSelected() {
             if (!mDevSettings.isFpsDebugEnabled()) {
               // Request overlay permission if needed when "Show Perf Monitor" option is selected
-              Context context = mReactInstanceManagerHelper.getCurrentActivity();
+              Context context = mReactInstanceDevHelper.getCurrentActivity();
               if (context == null) {
                 FLog.e(ReactConstants.TAG, "Unable to get reference to react activity");
               } else {
@@ -616,7 +616,7 @@ public abstract class DevSupportManagerBase
 
     final DevOptionHandler[] optionHandlers = options.values().toArray(new DevOptionHandler[0]);
 
-    Activity context = mReactInstanceManagerHelper.getCurrentActivity();
+    Activity context = mReactInstanceDevHelper.getCurrentActivity();
     if (context == null || context.isFinishing()) {
       FLog.e(
           ReactConstants.TAG,
@@ -651,7 +651,7 @@ public abstract class DevSupportManagerBase
   /** Starts of stops the sampling profiler */
   private void toggleJSSamplingProfiler() {
     JavaScriptExecutorFactory javaScriptExecutorFactory =
-        mReactInstanceManagerHelper.getJavaScriptExecutorFactory();
+        mReactInstanceDevHelper.getJavaScriptExecutorFactory();
     if (!mIsSamplingProfilerEnabled) {
       try {
         javaScriptExecutorFactory.startSamplingProfiler();
@@ -1105,7 +1105,7 @@ public abstract class DevSupportManagerBase
             }
           }
         };
-    mReactInstanceManagerHelper.onReloadWithJSDebugger(factory);
+    mReactInstanceDevHelper.onReloadWithJSDebugger(factory);
   }
 
   private WebsocketJavaScriptExecutor.JSExecutorConnectCallback getExecutorConnectCallback(
@@ -1139,7 +1139,7 @@ public abstract class DevSupportManagerBase
                 new Runnable() {
                   @Override
                   public void run() {
-                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer();
+                    mReactInstanceDevHelper.onJSBundleLoadedFromServer();
                   }
                 });
           }
@@ -1291,7 +1291,7 @@ public abstract class DevSupportManagerBase
           @Override
           public void run() {
             mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
-            mReactInstanceManagerHelper.toggleElementInspector();
+            mReactInstanceDevHelper.toggleElementInspector();
           }
         });
   }
