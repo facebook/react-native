@@ -106,13 +106,13 @@ export type PressabilityConfig = $ReadOnly<{|
 
   /*
    * Array of keys to receive key down events for
-   * For arrow keys, add "leftArrow", "rightArrow", "upArrow", "downArrow",
+   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
    */
   validKeysDown?: ?Array<string>,
 
   /*
    * Array of keys to receive key up events for
-   * For arrow keys, add "leftArrow", "rightArrow", "upArrow", "downArrow",
+   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
    */
   validKeysUp?: ?Array<string>,
 

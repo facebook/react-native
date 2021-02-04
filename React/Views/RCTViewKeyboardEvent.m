@@ -9,13 +9,13 @@
 #import <React/RCTAssert.h>
 
 @implementation RCTViewKeyboardEvent
-
+// Keyboard mappings are aligned cross-platform as much as possible as per this doc https://github.com/microsoft/react-native-windows/blob/master/vnext/proposals/active/keyboard-reconcile-desktop.md
 + (instancetype)keyDownEventWithReactTag:(NSNumber *)reactTag
                              capsLockKey:(BOOL)capsLockKey
                                 shiftKey:(BOOL)shiftKey
-                              controlKey:(BOOL)controlKey
-                               optionKey:(BOOL)optionKey
-                              commandKey:(BOOL)commandKey
+                                 ctrlKey:(BOOL)controlKey
+                                  altKey:(BOOL)optionKey
+                                 metaKey:(BOOL)commandKey
                            numericPadKey:(BOOL)numericPadKey
                                  helpKey:(BOOL)helpKey
                              functionKey:(BOOL)functionKey
@@ -28,16 +28,16 @@
                                                   viewTag:reactTag
                                                      body:@{ @"capsLockKey" : @(capsLockKey),
                                                                 @"shiftKey" : @(shiftKey),
-                                                              @"controlKey" : @(controlKey),
-                                                               @"optionKey" : @(optionKey),
-                                                              @"commandKey" : @(commandKey),
+                                                                 @"ctrlKey" : @(controlKey),
+                                                                  @"altKey" : @(optionKey),
+                                                                 @"metaKey" : @(commandKey),
                                                            @"numericPadKey" : @(numericPadKey),
                                                                  @"helpKey" : @(helpKey),
                                                              @"functionKey" : @(functionKey),
-                                                            @"leftArrowKey" : @(leftArrowKey),
-                                                           @"rightArrowKey" : @(rightArrowKey),
-                                                              @"upArrowKey" : @(upArrowKey),
-                                                            @"downArrowKey" : @(downArrowKey),
+                                                               @"ArrowLeft" : @(leftArrowKey),
+                                                              @"ArrowRight" : @(rightArrowKey),
+                                                                 @"ArrowUp" : @(upArrowKey),
+                                                               @"ArrowDown" : @(downArrowKey),
                                                                      @"key" : key }];
   return event;
 }
@@ -45,9 +45,9 @@
 +(instancetype)keyUpEventWithReactTag:(NSNumber *)reactTag
                           capsLockKey:(BOOL)capsLockKey
                              shiftKey:(BOOL)shiftKey
-                           controlKey:(BOOL)controlKey
-                            optionKey:(BOOL)optionKey
-                           commandKey:(BOOL)commandKey
+                              ctrlKey:(BOOL)controlKey
+                               altKey:(BOOL)optionKey
+                              metaKey:(BOOL)commandKey
                         numericPadKey:(BOOL)numericPadKey
                               helpKey:(BOOL)helpKey
                           functionKey:(BOOL)functionKey
@@ -55,21 +55,21 @@
                         rightArrowKey:(BOOL)rightArrowKey
                            upArrowKey:(BOOL)upArrowKey
                          downArrowKey:(BOOL)downArrowKey
-                                  key:(NSString *)key {
+                                   key:(NSString *)key {
   RCTViewKeyboardEvent *event = [[self alloc] initWithName:@"keyUp"
                                                   viewTag:reactTag
                                                      body:@{ @"capsLockKey" : @(capsLockKey),
                                                                 @"shiftKey" : @(shiftKey),
-                                                              @"controlKey" : @(controlKey),
-                                                               @"optionKey" : @(optionKey),
-                                                              @"commandKey" : @(commandKey),
+                                                                 @"ctrlKey" : @(controlKey),
+                                                                  @"altKey" : @(optionKey),
+                                                                 @"metaKey" : @(commandKey),
                                                            @"numericPadKey" : @(numericPadKey),
                                                                  @"helpKey" : @(helpKey),
                                                              @"functionKey" : @(functionKey),
-                                                            @"leftArrowKey" : @(leftArrowKey),
-                                                           @"rightArrowKey" : @(rightArrowKey),
-                                                              @"upArrowKey" : @(upArrowKey),
-                                                            @"downArrowKey" : @(downArrowKey),
+                                                               @"ArrowLeft" : @(leftArrowKey),
+                                                              @"ArrowRight" : @(rightArrowKey),
+                                                                 @"ArrowUp" : @(upArrowKey),
+                                                               @"ArrowDown" : @(downArrowKey),
                                                                      @"key" : key }];
   return event;
 }

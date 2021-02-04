@@ -9,25 +9,25 @@
 @interface RCTViewKeyboardEvent : RCTComponentEvent
 + (instancetype)keyDownEventWithReactTag:(NSNumber *)reactTag
                              capsLockKey:(BOOL)capsLockKey
-                                shiftKey:(BOOL)shiftKey
-                              controlKey:(BOOL)controlKey
-                               optionKey:(BOOL)optionKey
-                              commandKey:(BOOL)commandKey
-                           numericPadKey:(BOOL)numericPadKey
-                                 helpKey:(BOOL)helpKey
-                             functionKey:(BOOL)functionKey
-                            leftArrowKey:(BOOL)leftArrowKey
-                           rightArrowKey:(BOOL)rightArrowKey
-                              upArrowKey:(BOOL)upArrowKey
-                            downArrowKey:(BOOL)downArrowKey
-                                     key:(NSString*)key;
+                             shiftKey:(BOOL)shiftKey
+                              ctrlKey:(BOOL)controlKey
+                               altKey:(BOOL)optionKey
+                              metaKey:(BOOL)commandKey
+                        numericPadKey:(BOOL)numericPadKey
+                              helpKey:(BOOL)helpKey
+                          functionKey:(BOOL)functionKey
+                         leftArrowKey:(BOOL)leftArrowKey
+                        rightArrowKey:(BOOL)rightArrowKey
+                           upArrowKey:(BOOL)upArrowKey
+                         downArrowKey:(BOOL)downArrowKey
+                                  key:(NSString *)key;
 
 + (instancetype)keyUpEventWithReactTag:(NSNumber *)reactTag
                            capsLockKey:(BOOL)capsLockKey
                               shiftKey:(BOOL)shiftKey
-                            controlKey:(BOOL)controlKey
-                             optionKey:(BOOL)optionKey
-                            commandKey:(BOOL)commandKey
+                               ctrlKey:(BOOL)controlKey
+                                altKey:(BOOL)optionKey
+                               metaKey:(BOOL)commandKey
                          numericPadKey:(BOOL)numericPadKey
                                helpKey:(BOOL)helpKey
                            functionKey:(BOOL)functionKey
@@ -35,5 +35,5 @@
                          rightArrowKey:(BOOL)rightArrowKey
                             upArrowKey:(BOOL)upArrowKey
                           downArrowKey:(BOOL)downArrowKey
-                                   key:(NSString*)key;
+                                   key:(NSString *)key;
 @end

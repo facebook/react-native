@@ -1601,10 +1601,10 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 #pragma mark - Keyboard Events
 
 #if TARGET_OS_OSX
-const NSString *leftArrowPressKey = @"leftArrow";
-const NSString *rightArrowPressKey = @"rightArrow";
-const NSString *upArrowPressKey = @"upArrow";
-const NSString *downArrowPressKey = @"downArrow";
+NSString* const leftArrowPressKey = @"ArrowLeft";
+NSString* const rightArrowPressKey = @"ArrowRight";
+NSString* const upArrowPressKey = @"ArrowUp";
+NSString* const downArrowPressKey = @"ArrowDown";
 
 - (RCTViewKeyboardEvent*)keyboardEvent:(NSEvent*)event downPress:(BOOL)downPress {
   // modifiers
@@ -1621,6 +1621,7 @@ const NSString *downArrowPressKey = @"downArrow";
   BOOL rightArrowKey = NO;
   BOOL upArrowKey = NO;
   BOOL downArrowKey = NO;
+  BOOL escapeKeyPressed = NO;
   NSString *key = event.charactersIgnoringModifiers;
   unichar const code = [key characterAtIndex:0];
 
@@ -1633,6 +1634,11 @@ const NSString *downArrowPressKey = @"downArrow";
     upArrowKey = YES;
   } else if (code == NSDownArrowFunctionKey) {
     downArrowKey = YES;
+  }
+  
+  // detect Escape key presses via the key code
+  if (event.keyCode == 53) {
+    escapeKeyPressed = YES;
   }
 
   // detect modifier flags
@@ -1657,13 +1663,14 @@ const NSString *downArrowPressKey = @"downArrow";
   RCTViewKeyboardEvent *keyboardEvent = nil;
   // only post events for keys we care about
   if (downPress) {
-    if ([self keyIsValid:key left:leftArrowKey right:rightArrowKey up:upArrowKey down:downArrowKey validKeys:[self validKeysDown]]) {
+    NSString *keyToReturn = [self keyIsValid:key left:leftArrowKey right:rightArrowKey up:upArrowKey down:downArrowKey escapeKey:escapeKeyPressed validKeys:[self validKeysDown]];
+    if (keyToReturn != nil) {
       keyboardEvent = [RCTViewKeyboardEvent keyDownEventWithReactTag:self.reactTag
                                                          capsLockKey:capsLockKey
                                                             shiftKey:shiftKey
-                                                          controlKey:controlKey
-                                                           optionKey:optionKey
-                                                          commandKey:commandKey
+                                                             ctrlKey:controlKey
+                                                              altKey:optionKey
+                                                             metaKey:commandKey
                                                        numericPadKey:numericPadKey
                                                              helpKey:helpKey
                                                          functionKey:functionKey
@@ -1671,16 +1678,17 @@ const NSString *downArrowPressKey = @"downArrow";
                                                        rightArrowKey:rightArrowKey
                                                           upArrowKey:upArrowKey
                                                         downArrowKey:downArrowKey
-                                                                 key:key];
+                                                                 key:keyToReturn];
     }
   } else {
-    if ([self keyIsValid:key left:leftArrowKey right:rightArrowKey up:upArrowKey down:downArrowKey validKeys:[self validKeysUp]]) {
+    NSString *keyToReturn = [self keyIsValid:key left:leftArrowKey right:rightArrowKey up:upArrowKey down:downArrowKey escapeKey:escapeKeyPressed validKeys:[self validKeysUp]];
+    if (keyToReturn != nil) {
       keyboardEvent = [RCTViewKeyboardEvent keyUpEventWithReactTag:self.reactTag
                                                        capsLockKey:capsLockKey
                                                           shiftKey:shiftKey
-                                                        controlKey:controlKey
-                                                         optionKey:optionKey
-                                                        commandKey:commandKey
+                                                           ctrlKey:controlKey
+                                                            altKey:optionKey
+                                                           metaKey:commandKey
                                                      numericPadKey:numericPadKey
                                                            helpKey:helpKey
                                                        functionKey:functionKey
@@ -1688,21 +1696,42 @@ const NSString *downArrowPressKey = @"downArrow";
                                                      rightArrowKey:rightArrowKey
                                                         upArrowKey:upArrowKey
                                                       downArrowKey:downArrowKey
-                                                               key:key];
+                                                               key:keyToReturn];
     }
   }
   return keyboardEvent;
 }
 
 // check if the user typed key matches a key we need to send an event for
-- (BOOL)keyIsValid:(NSString*)key left:(BOOL)leftArrowPressed right:(BOOL)rightArrowPressed up:(BOOL)UpArrowPressed down:(BOOL)downArrowPressed validKeys:(NSArray<NSString*>*)validKeys {
-  BOOL keyIsValid = NO;
-  
-  if ([validKeys containsObject:key] || ([validKeys containsObject:leftArrowPressKey] && leftArrowPressed) || ([validKeys containsObject:rightArrowPressKey] && rightArrowPressed) || ([validKeys containsObject:upArrowPressKey] && UpArrowPressed) || ([validKeys containsObject:downArrowPressKey] && downArrowPressed)) {
-    keyIsValid = YES;
+// translate key codes over to JS compatible keys
+- (NSString*)keyIsValid:(NSString*)key left:(BOOL)leftArrowPressed right:(BOOL)rightArrowPressed up:(BOOL)upArrowPressed down:(BOOL)downArrowPressed escapeKey:(BOOL)escapeKeyPressed validKeys:(NSArray<NSString*>*)validKeys {
+  NSString *keyToReturn = key;
+
+  // Allow the flexibility of defining special keys in multiple ways
+  BOOL enterKeyValidityCheck = [key isEqualToString:@"\r"] && ([validKeys containsObject:@"Enter"] || [validKeys containsObject:@"\r"]);
+  BOOL escapeKeyValidityCheck = escapeKeyPressed && ([validKeys containsObject:@"Esc"] || [validKeys containsObject:@"Escape"]); // escape has to be checked via a key code so we can't just use the key itself here
+  BOOL leftArrowValidityCheck = [validKeys containsObject:leftArrowPressKey] && leftArrowPressed;
+  BOOL rightArrowValidityCheck = [validKeys containsObject:rightArrowPressKey] && rightArrowPressed;
+  BOOL upArrowValidityCheck = [validKeys containsObject:upArrowPressKey] && upArrowPressed;
+  BOOL downArrowValidityCheck = [validKeys containsObject:downArrowPressKey] && downArrowPressed;
+
+  if (escapeKeyValidityCheck) {
+    keyToReturn = @"Esc";
+  } else if (enterKeyValidityCheck) {
+    keyToReturn = @"Enter";
+  } else if (leftArrowValidityCheck) {
+    keyToReturn = leftArrowPressKey;
+  } else if (rightArrowValidityCheck) {
+    keyToReturn = rightArrowPressKey;
+  } else if (upArrowValidityCheck) {
+    keyToReturn = upArrowPressKey;
+  } else if (downArrowValidityCheck) {
+    keyToReturn = downArrowPressKey;
+  } else if (![validKeys containsObject:key]) {
+    keyToReturn = nil;
   }
   
-  return keyIsValid;
+  return keyToReturn;
 }
 
 - (void)keyDown:(NSEvent *)event {
