@@ -12,6 +12,7 @@
 
 const React = require('react');
 
+import {type EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 const {AppState, Text, View, Platform} = require('react-native');
 
 class AppStateSubscription extends React.Component<
@@ -25,21 +26,26 @@ class AppStateSubscription extends React.Component<
     eventsDetected: [],
   };
 
+  _subscriptions: ?Array<EventSubscription>;
+
   componentDidMount() {
-    AppState.addEventListener('change', this._handleAppStateChange);
-    AppState.addEventListener('memoryWarning', this._handleMemoryWarning);
+    this._subscriptions = [
+      AppState.addEventListener('change', this._handleAppStateChange),
+      AppState.addEventListener('memoryWarning', this._handleMemoryWarning),
+    ];
     if (Platform.OS === 'android') {
-      AppState.addEventListener('focus', this._handleFocus);
-      AppState.addEventListener('blur', this._handleBlur);
+      this._subscriptions.push(
+        AppState.addEventListener('focus', this._handleFocus),
+        AppState.addEventListener('blur', this._handleBlur),
+      );
     }
   }
 
   componentWillUnmount() {
-    AppState.removeEventListener('change', this._handleAppStateChange);
-    AppState.removeEventListener('memoryWarning', this._handleMemoryWarning);
-    if (Platform.OS === 'android') {
-      AppState.removeEventListener('focus', this._handleFocus);
-      AppState.removeEventListener('blur', this._handleBlur);
+    if (this._subscriptions != null) {
+      for (const subscription of this._subscriptions) {
+        subscription.remove();
+      }
     }
   }
 
