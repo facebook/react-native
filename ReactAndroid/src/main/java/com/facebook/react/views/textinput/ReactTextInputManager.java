@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.BlendMode;
 import android.graphics.BlendModeColorFilter;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -540,6 +541,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       } catch (NullPointerException e) {
         FLog.e(TAG, "NullPointerException when setting underlineColorAndroid for TextInput", e);
       }
+    }
+
+    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) { 
+      setBorderColor(view, 4, Color.TRANSPARENT);
     }
 
     if (underlineColor == null) {
