@@ -1228,7 +1228,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     return !YogaConstants.isUndefined(rgb) && !YogaConstants.isUndefined(alpha);
   }
 
-  private int getBorderColor(int position) {
+  public int getBorderColor(int position) {
     float rgb = mBorderRGB != null ? mBorderRGB.get(position) : DEFAULT_BORDER_RGB;
     float alpha = mBorderAlpha != null ? mBorderAlpha.get(position) : DEFAULT_BORDER_ALPHA;
 
