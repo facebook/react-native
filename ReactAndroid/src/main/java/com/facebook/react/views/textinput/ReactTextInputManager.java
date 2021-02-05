@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.BlendMode;
 import android.graphics.BlendModeColorFilter;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -548,9 +547,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else {
       if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
         int bottomBorderColor = view.getBorderColor(Spacing.BOTTOM);
-        setBorderColor(view, Spacing.BOTTOM, underlineColor);
+        setBorderColor(view, Spacing.START, underlineColor);
         drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
-        setBorderColor(view, Spacing.BOTTOM, bottomBorderColor);
+        setBorderColor(view, Spacing.START, bottomBorderColor);
       } else {
         drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
       }
