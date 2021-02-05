@@ -1658,6 +1658,7 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   // Animate opacity or scale/transform
   mutatedShadowView.props = componentDescriptor.interpolateProps(
       progress, startingView.props, finalView.props);
+  assert(mutatedShadowView.props != nullptr);
 
   // Interpolate LayoutMetrics
   LayoutMetrics const &finalLayoutMetrics = finalView.layoutMetrics;
