@@ -1009,6 +1009,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 const_cast<ViewProps *>(viewProps)->opacity = 0;
               }
               viewStart.props = props;
+              assert(viewStart.props != nullptr);
             }
             bool isScaleX =
                 mutationConfig.animationProperty == AnimationProperty::ScaleX ||
@@ -1027,6 +1028,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                     Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
               }
               viewStart.props = props;
+              assert(viewStart.props != nullptr);
             }
 
             keyFrame = AnimationKeyFrame{
@@ -1051,6 +1053,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 const_cast<ViewProps *>(viewProps)->opacity = 0;
               }
               viewFinal.props = props;
+              assert(viewFinal.props != nullptr);
             }
             bool isScaleX =
                 mutationConfig.animationProperty == AnimationProperty::ScaleX ||
@@ -1069,6 +1072,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                     Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
               }
               viewFinal.props = props;
+              assert(viewFinal.props != nullptr);
             }
 
             keyFrame = AnimationKeyFrame{
