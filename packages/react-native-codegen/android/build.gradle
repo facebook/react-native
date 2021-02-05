@@ -11,7 +11,12 @@ buildscript {
     repositories {
         mavenLocal()
         google()
-        jcenter()
+        mavenCentral()
+        jcenter {
+          content {
+            includeGroup("org.jetbrains.trove4j")
+          }
+        }
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.1.0")
@@ -22,7 +27,12 @@ allprojects {
     repositories {
         mavenLocal()
         google()
-        jcenter()
+        mavenCentral()
+        jcenter {
+          content {
+            includeGroup("org.jetbrains.trove4j")
+          }
+        }
     }
 }
 
