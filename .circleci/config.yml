@@ -502,6 +502,10 @@ jobs:
 
       # Keep configuring Android dependencies while AVD boots up
 
+      # Temp - redownload expired yarn key before apt-get
+      - run:
+          name: Setup yarn key
+          command: curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
       - run:
           name: Install rsync, zip
           command: apt-get update -y && apt-get install rsync zip -y
