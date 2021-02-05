@@ -1143,7 +1143,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               // already made in the current animation, and start the animation
               // from this point.
               keyFrame.viewStart = conflictingKeyFrame.viewPrev;
-              assert(keyFrame.viewStart.tag != 0);
+              assert(keyFrame.viewStart.tag > 0);
               keyFrame.initialProgress = 0;
 
               // We're guaranteed that a tag only has one animation associated
@@ -1154,9 +1154,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             }
           }
 
-          assert(keyFrame.viewStart.tag != 0);
-          assert(keyFrame.viewEnd.tag != 0);
-          assert(keyFrame.viewPrev.tag != 0);
+          assert(keyFrame.viewStart.tag > 0);
+          assert(keyFrame.viewEnd.tag > 0);
+          assert(keyFrame.viewPrev.tag > 0);
           keyFramesToAnimate.push_back(keyFrame);
         }
 
@@ -1245,9 +1245,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           PrintMutationInstruction(
               "Queueing up final mutation instruction - update:",
               mutationInstruction);
-          assert(mutationInstruction.oldChildShadowView.tag != 0);
+          assert(mutationInstruction.oldChildShadowView.tag > 0);
           assert(
-              mutationInstruction.newChildShadowView.tag != 0 ||
+              mutationInstruction.newChildShadowView.tag > 0 ||
               mutationInstruction.type == ShadowViewMutation::Delete ||
               mutationInstruction.type == ShadowViewMutation::Remove);
           finalConflictingMutations.push_back(mutationInstruction);
@@ -1268,8 +1268,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           auto generatedPenultimateMutation =
               ShadowViewMutation::UpdateMutation(
                   keyFrame.viewPrev, mutatedShadowView);
-          assert(generatedPenultimateMutation.oldChildShadowView.tag != 0);
-          assert(generatedPenultimateMutation.newChildShadowView.tag != 0);
+          assert(generatedPenultimateMutation.oldChildShadowView.tag > 0);
+          assert(generatedPenultimateMutation.newChildShadowView.tag > 0);
           PrintMutationInstruction(
               "Queueing up penultimate mutation instruction - synthetic",
               generatedPenultimateMutation);
@@ -1277,8 +1277,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
           auto generatedMutation = ShadowViewMutation::UpdateMutation(
               mutatedShadowView, keyFrame.viewEnd);
-          assert(generatedMutation.oldChildShadowView.tag != 0);
-          assert(generatedMutation.newChildShadowView.tag != 0);
+          assert(generatedMutation.oldChildShadowView.tag > 0);
+          assert(generatedMutation.newChildShadowView.tag > 0);
           PrintMutationInstruction(
               "Queueing up final mutation instruction - synthetic",
               generatedMutation);
@@ -1451,8 +1451,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           auto generatedPenultimateMutation =
               ShadowViewMutation::UpdateMutation(
                   keyFrame.viewPrev, mutatedShadowView);
-          assert(generatedPenultimateMutation.oldChildShadowView.tag != 0);
-          assert(generatedPenultimateMutation.newChildShadowView.tag != 0);
+          assert(generatedPenultimateMutation.oldChildShadowView.tag > 0);
+          assert(generatedPenultimateMutation.newChildShadowView.tag > 0);
           PrintMutationInstruction(
               "No Animation: Queueing up penultimate mutation instruction - synthetic",
               generatedPenultimateMutation);
@@ -1461,8 +1461,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
           auto generatedMutation = ShadowViewMutation::UpdateMutation(
               mutatedShadowView, keyFrame.viewEnd);
-          assert(generatedMutation.oldChildShadowView.tag != 0);
-          assert(generatedMutation.newChildShadowView.tag != 0);
+          assert(generatedMutation.oldChildShadowView.tag > 0);
+          assert(generatedMutation.newChildShadowView.tag > 0);
           PrintMutationInstruction(
               "No Animation: Queueing up final mutation instruction - synthetic",
               generatedMutation);
