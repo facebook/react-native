@@ -1649,6 +1649,8 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   auto mutatedShadowView = ShadowView(finalView);
   assert(mutatedShadowView.tag > 0);
 
+  assert(startingView.props != nullptr);
+  assert(finalView.props != nullptr);
   if (startingView.props == nullptr || finalView.props == nullptr) {
     return finalView;
   }
