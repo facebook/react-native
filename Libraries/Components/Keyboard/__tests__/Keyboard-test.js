@@ -9,8 +9,6 @@
  * @emails oncall+react_native
  */
 
-'use strict';
-
 const NativeModules = require('../../../BatchedBridge/NativeModules');
 const LayoutAnimation = require('../../../LayoutAnimation/LayoutAnimation');
 const dismissKeyboard = require('../../../Utilities/dismissKeyboard');
@@ -19,6 +17,7 @@ const Keyboard = require('../Keyboard');
 import NativeEventEmitter from '../../../EventEmitter/NativeEventEmitter';
 
 jest.mock('../../../LayoutAnimation/LayoutAnimation');
+jest.mock('../../../Utilities/dismissKeyboard');
 
 describe('Keyboard', () => {
   beforeEach(() => {
@@ -36,14 +35,14 @@ describe('Keyboard', () => {
   });
 
   it('uses dismissKeyboard utility', () => {
-    expect(Keyboard.dismiss).toBe(dismissKeyboard);
+    Keyboard.dismiss();
+    expect(dismissKeyboard).toHaveBeenCalled();
   });
 
   describe('scheduling layout animation', () => {
-    const scheduleLayoutAnimation = (
-      duration: number | null,
-      easing: string | null,
-    ): void => Keyboard.scheduleLayoutAnimation({duration, easing});
+    const scheduleLayoutAnimation = (duration, easing): void =>
+      // $FlowFixMe[incompatible-call]
+      Keyboard.scheduleLayoutAnimation({duration, easing});
 
     it('triggers layout animation', () => {
       scheduleLayoutAnimation(12, 'spring');

@@ -466,6 +466,7 @@ module.exports = {
    *
    * [Styles](docs/style.html)
    */
+  // $FlowFixMe[incompatible-use]
   style: Text.propTypes.style,
   /**
    * The color of the `TextInput` underline.

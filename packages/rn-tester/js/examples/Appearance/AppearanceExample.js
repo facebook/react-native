@@ -8,11 +8,9 @@
  * @flow
  */
 
-'use strict';
-
 import * as React from 'react';
 import {Appearance, Text, useColorScheme, View} from 'react-native';
-import type {AppearancePreferences} from '../../../../../Libraries/Utilities/NativeAppearance';
+import type {AppearancePreferences} from 'react-native/Libraries/Utilities/NativeAppearance';
 import {RNTesterThemeContext, themes} from '../../components/RNTesterTheme';
 
 class ColorSchemeSubscription extends React.Component<

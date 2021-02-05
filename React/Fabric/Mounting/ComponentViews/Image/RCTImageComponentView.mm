@@ -7,27 +7,20 @@
 
 #import "RCTImageComponentView.h"
 
+#import <React/RCTAssert.h>
 #import <React/RCTConversions.h>
 #import <React/RCTImageBlurUtils.h>
-#import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
 #import <react/renderer/components/image/ImageComponentDescriptor.h>
 #import <react/renderer/components/image/ImageEventEmitter.h>
 #import <react/renderer/components/image/ImageProps.h>
-#import <react/renderer/imagemanager/ImageInstrumentation.h>
 #import <react/renderer/imagemanager/ImageRequest.h>
-#import <react/renderer/imagemanager/RCTImageInstrumentationProxy.h>
 #import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
 
 using namespace facebook::react;
 
-@interface RCTImageComponentView () <RCTImageResponseDelegate>
-@end
-
 @implementation RCTImageComponentView {
-  UIImageView *_imageView;
-  ImageShadowNode::ConcreteStateTeller _stateTeller;
-  ImageResponseObserverCoordinator const *_coordinator;
+  ImageShadowNode::ConcreteState::Shared _state;
   RCTImageResponseObserverProxy _imageResponseObserverProxy;
 }
 
@@ -76,7 +69,7 @@ using namespace facebook::react;
 
   // `tintColor`
   if (oldImageProps.tintColor != newImageProps.tintColor) {
-    _imageView.tintColor = [UIColor colorWithCGColor:newImageProps.tintColor.get()];
+    _imageView.tintColor = RCTUIColorFromSharedColor(newImageProps.tintColor);
   }
 
   [super updateProps:props oldProps:oldProps];
@@ -84,17 +77,19 @@ using namespace facebook::react;
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _stateTeller.setConcreteState(state);
-  auto _oldState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(oldState);
-  auto data = _stateTeller.getData().value();
+  RCTAssert(state, @"`state` must not be null.");
+  RCTAssert(
+      std::dynamic_pointer_cast<ImageShadowNode::ConcreteState const>(state),
+      @"`state` must be a pointer to `ImageShadowNode::ConcreteState`.");
 
-  // This call (setting `coordinator`) must be unconditional (at the same block as setting `State`)
-  // because the setter stores a raw pointer to object that `State` owns.
-  self.coordinator = &data.getImageRequest().getObserverCoordinator();
+  auto oldImageState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(_state);
+  auto newImageState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
 
-  bool havePreviousData = _oldState && _oldState->getData().getImageSource() != ImageSource{};
+  [self _setStateAndResubscribeImageResponseObserver:newImageState];
 
-  if (!havePreviousData || data.getImageSource() != _oldState->getData().getImageSource()) {
+  bool havePreviousData = oldImageState && oldImageState->getData().getImageSource() != ImageSource{};
+
+  if (!havePreviousData || newImageState->getData().getImageSource() != oldImageState->getData().getImageSource()) {
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
     std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadStart();
@@ -104,35 +99,33 @@ using namespace facebook::react;
   }
 }
 
-- (void)setCoordinator:(ImageResponseObserverCoordinator const *)coordinator
+- (void)_setStateAndResubscribeImageResponseObserver:(ImageShadowNode::ConcreteState::Shared const &)state
 {
-  if (_coordinator) {
-    _coordinator->removeObserver(_imageResponseObserverProxy);
+  if (_state) {
+    auto &observerCoordinator = _state->getData().getImageRequest().getObserverCoordinator();
+    observerCoordinator.removeObserver(_imageResponseObserverProxy);
   }
-  _coordinator = coordinator;
-  if (_coordinator != nullptr) {
-    _coordinator->addObserver(_imageResponseObserverProxy);
+
+  _state = state;
+
+  if (_state) {
+    auto &observerCoordinator = _state->getData().getImageRequest().getObserverCoordinator();
+    observerCoordinator.addObserver(_imageResponseObserverProxy);
   }
 }
 
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  self.coordinator = nullptr;
+  [self _setStateAndResubscribeImageResponseObserver:nullptr];
   _imageView.image = nil;
-  _stateTeller.invalidate();
-}
-
-- (void)dealloc
-{
-  self.coordinator = nullptr;
 }
 
 #pragma mark - RCTImageResponseDelegate
 
-- (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
+- (void)didReceiveImage:(UIImage *)image metadata:(id)metadata fromObserver:(void const *)observer
 {
-  if (!_eventEmitter || !_stateTeller.isValid()) {
+  if (!_eventEmitter || !_state) {
     // Notifications are delivered asynchronously and might arrive after the view is already recycled.
     // In the future, we should incorporate an `EventEmitter` into a separate object owned by `ImageRequest` or `State`.
     // See for more info: T46311063.
@@ -157,30 +150,17 @@ using namespace facebook::react;
                                   resizingMode:UIImageResizingModeStretch];
   }
 
-  void (^didSetImage)() = ^() {
-    auto data = self->_stateTeller.getData();
-    if (!data.hasValue()) {
-      return;
-    }
-    auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
-        data.value().getImageRequest().getSharedImageInstrumentation());
-    if (instrumentation) {
-      instrumentation->didSetImage();
-    }
-  };
-
   if (imageProps.blurRadius > __FLT_EPSILON__) {
     // Blur on a background thread to avoid blocking interaction.
+    CGFloat blurRadius = imageProps.blurRadius;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      UIImage *blurredImage = RCTBlurredImageWithRadius(image, imageProps.blurRadius);
+      UIImage *blurredImage = RCTBlurredImageWithRadius(image, blurRadius);
       RCTExecuteOnMainQueue(^{
         self->_imageView.image = blurredImage;
-        didSetImage();
       });
     });
   } else {
     self->_imageView.image = image;
-    didSetImage();
   }
 }
 

@@ -54,7 +54,8 @@ void ViewShadowNode::initialize() noexcept {
 
   bool formsView = isColorMeaningful(viewProps.backgroundColor) ||
       isColorMeaningful(viewProps.foregroundColor) ||
-      !(viewProps.yogaStyle.border() == YGStyle::Edges{});
+      !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
+      !viewProps.testId.empty();
 
   formsView = formsView || formsStackingContext;
 

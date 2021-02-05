@@ -54,16 +54,25 @@ class ShadowNodeTraits {
     // Nodes with this trait (and all their descendants) will not produce views.
     Hidden = 1 << 6,
 
+    // Indicates that the `YogaLayoutableShadowNode` must set `isDirty` flag for
+    // Yoga node when a `ShadowNode` is being cloned. `ShadowNode`s that modify
+    // Yoga styles in the constructor (or later) *after* the `ShadowNode`
+    // is cloned must set this trait.
+    // Any Yoga node (not only Leaf ones) can have this trait.
+    DirtyYogaNode = 1 << 9,
+
     // Inherits `YogaLayoutableShadowNode` and enforces that the `YGNode` is a
     // leaf.
     LeafYogaNode = 1 << 10,
 
-    // Inherits `LayoutableShadowNode` and calls `measure()`.
-    HasMeasure = 1 << 11,
+    // Inherits `YogaLayoutableShadowNode` and has a custom measure function.
+    // Only Leaf nodes can have this trait.
+    MeasurableYogaNode = 1 << 11,
 
-    // Indicates that the `ShadowNode` must form a stacking context (a level
-    // of the hierarchy; `ShadowView`s formed by descendants the node will be
-    // descendants of a `ShadowView` formed by the node).
+    // Indicates that the `ShadowNode` must form a stacking context.
+    // A Stacking Context forms a level of a `ShadowView` hierarchy (in contrast
+    // with a level of a `ShadowNode` hierarchy).
+    // See W3C standard for more details: https://www.w3.org/TR/CSS2/zindex.html
     FormsStackingContext = 1 << 13,
 
     // Indicates that the node must form a `ShadowView`.

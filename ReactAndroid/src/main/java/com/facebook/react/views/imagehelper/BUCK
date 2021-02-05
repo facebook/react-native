@@ -6,6 +6,7 @@ rn_android_library(
         ["*.java"],
         exclude = ["MultiSourceHelper.java"],
     ),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
@@ -21,6 +22,7 @@ rn_android_library(
 rn_android_library(
     name = "withmultisource",
     srcs = ["MultiSourceHelper.java"],
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [

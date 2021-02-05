@@ -9,6 +9,7 @@
 #include <React/RCTBridge+Private.h>
 #include <React/RCTBridgeMethod.h>
 #include <React/RCTComponentData.h>
+#include <React/RCTEventDispatcherProtocol.h>
 #include <React/RCTFollyConvert.h>
 #include <React/RCTModuleData.h>
 #include <React/RCTUIManager.h>
@@ -39,9 +40,11 @@ using namespace facebook::react;
     __weak __typeof(self) weakSelf = self;
     _componentData.eventInterceptor = ^(NSString *eventName, NSDictionary *event, NSNumber *reactTag) {
       __typeof(self) strongSelf = weakSelf;
-      InterceptorBlock block = [strongSelf->_eventInterceptors objectForKey:reactTag];
-      if (block) {
-        block(std::string([RCTNormalizeInputEventName(eventName) UTF8String]), convertIdToFollyDynamic(event ?: @{}));
+      if (strongSelf) {
+        InterceptorBlock block = [strongSelf->_eventInterceptors objectForKey:reactTag];
+        if (block) {
+          block(std::string([RCTNormalizeInputEventName(eventName) UTF8String]), convertIdToFollyDynamic(event ?: @{}));
+        }
       }
     };
   }

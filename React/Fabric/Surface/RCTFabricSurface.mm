@@ -24,7 +24,7 @@ using namespace facebook::react;
 
 @implementation RCTFabricSurface {
   // Immutable
-  RCTSurfacePresenter *_surfacePresenter;
+  __weak RCTSurfacePresenter *_surfacePresenter;
   NSString *_moduleName;
 
   // Protected by the `_mutex`
@@ -58,27 +58,32 @@ using namespace facebook::react;
 
     _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
-    _touchHandler = [RCTSurfaceTouchHandler new];
-
     _stage = RCTSurfaceStageSurfaceDidInitialize;
   }
 
   return self;
 }
 
+- (void)resetWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
+{
+  _surfacePresenter = surfacePresenter;
+  _stage = RCTSurfaceStageSurfaceDidInitialize;
+  _view = nil;
+}
+
 - (BOOL)start
 {
-  if (![self _setStage:RCTSurfaceStageStarted]) {
+  if (![self _setStage:RCTSurfaceStageRunning]) {
     return NO;
   }
-  [_surfacePresenter registerSurface:self];
 
+  [_surfacePresenter registerSurface:self];
   return YES;
 }
 
 - (BOOL)stop
 {
-  if (![self _unsetStage:RCTSurfaceStageStarted]) {
+  if (![self _unsetStage:RCTSurfaceStageRunning]) {
     return NO;
   }
 
@@ -106,6 +111,7 @@ using namespace facebook::react;
 
   if (!_view) {
     _view = [[RCTSurfaceView alloc] initWithSurface:(RCTSurface *)self];
+    _touchHandler = [RCTSurfaceTouchHandler new];
     [_touchHandler attachToView:_view];
   }
 

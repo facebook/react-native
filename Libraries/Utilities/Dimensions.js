@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import EventEmitter from '../vendor/emitter/EventEmitter';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import NativeDeviceInfo, {
@@ -24,7 +22,9 @@ type DimensionsValue = {
   ...
 };
 
-const eventEmitter = new EventEmitter();
+const eventEmitter = new EventEmitter<{
+  change: [DimensionsValue],
+}>();
 let dimensionsInitialized = false;
 let dimensions: DimensionsValue;
 

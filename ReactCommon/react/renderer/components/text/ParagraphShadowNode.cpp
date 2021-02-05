@@ -112,9 +112,10 @@ void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
     return;
   }
 
-  setStateData(ParagraphState{content.attributedString,
-                              content.paragraphAttributes,
-                              textLayoutManager_});
+  setStateData(ParagraphState{
+      content.attributedString,
+      content.paragraphAttributes,
+      textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode
@@ -169,7 +170,6 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       content.paragraphAttributes,
       layoutConstraints);
 
-#ifndef ANDROID
   if (getConcreteProps().onTextLayout) {
     auto linesMeasurements = textLayoutManager_->measureLines(
         content.attributedString,
@@ -177,10 +177,9 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
         measurement.size);
     getConcreteEventEmitter().onTextLayout(linesMeasurements);
   }
-#endif
 
   if (content.attachments.empty()) {
-    // No attachments, nothing to layout.
+    // No attachments to layout.
     return;
   }
 

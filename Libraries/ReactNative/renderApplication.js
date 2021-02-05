@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const AppContainer = require('./AppContainer');
 import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
@@ -50,6 +48,8 @@ function renderApplication<Props: Object>(
   );
 
   performanceLogger.startTimespan('renderApplication_React_render');
+  performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
+
   if (fabric) {
     require('../Renderer/shims/ReactFabric').render(renderable, rootTag);
   } else {

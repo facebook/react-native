@@ -12,7 +12,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTErrorInfo.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTJSStackFrame.h>
 #import <React/RCTRedBoxExtraDataViewController.h>
 #import <React/RCTRedBoxSetEnabled.h>
@@ -104,10 +104,8 @@
     _stackTraceTableView.delegate = self;
     _stackTraceTableView.dataSource = self;
     _stackTraceTableView.backgroundColor = [UIColor clearColor];
-#if !TARGET_OS_TV
     _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
     _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-#endif
     _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
     [rootView addSubview:_stackTraceTableView];
 
@@ -292,10 +290,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
       [fullStackTrace appendFormat:@"    %@\n", [self formatFrameSource:stackFrame]];
     }
   }
-#if !TARGET_OS_TV
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
   [pb setString:fullStackTrace];
-#endif
 }
 
 - (NSString *)formatFrameSource:(RCTJSStackFrame *)stackFrame
@@ -459,6 +455,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -594,7 +591,8 @@ RCT_EXPORT_MODULE()
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [self->_bridge.eventDispatcher sendDeviceEventWithName:@"collectRedBoxExtraData" body:nil];
+    [[self->_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"collectRedBoxExtraData"
+                                                                                body:nil];
 #pragma clang diagnostic pop
 
     if (!self->_window) {

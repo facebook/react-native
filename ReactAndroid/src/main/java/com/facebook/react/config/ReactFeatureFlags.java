@@ -23,6 +23,9 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
+  /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
+  public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
+
   /*
    * This feature flag enables logs for Fabric
    */
@@ -43,18 +46,6 @@ public class ReactFeatureFlags {
   public static boolean useViewManagerDelegatesForCommands = false;
 
   /**
-   * This react flag enables a custom algorithm for the getChildVisibleRect() method in the classes
-   * ReactViewGroup, ReactHorizontalScrollView and ReactScrollView.
-   *
-   * <p>This new algorithm clip child rects if overflow is set to ViewProps.HIDDEN. More details in
-   * https://github.com/facebook/react-native/issues/23870 and
-   * https://github.com/facebook/react-native/pull/26334
-   *
-   * <p>The react flag is disabled by default because this is increasing ANRs (T57363204)
-   */
-  public static boolean clipChildRectsIfOverflowIsHidden = false;
-
-  /**
    * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
    * remove this when bug is fixed
    */
@@ -63,15 +54,15 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
-  /** Feature flag to configure initialization of Fabric surfaces. */
-  public static boolean enableFabricStartSurfaceWithLayoutMetrics = true;
+  /** Disable UI update operations in non-Fabric renderer after catalyst instance was destroyed */
+  public static boolean disableNonFabricViewOperationsOnCatalystDestroy = false;
 
-  /** Feature flag to use stopSurface when ReactRootView is unmounted. */
-  public static boolean enableStopSurfaceOnRootViewUnmount = false;
+  /**
+   * Fixes race-condition in the initialization of RN surface. TODO T78832286: remove this flag once
+   * we verify the fix is correct in production
+   */
+  public static boolean enableStartSurfaceRaceConditionFix = false;
 
-  /** Use experimental SetState retry mechanism in view? */
-  public static boolean enableExperimentalStateUpdateRetry = false;
-
-  /** Enable caching of Spannable objects using equality of ReadableNativeMaps */
-  public static boolean enableSpannableCacheByReadableNativeMapEquality = true;
+  /** Enables Static ViewConfig in RN Android native code. */
+  public static boolean enableExperimentalStaticViewConfigs = false;
 }

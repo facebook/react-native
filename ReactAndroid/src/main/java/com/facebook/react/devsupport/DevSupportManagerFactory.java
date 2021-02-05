@@ -28,14 +28,14 @@ public class DevSupportManagerFactory {
 
   public static DevSupportManager create(
       Context applicationContext,
-      ReactInstanceManagerDevHelper reactInstanceManagerHelper,
+      ReactInstanceDevHelper reactInstanceDevHelper,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
       int minNumShakes) {
 
     return create(
         applicationContext,
-        reactInstanceManagerHelper,
+        reactInstanceDevHelper,
         packagerPathForJSBundleName,
         enableOnCreate,
         null,
@@ -46,7 +46,7 @@ public class DevSupportManagerFactory {
 
   public static DevSupportManager create(
       Context applicationContext,
-      ReactInstanceManagerDevHelper reactInstanceManagerHelper,
+      ReactInstanceDevHelper reactInstanceManagerHelper,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
       @Nullable RedBoxHandler redBoxHandler,
@@ -69,7 +69,7 @@ public class DevSupportManagerFactory {
       Constructor constructor =
           devSupportManagerClass.getConstructor(
               Context.class,
-              ReactInstanceManagerDevHelper.class,
+              ReactInstanceDevHelper.class,
               String.class,
               boolean.class,
               RedBoxHandler.class,

@@ -45,18 +45,16 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
   }
 
-  void schedulerDidSetJSResponder(
-      SurfaceId surfaceId,
-      const ShadowView &shadowView,
-      const ShadowView &initialShadowView,
-      bool blockNativeResponder) override
+  void schedulerDidSetIsJSResponder(ShadowView const &shadowView, bool isJSResponder) override
   {
-    // Does nothing for now.
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidSetIsJSResponder:isJSResponder forShadowView:shadowView];
   }
 
-  void schedulerDidClearJSResponder() override
+  void schedulerDidSendAccessibilityEvent(const ShadowView &shadowView, std::string const &eventType) override
   {
-    // Does nothing for now.
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidSendAccessibilityEvent:shadowView eventType:eventType];
   }
 
  private:
@@ -83,8 +81,8 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
     [scheduler onAllAnimationsComplete];
   }
 
-  void activityDidChange(RunLoopObserver::Delegate const *delegate, RunLoopObserver::Activity activity) const
-      noexcept override
+  void activityDidChange(RunLoopObserver::Delegate const *delegate, RunLoopObserver::Activity activity)
+      const noexcept override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler animationTick];
@@ -150,8 +148,10 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   SystraceSection s("-[RCTScheduler startSurfaceWithSurfaceId:...]");
 
   auto props = convertIdToFollyDynamic(initialProps);
-  _scheduler->startSurface(
-      surfaceId, RCTStringFromNSString(moduleName), props, layoutConstraints, layoutContext, _animationDriver);
+  _scheduler->startSurface(surfaceId, RCTStringFromNSString(moduleName), props, layoutConstraints, layoutContext);
+
+  _scheduler->findMountingCoordinator(surfaceId)->setMountingOverrideDelegate(_animationDriver);
+
   _scheduler->renderTemplateToSurface(
       surfaceId, props.getDefault("navigationConfig").getDefault("initialUITemplate", "").getString());
 }

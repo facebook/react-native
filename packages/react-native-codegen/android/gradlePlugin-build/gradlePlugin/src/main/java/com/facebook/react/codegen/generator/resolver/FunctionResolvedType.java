@@ -103,10 +103,13 @@ public final class FunctionResolvedType extends ResolvedType<FunctionType> {
     // React methods need special `@ReactMethod` annotation for now.
     methodBuilder.addAnnotation(annotationBuilder.build());
 
+    // TODO(T82242829) Add @DoNotStrip annotation
+
     return methodBuilder.build();
   }
 
   private static @Nullable String getFalsyReturnStatement(TypeName returnType) {
+    // TODO: Handle nullable falsy return.
     if (returnType == TypeName.BOOLEAN) {
       return "return false";
     } else if (returnType == TypeName.DOUBLE) {

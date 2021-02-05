@@ -5,12 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <vector>
+
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/renderer/mounting/Differentiator.h>
+#include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/mounting/stubs.h>
 
 #include "Entropy.h"
@@ -23,8 +26,7 @@ static void testShadowNodeTreeLifeCycle(
     uint_fast32_t seed,
     int treeSize,
     int repeats,
-    int stages,
-    bool useFlattener) {
+    int stages) {
   auto entropy = seed == 0 ? Entropy() : Entropy(seed);
 
   auto eventDispatcher = EventDispatcher::Shared{};
@@ -55,8 +57,8 @@ static void testShadowNodeTreeLifeCycle(
 
     // Applying size constraints.
     emptyRootNode = emptyRootNode->clone(
-        LayoutConstraints{Size{512, 0},
-                          Size{512, std::numeric_limits<Float>::infinity()}},
+        LayoutConstraints{
+            Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
         LayoutContext{});
 
     // Generation of a random tree.
@@ -71,7 +73,7 @@ static void testShadowNodeTreeLifeCycle(
                 SharedShadowNodeList{singleRootChildNode})}));
 
     // Building an initial view hierarchy.
-    auto viewTree = stubViewTreeFromShadowNode(*emptyRootNode);
+    auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
     viewTree.mutate(
         calculateShadowViewMutations(*emptyRootNode, *currentRootNode));
 
@@ -99,14 +101,38 @@ static void testShadowNodeTreeLifeCycle(
       allNodes.push_back(nextRootNode);
 
       // Calculating mutations.
-      auto mutations = calculateShadowViewMutations(
-          *currentRootNode, *nextRootNode, useFlattener);
+      auto mutations =
+          calculateShadowViewMutations(*currentRootNode, *nextRootNode);
+
+      // Make sure that in a single frame, a DELETE for a
+      // view is not followed by a CREATE for the same view.
+      {
+        std::vector<int> deletedTags{};
+        for (auto const &mutation : mutations) {
+          if (mutation.type == ShadowViewMutation::Type::Delete) {
+            deletedTags.push_back(mutation.oldChildShadowView.tag);
+          }
+        }
+        for (auto const &mutation : mutations) {
+          if (mutation.type == ShadowViewMutation::Type::Create) {
+            if (std::find(
+                    deletedTags.begin(),
+                    deletedTags.end(),
+                    mutation.newChildShadowView.tag) != deletedTags.end()) {
+              LOG(ERROR) << "Deleted tag was recreated in mutations list: ["
+                         << mutation.newChildShadowView.tag << "]";
+              FAIL();
+            }
+          }
+        }
+      }
 
       // Mutating the view tree.
       viewTree.mutate(mutations);
 
       // Building a view tree to compare with.
-      auto rebuiltViewTree = stubViewTreeFromShadowNode(*nextRootNode);
+      auto rebuiltViewTree =
+          buildStubViewTreeWithoutUsingDifferentiator(*nextRootNode);
 
       // Comparing the newly built tree with the updated one.
       if (rebuiltViewTree != viewTree) {
@@ -148,31 +174,12 @@ static void testShadowNodeTreeLifeCycle(
 
 using namespace facebook::react;
 
-TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMoves) {
-  testShadowNodeTreeLifeCycle(
-      /* seed */ 0,
-      /* size */ 512,
-      /* repeats */ 32,
-      /* stages */ 32,
-      false);
-}
-
-TEST(MountingTest, stableSmallerTreeMoreIterationsOptimizedMoves) {
-  testShadowNodeTreeLifeCycle(
-      /* seed */ 0,
-      /* size */ 16,
-      /* repeats */ 512,
-      /* stages */ 32,
-      false);
-}
-
 TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMovesFlattener) {
   testShadowNodeTreeLifeCycle(
       /* seed */ 0,
       /* size */ 512,
       /* repeats */ 32,
-      /* stages */ 32,
-      true);
+      /* stages */ 32);
 }
 
 TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMovesFlattener2) {
@@ -180,8 +187,7 @@ TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMovesFlattener2) {
       /* seed */ 1,
       /* size */ 512,
       /* repeats */ 32,
-      /* stages */ 32,
-      true);
+      /* stages */ 32);
 }
 
 TEST(MountingTest, stableSmallerTreeMoreIterationsOptimizedMovesFlattener) {
@@ -189,6 +195,5 @@ TEST(MountingTest, stableSmallerTreeMoreIterationsOptimizedMovesFlattener) {
       /* seed */ 0,
       /* size */ 16,
       /* repeats */ 512,
-      /* stages */ 32,
-      true);
+      /* stages */ 32);
 }

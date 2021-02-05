@@ -59,8 +59,14 @@ Size SliderMeasurementsManager::measure(
       minimumSize.height,
       maximumSize.height));
 
-  std::lock_guard<std::mutex> lock(mutex_);
-  cachedMeasurement_ = measurement;
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  componentName.reset();
+
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    cachedMeasurement_ = measurement;
+  }
+
   return measurement;
 }
 

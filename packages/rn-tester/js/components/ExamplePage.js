@@ -8,10 +8,8 @@
  * @flow
  */
 
-'use strict';
-
 import * as React from 'react';
-import {StyleSheet, View, Text, Dimensions} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 
 type Props = $ReadOnly<{|
   children?: React.Node,
@@ -22,7 +20,6 @@ type Props = $ReadOnly<{|
   android?: ?boolean,
 |}>;
 
-const ScreenWidth = Dimensions.get('window').width;
 import {RNTesterThemeContext} from './RNTesterTheme';
 
 export default function ExamplePage(props: Props): React.Node {
@@ -76,8 +73,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   examplesContainer: {
-    width: ScreenWidth,
     flexGrow: 1,
+    flex: 1,
   },
   description: {
     marginVertical: 8,

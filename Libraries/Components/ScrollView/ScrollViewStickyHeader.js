@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -67,6 +65,15 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
     this.setState({nextHeaderLayoutY: y});
   }
 
+  componentWillUnmount() {
+    if (this._translateY != null && this._animatedValueListenerId != null) {
+      this._translateY.removeListener(this._animatedValueListenerId);
+    }
+    if (this._timer) {
+      clearTimeout(this._timer);
+    }
+  }
+
   UNSAFE_componentWillReceiveProps(nextProps: Props) {
     if (
       nextProps.scrollViewHeight !== this.props.scrollViewHeight ||
@@ -122,19 +129,6 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
             this.setState({
               translateY: value,
             });
-            // This fixes jank on iOS, especially around paging,
-            // but causes jank on Android.
-            // It seems that Native Animated Driver on iOS has
-            // more conflicts with values passed through the ShadowTree
-            // especially when connecting new Animated nodes + disconnecting
-            // old ones, compared to Android where that process seems fine.
-            if (Platform.OS === 'ios') {
-              setTimeout(() => {
-                this.setState({
-                  translateY: null,
-                });
-              }, 0);
-            }
           }
         }, this._debounceTimeout);
       };
@@ -179,9 +173,10 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
 
   render(): React.Node {
     // Fabric Detection
-    // eslint-disable-next-line dot-notation
     const isFabric = !!(
-      this._ref && this._ref['_internalInstanceHandle']?.stateNode?.canonical
+      // An internal transform mangles variables with leading "_" as private.
+      // eslint-disable-next-line dot-notation
+      (this._ref && this._ref['_internalInstanceHandle']?.stateNode?.canonical)
     );
 
     // Initially and in the case of updated props or layout, we
