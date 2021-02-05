@@ -560,6 +560,24 @@ void Binding::schedulerDidFinishTransaction(
             newChildShadowView.props->revision > 1) {
           cppCommonMountItems.push_back(
               CppMountItem::CreateMountItem(newChildShadowView));
+
+          // Generally, DELETE operations can always safely execute at the end
+          // of a MountItem batch. The usual expected order would be REMOVE and
+          // then DELETE, for instance. However... in specific cases with
+          // LayoutAnimations especially, a DELETE and CREATE may happen for a
+          // View - in that order. The inverse is NOT possible - for example, we
+          // do not expect a CREATE...DELETE in the same batch. That would
+          // contradict itself - a node cannot be in the tree (CREATE) and
+          // removed from the tree (DELETE) at the same time.
+          cppDeleteMountItems.erase(
+              std::remove_if(
+                  cppDeleteMountItems.begin(),
+                  cppDeleteMountItems.end(),
+                  [&](const CppMountItem &mountItem) {
+                    return mountItem.oldChildShadowView.tag ==
+                        newChildShadowView.tag;
+                  }),
+              cppDeleteMountItems.end());
         }
         break;
       }
