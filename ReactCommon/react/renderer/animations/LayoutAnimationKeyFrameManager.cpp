@@ -875,6 +875,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                      mutation.type == ShadowViewMutation::Type::Update
                  ? mutation.oldChildShadowView
                  : mutation.newChildShadowView);
+        assert(baselineShadowView.tag > 0);
         bool haveComponentDescriptor =
             hasComponentDescriptorForShadowView(baselineShadowView);
 
@@ -981,11 +982,17 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               mutation.type == ShadowViewMutation::Type::Insert
                   ? mutation.newChildShadowView
                   : mutation.oldChildShadowView);
+          assert(viewStart.tag > 0);
           ShadowView viewFinal = ShadowView(
               mutation.type == ShadowViewMutation::Type::Update
                   ? mutation.newChildShadowView
                   : viewStart);
+          assert(viewFinal.tag > 0);
           ShadowView parent = mutation.parentShadowView;
+          assert(
+              parent.tag > 0 ||
+              mutation.type == ShadowViewMutation::Type::Update ||
+              mutation.type == ShadowViewMutation::Type::Delete);
           Tag tag = viewStart.tag;
 
           AnimationKeyFrame keyFrame{};
@@ -1623,6 +1630,8 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
     double progress,
     ShadowView startingView,
     ShadowView finalView) const {
+  assert(startingView.tag > 0);
+  assert(finalView.tag > 0);
   if (!hasComponentDescriptorForShadowView(startingView)) {
     return finalView;
   }
@@ -1637,6 +1646,7 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   // will, so make sure we always keep the mounting layer consistent with the
   // "final" state.
   auto mutatedShadowView = ShadowView(finalView);
+  assert(mutatedShadowView.tag > 0);
 
   if (startingView.props == nullptr || finalView.props == nullptr) {
     return finalView;
