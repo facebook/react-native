@@ -35,7 +35,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:2.1
+      - image: reactnativecommunity/react-native-android:2.2
     resource_class: "large"
     environment:
       - TERM: "dumb"
@@ -501,11 +501,6 @@ jobs:
           background: true
 
       # Keep configuring Android dependencies while AVD boots up
-
-      - run:
-          name: Install rsync, zip
-          command: apt-get update -y && apt-get install rsync zip -y
-
       # Install Buck
       - install_buck_tooling
 
