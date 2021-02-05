@@ -1633,6 +1633,7 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   assert(startingView.tag > 0);
   assert(finalView.tag > 0);
   if (!hasComponentDescriptorForShadowView(startingView)) {
+    assert(false);
     return finalView;
   }
   ComponentDescriptor const &componentDescriptor =
