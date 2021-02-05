@@ -450,7 +450,7 @@ module.exports = ([
       return (
         <TextInput
           autoFocus={true}
-          style={styles.default}
+          underlineColorAndroid="transparent"
           accessibilityLabel="I am the accessibility label for text input"
         />
       );
