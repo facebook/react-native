@@ -32,7 +32,6 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.systrace.Systrace;
 
 public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
@@ -86,25 +85,22 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   private FabricUIManager createUIManager(@NonNull EventBeatManager eventBeatManager) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.createUIManager");
-    EventDispatcher eventDispatcher = getEventDispatcher();
-    FabricUIManager fabricUIManager =
-        new FabricUIManager(
-            mReactApplicationContext, mViewManagerRegistry, eventDispatcher, eventBeatManager);
 
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-    return fabricUIManager;
-  }
-
-  private EventDispatcher getEventDispatcher() {
-    EventDispatcher eventDispatcher;
+    FabricUIManager fabricUIManager;
     if (enableExperimentalStaticViewConfigs) {
-      eventDispatcher = new EventDispatcherImpl(mReactApplicationContext);
+      fabricUIManager =
+          new FabricUIManager(mReactApplicationContext, mViewManagerRegistry, eventBeatManager);
     } else {
+      // TODO T83943316: Remove this code once StaticViewConfigs are enabled by default
       UIManagerModule nativeModule =
           Assertions.assertNotNull(mReactApplicationContext.getNativeModule(UIManagerModule.class));
-      eventDispatcher = nativeModule.getEventDispatcher();
+      EventDispatcher eventDispatcher = nativeModule.getEventDispatcher();
+      fabricUIManager =
+          new FabricUIManager(
+              mReactApplicationContext, mViewManagerRegistry, eventDispatcher, eventBeatManager);
     }
-    return eventDispatcher;
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    return fabricUIManager;
   }
 
   // TODO T31905686: eager load Fabric classes, this is temporary and it will be removed
