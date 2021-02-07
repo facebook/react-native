@@ -27,6 +27,10 @@ set -e
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 TEMP_DIR=$(mktemp -d /tmp/react-native-codegen-XXXXXXXX)
 RN_DIR=$(cd "$THIS_DIR/.." && pwd)
+
+# find node path
+source "$RN_DIR/scripts/find-node.sh"
+
 NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
 USE_FABRIC="${USE_FABRIC:-0}"
 
