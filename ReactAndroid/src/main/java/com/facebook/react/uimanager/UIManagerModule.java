@@ -247,8 +247,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mEventDispatcher.onCatalystInstanceDestroyed();
     mUIImplementation.onCatalystInstanceDestroyed();
 
-    getReactApplicationContext().removeLifecycleEventListener(this);
-    getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
+    ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+    if (ReactFeatureFlags.enableReactContextCleanupFix) {
+      reactApplicationContext.removeLifecycleEventListener(this);
+    }
+    reactApplicationContext.unregisterComponentCallbacks(mMemoryTrimCallback);
     YogaNodePool.get().clear();
     ViewManagerPropertyUpdater.clear();
   }

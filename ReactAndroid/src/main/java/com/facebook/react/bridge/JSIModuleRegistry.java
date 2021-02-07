@@ -8,6 +8,7 @@
 package com.facebook.react.bridge;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.config.ReactFeatureFlags;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,8 @@ public class JSIModuleRegistry {
       JSIModuleHolder moduleHolder = entry.getValue();
       moduleHolder.notifyJSInstanceDestroy();
     }
-    mModules.clear();
+    if (ReactFeatureFlags.enableReactContextCleanupFix) {
+      mModules.clear();
+    }
   }
 }
