@@ -44,5 +44,6 @@ public class JSIModuleRegistry {
       JSIModuleHolder moduleHolder = entry.getValue();
       moduleHolder.notifyJSInstanceDestroy();
     }
+    mModules.clear();
   }
 }

@@ -84,6 +84,7 @@ public class NativeModuleRegistry {
       for (ModuleHolder module : mModules.values()) {
         module.destroy();
       }
+      mModules.clear();
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
