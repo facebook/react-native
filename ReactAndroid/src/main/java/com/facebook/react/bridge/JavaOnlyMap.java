@@ -102,6 +102,11 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   }
 
   @Override
+  public long getLong(@NonNull String name) {
+    return ((Number) mBackingMap.get(name)).longValue();
+  }
+
+  @Override
   public int getInt(@NonNull String name) {
     return ((Number) mBackingMap.get(name)).intValue();
   }
