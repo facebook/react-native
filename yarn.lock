@@ -3032,10 +3032,10 @@ flatted@^2.0.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.2.tgz#4575b21e2bcee7434aa9be662f4b7b5f9c2b5138"
   integrity sha512-r5wGx7YeOwNWNlCA0wQ86zKyDLMQr+/RB8xy74M4hTphfmjlijTSSXGuH8rnvKZnfT9i+75zmd8jcKdMR4O6jA==
 
-flow-bin@^0.143.1:
-  version "0.143.1"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.143.1.tgz#2ff825dfd85e84531b0ae780842cb1c2a9743cd2"
-  integrity sha512-6S6bgZ/pghBzEUELXkwFH/bsHT+GBMo8ftHDYs0SSJ+1e6NRdFfqxcYhaTvAK8zteSfQLZBIoec6G4WPPp4qQg==
+flow-bin@^0.144.0:
+  version "0.144.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.144.0.tgz#32fbeb94ef39cb8b9fa03d67b6f085042ce3a1bd"
+  integrity sha512-+TeTukkfRjimaNhOHt8iQ/M33Fg8Afrm+iBHS19XzAz2fH4GwgroKCrAxDHnZoAUnmRv6jm/XngFxADlcqwYkw==
 
 flow-parser@0.*, flow-parser@^0.121.0:
   version "0.121.0"

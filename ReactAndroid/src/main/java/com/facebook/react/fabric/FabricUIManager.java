@@ -79,6 +79,7 @@ import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
@@ -143,6 +144,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    */
   private volatile boolean mDestroyed = false;
 
+  // TODO T83943316: Delete this variable once StaticViewConfigs are enabled by default
+  private volatile boolean mShouldDeallocateEventDispatcher = false;
+
   private boolean mDriveCxxAnimations = false;
 
   private long mRunStartTime = 0l;
@@ -159,6 +163,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   // from C++ to exceed 9,999 and it should be obvious what's going on when analyzing performance.
   private int mCurrentSynchronousCommitNumber = 10000;
 
+  // TODO T83943316: Deprecate and delete this constructor once StaticViewConfigs are enabled by
+  // default
   public FabricUIManager(
       ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagerRegistry,
@@ -168,6 +174,20 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mReactApplicationContext = reactContext;
     mMountingManager = new MountingManager(viewManagerRegistry);
     mEventDispatcher = eventDispatcher;
+    mShouldDeallocateEventDispatcher = false;
+    mEventBeatManager = eventBeatManager;
+    mReactApplicationContext.addLifecycleEventListener(this);
+  }
+
+  public FabricUIManager(
+      ReactApplicationContext reactContext,
+      ViewManagerRegistry viewManagerRegistry,
+      EventBeatManager eventBeatManager) {
+    mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
+    mReactApplicationContext = reactContext;
+    mMountingManager = new MountingManager(viewManagerRegistry);
+    mEventDispatcher = new EventDispatcherImpl(reactContext);
+    mShouldDeallocateEventDispatcher = true;
     mEventBeatManager = eventBeatManager;
     mReactApplicationContext.addLifecycleEventListener(this);
   }
@@ -308,6 +328,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mBinding = null;
 
     ViewManagerPropertyUpdater.clear();
+
+    // When using ReactFeatureFlags.enableExperimentalStaticViewConfigs enabled, FabriUIManager is
+    // responsible for initializing and deallocating EventDispatcher.
+    // TODO T83943316: Remove this IF once StaticViewConfigs are enabled by default
+    if (mShouldDeallocateEventDispatcher) {
+      mEventDispatcher.onCatalystInstanceDestroyed();
+    }
   }
 
   @DoNotStrip

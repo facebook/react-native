@@ -787,9 +787,7 @@ public class UIImplementation {
   public void onHostDestroy() {}
 
   public void onCatalystInstanceDestroyed() {
-    if (ReactFeatureFlags.disableNonFabricViewOperationsOnCatalystDestroy) {
-      mViewOperationsEnabled = false;
-    }
+    mViewOperationsEnabled = false;
   }
 
   public void setViewHierarchyUpdateDebugListener(
