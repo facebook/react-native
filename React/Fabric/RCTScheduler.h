@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)schedulerDidSendAccessibilityEvent:(facebook::react::ShadowView const &)shadowView
                                  eventType:(std::string const &)eventType;
 
+- (void)schedulerDidSetIsJSResponder:(BOOL)isJSResponder forShadowView:(facebook::react::ShadowView const &)shadowView;
+
 @end
 
 /**

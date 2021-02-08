@@ -875,6 +875,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                      mutation.type == ShadowViewMutation::Type::Update
                  ? mutation.oldChildShadowView
                  : mutation.newChildShadowView);
+        assert(baselineShadowView.tag > 0);
         bool haveComponentDescriptor =
             hasComponentDescriptorForShadowView(baselineShadowView);
 
@@ -981,11 +982,17 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               mutation.type == ShadowViewMutation::Type::Insert
                   ? mutation.newChildShadowView
                   : mutation.oldChildShadowView);
+          assert(viewStart.tag > 0);
           ShadowView viewFinal = ShadowView(
               mutation.type == ShadowViewMutation::Type::Update
                   ? mutation.newChildShadowView
                   : viewStart);
+          assert(viewFinal.tag > 0);
           ShadowView parent = mutation.parentShadowView;
+          assert(
+              parent.tag > 0 ||
+              mutation.type == ShadowViewMutation::Type::Update ||
+              mutation.type == ShadowViewMutation::Type::Delete);
           Tag tag = viewStart.tag;
 
           AnimationKeyFrame keyFrame{};
@@ -1002,6 +1009,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 const_cast<ViewProps *>(viewProps)->opacity = 0;
               }
               viewStart.props = props;
+              assert(viewStart.props != nullptr);
             }
             bool isScaleX =
                 mutationConfig.animationProperty == AnimationProperty::ScaleX ||
@@ -1020,6 +1028,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                     Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
               }
               viewStart.props = props;
+              assert(viewStart.props != nullptr);
             }
 
             keyFrame = AnimationKeyFrame{
@@ -1044,6 +1053,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 const_cast<ViewProps *>(viewProps)->opacity = 0;
               }
               viewFinal.props = props;
+              assert(viewFinal.props != nullptr);
             }
             bool isScaleX =
                 mutationConfig.animationProperty == AnimationProperty::ScaleX ||
@@ -1062,6 +1072,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                     Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
               }
               viewFinal.props = props;
+              assert(viewFinal.props != nullptr);
             }
 
             keyFrame = AnimationKeyFrame{
@@ -1132,7 +1143,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               // already made in the current animation, and start the animation
               // from this point.
               keyFrame.viewStart = conflictingKeyFrame.viewPrev;
-              assert(keyFrame.viewStart.tag != 0);
+              assert(keyFrame.viewStart.tag > 0);
               keyFrame.initialProgress = 0;
 
               // We're guaranteed that a tag only has one animation associated
@@ -1143,9 +1154,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             }
           }
 
-          assert(keyFrame.viewStart.tag != 0);
-          assert(keyFrame.viewEnd.tag != 0);
-          assert(keyFrame.viewPrev.tag != 0);
+          assert(keyFrame.viewStart.tag > 0);
+          assert(keyFrame.viewEnd.tag > 0);
+          assert(keyFrame.viewPrev.tag > 0);
           keyFramesToAnimate.push_back(keyFrame);
         }
 
@@ -1234,9 +1245,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           PrintMutationInstruction(
               "Queueing up final mutation instruction - update:",
               mutationInstruction);
-          assert(mutationInstruction.oldChildShadowView.tag != 0);
+          assert(mutationInstruction.oldChildShadowView.tag > 0);
           assert(
-              mutationInstruction.newChildShadowView.tag != 0 ||
+              mutationInstruction.newChildShadowView.tag > 0 ||
               mutationInstruction.type == ShadowViewMutation::Delete ||
               mutationInstruction.type == ShadowViewMutation::Remove);
           finalConflictingMutations.push_back(mutationInstruction);
@@ -1257,8 +1268,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           auto generatedPenultimateMutation =
               ShadowViewMutation::UpdateMutation(
                   keyFrame.viewPrev, mutatedShadowView);
-          assert(generatedPenultimateMutation.oldChildShadowView.tag != 0);
-          assert(generatedPenultimateMutation.newChildShadowView.tag != 0);
+          assert(generatedPenultimateMutation.oldChildShadowView.tag > 0);
+          assert(generatedPenultimateMutation.newChildShadowView.tag > 0);
           PrintMutationInstruction(
               "Queueing up penultimate mutation instruction - synthetic",
               generatedPenultimateMutation);
@@ -1266,8 +1277,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
           auto generatedMutation = ShadowViewMutation::UpdateMutation(
               mutatedShadowView, keyFrame.viewEnd);
-          assert(generatedMutation.oldChildShadowView.tag != 0);
-          assert(generatedMutation.newChildShadowView.tag != 0);
+          assert(generatedMutation.oldChildShadowView.tag > 0);
+          assert(generatedMutation.newChildShadowView.tag > 0);
           PrintMutationInstruction(
               "Queueing up final mutation instruction - synthetic",
               generatedMutation);
@@ -1440,8 +1451,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           auto generatedPenultimateMutation =
               ShadowViewMutation::UpdateMutation(
                   keyFrame.viewPrev, mutatedShadowView);
-          assert(generatedPenultimateMutation.oldChildShadowView.tag != 0);
-          assert(generatedPenultimateMutation.newChildShadowView.tag != 0);
+          assert(generatedPenultimateMutation.oldChildShadowView.tag > 0);
+          assert(generatedPenultimateMutation.newChildShadowView.tag > 0);
           PrintMutationInstruction(
               "No Animation: Queueing up penultimate mutation instruction - synthetic",
               generatedPenultimateMutation);
@@ -1450,8 +1461,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
           auto generatedMutation = ShadowViewMutation::UpdateMutation(
               mutatedShadowView, keyFrame.viewEnd);
-          assert(generatedMutation.oldChildShadowView.tag != 0);
-          assert(generatedMutation.newChildShadowView.tag != 0);
+          assert(generatedMutation.oldChildShadowView.tag > 0);
+          assert(generatedMutation.newChildShadowView.tag > 0);
           PrintMutationInstruction(
               "No Animation: Queueing up final mutation instruction - synthetic",
               generatedMutation);
@@ -1623,7 +1634,10 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
     double progress,
     ShadowView startingView,
     ShadowView finalView) const {
+  assert(startingView.tag > 0);
+  assert(finalView.tag > 0);
   if (!hasComponentDescriptorForShadowView(startingView)) {
+    assert(false);
     return finalView;
   }
   ComponentDescriptor const &componentDescriptor =
@@ -1637,7 +1651,10 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   // will, so make sure we always keep the mounting layer consistent with the
   // "final" state.
   auto mutatedShadowView = ShadowView(finalView);
+  assert(mutatedShadowView.tag > 0);
 
+  assert(startingView.props != nullptr);
+  assert(finalView.props != nullptr);
   if (startingView.props == nullptr || finalView.props == nullptr) {
     return finalView;
   }
@@ -1645,6 +1662,7 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   // Animate opacity or scale/transform
   mutatedShadowView.props = componentDescriptor.interpolateProps(
       progress, startingView.props, finalView.props);
+  assert(mutatedShadowView.props != nullptr);
 
   // Interpolate LayoutMetrics
   LayoutMetrics const &finalLayoutMetrics = finalView.layoutMetrics;

@@ -256,3 +256,19 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 }
 
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Can't the import generated Plugin.h because plugins are not in this BUCK target
+Class<RCTComponentViewProtocol> RCTModalHostViewCls(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+Class<RCTComponentViewProtocol> RCTModalHostViewCls(void)
+{
+  return RCTModalHostViewComponentView.class;
+}

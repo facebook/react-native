@@ -132,6 +132,17 @@ using namespace facebook::react;
   return nullptr;
 }
 
+- (BOOL)isJSResponder
+{
+  // Default implementation always returns `NO`.
+  return NO;
+}
+
+- (void)setIsJSResponder:(BOOL)isJSResponder
+{
+  // Default implementation does nothing.
+}
+
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)propKeys
 {
   // Default implementation does nothing.

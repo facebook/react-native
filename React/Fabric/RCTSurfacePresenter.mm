@@ -467,6 +467,11 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   [self->_mountingManager sendAccessibilityEvent:tag eventType:eventTypeStr];
 }
 
+- (void)schedulerDidSetIsJSResponder:(BOOL)isJSResponder forShadowView:(facebook::react::ShadowView const &)shadowView;
+{
+  [self->_mountingManager setIsJSResponder:isJSResponder forShadowView:shadowView];
+}
+
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
 {
   std::unique_lock<better::shared_mutex> lock(_observerListMutex);
