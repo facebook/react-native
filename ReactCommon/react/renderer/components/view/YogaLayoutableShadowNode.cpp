@@ -22,23 +22,6 @@ namespace react {
 
 thread_local LayoutContext threadLocalLayoutContext;
 
-static void applyLayoutConstraints(
-    YGStyle &yogaStyle,
-    LayoutConstraints const &layoutConstraints) {
-  yogaStyle.minDimensions()[YGDimensionWidth] =
-      yogaStyleValueFromFloat(layoutConstraints.minimumSize.width);
-  yogaStyle.minDimensions()[YGDimensionHeight] =
-      yogaStyleValueFromFloat(layoutConstraints.minimumSize.height);
-
-  yogaStyle.maxDimensions()[YGDimensionWidth] =
-      yogaStyleValueFromFloat(layoutConstraints.maximumSize.width);
-  yogaStyle.maxDimensions()[YGDimensionHeight] =
-      yogaStyleValueFromFloat(layoutConstraints.maximumSize.height);
-
-  yogaStyle.direction() =
-      yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
-}
-
 ShadowNodeTraits YogaLayoutableShadowNode::BaseTraits() {
   auto traits = LayoutableShadowNode::BaseTraits();
   traits.set(ShadowNodeTraits::Trait::YogaLayoutableKind);
@@ -350,7 +333,25 @@ void YogaLayoutableShadowNode::layoutTree(
    */
   yogaConfig_.pointScaleFactor = layoutContext.pointScaleFactor;
 
-  applyLayoutConstraints(yogaNode_.getStyle(), layoutConstraints);
+  auto &yogaStyle = yogaNode_.getStyle();
+
+  auto direction =
+      yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
+
+  // We enforce maximum size here by applying corresponding styles because
+  // `YGNodeCalculateLayout` does not support specifying maximum size explicitly
+  // via parameters.
+  yogaStyle.minDimensions()[YGDimensionWidth] =
+      yogaStyleValueFromFloat(layoutConstraints.minimumSize.width);
+  yogaStyle.minDimensions()[YGDimensionHeight] =
+      yogaStyleValueFromFloat(layoutConstraints.minimumSize.height);
+
+  auto availableWidth = std::isinf(layoutConstraints.maximumSize.width)
+      ? YGUndefined
+      : yogaFloatFromFloat(layoutConstraints.maximumSize.width);
+  auto availableHeight = std::isinf(layoutConstraints.maximumSize.height)
+      ? YGUndefined
+      : yogaFloatFromFloat(layoutConstraints.maximumSize.height);
 
   threadLocalLayoutContext = layoutContext;
 
@@ -362,7 +363,7 @@ void YogaLayoutableShadowNode::layoutTree(
     SystraceSection s("YogaLayoutableShadowNode::YGNodeCalculateLayout");
 
     YGNodeCalculateLayout(
-        &yogaNode_, YGUndefined, YGUndefined, YGDirectionInherit);
+        &yogaNode_, availableWidth, availableHeight, direction);
   }
 
   if (yogaNode_.getHasNewLayout()) {
