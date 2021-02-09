@@ -20,6 +20,7 @@ export type RNTesterExampleModuleItem = $ReadOnly<{|
 
 export type RNTesterExampleModule = $ReadOnly<{|
   title: string,
+  testTitle?: ?string,
   description: string,
   displayName?: ?string,
   documentationURL?: ?string,

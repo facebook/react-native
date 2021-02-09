@@ -13,9 +13,11 @@ import SectionListExamples from './SectionListExamples';
 const React = require('react');
 
 exports.title = 'SectionList onViewableItemsChanged';
+exports.testTitle = 'Test onViewableItemsChanged callback';
 exports.category = 'ListView';
 exports.documentationURL = 'https://reactnative.dev/docs/sectionlist';
-exports.description = 'Showcase viewability config callback.';
+exports.description =
+  'Scroll list to see what items are returned in `onViewableItemsChanged` callback.';
 exports.examples = [
   {
     title: 'Simple scrollable list',

@@ -8,7 +8,7 @@
  * @format
  */
 
-import {Pressable, SectionList, StyleSheet, Text, View} from 'react-native';
+import {Button, SectionList, StyleSheet, Text, View} from 'react-native';
 import * as React from 'react';
 
 type Props = {
@@ -62,7 +62,7 @@ function getExample(example, output, ref) {
             ),
           viewabilityConfig: VIEWABILITY_CONFIG,
         },
-        startTest: () => {},
+        onTest: null,
       };
 
     case 'onEndReached':
@@ -71,7 +71,7 @@ function getExample(example, output, ref) {
           onEndReached: info => output('onEndReached'),
           onEndReachedThreshold: 0,
         },
-        startTest: () => {
+        onTest: () => {
           const scrollResponder = ref?.current?.getScrollResponder();
           if (scrollResponder != null) {
             scrollResponder.scrollToEnd();
@@ -86,18 +86,14 @@ function getExample(example, output, ref) {
 function SectionListExamples(props: Props): React.Node {
   const [output, setOutput] = React.useState('');
   const ref = React.useRef<?React.ElementRef<typeof SectionList>>();
-  const {startTest, props: testProps} = getExample(
-    props.example,
-    setOutput,
-    ref,
-  );
+  const {onTest, props: testProps} = getExample(props.example, setOutput, ref);
   return (
     <View>
-      <View testID="test_container" style={styles.row}>
+      <View testID="test_container" style={styles.testContainer}>
         <Text testID="output">{output}</Text>
-        <Pressable testID="start_test" onPress={startTest}>
-          <Text>Test</Text>
-        </Pressable>
+        {onTest != null ? (
+          <Button testID="start_test" onPress={onTest} title="Test" />
+        ) : null}
       </View>
       <SectionList
         ref={ref}
@@ -129,9 +125,15 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   sectionList: {height: '90%'},
-  row: {
+  testContainer: {
     flexDirection: 'row',
-    height: '10%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#f2f2f7ff',
+    padding: 10,
+  },
+  output: {
+    fontSize: 12,
   },
 });
 

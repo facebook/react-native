@@ -13,12 +13,14 @@ import SectionListExamples from './SectionListExamples';
 const React = require('react');
 
 exports.title = 'SectionList onEndReached';
+exports.testTitle = 'Test onEndReached callback';
 exports.category = 'ListView';
 exports.documentationURL = 'https://reactnative.dev/docs/sectionlist';
-exports.description = 'Showcase viewability config callback.';
+exports.description =
+  'Scroll to end of list or tap Test button to see `onEndReached` triggered.';
 exports.examples = [
   {
-    title: 'Simple scrollable list',
+    title: '',
     render: function(): React.Element<typeof SectionListExamples> {
       return <SectionListExamples example="onEndReached" />;
     },
