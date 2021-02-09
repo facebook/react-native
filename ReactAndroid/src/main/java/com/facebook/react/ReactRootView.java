@@ -19,6 +19,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.view.DisplayCutout;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -26,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.view.DisplayCutout;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -774,7 +774,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         if (displayCutout != null)  notchHeight = displayCutout.getSafeInsetTop();
       }
       final int heightDiff =
-          DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels - mVisibleViewArea.bottom + notchHeight;
+          DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels
+              - mVisibleViewArea.bottom
+              + notchHeight;
 
       boolean isKeyboardShowingOrKeyboardHeightChanged =
           mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected;
