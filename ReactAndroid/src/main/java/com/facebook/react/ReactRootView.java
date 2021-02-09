@@ -771,12 +771,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       int notchHeight = 0;
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         DisplayCutout displayCutout = getRootView().getRootWindowInsets().getDisplayCutout();
-        if (displayCutout != null)  notchHeight = displayCutout.getSafeInsetTop();
+        if (displayCutout != null) {
+          notchHeight = displayCutout.getSafeInsetTop();
+        }
       }
       final int heightDiff =
-          DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels
-              - mVisibleViewArea.bottom
-              + notchHeight;
+        DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels
+          - mVisibleViewArea.bottom
+          + notchHeight;
 
       boolean isKeyboardShowingOrKeyboardHeightChanged =
           mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected;
