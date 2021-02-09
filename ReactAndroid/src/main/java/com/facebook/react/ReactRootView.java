@@ -16,6 +16,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -767,8 +768,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     private void checkForKeyboardEvents() {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
-      DisplayCutout displayCutout = getRootView().getRootWindowInsets().getDisplayCutout();
-      int notchHeight = displayCutout == null ? 0 : displayCutout.getSafeInsetTop();
+      int notchHeight = 0;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        DisplayCutout displayCutout = getRootView().getRootWindowInsets().getDisplayCutout();
+        if (displayCutout != null)  notchHeight = displayCutout.getSafeInsetTop();
+      }
       final int heightDiff =
           DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels - mVisibleViewArea.bottom + notchHeight;
 
