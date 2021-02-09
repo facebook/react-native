@@ -27,6 +27,8 @@ public interface ReadableMap {
 
   double getDouble(@NonNull String name);
 
+  long getLong(@NonNull String name);
+
   int getInt(@NonNull String name);
 
   @Nullable
