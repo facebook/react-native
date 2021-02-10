@@ -647,15 +647,10 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
 std::vector<AnimationKeyFrame>
 LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
     SurfaceId surfaceId,
-    ShadowViewMutationList const &mutations,
-    bool deletesOnly) const {
+    ShadowViewMutationList const &mutations) const {
   std::vector<AnimationKeyFrame> conflictingAnimations{};
 
   for (auto const &mutation : mutations) {
-    if (deletesOnly && mutation.type != ShadowViewMutation::Type::Delete) {
-      continue;
-    }
-
     auto const &baselineShadowView =
         (mutation.type == ShadowViewMutation::Type::Insert ||
          mutation.type == ShadowViewMutation::Type::Create)
@@ -678,10 +673,7 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
           continue;
         }
 
-        bool conflicting = animatedKeyFrame.tag == baselineShadowView.tag ||
-            ((mutation.type == ShadowViewMutation::Type::Delete ||
-              mutation.type == ShadowViewMutation::Type::Create) &&
-             animatedKeyFrame.parentView.tag == baselineShadowView.tag);
+        bool conflicting = animatedKeyFrame.tag == baselineShadowView.tag;
 
         // Conflicting animation detected: if we're mutating a tag under
         // animation, or deleting the parent of a tag under animation, or
