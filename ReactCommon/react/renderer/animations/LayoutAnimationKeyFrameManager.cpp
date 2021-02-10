@@ -1011,13 +1011,20 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)
                       .cloneProps(viewStart.props, {});
+
+              // Dynamic cast, because - we don't know the type of this
+              // ShadowNode, it could be Image or Text or something else with
+              // different base props.
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
                 const_cast<ViewProps *>(viewProps)->opacity = 0;
               }
-              viewStart.props = props;
-              assert(viewStart.props != nullptr);
+
+              assert(props != nullptr);
+              if (props != nullptr) {
+                viewStart.props = props;
+              }
             }
             bool isScaleX =
                 mutationConfig.animationProperty == AnimationProperty::ScaleX ||
@@ -1029,14 +1036,21 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)
                       .cloneProps(viewStart.props, {});
+
+              // Dynamic cast, because - we don't know the type of this
+              // ShadowNode, it could be Image or Text or something else with
+              // different base props.
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
                 const_cast<ViewProps *>(viewProps)->transform =
                     Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
               }
-              viewStart.props = props;
-              assert(viewStart.props != nullptr);
+
+              assert(props != nullptr);
+              if (props != nullptr) {
+                viewStart.props = props;
+              }
             }
 
             keyFrame = AnimationKeyFrame{
@@ -1055,13 +1069,20 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)
                       .cloneProps(viewFinal.props, {});
+
+              // Dynamic cast, because - we don't know the type of this
+              // ShadowNode, it could be Image or Text or something else with
+              // different base props.
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
                 const_cast<ViewProps *>(viewProps)->opacity = 0;
               }
-              viewFinal.props = props;
-              assert(viewFinal.props != nullptr);
+
+              assert(props != nullptr);
+              if (props != nullptr) {
+                viewFinal.props = props;
+              }
             }
             bool isScaleX =
                 mutationConfig.animationProperty == AnimationProperty::ScaleX ||
@@ -1073,14 +1094,21 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)
                       .cloneProps(viewFinal.props, {});
+
+              // Dynamic cast, because - we don't know the type of this
+              // ShadowNode, it could be Image or Text or something else with
+              // different base props.
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
                 const_cast<ViewProps *>(viewProps)->transform =
                     Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
               }
-              viewFinal.props = props;
-              assert(viewFinal.props != nullptr);
+
+              assert(props != nullptr);
+              if (props != nullptr) {
+                viewFinal.props = props;
+              }
             }
 
             keyFrame = AnimationKeyFrame{
