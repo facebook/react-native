@@ -149,6 +149,8 @@ public class RootViewTest {
                 "timestamp",
                 (double) ts,
                 "identifier",
+                0.,
+                "targetSurface",
                 0.));
 
     // Test ACTION_UP event
@@ -185,6 +187,8 @@ public class RootViewTest {
                 "timestamp",
                 (double) ts,
                 "identifier",
+                0.,
+                "targetSurface",
                 0.));
 
     // Test other action
