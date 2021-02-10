@@ -260,6 +260,23 @@ public class SurfaceMountingManager {
       logViewHierarchy(parentView, false);
     }
 
+    ViewParent viewParent = view.getParent();
+    if (viewParent != null) {
+      int actualParentId =
+          viewParent instanceof ViewGroup ? ((ViewGroup) viewParent).getId() : View.NO_ID;
+      ReactSoftException.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "addViewAt: cannot insert view ["
+                  + tag
+                  + "] into parent ["
+                  + parentTag
+                  + "]: View already has a parent: ["
+                  + actualParentId
+                  + "] "
+                  + viewParent.getClass().getSimpleName()));
+    }
+
     try {
       getViewGroupManager(parentViewState).addView(parentView, view, index);
     } catch (IllegalStateException e) {
