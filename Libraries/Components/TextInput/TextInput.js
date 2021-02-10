@@ -842,6 +842,8 @@ function InternalTextInput(props: Props): React.Node {
   // Therefore, we ignore selections and pass them through until the selection event has
   // been sent.
   // Note that this mitigation is NOT needed for Fabric.
+  // discovered when upgrading react-hooks
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   let selection: ?Selection =
     props.selection == null
       ? null
