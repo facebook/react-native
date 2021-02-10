@@ -90,6 +90,7 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         auto childTag = mutation.newChildShadowView.tag;
         STUB_VIEW_ASSERT(registry.find(childTag) != registry.end());
         auto childStubView = registry[childTag];
+        STUB_VIEW_ASSERT(childStubView->parentTag == NO_VIEW_TAG);
         childStubView->update(mutation.newChildShadowView);
         STUB_VIEW_LOG({
           LOG(ERROR) << "StubView: Insert: " << childTag << " into "
@@ -97,6 +98,7 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
                      << parentStubView->children.size() << " children)";
         });
         STUB_VIEW_ASSERT(parentStubView->children.size() >= mutation.index);
+        childStubView->parentTag = parentTag;
         parentStubView->children.insert(
             parentStubView->children.begin() + mutation.index, childStubView);
         break;
@@ -116,6 +118,7 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         STUB_VIEW_ASSERT(parentStubView->children.size() > mutation.index);
         STUB_VIEW_ASSERT(registry.find(childTag) != registry.end());
         auto childStubView = registry[childTag];
+        STUB_VIEW_ASSERT(childStubView->parentTag == parentTag);
         bool childIsCorrect =
             parentStubView->children.size() > mutation.index &&
             parentStubView->children[mutation.index]->tag == childStubView->tag;
@@ -133,6 +136,7 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
                      << ": " << strChildList;
         });
         STUB_VIEW_ASSERT(childIsCorrect);
+        childStubView->parentTag = NO_VIEW_TAG;
         parentStubView->children.erase(
             parentStubView->children.begin() + mutation.index);
         break;
