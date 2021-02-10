@@ -12,9 +12,12 @@
 // Uncomment to enable verbose StubViewTree debug logs
 // #define STUB_VIEW_TREE_VERBOSE 1
 
+// For iOS especially: flush logs because some might be lost on iOS if an
+// assert is hit right after this.
 #define STUB_VIEW_ASSERT(cond)                 \
   if (!(cond)) {                               \
     LOG(ERROR) << "ASSERT FAILURE: " << #cond; \
+    google::FlushLogFiles(google::INFO);       \
   }                                            \
   assert(cond);
 
@@ -156,6 +159,10 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
     }
   }
   STUB_VIEW_LOG({ LOG(ERROR) << "StubView: Mutating End"; });
+
+  // For iOS especially: flush logs because some might be lost on iOS if an
+  // assert is hit right after this.
+  google::FlushLogFiles(google::INFO);
 }
 
 bool operator==(StubViewTree const &lhs, StubViewTree const &rhs) {
