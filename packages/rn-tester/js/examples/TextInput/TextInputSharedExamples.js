@@ -419,10 +419,10 @@ class SelectionExample extends React.Component<
     const length = this.state.value.length;
 
     return (
-      <View testID={this.props.testID}>
+      <View>
         <View style={{flexDirection: 'row'}}>
           <TextInput
-            testID="text-input"
+            testID={`${this.props.testID}-text-input`}
             multiline={this.props.multiline}
             onChangeText={value => this.setState({value})}
             onSelectionChange={this.onSelectionChange.bind(this)}
@@ -433,17 +433,23 @@ class SelectionExample extends React.Component<
           />
         </View>
         <View>
-          <Text testID="selection">
-            selection = {JSON.stringify(this.state.selection)}
+          <Text testID={`${this.props.testID}-selection`}>
+            selection = {JSON.stringify(this.state.selection).replace(/"/g, '')}
           </Text>
-          <Text testID="cursor-start" onPress={this.placeAt.bind(this, 0)}>
+          <Text
+            testID={`${this.props.testID}-cursor-start`}
+            onPress={this.placeAt.bind(this, 0)}>
             Place at Start (0, 0)
           </Text>
-          <Text testID="cursor-end" onPress={this.placeAt.bind(this, length)}>
+          <Text
+            testID={`${this.props.testID}-cursor-end`}
+            onPress={this.placeAt.bind(this, length)}>
             Place at End ({length}, {length})
           </Text>
           <Text onPress={this.placeAtRandom.bind(this)}>Place at Random</Text>
-          <Text testID="select-all" onPress={this.select.bind(this, 0, length)}>
+          <Text
+            testID={`${this.props.testID}-select-all`}
+            onPress={this.select.bind(this, 0, length)}>
             Select All
           </Text>
           <Text onPress={this.selectRandom.bind(this)}>Select Random</Text>
