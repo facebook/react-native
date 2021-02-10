@@ -11,6 +11,9 @@
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
+#include <cfenv>
+#include <cmath>
+
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -344,6 +347,22 @@ void Binding::stopSurface(jint surfaceId) {
   }
 
   scheduler->stopSurface(surfaceId);
+}
+
+static inline float scale(Float value, Float pointScaleFactor) {
+  std::feclearexcept(FE_ALL_EXCEPT);
+  float result = value * pointScaleFactor;
+  if (std::fetestexcept(FE_OVERFLOW)) {
+    LOG(ERROR) << "Binding::scale - FE_OVERFLOW - value: " << value
+               << " pointScaleFactor: " << pointScaleFactor
+               << " result: " << result;
+  }
+  if (std::fetestexcept(FE_UNDERFLOW)) {
+    LOG(ERROR) << "Binding::scale - FE_UNDERFLOW - value: " << value
+               << " pointScaleFactor: " << pointScaleFactor
+               << " result: " << result;
+  }
+  return result;
 }
 
 void Binding::setConstraints(
@@ -868,10 +887,10 @@ void Binding::schedulerDidFinishTransaction(
       auto pointScaleFactor = layoutMetrics.pointScaleFactor;
       auto contentInsets = layoutMetrics.contentInsets;
 
-      int left = floor(contentInsets.left * pointScaleFactor);
-      int top = floor(contentInsets.top * pointScaleFactor);
-      int right = floor(contentInsets.right * pointScaleFactor);
-      int bottom = floor(contentInsets.bottom * pointScaleFactor);
+      int left = floor(scale(contentInsets.left, pointScaleFactor));
+      int top = floor(scale(contentInsets.top, pointScaleFactor));
+      int right = floor(scale(contentInsets.right, pointScaleFactor));
+      int bottom = floor(scale(contentInsets.bottom, pointScaleFactor));
 
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = left;
@@ -895,10 +914,10 @@ void Binding::schedulerDidFinishTransaction(
       auto pointScaleFactor = layoutMetrics.pointScaleFactor;
       auto frame = layoutMetrics.frame;
 
-      int x = round(frame.origin.x * pointScaleFactor);
-      int y = round(frame.origin.y * pointScaleFactor);
-      int w = round(frame.size.width * pointScaleFactor);
-      int h = round(frame.size.height * pointScaleFactor);
+      int x = round(scale(frame.origin.x, pointScaleFactor));
+      int y = round(scale(frame.origin.y, pointScaleFactor));
+      int w = round(scale(frame.size.width, pointScaleFactor));
+      int h = round(scale(frame.size.height, pointScaleFactor));
       int layoutDirection =
           toInt(mountItem.newChildShadowView.layoutMetrics.layoutDirection);
       int displayType =
