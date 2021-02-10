@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
   s.source_files           = "*.{m,mm}"
 # [TODO(macOS ISS#2323203)
   s.osx.exclude_files      = "RCTLinkingManager.mm"
-  s.osx.source_files       = "macos/RCTLinkingManager.m"
+  s.osx.source_files       = "macos/RCTLinkingManager.mm"
 # ]TODO(macOS ISS#2323203)
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTLinking"

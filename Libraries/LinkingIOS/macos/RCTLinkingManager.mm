@@ -9,6 +9,8 @@
 
 #import "RCTLinkingManager.h"
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTUtils.h>
@@ -106,3 +108,7 @@ RCT_EXPORT_METHOD(getInitialURL:(RCTPromiseResolveBlock)resolve
     resolve(RCTNullIfNil(initialURL));
 }
 @end
+
+Class RCTLinkingManagerCls(void) {
+  return RCTLinkingManager.class;
+}
