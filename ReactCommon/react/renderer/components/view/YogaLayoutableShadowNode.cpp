@@ -532,7 +532,7 @@ static int YogaLog(
   int result = vsnprintf(NULL, 0, format, args);
   std::vector<char> buffer(1 + result);
   vsnprintf(buffer.data(), buffer.size(), format, args);
-  LOG(INFO) << "RNYogaLogger " << buffer.data();
+  LOG(ERROR) << "RNYogaLogger " << buffer.data();
   return result;
 }
 #endif
