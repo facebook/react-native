@@ -966,9 +966,17 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 // sequences should not be possible.
                 assert(keyframe.type == AnimationConfigurationType::Update);
 
-                keyframe.viewPrev = mutation.newChildShadowView.tag != 0
-                    ? mutation.newChildShadowView
-                    : mutation.oldChildShadowView;
+                // The mutation is an "insert", so it must have a
+                // "newChildShadowView"
+                assert(mutation.newChildShadowView.tag > 0);
+
+                // Those asserts don't run in prod. If there's some edge-case
+                // that we haven't caught yet, we'd crash in debug; make sure we
+                // don't mutate the prevView in prod.
+                if (keyframe.type == AnimationConfigurationType::Update &&
+                    mutation.newChildShadowView.tag > 0) {
+                  keyframe.viewPrev = mutation.newChildShadowView;
+                }
               }
             }
           }
