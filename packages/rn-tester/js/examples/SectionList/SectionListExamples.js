@@ -42,6 +42,29 @@ const Item = ({title}) => (
   </View>
 );
 
+export function SectionList_inverted(): React.Node {
+  const [output, setOutput] = React.useState('inverted false');
+  const [exampleProps, setExampleProps] = React.useState({
+    inverted: false,
+  });
+
+  const onTest = () => {
+    setExampleProps({
+      inverted: !exampleProps.inverted,
+    });
+    setOutput(`Is inverted: ${(!exampleProps.inverted).toString()}`);
+  };
+
+  return (
+    <SectionListExampleWithForwardedRef
+      exampleProps={exampleProps}
+      testOutput={output}
+      onTest={onTest}
+      testLabel={exampleProps.inverted ? 'Toggle false' : 'Toggle true'}
+    />
+  );
+}
+
 export function SectionList_stickySectionHeadersEnabled(): React.Node {
   const [output, setOutput] = React.useState(
     'stickySectionHeadersEnabled false',

@@ -85,6 +85,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     category: 'ListView',
   },
   {
+    key: 'SectionList_inverted',
+    module: require('../examples/SectionList/SectionList-inverted'),
+    category: 'ListView',
+  },
+  {
     key: 'SectionList-onViewableItemsChanged',
     module: require('../examples/SectionList/SectionList-onViewableItemsChanged'),
     category: 'ListView',
