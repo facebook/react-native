@@ -42,6 +42,35 @@ const Item = ({title}) => (
   </View>
 );
 
+export function SectionList_stickySectionHeadersEnabled(): React.Node {
+  const [output, setOutput] = React.useState(
+    'stickySectionHeadersEnabled false',
+  );
+  const [exampleProps, setExampleProps] = React.useState({
+    stickySectionHeadersEnabled: false,
+  });
+
+  const onTest = () => {
+    setExampleProps({
+      stickySectionHeadersEnabled: !exampleProps.stickySectionHeadersEnabled,
+    });
+    setOutput(
+      `stickySectionHeadersEnabled ${(!exampleProps.stickySectionHeadersEnabled).toString()}`,
+    );
+  };
+
+  return (
+    <SectionListExampleWithForwardedRef
+      exampleProps={exampleProps}
+      testOutput={output}
+      onTest={onTest}
+      testLabel={
+        exampleProps.stickySectionHeadersEnabled ? 'Sticky Off' : 'Sticky On'
+      }
+    />
+  );
+}
+
 export function SectionList_onEndReached(): React.Node {
   const [output, setOutput] = React.useState('');
   const exampleProps = {

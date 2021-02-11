@@ -104,6 +104,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'SectionList_stickyHeadersEnabled',
+    module: require('../examples/SectionList/SectionList-stickyHeadersEnabled'),
+    category: 'ListView',
+  },
+  {
     key: 'SectionList-onEndReached',
     module: require('../examples/SectionList/SectionList-onEndReached'),
     category: 'ListView',
