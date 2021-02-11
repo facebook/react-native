@@ -29,7 +29,7 @@ if (__DEV__) {
   const emitter = new NativeEventEmitter<DevSettingsEventDefinitions>(
     NativeDevSettings,
   );
-  const menuItems = new Map();
+  const subscriptions = new Map();
 
   DevSettings = {
     addMenuItem(title: string, handler: () => mixed): void {
@@ -37,19 +37,19 @@ if (__DEV__) {
       // happen when hot reloading the module that registers the
       // menu items. The title is used as the id which means we
       // don't support multiple items with the same name.
-      const oldHandler = menuItems.get(title);
-      if (oldHandler != null) {
-        emitter.removeListener('didPressMenuItem', oldHandler);
+      let subscription = subscriptions.get(title);
+      if (subscription != null) {
+        subscription.remove();
       } else {
         NativeDevSettings.addMenuItem(title);
       }
 
-      menuItems.set(title, handler);
-      emitter.addListener('didPressMenuItem', event => {
+      subscription = emitter.addListener('didPressMenuItem', event => {
         if (event.title === title) {
           handler();
         }
       });
+      subscriptions.set(title, subscription);
     },
     reload(reason?: string): void {
       if (NativeDevSettings.reloadWithReason != null) {

@@ -12,8 +12,9 @@
 
 const RNTesterButton = require('../../components/RNTesterButton');
 const React = require('react');
-
 const {Animated, Easing, StyleSheet, Text, View} = require('react-native');
+
+import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
 
 const styles = StyleSheet.create({
   content: {
@@ -39,9 +40,10 @@ exports.description = ('Animated provides a powerful ' +
   'and easy-to-use API for building modern, ' +
   'interactive user experiences.': string);
 
-exports.examples = [
+exports.examples = ([
   {
     title: 'FadeInView',
+    name: 'fadeInView',
     description: ('Uses a simple timing animation to ' +
       'bring opacity from 0 to 1 when the component ' +
       'mounts.': string),
@@ -93,6 +95,7 @@ exports.examples = [
           return (
             <View>
               <RNTesterButton
+                testID="toggle-button"
                 onPress={() => {
                   this.setState(state => ({show: !state.show}));
                 }}>
@@ -100,7 +103,7 @@ exports.examples = [
               </RNTesterButton>
               {this.state.show && (
                 <FadeInView>
-                  <View style={styles.content}>
+                  <View testID="fade-in-view" style={styles.content}>
                     <Text>FadeInView</Text>
                   </View>
                 </FadeInView>
@@ -339,6 +342,7 @@ exports.examples = [
   },
   {
     title: 'Moving box example',
+    name: 'movingView',
     description: ('Click arrow buttons to move the box.' +
       'Then hide the box and reveal it again.' +
       'After that the box position will reset to initial position.': string),
@@ -392,13 +396,16 @@ exports.examples = [
             <View style={movingBoxStyles.container}>
               {this.renderBox()}
               <View style={movingBoxStyles.buttonsContainer}>
-                <RNTesterButton onPress={() => this.moveTo(0)}>
+                <RNTesterButton
+                  testID="move-left-button"
+                  onPress={() => this.moveTo(0)}>
                   {'<-'}
                 </RNTesterButton>
                 <RNTesterButton onPress={this.toggleVisibility}>
                   {toggleText}
                 </RNTesterButton>
                 <RNTesterButton
+                  testID="move-right-button"
                   onPress={() => this.moveTo(containerWidth - boxSize)}>
                   {'->'}
                 </RNTesterButton>
@@ -413,6 +420,7 @@ exports.examples = [
             return (
               <View style={movingBoxStyles.boxContainer}>
                 <Animated.View
+                  testID="moving-view"
                   style={[
                     styles.content,
                     movingBoxStyles.box,
@@ -455,4 +463,4 @@ exports.examples = [
       <Text>Checkout the Gratuitous Animation App!</Text>
     ),
   },
-];
+]: Array<RNTesterExampleModuleItem>);
