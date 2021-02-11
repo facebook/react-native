@@ -1716,7 +1716,7 @@ NSString* const downArrowPressKey = @"ArrowDown";
   BOOL downArrowValidityCheck = [validKeys containsObject:downArrowPressKey] && downArrowPressed;
 
   if (escapeKeyValidityCheck) {
-    keyToReturn = @"Esc";
+    keyToReturn = @"Escape";
   } else if (enterKeyValidityCheck) {
     keyToReturn = @"Enter";
   } else if (leftArrowValidityCheck) {
