@@ -318,10 +318,10 @@ public class SurfaceMountingManager {
     }
 
     UiThreadUtil.assertOnUiThread();
-    ViewState viewState = getNullableViewState(parentTag);
+    ViewState parentViewState = getNullableViewState(parentTag);
 
     // TODO: throw exception here?
-    if (viewState == null) {
+    if (parentViewState == null) {
       ReactSoftException.logSoftException(
           MountingManager.TAG,
           new IllegalStateException(
@@ -329,7 +329,19 @@ public class SurfaceMountingManager {
       return;
     }
 
-    final ViewGroup parentView = (ViewGroup) viewState.mView;
+    if (!(parentViewState.mView instanceof ViewGroup)) {
+      String message =
+          "Unable to remove a view from a view that is not a ViewGroup. ParentTag: "
+              + parentTag
+              + " - Tag: "
+              + tag
+              + " - Index: "
+              + index;
+      FLog.e(TAG, message);
+      throw new IllegalStateException(message);
+    }
+
+    final ViewGroup parentView = (ViewGroup) parentViewState.mView;
 
     if (parentView == null) {
       throw new IllegalStateException("Unable to find view for tag [" + parentTag + "]");
@@ -341,7 +353,7 @@ public class SurfaceMountingManager {
       logViewHierarchy(parentView, false);
     }
 
-    ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(viewState);
+    ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(parentViewState);
 
     // Verify that the view we're about to remove has the same tag we expect
     View view = viewGroupManager.getChildAt(parentView, index);
