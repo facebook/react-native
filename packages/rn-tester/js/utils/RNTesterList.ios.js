@@ -104,16 +104,14 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'SectionList_EndReached',
-    module: require('../examples/SectionList/SectionList_onEndReached'),
+    key: 'SectionList-onEndReached',
+    module: require('../examples/SectionList/SectionList-onEndReached'),
     category: 'ListView',
-    supportsTVOS: true,
   },
   {
-    key: 'SectionList_onViewableItemsChanged',
-    module: require('../examples/SectionList/SectionList_onViewableItemsChanged'),
+    key: 'SectionList-onViewableItemsChanged',
+    module: require('../examples/SectionList/SectionList-onViewableItemsChanged'),
     category: 'ListView',
-    supportsTVOS: true,
   },
   {
     key: 'SectionListExample',
