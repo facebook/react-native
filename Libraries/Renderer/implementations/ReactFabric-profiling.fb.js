@@ -15,7 +15,8 @@ require("react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore");
 var ReactNativePrivateInterface = require("react-native/Libraries/ReactPrivate/ReactNativePrivateInterface"),
   React = require("react"),
   Scheduler = require("scheduler"),
-  tracing = require("scheduler/tracing");
+  tracing = require("scheduler/tracing"),
+  assertTextRendersInParent = require("react-native/Libraries/Renderer/implementations/assertTextRendersInParent");
 function invokeGuardedCallbackImpl(name, func, context, a, b, c, d, e, f) {
   var funcArgs = Array.prototype.slice.call(arguments, 3);
   try {
@@ -1605,8 +1606,7 @@ function createTextInstance(
   hostContext,
   internalInstanceHandle
 ) {
-  if (!hostContext.isInAParentText)
-    throw Error("Text strings must be rendered within a <Text> component.");
+  assertTextRendersInParent(hostContext, text, internalInstanceHandle);
   hostContext = nextReactTag;
   nextReactTag += 2;
   return {

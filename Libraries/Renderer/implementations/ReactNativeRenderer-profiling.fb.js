@@ -4999,7 +4999,7 @@ function completeWork(current, workInProgress, renderLanes) {
         current = requiredContext(rootInstanceStackCursor.current);
         if (!requiredContext(contextStackCursor$1.current).isInAParentText)
           throw Error(
-            "Text strings must be rendered within a <Text> component."
+            "Text string \"" + newProps + "\" must be rendered within a <Text> component.\n\nProbably result of a conditional rendering using boolean concatination as in `cond && <Component ...>`."
           );
         rootContainerInstance = allocateTag();
         ReactNativePrivateInterface.UIManager.createView(

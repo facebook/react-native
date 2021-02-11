@@ -21,6 +21,7 @@ require("react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore");
 var ReactNativePrivateInterface = require("react-native/Libraries/ReactPrivate/ReactNativePrivateInterface");
 var Scheduler = require("scheduler");
 var tracing = require("scheduler/tracing");
+var assertTextRendersInParent = require("react-native/Libraries/Renderer/implementations/assertTextRendersInParent");
 
 var ReactSharedInternals =
   React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
@@ -4052,9 +4053,7 @@ function createTextInstance(
   hostContext,
   internalInstanceHandle
 ) {
-  if (!hostContext.isInAParentText) {
-    throw Error("Text strings must be rendered within a <Text> component.");
-  }
+  assertTextRendersInParent(hostContext, text, internalInstanceHandle);
 
   var tag = allocateTag();
   ReactNativePrivateInterface.UIManager.createView(
