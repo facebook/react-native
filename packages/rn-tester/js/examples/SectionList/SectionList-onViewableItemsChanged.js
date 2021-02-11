@@ -9,7 +9,7 @@
  */
 
 'use strict';
-import SectionListExamples from './SectionListExamples';
+import {SectionList_onViewableItemsChanged} from './SectionListExamples';
 const React = require('react');
 
 exports.title = 'SectionList onViewableItemsChanged';
@@ -20,9 +20,11 @@ exports.description =
   'Scroll list to see what items are returned in `onViewableItemsChanged` callback.';
 exports.examples = [
   {
-    title: 'Simple scrollable list',
-    render: function(): React.Element<typeof SectionListExamples> {
-      return <SectionListExamples example="onViewableItemsChanged" />;
+    title: 'SectionList onViewableItemsChanged',
+    render: function(): React.Element<
+      typeof SectionList_onViewableItemsChanged,
+    > {
+      return <SectionList_onViewableItemsChanged />;
     },
   },
 ];

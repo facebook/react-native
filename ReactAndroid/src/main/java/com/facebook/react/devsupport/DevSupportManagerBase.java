@@ -133,6 +133,8 @@ public abstract class DevSupportManagerBase
 
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
 
+  private @Nullable Activity currentActivity;
+
   public DevSupportManagerBase(
       Context applicationContext,
       ReactInstanceDevHelper reactInstanceDevHelper,
@@ -392,8 +394,8 @@ public abstract class DevSupportManagerBase
         new Runnable() {
           @Override
           public void run() {
-            if (mRedBoxDialog == null) {
-              Activity context = mReactInstanceDevHelper.getCurrentActivity();
+            Activity context = mReactInstanceDevHelper.getCurrentActivity();
+            if (mRedBoxDialog == null || context != currentActivity) {
               if (context == null || context.isFinishing()) {
                 FLog.e(
                     ReactConstants.TAG,
@@ -402,7 +404,9 @@ public abstract class DevSupportManagerBase
                         + message);
                 return;
               }
-              mRedBoxDialog = new RedBoxDialog(context, DevSupportManagerBase.this, mRedBoxHandler);
+              currentActivity = context;
+              mRedBoxDialog =
+                  new RedBoxDialog(currentActivity, DevSupportManagerBase.this, mRedBoxHandler);
             }
             if (mRedBoxDialog.isShowing()) {
               // Sometimes errors cause multiple errors to be thrown in JS in quick succession. Only
