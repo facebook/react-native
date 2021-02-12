@@ -7,10 +7,19 @@
 
 package com.facebook.react;
 
+import com.facebook.react.uimanager.ReactRoot;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.WritableMap;
+import android.util.Log;
+import android.graphics.Rect;
+
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import org.mockito.Mockito;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -208,5 +217,32 @@ public class RootViewTest {
     rootView.startReactApplication(instanceManager, "");
     rootView.unmountReactApplication();
     rootView.startReactApplication(instanceManager, "");
+  }
+
+  @Test
+  public void testCheckForKeyboardEvents() {
+    ReactInstanceManager instanceManager = mock(ReactInstanceManager.class);
+    when(instanceManager.getCurrentReactContext()).thenReturn(mReactContext);
+    UIManagerModule uiManager = mock(UIManagerModule.class);
+    EventDispatcher eventDispatcher = mock(EventDispatcher.class);
+    DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitterModuleMock = mock(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+    when(mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)).thenReturn(eventEmitterModuleMock);
+    when(mCatalystInstanceMock.getNativeModule(UIManagerModule.class)).thenReturn(uiManager);
+    when(uiManager.getEventDispatcher()).thenReturn(eventDispatcher);
+
+    int rootViewId = 7;
+
+    ReactRootView rootView = new ReactRootView(mReactContext) {
+      @Override
+      public void getWindowVisibleDisplayFrame(Rect outRect) {
+        outRect.bottom += 100;
+      }
+    };
+    rootView.setId(rootViewId);
+    rootView.setRootViewTag(rootViewId);
+    rootView.startReactApplication(instanceManager, "");
+    rootView.simulateAttachForTesting();
+    rootView.getCustomGlobalLayoutListener().checkForKeyboardEvents();
+    verify(instanceManager, Mockito.times(2)).getCurrentReactContext();
   }
 }
