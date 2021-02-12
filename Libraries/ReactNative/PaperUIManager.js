@@ -39,6 +39,14 @@ function getViewManagerConfig(viewManagerName: string): any {
       viewManagerConfigs[
         viewManagerName
       ] = NativeUIManager.getConstantsForViewManager(viewManagerName);
+
+      if (viewManagerConfigs[viewManagerName] === undefined) {
+        console.warn(
+          'Error: Unable to find getConstantsForViewManager for viewManager: ' +
+            viewManagerName +
+            '.',
+        );
+      }
     } catch (e) {
       console.error(
         "NativeUIManager.getConstantsForViewManager('" +
@@ -70,6 +78,12 @@ function getViewManagerConfig(viewManagerName: string): any {
     if (result != null && result.viewConfig != null) {
       getConstants()[viewManagerName] = result.viewConfig;
       lazifyViewManagerConfig(viewManagerName);
+    } else {
+      console.warn(
+        'Error: Unable to find viewManagerConfigs for viewManager: ' +
+          viewManagerName +
+          ' using lazyLoadView.',
+      );
     }
   }
 

@@ -12,7 +12,7 @@ import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
 import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import NativeKeyboardObserver from './NativeKeyboardObserver';
-import type EmitterSubscription from '../../vendor/emitter/_EmitterSubscription';
+import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
 
 export type KeyboardEventName = $Keys<KeyboardEventDefinitions>;
 
@@ -101,10 +101,10 @@ type KeyboardEventDefinitions = {
  *```
  */
 
-class Keyboard extends NativeEventEmitter<KeyboardEventDefinitions> {
-  constructor() {
-    super(NativeKeyboardObserver);
-  }
+class Keyboard {
+  _emitter: NativeEventEmitter<KeyboardEventDefinitions> = new NativeEventEmitter(
+    NativeKeyboardObserver,
+  );
 
   /**
    * The `addListener` function connects a JavaScript function to an identified native
@@ -132,22 +132,9 @@ class Keyboard extends NativeEventEmitter<KeyboardEventDefinitions> {
   addListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
     listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
-    context: $FlowFixMe,
-  ): EmitterSubscription<KeyboardEventDefinitions, K> {
-    return super.addListener(eventType, listener);
-  }
-
-  /**
-   * Removes a specific listener.
-   *
-   * @param {string} eventName The `nativeEvent` is the string that identifies the event you're listening for.
-   * @param {function} callback function to be called when the event fires.
-   */
-  removeListener<K: $Keys<KeyboardEventDefinitions>>(
-    eventType: K,
-    listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
-  ): void {
-    super.removeListener(eventType, listener);
+    context?: mixed,
+  ): EventSubscription {
+    return this._emitter.addListener(eventType, listener);
   }
 
   /**
@@ -156,7 +143,7 @@ class Keyboard extends NativeEventEmitter<KeyboardEventDefinitions> {
    * @param {string} eventType The native event string listeners are watching which will be removed.
    */
   removeAllListeners<K: $Keys<KeyboardEventDefinitions>>(eventType: ?K): void {
-    super.removeAllListeners(eventType);
+    this._emitter.removeAllListeners(eventType);
   }
 
   /**

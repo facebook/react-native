@@ -205,6 +205,7 @@ exports.examples = ([
     },
   },
   {
+    name: 'keyboardShouldPersistTaps',
     title: '<ScrollView> Keyboard Options\n',
     description:
       'Toggle the keyboard using the search bar and determine keyboard behavior in response to drag and tap.',
@@ -845,6 +846,7 @@ const KeyboardExample = () => {
   const [keyboardShouldPersistTaps, setKeyboardShouldPersistTaps] = useState(
     'never',
   );
+  const [textInputValue, setTextInputValue] = useState('Tap to open Keyboard');
   const dismissOptions =
     Platform.OS === 'ios'
       ? ['none', 'on-drag', 'interactive']
@@ -852,11 +854,20 @@ const KeyboardExample = () => {
   const persistOptions = ['never', 'always', 'handled'];
   return (
     <View>
+      <TextInput
+        style={styles.textInput}
+        value={textInputValue}
+        onChangeText={val => setTextInputValue(val)}
+      />
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         keyboardDismissMode={keyboardDismissMode}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         nestedScrollEnabled>
+        <Button
+          onPress={() => console.log('button pressed!')}
+          label={'Button'}
+        />
         {ITEMS.map(createItemRow)}
       </ScrollView>
       <Text style={styles.rowTitle}>Keyboard Dismiss Mode</Text>

@@ -122,11 +122,9 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerDidSendAccessibilityEvent(
       const ShadowNode::Shared &shadowNode,
       std::string const &eventType) override;
-  void uiManagerDidSetJSResponder(
-      SurfaceId surfaceId,
-      const ShadowNode::Shared &shadowView,
-      bool blockNativeResponder) override;
-  void uiManagerDidClearJSResponder() override;
+  void uiManagerDidSetIsJSResponder(
+      ShadowNode::Shared const &shadowView,
+      bool isJSResponder) override;
 
  private:
   friend class SurfaceHandler;

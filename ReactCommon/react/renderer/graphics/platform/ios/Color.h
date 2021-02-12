@@ -8,6 +8,7 @@
 #pragma once
 
 #include <better/optional.h>
+#include <cmath>
 
 #include <react/renderer/graphics/ColorComponents.h>
 #include <react/renderer/graphics/Float.h>

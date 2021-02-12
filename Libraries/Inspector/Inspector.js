@@ -170,7 +170,10 @@ class Inspector extends React.Component<
   _onAgentShowNativeHighlight = node => {
     clearTimeout(this._hideTimeoutID);
 
-    node.measure((x, y, width, height, left, top) => {
+    // Shape of `node` is different in Fabric.
+    const component = node.canonical ?? node;
+
+    component.measure((x, y, width, height, left, top) => {
       this.setState({
         hierarchy: [],
         inspected: {

@@ -423,27 +423,14 @@ void Scheduler::uiManagerDidSendAccessibilityEvent(
 }
 
 /*
- * Set JS responder for a view
+ * Set JS responder for a view.
  */
-void Scheduler::uiManagerDidSetJSResponder(
-    SurfaceId surfaceId,
-    const ShadowNode::Shared &shadowNode,
-    bool blockNativeResponder) {
+void Scheduler::uiManagerDidSetIsJSResponder(
+    ShadowNode::Shared const &shadowNode,
+    bool isJSResponder) {
   if (delegate_) {
-    // TODO: the first shadowView paramenter, should be the first parent that
-    // is non virtual.
-    auto shadowView = ShadowView(*shadowNode);
-    delegate_->schedulerDidSetJSResponder(
-        surfaceId, shadowView, shadowView, blockNativeResponder);
-  }
-}
-
-/*
- * Clear the JSResponder for a view
- */
-void Scheduler::uiManagerDidClearJSResponder() {
-  if (delegate_) {
-    delegate_->schedulerDidClearJSResponder();
+    delegate_->schedulerDidSetIsJSResponder(
+        ShadowView(*shadowNode), isJSResponder);
   }
 }
 

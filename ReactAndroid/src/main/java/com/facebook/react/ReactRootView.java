@@ -558,7 +558,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
   }
 
-  public void setEventListener(ReactRootViewEventListener eventListener) {
+  public void setEventListener(@Nullable ReactRootViewEventListener eventListener) {
     mRootViewEventListener = eventListener;
   }
 

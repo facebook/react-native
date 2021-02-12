@@ -35,7 +35,6 @@
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource;
 
 @property (nonatomic, readonly) BOOL isHotLoadingAvailable;
-@property (nonatomic, readonly) BOOL isLiveReloadAvailable;
 @property (nonatomic, readonly) BOOL isRemoteDebuggingAvailable;
 @property (nonatomic, readonly) BOOL isDeviceDebuggingAvailable;
 @property (nonatomic, readonly) BOOL isJSCSamplingProfilerAvailable;

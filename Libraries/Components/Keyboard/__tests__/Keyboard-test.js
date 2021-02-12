@@ -9,12 +9,9 @@
  * @emails oncall+react_native
  */
 
-const NativeModules = require('../../../BatchedBridge/NativeModules');
 const LayoutAnimation = require('../../../LayoutAnimation/LayoutAnimation');
 const dismissKeyboard = require('../../../Utilities/dismissKeyboard');
 const Keyboard = require('../Keyboard');
-
-import NativeEventEmitter from '../../../EventEmitter/NativeEventEmitter';
 
 jest.mock('../../../LayoutAnimation/LayoutAnimation');
 jest.mock('../../../Utilities/dismissKeyboard');
@@ -22,16 +19,6 @@ jest.mock('../../../Utilities/dismissKeyboard');
 describe('Keyboard', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-  });
-
-  it('exposes KeyboardEventEmitter methods', () => {
-    const KeyboardObserver = NativeModules.KeyboardObserver;
-    const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
-
-    // $FlowFixMe
-    expect(Keyboard._subscriber).toBe(KeyboardEventEmitter._subscriber);
-    // $FlowFixMe Cannot access private property
-    expect(Keyboard._nativeModule).toBe(KeyboardEventEmitter._nativeModule);
   });
 
   it('uses dismissKeyboard utility', () => {
