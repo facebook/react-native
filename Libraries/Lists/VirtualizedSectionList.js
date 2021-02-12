@@ -143,8 +143,11 @@ class VirtualizedSectionList<
       index += this.props.getItemCount(this.props.sections[i].data) + 2;
     }
     let viewOffset = params.viewOffset || 0;
+    if (this._listRef == null) {
+      return;
+    }
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
-      // $FlowFixMe Cannot access private property
+      // $FlowFixMe[prop-missing] Cannot access private property
       const frame = this._listRef._getFrameMetricsApprox(
         index - params.itemIndex,
       );
@@ -158,7 +161,7 @@ class VirtualizedSectionList<
     this._listRef.scrollToIndex(toIndexParams);
   }
 
-  getListRef(): VirtualizedList {
+  getListRef(): ?React.ElementRef<typeof VirtualizedList> {
     return this._listRef;
   }
 
@@ -427,11 +430,8 @@ class VirtualizedSectionList<
   }
 
   _cellRefs = {};
-  _listRef: VirtualizedList;
+  _listRef: ?React.ElementRef<typeof VirtualizedList>;
   _captureRef = ref => {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
     this._listRef = ref;
   };
 }
