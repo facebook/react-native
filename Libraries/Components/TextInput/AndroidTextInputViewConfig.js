@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import ReactNativeViewViewConfig from '../../Components/View/ReactNativeViewViewConfig';
 import {type PartialViewConfig} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 

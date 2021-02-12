@@ -1220,18 +1220,9 @@ static void calculateShadowViewMutationsV2(
             }
           }
 
-          // We handled this case above. We fall through to check concreteness
-          // of old/new view to remove/insert create/delete above, and then bail
-          // out here.
-          if (oldChildPair.flattened != newChildPair.flattened) {
-            newInsertedPairs.erase(insertedIt);
-            oldIndex++;
-            continue;
-          }
-
           // old and new child pairs are both either flattened or unflattened at
           // this point. If they're not views, we don't need to update subtrees.
-          if (oldChildPair.isConcreteView) {
+          if (oldChildPair.isConcreteView && newChildPair.isConcreteView) {
             // TODO: do we always want to remove here? There are cases where we
             // might be able to remove this to prevent unnecessary
             // removes/inserts in cases of (un)flattening + reorders?
@@ -1245,7 +1236,8 @@ static void calculateShadowViewMutationsV2(
                   oldChildPair.shadowView, newChildPair.shadowView));
             }
           }
-          if (!oldChildPair.flattened &&
+
+          if (!oldChildPair.flattened && !newChildPair.flattened &&
               oldChildPair.shadowNode != newChildPair.shadowNode) {
             // Update subtrees
             auto oldGrandChildPairs =
@@ -1313,9 +1305,16 @@ static void calculateShadowViewMutationsV2(
             newChildPair.shadowView,
             newChildPair.mountIndex));
       }
+
+      // `inOtherTree` is only set to true during flattening/unflattening of
+      // parent. If the parent isn't (un)flattened, this will always be `false`,
+      // even if the node is in the other (old) tree. In this case, we expect
+      // the node to be removed from `newInsertedPairs` when we later encounter
+      // it in this loop.
       if (!newChildPair.inOtherTree) {
         newInsertedPairs.insert({newChildPair.shadowView.tag, &newChildPair});
       }
+
       newIndex++;
     }
 

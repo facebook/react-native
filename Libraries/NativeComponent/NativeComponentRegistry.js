@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import {createViewConfig} from './ViewConfig';
 import UIManager from '../ReactNative/UIManager';
 import type {

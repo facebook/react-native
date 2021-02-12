@@ -116,6 +116,9 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  */
 - (facebook::react::SharedProps)props;
 
+- (BOOL)isJSResponder;
+- (void)setIsJSResponder:(BOOL)isJSResponder;
+
 /*
  * This is broken. Do not use.
  */

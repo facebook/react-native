@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import {type HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import Platform from '../../Utilities/Platform';

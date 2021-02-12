@@ -30,6 +30,26 @@ public class TouchEvent extends Event<TouchEvent> {
 
   public static final long UNSET = Long.MIN_VALUE;
 
+  @Deprecated
+  public static TouchEvent obtain(
+      int viewTag,
+      TouchEventType touchEventType,
+      MotionEvent motionEventToCopy,
+      long gestureStartTime,
+      float viewX,
+      float viewY,
+      TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
+    return obtain(
+        -1,
+        viewTag,
+        touchEventType,
+        motionEventToCopy,
+        gestureStartTime,
+        viewX,
+        viewY,
+        touchEventCoalescingKeyHelper);
+  }
+
   public static TouchEvent obtain(
       int surfaceId,
       int viewTag,
@@ -149,6 +169,11 @@ public class TouchEvent extends Event<TouchEvent> {
         getSurfaceId(),
         getViewTag(),
         this);
+  }
+
+  @Override
+  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
+    dispatch(rctEventEmitter);
   }
 
   public MotionEvent getMotionEvent() {

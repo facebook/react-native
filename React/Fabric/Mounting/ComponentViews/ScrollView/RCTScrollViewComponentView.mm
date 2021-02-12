@@ -327,6 +327,28 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   }
 }
 
+/*
+ * Returns whether or not the scroll view interaction should be blocked because
+ * JavaScript was found to be the responder.
+ */
+- (BOOL)_shouldDisableScrollInteraction
+{
+  UIView *ancestorView = self.superview;
+
+  while (ancestorView) {
+    if ([ancestorView respondsToSelector:@selector(isJSResponder)]) {
+      BOOL isJSResponder = ((UIView<RCTComponentViewProtocol> *)ancestorView).isJSResponder;
+      if (isJSResponder) {
+        return YES;
+      }
+    }
+
+    ancestorView = ancestorView.superview;
+  }
+
+  return NO;
+}
+
 - (ScrollViewMetrics)_scrollViewMetrics
 {
   ScrollViewMetrics metrics;
@@ -366,7 +388,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 {
   // Historically, `UIScrollView`s in React Native do not cancel touches
   // started on `UIControl`-based views (as normal iOS `UIScrollView`s do).
-  return YES;
+  return ![self _shouldDisableScrollInteraction];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView

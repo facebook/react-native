@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
 

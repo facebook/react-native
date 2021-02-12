@@ -85,9 +85,9 @@ package-lock.json
 
 # Libs that shouldn't have Xcode project
 /Libraries/FBLazyVector/**/*.xcodeproj
-/Libraries/FBReactNativeSpec/**/*.xcodeproj
 /Libraries/RCTRequired/**/*.xcodeproj
 /React/CoreModules/**/*.xcodeproj
+/React/FBReactNativeSpec/**/*.xcodeproj
 /packages/react-native-codegen/**/*.xcodeproj
 
 # CocoaPods
@@ -100,7 +100,7 @@ package-lock.json
 !/packages/rn-tester/Pods/__offline_mirrors__
 
 # react-native-codegen
-/Libraries/FBReactNativeSpec/FBReactNativeSpec
+/React/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
 /ReactCommon/react/renderer/components/rncore/
 

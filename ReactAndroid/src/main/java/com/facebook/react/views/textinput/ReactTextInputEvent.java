@@ -7,11 +7,10 @@
 
 package com.facebook.react.views.textinput;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.facebook.react.uimanager.events.RCTModernEventEmitter;
 
 /**
  * Event emitted by EditText native view when text changes. VisibleForTesting from {@link
@@ -52,18 +51,9 @@ public class ReactTextInputEvent extends Event<ReactTextInputEvent> {
     return false;
   }
 
+  @Nullable
   @Override
-  public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
-  }
-
-  @Override
-  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(
-        getSurfaceId(), getViewTag(), getEventName(), serializeEventData());
-  }
-
-  private WritableMap serializeEventData() {
+  protected WritableMap getEventData() {
     WritableMap eventData = Arguments.createMap();
     WritableMap range = Arguments.createMap();
     range.putDouble("start", mRangeStart);

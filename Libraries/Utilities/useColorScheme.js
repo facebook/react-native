@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import {useMemo} from 'react';
 import {useSubscription} from 'use-subscription';
 import Appearance from './Appearance';

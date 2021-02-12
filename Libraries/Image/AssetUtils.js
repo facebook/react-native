@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import PixelRatio from '../Utilities/PixelRatio';
 
 let cacheBreaker;

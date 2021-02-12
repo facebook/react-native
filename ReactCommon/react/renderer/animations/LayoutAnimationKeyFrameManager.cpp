@@ -27,6 +27,20 @@
 
 #include <glog/logging.h>
 
+// Uncomment to enable verbose LayoutAnimation debug asserts, especially useful
+// for Android
+//#define VERBOSE_LAYOUT_ANIMATION_ASSERTS 1
+
+#ifdef VERBOSE_LAYOUT_ANIMATION_ASSERTS
+#define LA_ASSERT(cond)                        \
+  if (!(cond)) {                               \
+    LOG(ERROR) << "ASSERT FAILURE: " << #cond; \
+  }                                            \
+  assert(cond);
+#else
+#define LA_ASSERT(cond) assert(cond);
+#endif
+
 namespace facebook {
 namespace react {
 
@@ -400,7 +414,8 @@ void LayoutAnimationKeyFrameManager::
         bool skipLastAnimation,
         bool lastAnimationOnly) const {
   bool isRemoveMutation = mutation.type == ShadowViewMutation::Type::Remove;
-  assert(isRemoveMutation || mutation.type == ShadowViewMutation::Type::Insert);
+  LA_ASSERT(
+      isRemoveMutation || mutation.type == ShadowViewMutation::Type::Insert);
 
   // TODO: turn all of this into a lambda and share code?
   if (mutatedViewIsVirtual(mutation)) {
@@ -514,7 +529,7 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
     bool skipLastAnimation) const {
   bool isRemoveMutation = mutation.type == ShadowViewMutation::Type::Remove;
   bool isInsertMutation = mutation.type == ShadowViewMutation::Type::Insert;
-  assert(isRemoveMutation || isInsertMutation);
+  LA_ASSERT(isRemoveMutation || isInsertMutation);
 
   if (mutatedViewIsVirtual(mutation)) {
     PrintMutationInstruction(
@@ -632,15 +647,10 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
 std::vector<AnimationKeyFrame>
 LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
     SurfaceId surfaceId,
-    ShadowViewMutationList const &mutations,
-    bool deletesOnly) const {
+    ShadowViewMutationList const &mutations) const {
   std::vector<AnimationKeyFrame> conflictingAnimations{};
 
   for (auto const &mutation : mutations) {
-    if (deletesOnly && mutation.type != ShadowViewMutation::Type::Delete) {
-      continue;
-    }
-
     auto const &baselineShadowView =
         (mutation.type == ShadowViewMutation::Type::Insert ||
          mutation.type == ShadowViewMutation::Type::Create)
@@ -663,10 +673,7 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
           continue;
         }
 
-        bool conflicting = animatedKeyFrame.tag == baselineShadowView.tag ||
-            ((mutation.type == ShadowViewMutation::Type::Delete ||
-              mutation.type == ShadowViewMutation::Type::Create) &&
-             animatedKeyFrame.parentView.tag == baselineShadowView.tag);
+        bool conflicting = animatedKeyFrame.tag == baselineShadowView.tag;
 
         // Conflicting animation detected: if we're mutating a tag under
         // animation, or deleting the parent of a tag under animation, or
@@ -875,6 +882,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                      mutation.type == ShadowViewMutation::Type::Update
                  ? mutation.oldChildShadowView
                  : mutation.newChildShadowView);
+        LA_ASSERT(baselineShadowView.tag > 0);
         bool haveComponentDescriptor =
             hasComponentDescriptorForShadowView(baselineShadowView);
 
@@ -963,11 +971,19 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 // If there's already an animation queued up, followed by this
                 // Insert, it *must* be an Update mutation animation. Other
                 // sequences should not be possible.
-                assert(keyframe.type == AnimationConfigurationType::Update);
+                LA_ASSERT(keyframe.type == AnimationConfigurationType::Update);
 
-                keyframe.viewPrev = mutation.newChildShadowView.tag != 0
-                    ? mutation.newChildShadowView
-                    : mutation.oldChildShadowView;
+                // The mutation is an "insert", so it must have a
+                // "newChildShadowView"
+                LA_ASSERT(mutation.newChildShadowView.tag > 0);
+
+                // Those asserts don't run in prod. If there's some edge-case
+                // that we haven't caught yet, we'd crash in debug; make sure we
+                // don't mutate the prevView in prod.
+                if (keyframe.type == AnimationConfigurationType::Update &&
+                    mutation.newChildShadowView.tag > 0) {
+                  keyframe.viewPrev = mutation.newChildShadowView;
+                }
               }
             }
           }
@@ -981,11 +997,17 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               mutation.type == ShadowViewMutation::Type::Insert
                   ? mutation.newChildShadowView
                   : mutation.oldChildShadowView);
+          LA_ASSERT(viewStart.tag > 0);
           ShadowView viewFinal = ShadowView(
               mutation.type == ShadowViewMutation::Type::Update
                   ? mutation.newChildShadowView
                   : viewStart);
+          LA_ASSERT(viewFinal.tag > 0);
           ShadowView parent = mutation.parentShadowView;
+          LA_ASSERT(
+              parent.tag > 0 ||
+              mutation.type == ShadowViewMutation::Type::Update ||
+              mutation.type == ShadowViewMutation::Type::Delete);
           Tag tag = viewStart.tag;
 
           AnimationKeyFrame keyFrame{};
@@ -996,12 +1018,20 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)
                       .cloneProps(viewStart.props, {});
+
+              // Dynamic cast, because - we don't know the type of this
+              // ShadowNode, it could be Image or Text or something else with
+              // different base props.
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
                 const_cast<ViewProps *>(viewProps)->opacity = 0;
               }
-              viewStart.props = props;
+
+              LA_ASSERT(props != nullptr);
+              if (props != nullptr) {
+                viewStart.props = props;
+              }
             }
             bool isScaleX =
                 mutationConfig.animationProperty == AnimationProperty::ScaleX ||
@@ -1013,13 +1043,21 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)
                       .cloneProps(viewStart.props, {});
+
+              // Dynamic cast, because - we don't know the type of this
+              // ShadowNode, it could be Image or Text or something else with
+              // different base props.
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
                 const_cast<ViewProps *>(viewProps)->transform =
                     Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
               }
-              viewStart.props = props;
+
+              LA_ASSERT(props != nullptr);
+              if (props != nullptr) {
+                viewStart.props = props;
+              }
             }
 
             keyFrame = AnimationKeyFrame{
@@ -1038,12 +1076,20 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)
                       .cloneProps(viewFinal.props, {});
+
+              // Dynamic cast, because - we don't know the type of this
+              // ShadowNode, it could be Image or Text or something else with
+              // different base props.
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
                 const_cast<ViewProps *>(viewProps)->opacity = 0;
               }
-              viewFinal.props = props;
+
+              LA_ASSERT(props != nullptr);
+              if (props != nullptr) {
+                viewFinal.props = props;
+              }
             }
             bool isScaleX =
                 mutationConfig.animationProperty == AnimationProperty::ScaleX ||
@@ -1055,13 +1101,21 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)
                       .cloneProps(viewFinal.props, {});
+
+              // Dynamic cast, because - we don't know the type of this
+              // ShadowNode, it could be Image or Text or something else with
+              // different base props.
               const auto viewProps =
                   dynamic_cast<const ViewProps *>(props.get());
               if (viewProps != nullptr) {
                 const_cast<ViewProps *>(viewProps)->transform =
                     Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
               }
-              viewFinal.props = props;
+
+              LA_ASSERT(props != nullptr);
+              if (props != nullptr) {
+                viewFinal.props = props;
+              }
             }
 
             keyFrame = AnimationKeyFrame{
@@ -1090,7 +1144,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             // (either this is a "move", or there's a corresponding "Delete"
             // that is animated). We configure it as a Noop animation so it is
             // executed when all the other animations are completed.
-            assert(mutation.type == ShadowViewMutation::Type::Remove);
+            LA_ASSERT(mutation.type == ShadowViewMutation::Type::Remove);
 
             Tag removeTag = mutation.oldChildShadowView.tag;
             auto correspondingInsertIt = std::find_if(
@@ -1132,7 +1186,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               // already made in the current animation, and start the animation
               // from this point.
               keyFrame.viewStart = conflictingKeyFrame.viewPrev;
-              assert(keyFrame.viewStart.tag != 0);
+              LA_ASSERT(keyFrame.viewStart.tag > 0);
               keyFrame.initialProgress = 0;
 
               // We're guaranteed that a tag only has one animation associated
@@ -1143,9 +1197,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             }
           }
 
-          assert(keyFrame.viewStart.tag != 0);
-          assert(keyFrame.viewEnd.tag != 0);
-          assert(keyFrame.viewPrev.tag != 0);
+          LA_ASSERT(keyFrame.viewStart.tag > 0);
+          LA_ASSERT(keyFrame.viewEnd.tag > 0);
+          LA_ASSERT(keyFrame.viewPrev.tag > 0);
           keyFramesToAnimate.push_back(keyFrame);
         }
 
@@ -1234,9 +1288,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           PrintMutationInstruction(
               "Queueing up final mutation instruction - update:",
               mutationInstruction);
-          assert(mutationInstruction.oldChildShadowView.tag != 0);
-          assert(
-              mutationInstruction.newChildShadowView.tag != 0 ||
+          LA_ASSERT(mutationInstruction.oldChildShadowView.tag > 0);
+          LA_ASSERT(
+              mutationInstruction.newChildShadowView.tag > 0 ||
               mutationInstruction.type == ShadowViewMutation::Delete ||
               mutationInstruction.type == ShadowViewMutation::Remove);
           finalConflictingMutations.push_back(mutationInstruction);
@@ -1257,8 +1311,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           auto generatedPenultimateMutation =
               ShadowViewMutation::UpdateMutation(
                   keyFrame.viewPrev, mutatedShadowView);
-          assert(generatedPenultimateMutation.oldChildShadowView.tag != 0);
-          assert(generatedPenultimateMutation.newChildShadowView.tag != 0);
+          LA_ASSERT(generatedPenultimateMutation.oldChildShadowView.tag > 0);
+          LA_ASSERT(generatedPenultimateMutation.newChildShadowView.tag > 0);
           PrintMutationInstruction(
               "Queueing up penultimate mutation instruction - synthetic",
               generatedPenultimateMutation);
@@ -1266,8 +1320,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
           auto generatedMutation = ShadowViewMutation::UpdateMutation(
               mutatedShadowView, keyFrame.viewEnd);
-          assert(generatedMutation.oldChildShadowView.tag != 0);
-          assert(generatedMutation.newChildShadowView.tag != 0);
+          LA_ASSERT(generatedMutation.oldChildShadowView.tag > 0);
+          LA_ASSERT(generatedMutation.newChildShadowView.tag > 0);
           PrintMutationInstruction(
               "Queueing up final mutation instruction - synthetic",
               generatedMutation);
@@ -1440,8 +1494,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           auto generatedPenultimateMutation =
               ShadowViewMutation::UpdateMutation(
                   keyFrame.viewPrev, mutatedShadowView);
-          assert(generatedPenultimateMutation.oldChildShadowView.tag != 0);
-          assert(generatedPenultimateMutation.newChildShadowView.tag != 0);
+          LA_ASSERT(generatedPenultimateMutation.oldChildShadowView.tag > 0);
+          LA_ASSERT(generatedPenultimateMutation.newChildShadowView.tag > 0);
           PrintMutationInstruction(
               "No Animation: Queueing up penultimate mutation instruction - synthetic",
               generatedPenultimateMutation);
@@ -1450,8 +1504,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
           auto generatedMutation = ShadowViewMutation::UpdateMutation(
               mutatedShadowView, keyFrame.viewEnd);
-          assert(generatedMutation.oldChildShadowView.tag != 0);
-          assert(generatedMutation.newChildShadowView.tag != 0);
+          LA_ASSERT(generatedMutation.oldChildShadowView.tag > 0);
+          LA_ASSERT(generatedMutation.newChildShadowView.tag > 0);
           PrintMutationInstruction(
               "No Animation: Queueing up final mutation instruction - synthetic",
               generatedMutation);
@@ -1623,7 +1677,10 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
     double progress,
     ShadowView startingView,
     ShadowView finalView) const {
+  LA_ASSERT(startingView.tag > 0);
+  LA_ASSERT(finalView.tag > 0);
   if (!hasComponentDescriptorForShadowView(startingView)) {
+    LA_ASSERT(false);
     return finalView;
   }
   ComponentDescriptor const &componentDescriptor =
@@ -1637,7 +1694,10 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   // will, so make sure we always keep the mounting layer consistent with the
   // "final" state.
   auto mutatedShadowView = ShadowView(finalView);
+  LA_ASSERT(mutatedShadowView.tag > 0);
 
+  LA_ASSERT(startingView.props != nullptr);
+  LA_ASSERT(finalView.props != nullptr);
   if (startingView.props == nullptr || finalView.props == nullptr) {
     return finalView;
   }
@@ -1645,6 +1705,7 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   // Animate opacity or scale/transform
   mutatedShadowView.props = componentDescriptor.interpolateProps(
       progress, startingView.props, finalView.props);
+  LA_ASSERT(mutatedShadowView.props != nullptr);
 
   // Interpolate LayoutMetrics
   LayoutMetrics const &finalLayoutMetrics = finalView.layoutMetrics;

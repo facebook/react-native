@@ -7,11 +7,10 @@
 
 package com.facebook.react.views.textinput;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.facebook.react.uimanager.events.RCTModernEventEmitter;
 
 /** Event emitted by EditText native view when key pressed */
 public class ReactTextInputKeyPressEvent extends Event<ReactTextInputEvent> {
@@ -35,27 +34,17 @@ public class ReactTextInputKeyPressEvent extends Event<ReactTextInputEvent> {
     return EVENT_NAME;
   }
 
+  @Nullable
+  @Override
+  protected WritableMap getEventData() {
+    WritableMap eventData = Arguments.createMap();
+    eventData.putString("key", mKey);
+    return eventData;
+  }
+
   @Override
   public boolean canCoalesce() {
     // We don't want to miss any textinput event, as event data is incremental.
     return false;
-  }
-
-  @Override
-  public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
-  }
-
-  @Override
-  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(
-        getSurfaceId(), getViewTag(), getEventName(), serializeEventData());
-  }
-
-  private WritableMap serializeEventData() {
-    WritableMap eventData = Arguments.createMap();
-    eventData.putString("key", mKey);
-
-    return eventData;
   }
 }

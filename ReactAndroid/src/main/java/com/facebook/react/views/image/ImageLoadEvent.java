@@ -12,8 +12,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.facebook.react.uimanager.events.RCTModernEventEmitter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -146,30 +144,18 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   }
 
   @Override
-  public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), getEventData());
-  }
-
-  @Override
-  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getSurfaceId(), getViewTag(), getEventName(), getEventData());
-  }
-
-  private WritableMap getEventData() {
-    WritableMap eventData = null;
+  protected WritableMap getEventData() {
+    WritableMap eventData = Arguments.createMap();
 
     switch (mEventType) {
       case ON_PROGRESS:
-        eventData = Arguments.createMap();
         eventData.putInt("loaded", mLoaded);
         eventData.putInt("total", mTotal);
         break;
       case ON_LOAD:
-        eventData = Arguments.createMap();
         eventData.putMap("source", createEventDataSource());
         break;
       case ON_ERROR:
-        eventData = Arguments.createMap();
         eventData.putString("error", mErrorMessage);
         break;
     }

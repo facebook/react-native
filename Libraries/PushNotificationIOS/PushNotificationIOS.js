@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativePushNotificationManagerIOS from './NativePushNotificationManagerIOS';
 import invariant from 'invariant';

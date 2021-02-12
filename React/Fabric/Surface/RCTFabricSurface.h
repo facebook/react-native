@@ -8,6 +8,7 @@
 #import <React/RCTSurfaceProtocol.h>
 #import <React/RCTSurfaceStage.h>
 #import <react/renderer/mounting/MountingCoordinator.h>
+#import <react/renderer/scheduler/SurfaceHandler.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -128,12 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTFabricSurface (Internal)
 
-/**
- * Sets and clears given stage flags (bitmask).
- * Returns `YES` if the actual state was changed.
- */
-- (BOOL)_setStage:(RCTSurfaceStage)stage;
-- (BOOL)_unsetStage:(RCTSurfaceStage)stage;
+- (facebook::react::SurfaceHandler const &)surfaceHandler;
 
 @end
 

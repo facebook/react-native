@@ -52,17 +52,11 @@ class UIManagerDelegate {
       std::string const &eventType) = 0;
 
   /*
-   * Set JS responder for a view
+   * Set JS responder for a view.
    */
-  virtual void uiManagerDidSetJSResponder(
-      SurfaceId surfaceId,
-      ShadowNode::Shared const &shadowView,
-      bool blockNativeResponder) = 0;
-
-  /*
-   * Clear the JSResponder for a view
-   */
-  virtual void uiManagerDidClearJSResponder() = 0;
+  virtual void uiManagerDidSetIsJSResponder(
+      ShadowNode::Shared const &shadowNode,
+      bool isJSResponder) = 0;
 
   virtual ~UIManagerDelegate() noexcept = default;
 };

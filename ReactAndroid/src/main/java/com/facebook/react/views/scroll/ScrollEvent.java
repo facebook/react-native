@@ -14,8 +14,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.facebook.react.uimanager.events.RCTModernEventEmitter;
 
 /** A event dispatched from a ScrollView scrolling. */
 public class ScrollEvent extends Event<ScrollEvent> {
@@ -32,6 +30,32 @@ public class ScrollEvent extends Event<ScrollEvent> {
   private int mScrollViewWidth;
   private int mScrollViewHeight;
   private @Nullable ScrollEventType mScrollEventType;
+
+  @Deprecated
+  public static ScrollEvent obtain(
+      int viewTag,
+      ScrollEventType scrollEventType,
+      int scrollX,
+      int scrollY,
+      float xVelocity,
+      float yVelocity,
+      int contentWidth,
+      int contentHeight,
+      int scrollViewWidth,
+      int scrollViewHeight) {
+    return obtain(
+        -1,
+        viewTag,
+        scrollEventType,
+        scrollX,
+        scrollY,
+        xVelocity,
+        yVelocity,
+        contentWidth,
+        contentHeight,
+        scrollViewWidth,
+        scrollViewHeight);
+  }
 
   public static ScrollEvent obtain(
       int surfaceId,
@@ -115,18 +139,9 @@ public class ScrollEvent extends Event<ScrollEvent> {
     return false;
   }
 
+  @Nullable
   @Override
-  public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
-  }
-
-  @Override
-  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(
-        getSurfaceId(), getViewTag(), getEventName(), serializeEventData());
-  }
-
-  private WritableMap serializeEventData() {
+  protected WritableMap getEventData() {
     WritableMap contentInset = Arguments.createMap();
     contentInset.putDouble("top", 0);
     contentInset.putDouble("bottom", 0);

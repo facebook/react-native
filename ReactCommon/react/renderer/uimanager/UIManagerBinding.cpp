@@ -263,7 +263,7 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "setJSResponder") {
+  if (methodName == "setIsJSResponder") {
     return jsi::Function::createFromHostFunction(
         runtime,
         name,
@@ -273,7 +273,7 @@ jsi::Value UIManagerBinding::get(
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept -> jsi::Value {
-          uiManager->setJSResponder(
+          uiManager->setIsJSResponder(
               shadowNodeFromValue(runtime, arguments[0]),
               arguments[1].getBool());
 
@@ -307,22 +307,6 @@ jsi::Value UIManagerBinding::get(
           EventEmitter::DispatchMutex().unlock();
 
           onSuccessFunction.call(runtime, std::move(instanceHandle));
-          return jsi::Value::undefined();
-        });
-  }
-
-  if (methodName == "clearJSResponder") {
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        0,
-        [uiManager](
-            jsi::Runtime &runtime,
-            jsi::Value const &thisValue,
-            jsi::Value const *arguments,
-            size_t count) noexcept -> jsi::Value {
-          uiManager->clearJSResponder();
-
           return jsi::Value::undefined();
         });
   }
@@ -452,23 +436,21 @@ jsi::Value UIManagerBinding::get(
             auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
             auto shadowNodeList =
                 shadowNodeListFromValue(runtime, arguments[1]);
-
-            sharedUIManager->completeRootEventCounter_ += 1;
+            static std::atomic_uint_fast8_t completeRootEventCounter{0};
+            static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
+            completeRootEventCounter += 1;
+            mostRecentSurfaceId = surfaceId;
             sharedUIManager->backgroundExecutor_(
-                [sharedUIManager,
-                 surfaceId,
-                 shadowNodeList,
-                 eventCount =
-                     sharedUIManager->completeRootEventCounter_.load()] {
-                  auto shouldCancel = [eventCount, sharedUIManager]() -> bool {
-                    // If `eventCounter_` was incremented, another
+                [=, eventCount = completeRootEventCounter.load()] {
+                  auto shouldYield = [=]() -> bool {
+                    // If `completeRootEventCounter` was incremented, another
                     // `completeSurface` call has been scheduled and current
-                    // `completeSurface` should be cancelled.
-                    return sharedUIManager->completeRootEventCounter_ >
-                        eventCount;
+                    // `completeSurface` should yield to it.
+                    return completeRootEventCounter > eventCount &&
+                        mostRecentSurfaceId == surfaceId;
                   };
                   sharedUIManager->completeSurface(
-                      surfaceId, shadowNodeList, {true, shouldCancel});
+                      surfaceId, shadowNodeList, {true, shouldYield});
                 });
 
             return jsi::Value::undefined();

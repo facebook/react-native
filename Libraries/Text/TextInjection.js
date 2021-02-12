@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import typeof Text from './Text';
 
 export default {

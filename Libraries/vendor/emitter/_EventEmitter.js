@@ -9,8 +9,6 @@
  * @typecheck
  */
 
-'use strict';
-
 const invariant = require('invariant');
 
 import EmitterSubscription from './_EmitterSubscription';

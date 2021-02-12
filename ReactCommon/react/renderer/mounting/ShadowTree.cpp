@@ -332,7 +332,7 @@ CommitStatus ShadowTree::tryCommit(
   auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
 
   if (!newRootShadowNode ||
-      (commitOptions.shouldCancel && commitOptions.shouldCancel())) {
+      (commitOptions.shouldYield && commitOptions.shouldYield())) {
     return CommitStatus::Cancelled;
   }
 
@@ -372,7 +372,7 @@ CommitStatus ShadowTree::tryCommit(
         *this, oldRootShadowNode, newRootShadowNode);
 
     if (!newRootShadowNode ||
-        (commitOptions.shouldCancel && commitOptions.shouldCancel())) {
+        (commitOptions.shouldYield && commitOptions.shouldYield())) {
       return CommitStatus::Cancelled;
     }
 

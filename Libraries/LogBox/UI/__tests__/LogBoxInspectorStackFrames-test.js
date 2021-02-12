@@ -9,8 +9,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const React = require('react');
 import LogBoxInspectorStackFrames, {
   getCollapseMessage,

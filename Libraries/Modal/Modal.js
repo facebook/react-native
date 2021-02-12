@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
