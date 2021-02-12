@@ -1015,33 +1015,6 @@ exports[`VirtualizedSectionList renders list with empty component 1`] = `
 </RCTScrollView>
 `;
 
-exports[`VirtualizedSectionList renders null list 1`] = `
-<RCTScrollView
-  disableVirtualization={false}
-  getItem={[Function]}
-  getItemCount={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
-  keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
-  onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
-  onLayout={[Function]}
-  onMomentumScrollBegin={[Function]}
-  onMomentumScrollEnd={[Function]}
-  onScroll={[Function]}
-  onScrollBeginDrag={[Function]}
-  onScrollEndDrag={[Function]}
-  renderItem={[Function]}
-  scrollEventThrottle={50}
-  stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
->
-  <View />
-</RCTScrollView>
-`;
-
 exports[`VirtualizedSectionList renders simple list 1`] = `
 <RCTScrollView
   data={

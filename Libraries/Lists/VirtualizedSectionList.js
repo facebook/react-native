@@ -162,58 +162,55 @@ class VirtualizedSectionList<
     return this._listRef;
   }
 
-  constructor(props: Props<SectionT>, context: Object) {
-    super(props, context);
-    this.state = this._computeState(props);
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps: Props<SectionT>) {
-    this.setState(this._computeState(nextProps));
-  }
-
-  _computeState(props: Props<SectionT>): State {
-    const offset = props.ListHeaderComponent ? 1 : 0;
-    const stickyHeaderIndices = [];
-    const itemCount = props.sections
-      ? props.sections.reduce((v, section) => {
-          stickyHeaderIndices.push(v + offset);
-          return v + props.getItemCount(section.data) + 2; // Add two for the section header and footer.
-        }, 0)
-      : 0;
-
+  render(): React.Node {
     const {
+      ItemSeparatorComponent, // don't pass through, rendered with renderItem
       SectionSeparatorComponent,
-      renderItem,
+      renderItem: _renderItem,
       renderSectionFooter,
       renderSectionHeader,
       sections: _sections,
       stickySectionHeadersEnabled,
-      ...restProps
-    } = props;
+      ...passThroughProps
+    } = this.props;
 
-    return {
-      childProps: {
-        ...restProps,
-        renderItem: this._renderItem,
-        ItemSeparatorComponent: undefined, // Rendered with renderItem
-        data: props.sections,
-        getItemCount: () => itemCount,
-        // $FlowFixMe
-        getItem: (sections, index) => this._getItem(props, sections, index),
-        keyExtractor: this._keyExtractor,
-        onViewableItemsChanged: props.onViewableItemsChanged
-          ? this._onViewableItemsChanged
-          : undefined,
-        stickyHeaderIndices: props.stickySectionHeadersEnabled
-          ? stickyHeaderIndices
-          : undefined,
-      },
-    };
-  }
+    const listHeaderOffset = this.props.ListHeaderComponent ? 1 : 0;
 
-  render(): React.Node {
+    const stickyHeaderIndices = this.props.stickySectionHeadersEnabled
+      ? []
+      : undefined;
+
+    let itemCount = 0;
+    for (const section of this.props.sections) {
+      // Track the section header indices
+      if (stickyHeaderIndices != null) {
+        stickyHeaderIndices.push(itemCount + listHeaderOffset);
+      }
+
+      // Add two for the section header and footer.
+      itemCount += 2;
+      itemCount += this.props.getItemCount(section.data);
+    }
+    const renderItem = this._renderItem(itemCount);
+
     return (
-      <VirtualizedList {...this.state.childProps} ref={this._captureRef} />
+      <VirtualizedList
+        {...passThroughProps}
+        keyExtractor={this._keyExtractor}
+        stickyHeaderIndices={stickyHeaderIndices}
+        renderItem={renderItem}
+        data={this.props.sections}
+        getItem={(sections, index) =>
+          this._getItem(this.props, sections, index)
+        }
+        getItemCount={() => itemCount}
+        onViewableItemsChanged={
+          this.props.onViewableItemsChanged
+            ? this._onViewableItemsChanged
+            : undefined
+        }
+        ref={this._captureRef}
+      />
     );
   }
 
@@ -344,7 +341,14 @@ class VirtualizedSectionList<
     }
   };
 
-  _renderItem = ({item, index}: {item: Item, index: number, ...}) => {
+  _renderItem = (listItemCount: number) => ({
+    item,
+    index,
+  }: {
+    item: Item,
+    index: number,
+    ...
+  }) => {
     const info = this._subExtractor(index);
     if (!info) {
       return null;
@@ -361,7 +365,11 @@ class VirtualizedSectionList<
       }
     } else {
       const renderItem = info.section.renderItem || this.props.renderItem;
-      const SeparatorComponent = this._getSeparatorComponent(index, info);
+      const SeparatorComponent = this._getSeparatorComponent(
+        index,
+        info,
+        listItemCount,
+      );
       invariant(renderItem, 'no renderItem!');
       return (
         <ItemWithSeparator
@@ -397,6 +405,7 @@ class VirtualizedSectionList<
   _getSeparatorComponent(
     index: number,
     info?: ?Object,
+    listItemCount: number,
   ): ?React.ComponentType<any> {
     info = info || this._subExtractor(index);
     if (!info) {
@@ -405,7 +414,7 @@ class VirtualizedSectionList<
     const ItemSeparatorComponent =
       info.section.ItemSeparatorComponent || this.props.ItemSeparatorComponent;
     const {SectionSeparatorComponent} = this.props;
-    const isLastItemInList = index === this.state.childProps.getItemCount() - 1;
+    const isLastItemInList = index === listItemCount - 1;
     const isLastItemInSection =
       info.index === this.props.getItemCount(info.section.data) - 1;
     if (SectionSeparatorComponent && isLastItemInSection) {
