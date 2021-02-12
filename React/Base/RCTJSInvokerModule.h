@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * This protocol should be adopted when a turbo module needs to directly call into JavaScript.
  * In bridge-less React Native, it is a replacement for [_bridge enqueueJSCall:].
@@ -16,3 +18,5 @@
 @property (nonatomic, copy) void (^invokeJSWithModuleDotMethod)(NSString *moduleDotMethod, NSArray *args);
 
 @end
+
+NS_ASSUME_NONNULL_END
