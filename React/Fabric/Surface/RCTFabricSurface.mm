@@ -67,8 +67,9 @@ using namespace facebook::react;
 
 - (void)resetWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
 {
-  _surfacePresenter = surfacePresenter;
   _view = nil;
+  _surfacePresenter = surfacePresenter;
+  [_surfacePresenter registerSurface:self];
 }
 
 - (void)dealloc
