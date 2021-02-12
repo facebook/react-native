@@ -10,7 +10,7 @@ pr:
   branches:
     include:
       - master
-      - 0.59-stable
+      - '*-stable'
   paths:
     exclude:
       - '*.md'
