@@ -259,8 +259,6 @@
 {
   if (![self becomeFirstResponder]) {
     self.reactIsFocusNeeded = YES;
-  } else {
-      self.reactIsFocusNeeded = NO;
   }
 }
 
