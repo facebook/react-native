@@ -10,17 +10,14 @@
 
 /* global device, element, by, expect */
 const {
-  openComponentWithLabel,
+  openComponentWithId,
   openExampleWithTitle,
 } = require('../e2e-helpers');
 
 describe('Button', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
-    await openComponentWithLabel(
-      'Button',
-      'Button Simple React Native button component.',
-    );
+    await openComponentWithId('Button', 'Button');
   });
 
   it('Default Styling button should be tappable', async () => {

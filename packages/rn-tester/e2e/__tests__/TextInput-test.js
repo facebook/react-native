@@ -10,17 +10,14 @@
 
 /* global device, element, by, expect */
 const {
-  openComponentWithLabel,
+  openComponentWithId,
   openExampleWithTitle,
 } = require('../e2e-helpers');
 
 describe('TextInput', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
-    await openComponentWithLabel(
-      'TextInput',
-      'Single and multi-line text inputs.',
-    );
+    await openComponentWithId('TextInput', 'TextInput');
   });
 
   it('Live rewrite with spaces should replace spaces and enforce max length', async () => {
