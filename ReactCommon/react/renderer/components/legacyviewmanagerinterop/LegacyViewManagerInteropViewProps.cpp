@@ -10,12 +10,26 @@
 namespace facebook {
 namespace react {
 
-static folly::dynamic recursiveMerge(
-    folly::dynamic const &lhs,
-    folly::dynamic const &rhs) {
-  auto copy = lhs;
-  copy.merge_patch(rhs);
-  return copy;
+static folly::dynamic mergeRawProps(
+    folly::dynamic const &source,
+    folly::dynamic const &patch) {
+  auto result = source;
+
+  if (!result.isObject()) {
+    result = folly::dynamic::object();
+  }
+
+  if (!patch.isObject()) {
+    return result;
+  }
+
+  // Note, here we have to preserve sub-prop objects with `null` value as
+  // an indication for the legacy mounting layer that it needs to clean them up.
+  for (auto const &pair : patch.items()) {
+    result[pair.first] = pair.second;
+  }
+
+  return result;
 }
 
 LegacyViewManagerInteropViewProps::LegacyViewManagerInteropViewProps(
@@ -23,7 +37,7 @@ LegacyViewManagerInteropViewProps::LegacyViewManagerInteropViewProps(
     const RawProps &rawProps)
     : ViewProps(sourceProps, rawProps),
       otherProps(
-          recursiveMerge(sourceProps.otherProps, (folly::dynamic)rawProps)) {}
+          mergeRawProps(sourceProps.otherProps, (folly::dynamic)rawProps)) {}
 
 } // namespace react
 } // namespace facebook
