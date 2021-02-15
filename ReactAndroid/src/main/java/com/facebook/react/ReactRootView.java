@@ -649,6 +649,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     mJSTouchDispatcher = new JSTouchDispatcher(this);
   }
 
+  @VisibleForTesting
+  /* package */ void simulateCheckForKeyboardForTesting() {
+    getCustomGlobalLayoutListener().checkForKeyboardEvents();
+  }
+
   private CustomGlobalLayoutListener getCustomGlobalLayoutListener() {
     if (mCustomGlobalLayoutListener == null) {
       mCustomGlobalLayoutListener = new CustomGlobalLayoutListener();

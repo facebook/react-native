@@ -7,24 +7,16 @@
 
 package com.facebook.react;
 
-import com.facebook.react.uimanager.ReactRoot;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.bridge.WritableMap;
-import android.util.Log;
-import android.graphics.Rect;
-
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import org.mockito.Mockito;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
@@ -35,6 +27,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.SystemClock;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.Event;
@@ -46,6 +39,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
@@ -225,24 +219,27 @@ public class RootViewTest {
     when(instanceManager.getCurrentReactContext()).thenReturn(mReactContext);
     UIManagerModule uiManager = mock(UIManagerModule.class);
     EventDispatcher eventDispatcher = mock(EventDispatcher.class);
-    DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitterModuleMock = mock(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-    when(mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)).thenReturn(eventEmitterModuleMock);
+    DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitterModuleMock =
+        mock(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+    when(mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class))
+        .thenReturn(eventEmitterModuleMock);
     when(mCatalystInstanceMock.getNativeModule(UIManagerModule.class)).thenReturn(uiManager);
     when(uiManager.getEventDispatcher()).thenReturn(eventDispatcher);
 
     int rootViewId = 7;
 
-    ReactRootView rootView = new ReactRootView(mReactContext) {
-      @Override
-      public void getWindowVisibleDisplayFrame(Rect outRect) {
-        outRect.bottom += 100;
-      }
-    };
+    ReactRootView rootView =
+        new ReactRootView(mReactContext) {
+          @Override
+          public void getWindowVisibleDisplayFrame(Rect outRect) {
+            outRect.bottom += 100;
+          }
+        };
     rootView.setId(rootViewId);
     rootView.setRootViewTag(rootViewId);
     rootView.startReactApplication(instanceManager, "");
     rootView.simulateAttachForTesting();
-    rootView.getCustomGlobalLayoutListener().checkForKeyboardEvents();
-    verify(instanceManager, Mockito.times(2)).getCurrentReactContext();
+    rootView.simulateCheckForKeyboardForTesting();
+    verify(instanceManager, Mockito.times(1)).getCurrentReactContext();
   }
 }
