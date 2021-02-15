@@ -11,10 +11,6 @@
 
 'use strict';
 
-jest.mock('../../../Core/Devtools/parseErrorStack', () => {
-  return {__esModule: true, default: jest.fn(() => [])};
-});
-
 const {parseLogBoxLog, parseLogBoxException} = require('../parseLogBoxLog');
 
 describe('parseLogBoxLog', () => {
@@ -736,6 +732,501 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           collapse: false,
         },
       ],
+    });
+  });
+
+  describe('Handles component stack frames formatted as call stacks', () => {
+    // In new versions of React, the component stack frame format changed to match call stacks.
+    it('detects a component stack in an interpolated warning', () => {
+      expect(
+        parseLogBoxLog([
+          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
+          '\n\nCheck the render method of `MyComponent`.',
+          '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n     at MyAppComponent (/path/to/app.js:100:20)',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            collapse: false,
+            content: 'MyComponent',
+            fileName: '/path/to/filename.js',
+            location: {column: 1, row: 1},
+          },
+          // TODO: we're missing the second component,
+          // because React isn't sending back a properly formatted stackframe.
+          {
+            collapse: false,
+            content: 'MyAppComponent',
+            fileName: '/path/to/app.js',
+            location: {column: 19, row: 100},
+          },
+        ],
+        category:
+          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
+        message: {
+          content:
+            'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `MyComponent`.',
+          substitutions: [
+            {
+              length: 43,
+              offset: 129,
+            },
+          ],
+        },
+      });
+    });
+
+    it('detects a component stack in the first argument', () => {
+      expect(
+        parseLogBoxLog([
+          'Some kind of message\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n     at MyAppComponent (/path/to/app.js:100:20)',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            collapse: false,
+            content: 'MyComponent',
+            fileName: '/path/to/filename.js',
+            location: {column: 1, row: 1},
+          },
+          // TODO: we're missing the second component,
+          // because React isn't sending back a properly formatted stackframe.
+          {
+            collapse: false,
+            content: 'MyAppComponent',
+            fileName: '/path/to/app.js',
+            location: {column: 19, row: 100},
+          },
+        ],
+        category: 'Some kind of message',
+        message: {
+          content: 'Some kind of message',
+          substitutions: [],
+        },
+      });
+    });
+
+    it('detects a component stack in the second argument', () => {
+      expect(
+        parseLogBoxLog([
+          'Some kind of message',
+          '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n     at MyAppComponent (/path/to/app.js:100:20)',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            collapse: false,
+            content: 'MyComponent',
+            fileName: '/path/to/filename.js',
+            location: {column: 1, row: 1},
+          },
+          // TODO: we're missing the second component,
+          // because React isn't sending back a properly formatted stackframe.
+          {
+            collapse: false,
+            content: 'MyAppComponent',
+            fileName: '/path/to/app.js',
+            location: {column: 19, row: 100},
+          },
+        ],
+        category: 'Some kind of message',
+        message: {
+          content: 'Some kind of message',
+          substitutions: [],
+        },
+      });
+    });
+
+    it('detects a component stack in the nth argument', () => {
+      expect(
+        parseLogBoxLog([
+          'Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
+          '\n\nCheck the render method of `MyOtherComponent`.',
+          '',
+          '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n     at MyAppComponent (/path/to/app.js:100:20)',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            collapse: false,
+            content: 'MyComponent',
+            fileName: '/path/to/filename.js',
+            location: {column: 1, row: 1},
+          },
+          // TODO: we're missing the second component,
+          // because React isn't sending back a properly formatted stackframe.
+          {
+            collapse: false,
+            content: 'MyAppComponent',
+            fileName: '/path/to/app.js',
+            location: {column: 19, row: 100},
+          },
+        ],
+        category:
+          'Warning: Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
+        message: {
+          content:
+            'Warning: Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
+          substitutions: [
+            {
+              length: 48,
+              offset: 62,
+            },
+            {
+              length: 0,
+              offset: 110,
+            },
+          ],
+        },
+      });
+    });
+
+    it('parses an error log with `error.componentStack`', () => {
+      const error = {
+        id: 0,
+        isFatal: false,
+        isComponentError: false,
+        message: '### Error',
+        originalMessage: '### Error',
+        name: '',
+        componentStack:
+          '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n     at MyAppComponent (/path/to/app.js:100:20)',
+        stack: [
+          {
+            column: 1,
+            file: 'foo.js',
+            lineNumber: 1,
+            methodName: 'bar',
+            collapse: false,
+          },
+        ],
+      };
+
+      expect(parseLogBoxException(error)).toEqual({
+        level: 'error',
+        category: '### Error',
+        isComponentError: false,
+        message: {
+          content: '### Error',
+          substitutions: [],
+        },
+        componentStack: [
+          {
+            collapse: false,
+            content: 'MyComponent',
+            fileName: '/path/to/filename.js',
+            location: {column: 1, row: 1},
+          },
+          // TODO: we're missing the second component,
+          // because React isn't sending back a properly formatted stackframe.
+          {
+            collapse: false,
+            content: 'MyAppComponent',
+            fileName: '/path/to/app.js',
+            location: {column: 19, row: 100},
+          },
+        ],
+        stack: [
+          {
+            column: 1,
+            file: 'foo.js',
+            lineNumber: 1,
+            methodName: 'bar',
+            collapse: false,
+          },
+        ],
+      });
+    });
+  });
+
+  describe('Handles component stack frames formatted as call stacks in JSC', () => {
+    // In new versions of React, the component stack frame format changed to match call stacks.
+    it('detects a component stack in an interpolated warning', () => {
+      expect(
+        parseLogBoxLog([
+          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
+          '\n\nCheck the render method of `MyComponent`.',
+          '\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            collapse: false,
+            content: 'MyComponent',
+            fileName: '/path/to/filename.js',
+            location: {column: 1, row: 1},
+          },
+          // TODO: we're missing the second component,
+          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'MyAppComponent',
+            fileName: '/path/to/app.js',
+            location: {column: 19, row: 100},
+          },
+        ],
+        category:
+          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
+        message: {
+          content:
+            'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `MyComponent`.',
+          substitutions: [
+            {
+              length: 43,
+              offset: 129,
+            },
+          ],
+        },
+      });
+    });
+
+    it('detects a component stack in the first argument', () => {
+      expect(
+        parseLogBoxLog([
+          'Some kind of message\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            collapse: false,
+            content: 'MyComponent',
+            fileName: '/path/to/filename.js',
+            location: {column: 1, row: 1},
+          },
+          // TODO: we're missing the second component,
+          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'MyAppComponent',
+            fileName: '/path/to/app.js',
+            location: {column: 19, row: 100},
+          },
+        ],
+        category: 'Some kind of message',
+        message: {
+          content: 'Some kind of message',
+          substitutions: [],
+        },
+      });
+    });
+
+    it('detects a component stack in the first argument (JSC)', () => {
+      expect(
+        parseLogBoxLog([
+          'Some kind of message\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            collapse: false,
+            content: 'MyComponent',
+            fileName: '/path/to/filename.js',
+            location: {column: 1, row: 1},
+          },
+          // TODO: we're missing the second component,
+          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'MyAppComponent',
+            fileName: '/path/to/app.js',
+            location: {column: 19, row: 100},
+          },
+        ],
+        category: 'Some kind of message',
+        message: {
+          content: 'Some kind of message',
+          substitutions: [],
+        },
+      });
+    });
+
+    it('detects a component stack in the second argument', () => {
+      expect(
+        parseLogBoxLog([
+          'Some kind of message',
+          '\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            collapse: false,
+            content: 'MyComponent',
+            fileName: '/path/to/filename.js',
+            location: {column: 1, row: 1},
+          },
+          // TODO: we're missing the second component,
+          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'MyAppComponent',
+            fileName: '/path/to/app.js',
+            location: {column: 19, row: 100},
+          },
+        ],
+        category: 'Some kind of message',
+        message: {
+          content: 'Some kind of message',
+          substitutions: [],
+        },
+      });
+    });
+
+    it('detects a component stack in the nth argument', () => {
+      expect(
+        parseLogBoxLog([
+          'Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
+          '\n\nCheck the render method of `MyOtherComponent`.',
+          '',
+          '\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
+        ]),
+      ).toEqual({
+        componentStack: [
+          {
+            collapse: false,
+            content: 'MyComponent',
+            fileName: '/path/to/filename.js',
+            location: {column: 1, row: 1},
+          },
+          // TODO: we're missing the second component,
+          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'MyAppComponent',
+            fileName: '/path/to/app.js',
+            location: {column: 19, row: 100},
+          },
+        ],
+        category:
+          'Warning: Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
+        message: {
+          content:
+            'Warning: Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
+          substitutions: [
+            {
+              length: 48,
+              offset: 62,
+            },
+            {
+              length: 0,
+              offset: 110,
+            },
+          ],
+        },
+      });
+    });
+
+    it('parses an error log with `error.componentStack`', () => {
+      const error = {
+        id: 0,
+        isFatal: false,
+        isComponentError: false,
+        message: '### Error',
+        originalMessage: '### Error',
+        name: '',
+        componentStack:
+          '\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
+        stack: [
+          {
+            column: 1,
+            file: 'foo.js',
+            lineNumber: 1,
+            methodName: 'bar',
+            collapse: false,
+          },
+        ],
+      };
+
+      expect(parseLogBoxException(error)).toEqual({
+        level: 'error',
+        category: '### Error',
+        isComponentError: false,
+        message: {
+          content: '### Error',
+          substitutions: [],
+        },
+        componentStack: [
+          {
+            collapse: false,
+            content: 'MyComponent',
+            fileName: '/path/to/filename.js',
+            location: {column: 1, row: 1},
+          },
+          // TODO: we're missing the second component,
+          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'MyAppComponent',
+            fileName: '/path/to/app.js',
+            location: {column: 19, row: 100},
+          },
+        ],
+        stack: [
+          {
+            column: 1,
+            file: 'foo.js',
+            lineNumber: 1,
+            methodName: 'bar',
+            collapse: false,
+          },
+        ],
+      });
+    });
+
+    it('parses an error log with a component stack in the message', () => {
+      const error = {
+        id: 0,
+        isFatal: false,
+        isComponentError: false,
+        message:
+          'Some kind of message\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
+        originalMessage:
+          'Some kind of message\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
+        name: '',
+        componentStack: null,
+        stack: [
+          {
+            column: 1,
+            file: 'foo.js',
+            lineNumber: 1,
+            methodName: 'bar',
+            collapse: false,
+          },
+        ],
+      };
+      expect(parseLogBoxException(error)).toEqual({
+        level: 'error',
+        isComponentError: false,
+        stack: [
+          {
+            collapse: false,
+            column: 1,
+            file: 'foo.js',
+            lineNumber: 1,
+            methodName: 'bar',
+          },
+        ],
+        componentStack: [
+          {
+            collapse: false,
+            content: 'MyComponent',
+            fileName: '/path/to/filename.js',
+            location: {column: 1, row: 1},
+          },
+          // TODO: we're missing the second component,
+          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'MyAppComponent',
+            fileName: '/path/to/app.js',
+            location: {column: 19, row: 100},
+          },
+        ],
+        category: 'Some kind of message',
+        message: {
+          content: 'Some kind of message',
+          substitutions: [],
+        },
+      });
     });
   });
 });

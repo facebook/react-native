@@ -6,16 +6,17 @@
  */
 
 #import "RCTParagraphComponentView.h"
+#import "RCTParagraphComponentAccessibilityProvider.h"
 
-#import <react/components/text/ParagraphComponentDescriptor.h>
-#import <react/components/text/ParagraphProps.h>
-#import <react/components/text/ParagraphState.h>
-#import <react/components/text/RawTextComponentDescriptor.h>
-#import <react/components/text/TextComponentDescriptor.h>
-#import <react/graphics/Geometry.h>
-#import <react/textlayoutmanager/RCTAttributedTextUtils.h>
-#import <react/textlayoutmanager/RCTTextLayoutManager.h>
-#import <react/textlayoutmanager/TextLayoutManager.h>
+#import <react/renderer/components/text/ParagraphComponentDescriptor.h>
+#import <react/renderer/components/text/ParagraphProps.h>
+#import <react/renderer/components/text/ParagraphState.h>
+#import <react/renderer/components/text/RawTextComponentDescriptor.h>
+#import <react/renderer/components/text/TextComponentDescriptor.h>
+#import <react/renderer/graphics/Geometry.h>
+#import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
+#import <react/renderer/textlayoutmanager/RCTTextLayoutManager.h>
+#import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "RCTConversions.h"
@@ -26,6 +27,7 @@ using namespace facebook::react;
 @implementation RCTParagraphComponentView {
   ParagraphShadowNode::ConcreteState::Shared _state;
   ParagraphAttributes _paragraphAttributes;
+  RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -34,8 +36,6 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const ParagraphProps>();
     _props = defaultProps;
 
-    self.isAccessibilityElement = YES;
-    self.accessibilityTraits |= UIAccessibilityTraitStaticText;
     self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
   }
@@ -73,8 +73,9 @@ using namespace facebook::react;
 
 + (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders
 {
-  return {concreteComponentDescriptorProvider<RawTextComponentDescriptor>(),
-          concreteComponentDescriptorProvider<TextComponentDescriptor>()};
+  return {
+      concreteComponentDescriptorProvider<RawTextComponentDescriptor>(),
+      concreteComponentDescriptorProvider<TextComponentDescriptor>()};
 }
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
@@ -126,17 +127,50 @@ using namespace facebook::react;
 
 - (NSString *)accessibilityLabel
 {
-  NSString *superAccessibilityLabel = RCTNSStringFromStringNilIfEmpty(_props->accessibilityLabel);
-  if (superAccessibilityLabel) {
-    return superAccessibilityLabel;
-  }
-
-  if (!_state) {
-    return nil;
-  }
-
-  return RCTNSStringFromString(_state->getData().attributedString.getString());
+  return self.attributedText.string;
 }
+
+- (BOOL)isAccessibilityElement
+{
+  // All accessibility functionality of the component is implemented in `accessibilityElements` method below.
+  // Hence to avoid calling all other methods from `UIAccessibilityContainer` protocol (most of them have default
+  // implementations), we return here `NO`.
+  return NO;
+}
+
+- (NSArray *)accessibilityElements
+{
+  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+
+  // If the component is not `accessible`, we return an empty array.
+  // We do this because logically all nested <Text> components represent the content of the <Paragraph> component;
+  // in other words, all nested <Text> components individually have no sense without the <Paragraph>.
+  if (!_state || !paragraphProps.accessible) {
+    return [NSArray new];
+  }
+
+  auto &data = _state->getData();
+
+  if (![_accessibilityProvider isUpToDate:data.attributedString]) {
+    RCTTextLayoutManager *textLayoutManager =
+        (RCTTextLayoutManager *)unwrapManagedObject(data.layoutManager->getNativeTextLayoutManager());
+    CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+    _accessibilityProvider = [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:data.attributedString
+                                                                                  layoutManager:textLayoutManager
+                                                                            paragraphAttributes:data.paragraphAttributes
+                                                                                          frame:frame
+                                                                                           view:self];
+  }
+
+  return _accessibilityProvider.accessibilityElements;
+}
+
+- (UIAccessibilityTraits)accessibilityTraits
+{
+  return [super accessibilityTraits] | UIAccessibilityTraitStaticText;
+}
+
+#pragma mark - RCTTouchableComponentViewProtocol
 
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
 {

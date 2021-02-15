@@ -5,10 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
-
-'use strict';
 
 import NativeSourceCode from '../../NativeModules/specs/NativeSourceCode';
 
@@ -36,7 +34,7 @@ function getDevServer(): DevServerInfo {
   }
 
   return {
-    url: _cachedDevServerURL || FALLBACK,
+    url: _cachedDevServerURL ?? FALLBACK,
     fullBundleUrl: _cachedFullBundleURL,
     bundleLoadedFromServer: _cachedDevServerURL !== null,
   };

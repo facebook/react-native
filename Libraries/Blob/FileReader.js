@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const Blob = require('./Blob');
 const EventTarget = require('event-target-shim');
 

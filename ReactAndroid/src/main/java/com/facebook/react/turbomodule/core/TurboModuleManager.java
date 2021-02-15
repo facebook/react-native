@@ -10,16 +10,13 @@ package com.facebook.react.turbomodule.core;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.JSIModule;
-import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
@@ -52,14 +49,14 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   private final HybridData mHybridData;
 
   public TurboModuleManager(
-      JavaScriptContextHolder jsContext,
+      RuntimeExecutor runtimeExecutor,
       @Nullable final TurboModuleManagerDelegate delegate,
       CallInvokerHolder jsCallInvokerHolder,
       CallInvokerHolder nativeCallInvokerHolder) {
     maybeLoadSoLibrary();
     mHybridData =
         initHybrid(
-            jsContext.get(),
+            runtimeExecutor,
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (CallInvokerHolderImpl) nativeCallInvokerHolder,
             delegate);
@@ -142,15 +139,6 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         /*
          * Always return null after cleanup has started, so that getModule(moduleName) returns null.
          */
-
-        if (ReactFeatureFlags.enableTurboModuleDebugLogs) {
-          // TODO(T46487253): Remove after task is closed
-          FLog.e(
-              ReactConstants.TAG,
-              "TurboModuleManager.getOrMaybeCreateTurboModuleHolder: Tried to require TurboModule "
-                  + moduleName
-                  + " after cleanup initiated");
-        }
         return null;
       }
 
@@ -165,7 +153,16 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       moduleHolder = mTurboModuleHolders.get(moduleName);
     }
 
-    return getModule(moduleName, moduleHolder);
+    TurboModulePerfLogger.moduleCreateStart(moduleName, moduleHolder.getModuleId());
+    TurboModule module = getModule(moduleName, moduleHolder, true);
+
+    if (module != null) {
+      TurboModulePerfLogger.moduleCreateEnd(moduleName, moduleHolder.getModuleId());
+    } else {
+      TurboModulePerfLogger.moduleCreateFail(moduleName, moduleHolder.getModuleId());
+    }
+
+    return module;
   }
 
   /**
@@ -176,11 +173,16 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
    * initialized.
    */
   @Nullable
-  private TurboModule getModule(String moduleName, @NonNull TurboModuleHolder moduleHolder) {
+  private TurboModule getModule(
+      String moduleName, @NonNull TurboModuleHolder moduleHolder, boolean shouldPerfLog) {
     boolean shouldCreateModule = false;
 
     synchronized (moduleHolder) {
       if (moduleHolder.isDoneCreatingModule()) {
+        if (shouldPerfLog) {
+          TurboModulePerfLogger.moduleCreateCacheHit(moduleName, moduleHolder.getModuleId());
+        }
+
         return moduleHolder.getModule();
       }
 
@@ -192,11 +194,15 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     }
 
     if (shouldCreateModule) {
+      TurboModulePerfLogger.moduleCreateConstructStart(moduleName, moduleHolder.getModuleId());
       TurboModule turboModule = mJavaModuleProvider.getModule(moduleName);
 
       if (turboModule == null) {
         turboModule = mCxxModuleProvider.getModule(moduleName);
       }
+
+      TurboModulePerfLogger.moduleCreateConstructEnd(moduleName, moduleHolder.getModuleId());
+      TurboModulePerfLogger.moduleCreateSetUpStart(moduleName, moduleHolder.getModuleId());
 
       if (turboModule != null) {
         synchronized (moduleHolder) {
@@ -209,12 +215,9 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
          * Therefore, we should initialize on the TurboModule now.
          */
         ((NativeModule) turboModule).initialize();
-      } else {
-        FLog.e(
-            ReactConstants.TAG,
-            "TurboModuleManager.getModule: TurboModule " + moduleName + " not found in delegate");
       }
 
+      TurboModulePerfLogger.moduleCreateSetUpEnd(moduleName, moduleHolder.getModuleId());
       synchronized (moduleHolder) {
         moduleHolder.endCreatingModule();
         moduleHolder.notifyAll();
@@ -285,7 +288,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   }
 
   private native HybridData initHybrid(
-      long jsContext,
+      RuntimeExecutor runtimeExecutor,
       CallInvokerHolderImpl jsCallInvokerHolder,
       CallInvokerHolderImpl nativeCallInvokerHolder,
       TurboModuleManagerDelegate tmmDelegate);
@@ -320,7 +323,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
        * initialized. In this case, we should wait for initialization to complete, before destroying
        * the TurboModule.
        */
-      final TurboModule turboModule = getModule(moduleName, moduleHolder);
+      final TurboModule turboModule = getModule(moduleName, moduleHolder, false);
 
       if (turboModule != null) {
         // TODO(T48014458): Rename this to invalidate()
@@ -346,6 +349,17 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     private volatile TurboModule mModule = null;
     private volatile boolean mIsTryingToCreate = false;
     private volatile boolean mIsDoneCreatingModule = false;
+    private static volatile int sHolderCount = 0;
+    private volatile int mModuleId;
+
+    public TurboModuleHolder() {
+      mModuleId = sHolderCount;
+      sHolderCount += 1;
+    }
+
+    int getModuleId() {
+      return mModuleId;
+    }
 
     void setModule(@NonNull TurboModule module) {
       mModule = module;

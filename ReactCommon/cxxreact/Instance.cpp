@@ -108,6 +108,18 @@ void Instance::loadScriptFromString(
   }
 }
 
+bool Instance::isHBCBundle(const char *sourcePath) {
+  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
+  BundleHeader header;
+
+  if (!bundle_stream ||
+      !bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header))) {
+    return false;
+  }
+
+  return parseTypeFromHeader(header) == ScriptTag::HBCBundle;
+}
+
 bool Instance::isIndexedRAMBundle(const char *sourcePath) {
   std::ifstream bundle_stream(sourcePath, std::ios_base::in);
   BundleHeader header;
@@ -222,7 +234,11 @@ ModuleRegistry &Instance::getModuleRegistry() {
 }
 
 void Instance::handleMemoryPressure(int pressureLevel) {
-  nativeToJsBridge_->handleMemoryPressure(pressureLevel);
+  if (nativeToJsBridge_) {
+    // This class resets `nativeToJsBridge_` only in the destructor,
+    // hence a race is not possible there.
+    nativeToJsBridge_->handleMemoryPressure(pressureLevel);
+  }
 }
 
 std::shared_ptr<CallInvoker> Instance::getJSCallInvoker() {

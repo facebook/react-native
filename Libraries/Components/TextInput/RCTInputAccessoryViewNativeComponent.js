@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 
@@ -21,6 +19,8 @@ type NativeProps = $ReadOnly<{|
   backgroundColor?: ?ColorValue,
 |}>;
 
-export default (codegenNativeComponent<NativeProps>(
-  'RCTInputAccessoryView',
-): HostComponent<NativeProps>);
+export default (codegenNativeComponent<NativeProps>('InputAccessory', {
+  interfaceOnly: true,
+  paperComponentName: 'RCTInputAccessoryView',
+  excludedPlatforms: ['android'],
+}): HostComponent<NativeProps>);

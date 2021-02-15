@@ -58,8 +58,10 @@
   if (options.activityIndicatorComponentFactory == nil || RCTSurfaceStageIsRunning(state.surface.stage)) {
     component = surfaceHostingComponent;
   } else {
-    component = [CKOverlayLayoutComponent newWithComponent:surfaceHostingComponent
-                                                   overlay:options.activityIndicatorComponentFactory()];
+    component = CK::OverlayLayoutComponentBuilder()
+    .component(surfaceHostingComponent)
+    .overlay(options.activityIndicatorComponentFactory())
+    .build();
   }
 
   return [super newWithComponent:component];

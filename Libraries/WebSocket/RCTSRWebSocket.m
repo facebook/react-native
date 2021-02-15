@@ -462,7 +462,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Origin"), (__bridge CFStringRef)_url.RCTSR_origin);
 
-  if (_requestedProtocols) {
+  if (_requestedProtocols && _requestedProtocols.count > 0) {
     CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Sec-WebSocket-Protocol"), (__bridge CFStringRef)[_requestedProtocols componentsJoinedByString:@", "]);
   }
 

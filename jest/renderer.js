@@ -9,10 +9,9 @@
  * @flow
  */
 
-'use strict';
-
 const React = require('react');
-const ShallowRenderer = require('react-test-renderer/shallow');
+
+const ShallowRenderer = require('react-shallow-renderer');
 const TestRenderer = require('react-test-renderer');
 
 /* $FlowFixMe(>=0.125.1 site=react_native_fb) This comment suppresses an error

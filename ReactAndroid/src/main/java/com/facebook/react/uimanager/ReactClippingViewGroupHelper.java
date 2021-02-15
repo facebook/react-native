@@ -8,7 +8,6 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.view.View;
 import android.view.ViewParent;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -56,52 +55,5 @@ public class ReactClippingViewGroupHelper {
       }
     }
     view.getDrawingRect(outputRect);
-  }
-
-  public static boolean getChildVisibleRectHelper(
-      View child, Rect r, android.graphics.Point offset, View parent, String overflow) {
-    // This is based on the Android ViewGroup implementation, modified to clip child rects
-    // if overflow is set to ViewProps.HIDDEN. This effectively solves Issue #23870 which
-    // appears to have been introduced by FLAG_CLIP_CHILDREN being forced false
-    // regardless of whether clipping is desired.
-    final RectF rect = new RectF();
-    rect.set(r);
-
-    child.getMatrix().mapRect(rect);
-
-    final int dx = child.getLeft() - parent.getScrollX();
-    final int dy = child.getTop() - parent.getScrollY();
-
-    rect.offset(dx, dy);
-
-    if (offset != null) {
-      float[] position = new float[2];
-      position[0] = offset.x;
-      position[1] = offset.y;
-      child.getMatrix().mapPoints(position);
-      offset.x = Math.round(position[0]) + dx;
-      offset.y = Math.round(position[1]) + dy;
-    }
-
-    final int width = parent.getRight() - parent.getLeft();
-    final int height = parent.getBottom() - parent.getTop();
-
-    boolean rectIsVisible = true;
-
-    ViewParent grandparent = parent.getParent();
-    if (grandparent == null || ViewProps.HIDDEN.equals(overflow)) {
-      rectIsVisible = rect.intersect(0, 0, width, height);
-    }
-
-    r.set(
-        (int) Math.floor(rect.left),
-        (int) Math.floor(rect.top),
-        (int) Math.ceil(rect.right),
-        (int) Math.ceil(rect.bottom));
-
-    if (rectIsVisible && grandparent != null) {
-      rectIsVisible = grandparent.getChildVisibleRect(parent, r, offset);
-    }
-    return rectIsVisible;
   }
 }

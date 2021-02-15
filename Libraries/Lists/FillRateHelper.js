@@ -10,9 +10,6 @@
 
 'use strict';
 
-const performanceNow = require('fbjs/lib/performanceNow');
-const warning = require('fbjs/lib/warning');
-
 export type FillRateInfo = Info;
 
 class Info {
@@ -60,10 +57,9 @@ class FillRateHelper {
   static addListener(
     callback: FillRateInfo => void,
   ): {remove: () => void, ...} {
-    warning(
-      _sampleRate !== null,
-      'Call `FillRateHelper.setSampleRate` before `addListener`.',
-    );
+    if (_sampleRate === null) {
+      console.warn('Call `FillRateHelper.setSampleRate` before `addListener`.');
+    }
     _listeners.push(callback);
     return {
       remove: () => {
@@ -89,7 +85,7 @@ class FillRateHelper {
   activate() {
     if (this._enabled && this._samplesStartTime == null) {
       DEBUG && console.debug('FillRateHelper: activate');
-      this._samplesStartTime = performanceNow();
+      this._samplesStartTime = global.performance.now();
     }
   }
 
@@ -108,7 +104,7 @@ class FillRateHelper {
       this._resetData();
       return;
     }
-    const total_time_spent = performanceNow() - start;
+    const total_time_spent = global.performance.now() - start;
     const info: any = {
       ...this._info,
       total_time_spent,
@@ -172,7 +168,7 @@ class FillRateHelper {
     const scrollSpeed = Math.round(Math.abs(velocity) * 1000); // px / sec
 
     // Whether blank now or not, record the elapsed time blank if we were blank last time.
-    const now = performanceNow();
+    const now = global.performance.now();
     if (this._anyBlankStartTime != null) {
       this._info.any_blank_ms += now - this._anyBlankStartTime;
     }

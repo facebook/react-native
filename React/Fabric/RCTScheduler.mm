@@ -7,11 +7,11 @@
 
 #import "RCTScheduler.h"
 
-#import <react/animations/LayoutAnimationDriver.h>
-#import <react/componentregistry/ComponentDescriptorFactory.h>
-#import <react/debug/SystraceSection.h>
-#import <react/scheduler/Scheduler.h>
-#import <react/scheduler/SchedulerDelegate.h>
+#import <react/renderer/animations/LayoutAnimationDriver.h>
+#import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#import <react/renderer/debug/SystraceSection.h>
+#import <react/renderer/scheduler/Scheduler.h>
+#import <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/utils/RunLoopObserver.h>
 
 #import <React/RCTFollyConvert.h>
@@ -45,18 +45,16 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
   }
 
-  void schedulerDidSetJSResponder(
-      SurfaceId surfaceId,
-      const ShadowView &shadowView,
-      const ShadowView &initialShadowView,
-      bool blockNativeResponder) override
+  void schedulerDidSetIsJSResponder(ShadowView const &shadowView, bool isJSResponder) override
   {
-    // Does nothing for now.
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidSetIsJSResponder:isJSResponder forShadowView:shadowView];
   }
 
-  void schedulerDidClearJSResponder() override
+  void schedulerDidSendAccessibilityEvent(const ShadowView &shadowView, std::string const &eventType) override
   {
-    // Does nothing for now.
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidSendAccessibilityEvent:shadowView eventType:eventType];
   }
 
  private:
@@ -83,8 +81,8 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
     [scheduler onAllAnimationsComplete];
   }
 
-  void activityDidChange(RunLoopObserver::Delegate const *delegate, RunLoopObserver::Activity activity) const
-      noexcept override
+  void activityDidChange(RunLoopObserver::Delegate const *delegate, RunLoopObserver::Activity activity)
+      const noexcept override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler animationTick];
@@ -95,7 +93,7 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 };
 
 @implementation RCTScheduler {
-  std::shared_ptr<Scheduler> _scheduler;
+  std::unique_ptr<Scheduler> _scheduler;
   std::shared_ptr<LayoutAnimationDriver> _animationDriver;
   std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
   std::shared_ptr<LayoutAnimationDelegateProxy> _layoutAnimationDelegateProxy;
@@ -114,13 +112,14 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 
     if (_layoutAnimationsEnabled) {
       _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
-      _animationDriver = std::make_unique<LayoutAnimationDriver>(_layoutAnimationDelegateProxy.get());
+      _animationDriver =
+          std::make_shared<LayoutAnimationDriver>(toolbox.runtimeExecutor, _layoutAnimationDelegateProxy.get());
       _uiRunLoopObserver =
           toolbox.mainRunLoopObserverFactory(RunLoopObserver::Activity::BeforeWaiting, _layoutAnimationDelegateProxy);
       _uiRunLoopObserver->setDelegate(_layoutAnimationDelegateProxy.get());
     }
 
-    _scheduler = std::make_shared<Scheduler>(
+    _scheduler = std::make_unique<Scheduler>(
         toolbox, (_animationDriver ? _animationDriver.get() : nullptr), _delegateProxy.get());
   }
 
@@ -138,50 +137,16 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
     _animationDriver->setLayoutAnimationStatusDelegate(nullptr);
   }
   _animationDriver = nullptr;
-
-  _scheduler->setDelegate(nullptr);
 }
 
-- (void)startSurfaceWithSurfaceId:(SurfaceId)surfaceId
-                       moduleName:(NSString *)moduleName
-                     initialProps:(NSDictionary *)initialProps
-                layoutConstraints:(LayoutConstraints)layoutConstraints
-                    layoutContext:(LayoutContext)layoutContext
+- (void)registerSurface:(facebook::react::SurfaceHandler const &)surfaceHandler
 {
-  SystraceSection s("-[RCTScheduler startSurfaceWithSurfaceId:...]");
-
-  auto props = convertIdToFollyDynamic(initialProps);
-  _scheduler->startSurface(
-      surfaceId,
-      RCTStringFromNSString(moduleName),
-      props,
-      layoutConstraints,
-      layoutContext,
-      (_animationDriver ? _animationDriver.get() : nullptr));
-  _scheduler->renderTemplateToSurface(
-      surfaceId, props.getDefault("navigationConfig").getDefault("initialUITemplate", "").getString());
+  _scheduler->registerSurface(surfaceHandler);
 }
 
-- (void)stopSurfaceWithSurfaceId:(SurfaceId)surfaceId
+- (void)unregisterSurface:(facebook::react::SurfaceHandler const &)surfaceHandler
 {
-  SystraceSection s("-[RCTScheduler stopSurfaceWithSurfaceId:]");
-  _scheduler->stopSurface(surfaceId);
-}
-
-- (CGSize)measureSurfaceWithLayoutConstraints:(LayoutConstraints)layoutConstraints
-                                layoutContext:(LayoutContext)layoutContext
-                                    surfaceId:(SurfaceId)surfaceId
-{
-  SystraceSection s("-[RCTScheduler measureSurfaceWithLayoutConstraints:]");
-  return RCTCGSizeFromSize(_scheduler->measureSurface(surfaceId, layoutConstraints, layoutContext));
-}
-
-- (void)constraintSurfaceLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
-                                       layoutContext:(LayoutContext)layoutContext
-                                           surfaceId:(SurfaceId)surfaceId
-{
-  SystraceSection s("-[RCTScheduler constraintSurfaceLayoutWithLayoutConstraints:]");
-  _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
+  _scheduler->unregisterSurface(surfaceHandler);
 }
 
 - (ComponentDescriptor const *)findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:(ComponentHandle)handle
@@ -189,9 +154,9 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   return _scheduler->findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(handle);
 }
 
-- (MountingCoordinator::Shared)mountingCoordinatorWithSurfaceId:(SurfaceId)surfaceId
+- (void)setupAnimationDriver:(facebook::react::SurfaceHandler const &)surfaceHandler
 {
-  return _scheduler->findMountingCoordinator(surfaceId);
+  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(_animationDriver);
 }
 
 - (void)onAnimationStarted

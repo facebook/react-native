@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import AndroidDropdownPickerNativeComponent, {
   Commands as AndroidDropdownPickerCommands,
 } from './AndroidDropdownPickerNativeComponent';
@@ -100,7 +98,7 @@ function PickerAndroid(props: Props): React.Node {
           props.mode === 'dropdown'
             ? AndroidDropdownPickerCommands
             : AndroidDialogPickerCommands;
-        Commands.setNativeSelectedPosition(current, selected);
+        Commands.setNativeSelectedPosition(current, position);
       }
     },
     [

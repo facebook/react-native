@@ -7,12 +7,14 @@
 
 #import "RCTSwitchComponentView.h"
 
-#import <react/components/rncore/ComponentDescriptors.h>
-#import <react/components/rncore/EventEmitters.h>
-#import <react/components/rncore/Props.h>
-#import <react/components/rncore/RCTComponentViewHelpers.h>
+#import <React/RCTConversions.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
+#import <react/renderer/components/rncore/ComponentDescriptors.h>
+#import <react/renderer/components/rncore/EventEmitters.h>
+#import <react/renderer/components/rncore/Props.h>
+#import <react/renderer/components/rncore/RCTComponentViewHelpers.h>
+
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -21,28 +23,23 @@ using namespace facebook::react;
 
 @implementation RCTSwitchComponentView {
   UISwitch *_switchView;
+  BOOL _isInitialValueSet;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
+    static const auto defaultProps = std::make_shared<const SwitchProps>();
+    _props = defaultProps;
+
     _switchView = [[UISwitch alloc] initWithFrame:self.bounds];
 
     [_switchView addTarget:self action:@selector(onChange:) forControlEvents:UIControlEventValueChanged];
 
     self.contentView = _switchView;
-
-    [self setPropsToDefault];
   }
 
   return self;
-}
-
-- (void)setPropsToDefault
-{
-  static const auto defaultProps = std::make_shared<const SwitchProps>();
-  _props = defaultProps;
-  _switchView.on = defaultProps->value;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -50,7 +47,7 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  [self setPropsToDefault];
+  _isInitialValueSet = NO;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -65,7 +62,9 @@ using namespace facebook::react;
 
   // `value`
   if (oldSwitchProps.value != newSwitchProps.value) {
-    _switchView.on = newSwitchProps.value;
+    BOOL shouldAnimate = _isInitialValueSet == YES;
+    [_switchView setOn:newSwitchProps.value animated:shouldAnimate];
+    _isInitialValueSet = YES;
   }
 
   // `disabled`
@@ -75,17 +74,17 @@ using namespace facebook::react;
 
   // `tintColor`
   if (oldSwitchProps.tintColor != newSwitchProps.tintColor) {
-    _switchView.tintColor = [UIColor colorWithCGColor:newSwitchProps.tintColor.get()];
+    _switchView.tintColor = RCTUIColorFromSharedColor(newSwitchProps.tintColor);
   }
 
   // `onTintColor
   if (oldSwitchProps.onTintColor != newSwitchProps.onTintColor) {
-    _switchView.onTintColor = [UIColor colorWithCGColor:newSwitchProps.onTintColor.get()];
+    _switchView.onTintColor = RCTUIColorFromSharedColor(newSwitchProps.onTintColor);
   }
 
   // `thumbTintColor`
   if (oldSwitchProps.thumbTintColor != newSwitchProps.thumbTintColor) {
-    _switchView.thumbTintColor = [UIColor colorWithCGColor:newSwitchProps.thumbTintColor.get()];
+    _switchView.thumbTintColor = RCTUIColorFromSharedColor(newSwitchProps.thumbTintColor);
   }
 
   [super updateProps:props oldProps:oldProps];

@@ -126,6 +126,13 @@ const char *JSBigFileString::c_str() const {
     }
 #endif // WITH_FBREMAP
   }
+  static const size_t kMinPageSize = 4096;
+  CHECK(!(reinterpret_cast<uintptr_t>(m_data) & (kMinPageSize - 1)))
+      << "mmap address misaligned, likely corrupted"
+      << " m_data: " << (const void *)m_data;
+  CHECK(m_pageOff <= m_size)
+      << "offset impossibly large, likely corrupted"
+      << " m_pageOff: " << m_pageOff << " m_size: " << m_size;
   return m_data + m_pageOff;
 }
 

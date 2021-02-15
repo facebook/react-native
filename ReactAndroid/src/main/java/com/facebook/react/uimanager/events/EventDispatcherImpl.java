@@ -20,8 +20,8 @@ import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -88,8 +88,10 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
   private final Map<String, Short> mEventNameToEventId = MapBuilder.newHashMap();
   private final DispatchEventsRunnable mDispatchEventsRunnable = new DispatchEventsRunnable();
   private final ArrayList<Event> mEventStaging = new ArrayList<>();
-  private final ArrayList<EventDispatcherListener> mListeners = new ArrayList<>();
-  private final List<BatchEventDispatchedListener> mPostEventDispatchListeners = new ArrayList<>();
+  private final CopyOnWriteArrayList<EventDispatcherListener> mListeners =
+      new CopyOnWriteArrayList<>();
+  private final CopyOnWriteArrayList<BatchEventDispatchedListener> mPostEventDispatchListeners =
+      new CopyOnWriteArrayList<>();
   private final ScheduleDispatchFrameCallback mCurrentFrameCallback =
       new ScheduleDispatchFrameCallback();
   private final AtomicInteger mHasDispatchScheduledCount = new AtomicInteger();
@@ -261,6 +263,11 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
     mReactEventEmitter.register(uiManagerType, eventEmitter);
   }
 
+  public void registerEventEmitter(
+      @UIManagerType int uiManagerType, RCTModernEventEmitter eventEmitter) {
+    mReactEventEmitter.register(uiManagerType, eventEmitter);
+  }
+
   public void unregisterEventEmitter(@UIManagerType int uiManagerType) {
     mReactEventEmitter.unregister(uiManagerType);
   }
@@ -359,7 +366,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
               }
               Systrace.endAsyncFlow(
                   Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, event.getEventName(), event.getUniqueID());
-              event.dispatch(mReactEventEmitter);
+              event.dispatchModern(mReactEventEmitter);
               event.dispose();
             }
             clearEventsToDispatch();

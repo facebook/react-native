@@ -7,13 +7,15 @@
 
 #import "RCTSliderComponentView.h"
 
+#import <React/RCTConversions.h>
 #import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
-#import <react/components/rncore/EventEmitters.h>
-#import <react/components/rncore/Props.h>
-#import <react/components/slider/SliderComponentDescriptor.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
+#import <react/renderer/components/rncore/EventEmitters.h>
+#import <react/renderer/components/rncore/Props.h>
+#import <react/renderer/components/slider/SliderComponentDescriptor.h>
+
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -29,10 +31,10 @@ using namespace facebook::react;
   UIImage *_maximumTrackImage;
   UIImage *_thumbImage;
 
-  const ImageResponseObserverCoordinator *_trackImageCoordinator;
-  const ImageResponseObserverCoordinator *_minimumTrackImageCoordinator;
-  const ImageResponseObserverCoordinator *_maximumTrackImageCoordinator;
-  const ImageResponseObserverCoordinator *_thumbImageCoordinator;
+  ImageResponseObserverCoordinator const *_trackImageCoordinator;
+  ImageResponseObserverCoordinator const *_minimumTrackImageCoordinator;
+  ImageResponseObserverCoordinator const *_maximumTrackImageCoordinator;
+  ImageResponseObserverCoordinator const *_thumbImageCoordinator;
 
   RCTImageResponseObserverProxy _trackImageResponseObserverProxy;
   RCTImageResponseObserverProxy _minimumTrackImageResponseObserverProxy;
@@ -81,20 +83,19 @@ using namespace facebook::react;
   // need to make sure that image properties are reset here
   [_sliderView setMinimumTrackImage:nil forState:UIControlStateNormal];
   [_sliderView setMaximumTrackImage:nil forState:UIControlStateNormal];
-  [_sliderView setThumbImage:nil forState:UIControlStateNormal];
+
+  if (_thumbImage) {
+    [_sliderView setThumbImage:nil forState:UIControlStateNormal];
+  }
 
   _trackImage = nil;
   _minimumTrackImage = nil;
   _maximumTrackImage = nil;
   _thumbImage = nil;
-}
 
-- (void)dealloc
-{
-  self.trackImageCoordinator = nullptr;
-  self.minimumTrackImageCoordinator = nullptr;
-  self.maximumTrackImageCoordinator = nullptr;
-  self.thumbImageCoordinator = nullptr;
+  const auto &props = *std::static_pointer_cast<const SliderProps>(_props);
+  _sliderView.value = props.value;
+  _previousValue = props.value;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -109,12 +110,6 @@ using namespace facebook::react;
   const auto &oldSliderProps = *std::static_pointer_cast<const SliderProps>(_props);
   const auto &newSliderProps = *std::static_pointer_cast<const SliderProps>(props);
 
-  // `value`
-  if (oldSliderProps.value != newSliderProps.value) {
-    _sliderView.value = newSliderProps.value;
-    _previousValue = newSliderProps.value;
-  }
-
   // `minimumValue`
   if (oldSliderProps.minimumValue != newSliderProps.minimumValue) {
     _sliderView.minimumValue = newSliderProps.minimumValue;
@@ -125,6 +120,12 @@ using namespace facebook::react;
     _sliderView.maximumValue = newSliderProps.maximumValue;
   }
 
+  // `value`
+  if (oldSliderProps.value != newSliderProps.value) {
+    _sliderView.value = newSliderProps.value;
+    _previousValue = newSliderProps.value;
+  }
+
   // `disabled`
   if (oldSliderProps.disabled != newSliderProps.disabled) {
     _sliderView.enabled = !newSliderProps.disabled;
@@ -132,17 +133,17 @@ using namespace facebook::react;
 
   // `thumbTintColor`
   if (oldSliderProps.thumbTintColor != newSliderProps.thumbTintColor) {
-    _sliderView.thumbTintColor = [UIColor colorWithCGColor:newSliderProps.thumbTintColor.get()];
+    _sliderView.thumbTintColor = RCTUIColorFromSharedColor(newSliderProps.thumbTintColor);
   }
 
   // `minimumTrackTintColor`
   if (oldSliderProps.minimumTrackTintColor != newSliderProps.minimumTrackTintColor) {
-    _sliderView.minimumTrackTintColor = [UIColor colorWithCGColor:newSliderProps.minimumTrackTintColor.get()];
+    _sliderView.minimumTrackTintColor = RCTUIColorFromSharedColor(newSliderProps.minimumTrackTintColor);
   }
 
   // `maximumTrackTintColor`
   if (oldSliderProps.maximumTrackTintColor != newSliderProps.maximumTrackTintColor) {
-    _sliderView.maximumTrackTintColor = [UIColor colorWithCGColor:newSliderProps.maximumTrackTintColor.get()];
+    _sliderView.maximumTrackTintColor = RCTUIColorFromSharedColor(newSliderProps.maximumTrackTintColor);
   }
 
   [super updateProps:props oldProps:oldProps];
@@ -299,7 +300,7 @@ using namespace facebook::react;
 
   const auto &props = *std::static_pointer_cast<const SliderProps>(_props);
 
-  if (props.step > 0 && value <= (props.maximumValue - props.minimumValue)) {
+  if (props.step > 0 && props.step <= (props.maximumValue - props.minimumValue)) {
     value = MAX(
         props.minimumValue,
         MIN(props.maximumValue, props.minimumValue + round((value - props.minimumValue) / props.step) * props.step));
@@ -321,7 +322,7 @@ using namespace facebook::react;
 
 #pragma mark - RCTImageResponseDelegate
 
-- (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
+- (void)didReceiveImage:(UIImage *)image metadata:(id)metadata fromObserver:(void const *)observer
 {
   if (observer == &_trackImageResponseObserverProxy) {
     self.trackImage = image;
