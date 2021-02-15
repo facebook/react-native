@@ -28,7 +28,7 @@ import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.Event;
@@ -215,15 +215,15 @@ public class RootViewTest {
   }
 
   @Test
-  public void testCheckForKeyboardDidShow() {
+  public void testCheckForKeyboardEvents() {
     ReactInstanceManager instanceManager = mock(ReactInstanceManager.class);
     when(instanceManager.getCurrentReactContext()).thenReturn(mReactContext);
+
     UIManagerModule uiManager = mock(UIManagerModule.class);
     EventDispatcher eventDispatcher = mock(EventDispatcher.class);
-    DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitterModuleMock =
-        mock(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-    when(mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class))
-        .thenReturn(eventEmitterModuleMock);
+    RCTDeviceEventEmitter eventEmitterModuleMock = mock(RCTDeviceEventEmitter.class);
+
+    when(mReactContext.getJSModule(RCTDeviceEventEmitter.class)).thenReturn(eventEmitterModuleMock);
     when(mCatalystInstanceMock.getNativeModule(UIManagerModule.class)).thenReturn(uiManager);
     when(uiManager.getEventDispatcher()).thenReturn(eventDispatcher);
 
@@ -233,23 +233,31 @@ public class RootViewTest {
         new ReactRootView(mReactContext) {
           @Override
           public void getWindowVisibleDisplayFrame(Rect outRect) {
-            outRect.bottom += 100;
+            if (outRect.bottom == 0) {
+              outRect.bottom += 100;
+              outRect.right += 370;
+            } else {
+              outRect.bottom += 370;
+            }
           }
         };
+
     rootView.setId(rootViewId);
     rootView.setRootViewTag(rootViewId);
     rootView.startReactApplication(instanceManager, "");
     rootView.simulateAttachForTesting();
     rootView.simulateCheckForKeyboardForTesting();
+
     WritableMap params = Arguments.createMap();
     WritableMap endCoordinates = Arguments.createMap();
     params.putDouble("duration", 0.0);
-    endCoordinates.putDouble("width", 0.0);
+    endCoordinates.putDouble("width", 370.0);
     endCoordinates.putDouble("screenX", 0.0);
     endCoordinates.putDouble("height", 370.0);
     endCoordinates.putDouble("screenY", 100.0);
     params.putMap("endCoordinates", endCoordinates);
     params.putString("easing", "keyboard");
+
     verify(eventEmitterModuleMock, Mockito.times(1)).emit("keyboardDidShow", params);
   }
 }
