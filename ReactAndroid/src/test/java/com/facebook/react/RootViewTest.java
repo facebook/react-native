@@ -26,6 +26,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -214,7 +215,7 @@ public class RootViewTest {
   }
 
   @Test
-  public void testCheckForKeyboardEvents() {
+  public void testCheckForKeyboardDidShow() {
     ReactInstanceManager instanceManager = mock(ReactInstanceManager.class);
     when(instanceManager.getCurrentReactContext()).thenReturn(mReactContext);
     UIManagerModule uiManager = mock(UIManagerModule.class);
@@ -240,6 +241,15 @@ public class RootViewTest {
     rootView.startReactApplication(instanceManager, "");
     rootView.simulateAttachForTesting();
     rootView.simulateCheckForKeyboardForTesting();
-    verify(instanceManager, Mockito.times(1)).getCurrentReactContext();
+    WritableMap params = Arguments.createMap();
+    WritableMap endCoordinates = Arguments.createMap();
+    params.putDouble("duration", 0.0);
+    endCoordinates.putDouble("width", 0.0);
+    endCoordinates.putDouble("screenX", 0.0);
+    endCoordinates.putDouble("height", 370.0);
+    endCoordinates.putDouble("screenY", 100.0);
+    params.putMap("endCoordinates", endCoordinates);
+    params.putString("easing", "keyboard");
+    verify(eventEmitterModuleMock, Mockito.times(1)).emit("keyboardDidShow", params);
   }
 }
