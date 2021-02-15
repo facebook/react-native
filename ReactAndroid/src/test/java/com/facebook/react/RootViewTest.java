@@ -217,17 +217,10 @@ public class RootViewTest {
   @Test
   public void testCheckForKeyboardEvents() {
     ReactInstanceManager instanceManager = mock(ReactInstanceManager.class);
-    when(instanceManager.getCurrentReactContext()).thenReturn(mReactContext);
-
-    UIManagerModule uiManager = mock(UIManagerModule.class);
-    EventDispatcher eventDispatcher = mock(EventDispatcher.class);
     RCTDeviceEventEmitter eventEmitterModuleMock = mock(RCTDeviceEventEmitter.class);
 
+    when(instanceManager.getCurrentReactContext()).thenReturn(mReactContext);
     when(mReactContext.getJSModule(RCTDeviceEventEmitter.class)).thenReturn(eventEmitterModuleMock);
-    when(mCatalystInstanceMock.getNativeModule(UIManagerModule.class)).thenReturn(uiManager);
-    when(uiManager.getEventDispatcher()).thenReturn(eventDispatcher);
-
-    int rootViewId = 7;
 
     ReactRootView rootView =
         new ReactRootView(mReactContext) {
@@ -242,19 +235,18 @@ public class RootViewTest {
           }
         };
 
-    rootView.setId(rootViewId);
-    rootView.setRootViewTag(rootViewId);
     rootView.startReactApplication(instanceManager, "");
-    rootView.simulateAttachForTesting();
     rootView.simulateCheckForKeyboardForTesting();
 
     WritableMap params = Arguments.createMap();
     WritableMap endCoordinates = Arguments.createMap();
+    double screenHeight = 470.0;
+    double keyboardHeight = 100.0;
     params.putDouble("duration", 0.0);
-    endCoordinates.putDouble("width", 370.0);
+    endCoordinates.putDouble("width", screenHeight - keyboardHeight);
     endCoordinates.putDouble("screenX", 0.0);
-    endCoordinates.putDouble("height", 370.0);
-    endCoordinates.putDouble("screenY", 100.0);
+    endCoordinates.putDouble("height", screenHeight - keyboardHeight);
+    endCoordinates.putDouble("screenY", keyboardHeight);
     params.putMap("endCoordinates", endCoordinates);
     params.putString("easing", "keyboard");
 
