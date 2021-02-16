@@ -80,6 +80,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/ScrollView/ScrollViewAnimatedExample'),
   },
   {
+    key: 'ScrollViewTextInputExample',
+    category: 'Basic',
+    module: require('../examples/ScrollView/ScrollViewTextInputExample'),
+  },
+  {
     key: 'SectionList-onEndReached',
     module: require('../examples/SectionList/SectionList-onEndReached'),
     category: 'ListView',
