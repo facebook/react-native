@@ -280,8 +280,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @ThreadConfined(ANY)
   @Override
   public void stopSurface(final int surfaceID) {
-    mBinding.stopSurface(surfaceID);
+    // Mark surfaceId as dead, stop executing mounting instructions
     mMountingManager.stopSurface(surfaceID);
+
+    // Communicate stopSurface to Cxx - causes an empty ShadowTree to be committed,
+    // but all mounting instructions will be ignored because stopSurface was called
+    // on the MountingManager
+    mBinding.stopSurface(surfaceID);
   }
 
   @Override
