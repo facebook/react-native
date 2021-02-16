@@ -803,9 +803,7 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   private void clearReactRoot(ReactRoot reactRoot) {
     UiThreadUtil.assertOnUiThread();
-    if (ReactFeatureFlags.enableStartSurfaceRaceConditionFix) {
-      reactRoot.getState().compareAndSet(ReactRoot.STATE_STARTED, ReactRoot.STATE_STOPPED);
-    }
+    reactRoot.getState().compareAndSet(ReactRoot.STATE_STARTED, ReactRoot.STATE_STOPPED);
     ViewGroup rootViewGroup = reactRoot.getRootViewGroup();
     rootViewGroup.removeAllViews();
     rootViewGroup.setId(View.NO_ID);
@@ -826,12 +824,7 @@ public class ReactInstanceManager {
     // Calling clearReactRoot is necessary to initialize the Id on reactRoot
     // This is necessary independently if the RN Bridge has been initialized or not.
     // Ideally reactRoot should be initialized with id == NO_ID
-    if (ReactFeatureFlags.enableStartSurfaceRaceConditionFix) {
-      if (mAttachedReactRoots.add(reactRoot)) {
-        clearReactRoot(reactRoot);
-      }
-    } else {
-      mAttachedReactRoots.add(reactRoot);
+    if (mAttachedReactRoots.add(reactRoot)) {
       clearReactRoot(reactRoot);
     }
 
@@ -840,8 +833,7 @@ public class ReactInstanceManager {
     // reactRoot reactRoot list.
     ReactContext currentContext = getCurrentReactContext();
     if (mCreateReactContextThread == null && currentContext != null) {
-      if (!ReactFeatureFlags.enableStartSurfaceRaceConditionFix
-          || reactRoot.getState().compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
+      if (reactRoot.getState().compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
         attachRootViewToInstance(reactRoot);
       }
     }
@@ -1110,10 +1102,7 @@ public class ReactInstanceManager {
 
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
       for (ReactRoot reactRoot : mAttachedReactRoots) {
-        if (!ReactFeatureFlags.enableStartSurfaceRaceConditionFix
-            || reactRoot
-                .getState()
-                .compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
+        if (reactRoot.getState().compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
           attachRootViewToInstance(reactRoot);
         }
       }
