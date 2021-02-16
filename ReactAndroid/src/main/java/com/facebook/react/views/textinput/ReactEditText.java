@@ -222,7 +222,7 @@ public class ReactEditText extends AppCompatEditText
         float verticalScroll = mPreviousYCoordinates - ev.getY();
         boolean enableParentScroll = false;
         boolean isSwipeVertical = Math.abs(verticalScroll) > Math.abs(horizontalScroll);
-        if(isSwipeVertical) {
+        if (isSwipeVertical) {
           boolean scrollDirectionUp = verticalScroll < 0;
           boolean enableParentScrollUp = scrollDirectionUp && !canScrollVertically(UP);
           boolean enableParentScrollDown = !scrollDirectionUp && !canScrollVertically(DOWN);
@@ -233,7 +233,7 @@ public class ReactEditText extends AppCompatEditText
           boolean enableParentScrollLeft = !scrollDirectionRight && !canScrollHorizontally(LEFT);
           enableParentScroll = enableParentScrollRight || enableParentScrollLeft;
         }
-        if(mDetectScrollMovement && enableParentScroll) {
+        if (mDetectScrollMovement && enableParentScroll) {
           this.getParent().requestDisallowInterceptTouchEvent(false);
           mDetectScrollMovement = false;
         }
@@ -379,13 +379,12 @@ public class ReactEditText extends AppCompatEditText
     if (focused && mSelectionWatcher != null) {
       mSelectionWatcher.onSelectionChanged(getSelectionStart(), getSelectionEnd());
     }
-    boolean resetGravity = getGravity() == Gravity.CENTER &&
-      mMultiLine == false;
-    if(focused && resetGravity) {
+    boolean resetGravity = getGravity() == Gravity.CENTER && mMultiLine == false;
+    if (focused && resetGravity) {
       setGravity(Gravity.LEFT);
       mGravityReset = true;
     };
-    if(!focused && mGravityReset) {
+    if (!focused && mGravityReset) {
       setGravity(Gravity.CENTER);
       mGravityReset = false;
     };
