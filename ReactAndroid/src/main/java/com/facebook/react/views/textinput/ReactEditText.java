@@ -117,8 +117,6 @@ public class ReactEditText extends AppCompatEditText
   private boolean mDidAttachToWindow = false;
   private float mPreviousYCoordinates;
   private float mPreviousXCoordinates;
-  private boolean mMultiLine = false;
-  private boolean mGravityReset = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -379,15 +377,6 @@ public class ReactEditText extends AppCompatEditText
     if (focused && mSelectionWatcher != null) {
       mSelectionWatcher.onSelectionChanged(getSelectionStart(), getSelectionEnd());
     }
-    boolean resetGravity = getGravity() == Gravity.CENTER && mMultiLine == false;
-    if (focused && resetGravity) {
-      setGravity(Gravity.LEFT);
-      mGravityReset = true;
-    };
-    if (!focused && mGravityReset) {
-      setGravity(Gravity.CENTER);
-      mGravityReset = false;
-    };
   }
 
   public void setSelectionWatcher(SelectionWatcher selectionWatcher) {
