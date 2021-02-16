@@ -54,12 +54,6 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
-  /**
-   * Fixes race-condition in the initialization of RN surface. TODO T78832286: remove this flag once
-   * we verify the fix is correct in production
-   */
-  public static boolean enableStartSurfaceRaceConditionFix = false;
-
   /** Enables Static ViewConfig in RN Android native code. */
   public static boolean enableExperimentalStaticViewConfigs = false;
 
