@@ -55,6 +55,20 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
   return uiManagerObject.getHostObject<UIManagerBinding>(runtime);
 }
 
+std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
+    jsi::Runtime &runtime) {
+  auto uiManagerModuleName = "nativeFabricUIManager";
+
+  auto uiManagerValue =
+      runtime.global().getProperty(runtime, uiManagerModuleName);
+  if (uiManagerValue.isUndefined()) {
+    return nullptr;
+  }
+
+  auto uiManagerObject = uiManagerValue.asObject(runtime);
+  return uiManagerObject.getHostObject<UIManagerBinding>(runtime);
+}
+
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "
                << this << ").";
@@ -249,7 +263,7 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "setJSResponder") {
+  if (methodName == "setIsJSResponder") {
     return jsi::Function::createFromHostFunction(
         runtime,
         name,
@@ -259,7 +273,7 @@ jsi::Value UIManagerBinding::get(
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept -> jsi::Value {
-          uiManager->setJSResponder(
+          uiManager->setIsJSResponder(
               shadowNodeFromValue(runtime, arguments[0]),
               arguments[1].getBool());
 
@@ -293,22 +307,6 @@ jsi::Value UIManagerBinding::get(
           EventEmitter::DispatchMutex().unlock();
 
           onSuccessFunction.call(runtime, std::move(instanceHandle));
-          return jsi::Value::undefined();
-        });
-  }
-
-  if (methodName == "clearJSResponder") {
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        0,
-        [uiManager](
-            jsi::Runtime &runtime,
-            jsi::Value const &thisValue,
-            jsi::Value const *arguments,
-            size_t count) noexcept -> jsi::Value {
-          uiManager->clearJSResponder();
-
           return jsi::Value::undefined();
         });
   }
@@ -430,7 +428,7 @@ jsi::Value UIManagerBinding::get(
           runtime,
           name,
           2,
-          [uiManager, sharedUIManager = uiManager_](
+          [sharedUIManager = uiManager_](
               jsi::Runtime &runtime,
               jsi::Value const &thisValue,
               jsi::Value const *arguments,
@@ -438,29 +436,22 @@ jsi::Value UIManagerBinding::get(
             auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
             auto shadowNodeList =
                 shadowNodeListFromValue(runtime, arguments[1]);
-
-            if (sharedUIManager->backgroundExecutor_) {
-              sharedUIManager->completeRootEventCounter_ += 1;
-              sharedUIManager->backgroundExecutor_(
-                  [sharedUIManager,
-                   surfaceId,
-                   shadowNodeList,
-                   eventCount =
-                       sharedUIManager->completeRootEventCounter_.load()] {
-                    auto shouldCancel = [eventCount,
-                                         sharedUIManager]() -> bool {
-                      // If `eventCounter_` was incremented, another
-                      // `completeSurface` call has been scheduled and current
-                      // `completeSurface` should be cancelled.
-                      return sharedUIManager->completeRootEventCounter_ >
-                          eventCount;
-                    };
-                    sharedUIManager->completeSurface(
-                        surfaceId, shadowNodeList, {true, shouldCancel});
-                  });
-            } else {
-              uiManager->completeSurface(surfaceId, shadowNodeList, {true, {}});
-            }
+            static std::atomic_uint_fast8_t completeRootEventCounter{0};
+            static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
+            completeRootEventCounter += 1;
+            mostRecentSurfaceId = surfaceId;
+            sharedUIManager->backgroundExecutor_(
+                [=, eventCount = completeRootEventCounter.load()] {
+                  auto shouldYield = [=]() -> bool {
+                    // If `completeRootEventCounter` was incremented, another
+                    // `completeSurface` call has been scheduled and current
+                    // `completeSurface` should yield to it.
+                    return completeRootEventCounter > eventCount &&
+                        mostRecentSurfaceId == surfaceId;
+                  };
+                  sharedUIManager->completeSurface(
+                      surfaceId, shadowNodeList, {true, shouldYield});
+                });
 
             return jsi::Value::undefined();
           });

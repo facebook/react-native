@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import Blob from '../Blob/Blob';
 import type {BlobData} from '../Blob/BlobTypes';
 import BlobManager from '../Blob/BlobManager';
@@ -97,6 +95,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
     options: ?{headers?: {origin?: string, ...}, ...},
   ) {
     super();
+    this.url = url;
     if (typeof protocols === 'string') {
       protocols = [protocols];
     }

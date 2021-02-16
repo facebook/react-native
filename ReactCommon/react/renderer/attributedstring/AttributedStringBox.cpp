@@ -24,6 +24,14 @@ AttributedStringBox::AttributedStringBox(
     std::shared_ptr<void> const &opaquePointer)
     : mode_(Mode::OpaquePointer), value_({}), opaquePointer_(opaquePointer) {}
 
+AttributedStringBox::AttributedStringBox(AttributedStringBox &&other) noexcept
+    : mode_(other.mode_),
+      value_(std::move(other.value_)),
+      opaquePointer_(std::move(other.opaquePointer_)) {
+  other.mode_ = AttributedStringBox::Mode::Value;
+  other.value_ = std::make_shared<AttributedString const>(AttributedString{});
+}
+
 AttributedStringBox::Mode AttributedStringBox::getMode() const {
   return mode_;
 }
@@ -40,6 +48,18 @@ std::shared_ptr<void> AttributedStringBox::getOpaquePointer() const {
   return opaquePointer_;
 }
 
+AttributedStringBox &AttributedStringBox::operator=(
+    AttributedStringBox &&other) {
+  if (this != &other) {
+    mode_ = other.mode_;
+    value_ = std::move(other.value_);
+    opaquePointer_ = std::move(other.opaquePointer_);
+    other.mode_ = AttributedStringBox::Mode::Value;
+    other.value_ = std::make_shared<AttributedString const>(AttributedString{});
+  }
+  return *this;
+}
+
 bool operator==(
     AttributedStringBox const &lhs,
     AttributedStringBox const &rhs) {
@@ -48,9 +68,9 @@ bool operator==(
   }
 
   switch (lhs.getMode()) {
-    case facebook::react::AttributedStringBox::Mode::Value:
+    case AttributedStringBox::Mode::Value:
       return lhs.getValue() == rhs.getValue();
-    case facebook::react::AttributedStringBox::Mode::OpaquePointer:
+    case AttributedStringBox::Mode::OpaquePointer:
       return lhs.getOpaquePointer() == rhs.getOpaquePointer();
   }
 }

@@ -6,6 +6,7 @@
  */
 
 #include "ShadowNode.h"
+#include "Constants.h"
 #include "ShadowNodeFragment.h"
 
 #include <better/small_vector.h>
@@ -22,6 +23,33 @@ SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
   static const auto emptySharedShadowNodeSharedList =
       std::make_shared<SharedShadowNodeList>();
   return emptySharedShadowNodeSharedList;
+}
+
+/*
+ * On iOS, this method returns `props` if provided, `sourceShadowNode`'s props
+ * otherwise. On Android, we forward props in case `sourceShadowNode` hasn't
+ * been mounted. `Props::rawProps` are merged from `props` to a copy of
+ * `sourceShadowNode.props_` and returned. This is necessary to enable
+ * Background Executor and should be removed once reimplementation of JNI layer
+ * is finished.
+ */
+SharedProps ShadowNode::propsForClonedShadowNode(
+    ShadowNode const &sourceShadowNode,
+    Props::Shared const &props) {
+#ifdef ANDROID
+  if (Constants::getPropsForwardingEnabled()) {
+    bool hasBeenMounted = sourceShadowNode.hasBeenMounted_;
+    bool sourceNodeHasRawProps = !sourceShadowNode.getProps()->rawProps.empty();
+    if (!hasBeenMounted && sourceNodeHasRawProps && props) {
+      auto copiedProps = sourceShadowNode.getProps()->rawProps;
+      copiedProps.merge_patch(props->rawProps);
+      auto &castedProps = const_cast<Props &>(*props);
+      castedProps.rawProps = copiedProps;
+      return props;
+    }
+  }
+#endif
+  return props ? props : sourceShadowNode.getProps();
 }
 
 bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
@@ -60,13 +88,13 @@ ShadowNode::ShadowNode(
 }
 
 ShadowNode::ShadowNode(
-    const ShadowNode &sourceShadowNode,
-    const ShadowNodeFragment &fragment)
+    ShadowNode const &sourceShadowNode,
+    ShadowNodeFragment const &fragment)
     :
 #if RN_DEBUG_STRING_CONVERTIBLE
       revision_(sourceShadowNode.revision_ + 1),
 #endif
-      props_(fragment.props ? fragment.props : sourceShadowNode.props_),
+      props_(propsForClonedShadowNode(sourceShadowNode, fragment.props)),
       children_(
           fragment.children ? fragment.children : sourceShadowNode.children_),
       state_(
@@ -214,6 +242,7 @@ void ShadowNode::cloneChildrenIfShared() {
 void ShadowNode::setMounted(bool mounted) const {
   if (mounted) {
     family_->setMostRecentState(getState());
+    hasBeenMounted_ = mounted;
   }
 
   family_->eventEmitter_->setEnabled(mounted);

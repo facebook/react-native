@@ -250,12 +250,18 @@ public class ReactImageView extends GenericDraweeView {
               // TODO: Somehow get image size and convert `loaded` and `total` to image bytes.
               mEventDispatcher.dispatchEvent(
                   ImageLoadEvent.createProgressEvent(
-                      getId(), mImageSource.getSource(), loaded, total));
+                      UIManagerHelper.getSurfaceId(ReactImageView.this),
+                      getId(),
+                      mImageSource.getSource(),
+                      loaded,
+                      total));
             }
 
             @Override
             public void onSubmit(String id, Object callerContext) {
-              mEventDispatcher.dispatchEvent(ImageLoadEvent.createLoadStartEvent(getId()));
+              mEventDispatcher.dispatchEvent(
+                  ImageLoadEvent.createLoadStartEvent(
+                      UIManagerHelper.getSurfaceId(ReactImageView.this), getId()));
             }
 
             @Override
@@ -264,17 +270,22 @@ public class ReactImageView extends GenericDraweeView {
               if (imageInfo != null) {
                 mEventDispatcher.dispatchEvent(
                     ImageLoadEvent.createLoadEvent(
+                        UIManagerHelper.getSurfaceId(ReactImageView.this),
                         getId(),
                         mImageSource.getSource(),
                         imageInfo.getWidth(),
                         imageInfo.getHeight()));
-                mEventDispatcher.dispatchEvent(ImageLoadEvent.createLoadEndEvent(getId()));
+                mEventDispatcher.dispatchEvent(
+                    ImageLoadEvent.createLoadEndEvent(
+                        UIManagerHelper.getSurfaceId(ReactImageView.this), getId()));
               }
             }
 
             @Override
             public void onFailure(String id, Throwable throwable) {
-              mEventDispatcher.dispatchEvent(ImageLoadEvent.createErrorEvent(getId(), throwable));
+              mEventDispatcher.dispatchEvent(
+                  ImageLoadEvent.createErrorEvent(
+                      UIManagerHelper.getSurfaceId(ReactImageView.this), getId(), throwable));
             }
           };
     }

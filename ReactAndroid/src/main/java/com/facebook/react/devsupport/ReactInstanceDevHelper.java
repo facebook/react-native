@@ -15,9 +15,10 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 
 /**
  * Interface used by {@link DevSupportManager} for accessing some fields and methods of {@link
- * ReactInstanceManager} for the purpose of displaying and handling developer menu options.
+ * ReactInstanceManager} or {@link ReactHost} for the purpose of displaying and handling developer
+ * menu options.
  */
-public interface ReactInstanceManagerDevHelper {
+public interface ReactInstanceDevHelper {
 
   /** Request react instance recreation with JS debugging enabled. */
   void onReloadWithJSDebugger(JavaJSExecutor.Factory proxyExecutorFactory);

@@ -787,9 +787,7 @@ public class UIImplementation {
   public void onHostDestroy() {}
 
   public void onCatalystInstanceDestroyed() {
-    if (ReactFeatureFlags.disableNonFabricViewOperationsOnCatalystDestroy) {
-      mViewOperationsEnabled = false;
-    }
+    mViewOperationsEnabled = false;
   }
 
   public void setViewHierarchyUpdateDebugListener(
@@ -958,6 +956,7 @@ public class UIImplementation {
       if (frameDidChange && cssNode.shouldNotifyOnLayout()) {
         mEventDispatcher.dispatchEvent(
             OnLayoutEvent.obtain(
+                -1, /* surfaceId not used in classic renderer */
                 tag,
                 cssNode.getScreenX(),
                 cssNode.getScreenY(),

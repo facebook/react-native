@@ -11,16 +11,16 @@
 'use strict';
 
 import type EventEmitter from './EventEmitter';
-import EventSubscription from './_EventSubscription';
+import _EventSubscription from './_EventSubscription';
 import type EventSubscriptionVendor from './_EventSubscriptionVendor';
+import {type EventSubscription} from './EventSubscription';
 
 /**
  * EmitterSubscription represents a subscription with listener and context data.
  */
-class EmitterSubscription<
-  EventDefinitions: {...},
-  K: $Keys<EventDefinitions>,
-> extends EventSubscription<EventDefinitions, K> {
+class EmitterSubscription<EventDefinitions: {...}, K: $Keys<EventDefinitions>>
+  extends _EventSubscription<EventDefinitions, K>
+  implements EventSubscription {
   emitter: EventEmitter<EventDefinitions>;
   listener: ?(...$ElementType<EventDefinitions, K>) => mixed;
   context: ?$FlowFixMe;
@@ -49,7 +49,7 @@ class EmitterSubscription<
 
   /**
    * Removes this subscription from the emitter that registered it.
-   * Note: we're overriding the `remove()` method of EventSubscription here
+   * Note: we're overriding the `remove()` method of _EventSubscription here
    * but deliberately not calling `super.remove()` as the responsibility
    * for removing the subscription lies with the EventEmitter.
    */

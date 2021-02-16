@@ -85,7 +85,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private @Nullable String mInitialUITemplate;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
-  private int mRootViewTag;
+  private int mRootViewTag =
+      0; /* This should be View.NO_ID, but for legacy reasons we haven't migrated yet */
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
   private @Nullable JSTouchDispatcher mJSTouchDispatcher;
@@ -451,6 +452,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to update root layout specs for uninitialized ReactInstanceManager");
       return;
     }
+    // In Fabric we cannot call `updateRootLayoutSpecs` until a SurfaceId has been set.
+    // Sometimes,
+    if (getUIManagerType() == FABRIC && !isRootViewTagSet()) {
+      ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_UPDATE_LAYOUT_SPECS_END);
+      FLog.e(TAG, "Unable to update root layout specs for ReactRootView: no rootViewTag set yet");
+      return;
+    }
+
     final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
 
     if (reactApplicationContext != null) {
@@ -549,7 +558,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
   }
 
-  public void setEventListener(ReactRootViewEventListener eventListener) {
+  public void setEventListener(@Nullable ReactRootViewEventListener eventListener) {
     mRootViewEventListener = eventListener;
   }
 
@@ -572,7 +581,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   public void setAppProperties(@Nullable Bundle appProperties) {
     UiThreadUtil.assertOnUiThread();
     mAppProperties = appProperties;
-    if (getRootViewTag() != 0) {
+    if (isRootViewTagSet()) {
       runApplication();
     }
   }
@@ -637,6 +646,16 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachToReactInstanceManager");
     ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ATTACH_TO_REACT_INSTANCE_MANAGER_START);
 
+    // React Native requires that the RootView id be managed entirely by React Native, and will
+    // crash in addRootView/startSurface if the native View id isn't set to NO_ID.
+    if (getId() != View.NO_ID) {
+      throw new IllegalViewOperationException(
+          "Trying to attach a ReactRootView with an explicit id already set to ["
+              + getId()
+              + "]. React Native uses the id field to track react tags and will overwrite this"
+              + " field. If that is fine, explicitly overwrite the id field to View.NO_ID.");
+    }
+
     try {
       if (mIsAttachedToInstance) {
         return;
@@ -665,6 +684,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   public int getRootViewTag() {
     return mRootViewTag;
+  }
+
+  private boolean isRootViewTagSet() {
+    return mRootViewTag != 0 && mRootViewTag != NO_ID;
   }
 
   public void setRootViewTag(int rootViewTag) {

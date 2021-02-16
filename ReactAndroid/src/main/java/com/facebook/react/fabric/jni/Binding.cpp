@@ -11,6 +11,9 @@
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
+#include <cfenv>
+#include <cmath>
+
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -255,7 +258,9 @@ void Binding::startSurface(
       moduleName->toStdString(),
       initialProps->consume(),
       {},
-      context,
+      context);
+
+  scheduler->findMountingCoordinator(surfaceId)->setMountingOverrideDelegate(
       animationDriver_);
 }
 
@@ -306,7 +311,9 @@ void Binding::startSurfaceWithConstraints(
       moduleName->toStdString(),
       initialProps->consume(),
       constraints,
-      context,
+      context);
+
+  scheduler->findMountingCoordinator(surfaceId)->setMountingOverrideDelegate(
       animationDriver_);
 }
 
@@ -340,6 +347,22 @@ void Binding::stopSurface(jint surfaceId) {
   }
 
   scheduler->stopSurface(surfaceId);
+}
+
+static inline float scale(Float value, Float pointScaleFactor) {
+  std::feclearexcept(FE_ALL_EXCEPT);
+  float result = value * pointScaleFactor;
+  if (std::fetestexcept(FE_OVERFLOW)) {
+    LOG(ERROR) << "Binding::scale - FE_OVERFLOW - value: " << value
+               << " pointScaleFactor: " << pointScaleFactor
+               << " result: " << result;
+  }
+  if (std::fetestexcept(FE_UNDERFLOW)) {
+    LOG(ERROR) << "Binding::scale - FE_UNDERFLOW - value: " << value
+               << " pointScaleFactor: " << pointScaleFactor
+               << " result: " << result;
+  }
+  return result;
 }
 
 void Binding::setConstraints(
@@ -553,9 +576,27 @@ void Binding::schedulerDidFinishTransaction(
     switch (mutationType) {
       case ShadowViewMutation::Create: {
         if (disablePreallocateViews_ ||
-            newChildShadowView.props->revision > 1 || mutation.recreated) {
+            newChildShadowView.props->revision > 1) {
           cppCommonMountItems.push_back(
               CppMountItem::CreateMountItem(newChildShadowView));
+
+          // Generally, DELETE operations can always safely execute at the end
+          // of a MountItem batch. The usual expected order would be REMOVE and
+          // then DELETE, for instance. However... in specific cases with
+          // LayoutAnimations especially, a DELETE and CREATE may happen for a
+          // View - in that order. The inverse is NOT possible - for example, we
+          // do not expect a CREATE...DELETE in the same batch. That would
+          // contradict itself - a node cannot be in the tree (CREATE) and
+          // removed from the tree (DELETE) at the same time.
+          cppDeleteMountItems.erase(
+              std::remove_if(
+                  cppDeleteMountItems.begin(),
+                  cppDeleteMountItems.end(),
+                  [&](const CppMountItem &mountItem) {
+                    return mountItem.oldChildShadowView.tag ==
+                        newChildShadowView.tag;
+                  }),
+              cppDeleteMountItems.end());
         }
         break;
       }
@@ -846,10 +887,10 @@ void Binding::schedulerDidFinishTransaction(
       auto pointScaleFactor = layoutMetrics.pointScaleFactor;
       auto contentInsets = layoutMetrics.contentInsets;
 
-      int left = floor(contentInsets.left * pointScaleFactor);
-      int top = floor(contentInsets.top * pointScaleFactor);
-      int right = floor(contentInsets.right * pointScaleFactor);
-      int bottom = floor(contentInsets.bottom * pointScaleFactor);
+      int left = floor(scale(contentInsets.left, pointScaleFactor));
+      int top = floor(scale(contentInsets.top, pointScaleFactor));
+      int right = floor(scale(contentInsets.right, pointScaleFactor));
+      int bottom = floor(scale(contentInsets.bottom, pointScaleFactor));
 
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = left;
@@ -873,10 +914,10 @@ void Binding::schedulerDidFinishTransaction(
       auto pointScaleFactor = layoutMetrics.pointScaleFactor;
       auto frame = layoutMetrics.frame;
 
-      int x = round(frame.origin.x * pointScaleFactor);
-      int y = round(frame.origin.y * pointScaleFactor);
-      int w = round(frame.size.width * pointScaleFactor);
-      int h = round(frame.size.height * pointScaleFactor);
+      int x = round(scale(frame.origin.x, pointScaleFactor));
+      int y = round(scale(frame.origin.y, pointScaleFactor));
+      int w = round(scale(frame.size.width, pointScaleFactor));
+      int h = round(scale(frame.size.height, pointScaleFactor));
       int layoutDirection =
           toInt(mountItem.newChildShadowView.layoutMetrics.layoutDirection);
       int displayType =
@@ -1062,7 +1103,7 @@ void Binding::schedulerDidDispatchCommand(
 
   static auto dispatchCommand =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
-          ->getMethod<void(jint, jstring, ReadableArray::javaobject)>(
+          ->getMethod<void(jint, jint, jstring, ReadableArray::javaobject)>(
               "dispatchCommand");
 
   local_ref<JString> command = make_jstring(commandName);
@@ -1071,7 +1112,11 @@ void Binding::schedulerDidDispatchCommand(
       castReadableArray(ReadableNativeArray::newObjectCxxArgs(args));
 
   dispatchCommand(
-      localJavaUIManager, shadowView.tag, command.get(), argsArray.get());
+      localJavaUIManager,
+      shadowView.surfaceId,
+      shadowView.tag,
+      command.get(),
+      argsArray.get());
 }
 
 void Binding::schedulerDidSendAccessibilityEvent(
@@ -1088,17 +1133,19 @@ void Binding::schedulerDidSendAccessibilityEvent(
 
   static auto sendAccessibilityEventFromJS =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
-          ->getMethod<void(jint, jstring)>("sendAccessibilityEventFromJS");
+          ->getMethod<void(jint, jint, jstring)>(
+              "sendAccessibilityEventFromJS");
 
   sendAccessibilityEventFromJS(
-      localJavaUIManager, shadowView.tag, eventTypeStr.get());
+      localJavaUIManager,
+      shadowView.surfaceId,
+      shadowView.tag,
+      eventTypeStr.get());
 }
 
-void Binding::schedulerDidSetJSResponder(
-    SurfaceId surfaceId,
-    const ShadowView &shadowView,
-    const ShadowView &initialShadowView,
-    bool blockNativeResponder) {
+void Binding::schedulerDidSetIsJSResponder(
+    ShadowView const &shadowView,
+    bool isJSResponder) {
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
     LOG(ERROR) << "Binding::schedulerSetJSResponder: JavaUIManager disappeared";
@@ -1107,28 +1154,26 @@ void Binding::schedulerDidSetJSResponder(
 
   static auto setJSResponder =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
-          ->getMethod<void(jint, jint, jboolean)>("setJSResponder");
-
-  setJSResponder(
-      localJavaUIManager,
-      shadowView.tag,
-      initialShadowView.tag,
-      (jboolean)blockNativeResponder);
-}
-
-void Binding::schedulerDidClearJSResponder() {
-  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
-  if (!localJavaUIManager) {
-    LOG(ERROR)
-        << "Binding::schedulerClearJSResponder: JavaUIManager disappeared";
-    return;
-  }
+          ->getMethod<void(jint, jint, jint, jboolean)>("setJSResponder");
 
   static auto clearJSResponder =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<void()>("clearJSResponder");
 
-  clearJSResponder(localJavaUIManager);
+  if (isJSResponder) {
+    setJSResponder(
+        localJavaUIManager,
+        shadowView.surfaceId,
+        shadowView.tag,
+        // The closest non-flattened ancestor of the same value if the node is
+        // not flattened. For now, we don't support the case when the node can
+        // be flattened because the only component that uses this feature -
+        // ScrollView - cannot be flattened.
+        shadowView.tag,
+        (jboolean) true);
+  } else {
+    clearJSResponder(localJavaUIManager);
+  }
 }
 
 void Binding::registerNatives() {

@@ -9,8 +9,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import type {PressEvent} from '../../Types/CoreEventTypes';
 import * as HoverState from '../HoverState';
 import Pressability from '../Pressability';

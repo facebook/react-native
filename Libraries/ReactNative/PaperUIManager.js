@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const NativeModules = require('../BatchedBridge/NativeModules');
 const Platform = require('../Utilities/Platform');
 const UIManagerProperties = require('./UIManagerProperties');
@@ -41,7 +39,21 @@ function getViewManagerConfig(viewManagerName: string): any {
       viewManagerConfigs[
         viewManagerName
       ] = NativeUIManager.getConstantsForViewManager(viewManagerName);
+
+      if (viewManagerConfigs[viewManagerName] === undefined) {
+        console.warn(
+          'Error: Unable to find getConstantsForViewManager for viewManager: ' +
+            viewManagerName +
+            '.',
+        );
+      }
     } catch (e) {
+      console.error(
+        "NativeUIManager.getConstantsForViewManager('" +
+          viewManagerName +
+          "') threw an exception.",
+        e,
+      );
       viewManagerConfigs[viewManagerName] = null;
     }
   }
@@ -66,6 +78,12 @@ function getViewManagerConfig(viewManagerName: string): any {
     if (result != null && result.viewConfig != null) {
       getConstants()[viewManagerName] = result.viewConfig;
       lazifyViewManagerConfig(viewManagerName);
+    } else {
+      console.warn(
+        'Error: Unable to find viewManagerConfigs for viewManager: ' +
+          viewManagerName +
+          ' using lazyLoadView.',
+      );
     }
   }
 
@@ -96,6 +114,9 @@ const UIManagerJS = {
   },
   getViewManagerConfig(viewManagerName: string): any {
     return getViewManagerConfig(viewManagerName);
+  },
+  hasViewManagerConfig(viewManagerName: string): boolean {
+    return getViewManagerConfig(viewManagerName) != null;
   },
 };
 

@@ -222,22 +222,25 @@ ShadowTree::ShadowTree(
     SurfaceId surfaceId,
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext,
-    RootComponentDescriptor const &rootComponentDescriptor,
-    ShadowTreeDelegate const &delegate,
-    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate)
+    ShadowTreeDelegate const &delegate)
     : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
+
+  static auto globalRootComponentDescriptor =
+      std::make_unique<RootComponentDescriptor const>(
+          ComponentDescriptorParameters{
+              EventDispatcher::Shared{}, nullptr, nullptr});
 
   const auto props = std::make_shared<const RootProps>(
       *RootShadowNode::defaultSharedProps(), layoutConstraints, layoutContext);
 
   auto const fragment =
       ShadowNodeFamilyFragment{surfaceId, surfaceId, noopEventEmitter};
-  auto family = rootComponentDescriptor.createFamily(fragment, nullptr);
+  auto family = globalRootComponentDescriptor->createFamily(fragment, nullptr);
 
   auto rootShadowNode = std::static_pointer_cast<const RootShadowNode>(
-      rootComponentDescriptor.createShadowNode(
+      globalRootComponentDescriptor->createShadowNode(
           ShadowNodeFragment{
               /* .props = */ props,
           },
@@ -246,8 +249,8 @@ ShadowTree::ShadowTree(
   currentRevision_ = ShadowTreeRevision{
       rootShadowNode, ShadowTreeRevision::Number{0}, TransactionTelemetry{}};
 
-  mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
-      currentRevision_, mountingOverrideDelegate);
+  mountingCoordinator_ =
+      std::make_shared<MountingCoordinator const>(currentRevision_);
 }
 
 ShadowTree::~ShadowTree() {
@@ -329,7 +332,7 @@ CommitStatus ShadowTree::tryCommit(
   auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
 
   if (!newRootShadowNode ||
-      (commitOptions.shouldCancel && commitOptions.shouldCancel())) {
+      (commitOptions.shouldYield && commitOptions.shouldYield())) {
     return CommitStatus::Cancelled;
   }
 
@@ -368,7 +371,8 @@ CommitStatus ShadowTree::tryCommit(
     newRootShadowNode = delegate_.shadowTreeWillCommit(
         *this, oldRootShadowNode, newRootShadowNode);
 
-    if (!newRootShadowNode) {
+    if (!newRootShadowNode ||
+        (commitOptions.shouldYield && commitOptions.shouldYield())) {
       return CommitStatus::Cancelled;
     }
 
@@ -387,10 +391,6 @@ CommitStatus ShadowTree::tryCommit(
         ShadowTreeRevision{newRootShadowNode, newRevisionNumber, telemetry};
 
     currentRevision_ = newRevision;
-  }
-
-  if (commitOptions.shouldCancel && commitOptions.shouldCancel()) {
-    return CommitStatus::Cancelled;
   }
 
   emitLayoutEvents(affectedLayoutableNodes);

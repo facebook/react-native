@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type VirtualizedList from './VirtualizedList.js';
 import * as React from 'react';
 import {useMemo, useContext} from 'react';

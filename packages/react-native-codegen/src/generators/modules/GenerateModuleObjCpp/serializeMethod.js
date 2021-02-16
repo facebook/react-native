@@ -22,7 +22,8 @@ import type {AliasResolver} from '../Utils';
 
 const invariant = require('invariant');
 const {StructCollector} = require('./StructCollector');
-const {capitalize, getNamespacedStructName} = require('./Utils');
+const {getNamespacedStructName} = require('./Utils');
+const {capitalize} = require('../../Utils');
 const {
   wrapNullable,
   unwrapNullable,

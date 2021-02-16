@@ -83,6 +83,9 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public void addChildAt(YogaNode c, int i) {
+    if (!(c instanceof YogaNodeJNIBase)) {
+      return;
+    }
     YogaNodeJNIBase child = (YogaNodeJNIBase) c;
     if (child.mOwner != null) {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
@@ -105,6 +108,9 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public void swapChildAt(YogaNode newChild, int position) {
+    if (!(newChild instanceof YogaNodeJNIBase)) {
+      return;
+    }
     YogaNodeJNIBase child = (YogaNodeJNIBase) newChild;
     mChildren.remove(position);
     mChildren.add(position, child);
@@ -223,6 +229,9 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   @Override
   public void copyStyle(YogaNode srcNode) {
+    if (!(srcNode instanceof YogaNodeJNIBase)) {
+      return;
+    }
     YogaNative.jni_YGNodeCopyStyleJNI(mNativePointer, ((YogaNodeJNIBase) srcNode).mNativePointer);
   }
 

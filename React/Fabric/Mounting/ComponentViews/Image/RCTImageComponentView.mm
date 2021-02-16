@@ -32,7 +32,7 @@ using namespace facebook::react;
 
     _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
     _imageView.clipsToBounds = YES;
-    _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(defaultProps->resizeMode);
+    _imageView.contentMode = RCTContentModeFromImageResizeMode(defaultProps->resizeMode);
     _imageView.layer.minificationFilter = kCAFilterTrilinear;
     _imageView.layer.magnificationFilter = kCAFilterTrilinear;
 
@@ -58,13 +58,7 @@ using namespace facebook::react;
 
   // `resizeMode`
   if (oldImageProps.resizeMode != newImageProps.resizeMode) {
-    if (newImageProps.resizeMode == ImageResizeMode::Repeat) {
-      // Repeat resize mode is handled by the UIImage. Use scale to fill
-      // so the repeated image fills the UIImageView.
-      _imageView.contentMode = UIViewContentModeScaleToFill;
-    } else {
-      _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(newImageProps.resizeMode);
-    }
+    _imageView.contentMode = RCTContentModeFromImageResizeMode(newImageProps.resizeMode);
   }
 
   // `tintColor`

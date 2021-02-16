@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';

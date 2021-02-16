@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {____ViewStyle_Internal} from './StyleSheetTypes';
 
 export default function splitLayoutProps(

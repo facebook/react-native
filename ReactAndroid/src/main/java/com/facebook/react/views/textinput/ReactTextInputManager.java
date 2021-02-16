@@ -898,12 +898,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private EventDispatcher mEventDispatcher;
     private ReactEditText mEditText;
     private String mPreviousText;
+    private int mSurfaceId;
 
     public ReactTextInputTextWatcher(
         final ReactContext reactContext, final ReactEditText editText) {
       mEventDispatcher = getEventDispatcher(reactContext, editText);
       mEditText = editText;
       mPreviousText = null;
+      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
     }
 
     @Override
@@ -956,10 +958,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // TODO: t7936714 merge these events
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
-              mEditText.getId(), s.toString(), mEditText.incrementAndGetEventCounter()));
+              mSurfaceId,
+              mEditText.getId(),
+              s.toString(),
+              mEditText.incrementAndGetEventCounter()));
 
       mEventDispatcher.dispatchEvent(
-          new ReactTextInputEvent(mEditText.getId(), newText, oldText, start, start + before));
+          new ReactTextInputEvent(
+              mSurfaceId, mEditText.getId(), newText, oldText, start, start + before));
     }
 
     @Override
@@ -974,15 +980,18 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     editText.setOnFocusChangeListener(
         new View.OnFocusChangeListener() {
           public void onFocusChange(View v, boolean hasFocus) {
+            int surfaceId = reactContext.getSurfaceId();
             EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
             if (hasFocus) {
-              eventDispatcher.dispatchEvent(new ReactTextInputFocusEvent(editText.getId()));
+              eventDispatcher.dispatchEvent(
+                  new ReactTextInputFocusEvent(surfaceId, editText.getId()));
             } else {
-              eventDispatcher.dispatchEvent(new ReactTextInputBlurEvent(editText.getId()));
+              eventDispatcher.dispatchEvent(
+                  new ReactTextInputBlurEvent(surfaceId, editText.getId()));
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputEndEditingEvent(
-                      editText.getId(), editText.getText().toString()));
+                      surfaceId, editText.getId(), editText.getText().toString()));
             }
           }
         });
@@ -1007,7 +1016,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
-                      editText.getId(), editText.getText().toString()));
+                      reactContext.getSurfaceId(),
+                      editText.getId(),
+                      editText.getText().toString()));
 
               if (blurOnSubmit) {
                 editText.clearFocus();
@@ -1040,11 +1051,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private @Nullable EventDispatcher mEventDispatcher;
     private int mPreviousContentWidth = 0;
     private int mPreviousContentHeight = 0;
+    private int mSurfaceId;
 
     public ReactContentSizeWatcher(ReactEditText editText) {
       mEditText = editText;
       ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
     }
 
     @Override
@@ -1074,6 +1087,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         mEventDispatcher.dispatchEvent(
             new ReactContentSizeChangedEvent(
+                mSurfaceId,
                 mEditText.getId(),
                 PixelUtil.toDIPFromPixel(contentWidth),
                 PixelUtil.toDIPFromPixel(contentHeight)));
@@ -1087,12 +1101,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private EventDispatcher mEventDispatcher;
     private int mPreviousSelectionStart;
     private int mPreviousSelectionEnd;
+    private int mSurfaceId;
 
     public ReactSelectionWatcher(ReactEditText editText) {
       mReactEditText = editText;
 
       ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
     }
 
     @Override
@@ -1108,7 +1124,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
       if (mPreviousSelectionStart != realStart || mPreviousSelectionEnd != realEnd) {
         mEventDispatcher.dispatchEvent(
-            new ReactTextInputSelectionEvent(mReactEditText.getId(), realStart, realEnd));
+            new ReactTextInputSelectionEvent(
+                mSurfaceId, mReactEditText.getId(), realStart, realEnd));
 
         mPreviousSelectionStart = realStart;
         mPreviousSelectionEnd = realEnd;
@@ -1122,11 +1139,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private EventDispatcher mEventDispatcher;
     private int mPreviousHoriz;
     private int mPreviousVert;
+    private int mSurfaceId;
 
     public ReactScrollWatcher(ReactEditText editText) {
       mReactEditText = editText;
       ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
     }
 
     @Override
@@ -1134,6 +1153,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       if (mPreviousHoriz != horiz || mPreviousVert != vert) {
         ScrollEvent event =
             ScrollEvent.obtain(
+                mSurfaceId,
                 mReactEditText.getId(),
                 ScrollEventType.SCROLL,
                 horiz,

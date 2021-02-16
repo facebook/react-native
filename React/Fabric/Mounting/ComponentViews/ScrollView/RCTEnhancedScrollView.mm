@@ -13,6 +13,7 @@
 
 @implementation RCTEnhancedScrollView {
   __weak id<UIScrollViewDelegate> _publicDelegate;
+  BOOL _isSetContentOffsetDisabled;
 }
 
 + (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key
@@ -46,6 +47,17 @@
   return self;
 }
 
+- (void)preserveContentOffsetWithBlock:(void (^)())block
+{
+  if (!block) {
+    return;
+  }
+
+  _isSetContentOffsetDisabled = YES;
+  block();
+  _isSetContentOffsetDisabled = NO;
+}
+
 /*
  * Automatically centers the content such that if the content is smaller than the
  * ScrollView, we force it to be centered, but when you zoom or the content otherwise
@@ -54,6 +66,10 @@
  */
 - (void)setContentOffset:(CGPoint)contentOffset
 {
+  if (_isSetContentOffsetDisabled) {
+    return;
+  }
+
   if (_centerContent && !CGSizeEqualToSize(self.contentSize, CGSizeZero)) {
     CGSize scrollViewSize = self.bounds.size;
     if (self.contentSize.width <= scrollViewSize.width) {

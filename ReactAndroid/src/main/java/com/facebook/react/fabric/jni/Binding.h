@@ -140,13 +140,9 @@ class Binding : public jni::HybridClass<Binding>,
       const ShadowView &shadowView,
       std::string const &eventType) override;
 
-  void schedulerDidSetJSResponder(
-      SurfaceId surfaceId,
-      const ShadowView &shadowView,
-      const ShadowView &initialShadowView,
-      bool blockNativeResponder) override;
-
-  void schedulerDidClearJSResponder() override;
+  void schedulerDidSetIsJSResponder(
+      ShadowView const &shadowView,
+      bool isJSResponder) override;
 
   void setPixelDensity(float pointScaleFactor);
 

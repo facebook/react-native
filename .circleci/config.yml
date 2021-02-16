@@ -244,9 +244,12 @@ jobs:
 
       - install_github_bot_deps
 
+      # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
       - run:
           name: Install additional GitHub bot dependencies
-          command: apt update && apt install -y shellcheck jq
+          command: |
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            apt update && apt install -y shellcheck jq
 
       - run:
           name: Run linters against modified files (analysis-bot)
@@ -501,10 +504,12 @@ jobs:
           background: true
 
       # Keep configuring Android dependencies while AVD boots up
-
+      # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
       - run:
           name: Install rsync, zip
-          command: apt-get update -y && apt-get install rsync zip -y
+          command: |
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            apt-get update -y && apt-get install rsync zip -y
 
       # Install Buck
       - install_buck_tooling
@@ -639,9 +644,11 @@ jobs:
           paths:
             - C:\Users\circleci\AppData\Local\Yarn
 
+      # Try to install the SDK up to 3 times, since network flakiness can cause install failures
+      # Using a timeout of 9 mins, as circle ci will timeout if there is no output for 10 mins
       - run:
           name: Install Android SDK Tools
-          command: choco install android-sdk
+          command: choco install android-sdk --timeout 540; if (!$?) { choco install android-sdk --timeout 540 --force --forcedependencies}; if (!$?) { choco install android-sdk  --force --forcedependencies}
 
       - run:
           name: Setup Android SDKs
