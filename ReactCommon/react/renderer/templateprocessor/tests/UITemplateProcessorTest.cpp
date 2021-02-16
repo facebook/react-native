@@ -89,8 +89,8 @@ TEST(UITemplateProcessorTest, testSimpleBytecode) {
   auto nativeModuleRegistry = buildNativeModuleRegistry();
 
   auto bytecode = R"delim({"version":0.1,"commands":[
-    ["createNode",2,"RCTView",-1,{"opacity": 0.5, "testId": "root"}],
-    ["createNode",4,"RCTView",2,{"testId": "child"}],
+    ["createNode",2,"RCTView",-1,{"opacity": 0.5, "testID": "root"}],
+    ["createNode",4,"RCTView",2,{"testID": "child"}],
     ["returnRoot",2]
   ]})delim";
 
@@ -124,11 +124,11 @@ TEST(UITemplateProcessorTest, testConditionalBytecode) {
   auto nativeModuleRegistry = buildNativeModuleRegistry();
 
   auto bytecode = R"delim({"version":0.1,"commands":[
-    ["createNode",2,"RCTView",-1,{"testId": "root"}],
+    ["createNode",2,"RCTView",-1,{"testID": "root"}],
     ["loadNativeBool",1,"MobileConfig","getBool",["qe:simple_test"]],
     ["conditional",1,
-      [["createNode",4,"RCTView",2,{"testId": "cond_true"}]],
-      [["createNode",4,"RCTView",2,{"testId": "cond_false"}]]
+      [["createNode",4,"RCTView",2,{"testID": "cond_true"}]],
+      [["createNode",4,"RCTView",2,{"testID": "cond_false"}]]
     ],
     ["returnRoot",2]
   ]})delim";

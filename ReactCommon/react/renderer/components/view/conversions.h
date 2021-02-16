@@ -117,11 +117,13 @@ inline better::optional<Float> optionalFloatFromYogaValue(
 inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
   auto layoutMetrics = LayoutMetrics{};
 
-  layoutMetrics.frame =
-      Rect{Point{floatFromYogaFloat(YGNodeLayoutGetLeft(&yogaNode)),
-                 floatFromYogaFloat(YGNodeLayoutGetTop(&yogaNode))},
-           Size{floatFromYogaFloat(YGNodeLayoutGetWidth(&yogaNode)),
-                floatFromYogaFloat(YGNodeLayoutGetHeight(&yogaNode))}};
+  layoutMetrics.frame = Rect{
+      Point{
+          floatFromYogaFloat(YGNodeLayoutGetLeft(&yogaNode)),
+          floatFromYogaFloat(YGNodeLayoutGetTop(&yogaNode))},
+      Size{
+          floatFromYogaFloat(YGNodeLayoutGetWidth(&yogaNode)),
+          floatFromYogaFloat(YGNodeLayoutGetHeight(&yogaNode))}};
 
   layoutMetrics.borderWidth = EdgeInsets{
       floatFromYogaFloat(YGNodeLayoutGetBorder(&yogaNode, YGEdgeLeft)),

@@ -8,7 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
 import type {Node} from 'React';
 import {NativeModules, Button} from 'react-native';
 import React from 'react';
@@ -18,6 +17,7 @@ const {CrashyCrash} = NativeModules;
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = 'Crash';
+exports.category = 'Basic';
 exports.description = 'Crash examples.';
 
 exports.examples = [

@@ -7,6 +7,26 @@
 
 #include "StubViewTree.h"
 
+#include <glog/logging.h>
+
+// Uncomment to enable verbose StubViewTree debug logs
+// #define STUB_VIEW_TREE_VERBOSE 1
+
+// For iOS especially: flush logs because some might be lost on iOS if an
+// assert is hit right after this.
+#define STUB_VIEW_ASSERT(cond)                 \
+  if (!(cond)) {                               \
+    LOG(ERROR) << "ASSERT FAILURE: " << #cond; \
+    google::FlushLogFiles(google::INFO);       \
+  }                                            \
+  assert(cond);
+
+#ifdef STUB_VIEW_TREE_VERBOSE
+#define STUB_VIEW_LOG(code) code
+#else
+#define STUB_VIEW_LOG(code)
+#endif
+
 namespace facebook {
 namespace react {
 
@@ -21,69 +41,132 @@ StubView const &StubViewTree::getRootStubView() const {
   return *registry.at(rootTag);
 }
 
+StubView const &StubViewTree::getStubView(Tag tag) const {
+  return *registry.at(tag);
+}
+
+size_t StubViewTree::size() const {
+  return registry.size();
+}
+
 void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
+  STUB_VIEW_LOG({ LOG(ERROR) << "StubView: Mutating Begin"; });
   for (auto const &mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
-        assert(mutation.parentShadowView == ShadowView{});
-        assert(mutation.oldChildShadowView == ShadowView{});
+        STUB_VIEW_ASSERT(mutation.parentShadowView == ShadowView{});
+        STUB_VIEW_ASSERT(mutation.oldChildShadowView == ShadowView{});
+        STUB_VIEW_ASSERT(mutation.newChildShadowView.props);
         auto stubView = std::make_shared<StubView>();
+        stubView->update(mutation.newChildShadowView);
         auto tag = mutation.newChildShadowView.tag;
-        assert(registry.find(tag) == registry.end());
+        STUB_VIEW_LOG({ LOG(ERROR) << "StubView: Create: " << tag; });
+        STUB_VIEW_ASSERT(registry.find(tag) == registry.end());
         registry[tag] = stubView;
         break;
       }
 
       case ShadowViewMutation::Delete: {
-        assert(mutation.parentShadowView == ShadowView{});
-        assert(mutation.newChildShadowView == ShadowView{});
+        STUB_VIEW_LOG(
+            { LOG(ERROR) << "Delete " << mutation.oldChildShadowView.tag; });
+        STUB_VIEW_ASSERT(mutation.parentShadowView == ShadowView{});
+        STUB_VIEW_ASSERT(mutation.newChildShadowView == ShadowView{});
         auto tag = mutation.oldChildShadowView.tag;
-        assert(registry.find(tag) != registry.end());
+        /* Disable this assert until T76057501 is resolved.
+        STUB_VIEW_ASSERT(registry.find(tag) != registry.end());
+        auto stubView = registry[tag];
+        STUB_VIEW_ASSERT(
+            (ShadowView)(*stubView) == mutation.oldChildShadowView);
+        */
         registry.erase(tag);
         break;
       }
 
       case ShadowViewMutation::Insert: {
-        assert(mutation.oldChildShadowView == ShadowView{});
+        STUB_VIEW_ASSERT(mutation.oldChildShadowView == ShadowView{});
         auto parentTag = mutation.parentShadowView.tag;
-        assert(registry.find(parentTag) != registry.end());
+        STUB_VIEW_ASSERT(registry.find(parentTag) != registry.end());
         auto parentStubView = registry[parentTag];
         auto childTag = mutation.newChildShadowView.tag;
-        assert(registry.find(childTag) != registry.end());
+        STUB_VIEW_ASSERT(registry.find(childTag) != registry.end());
         auto childStubView = registry[childTag];
+        STUB_VIEW_ASSERT(childStubView->parentTag == NO_VIEW_TAG);
         childStubView->update(mutation.newChildShadowView);
+        STUB_VIEW_LOG({
+          LOG(ERROR) << "StubView: Insert: " << childTag << " into "
+                     << parentTag << " at " << mutation.index << "("
+                     << parentStubView->children.size() << " children)";
+        });
+        STUB_VIEW_ASSERT(parentStubView->children.size() >= mutation.index);
+        childStubView->parentTag = parentTag;
         parentStubView->children.insert(
             parentStubView->children.begin() + mutation.index, childStubView);
         break;
       }
 
       case ShadowViewMutation::Remove: {
-        assert(mutation.newChildShadowView == ShadowView{});
+        STUB_VIEW_ASSERT(mutation.newChildShadowView == ShadowView{});
         auto parentTag = mutation.parentShadowView.tag;
-        assert(registry.find(parentTag) != registry.end());
+        STUB_VIEW_ASSERT(registry.find(parentTag) != registry.end());
         auto parentStubView = registry[parentTag];
         auto childTag = mutation.oldChildShadowView.tag;
-        assert(registry.find(childTag) != registry.end());
+        STUB_VIEW_LOG({
+          LOG(ERROR) << "StubView: Remove: " << childTag << " from "
+                     << parentTag << " at index " << mutation.index << " with "
+                     << parentStubView->children.size() << " children";
+        });
+        STUB_VIEW_ASSERT(parentStubView->children.size() > mutation.index);
+        STUB_VIEW_ASSERT(registry.find(childTag) != registry.end());
         auto childStubView = registry[childTag];
-        assert(
-            parentStubView->children[mutation.index]->tag ==
-            childStubView->tag);
+        STUB_VIEW_ASSERT(childStubView->parentTag == parentTag);
+        bool childIsCorrect =
+            parentStubView->children.size() > mutation.index &&
+            parentStubView->children[mutation.index]->tag == childStubView->tag;
+        STUB_VIEW_LOG({
+          std::string strChildList = "";
+          int i = 0;
+          for (auto const &child : parentStubView->children) {
+            strChildList.append(std::to_string(i));
+            strChildList.append(":");
+            strChildList.append(std::to_string(child->tag));
+            strChildList.append(", ");
+            i++;
+          }
+          LOG(ERROR) << "StubView: BEFORE REMOVE: Children of " << parentTag
+                     << ": " << strChildList;
+        });
+        STUB_VIEW_ASSERT(childIsCorrect);
+        childStubView->parentTag = NO_VIEW_TAG;
         parentStubView->children.erase(
             parentStubView->children.begin() + mutation.index);
         break;
       }
 
       case ShadowViewMutation::Update: {
-        assert(
+        STUB_VIEW_LOG({
+          LOG(ERROR) << "StubView: Update: " << mutation.newChildShadowView.tag;
+        });
+        STUB_VIEW_ASSERT(mutation.oldChildShadowView.tag != 0);
+        STUB_VIEW_ASSERT(mutation.newChildShadowView.tag != 0);
+        STUB_VIEW_ASSERT(mutation.newChildShadowView.props);
+        STUB_VIEW_ASSERT(
             mutation.newChildShadowView.tag == mutation.oldChildShadowView.tag);
-        assert(
+        STUB_VIEW_ASSERT(
             registry.find(mutation.newChildShadowView.tag) != registry.end());
-        auto stubView = registry[mutation.newChildShadowView.tag];
-        stubView->update(mutation.newChildShadowView);
+        auto oldStubView = registry[mutation.newChildShadowView.tag];
+        STUB_VIEW_ASSERT(oldStubView->tag != 0);
+        STUB_VIEW_ASSERT(
+            (ShadowView)(*oldStubView) == mutation.oldChildShadowView);
+        oldStubView->update(mutation.newChildShadowView);
         break;
       }
     }
   }
+  STUB_VIEW_LOG({ LOG(ERROR) << "StubView: Mutating End"; });
+
+  // For iOS especially: flush logs because some might be lost on iOS if an
+  // assert is hit right after this.
+  google::FlushLogFiles(google::INFO);
 }
 
 bool operator==(StubViewTree const &lhs, StubViewTree const &rhs) {

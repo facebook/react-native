@@ -12,7 +12,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTReloadCommand.h>
@@ -202,6 +202,7 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+  [super invalidate];
 #if ENABLE_PACKAGER_CONNECTION
   [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_reloadToken];
 #endif
@@ -349,7 +350,7 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   if (_isJSLoaded) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [self.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+    [[self.moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"toggleElementInspector" body:nil];
 #pragma clang diagnostic pop
   }
 }
@@ -357,11 +358,11 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 {
   __weak __typeof(self) weakSelf = self;
-  [self.bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:title
-                                                           handler:^{
-                                                             [weakSelf sendEventWithName:@"didPressMenuItem"
-                                                                                    body:@{@"title" : title}];
-                                                           }]];
+  [(RCTDevMenu *)[self.moduleRegistry moduleForName:"DevMenu"]
+      addItem:[RCTDevMenuItem buttonItemWithTitle:title
+                                          handler:^{
+                                            [weakSelf sendEventWithName:@"didPressMenuItem" body:@{@"title" : title}];
+                                          }]];
 }
 
 - (BOOL)isElementInspectorShown
@@ -405,17 +406,18 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 
 - (void)setupHMRClientWithBundleURL:(NSURL *)bundleURL
 {
-  if (bundleURL && !bundleURL.fileURL) { // isHotLoadingAvailable check
+  if (bundleURL && !bundleURL.fileURL) {
     NSString *const path = [bundleURL.path substringFromIndex:1]; // Strip initial slash.
     NSString *const host = bundleURL.host;
     NSNumber *const port = bundleURL.port;
+    BOOL isHotLoadingEnabled = self.isHotLoadingEnabled;
     if (self.bridge) {
       [self.bridge enqueueJSCall:@"HMRClient"
                           method:@"setup"
-                            args:@[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]
+                            args:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]
                       completion:NULL];
     } else {
-      self.invokeJS(@"HMRClient", @"setup", @[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]);
+      self.invokeJS(@"HMRClient", @"setup", @[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]);
     }
   }
 }
@@ -461,7 +463,8 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
     if ([self isElementInspectorShown]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      [self.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+      [[self.moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"toggleElementInspector"
+                                                                                body:nil];
 #pragma clang diagnostic pop
     }
   });

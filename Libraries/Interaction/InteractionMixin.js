@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const InteractionManager = require('./InteractionManager');
 import {type Handle} from './InteractionManager';
 

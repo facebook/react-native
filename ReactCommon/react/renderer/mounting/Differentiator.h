@@ -13,7 +13,7 @@
 namespace facebook {
 namespace react {
 
-enum class DifferentiatorMode { Classic, OptimizedMoves };
+enum class ReparentMode { Flatten, Unflatten };
 
 /*
  * Calculates a list of view mutations which describes how the old
@@ -22,14 +22,22 @@ enum class DifferentiatorMode { Classic, OptimizedMoves };
  */
 ShadowViewMutationList calculateShadowViewMutations(
     ShadowNode const &oldRootShadowNode,
-    ShadowNode const &newRootShadowNode,
-    bool enableReparentingDetection = false);
+    ShadowNode const &newRootShadowNode);
+
+/**
+ * Generates a list of `ShadowViewNodePair`s that represents a layer of a
+ * flattened view hierarchy. The V2 version preserves nodes even if they do
+ * not form views and their children are flattened.
+ */
+ShadowViewNodePair::List sliceChildShadowNodeViewPairsV2(
+    ShadowNode const &shadowNode,
+    bool allowFlattened = false);
 
 /*
  * Generates a list of `ShadowViewNodePair`s that represents a layer of a
- * flattened view hierarchy.
+ * flattened view hierarchy. This is *only* used by unit tests currently.
  */
-ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
+ShadowViewNodePair::List sliceChildShadowNodeViewPairsLegacy(
     ShadowNode const &shadowNode);
 
 } // namespace react

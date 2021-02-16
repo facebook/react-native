@@ -13,19 +13,28 @@
 @protocol RCTBridgeMethod;
 @protocol RCTBridgeModule;
 @class RCTBridge;
+@class RCTModuleRegistry;
+@class RCTViewRegistry;
 
 typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
 
 @interface RCTModuleData : NSObject <RCTInvalidating>
 
-- (instancetype)initWithModuleClass:(Class)moduleClass bridge:(RCTBridge *)bridge;
+- (instancetype)initWithModuleClass:(Class)moduleClass
+                             bridge:(RCTBridge *)bridge
+                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED;
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
                      moduleProvider:(RCTBridgeModuleProvider)moduleProvider
-                             bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+                             bridge:(RCTBridge *)bridge
+                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
-                                bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+                                bridge:(RCTBridge *)bridge
+                        moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+               viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED NS_DESIGNATED_INITIALIZER;
 
 /**
  * Calls `constantsToExport` on the module and stores the result. Note that
@@ -97,4 +106,4 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
 @end
 
 RCT_EXTERN void RCTSetIsMainQueueExecutionOfConstantsToExportDisabled(BOOL val);
-RCT_EXTERN BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled();
+RCT_EXTERN BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled(void);

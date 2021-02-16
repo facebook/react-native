@@ -33,15 +33,16 @@ public class CodegenPlugin implements Plugin<Project> {
     final File generatedSchemaFile = new File(generatedSrcDir, "schema.json");
 
     // 2. Task: produce schema from JS files.
+    String os = System.getProperty("os.name").toLowerCase();
+
     project
         .getTasks()
         .register(
             "generateCodegenSchemaFromJavaScript",
             Exec.class,
             task -> {
-              if (!extension.enableCodegen) {
-                return;
-              }
+              // This is needed when using codegen from source, not from npm.
+              task.dependsOn(":packages:react-native-codegen:android:buildCodegenCLI");
 
               task.doFirst(
                   s -> {
@@ -63,7 +64,7 @@ public class CodegenPlugin implements Plugin<Project> {
 
               ImmutableList<String> execCommands =
                   new ImmutableList.Builder<String>()
-                      .add("yarn")
+                      .add(os.contains("windows") ? "yarn.cmd" : "yarn")
                       .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
                       .add(extension.codegenGenerateSchemaCLI().getAbsolutePath())
                       .add(generatedSchemaFile.getAbsolutePath())
@@ -79,53 +80,40 @@ public class CodegenPlugin implements Plugin<Project> {
             "generateCodegenArtifactsFromSchema",
             Exec.class,
             task -> {
-              if (!extension.enableCodegen) {
-                return;
-              }
-
               task.dependsOn("generateCodegenSchemaFromJavaScript");
-
-              // TODO: The codegen tool should produce this outputDir structure based on
-              // the provided Java package name.
-              File outputDir =
-                  new File(
-                      generatedSrcDir,
-                      "java/" + extension.codegenJavaPackageName.replace(".", "/"));
 
               task.getInputs()
                   .files(project.fileTree(ImmutableMap.of("dir", extension.codegenDir())));
+              task.getInputs().files(extension.codegenGenerateNativeModuleSpecsCLI());
               task.getInputs().files(generatedSchemaFile);
-              task.getOutputs().dir(outputDir);
+              task.getOutputs().dir(generatedSrcDir);
 
               if (extension.useJavaGenerator) {
-                generateJavaFromSchemaWithJavaGenerator(
-                    generatedSchemaFile,
-                    extension.codegenJavaPackageName,
-                    new File(generatedSrcDir, "java"));
-                // TODO: generate JNI C++ files.
-                task.commandLine("echo");
-              } else {
-                ImmutableList<String> execCommands =
-                    new ImmutableList.Builder<String>()
-                        .add("yarn")
-                        .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
-                        .add(extension.codegenGenerateNativeModuleSpecsCLI().getAbsolutePath())
-                        .add("android")
-                        .add(generatedSchemaFile.getAbsolutePath())
-                        .add(outputDir.getAbsolutePath())
-                        .build();
-                task.commandLine(execCommands);
+                task.doLast(
+                    s -> {
+                      generateJavaFromSchemaWithJavaGenerator(
+                          generatedSchemaFile, extension.codegenJavaPackageName, generatedSrcDir);
+                    });
               }
+
+              ImmutableList<String> execCommands =
+                  new ImmutableList.Builder<String>()
+                      .add(os.contains("windows") ? "yarn.cmd" : "yarn")
+                      .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
+                      .add(extension.codegenGenerateNativeModuleSpecsCLI().getAbsolutePath())
+                      .add("android")
+                      .add(generatedSchemaFile.getAbsolutePath())
+                      .add(generatedSrcDir.getAbsolutePath())
+                      .add(extension.libraryName)
+                      .add(extension.codegenJavaPackageName)
+                      .build();
+              task.commandLine(execCommands);
             });
 
     // 4. Add dependencies & generated sources to the project.
     // Note: This last step needs to happen after the project has been evaluated.
     project.afterEvaluate(
         s -> {
-          if (!extension.enableCodegen) {
-            return;
-          }
-
           // `preBuild` is one of the base tasks automatically registered by Gradle.
           // This will invoke the codegen before compiling the entire project.
           Task preBuild = project.getTasks().findByName("preBuild");
@@ -148,7 +136,6 @@ public class CodegenPlugin implements Plugin<Project> {
               .getByName("main")
               .getJava()
               .srcDir(new File(generatedSrcDir, "java"));
-          // TODO: Add JNI sources.
         });
   }
 

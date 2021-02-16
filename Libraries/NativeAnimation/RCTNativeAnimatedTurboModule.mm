@@ -6,10 +6,9 @@
  */
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <RCTTypeSafety/RCTConvertHelpers.h>
 #import <React/RCTNativeAnimatedTurboModule.h>
 #import <React/RCTNativeAnimatedNodesManager.h>
-
-#import <RCTTypeSafety/RCTConvertHelpers.h>
 
 #import "RCTAnimationPlugins.h"
 
@@ -21,7 +20,7 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 @implementation RCTNativeAnimatedTurboModule
 {
   RCTNativeAnimatedNodesManager *_nodesManager;
-
+  __weak id<RCTSurfacePresenterStub> _surfacePresenter;
   // Operations called after views have been updated.
   NSMutableArray<AnimatedOperation> *_operations;
   // Operations called before views have been updated.
@@ -31,12 +30,28 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
 RCT_EXPORT_MODULE();
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _operations = [NSMutableArray new];
+    _preOperations = [NSMutableArray new];
+    _animIdIsManagedByFabric = [NSMutableDictionary new];
+  }
+  return self;
+}
+
 - (void)invalidate
 {
+  [super invalidate];
   [_nodesManager stopAnimationLoop];
-  [self.bridge.eventDispatcher removeDispatchObserver:self];
+  [[self.moduleRegistry moduleForName:"EventDispatcher"] removeDispatchObserver:self];
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
-  [self.bridge.surfacePresenter removeObserver:self];
+  [_surfacePresenter removeObserver:self];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -50,15 +65,27 @@ RCT_EXPORT_MODULE();
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
-
-  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge];
-  _operations = [NSMutableArray new];
-  _preOperations = [NSMutableArray new];
-  _animIdIsManagedByFabric = [NSMutableDictionary new];
-
-  [bridge.eventDispatcher addDispatchObserver:self];
+  _surfacePresenter = bridge.surfacePresenter;
+  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge surfacePresenter:_surfacePresenter];
   [bridge.uiManager.observerCoordinator addObserver:self];
-  [bridge.surfacePresenter addObserver:self];
+  [_surfacePresenter addObserver:self];
+}
+
+- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
+{
+  [super setModuleRegistry:moduleRegistry];
+  [[moduleRegistry moduleForName:"EventDispatcher"] addDispatchObserver:self];
+}
+
+/*
+ * In bridgeless mode, `setBridge` is never called during initializtion. Instead this selector is invoked via
+ * BridgelessTurboModuleSetup.
+ */
+- (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
+{
+  _surfacePresenter = surfacePresenter;
+  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge surfacePresenter:_surfacePresenter];
+  [_surfacePresenter addObserver:self];
 }
 
 #pragma mark -- API

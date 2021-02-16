@@ -16,6 +16,7 @@ const {getEvents} = require('./events');
 const {getProps, getPropProperties} = require('./props');
 const {getCommandOptions, getOptions} = require('./options');
 const {getExtendsProps, removeKnownExtends} = require('./extends');
+const {getTypes} = require('../utils');
 
 function findComponentConfig(ast) {
   const foundConfigs = [];
@@ -167,7 +168,7 @@ function getCommandProperties(commandTypeName, types, commandOptions) {
 }
 
 // $FlowFixMe there's no flowtype for AST
-function processComponent(ast, types): ComponentSchemaBuilderConfig {
+function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
   const {
     componentName,
     propsTypeName,
@@ -175,6 +176,8 @@ function processComponent(ast, types): ComponentSchemaBuilderConfig {
     commandOptionsExpression,
     optionsExpression,
   } = findComponentConfig(ast);
+
+  const types = getTypes(ast);
 
   const propProperties = getPropProperties(propsTypeName, types);
   const commandOptions = getCommandOptions(commandOptionsExpression);
@@ -205,5 +208,5 @@ function processComponent(ast, types): ComponentSchemaBuilderConfig {
 }
 
 module.exports = {
-  processComponent,
+  buildComponentSchema,
 };

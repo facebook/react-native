@@ -23,6 +23,7 @@ import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -296,6 +297,11 @@ public class ReactContext extends ContextWrapper {
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
     }
+    if (ReactFeatureFlags.enableReactContextCleanupFix) {
+      mLifecycleEventListeners.clear();
+      mActivityEventListeners.clear();
+      mWindowFocusEventListeners.clear();
+    }
   }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onActivityResult} */
@@ -470,7 +476,8 @@ public class ReactContext extends ContextWrapper {
    * @param segmentId
    * @param path
    */
-  public void registerSegment(int segmentId, String path) {
+  public void registerSegment(int segmentId, String path, Callback callback) {
     Assertions.assertNotNull(mCatalystInstance).registerSegment(segmentId, path);
+    Assertions.assertNotNull(callback).invoke();
   }
 }

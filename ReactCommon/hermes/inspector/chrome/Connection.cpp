@@ -93,6 +93,7 @@ class Connection::Impl : public inspector::InspectorObserver,
       const m::heapProfiler::StartTrackingHeapObjectsRequest &req) override;
   void handle(
       const m::heapProfiler::StopTrackingHeapObjectsRequest &req) override;
+  void handle(const m::heapProfiler::CollectGarbageRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
   void handle(const m::runtime::RunIfWaitingForDebuggerRequest &req) override;
@@ -217,8 +218,8 @@ bool Connection::Impl::disconnect() {
 
   inspector_->disable().via(executor_.get()).thenValue([this](auto &&) {
     // HACK:  We purposely call RemoteConnection::onDisconnect on a *different*
-    // rather than on this thread (the executor thread). This is to prevent this
-    // scenario:
+    // thread, rather than on this thread (the executor thread). This is to
+    // prevent this scenario:
     //
     // 1. RemoteConnection::onDisconnect runs on the executor thread
     // 2. onDisconnect through a long chain of calls causes the Connection
@@ -469,6 +470,13 @@ void Connection::Impl::sendSnapshot(
           message,
           [this, reportProgress, stopStackTraceCapture](
               const debugger::ProgramState &) {
+            // Stop taking any new traces before sending out the heap snapshot.
+            if (stopStackTraceCapture) {
+              getRuntime()
+                  .instrumentation()
+                  .stopTrackingHeapObjectStackTraces();
+            }
+
             if (reportProgress) {
               // A progress notification with finished = true indicates the
               // snapshot has been captured and is ready to be sent.  Our
@@ -492,11 +500,6 @@ void Connection::Impl::sendSnapshot(
                 });
 
             getRuntime().instrumentation().createSnapshotToStream(cos);
-            if (stopStackTraceCapture) {
-              getRuntime()
-                  .instrumentation()
-                  .stopTrackingHeapObjectStackTraces();
-            }
           })
       .via(executor_.get())
       .thenValue([this, reqId](auto &&) {
@@ -522,7 +525,45 @@ void Connection::Impl::handle(
       ->executeIfEnabled(
           "HeapProfiler.startTrackingHeapObjects",
           [this](const debugger::ProgramState &) {
-            getRuntime().instrumentation().startTrackingHeapObjectStackTraces();
+            getRuntime().instrumentation().startTrackingHeapObjectStackTraces(
+                [this](
+                    uint64_t lastSeenObjectId,
+                    std::chrono::microseconds timestamp,
+                    std::vector<jsi::Instrumentation::HeapStatsUpdate> stats) {
+                  // Send the last object ID notification first.
+                  m::heapProfiler::LastSeenObjectIdNotification note;
+                  note.lastSeenObjectId = lastSeenObjectId;
+                  // The protocol uses milliseconds with a fraction for
+                  // microseconds.
+                  note.timestamp =
+                      static_cast<double>(timestamp.count()) / 1000;
+                  sendNotificationToClient(note);
+
+                  m::heapProfiler::HeapStatsUpdateNotification heapStatsNote;
+                  // Flatten the HeapStatsUpdate list.
+                  heapStatsNote.statsUpdate.reserve(stats.size() * 3);
+                  for (const jsi::Instrumentation::HeapStatsUpdate &fragment :
+                       stats) {
+                    // Each triplet is the fragment number, the total count of
+                    // objects for the fragment, and the total size of objects
+                    // for the fragment.
+                    heapStatsNote.statsUpdate.push_back(
+                        static_cast<int>(std::get<0>(fragment)));
+                    heapStatsNote.statsUpdate.push_back(
+                        static_cast<int>(std::get<1>(fragment)));
+                    heapStatsNote.statsUpdate.push_back(
+                        static_cast<int>(std::get<2>(fragment)));
+                  }
+                  assert(
+                      heapStatsNote.statsUpdate.size() == stats.size() * 3 &&
+                      "Should be exactly 3x the stats vector");
+                  // TODO: Chunk this if there are too many fragments to update.
+                  // Unlikely to be a problem in practice unless there's a huge
+                  // amount of allocation and freeing.
+                  sendNotificationToClient(heapStatsNote);
+                });
+            // At this point we need the equivalent of a setInterval, where each
+            // interval samples the existing
           })
       .via(executor_.get())
       .thenValue(
@@ -537,6 +578,22 @@ void Connection::Impl::handle(
       "HeapSnapshot.stopTrackingHeapObjects",
       req.reportProgress && *req.reportProgress,
       /* stopStackTraceCapture */ true);
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::CollectGarbageRequest &req) {
+  const auto id = req.id;
+
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.collectGarbage",
+          [this](const debugger::ProgramState &) {
+            getRuntime().instrumentation().collectGarbage("inspector");
+          })
+      .via(executor_.get())
+      .thenValue(
+          [this, id](auto &&) { sendResponseToClient(m::makeOkResponse(id)); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
 void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {

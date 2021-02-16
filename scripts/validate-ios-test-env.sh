@@ -8,8 +8,7 @@
 # testing environment.
 #
 # In particular, it checks that the minimum required Xcode version is installed.
-# It also checks that the correct Node version is installed. Node 10 is not fully
-# supported at the time and Node 6 is no longer supported.
+# It also checks that the correct Node version is installed.
 
 # Function used to compare dot separated version numbers
 function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
@@ -24,7 +23,7 @@ fi
 # Check that the correct version of node is installed
 NODE_VERSION="$(command node --version | sed 's/[-/a-zA-Z]//g' |sed 's/.\{2\}$//')"
 
-if (( $(echo "${NODE_VERSION} <= 6.0" | bc -l) )); then
+if (( $(echo "${NODE_VERSION} < 12.0" | bc -l) )); then
   echo "Node ${NODE_VERSION} detected. This version of Node is not supported."
   echo "See https://reactnative.dev/docs/getting-started.html for instructions."
   exit 1

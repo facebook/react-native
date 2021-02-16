@@ -8,70 +8,28 @@
  * @flow
  */
 
-'use strict';
-
 import EventEmitter from '../vendor/emitter/EventEmitter';
 import type EmitterSubscription from '../vendor/emitter/_EmitterSubscription';
 import EventSubscriptionVendor from '../vendor/emitter/_EventSubscriptionVendor';
-
-function checkNativeEventModule(eventType: ?string) {
-  if (eventType) {
-    if (eventType.lastIndexOf('statusBar', 0) === 0) {
-      throw new Error(
-        '`' +
-          eventType +
-          '` event should be registered via the StatusBarIOS module',
-      );
-    }
-    if (eventType.lastIndexOf('keyboard', 0) === 0) {
-      throw new Error(
-        '`' +
-          eventType +
-          '` event should be registered via the Keyboard module',
-      );
-    }
-    if (eventType === 'appStateDidChange' || eventType === 'memoryWarning') {
-      throw new Error(
-        '`' +
-          eventType +
-          '` event should be registered via the AppState module',
-      );
-    }
-  }
-}
 
 /**
  * Deprecated - subclass NativeEventEmitter to create granular event modules instead of
  * adding all event listeners directly to RCTDeviceEventEmitter.
  */
-class RCTDeviceEventEmitter extends EventEmitter {
-  sharedSubscriber: EventSubscriptionVendor;
+class RCTDeviceEventEmitter<
+  EventDefinitions: {...},
+> extends EventEmitter<EventDefinitions> {
+  sharedSubscriber: EventSubscriptionVendor<EventDefinitions>;
 
   constructor() {
-    const sharedSubscriber = new EventSubscriptionVendor();
+    const sharedSubscriber = new EventSubscriptionVendor<EventDefinitions>();
     super(sharedSubscriber);
     this.sharedSubscriber = sharedSubscriber;
   }
 
-  addListener(
-    eventType: string,
-    listener: Function,
-    context: ?Object,
-  ): EmitterSubscription {
-    if (__DEV__) {
-      checkNativeEventModule(eventType);
-    }
-    return super.addListener(eventType, listener, context);
-  }
-
-  removeAllListeners(eventType: ?string) {
-    if (__DEV__) {
-      checkNativeEventModule(eventType);
-    }
-    super.removeAllListeners(eventType);
-  }
-
-  removeSubscription(subscription: EmitterSubscription) {
+  removeSubscription<K: $Keys<EventDefinitions>>(
+    subscription: EmitterSubscription<EventDefinitions, K>,
+  ): void {
     if (subscription.emitter !== this) {
       subscription.emitter.removeSubscription(subscription);
     } else {
@@ -80,4 +38,7 @@ class RCTDeviceEventEmitter extends EventEmitter {
   }
 }
 
-module.exports = (new RCTDeviceEventEmitter(): RCTDeviceEventEmitter);
+// FIXME: use typed events
+type RCTDeviceEventDefinitions = $FlowFixMe;
+
+export default (new RCTDeviceEventEmitter(): RCTDeviceEventEmitter<RCTDeviceEventDefinitions>);

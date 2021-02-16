@@ -250,8 +250,9 @@ static inline ShadowNode::Shared generateShadowNodeTree(
   auto family = componentDescriptor.createFamily(
       {generateReactTag(), SurfaceId(1), nullptr}, nullptr);
   return componentDescriptor.createShadowNode(
-      ShadowNodeFragment{generateDefaultProps(componentDescriptor),
-                         std::make_shared<SharedShadowNodeList>(children)},
+      ShadowNodeFragment{
+          generateDefaultProps(componentDescriptor),
+          std::make_shared<SharedShadowNodeList>(children)},
       family);
 }
 

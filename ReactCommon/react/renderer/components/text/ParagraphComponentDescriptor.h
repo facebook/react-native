@@ -54,12 +54,6 @@ class ParagraphComponentDescriptor final
     // `ParagraphShadowNode` uses `TextLayoutManager` to measure text content
     // and communicate text rendering metrics to mounting layer.
     paragraphShadowNode->setTextLayoutManager(textLayoutManager_);
-
-    paragraphShadowNode->dirtyLayout();
-
-    // All `ParagraphShadowNode`s must have leaf Yoga nodes with properly
-    // setup measure function.
-    paragraphShadowNode->enableMeasurement();
   }
 
  private:

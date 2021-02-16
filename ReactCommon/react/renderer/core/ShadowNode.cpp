@@ -6,6 +6,7 @@
  */
 
 #include "ShadowNode.h"
+#include "Constants.h"
 #include "ShadowNodeFragment.h"
 
 #include <better/small_vector.h>
@@ -24,23 +25,35 @@ SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
   return emptySharedShadowNodeSharedList;
 }
 
-bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
-  return first.family_ == second.family_;
-}
-
-static int computeStateRevision(
-    State::Shared const &state,
-    SharedShadowNodeSharedList const &children) {
-  int fragmentStateRevision = state ? state->getRevision() : 0;
-  int childrenSum = 0;
-
-  if (children) {
-    for (auto const &child : *children) {
-      childrenSum += child->getStateRevision();
+/*
+ * On iOS, this method returns `props` if provided, `sourceShadowNode`'s props
+ * otherwise. On Android, we forward props in case `sourceShadowNode` hasn't
+ * been mounted. `Props::rawProps` are merged from `props` to a copy of
+ * `sourceShadowNode.props_` and returned. This is necessary to enable
+ * Background Executor and should be removed once reimplementation of JNI layer
+ * is finished.
+ */
+SharedProps ShadowNode::propsForClonedShadowNode(
+    ShadowNode const &sourceShadowNode,
+    Props::Shared const &props) {
+#ifdef ANDROID
+  if (Constants::getPropsForwardingEnabled()) {
+    bool hasBeenMounted = sourceShadowNode.hasBeenMounted_;
+    bool sourceNodeHasRawProps = !sourceShadowNode.getProps()->rawProps.empty();
+    if (!hasBeenMounted && sourceNodeHasRawProps && props) {
+      auto copiedProps = sourceShadowNode.getProps()->rawProps;
+      copiedProps.merge_patch(props->rawProps);
+      auto &castedProps = const_cast<Props &>(*props);
+      castedProps.rawProps = copiedProps;
+      return props;
     }
   }
+#endif
+  return props ? props : sourceShadowNode.getProps();
+}
 
-  return fragmentStateRevision + childrenSum;
+bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
+  return first.family_ == second.family_;
 }
 
 #pragma mark - Constructors
@@ -59,7 +72,6 @@ ShadowNode::ShadowNode(
                             : emptySharedShadowNodeSharedList()),
       state_(fragment.state),
       orderIndex_(0),
-      stateRevision_(computeStateRevision(state_, children_)),
       family_(family),
       traits_(traits) {
   assert(props_);
@@ -76,20 +88,19 @@ ShadowNode::ShadowNode(
 }
 
 ShadowNode::ShadowNode(
-    const ShadowNode &sourceShadowNode,
-    const ShadowNodeFragment &fragment)
+    ShadowNode const &sourceShadowNode,
+    ShadowNodeFragment const &fragment)
     :
 #if RN_DEBUG_STRING_CONVERTIBLE
       revision_(sourceShadowNode.revision_ + 1),
 #endif
-      props_(fragment.props ? fragment.props : sourceShadowNode.props_),
+      props_(propsForClonedShadowNode(sourceShadowNode, fragment.props)),
       children_(
           fragment.children ? fragment.children : sourceShadowNode.children_),
       state_(
           fragment.state ? fragment.state
                          : sourceShadowNode.getMostRecentState()),
       orderIndex_(sourceShadowNode.orderIndex_),
-      stateRevision_(computeStateRevision(state_, children_)),
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
 
@@ -184,8 +195,6 @@ void ShadowNode::appendChild(const ShadowNode::Shared &child) {
   nonConstChildren->push_back(child);
 
   child->family_->setParent(family_);
-
-  stateRevision_ += child->getStateRevision();
 }
 
 void ShadowNode::replaceChild(
@@ -193,8 +202,6 @@ void ShadowNode::replaceChild(
     ShadowNode::Shared const &newChild,
     int suggestedIndex) {
   ensureUnsealed();
-
-  stateRevision_ += newChild->getStateRevision() - oldChild.getStateRevision();
 
   cloneChildrenIfShared();
 
@@ -235,6 +242,7 @@ void ShadowNode::cloneChildrenIfShared() {
 void ShadowNode::setMounted(bool mounted) const {
   if (mounted) {
     family_->setMostRecentState(getState());
+    hasBeenMounted_ = mounted;
   }
 
   family_->eventEmitter_->setEnabled(mounted);
@@ -242,10 +250,6 @@ void ShadowNode::setMounted(bool mounted) const {
 
 ShadowNodeFamily const &ShadowNode::getFamily() const {
   return *family_;
-}
-
-int ShadowNode::getStateRevision() const {
-  return stateRevision_;
 }
 
 ShadowNode::Unshared ShadowNode::cloneTree(
@@ -295,7 +299,6 @@ std::string ShadowNode::getDebugName() const {
 
 std::string ShadowNode::getDebugValue() const {
   return "r" + folly::to<std::string>(revision_) + "/sr" +
-      folly::to<std::string>(stateRevision_) + "/s" +
       folly::to<std::string>(state_ ? state_->getRevision() : 0) +
       (getSealed() ? "/sealed" : "");
 }

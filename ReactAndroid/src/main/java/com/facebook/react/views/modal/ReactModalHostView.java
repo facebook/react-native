@@ -28,6 +28,7 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -199,6 +200,10 @@ public class ReactModalHostView extends ViewGroup
   protected void setHardwareAccelerated(boolean hardwareAccelerated) {
     mHardwareAccelerated = hardwareAccelerated;
     mPropertyRequiresNewDialog = true;
+  }
+
+  void setEventDispatcher(EventDispatcher eventDispatcher) {
+    mHostView.setEventDispatcher(eventDispatcher);
   }
 
   @Override
@@ -392,6 +397,7 @@ public class ReactModalHostView extends ViewGroup
     private boolean hasAdjustedSize = false;
     private int viewWidth;
     private int viewHeight;
+    private EventDispatcher mEventDispatcher;
 
     private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
 
@@ -399,6 +405,10 @@ public class ReactModalHostView extends ViewGroup
 
     public DialogRootViewGroup(Context context) {
       super(context);
+    }
+
+    private void setEventDispatcher(EventDispatcher eventDispatcher) {
+      mEventDispatcher = eventDispatcher;
     }
 
     @Override
@@ -441,13 +451,34 @@ public class ReactModalHostView extends ViewGroup
 
     @UiThread
     public void updateState(final int width, final int height) {
+      final float realWidth = PixelUtil.toDIPFromPixel(width);
+      final float realHeight = PixelUtil.toDIPFromPixel(height);
+
+      // Check incoming state values. If they're already the correct value, return early to prevent
+      // infinite UpdateState/SetState loop.
+      ReadableMap currentState = getFabricViewStateManager().getState();
+      if (currentState != null) {
+        float delta = (float) 0.9;
+        float stateScreenHeight =
+            currentState.hasKey("screenHeight")
+                ? (float) currentState.getDouble("screenHeight")
+                : 0;
+        float stateScreenWidth =
+            currentState.hasKey("screenWidth") ? (float) currentState.getDouble("screenWidth") : 0;
+
+        if (Math.abs(stateScreenWidth - realWidth) < delta
+            && Math.abs(stateScreenHeight - realHeight) < delta) {
+          return;
+        }
+      }
+
       mFabricViewStateManager.setState(
           new FabricViewStateManager.StateUpdateCallback() {
             @Override
             public WritableMap getStateUpdate() {
               WritableMap map = new WritableNativeMap();
-              map.putDouble("screenWidth", PixelUtil.toDIPFromPixel(width));
-              map.putDouble("screenHeight", PixelUtil.toDIPFromPixel(height));
+              map.putDouble("screenWidth", realWidth);
+              map.putDouble("screenHeight", realHeight);
               return map;
             }
           });
@@ -472,13 +503,13 @@ public class ReactModalHostView extends ViewGroup
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-      mJSTouchDispatcher.handleTouchEvent(event, getEventDispatcher());
+      mJSTouchDispatcher.handleTouchEvent(event, mEventDispatcher);
       return super.onInterceptTouchEvent(event);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-      mJSTouchDispatcher.handleTouchEvent(event, getEventDispatcher());
+      mJSTouchDispatcher.handleTouchEvent(event, mEventDispatcher);
       super.onTouchEvent(event);
       // In case when there is no children interested in handling touch event, we return true from
       // the root view in order to receive subsequent events related to that gesture
@@ -487,18 +518,13 @@ public class ReactModalHostView extends ViewGroup
 
     @Override
     public void onChildStartedNativeGesture(MotionEvent androidEvent) {
-      mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, getEventDispatcher());
+      mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, mEventDispatcher);
     }
 
     @Override
     public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
       // No-op - override in order to still receive events to onInterceptTouchEvent
       // even when some other view disallow that
-    }
-
-    private EventDispatcher getEventDispatcher() {
-      ReactContext reactContext = getReactContext();
-      return reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     }
 
     @Override

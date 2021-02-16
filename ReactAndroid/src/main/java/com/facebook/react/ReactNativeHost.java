@@ -72,7 +72,9 @@ public abstract class ReactNativeHost {
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
             .setUIImplementationProvider(getUIImplementationProvider())
             .setJSIModulesPackage(getJSIModulePackage())
-            .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
+            .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
+            .setReactPackageTurboModuleManagerDelegateBuilder(
+                getReactPackageTurboModuleManagerDelegateBuilder());
 
     for (ReactPackage reactPackage : getPackages()) {
       builder.addPackage(reactPackage);
@@ -96,6 +98,11 @@ public abstract class ReactNativeHost {
 
   /** Get the {@link JavaScriptExecutorFactory}. Override this to use a custom Executor. */
   protected @Nullable JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
+    return null;
+  }
+
+  protected @Nullable ReactPackageTurboModuleManagerDelegate.Builder
+      getReactPackageTurboModuleManagerDelegateBuilder() {
     return null;
   }
 

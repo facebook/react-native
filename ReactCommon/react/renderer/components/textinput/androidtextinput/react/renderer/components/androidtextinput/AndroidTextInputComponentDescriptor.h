@@ -62,6 +62,8 @@ class AndroidTextInputComponentDescriptor final
         theme[YGEdgeBottom] =
             (YGValue){defaultTextInputPadding[3], YGUnitPoint};
         surfaceIdToThemePaddingMap_.emplace(std::make_pair(surfaceId, theme));
+        env->ReleaseFloatArrayElements(
+            defaultTextInputPaddingArray, defaultTextInputPadding, JNI_ABORT);
       }
       env->DeleteLocalRef(defaultTextInputPaddingArray);
     }
