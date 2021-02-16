@@ -251,17 +251,24 @@ void Binding::startSurface(
     return;
   }
 
-  LayoutContext context;
-  context.pointScaleFactor = pointScaleFactor_;
-  scheduler->startSurface(
-      surfaceId,
-      moduleName->toStdString(),
-      initialProps->consume(),
-      {},
-      context);
+  auto layoutContext = LayoutContext{};
+  layoutContext.pointScaleFactor = pointScaleFactor_;
 
-  scheduler->findMountingCoordinator(surfaceId)->setMountingOverrideDelegate(
+  auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
+  surfaceHandler.setProps(initialProps->consume());
+  surfaceHandler.constraintLayout({}, layoutContext);
+
+  scheduler->registerSurface(surfaceHandler);
+
+  surfaceHandler.start();
+
+  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
       animationDriver_);
+
+  {
+    std::unique_lock<better::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+    surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
+  }
 }
 
 void Binding::startSurfaceWithConstraints(
@@ -306,15 +313,21 @@ void Binding::startSurfaceWithConstraints(
   constraints.layoutDirection =
       isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
-  scheduler->startSurface(
-      surfaceId,
-      moduleName->toStdString(),
-      initialProps->consume(),
-      constraints,
-      context);
+  auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
+  surfaceHandler.setProps(initialProps->consume());
+  surfaceHandler.constraintLayout(constraints, context);
 
-  scheduler->findMountingCoordinator(surfaceId)->setMountingOverrideDelegate(
+  scheduler->registerSurface(surfaceHandler);
+
+  surfaceHandler.start();
+
+  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
       animationDriver_);
+
+  {
+    std::unique_lock<better::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+    surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
+  }
 }
 
 void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
@@ -346,7 +359,21 @@ void Binding::stopSurface(jint surfaceId) {
     return;
   }
 
-  scheduler->stopSurface(surfaceId);
+  {
+    std::unique_lock<better::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+
+    auto iterator = surfaceHandlerRegistry_.find(surfaceId);
+
+    if (iterator == surfaceHandlerRegistry_.end()) {
+      LOG(ERROR) << "Binding::stopSurface: Surface with given id is not found";
+      return;
+    }
+
+    auto surfaceHandler = std::move(iterator->second);
+    surfaceHandlerRegistry_.erase(iterator);
+    surfaceHandler.stop();
+    scheduler->unregisterSurface(surfaceHandler);
+  }
 }
 
 static inline float scale(Float value, Float pointScaleFactor) {
@@ -399,7 +426,19 @@ void Binding::setConstraints(
   constraints.layoutDirection =
       isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
-  scheduler->constraintSurfaceLayout(surfaceId, constraints, context);
+  {
+    std::shared_lock<better::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+
+    auto iterator = surfaceHandlerRegistry_.find(surfaceId);
+
+    if (iterator == surfaceHandlerRegistry_.end()) {
+      LOG(ERROR) << "Binding::setConstraints: Surface with given id is not found";
+      return;
+    }
+
+    auto &surfaceHandler = iterator->second;
+    surfaceHandler.constraintLayout(constraints, context);
+  }
 }
 
 void Binding::installFabricUIManager(

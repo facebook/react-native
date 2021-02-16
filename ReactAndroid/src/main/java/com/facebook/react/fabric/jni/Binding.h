@@ -164,6 +164,10 @@ class Binding : public jni::HybridClass<Binding>,
   std::shared_ptr<Scheduler> scheduler_;
   std::mutex schedulerMutex_;
 
+  better::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
+  better::shared_mutex
+      surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
+
   std::recursive_mutex commitMutex_;
 
   float pointScaleFactor_ = 1;
