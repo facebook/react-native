@@ -10,16 +10,13 @@
 #include <better/optional.h>
 #include <chrono>
 
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowTreeRevision.h>
 #include <react/renderer/mounting/TelemetryController.h>
 #include "ShadowTreeRevision.h"
-
-#ifndef NDEBUG
-#define RN_SHADOW_TREE_INTROSPECTION 1
-#endif
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <react/renderer/mounting/stubs.h>
