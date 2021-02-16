@@ -160,14 +160,12 @@ if [[ $EMIT_SOURCEMAP == true ]]; then
   else
     PACKAGER_SOURCEMAP_FILE="$SOURCEMAP_FILE"
   fi
-  EXTRA_ARGS+=("--sourcemap-output")
-  EXTRA_ARGS+=("$PACKAGER_SOURCEMAP_FILE")
+  EXTRA_ARGS+=("--sourcemap-output" "$PACKAGER_SOURCEMAP_FILE")
 fi
 
 # Hermes doesn't require JS minification.
 if [[ $USE_HERMES == true && $DEV == false ]]; then
-  EXTRA_ARGS+=("--minify")
-  EXTRA_ARGS+=("false")
+  EXTRA_ARGS+=("--minify" "false")
 fi
 
 "$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
