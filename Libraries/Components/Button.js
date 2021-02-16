@@ -18,7 +18,7 @@ const Text = require('../Text/Text');
 const TouchableNativeFeedback = require('./Touchable/TouchableNativeFeedback');
 const TouchableOpacity = require('./Touchable/TouchableOpacity');
 const View = require('./View/View');
-
+import type {AccessibilityState} from './View/ViewAccessibility';
 const invariant = require('invariant');
 
 import type {PressEvent} from '../Types/CoreEventTypes';
@@ -134,6 +134,11 @@ type ButtonProps = $ReadOnly<{|
     Used to locate this view in end-to-end tests.
    */
   testID?: ?string,
+
+  /**
+   * Accessibility props.
+   */
+  accessibilityState?: ?AccessibilityState,
 |}>;
 
 /**
@@ -263,7 +268,6 @@ class Button extends React.Component<ButtonProps> {
       nextFocusUp,
       disabled,
       testID,
-      accessibilityState = {},
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -274,10 +278,14 @@ class Button extends React.Component<ButtonProps> {
         buttonStyles.push({backgroundColor: color});
       }
     }
+    const accessibilityState =
+      disabled != null
+        ? {...this.props.accessibilityState, disabled}
+        : this.props.accessibilityState;
+
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
       textStyles.push(styles.textDisabled);
-      accessibilityState.disabled = true;
     }
     invariant(
       typeof title === 'string',
