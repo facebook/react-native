@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const BatchedBridge = require('../BatchedBridge/BatchedBridge');
 const TaskQueue = require('./TaskQueue');
 

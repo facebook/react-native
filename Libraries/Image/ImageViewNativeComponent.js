@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps} from './ImageProps';
 import type {ViewProps} from '../Components/View/ViewPropTypes';

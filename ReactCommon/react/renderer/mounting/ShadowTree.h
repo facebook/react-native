@@ -55,9 +55,10 @@ class ShadowTree final {
 
   struct CommitOptions {
     bool enableStateReconciliation{false};
-    // Lambda called inside `tryCommit`. If false is returned, commit is
-    // cancelled.
-    std::function<bool()> shouldCancel;
+
+    // Called during `tryCommit` phase. Returning true indicates current commit
+    // should yield to the next commit.
+    std::function<bool()> shouldYield;
   };
 
   /*
@@ -67,9 +68,7 @@ class ShadowTree final {
       SurfaceId surfaceId,
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext,
-      RootComponentDescriptor const &rootComponentDescriptor,
-      ShadowTreeDelegate const &delegate,
-      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate);
+      ShadowTreeDelegate const &delegate);
 
   ~ShadowTree();
 

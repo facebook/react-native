@@ -7,11 +7,10 @@
 
 package com.facebook.react.views.textinput;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.facebook.react.uimanager.events.RCTModernEventEmitter;
 
 /** Event emitted by EditText native view when the user submits the text. */
 /* package */ class ReactTextInputSubmitEditingEvent
@@ -36,26 +35,17 @@ import com.facebook.react.uimanager.events.RCTModernEventEmitter;
     return EVENT_NAME;
   }
 
+  @Nullable
   @Override
-  public boolean canCoalesce() {
-    return false;
-  }
-
-  @Override
-  public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
-  }
-
-  @Override
-  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(
-        getSurfaceId(), getViewTag(), getEventName(), serializeEventData());
-  }
-
-  private WritableMap serializeEventData() {
+  protected WritableMap getEventData() {
     WritableMap eventData = Arguments.createMap();
     eventData.putInt("target", getViewTag());
     eventData.putString("text", mText);
     return eventData;
+  }
+
+  @Override
+  public boolean canCoalesce() {
+    return false;
   }
 }

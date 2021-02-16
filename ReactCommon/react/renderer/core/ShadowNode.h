@@ -176,8 +176,6 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   void setMounted(bool mounted) const;
 
-  int getStateRevision() const;
-
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -213,6 +211,12 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    * Pointer to a family object that this shadow node belongs to.
    */
   ShadowNodeFamily::Shared family_;
+
+  mutable std::atomic<bool> hasBeenMounted_{false};
+
+  static SharedProps propsForClonedShadowNode(
+      ShadowNode const &sourceShadowNode,
+      Props::Shared const &props);
 
  protected:
   /*

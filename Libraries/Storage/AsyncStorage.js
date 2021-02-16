@@ -9,8 +9,6 @@
  * @jsdoc
  */
 
-'use strict';
-
 import NativeAsyncLocalStorage from './NativeAsyncLocalStorage';
 import NativeAsyncSQLiteDBStorage from './NativeAsyncSQLiteDBStorage';
 import invariant from 'invariant';

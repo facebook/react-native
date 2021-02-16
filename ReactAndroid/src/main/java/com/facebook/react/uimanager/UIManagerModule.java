@@ -247,7 +247,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mEventDispatcher.onCatalystInstanceDestroyed();
     mUIImplementation.onCatalystInstanceDestroyed();
 
-    getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
+    ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+    if (ReactFeatureFlags.enableReactContextCleanupFix) {
+      reactApplicationContext.removeLifecycleEventListener(this);
+    }
+    reactApplicationContext.unregisterComponentCallbacks(mMemoryTrimCallback);
     YogaNodePool.get().clear();
     ViewManagerPropertyUpdater.clear();
   }
@@ -421,16 +425,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   @Override
   public void synchronouslyUpdateViewOnUIThread(int tag, ReadableMap props) {
-    int uiManagerType = ViewUtil.getUIManagerType(tag);
-    if (uiManagerType == FABRIC) {
-      UIManager fabricUIManager =
-          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
-      if (fabricUIManager != null) {
-        fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
-      }
-    } else {
-      mUIImplementation.synchronouslyUpdateViewOnUIThread(tag, new ReactStylesDiffMap(props));
-    }
+    mUIImplementation.synchronouslyUpdateViewOnUIThread(tag, new ReactStylesDiffMap(props));
   }
 
   /**
@@ -533,25 +528,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       FLog.d(ReactConstants.TAG, message);
       PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.UI_MANAGER, message);
     }
-    int uiManagerType = ViewUtil.getUIManagerType(tag);
-    if (uiManagerType == FABRIC) {
-      ReactApplicationContext reactApplicationContext = getReactApplicationContext();
-      if (reactApplicationContext.hasActiveCatalystInstance()) {
-        final UIManager fabricUIManager =
-            UIManagerHelper.getUIManager(reactApplicationContext, uiManagerType);
-        if (fabricUIManager != null) {
-          reactApplicationContext.runOnUiQueueThread(
-              new Runnable() {
-                @Override
-                public void run() {
-                  fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
-                }
-              });
-        }
-      }
-    } else {
-      mUIImplementation.updateView(tag, className, props);
-    }
+    mUIImplementation.updateView(tag, className, props);
   }
 
   /**

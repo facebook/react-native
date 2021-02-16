@@ -24,11 +24,12 @@ def get_preprocessor_flags_for_build_mode():
 def get_static_library_ios_flags():
     return _APPLE_COMPILER_FLAGS
 
-OBJC_ARC_PREPROCESSOR_FLAGS = [
-    "-fobjc-arc",
-    "-fno-objc-arc-exceptions",
-    "-Qunused-arguments",
-]
+def get_objc_arc_preprocessor_flags():
+    return [
+        "-fobjc-arc",
+        "-fno-objc-arc-exceptions",
+        "-Qunused-arguments",
+    ]
 
 IS_OSS_BUILD = True
 
@@ -163,7 +164,7 @@ def rn_android_prebuilt_aar(*args, **kwargs):
 def rn_apple_library(*args, **kwargs):
     kwargs.setdefault("link_whole", True)
     kwargs.setdefault("enable_exceptions", True)
-    kwargs.setdefault("target_sdk_version", "10.0")
+    kwargs.setdefault("target_sdk_version", "11.0")
 
     # Unsupported kwargs
     _ = kwargs.pop("autoglob", False)

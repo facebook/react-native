@@ -35,7 +35,6 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 import java.util.HashMap;
 
 /**
@@ -295,20 +294,21 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       ReactContext reactContext = (ReactContext) host.getContext();
       if (reactContext.hasActiveCatalystInstance()) {
         final int reactTag = host.getId();
+        final int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
         UIManager uiManager = UIManagerHelper.getUIManager(reactContext, reactTag);
         if (uiManager != null) {
           uiManager
               .<EventDispatcher>getEventDispatcher()
               .dispatchEvent(
-                  new Event(reactTag) {
+                  new Event(surfaceId, reactTag) {
                     @Override
                     public String getEventName() {
                       return TOP_ACCESSIBILITY_ACTION_EVENT;
                     }
 
                     @Override
-                    public void dispatch(RCTEventEmitter rctEventEmitter) {
-                      rctEventEmitter.receiveEvent(reactTag, TOP_ACCESSIBILITY_ACTION_EVENT, event);
+                    protected WritableMap getEventData() {
+                      return event;
                     }
                   });
         }

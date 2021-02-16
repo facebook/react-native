@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const React = require('react');
 
 const {
@@ -27,6 +25,7 @@ const {
 const nullthrows = require('nullthrows');
 
 import {useState, useCallback} from 'react';
+import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 exports.displayName = 'ScrollViewExample';
@@ -35,8 +34,9 @@ exports.documentationURL = 'https://reactnative.dev/docs/scrollview';
 exports.category = 'Basic';
 exports.description =
   'Component that enables scrolling through child components';
-exports.examples = [
+exports.examples = ([
   {
+    name: 'scrollTo',
     title: '<ScrollView>\n',
     description:
       'To make content scrollable, wrap it within a <ScrollView> component',
@@ -53,7 +53,8 @@ exports.examples = [
               console.log('onScroll!');
             }}
             scrollEventThrottle={200}
-            style={styles.scrollView}>
+            style={styles.scrollView}
+            testID="scroll_vertical">
             {ITEMS.map(createItemRow)}
           </ScrollView>
           <Button
@@ -61,18 +62,21 @@ exports.examples = [
             onPress={() => {
               nullthrows(_scrollView).scrollTo({y: 0});
             }}
+            testID="scroll_to_top_button"
           />
           <Button
             label="Scroll to bottom"
             onPress={() => {
               nullthrows(_scrollView).scrollToEnd({animated: true});
             }}
+            testID="scroll_to_bottom_button"
           />
           <Button
             label="Flash scroll indicators"
             onPress={() => {
               nullthrows(_scrollView).flashScrollIndicators();
             }}
+            testID="flash_scroll_indicators_button"
           />
         </View>
       );
@@ -201,6 +205,7 @@ exports.examples = [
     },
   },
   {
+    name: 'keyboardShouldPersistTaps',
     title: '<ScrollView> Keyboard Options\n',
     description:
       'Toggle the keyboard using the search bar and determine keyboard behavior in response to drag and tap.',
@@ -261,7 +266,8 @@ exports.examples = [
       return <SnapToOptions />;
     },
   },
-];
+]: Array<RNTesterExampleModuleItem>);
+
 if (Platform.OS === 'ios') {
   exports.examples.push({
     title: '<ScrollView> smooth bi-directional content loading\n',
@@ -840,6 +846,7 @@ const KeyboardExample = () => {
   const [keyboardShouldPersistTaps, setKeyboardShouldPersistTaps] = useState(
     'never',
   );
+  const [textInputValue, setTextInputValue] = useState('Tap to open Keyboard');
   const dismissOptions =
     Platform.OS === 'ios'
       ? ['none', 'on-drag', 'interactive']
@@ -847,11 +854,20 @@ const KeyboardExample = () => {
   const persistOptions = ['never', 'always', 'handled'];
   return (
     <View>
+      <TextInput
+        style={styles.textInput}
+        value={textInputValue}
+        onChangeText={val => setTextInputValue(val)}
+      />
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         keyboardDismissMode={keyboardDismissMode}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         nestedScrollEnabled>
+        <Button
+          onPress={() => console.log('button pressed!')}
+          label={'Button'}
+        />
         {ITEMS.map(createItemRow)}
       </ScrollView>
       <Text style={styles.rowTitle}>Keyboard Dismiss Mode</Text>
@@ -1140,9 +1156,16 @@ let ITEMS = [...Array(12)].map((_, i) => `Item ${i}`);
 
 const createItemRow = (msg, index) => <Item key={index} msg={msg} />;
 
-const Button = ({label, onPress}) => (
-  <TouchableOpacity style={styles.button} onPress={onPress}>
-    <Text>{label}</Text>
+const Button = (props: {
+  label: string,
+  onPress: () => void,
+  testID?: string,
+}) => (
+  <TouchableOpacity
+    style={styles.button}
+    onPress={props.onPress}
+    testID={props.testID}>
+    <Text>{props.label}</Text>
   </TouchableOpacity>
 );
 

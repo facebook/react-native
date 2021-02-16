@@ -43,7 +43,8 @@ public class PreAllocateViewMountItem implements MountItem {
     mIsLayoutable = isLayoutable;
   }
 
-  public int getRootTag() {
+  @Override
+  public int getSurfaceId() {
     return mSurfaceId;
   }
 

@@ -18,7 +18,6 @@ const {
   View,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  findNodeHandle,
   Alert,
   StyleSheet,
   Platform,
@@ -712,27 +711,21 @@ class AnnounceForAccessibility extends React.Component<{}> {
 }
 
 class SetAccessibilityFocusExample extends React.Component<{}> {
-  state = {
-    reactTag: null,
-  };
-
   render() {
     const myRef = createRef();
 
     const onClose = () => {
       if (myRef && myRef.current) {
-        const reactTag = findNodeHandle(myRef.current);
-        this.setState({reactTag});
-        AccessibilityInfo.setAccessibilityFocus(reactTag);
+        AccessibilityInfo.sendAccessiblityEvent_unstable(
+          myRef.current,
+          'focus',
+        );
       }
     };
 
     return (
       <View>
-        <Text>
-          SetAccessibilityFocus on ReactTag:{' '}
-          {this.state.reactTag == null ? 'Null' : this.state.reactTag}
-        </Text>
+        <Text>SetAccessibilityFocus on native element</Text>
         <Button
           ref={myRef}
           title={'Click'}

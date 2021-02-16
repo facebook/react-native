@@ -79,8 +79,8 @@ void LayoutAnimationDriver::animationMutationsForFrame(
       // All generated Update mutations must have an "old" and "new"
       // ShadowView. Checking for nonzero tag doesn't guarantee that the views
       // are valid/correct, just that something is there.
-      assert(updateMutation.oldChildShadowView.tag != 0);
-      assert(updateMutation.newChildShadowView.tag != 0);
+      assert(updateMutation.oldChildShadowView.tag > 0);
+      assert(updateMutation.newChildShadowView.tag > 0);
 
       mutationsList.push_back(updateMutation);
       PrintMutationInstruction("Animation Progress:", updateMutation);
@@ -125,9 +125,9 @@ void LayoutAnimationDriver::animationMutationsForFrame(
               keyframe.viewPrev,
               finalMutationForKeyFrame.newChildShadowView,
               finalMutationForKeyFrame.index};
-          assert(mutation.oldChildShadowView.tag != 0);
+          assert(mutation.oldChildShadowView.tag > 0);
           assert(
-              mutation.newChildShadowView.tag != 0 ||
+              mutation.newChildShadowView.tag > 0 ||
               finalMutationForKeyFrame.type == ShadowViewMutation::Remove ||
               finalMutationForKeyFrame.type == ShadowViewMutation::Delete);
           mutationsList.push_back(mutation);
@@ -142,8 +142,8 @@ void LayoutAnimationDriver::animationMutationsForFrame(
               keyframe.viewPrev,
               keyframe.viewEnd,
               -1};
-          assert(mutation.oldChildShadowView.tag != 0);
-          assert(mutation.newChildShadowView.tag != 0);
+          assert(mutation.oldChildShadowView.tag > 0);
+          assert(mutation.newChildShadowView.tag > 0);
           mutationsList.push_back(mutation);
         }
       }

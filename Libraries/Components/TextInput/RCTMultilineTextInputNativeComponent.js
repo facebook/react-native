@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';

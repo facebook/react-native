@@ -57,6 +57,7 @@ Pod::Spec.new do |s|
     ss.exclude_files          = "React/CoreModules/**/*",
                                 "React/DevSupport/**/*",
                                 "React/Fabric/**/*",
+                                "React/FBReactNativeSpec/**/*",
                                 "React/Tests/**/*",
                                 "React/Inspector/**/*"
     ss.private_header_files   = "React/Cxx*/*.h"

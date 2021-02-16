@@ -10,13 +10,15 @@
 
 'use strict';
 
+import {type EventSubscription} from './EventSubscription';
 import type EventSubscriptionVendor from './_EventSubscriptionVendor';
 
 /**
  * EventSubscription represents a subscription to a particular event. It can
  * remove its own subscription.
  */
-class EventSubscription<EventDefinitions: {...}, K: $Keys<EventDefinitions>> {
+class _EventSubscription<EventDefinitions: {...}, K: $Keys<EventDefinitions>>
+  implements EventSubscription {
   eventType: K;
   key: number;
   subscriber: EventSubscriptionVendor<EventDefinitions>;
@@ -39,4 +41,4 @@ class EventSubscription<EventDefinitions: {...}, K: $Keys<EventDefinitions>> {
   }
 }
 
-module.exports = EventSubscription;
+module.exports = _EventSubscription;
