@@ -8,7 +8,6 @@
 package com.facebook.react.views.textinput;
 
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
-import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -109,7 +108,7 @@ public class ReactEditText extends AppCompatEditText
   private @Nullable String mFontFamily = null;
   private int mFontWeight = ReactTypefaceUtils.UNSET;
   private int mFontStyle = ReactTypefaceUtils.UNSET;
-  private int lengthFilterValue = UNSET;
+  private int mLengthFilterValue = UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
 
@@ -467,11 +466,11 @@ public class ReactEditText extends AppCompatEditText
   }
 
   public int getLengthFilterValue() {
-    return lengthFilterValue;
+    return mLengthFilterValue;
   }
 
   public void setLengthFilterValue(int lengthFilterValue) {
-    this.lengthFilterValue = lengthFilterValue;
+    this.mLengthFilterValue = lengthFilterValue;
   }
 
   public void maybeUpdateTypeface() {

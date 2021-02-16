@@ -57,7 +57,7 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
   private EventDispatcher mEventDispatcher;
   private boolean mIsBatchEdit;
   private @Nullable String mKey = null;
-  private int previousComposingTextLength;
+  private int mPreviousComposingTextLength;
 
   public ReactEditTextInputConnectionWrapper(
       InputConnection target,
@@ -99,11 +99,11 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
     int maxLength = mEditText.getLengthFilterValue();
     int textLength = text.length();
     boolean editTextAtMaxLength = mEditText.getText().length() == maxLength;
-    boolean composingTextWasDeletedByUser = previousComposingTextLength - textLength == 1;
+    boolean composingTextWasDeletedByUser = mPreviousComposingTextLength - textLength == 1;
     boolean composingTextDidAutoReset =
-        previousComposingTextLength > 0 && (textLength == 1 && !composingTextWasDeletedByUser);
+        mPreviousComposingTextLength > 0 && (textLength == 1 && !composingTextWasDeletedByUser);
     boolean composingTextIsShorterButDidNotReset =
-        previousComposingTextLength > textLength && !composingTextDidAutoReset;
+        mPreviousComposingTextLength > textLength && !composingTextDidAutoReset;
 
     if (editTextAtMaxLength && textLength != 0 && !composingTextIsShorterButDidNotReset) {
       key = String.valueOf(text.charAt(textLength - 1));
@@ -114,7 +114,7 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
       key = String.valueOf(mEditText.getText().charAt(currentSelectionStart - 1));
     }
     dispatchKeyEventOrEnqueue(key);
-    previousComposingTextLength = text.length();
+    mPreviousComposingTextLength = text.length();
     return consumed;
   }
 
