@@ -22,23 +22,6 @@ namespace react {
 
 thread_local LayoutContext threadLocalLayoutContext;
 
-static void applyLayoutConstraints(
-    YGStyle &yogaStyle,
-    LayoutConstraints const &layoutConstraints) {
-  yogaStyle.minDimensions()[YGDimensionWidth] =
-      yogaStyleValueFromFloat(layoutConstraints.minimumSize.width);
-  yogaStyle.minDimensions()[YGDimensionHeight] =
-      yogaStyleValueFromFloat(layoutConstraints.minimumSize.height);
-
-  yogaStyle.maxDimensions()[YGDimensionWidth] =
-      yogaStyleValueFromFloat(layoutConstraints.maximumSize.width);
-  yogaStyle.maxDimensions()[YGDimensionHeight] =
-      yogaStyleValueFromFloat(layoutConstraints.maximumSize.height);
-
-  yogaStyle.direction() =
-      yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
-}
-
 ShadowNodeTraits YogaLayoutableShadowNode::BaseTraits() {
   auto traits = LayoutableShadowNode::BaseTraits();
   traits.set(ShadowNodeTraits::Trait::YogaLayoutableKind);
@@ -350,7 +333,74 @@ void YogaLayoutableShadowNode::layoutTree(
    */
   yogaConfig_.pointScaleFactor = layoutContext.pointScaleFactor;
 
-  applyLayoutConstraints(yogaNode_.getStyle(), layoutConstraints);
+  auto minimumSize = layoutConstraints.minimumSize;
+  auto maximumSize = layoutConstraints.maximumSize;
+
+  // The caller must ensure that layout constraints make sense.
+  // Values cannot be NaN.
+  assert(!std::isnan(minimumSize.width));
+  assert(!std::isnan(minimumSize.height));
+  assert(!std::isnan(maximumSize.width));
+  assert(!std::isnan(maximumSize.height));
+  // Values cannot be negative.
+  assert(minimumSize.width >= 0);
+  assert(minimumSize.height >= 0);
+  assert(maximumSize.width >= 0);
+  assert(maximumSize.height >= 0);
+  // Mimimum size cannot be infinity.
+  assert(!std::isinf(minimumSize.width));
+  assert(!std::isinf(minimumSize.height));
+
+  // Internally Yoga uses three different measurement modes controlling layout
+  // constraints: `Undefined`, `Exactly`, and `AtMost`. These modes are an
+  // implementation detail and are not defined in `CSS Flexible Box Layout
+  // Module`. Yoga C++ API (and `YGNodeCalculateLayout` function particularly)
+  // does not allow to specify the measure modes explicitly. Instead, it infers
+  // these from styles associated with the root node. The actual inferring logic
+  // is complex but it has a quite reasonable effect: to ensure applying proper
+  // layout restrictions we have to express constraints we have and avoid
+  // specifying anything that might trigger some unexpected side-effect. To do
+  // this, we clear all dimensional styles and apply only parts that we need to
+  // ensure.
+
+  auto &yogaStyle = yogaNode_.getStyle();
+
+  yogaStyle.minDimensions()[YGDimensionWidth] = YGValueUndefined;
+  yogaStyle.minDimensions()[YGDimensionHeight] = YGValueUndefined;
+  yogaStyle.maxDimensions()[YGDimensionWidth] = YGValueUndefined;
+  yogaStyle.maxDimensions()[YGDimensionHeight] = YGValueUndefined;
+  yogaStyle.dimensions()[YGDimensionWidth] = YGValueUndefined;
+  yogaStyle.dimensions()[YGDimensionHeight] = YGValueUndefined;
+
+  auto ownerWidth = YGUndefined;
+  auto ownerHeight = YGUndefined;
+
+  if (!std::isinf(maximumSize.width)) {
+    yogaStyle.maxDimensions()[YGDimensionWidth] =
+        yogaStyleValueFromFloat(maximumSize.width);
+
+    ownerWidth = yogaFloatFromFloat(maximumSize.width);
+  }
+
+  if (!std::isinf(maximumSize.height)) {
+    yogaStyle.maxDimensions()[YGDimensionHeight] =
+        yogaStyleValueFromFloat(maximumSize.height);
+
+    ownerHeight = yogaFloatFromFloat(maximumSize.height);
+  }
+
+  if (!std::isinf(minimumSize.width)) {
+    yogaStyle.minDimensions()[YGDimensionWidth] =
+        yogaStyleValueFromFloat(minimumSize.width);
+  }
+
+  if (!std::isinf(minimumSize.height)) {
+    yogaStyle.minDimensions()[YGDimensionHeight] =
+        yogaStyleValueFromFloat(minimumSize.height);
+  }
+
+  auto direction =
+      yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
 
   threadLocalLayoutContext = layoutContext;
 
@@ -361,8 +411,7 @@ void YogaLayoutableShadowNode::layoutTree(
   {
     SystraceSection s("YogaLayoutableShadowNode::YGNodeCalculateLayout");
 
-    YGNodeCalculateLayout(
-        &yogaNode_, YGUndefined, YGUndefined, YGDirectionInherit);
+    YGNodeCalculateLayout(&yogaNode_, ownerWidth, ownerHeight, direction);
   }
 
   if (yogaNode_.getHasNewLayout()) {
@@ -531,7 +580,7 @@ static int YogaLog(
   int result = vsnprintf(NULL, 0, format, args);
   std::vector<char> buffer(1 + result);
   vsnprintf(buffer.data(), buffer.size(), format, args);
-  LOG(INFO) << "RNYogaLogger " << buffer.data();
+  LOG(ERROR) << "RNYogaLogger " << buffer.data();
   return result;
 }
 #endif

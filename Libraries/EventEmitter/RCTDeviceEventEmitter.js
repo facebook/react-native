@@ -12,32 +12,6 @@ import EventEmitter from '../vendor/emitter/EventEmitter';
 import type EmitterSubscription from '../vendor/emitter/_EmitterSubscription';
 import EventSubscriptionVendor from '../vendor/emitter/_EventSubscriptionVendor';
 
-function checkNativeEventModule(eventType: ?string) {
-  if (eventType) {
-    if (eventType.lastIndexOf('statusBar', 0) === 0) {
-      throw new Error(
-        '`' +
-          eventType +
-          '` event should be registered via the StatusBarIOS module',
-      );
-    }
-    if (eventType.lastIndexOf('keyboard', 0) === 0) {
-      throw new Error(
-        '`' +
-          eventType +
-          '` event should be registered via the Keyboard module',
-      );
-    }
-    if (eventType === 'appStateDidChange' || eventType === 'memoryWarning') {
-      throw new Error(
-        '`' +
-          eventType +
-          '` event should be registered via the AppState module',
-      );
-    }
-  }
-}
-
 /**
  * Deprecated - subclass NativeEventEmitter to create granular event modules instead of
  * adding all event listeners directly to RCTDeviceEventEmitter.
@@ -51,24 +25,6 @@ class RCTDeviceEventEmitter<
     const sharedSubscriber = new EventSubscriptionVendor<EventDefinitions>();
     super(sharedSubscriber);
     this.sharedSubscriber = sharedSubscriber;
-  }
-
-  addListener<K: $Keys<EventDefinitions>>(
-    eventType: K,
-    listener: (...$ElementType<EventDefinitions, K>) => mixed,
-    context: $FlowFixMe,
-  ): EmitterSubscription<EventDefinitions, K> {
-    if (__DEV__) {
-      checkNativeEventModule(eventType);
-    }
-    return super.addListener(eventType, listener, context);
-  }
-
-  removeAllListeners<K: $Keys<EventDefinitions>>(eventType: ?K): void {
-    if (__DEV__) {
-      checkNativeEventModule(eventType);
-    }
-    super.removeAllListeners(eventType);
   }
 
   removeSubscription<K: $Keys<EventDefinitions>>(

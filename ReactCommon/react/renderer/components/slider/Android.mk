@@ -7,7 +7,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := react_render_components_slider
+LOCAL_MODULE := rrc_slider
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/platform/android/react/renderer/components/slider/*.cpp)
 
@@ -21,7 +21,7 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_SHARED_LIBRARIES := libfbjni libreact_codegen_rncore libreact_render_imagemanager libreactnativeutilsjni libreact_render_componentregistry libreact_render_uimanager libreact_render_components_image libyoga libfolly_futures glog libfolly_json libglog_init libreact_render_core libreact_render_debug libreact_render_graphics libreact_render_components_view
+LOCAL_SHARED_LIBRARIES := libfbjni libreact_codegen_rncore libreact_render_imagemanager libreactnativeutilsjni libreact_render_componentregistry libreact_render_uimanager librrc_image libyoga libfolly_futures glog libfolly_json libglog_init libreact_render_core libreact_render_debug libreact_render_graphics librrc_view
 
 include $(BUILD_SHARED_LIBRARY)
 

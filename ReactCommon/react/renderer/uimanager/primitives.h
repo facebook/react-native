@@ -43,6 +43,10 @@ struct ShadowNodeListWrapper : public jsi::HostObject {
 inline static ShadowNode::Shared shadowNodeFromValue(
     jsi::Runtime &runtime,
     jsi::Value const &value) {
+  if (value.isNull()) {
+    return nullptr;
+  }
+
   return value.getObject(runtime)
       .getHostObject<ShadowNodeWrapper>(runtime)
       ->shadowNode;

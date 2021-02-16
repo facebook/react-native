@@ -55,7 +55,7 @@ class RNTesterExampleContainer extends React.Component {
     if (module.examples.length === 1) {
       return (
         <ExamplePage
-          title={module.title}
+          title={module.testTitle || module.title}
           description={module.description}
           android={!module.platform || module.platform === 'android'}
           ios={!module.platform || module.platform === 'ios'}
