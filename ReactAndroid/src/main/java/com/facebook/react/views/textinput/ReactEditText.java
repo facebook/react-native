@@ -254,6 +254,7 @@ public class ReactEditText extends AppCompatEditText
   @Override
   protected void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert) {
     super.onScrollChanged(horiz, vert, oldHoriz, oldVert);
+
     if (mScrollWatcher != null) {
       mScrollWatcher.onScrollChanged(horiz, vert, oldHoriz, oldVert);
     }
