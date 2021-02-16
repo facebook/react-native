@@ -398,9 +398,9 @@ inline Float toRadians(const RawValue &value) {
       stringValue.c_str(), &suffixStart); // can't use std::stod, probably
                                           // because of old Android NDKs
   if (0 == strncmp(suffixStart, "deg", 3)) {
-    return num * M_PI / 180;
+    return static_cast<Float>(num * M_PI / 180);
   }
-  return num; // assume suffix is "rad"
+  return static_cast<Float>(num); // assume suffix is "rad"
 }
 
 inline void fromRawValue(const RawValue &value, Transform &result) {

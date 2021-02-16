@@ -79,7 +79,7 @@ inline static SharedEventTarget eventTargetFromValue(
     jsi::Value const &eventTargetValue,
     jsi::Value const &tagValue) {
   return std::make_shared<EventTarget>(
-      runtime, eventTargetValue, tagValue.getNumber());
+      runtime, eventTargetValue, static_cast<EventTarget::Tag>(tagValue.getNumber()));
 }
 
 inline static Tag tagFromValue(jsi::Runtime &runtime, jsi::Value const &value) {

@@ -426,13 +426,13 @@ static void calculateShadowViewMutationsFlattener(
             ShadowViewMutation::RemoveMutation(
                 node.shadowView,
                 treeChildPair.shadowView,
-                treeChildPair.mountIndex));
+                static_cast<int>(treeChildPair.mountIndex)));
       } else {
         mutationInstructionContainer.insertMutations.push_back(
             ShadowViewMutation::InsertMutation(
                 node.shadowView,
                 treeChildPair.shadowView,
-                treeChildPair.mountIndex));
+                static_cast<int>(treeChildPair.mountIndex)));
       }
     }
 
@@ -887,7 +887,7 @@ static void calculateShadowViewMutationsV2(
       deleteMutations.push_back(
           ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
       removeMutations.push_back(ShadowViewMutation::RemoveMutation(
-          parentShadowView, oldChildPair.shadowView, oldChildPair.mountIndex));
+          parentShadowView, oldChildPair.shadowView, static_cast<int>(oldChildPair.mountIndex)));
 
       // We also have to call the algorithm recursively to clean up the entire
       // subtree starting from the removed view.
@@ -914,7 +914,7 @@ static void calculateShadowViewMutationsV2(
       }
 
       insertMutations.push_back(ShadowViewMutation::InsertMutation(
-          parentShadowView, newChildPair.shadowView, newChildPair.mountIndex));
+          parentShadowView, newChildPair.shadowView, static_cast<int>(newChildPair.mountIndex)));
       createMutations.push_back(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
 
@@ -972,14 +972,14 @@ static void calculateShadowViewMutationsV2(
               insertMutations.push_back(ShadowViewMutation::InsertMutation(
                   parentShadowView,
                   newChildPair.shadowView,
-                  newChildPair.mountIndex));
+                  static_cast<int>(newChildPair.mountIndex)));
               createMutations.push_back(
                   ShadowViewMutation::CreateMutation(newChildPair.shadowView));
             } else {
               removeMutations.push_back(ShadowViewMutation::RemoveMutation(
                   parentShadowView,
                   oldChildPair.shadowView,
-                  oldChildPair.mountIndex));
+                  static_cast<int>(oldChildPair.mountIndex)));
               deleteMutations.push_back(
                   ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
             }
@@ -1214,7 +1214,7 @@ static void calculateShadowViewMutationsV2(
               removeMutations.push_back(ShadowViewMutation::RemoveMutation(
                   parentShadowView,
                   oldChildPair.shadowView,
-                  oldChildPair.mountIndex));
+                  static_cast<int>(oldChildPair.mountIndex)));
               deleteMutations.push_back(
                   ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
             }
@@ -1229,7 +1229,7 @@ static void calculateShadowViewMutationsV2(
             removeMutations.push_back(ShadowViewMutation::RemoveMutation(
                 parentShadowView,
                 oldChildPair.shadowView,
-                oldChildPair.mountIndex));
+                static_cast<int>(oldChildPair.mountIndex)));
 
             if (oldChildPair.shadowView != newChildPair.shadowView) {
               updateMutations.push_back(ShadowViewMutation::UpdateMutation(
@@ -1275,7 +1275,7 @@ static void calculateShadowViewMutationsV2(
             removeMutations.push_back(ShadowViewMutation::RemoveMutation(
                 parentShadowView,
                 oldChildPair.shadowView,
-                oldChildPair.mountIndex));
+                static_cast<int>(oldChildPair.mountIndex)));
 
             deletionCandidatePairs.insert(
                 {oldChildPair.shadowView.tag, &oldChildPair});
@@ -1303,7 +1303,7 @@ static void calculateShadowViewMutationsV2(
         insertMutations.push_back(ShadowViewMutation::InsertMutation(
             parentShadowView,
             newChildPair.shadowView,
-            newChildPair.mountIndex));
+            static_cast<int>(newChildPair.mountIndex)));
       }
 
       // `inOtherTree` is only set to true during flattening/unflattening of

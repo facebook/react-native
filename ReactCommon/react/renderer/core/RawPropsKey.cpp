@@ -23,19 +23,19 @@ void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length)
   if (prefix) {
     auto prefixLength = std::strlen(prefix);
     std::memcpy(buffer, prefix, prefixLength);
-    *length = prefixLength;
+    *length = static_cast<RawPropsPropNameLength>(prefixLength);
   }
 
   // Name
   auto nameLength = std::strlen(name);
   std::memcpy(buffer + *length, name, nameLength);
-  *length += nameLength;
+  *length += static_cast<RawPropsPropNameLength>(nameLength);
 
   // Suffix
   if (suffix) {
-    int suffixLength = std::strlen(suffix);
+    auto suffixLength = std::strlen(suffix);
     std::memcpy(buffer + *length, suffix, suffixLength);
-    *length += suffixLength;
+    *length += static_cast<RawPropsPropNameLength>(suffixLength);
   }
   assert(*length < kPropNameLengthHardCap);
 }
