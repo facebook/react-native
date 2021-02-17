@@ -175,7 +175,7 @@ exports.examples = [
     },
   },
   {
-    title: 'Button with accessibilityState="disabled"',
+    title: 'Button with accessibilityState={{disabled: true}}',
     description: ('Note: This prop will announce on TalkBack that the button is disabled ' +
       'onPress functionality has to be disabled by the buttons own disabled prop': string),
     render: function(): React.Node {

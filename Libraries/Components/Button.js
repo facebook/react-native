@@ -279,7 +279,7 @@ class Button extends React.Component<ButtonProps> {
       }
     }
     const accessibilityState =
-      disabled != null
+      disabled === true
         ? {...this.props.accessibilityState, disabled}
         : this.props.accessibilityState;
 
