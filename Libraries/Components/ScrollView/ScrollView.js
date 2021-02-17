@@ -799,19 +799,17 @@ class ScrollView extends React.Component<Props, State> {
     this._updateAnimatedNodeAttachment();
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
-    const currentContentInsetTop = this.props.contentInset
+  componentDidUpdate(prevProps: Props) {
+    const prevContentInsetTop = prevProps.contentInset
+      ? prevProps.contentInset.top
+      : 0;
+    const newContentInsetTop = this.props.contentInset
       ? this.props.contentInset.top
       : 0;
-    const nextContentInsetTop = nextProps.contentInset
-      ? nextProps.contentInset.top
-      : 0;
-    if (currentContentInsetTop !== nextContentInsetTop) {
-      this._scrollAnimatedValue.setOffset(nextContentInsetTop || 0);
+    if (prevContentInsetTop !== newContentInsetTop) {
+      this._scrollAnimatedValue.setOffset(newContentInsetTop || 0);
     }
-  }
 
-  componentDidUpdate() {
     this._updateAnimatedNodeAttachment();
   }
 
