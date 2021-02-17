@@ -298,7 +298,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
 const styles = StyleSheet.create({
   header: {
     zIndex: 10,
-    position: 'relative',
+    elevation: 10,
   },
   fill: {
     flex: 1,
