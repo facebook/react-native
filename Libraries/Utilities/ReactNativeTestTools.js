@@ -57,7 +57,8 @@ function byClickable(): Predicate {
       // HACK: Find components that use `Pressability`.
       node.instance?.state?.pressability != null ||
       // TODO: Remove this after deleting `Touchable`.
-      (node.instance &&
+      (node.instance != null &&
+        // $FlowFixMe[prop-missing]
         typeof node.instance.touchableHandlePress === 'function'),
     'is clickable',
   );
@@ -72,7 +73,7 @@ function byTestID(testID: string): Predicate {
 
 function byTextMatching(regex: RegExp): Predicate {
   return withMessage(
-    node => node.props && regex.exec(node.props.children),
+    node => node.props != null && regex.exec(node.props.children) !== null,
     `text content matches ${regex.toString()}`,
   );
 }
