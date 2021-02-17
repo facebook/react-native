@@ -39,25 +39,35 @@ type Props = $ReadOnly<{|
 |}>;
 
 class ElementProperties extends React.Component<Props> {
+  _getShortFileName(fileName): string {
+    const parts = fileName.split('/');
+    return parts[parts.length - 1];
+  }
+
+  _getSeparator(i): React.Node {
+    return (
+      <Text key={`sep-${i}`} style={styles.breadSep}>
+        &#9656;
+      </Text>
+    );
+  }
+
   render(): React.Node {
+    const {frame, hierarchy, selection, setSelection, source} = this.props;
     const style = flattenStyle(this.props.style);
-    const selection = this.props.selection;
-    let openFileButton;
-    const source = this.props.source;
     const {fileName, lineNumber} = source || {};
-    if (fileName && lineNumber) {
-      const parts = fileName.split('/');
-      const fileNameShort = parts[parts.length - 1];
-      openFileButton = (
+
+    const openFileButton =
+      fileName && lineNumber ? (
         <TouchableHighlight
           style={styles.openButton}
           onPress={openFileInEditor.bind(null, fileName, lineNumber)}>
           <Text style={styles.openButtonTitle} numberOfLines={1}>
-            {fileNameShort}:{lineNumber}
+            {this._getShortFileName(fileName)}:{lineNumber}
           </Text>
         </TouchableHighlight>
-      );
-    }
+      ) : null;
+
     // Without the `TouchableWithoutFeedback`, taps on this inspector pane
     // would change the inspected element to whatever is under the inspector
     return (
@@ -65,21 +75,16 @@ class ElementProperties extends React.Component<Props> {
         <View style={styles.info}>
           <View style={styles.breadcrumb}>
             {mapWithSeparator(
-              this.props.hierarchy,
+              hierarchy,
               (hierarchyItem, i) => (
                 <TouchableHighlight
                   key={'item-' + i}
                   style={[styles.breadItem, i === selection && styles.selected]}
-                  // $FlowFixMe found when converting React.createClass to ES6
-                  onPress={() => this.props.setSelection(i)}>
+                  onPress={() => setSelection && setSelection(i)}>
                   <Text style={styles.breadItemText}>{hierarchyItem.name}</Text>
                 </TouchableHighlight>
               ),
-              i => (
-                <Text key={'sep-' + i} style={styles.breadSep}>
-                  &#9656;
-                </Text>
-              ),
+              this._getSeparator,
             )}
           </View>
           <View style={styles.row}>
@@ -87,7 +92,7 @@ class ElementProperties extends React.Component<Props> {
               <StyleInspector style={style} />
               {openFileButton}
             </View>
-            {<BoxInspector style={style} frame={this.props.frame} />}
+            <BoxInspector style={style} frame={frame} />
           </View>
         </View>
       </TouchableWithoutFeedback>
