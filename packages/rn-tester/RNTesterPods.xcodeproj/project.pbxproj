@@ -88,7 +88,7 @@
 		2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		34028D6B10F47E490042EB27 /* Pods-RNTesterUnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterUnitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		383889D923A7398900D06C3E /* RCTConvert_UIColorTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert_UIColorTests.m; sourceTree = "<group>"; };
-		3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "legacy_image@2x.png"; path = "RNTester/legacy_image@2x.png"; sourceTree = "<group>"; };
+		3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "legacy_image@2x.png"; sourceTree = "<group>"; };
 		5BEC8567F3741044B6A5EFC5 /* Pods-RNTester.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester.release.xcconfig"; path = "Pods/Target Support Files/Pods-RNTester/Pods-RNTester.release.xcconfig"; sourceTree = "<group>"; };
 		5C60EB1B226440DB0018C04F /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
 		5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RNTesterTurboModuleProvider.mm; sourceTree = "<group>"; };
