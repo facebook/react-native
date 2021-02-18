@@ -15,6 +15,8 @@
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTUtils.h>
 
+#import "RCTLinkingPlugins.h"
+
 NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
 static NSString *initialURL = nil;
