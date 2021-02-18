@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <react/debug/flags.h>
+
 //
 // This file contains flags that should __never__ be enabled for
 // release-mode/production builds, unless explicitly noted. You can enable some

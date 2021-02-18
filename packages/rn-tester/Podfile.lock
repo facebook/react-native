@@ -259,7 +259,8 @@ PODS:
     - React-Fabric/components (= 1000.0.0)
     - React-Fabric/config (= 1000.0.0)
     - React-Fabric/core (= 1000.0.0)
-    - React-Fabric/debug (= 1000.0.0)
+    - React-Fabric/debug_core (= 1000.0.0)
+    - React-Fabric/debug_renderer (= 1000.0.0)
     - React-Fabric/imagemanager (= 1000.0.0)
     - React-Fabric/mounting (= 1000.0.0)
     - React-Fabric/scheduler (= 1000.0.0)
@@ -463,7 +464,15 @@ PODS:
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
-  - React-Fabric/debug (1000.0.0):
+  - React-Fabric/debug_core (1000.0.0):
+    - RCT-Folly/Fabric (= 2020.01.13.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/debug_renderer (1000.0.0):
     - RCT-Folly/Fabric (= 2020.01.13.00)
     - RCTRequired (= 1000.0.0)
     - RCTTypeSafety (= 1000.0.0)
@@ -816,7 +825,7 @@ SPEC CHECKSUMS:
   React-Core: c63389ffebc383f834a2cae4d1c120968ffb3cdb
   React-CoreModules: 87f011fa87190ffe979e443ce578ec93ec6ff4d4
   React-cxxreact: 14cce64344ab482615dfe82a2cbea6eb73be6481
-  React-Fabric: 1744b2e94f5ed2ab247f3a55fd9762d55ed63f3b
+  React-Fabric: 2e26aa017842a411a0d0f29c1f458e0e91cb3d96
   React-graphics: 246b8e6cb4aad51271358767c965e47d692921ab
   React-jsi: 08c6628096d2025d4085fbaec8fe14a3c9dc667c
   React-jsiexecutor: 896c41b04121803e4ee61e4c9ed0900fdb420fea

@@ -1,13 +1,11 @@
-load("@fbsource//tools/build_defs:platform_defs.bzl", "CXX")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
-    "fb_xplat_cxx_test",
+    "CXX",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
     "get_preprocessor_flags_for_build_mode",
-    "react_native_xplat_target",
     "rn_xplat_cxx_library",
     "subdir_glob",
 )
@@ -29,7 +27,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "react/renderer/debug",
+        prefix = "react/debug",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -57,33 +55,13 @@ rn_xplat_cxx_library(
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
     ],
-    tests = [":tests"],
+    tests = [],
     visibility = ["PUBLIC"],
     deps = [
+        "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
         "//xplat/folly:headers_only",
         "//xplat/folly:memory",
         "//xplat/folly:molly",
-        react_native_xplat_target("better:better"),
-        react_native_xplat_target("react/debug:debug"),
-    ],
-)
-
-fb_xplat_cxx_test(
-    name = "tests",
-    srcs = glob(["tests/**/*.cpp"]),
-    headers = glob(["tests/**/*.h"]),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++14",
-        "-Wall",
-    ],
-    contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID, APPLE, CXX),
-    deps = [
-        ":debug",
-        "//xplat/folly:molly",
-        "//xplat/third-party/gmock:gtest",
     ],
 )
