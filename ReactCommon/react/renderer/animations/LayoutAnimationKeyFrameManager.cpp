@@ -27,10 +27,6 @@
 
 #include <glog/logging.h>
 
-// Uncomment to enable verbose LayoutAnimation debug asserts, especially useful
-// for Android
-//#define VERBOSE_LAYOUT_ANIMATION_ASSERTS 1
-
 #ifdef VERBOSE_LAYOUT_ANIMATION_ASSERTS
 #define LA_ASSERT(cond)                        \
   if (!(cond)) {                               \

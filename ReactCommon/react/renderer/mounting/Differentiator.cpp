@@ -14,10 +14,6 @@
 #include <algorithm>
 #include "ShadowView.h"
 
-// Uncomment this to enable verbose diffing logs, which can be useful for
-// debugging.
-// #define DEBUG_LOGS_DIFFER
-
 #ifdef DEBUG_LOGS_DIFFER
 #include <glog/logging.h>
 #define DEBUG_LOGS(code) code

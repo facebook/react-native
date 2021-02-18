@@ -9,9 +9,6 @@
 
 #include <glog/logging.h>
 
-// Uncomment to enable verbose StubViewTree debug logs
-// #define STUB_VIEW_TREE_VERBOSE 1
-
 // For iOS especially: flush logs because some might be lost on iOS if an
 // assert is hit right after this.
 #define STUB_VIEW_ASSERT(cond)                 \
