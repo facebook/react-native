@@ -8,7 +8,7 @@
 #include "RawPropsParser.h"
 
 #include <folly/Likely.h>
-#include <react/debug/rn_assert.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawProps.h>
 
 #include <glog/logging.h>
@@ -107,7 +107,7 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
       if (!rawProps.value_.isObject()) {
         LOG(ERROR) << "Preparse props: rawProps value is not object";
       }
-      rn_assert(rawProps.value_.isObject());
+      react_native_assert(rawProps.value_.isObject());
       auto object = rawProps.value_.asObject(runtime);
 
       auto names = object.getPropertyNames(runtime);

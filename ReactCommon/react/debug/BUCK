@@ -42,7 +42,7 @@ rn_xplat_cxx_library(
         ),
     ],
     fbandroid_linker_flags = [
-        # for android rn_assert
+        # for android react_native_assert
         "-llog",
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
