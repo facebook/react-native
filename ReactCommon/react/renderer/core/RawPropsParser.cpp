@@ -8,6 +8,7 @@
 #include "RawPropsParser.h"
 
 #include <folly/Likely.h>
+#include <react/debug/rn_assert.h>
 #include <react/renderer/core/RawProps.h>
 
 #include <glog/logging.h>
@@ -62,14 +63,14 @@ RawValue const *RawPropsParser::at(
   // the same order every time. This is trivial if you have a simple Props
   // constructor, but difficult or impossible if you have a shared sub-prop
   // Struct that is used by multiple parent Props.
-#ifndef NDEBUG
+#ifdef RN_DEBUG
   bool resetLoop = false;
 #endif
   do {
     rawProps.keyIndexCursor_++;
 
     if (UNLIKELY(rawProps.keyIndexCursor_ >= size_)) {
-#ifndef NDEBUG
+#ifdef RN_DEBUG
       if (resetLoop) {
         LOG(ERROR) << "Looked up RawProps key that does not exist: "
                    << (std::string)key;
@@ -106,7 +107,7 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
       if (!rawProps.value_.isObject()) {
         LOG(ERROR) << "Preparse props: rawProps value is not object";
       }
-      assert(rawProps.value_.isObject());
+      rn_assert(rawProps.value_.isObject());
       auto object = rawProps.value_.asObject(runtime);
 
       auto names = object.getPropertyNames(runtime);

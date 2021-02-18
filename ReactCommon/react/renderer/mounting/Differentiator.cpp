@@ -9,6 +9,7 @@
 
 #include <better/map.h>
 #include <better/small_vector.h>
+#include <react/debug/rn_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <algorithm>
@@ -82,7 +83,7 @@ class TinyMap final {
   inline Iterator find(KeyT key) {
     cleanVector();
 
-    assert(key != 0);
+    rn_assert(key != 0);
 
     if (begin_() == nullptr) {
       return end();
@@ -98,7 +99,7 @@ class TinyMap final {
   }
 
   inline void insert(Pair pair) {
-    assert(pair.first != 0);
+    rn_assert(pair.first != 0);
     vector_.push_back(pair);
   }
 
@@ -1489,7 +1490,7 @@ ShadowViewMutation::List calculateShadowViewMutations(
   SystraceSection s("calculateShadowViewMutations");
 
   // Root shadow nodes must be belong the same family.
-  assert(ShadowNode::sameFamily(oldRootShadowNode, newRootShadowNode));
+  rn_assert(ShadowNode::sameFamily(oldRootShadowNode, newRootShadowNode));
 
   auto mutations = ShadowViewMutation::List{};
   mutations.reserve(256);

@@ -37,16 +37,6 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
-    exported_platform_linker_flags = [
-        (
-            "^android.*",
-            ["-llog"],
-        ),
-    ],
-    fbandroid_linker_flags = [
-        # for android rn_assert
-        "-llog",
-    ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
