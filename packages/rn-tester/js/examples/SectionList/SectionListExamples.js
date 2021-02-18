@@ -65,6 +65,50 @@ export function SectionList_inverted(): React.Node {
   );
 }
 
+export function SectionList_contentInset(): React.Node {
+  const [initialContentInset, toggledContentInset] = [44, 88];
+
+  const [output, setOutput] = React.useState(
+    `contentInset top: ${initialContentInset.toString()}`,
+  );
+  const [exampleProps, setExampleProps] = React.useState({
+    automaticallyAdjustContentInsets: false,
+    contentInset: {top: initialContentInset},
+    contentOffset: {y: -initialContentInset, x: 0},
+  });
+
+  const onTest = () => {
+    const newContentInset =
+      exampleProps.contentInset.top === initialContentInset
+        ? toggledContentInset
+        : initialContentInset;
+    setExampleProps({
+      automaticallyAdjustContentInsets: false,
+      contentInset: {top: newContentInset},
+      contentOffset: {y: -newContentInset, x: 0},
+    });
+    setOutput(`contentInset top: ${newContentInset.toString()}`);
+  };
+
+  return (
+    <>
+      <View
+        style={[
+          styles.titleContainer,
+          {height: exampleProps.contentInset.top},
+        ]}>
+        <Text style={styles.titleText}>Menu</Text>
+      </View>
+      <SectionListExampleWithForwardedRef
+        exampleProps={exampleProps}
+        testOutput={output}
+        onTest={onTest}
+        testLabel={'Toggle header size'}
+      />
+    </>
+  );
+}
+
 export function SectionList_stickySectionHeadersEnabled(): React.Node {
   const [output, setOutput] = React.useState(
     'stickySectionHeadersEnabled false',
@@ -195,6 +239,21 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
+  },
+  titleContainer: {
+    position: 'absolute',
+    top: 45,
+    left: 0,
+    right: 0,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: 'gray',
+    zIndex: 1,
+  },
+  titleText: {
+    fontSize: 24,
+    lineHeight: 44,
+    fontWeight: 'bold',
   },
   testContainer: {
     flexDirection: 'row',
