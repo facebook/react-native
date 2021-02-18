@@ -10,10 +10,6 @@
 #import <mutex>
 
 #import <React/RCTAssert.h>
-#import <React/RCTConversions.h>
-#import <React/RCTFollyConvert.h>
-#import <React/RCTI18nUtil.h>
-#import <React/RCTMountingManager.h>
 #import <React/RCTSurfaceDelegate.h>
 #import <React/RCTSurfaceRootView.h>
 #import <React/RCTSurfaceTouchHandler.h>
@@ -27,19 +23,26 @@
 using namespace facebook::react;
 
 @implementation RCTFabricSurface {
+  // Immutable
   __weak RCTSurfacePresenter *_surfacePresenter;
+  NSString *_moduleName;
 
-  // `SurfaceHandler` is a thread-safe object, so we don't need additional synchronization.
-  // Objective-C++ classes cannot have instance variables without default constructors,
-  // hence we wrap a value into `optional` to workaround it.
-  better::optional<SurfaceHandler> _surfaceHandler;
+  // Protected by the `_mutex`
+  std::mutex _mutex;
+  RCTSurfaceStage _stage;
+  NSDictionary *_properties;
+  CGSize _minimumSize;
+  CGSize _maximumSize;
+  CGPoint _viewportOffset;
+  CGSize _intrinsicSize;
 
-  // Can be accessed from the main thread only.
+  // The Main thread only
   RCTSurfaceView *_Nullable _view;
   RCTSurfaceTouchHandler *_Nullable _touchHandler;
 }
 
 @synthesize delegate = _delegate;
+@synthesize rootTag = _rootTag;
 
 - (instancetype)initWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
                               moduleName:(NSString *)moduleName
@@ -47,19 +50,15 @@ using namespace facebook::react;
 {
   if (self = [super init]) {
     _surfacePresenter = surfacePresenter;
+    _moduleName = moduleName;
+    _properties = [initialProperties copy];
+    _rootTag = [RCTAllocateRootViewTag() integerValue];
 
-    _surfaceHandler =
-        SurfaceHandler{RCTStringFromNSString(moduleName), (SurfaceId)[RCTAllocateRootViewTag() integerValue]};
-    _surfaceHandler->setProps(convertIdToFollyDynamic(initialProperties));
+    _minimumSize = CGSizeZero;
 
-    [_surfacePresenter registerSurface:self];
+    _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
-    [self _updateLayoutContext];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleContentSizeCategoryDidChangeNotification:)
-                                                 name:UIContentSizeCategoryDidChangeNotification
-                                               object:nil];
+    _stage = RCTSurfaceStageSurfaceDidInitialize;
   }
 
   return self;
@@ -67,50 +66,41 @@ using namespace facebook::react;
 
 - (void)resetWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
 {
-  _view = nil;
   _surfacePresenter = surfacePresenter;
-  [_surfacePresenter registerSurface:self];
+  _stage = RCTSurfaceStageSurfaceDidInitialize;
+  _view = nil;
 }
-
-- (void)dealloc
-{
-  [_surfacePresenter unregisterSurface:self];
-}
-
-#pragma mark - Life-cycle management
 
 - (BOOL)start
 {
-  _surfaceHandler->start();
-  [self _propagateStageChange];
+  if (![self _setStage:RCTSurfaceStageRunning]) {
+    return NO;
+  }
 
-  RCTExecuteOnMainQueue(^{
-    [self->_surfacePresenter.mountingManager attachSurfaceToView:self.view
-                                                       surfaceId:self->_surfaceHandler->getSurfaceId()];
-  });
-
-  [_surfacePresenter setupAnimationDriverWithSurfaceHandler:*_surfaceHandler];
+  [_surfacePresenter registerSurface:self];
   return YES;
 }
 
 - (BOOL)stop
 {
-  _surfaceHandler->stop();
-  [self _propagateStageChange];
+  if (![self _unsetStage:RCTSurfaceStageRunning]) {
+    return NO;
+  }
 
-  RCTExecuteOnMainQueue(^{
-    [self->_surfacePresenter.mountingManager detachSurfaceFromView:self.view
-                                                         surfaceId:self->_surfaceHandler->getSurfaceId()];
-  });
-
+  [_surfacePresenter unregisterSurface:self];
   return YES;
+}
+
+- (void)dealloc
+{
+  [self stop];
 }
 
 #pragma mark - Immutable Properties (no need to enforce synchronization)
 
 - (NSString *)moduleName
 {
-  return RCTNSStringFromString(_surfaceHandler->getModuleName());
+  return _moduleName;
 }
 
 #pragma mark - Main-Threaded Routines
@@ -132,13 +122,49 @@ using namespace facebook::react;
 
 - (RCTSurfaceStage)stage
 {
-  return _surfaceHandler->getStatus() == SurfaceHandler::Status::Running ? RCTSurfaceStageRunning
-                                                                         : RCTSurfaceStagePreparing;
+  std::lock_guard<std::mutex> lock(_mutex);
+  return _stage;
 }
 
-- (void)_propagateStageChange
+- (BOOL)_setStage:(RCTSurfaceStage)stage
 {
-  RCTSurfaceStage stage = self.stage;
+  return [self _setStage:stage setOrUnset:YES];
+}
+
+- (BOOL)_unsetStage:(RCTSurfaceStage)stage
+{
+  return [self _setStage:stage setOrUnset:NO];
+}
+
+- (BOOL)_setStage:(RCTSurfaceStage)stage setOrUnset:(BOOL)setOrUnset
+{
+  RCTSurfaceStage updatedStage;
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+
+    if (setOrUnset) {
+      updatedStage = (RCTSurfaceStage)(_stage | stage);
+    } else {
+      updatedStage = (RCTSurfaceStage)(_stage & ~stage);
+    }
+
+    if (updatedStage == _stage) {
+      return NO;
+    }
+
+    _stage = updatedStage;
+  }
+
+  [self _propagateStageChange:updatedStage];
+  return YES;
+}
+
+- (void)_propagateStageChange:(RCTSurfaceStage)stage
+{
+  // Updating the `view`
+  RCTExecuteOnMainQueue(^{
+    self->_view.stage = stage;
+  });
 
   // Notifying the `delegate`
   id<RCTSurfaceDelegate> delegate = self.delegate;
@@ -147,113 +173,114 @@ using namespace facebook::react;
   }
 }
 
-- (void)_updateLayoutContext
-{
-  auto layoutConstraints = _surfaceHandler->getLayoutConstraints();
-  auto layoutContext = _surfaceHandler->getLayoutContext();
-
-  layoutContext.pointScaleFactor = RCTScreenScale();
-  layoutContext.swapLeftAndRightInRTL =
-      [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL];
-  layoutContext.fontSizeMultiplier = RCTFontSizeMultiplier();
-
-  _surfaceHandler->constraintLayout(layoutConstraints, layoutContext);
-}
-
 #pragma mark - Properties Management
 
 - (NSDictionary *)properties
 {
-  return convertFollyDynamicToId(_surfaceHandler->getProps());
+  std::lock_guard<std::mutex> lock(_mutex);
+  return _properties;
 }
 
 - (void)setProperties:(NSDictionary *)properties
 {
-  _surfaceHandler->setProps(convertIdToFollyDynamic(properties));
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+
+    if ([properties isEqualToDictionary:_properties]) {
+      return;
+    }
+
+    _properties = [properties copy];
+  }
+
+  [_surfacePresenter setProps:properties surface:self];
 }
 
 #pragma mark - Layout
 
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+{
+  return [_surfacePresenter sizeThatFitsMinimumSize:minimumSize maximumSize:maximumSize surface:self];
+}
+
+#pragma mark - Size Constraints
+
+- (void)setSize:(CGSize)size
+{
+  [self setMinimumSize:size maximumSize:size viewportOffset:_viewportOffset];
+}
+
 - (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize viewportOffset:(CGPoint)viewportOffset
 {
-  auto layoutConstraints = _surfaceHandler->getLayoutConstraints();
-  auto layoutContext = _surfaceHandler->getLayoutContext();
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    if (CGSizeEqualToSize(minimumSize, _minimumSize) && CGSizeEqualToSize(maximumSize, _maximumSize) &&
+        CGPointEqualToPoint(viewportOffset, _viewportOffset)) {
+      return;
+    }
 
-  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
-  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
-
-  if (!isnan(viewportOffset.x) && !isnan(viewportOffset.y)) {
-    layoutContext.viewportOffset = RCTPointFromCGPoint(viewportOffset);
+    _maximumSize = maximumSize;
+    _minimumSize = minimumSize;
+    _viewportOffset = viewportOffset;
   }
 
-  _surfaceHandler->constraintLayout(layoutConstraints, layoutContext);
+  [_surfacePresenter setMinimumSize:minimumSize maximumSize:maximumSize surface:self];
 }
 
 - (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
 {
-  [self setMinimumSize:minimumSize maximumSize:maximumSize viewportOffset:CGPointMake(NAN, NAN)];
-}
-
-- (void)setSize:(CGSize)size
-{
-  [self setMinimumSize:size maximumSize:size];
-}
-
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
-{
-  auto layoutConstraints = _surfaceHandler->getLayoutConstraints();
-  auto layoutContext = _surfaceHandler->getLayoutContext();
-
-  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
-  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
-
-  return RCTCGSizeFromSize(_surfaceHandler->measure(layoutConstraints, layoutContext));
+  [self setMinimumSize:minimumSize maximumSize:maximumSize viewportOffset:_viewportOffset];
 }
 
 - (CGSize)minimumSize
 {
-  return RCTCGSizeFromSize(_surfaceHandler->getLayoutConstraints().minimumSize);
+  std::lock_guard<std::mutex> lock(_mutex);
+  return _minimumSize;
 }
 
 - (CGSize)maximumSize
 {
-  return RCTCGSizeFromSize(_surfaceHandler->getLayoutConstraints().maximumSize);
+  std::lock_guard<std::mutex> lock(_mutex);
+  return _maximumSize;
 }
 
 - (CGPoint)viewportOffset
 {
-  return RCTCGPointFromPoint(_surfaceHandler->getLayoutContext().viewportOffset);
+  std::lock_guard<std::mutex> lock(_mutex);
+  return _viewportOffset;
+}
+
+#pragma mark - intrinsicSize
+
+- (void)setIntrinsicSize:(CGSize)intrinsicSize
+{
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    if (CGSizeEqualToSize(intrinsicSize, _intrinsicSize)) {
+      return;
+    }
+
+    _intrinsicSize = intrinsicSize;
+  }
+
+  // Notifying `delegate`
+  id<RCTSurfaceDelegate> delegate = self.delegate;
+  if ([delegate respondsToSelector:@selector(surface:didChangeIntrinsicSize:)]) {
+    [delegate surface:(RCTSurface *)(id)self didChangeIntrinsicSize:intrinsicSize];
+  }
+}
+
+- (CGSize)intrinsicSize
+{
+  std::lock_guard<std::mutex> lock(_mutex);
+  return _intrinsicSize;
 }
 
 #pragma mark - Synchronous Waiting
 
 - (BOOL)synchronouslyWaitFor:(NSTimeInterval)timeout
 {
-  auto mountingCoordinator = _surfaceHandler->getMountingCoordinator();
-
-  if (!mountingCoordinator) {
-    return NO;
-  }
-
-  if (!mountingCoordinator->waitForTransaction(std::chrono::duration<NSTimeInterval>(timeout))) {
-    return NO;
-  }
-
-  [_surfacePresenter.mountingManager scheduleTransaction:mountingCoordinator];
-
-  return YES;
-}
-
-- (void)handleContentSizeCategoryDidChangeNotification:(NSNotification *)notification
-{
-  [self _updateLayoutContext];
-}
-
-#pragma mark - Private
-
-- (SurfaceHandler const &)surfaceHandler;
-{
-  return *_surfaceHandler;
+  return [_surfacePresenter synchronouslyWaitSurface:self timeout:timeout];
 }
 
 #pragma mark - Deprecated
@@ -269,12 +296,7 @@ using namespace facebook::react;
 
 - (NSNumber *)rootViewTag
 {
-  return @(_surfaceHandler->getSurfaceId());
-}
-
-- (NSInteger)rootTag
-{
-  return (NSInteger)(_surfaceHandler->getSurfaceId());
+  return @(_rootTag);
 }
 
 @end

@@ -11,7 +11,6 @@
 #import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTSurfaceStage.h>
 #import <ReactCommon/RuntimeExecutor.h>
-#import <react/renderer/scheduler/SurfaceHandler.h>
 #import <react/utils/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -46,25 +45,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTSurfacePresenter (Surface) <RCTSurfacePresenterStub>
 
-/*
+/**
  * Surface uses these methods to register itself in the Presenter.
  */
 - (void)registerSurface:(RCTFabricSurface *)surface;
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
 
-@property (readonly) RCTMountingManager *mountingManager;
+- (void)setProps:(NSDictionary *)props surface:(RCTFabricSurface *)surface;
 
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 
+/**
+ * Measures the Surface with given constraints.
+ */
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
+                      maximumSize:(CGSize)maximumSize
+                          surface:(RCTFabricSurface *)surface;
+
+/**
+ * Sets `minimumSize` and `maximumSize` layout constraints for the Surface.
+ */
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize surface:(RCTFabricSurface *)surface;
+
 - (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
 
-- (void)setupAnimationDriverWithSurfaceHandler:(facebook::react::SurfaceHandler const &)surfaceHandler;
+- (BOOL)synchronouslyWaitSurface:(RCTFabricSurface *)surface timeout:(NSTimeInterval)timeout;
 
-/*
- * Deprecated.
- * Use `RCTMountingTransactionObserverCoordinator` instead.
- */
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;
+
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer;
 
 /*

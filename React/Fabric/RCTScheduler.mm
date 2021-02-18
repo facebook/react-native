@@ -139,14 +139,43 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   _animationDriver = nullptr;
 }
 
-- (void)registerSurface:(facebook::react::SurfaceHandler const &)surfaceHandler
+- (void)startSurfaceWithSurfaceId:(SurfaceId)surfaceId
+                       moduleName:(NSString *)moduleName
+                     initialProps:(NSDictionary *)initialProps
+                layoutConstraints:(LayoutConstraints)layoutConstraints
+                    layoutContext:(LayoutContext)layoutContext
 {
-  _scheduler->registerSurface(surfaceHandler);
+  SystraceSection s("-[RCTScheduler startSurfaceWithSurfaceId:...]");
+
+  auto props = convertIdToFollyDynamic(initialProps);
+  _scheduler->startSurface(surfaceId, RCTStringFromNSString(moduleName), props, layoutConstraints, layoutContext);
+
+  _scheduler->findMountingCoordinator(surfaceId)->setMountingOverrideDelegate(_animationDriver);
+
+  _scheduler->renderTemplateToSurface(
+      surfaceId, props.getDefault("navigationConfig").getDefault("initialUITemplate", "").getString());
 }
 
-- (void)unregisterSurface:(facebook::react::SurfaceHandler const &)surfaceHandler
+- (void)stopSurfaceWithSurfaceId:(SurfaceId)surfaceId
 {
-  _scheduler->unregisterSurface(surfaceHandler);
+  SystraceSection s("-[RCTScheduler stopSurfaceWithSurfaceId:]");
+  _scheduler->stopSurface(surfaceId);
+}
+
+- (CGSize)measureSurfaceWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+                                layoutContext:(LayoutContext)layoutContext
+                                    surfaceId:(SurfaceId)surfaceId
+{
+  SystraceSection s("-[RCTScheduler measureSurfaceWithLayoutConstraints:]");
+  return RCTCGSizeFromSize(_scheduler->measureSurface(surfaceId, layoutConstraints, layoutContext));
+}
+
+- (void)constraintSurfaceLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+                                       layoutContext:(LayoutContext)layoutContext
+                                           surfaceId:(SurfaceId)surfaceId
+{
+  SystraceSection s("-[RCTScheduler constraintSurfaceLayoutWithLayoutConstraints:]");
+  _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
 }
 
 - (ComponentDescriptor const *)findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:(ComponentHandle)handle
@@ -154,9 +183,9 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   return _scheduler->findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(handle);
 }
 
-- (void)setupAnimationDriver:(facebook::react::SurfaceHandler const &)surfaceHandler
+- (MountingCoordinator::Shared)mountingCoordinatorWithSurfaceId:(SurfaceId)surfaceId
 {
-  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(_animationDriver);
+  return _scheduler->findMountingCoordinator(surfaceId);
 }
 
 - (void)onAnimationStarted
