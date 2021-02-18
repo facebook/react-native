@@ -6,7 +6,7 @@
  */
 
 // No header guards since it is legitimately possible to include this file more
-// than once with and without RN_DEBUG.
+// than once with and without REACT_NATIVE_DEBUG.
 
 // react_native_assert allows us to opt-in to specific asserts on Android and
 // test before moving on. When all issues have been found, maybe we can use
@@ -16,11 +16,11 @@
 
 #undef react_native_assert
 
-#ifndef RN_DEBUG
+#ifndef REACT_NATIVE_DEBUG
 
 #define react_native_assert(e) ((void)0)
 
-#else // RN_DEBUG
+#else // REACT_NATIVE_DEBUG
 
 #ifdef __ANDROID__
 

@@ -63,14 +63,14 @@ RawValue const *RawPropsParser::at(
   // the same order every time. This is trivial if you have a simple Props
   // constructor, but difficult or impossible if you have a shared sub-prop
   // Struct that is used by multiple parent Props.
-#ifdef RN_DEBUG
+#ifdef REACT_NATIVE_DEBUG
   bool resetLoop = false;
 #endif
   do {
     rawProps.keyIndexCursor_++;
 
     if (UNLIKELY(rawProps.keyIndexCursor_ >= size_)) {
-#ifdef RN_DEBUG
+#ifdef REACT_NATIVE_DEBUG
       if (resetLoop) {
         LOG(ERROR) << "Looked up RawProps key that does not exist: "
                    << (std::string)key;
