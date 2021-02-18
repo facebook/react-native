@@ -237,6 +237,7 @@
   if (!NSEqualPoints(contentOffset, self.documentVisibleRect.origin))
   {
     [self.contentView scrollToPoint:contentOffset];
+    [self reflectScrolledClipView:self.contentView];
   }
 #else // ]TODO(macOS ISS#2323203)
   super.contentOffset = CGPointMake(
@@ -244,6 +245,21 @@
       RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
 #endif // TODO(macOS ISS#2323203)
 }
+
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+- (void)setContentOffset:(CGPoint)contentOffset
+                animated:(BOOL)animated
+{
+  if (animated) {
+    [NSAnimationContext beginGrouping];
+    [[NSAnimationContext currentContext] setDuration:0.3];
+    [[self.contentView animator] setBoundsOrigin:contentOffset];
+    [NSAnimationContext endGrouping];
+  } else {
+    self.contentOffset = contentOffset;
+  }
+}
+#endif // TODO(macOS ISS#2323203)
 
 - (void)setFrame:(CGRect)frame
 {
@@ -321,12 +337,12 @@
 	return YES;
 }
 
-- (void)setAccessibilityLabel:(NSString *)accessibilityLabel 
+- (void)setAccessibilityLabel:(NSString *)accessibilityLabel
 {
   [super setAccessibilityLabel:accessibilityLabel];
   [[self documentView] setAccessibilityLabel:accessibilityLabel];
 }
-- (void)setDocumentView:(__kindof NSView *)documentView 
+- (void)setDocumentView:(__kindof NSView *)documentView
 {
   [super setDocumentView:documentView];
   [documentView setAccessibilityLabel:[self accessibilityLabel]];
@@ -457,7 +473,7 @@
   return [_scrollView resignFirstResponder];
 }
 
-- (void)setAccessibilityLabel:(NSString *)accessibilityLabel 
+- (void)setAccessibilityLabel:(NSString *)accessibilityLabel
 {
   [_scrollView setAccessibilityLabel:accessibilityLabel];
 }
@@ -494,7 +510,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   [super insertReactSubview:view atIndex:atIndex];
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 	RCTAssert(self.contentView == nil, @"RCTScrollView may only contain a single subview");
-	
+
   _scrollView.documentView = view;
 #else // ]TODO(macOS ISS#2323203)
 #if !TARGET_OS_TV
@@ -714,10 +730,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
             0.01)); // Make width and height greater than 0
     // Ensure at least one scroll event will fire
     _allowNextScrollNoMatterWhat = YES;
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-    (void) animated;
-    _scrollView.contentOffset = offset;
-#else // ]TODO(macOS ISS#2323203)
+
     if (!CGRectContainsPoint(maxRect, offset) && !self.scrollToOverflowEnabled) {
       CGFloat x = fmax(offset.x, CGRectGetMinX(maxRect));
       x = fmin(x, CGRectGetMaxX(maxRect));
@@ -725,8 +738,8 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
       y = fmin(y, CGRectGetMaxY(maxRect));
       offset = CGPointMake(x, y);
     }
+
     [_scrollView setContentOffset:offset animated:animated];
-#endif // TODO(macOS ISS#2323203)
   }
 }
 
@@ -753,12 +766,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
     // Ensure at least one scroll event will fire
     _allowNextScrollNoMatterWhat = YES;
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-    (void) animated;
-    _scrollView.contentOffset = offset;
-#else // ]TODO(macOS ISS#2323203)
     [_scrollView setContentOffset:offset animated:animated];
-#endif // TODO(macOS ISS#2323203)
   }
 }
 
@@ -787,7 +795,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 #endif
 }
 // ]TODO(macOS ISS#2323203)
- 
+
 #pragma mark - ScrollView delegate
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
@@ -1277,22 +1285,22 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   {
     case 36:
       return @"ENTER";
-      
+
     case 116:
       return @"PAGE_UP";
 
     case 121:
       return @"PAGE_DOWN";
-      
+
     case 123:
       return @"LEFT_ARROW";
-      
+
     case 124:
       return @"RIGHT_ARROW";
-      
+
     case 125:
       return @"DOWN_ARROW";
-      
+
     case 126:
       return @"UP_ARROW";
   }
@@ -1308,7 +1316,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     RCT_SEND_SCROLL_EVENT(onScrollKeyDown, (@{ @"key": keyCommand}));
 	} else {
     [super keyDown:theEvent];
-		
+
     // AX: if a tab key was pressed and the first responder is currently clipped by the scroll view,
     // automatically scroll to make the view visible to make it navigable via keyboard.
     if ([theEvent keyCode] == 48) {  //tab key
