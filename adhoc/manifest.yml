@@ -1,0 +1,19 @@
+applications:
+-  name: LCH
+   memory: 700MB
+   path: target/LCH-0.0.1-SNAPSHOT.war
+   buildpacks:
+   - java_buildpack
+   health-check-type: none
+   env:
+      SPRING_PROFILES_DEFAULT: cf
+      XSAPPNAME: LCH
+      TENANT_HOST_PATTERN: LCH- (.*). cfapps.eu10.hana.ondemand.com
+   destinations: |
+      [{
+         "name":"lch_services",
+         "url" :"LCH.cfapps.eu10.hana.ondemand.com",
+         "forwardAuthToken": true}
+      ]
+   services:
+   - uaa_UserDetail
