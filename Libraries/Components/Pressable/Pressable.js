@@ -117,17 +117,17 @@ type Props = $ReadOnly<{|
   /**
    * If true, doesn't play system sound on touch.
    */
-  android_disableSound?: ?boolean,
+  androidDisableSound?: ?boolean,
 
   /**
    * Enables the Android ripple effect and configures its color.
    */
-  android_ripple?: ?RippleConfig,
+  androidRipple?: ?RippleConfig,
 
   /**
    * Used only for documentation or testing (e.g. snapshot testing).
    */
-  testOnly_pressed?: ?boolean,
+  testOnlyPressed?: ?boolean,
 
   /**
    * Duration to wait after press down before calling `onPressIn`.
@@ -142,8 +142,8 @@ type Props = $ReadOnly<{|
 function Pressable(props: Props, forwardedRef): React.Node {
   const {
     accessible,
-    android_disableSound,
-    android_ripple,
+    androidDisableSound,
+    androidRipple,
     children,
     delayLongPress,
     disabled,
@@ -154,7 +154,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     onPressOut,
     pressRetentionOffset,
     style,
-    testOnly_pressed,
+    testOnlyPressed,
     unstable_pressDelay,
     ...restProps
   } = props;
@@ -162,9 +162,9 @@ function Pressable(props: Props, forwardedRef): React.Node {
   const viewRef = useRef<React.ElementRef<typeof View> | null>(null);
   useImperativeHandle(forwardedRef, () => viewRef.current);
 
-  const android_rippleConfig = useAndroidRippleForView(android_ripple, viewRef);
+  const androidRippleConfig = useAndroidRippleForView(androidRipple, viewRef);
 
-  const [pressed, setPressed] = usePressState(testOnly_pressed === true);
+  const [pressed, setPressed] = usePressState(testOnlyPressed === true);
 
   const hitSlop = normalizeRect(props.hitSlop);
 
@@ -175,7 +175,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
 
   const restPropsWithDefaults: React.ElementConfig<typeof View> = {
     ...restProps,
-    ...android_rippleConfig?.viewProps,
+    ...androidRippleConfig?.viewProps,
     accessible: accessible !== false,
     accessibilityState,
     focusable: focusable !== false,
@@ -187,24 +187,24 @@ function Pressable(props: Props, forwardedRef): React.Node {
       disabled,
       hitSlop,
       pressRectOffset: pressRetentionOffset,
-      android_disableSound,
+      androidDisableSound,
       delayLongPress,
       delayPressIn: unstable_pressDelay,
       onLongPress,
       onPress,
       onPressIn(event: PressEvent): void {
-        if (android_rippleConfig != null) {
-          android_rippleConfig.onPressIn(event);
+        if (androidRippleConfig != null) {
+          androidRippleConfig.onPressIn(event);
         }
         setPressed(true);
         if (onPressIn != null) {
           onPressIn(event);
         }
       },
-      onPressMove: android_rippleConfig?.onPressMove,
+      onPressMove: androidRippleConfig?.onPressMove,
       onPressOut(event: PressEvent): void {
-        if (android_rippleConfig != null) {
-          android_rippleConfig.onPressOut(event);
+        if (androidRippleConfig != null) {
+          androidRippleConfig.onPressOut(event);
         }
         setPressed(false);
         if (onPressOut != null) {
@@ -213,8 +213,8 @@ function Pressable(props: Props, forwardedRef): React.Node {
       },
     }),
     [
-      android_disableSound,
-      android_rippleConfig,
+      androidDisableSound,
+      androidRippleConfig,
       delayLongPress,
       disabled,
       hitSlop,

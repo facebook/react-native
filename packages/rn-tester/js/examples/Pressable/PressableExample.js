@@ -369,7 +369,7 @@ exports.examples = [
       };
       return (
         <View style={styles.row}>
-          <Pressable android_ripple={{color: 'green'}}>
+          <Pressable androidRipple={{color: 'green'}}>
             <Animated.View style={style} />
           </Pressable>
         </View>
@@ -393,7 +393,7 @@ exports.examples = [
               {justifyContent: 'space-around', alignItems: 'center'},
             ]}>
             <Pressable
-              android_ripple={{color: 'orange', borderless: true, radius: 30}}>
+              androidRipple={{color: 'orange', borderless: true, radius: 30}}>
               <View>
                 <Text style={[styles.button, nativeFeedbackButton]}>
                   radius 30
@@ -401,7 +401,7 @@ exports.examples = [
               </View>
             </Pressable>
 
-            <Pressable android_ripple={{borderless: true, radius: 150}}>
+            <Pressable androidRipple={{borderless: true, radius: 150}}>
               <View>
                 <Text style={[styles.button, nativeFeedbackButton]}>
                   radius 150
@@ -409,7 +409,7 @@ exports.examples = [
               </View>
             </Pressable>
 
-            <Pressable android_ripple={{borderless: false, radius: 70}}>
+            <Pressable androidRipple={{borderless: false, radius: 70}}>
               <View style={styles.block}>
                 <Text style={[styles.button, nativeFeedbackButton]}>
                   radius 70, with border
@@ -418,7 +418,7 @@ exports.examples = [
             </Pressable>
           </View>
 
-          <Pressable android_ripple={{borderless: false}}>
+          <Pressable androidRipple={{borderless: false}}>
             <View style={styles.block}>
               <Text style={[styles.button, nativeFeedbackButton]}>
                 with border, default color and radius
