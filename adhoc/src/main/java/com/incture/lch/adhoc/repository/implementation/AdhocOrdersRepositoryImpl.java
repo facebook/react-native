@@ -397,7 +397,8 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 			session.save(lkShipperDetailsDao.importShipperDetails(shipDetDto2));
 		}
 
-		String adhocOrderId = getReferenceData.getNextSeqNumberAdhoc(getReferenceData.execute("AH"), 5, sessionFactory);
+		String adhocOrderId = getReferenceData.getNextSeqNumberAdhoc(getReferenceData.executeAdhoc("ADH"+ AdhocOrderDto.getShipperName().substring(0,2)), 5, sessionFactory);
+	
 		if (adhocOrders.getFwoNum() == null || adhocOrders.getFwoNum().equals("")) {
 			adhocOrders.setFwoNum(adhocOrderId);
 		}
