@@ -125,15 +125,21 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 					.setExpectedDeliveryDate(ServiceUtil.convertDateToString(adhocOrders.getExpectedDeliveryDate()));
 		}
 		AdhocOrderDto.setPartDescription(adhocOrders.getPartDescription());
-		AdhocOrderDto.setQuantity(adhocOrders.getQuantity());
+		//AdhocOrderDto.setQuantity(adhocOrders.getQuantity());
+		AdhocOrderDto.setQuantity(ServiceUtil.convertIntegerToString(adhocOrders.getQuantity()));
+
 		AdhocOrderDto.setUom(adhocOrders.getUom());
 		if (adhocOrders.getIsInternational() != null) {
-			AdhocOrderDto.setIsInternational(ServiceUtil.convertStringToBoolean(adhocOrders.getIsInternational()));
+			//AdhocOrderDto.setIsInternational(ServiceUtil.convertStringToBoolean(adhocOrders.getIsInternational()));
+			AdhocOrderDto.setIsInternational(adhocOrders.getIsInternational());
+
 		}
 		AdhocOrderDto.setCountryOrigin(adhocOrders.getCountryOrigin());
 		AdhocOrderDto.setValue(adhocOrders.getValue());
 		AdhocOrderDto.setCurrency(adhocOrders.getCurrency());
-		AdhocOrderDto.setWeight(adhocOrders.getWeight());
+		//AdhocOrderDto.setWeight(adhocOrders.getWeight());
+		AdhocOrderDto.setDimensionB(ServiceUtil.convertBigDecimalToString(adhocOrders.getWeight()));
+
 		if (adhocOrders.getDimensionB() != null) {
 			AdhocOrderDto.setDimensionB(ServiceUtil.convertBigDecimalToString(adhocOrders.getDimensionB()));
 		}
@@ -147,7 +153,9 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		AdhocOrderDto.setProjectNumber(adhocOrders.getProjectNumber());
 		AdhocOrderDto.setReferenceNumber(adhocOrders.getReferenceNumber());
 		if (adhocOrders.getIsTruck() != null) {
-			AdhocOrderDto.setIsTruck(ServiceUtil.convertStringToBoolean(adhocOrders.getIsTruck()));
+			//AdhocOrderDto.setIsTruck(ServiceUtil.convertStringToBoolean(adhocOrders.getIsTruck()));
+			AdhocOrderDto.setIsTruck(adhocOrders.getIsTruck());
+
 		}
 		AdhocOrderDto.setVinNumber(adhocOrders.getVinNumber());
 		AdhocOrderDto.setShippingInstruction(adhocOrders.getShippingInstruction());
@@ -173,7 +181,9 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		AdhocOrderDto.setOriginZip(adhocOrders.getOriginZip());
 
 		if (adhocOrders.getIsHazmat() != null) {
-			AdhocOrderDto.setIsHazmat(ServiceUtil.convertStringToBoolean(adhocOrders.getIsHazmat()));
+			//AdhocOrderDto.setIsHazmat(ServiceUtil.convertStringToBoolean(adhocOrders.getIsHazmat()));
+			AdhocOrderDto.setIsHazmat(adhocOrders.getIsHazmat());
+
 		}
 		AdhocOrderDto.setShipperNameFreeText(adhocOrders.getShipperNameFreeText());
 		AdhocOrderDto.setOriginCountry(adhocOrders.getOriginCountry());
@@ -220,19 +230,27 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 					.setExpectedDeliveryDate(ServiceUtil.convertStringToDate(AdhocOrderDto.getExpectedDeliveryDate()));
 		}
 		adhocOrders.setPartDescription(AdhocOrderDto.getPartDescription());
-		adhocOrders.setQuantity(AdhocOrderDto.getQuantity());
+		//adhocOrders.setQuantity(AdhocOrderDto.getQuantity());
+		adhocOrders.setQuantity(ServiceUtil.convertStringToInteger(AdhocOrderDto.getQuantity()));
+		
+		
 		adhocOrders.setUom(AdhocOrderDto.getUom());
 		if (AdhocOrderDto.getIsInternational() != null) {
-			adhocOrders.setIsInternational(ServiceUtil.convertBooleanToString(AdhocOrderDto.getIsInternational()));
+			//adhocOrders.setIsInternational(ServiceUtil.convertBooleanToString(AdhocOrderDto.getIsInternational()));
+			adhocOrders.setIsInternational(AdhocOrderDto.getIsInternational());
+
 		}
 
 		if (AdhocOrderDto.getIsTruck() != null) {
-			adhocOrders.setIsTruck(ServiceUtil.convertBooleanToString(AdhocOrderDto.getIsTruck()));
+			//adhocOrders.setIsTruck(ServiceUtil.convertBooleanToString(AdhocOrderDto.getIsTruck()));
+			adhocOrders.setIsTruck(AdhocOrderDto.getIsTruck());
+
+			
 		}
 		adhocOrders.setCountryOrigin(AdhocOrderDto.getCountryOrigin());
 		adhocOrders.setValue(AdhocOrderDto.getValue());
 		adhocOrders.setCurrency(AdhocOrderDto.getCurrency());
-		adhocOrders.setWeight(AdhocOrderDto.getWeight());
+		adhocOrders.setWeight(ServiceUtil.convertStringToBigDecimal(AdhocOrderDto.getWeight()));
 		if (AdhocOrderDto.getDimensionB() != null && !(AdhocOrderDto.getDimensionB().equals(""))) {
 			adhocOrders.setDimensionB(ServiceUtil.convertStringToBigDecimal(AdhocOrderDto.getDimensionB()));
 		}
@@ -275,7 +293,10 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		adhocOrders.setOriginZip(AdhocOrderDto.getOriginZip());
 
 		if (AdhocOrderDto.getIsHazmat() != null) {
-			adhocOrders.setIsHazmat(ServiceUtil.convertBooleanToString(AdhocOrderDto.getIsHazmat()));
+			//adhocOrders.setIsHazmat(ServiceUtil.convertBooleanToString(AdhocOrderDto.getIsHazmat()));
+
+			adhocOrders.setIsHazmat(AdhocOrderDto.getIsHazmat());
+
 		}
 		adhocOrders.setShipperNameFreeText(AdhocOrderDto.getShipperNameFreeText());
 		adhocOrders.setOriginCountry(AdhocOrderDto.getOriginCountry());
