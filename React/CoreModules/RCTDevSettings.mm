@@ -158,6 +158,10 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(jsLoaded:)
                                                  name:RCTJavaScriptDidLoadNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(jsLoaded:)
+                                                 name:@"RCTInstanceDidLoadBundle"
+                                               object:nil];
   }
   return self;
 }
@@ -335,9 +339,17 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
       if (enabled) {
-        [self.bridge enqueueJSCall:@"HMRClient" method:@"enable" args:@[] completion:NULL];
+        if (self.bridge) {
+          [self.bridge enqueueJSCall:@"HMRClient" method:@"enable" args:@[] completion:NULL];
+        } else if (self.invokeJS) {
+          self.invokeJS(@"HMRClient", @"enable", @[]);
+        }
       } else {
-        [self.bridge enqueueJSCall:@"HMRClient" method:@"disable" args:@[] completion:NULL];
+        if (self.bridge) {
+          [self.bridge enqueueJSCall:@"HMRClient" method:@"disable" args:@[] completion:NULL];
+        } else if (self.invokeJS) {
+          self.invokeJS(@"HMRClient", @"disable", @[]);
+        }
       }
 #pragma clang diagnostic pop
     }
@@ -457,7 +469,10 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 
 - (void)jsLoaded:(NSNotification *)notification
 {
-  if (notification.userInfo[@"bridge"] != self.bridge) {
+  // In bridge mode, the bridge that sent the notif must be the same as the one stored in this module.
+  // In bridgless mode, we don't care about this.
+  if ([notification.name isEqualToString:RCTJavaScriptDidLoadNotification] &&
+      notification.userInfo[@"bridge"] != self.bridge) {
     return;
   }
 
