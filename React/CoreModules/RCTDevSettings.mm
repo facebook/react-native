@@ -12,13 +12,13 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBundleHolderModule.h>
+#import <React/RCTDevMenu.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
-
-#import <React/RCTDevMenu.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -114,7 +114,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 @end
 
-@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec> {
+@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec, RCTBundleHolderModule> {
   BOOL _isJSLoaded;
 #if ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _reloadToken;
@@ -127,6 +127,8 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 @end
 
 @implementation RCTDevSettings
+
+@synthesize bundleURL = _bundleURL;
 
 RCT_EXPORT_MODULE()
 
@@ -243,7 +245,12 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)isHotLoadingAvailable
 {
-  return self.bridge.bundleURL && !self.bridge.bundleURL.fileURL; // Only works when running from server
+  if (self.bridge.bundleURL) {
+    return !self.bridge.bundleURL.fileURL; // Only works when running from server
+  } else if (self.bundleURL) {
+    return !self.bundleURL.fileURL;
+  }
+  return NO;
 }
 
 RCT_EXPORT_METHOD(reload)
