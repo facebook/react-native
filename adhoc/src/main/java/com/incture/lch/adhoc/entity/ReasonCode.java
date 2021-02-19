@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "REASON_CODE")
+@Table(name = "T_REASON_CODE")
 public class ReasonCode implements Serializable {
 
 	private static final long serialVersionUID = 6442445879975799175L;

@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "LK_COUNTRY")
+@Table(name = "T_COUNTRY")
 public class LkCountries implements Serializable {
 
 	private static final long serialVersionUID = -6180841737481482012L;

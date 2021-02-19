@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "LK_DIVISIONS")
+@Table(name = "T_DIVISIONS")
 public class LkDivisions implements Serializable {
 
 	private static final long serialVersionUID = -8233881939574383612L;

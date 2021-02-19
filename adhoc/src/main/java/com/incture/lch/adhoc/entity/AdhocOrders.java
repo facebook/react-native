@@ -12,7 +12,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "LCH_ADHOC_ORDER")
+@Table(name = "T_ADHOC_ORDER")
 public class AdhocOrders implements Serializable {
 
 	private static final long serialVersionUID = -6619380688974543624L;
