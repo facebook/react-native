@@ -549,7 +549,7 @@ Pod::Spec.new do |spec|
   spec.homepage        = "https://libevent.org"
   spec.license         = { :type => "BSD 3-Clause", :file => "LICENSE" }
   spec.author          = "Niels Provos and Nick Mathewson"
-  spec.platforms       = { :osx => "10.13", :ios => "10.0" }
+  spec.platforms       = { :osx => "10.13", :ios => "11.0" }
   spec.source          = { :git => "https://github.com/libevent/libevent.git", :tag => "release-#{spec.version}-stable" }
   spec.prepare_command = "touch evconfig-private.h; echo -e #{Shellwords.escape(CONFIG_WITHOUT_OPENSSL)} > include/event2/event-config.h"
   spec.source_files =
