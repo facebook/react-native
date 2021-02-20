@@ -11,6 +11,7 @@
 
 #include <better/small_vector.h>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
@@ -74,8 +75,8 @@ ShadowNode::ShadowNode(
       orderIndex_(0),
       family_(family),
       traits_(traits) {
-  assert(props_);
-  assert(children_);
+  react_native_assert(props_);
+  react_native_assert(children_);
 
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
 
@@ -104,8 +105,8 @@ ShadowNode::ShadowNode(
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
 
-  assert(props_);
-  assert(children_);
+  react_native_assert(props_);
+  react_native_assert(children_);
 
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
 
@@ -227,7 +228,7 @@ void ShadowNode::replaceChild(
     }
   }
 
-  assert(false && "Child to replace was not found.");
+  react_native_assert(false && "Child to replace was not found.");
 }
 
 void ShadowNode::cloneChildrenIfShared() {
@@ -267,7 +268,7 @@ ShadowNode::Unshared ShadowNode::cloneTree(
 
   auto newShadowNode = callback(*oldShadowNode);
 
-  assert(
+  react_native_assert(
       newShadowNode &&
       "`callback` returned `nullptr` which is not allowed value.");
 
@@ -278,7 +279,8 @@ ShadowNode::Unshared ShadowNode::cloneTree(
     auto childIndex = it->second;
 
     auto children = parentNode.getChildren();
-    assert(ShadowNode::sameFamily(*children.at(childIndex), *childNode));
+    react_native_assert(
+        ShadowNode::sameFamily(*children.at(childIndex), *childNode));
     children[childIndex] = childNode;
 
     childNode = parentNode.clone({

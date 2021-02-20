@@ -9,6 +9,7 @@
 
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
 
@@ -29,7 +30,7 @@ static jsi::Object getModule(
   if (!moduleAsValue.isObject()) {
     LOG(ERROR) << "getModule of " << moduleName << " is not an object";
   }
-  assert(moduleAsValue.isObject());
+  react_native_assert(moduleAsValue.isObject());
   return moduleAsValue.asObject(runtime);
 }
 
@@ -170,7 +171,7 @@ void UIManagerBinding::dispatchEvent(
       if (!payload.isObject()) {
         LOG(ERROR) << "payload for dispatchEvent is not an object: " << eventTarget->getTag();
       }
-      assert(payload.isObject());
+      react_native_assert(payload.isObject());
       payload.asObject(runtime).setProperty(runtime, "target", eventTarget->getTag());
       return instanceHandle;
     }()

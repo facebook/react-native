@@ -10,6 +10,7 @@
 #include <glog/logging.h>
 #include <jsi/jsi.h>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/Constants.h>
 #include <react/renderer/core/LayoutContext.h>
@@ -153,7 +154,7 @@ Scheduler::~Scheduler() {
         surfaceIds.push_back(shadowTree.getSurfaceId());
       });
 
-  assert(
+  react_native_assert(
       surfaceIds.empty() &&
       "Scheduler was destroyed with outstanding Surfaces.");
 

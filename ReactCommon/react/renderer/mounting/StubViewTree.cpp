@@ -8,6 +8,7 @@
 #include "StubViewTree.h"
 
 #include <glog/logging.h>
+#include <react/debug/react_native_assert.h>
 
 // For iOS especially: flush logs because some might be lost on iOS if an
 // assert is hit right after this.
@@ -16,7 +17,7 @@
     LOG(ERROR) << "ASSERT FAILURE: " << #cond; \
     google::FlushLogFiles(google::INFO);       \
   }                                            \
-  assert(cond);
+  react_native_assert(cond);
 
 #ifdef STUB_VIEW_TREE_VERBOSE
 #define STUB_VIEW_LOG(code) code

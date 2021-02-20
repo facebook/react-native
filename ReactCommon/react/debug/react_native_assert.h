@@ -43,6 +43,8 @@ void react_native_assert_fail(
 
 #else // __ANDROID__
 
+#include <cassert>
+
 #define react_native_assert(e) assert(e)
 
 #endif // platforms besides __ANDROID__

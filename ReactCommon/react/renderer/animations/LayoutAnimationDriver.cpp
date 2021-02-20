@@ -25,6 +25,7 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 #include <glog/logging.h>
+#include <react/debug/react_native_assert.h>
 
 namespace facebook {
 namespace react {
@@ -79,8 +80,8 @@ void LayoutAnimationDriver::animationMutationsForFrame(
       // All generated Update mutations must have an "old" and "new"
       // ShadowView. Checking for nonzero tag doesn't guarantee that the views
       // are valid/correct, just that something is there.
-      assert(updateMutation.oldChildShadowView.tag > 0);
-      assert(updateMutation.newChildShadowView.tag > 0);
+      react_native_assert(updateMutation.oldChildShadowView.tag > 0);
+      react_native_assert(updateMutation.newChildShadowView.tag > 0);
 
       mutationsList.push_back(updateMutation);
       PrintMutationInstruction("Animation Progress:", updateMutation);
@@ -125,8 +126,8 @@ void LayoutAnimationDriver::animationMutationsForFrame(
               keyframe.viewPrev,
               finalMutationForKeyFrame.newChildShadowView,
               finalMutationForKeyFrame.index};
-          assert(mutation.oldChildShadowView.tag > 0);
-          assert(
+          react_native_assert(mutation.oldChildShadowView.tag > 0);
+          react_native_assert(
               mutation.newChildShadowView.tag > 0 ||
               finalMutationForKeyFrame.type == ShadowViewMutation::Remove ||
               finalMutationForKeyFrame.type == ShadowViewMutation::Delete);
@@ -142,8 +143,8 @@ void LayoutAnimationDriver::animationMutationsForFrame(
               keyframe.viewPrev,
               keyframe.viewEnd,
               -1};
-          assert(mutation.oldChildShadowView.tag > 0);
-          assert(mutation.newChildShadowView.tag > 0);
+          react_native_assert(mutation.oldChildShadowView.tag > 0);
+          react_native_assert(mutation.newChildShadowView.tag > 0);
           mutationsList.push_back(mutation);
         }
       }
