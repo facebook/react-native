@@ -26,7 +26,7 @@
 // Enables some Shadow Tree introspection features (maintains a StubViewTree,
 // and logs prev/next tree and mutations if there are any discrepancies). If you
 // define this, also define `RN_DEBUG_STRING_CONVERTIBLE`.
-#ifndef NDEBUG
+#ifdef REACT_NATIVE_DEBUG
 #define RN_SHADOW_TREE_INTROSPECTION 1
 #endif
 
