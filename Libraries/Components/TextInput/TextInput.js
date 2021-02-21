@@ -1149,10 +1149,6 @@ function InternalTextInput(props: Props): React.Node {
         onPress={_onPress}
         onPressIn={props.onPressIn}
         onPressOut={props.onPressOut}
-        accessible={props.accessible}
-        accessibilityLabel={props.accessibilityLabel}
-        accessibilityRole={props.accessibilityRole}
-        accessibilityState={props.accessibilityState}
         nativeID={props.nativeID}
         testID={props.testID}
         {...additionalTouchableProps}>
