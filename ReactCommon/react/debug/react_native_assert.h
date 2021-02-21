@@ -43,10 +43,22 @@ void react_native_assert_fail(
 
 #else // __ANDROID__
 
+#include <glog/logging.h>
 #include <cassert>
 
-#define react_native_assert(e) assert(e)
+// For all platforms, but iOS+Xcode especially: flush logs because some might be
+// lost on iOS if an assert is hit right after this. If you are trying to debug
+// something actively and have added lots of LOG statements to track down an
+// issue, there is race between flushing the final logs and stopping execution
+// when the assert hits. Thus, if we know an assert will fail, we force flushing
+// to happen right before the assert.
+#define react_native_assert(cond)                           \
+  if (!(cond)) {                                            \
+    LOG(ERROR) << "react_native_assert failure: " << #cond; \
+    google::FlushLogFiles(google::INFO);                    \
+    assert(cond);                                           \
+  }
 
 #endif // platforms besides __ANDROID__
 
-#endif // NDEBUG
+#endif // REACT_NATIVE_DEBUG
