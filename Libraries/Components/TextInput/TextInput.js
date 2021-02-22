@@ -17,11 +17,12 @@ const StyleSheet = require('../../StyleSheet/StyleSheet');
 const Text = require('../../Text/Text');
 const TextAncestor = require('../../Text/TextAncestor');
 const TextInputState = require('./TextInputState');
-const TouchableWithoutFeedback = require('../Touchable/TouchableWithoutFeedback');
 
 const invariant = require('invariant');
 const nullthrows = require('nullthrows');
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
+
+import usePressability from '../../Pressability/usePressability';
 
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
@@ -1002,12 +1003,6 @@ function InternalTextInput(props: Props): React.Node {
     },
   });
 
-  const _onPress = (event: PressEvent) => {
-    if (props.editable || props.editable === undefined) {
-      nullthrows(inputRef.current).focus();
-    }
-  };
-
   const _onChange = (event: ChangeEvent) => {
     const text = event.nativeEvent.text;
     props.onChange && props.onChange(event);
@@ -1061,17 +1056,37 @@ function InternalTextInput(props: Props): React.Node {
   };
 
   let textInput = null;
-  let additionalTouchableProps: {|
-    rejectResponderTermination?: $PropertyType<
-      Props,
-      'rejectResponderTermination',
-    >,
-    // This is a hack to let Flow know we want an exact object
-  |} = {...null};
 
   // The default value for `blurOnSubmit` is true for single-line fields and
   // false for multi-line fields.
   const blurOnSubmit = props.blurOnSubmit ?? !props.multiline;
+
+  const accessible = props.accessible !== false;
+  const focusable = props.focusable !== false;
+
+  const config = React.useMemo(
+    () => ({
+      onPress: (event: PressEvent) => {
+        if (props.editable !== false) {
+          nullthrows(inputRef.current).focus();
+        }
+      },
+      onPressIn: props.onPressIn,
+      onPressOut: props.onPressOut,
+      cancelable:
+        Platform.OS === 'ios' ? !props.rejectResponderTermination : null,
+    }),
+    [
+      props.editable,
+      props.onPressIn,
+      props.onPressOut,
+      props.rejectResponderTermination,
+    ],
+  );
+
+  // TextInput handles onBlur and onFocus events
+  // so omitting onBlur and onFocus pressability handlers here.
+  const {onBlur, onFocus, ...eventHandlers} = usePressability(config) || {};
 
   if (Platform.OS === 'ios') {
     const RCTTextInputView = props.multiline
@@ -1082,15 +1097,15 @@ function InternalTextInput(props: Props): React.Node {
       ? [styles.multilineInput, props.style]
       : props.style;
 
-    additionalTouchableProps.rejectResponderTermination =
-      props.rejectResponderTermination;
-
     textInput = (
       <RCTTextInputView
         ref={_setNativeRef}
         {...props}
+        {...eventHandlers}
+        accessible={accessible}
         blurOnSubmit={blurOnSubmit}
         dataDetectorTypes={props.dataDetectorTypes}
+        focusable={focusable}
         mostRecentEventCount={mostRecentEventCount}
         onBlur={_onBlur}
         onChange={_onChange}
@@ -1123,10 +1138,13 @@ function InternalTextInput(props: Props): React.Node {
       <AndroidTextInput
         ref={_setNativeRef}
         {...props}
+        {...eventHandlers}
+        accessible={accessible}
         autoCapitalize={autoCapitalize}
         blurOnSubmit={blurOnSubmit}
         children={children}
         disableFullscreenUI={props.disableFullscreenUI}
+        focusable={focusable}
         mostRecentEventCount={mostRecentEventCount}
         onBlur={_onBlur}
         onChange={_onChange}
@@ -1143,22 +1161,7 @@ function InternalTextInput(props: Props): React.Node {
     );
   }
   return (
-    <TextAncestor.Provider value={true}>
-      <TouchableWithoutFeedback
-        onLayout={props.onLayout}
-        onPress={_onPress}
-        onPressIn={props.onPressIn}
-        onPressOut={props.onPressOut}
-        accessible={props.accessible}
-        accessibilityLabel={props.accessibilityLabel}
-        accessibilityRole={props.accessibilityRole}
-        accessibilityState={props.accessibilityState}
-        nativeID={props.nativeID}
-        testID={props.testID}
-        {...additionalTouchableProps}>
-        {textInput}
-      </TouchableWithoutFeedback>
-    </TextAncestor.Provider>
+    <TextAncestor.Provider value={true}>{textInput}</TextAncestor.Provider>
   );
 }
 
