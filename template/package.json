@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "react": "17.0.1",
-    "react-native": "file:/Users/grabbou/Repositories/react-native/react-native-0.64.0-rc.420.tgz"
+    "react-native": "0.64.0-rc.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
