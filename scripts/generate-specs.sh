@@ -58,18 +58,7 @@ main() {
     exit 1
   fi
 
-  # Check if user-defined CODEGEN_PATH is correct
-  if [[ "$CODEGEN_PATH" && ! -d "$CODEGEN_PATH" ]]; then
-    echo "error: Could not find react-native-codegen at ${CODEGEN_PATH}. " \ 
-        "Perhaps you need to run npm install or otherwise " \
-        "point the CODEGEN_PATH variable to your custom location." >&2
-    exit 1
-  fi
-
-  # Default value of CODEGEN_PATH is a location of a react-native-codegen package
-  if [[ -z "$CODEGEN_PATH" ]]; then
-    CODEGEN_PATH=$("$NODE_BINARY" -e "console.log(require('path').dirname(require.resolve('react-native-codegen/package.json')))")
-  fi
+  CODEGEN_PATH=$("$NODE_BINARY" -e "console.log(require('path').dirname(require.resolve('react-native-codegen/package.json')))")
 
   # Special case for running CodeGen from source: build it
   if [ ! -d "$CODEGEN_PATH/lib" ]; then
