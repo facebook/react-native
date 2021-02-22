@@ -162,9 +162,6 @@ def use_react_native_codegen!(spec, options={})
   env_vars = "SRCS_DIR=#{srcs_dir}"
   env_vars += " CODEGEN_MODULES_OUTPUT_DIR=#{codegen_modules_output_dir}"
 
-  # Since the generated files are not guaranteed to exist when CocoaPods is run, we need to create
-  # empty files to ensure the references are included in the resulting Pods Xcode project.
-  mkdir_command = "mkdir -p #{codegen_modules_output_dir}"
   generated_filenames = [ "#{codegen_modules_library_name}.h", "#{codegen_modules_library_name}-generated.mm" ]
   generated_files = generated_filenames.map { |filename| File.join(codegen_modules_output_dir, filename) }
 
@@ -196,6 +193,4 @@ def use_react_native_codegen!(spec, options={})
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
-
-  spec.prepare_command = "#{mkdir_command} && touch #{generated_files.reduce() { |str, file| str + " " + file }}"
 end

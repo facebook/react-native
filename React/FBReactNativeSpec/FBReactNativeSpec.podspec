@@ -46,5 +46,4 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi", version
   s.dependency "ReactCommon/turbomodule/core", version
 
-  use_react_native_codegen! (s)
 end
