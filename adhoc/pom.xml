@@ -38,9 +38,6 @@
 			<artifactId>spring-cloud-spring-service-connector</artifactId>
 			<version>2.0.7.RELEASE</version>
 		</dependency>
-
-
-
 		<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-cloudfoundry-connector -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -80,12 +77,15 @@
 			<version>1.0.4.RELEASE</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.sap.cloud/neo-java-web-api -->
+		<!-- <dependency> <groupId>com.sap.cloud</groupId> <artifactId>neo-java-web-api</artifactId> 
+			<version>3.122.7</version> <scope>provided</scope> </dependency> -->
 		<dependency>
 			<groupId>com.sap.cloud</groupId>
 			<artifactId>neo-java-web-api</artifactId>
-			<version>3.122.7</version>
+			<version>[3.71.8,4.0.0)</version>
 			<scope>provided</scope>
 		</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

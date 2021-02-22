@@ -40,6 +40,11 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 	public ResponseDto addAdhocOrders(AdhocOrderDto AdhocOrderDto) {
 		return adhocOrdersRepository.addAdhocOrders(AdhocOrderDto);
 	}
+	
+	@Override
+	public ResponseDto saveAdhocOrders(AdhocOrderDto AdhocOrderDto) {
+		return adhocOrdersRepository.saveAdhocOrders(AdhocOrderDto);
+	}
 
 	@Override
 	public ResponseDto deleteAdhocOrders(String adhocOrderId, String userId, String partNum) {

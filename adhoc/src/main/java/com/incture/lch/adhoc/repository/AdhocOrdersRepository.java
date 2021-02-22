@@ -21,6 +21,9 @@ public interface AdhocOrdersRepository {
 	public List<AdhocOrderDto> getAllAdhocOrders();
 
 	public ResponseDto addAdhocOrders(AdhocOrderDto adhocOrdersDto);
+	
+	
+	public ResponseDto saveAdhocOrders(AdhocOrderDto adhocOrdersDto);
 
 	public int deleteAdhocOrders(String adhocOrderId, String userId, String partNum);
 

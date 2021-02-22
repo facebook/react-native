@@ -1,5 +1,7 @@
 package com.incture.lch.adhoc.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +25,7 @@ import com.incture.lch.adhoc.dto.ReasonCodeDto;
 import com.incture.lch.adhoc.dto.ResponseDto;
 import com.incture.lch.adhoc.service.AdhocOrdersService;
 import com.incture.lch.adhoc.util.ServiceUtil;
+//import com.sap.conn.jco.JCoException;
 
 @RestController
 @CrossOrigin
@@ -34,10 +37,19 @@ public class AdhocOrdersController {
 	@Autowired
 	private AdhocOrdersService adhocOrdersService;
 
+/*	@Autowired
+	private JcoApiConnector jcoApiConnector;*/
+
 	@RequestMapping(value = "/addAdhocOrders", method = RequestMethod.POST, consumes = { "application/json" })
 	@ResponseBody
 	public ResponseDto addAdhocOrders(@RequestBody AdhocOrderDto AdhocOrderDto) {
 		return adhocOrdersService.addAdhocOrders(AdhocOrderDto);
+	}
+	
+	@RequestMapping(value = "/saveAdhocOrders", method = RequestMethod.POST, consumes = { "application/json" })
+	@ResponseBody
+	public ResponseDto saveAdhocOrders(@RequestBody AdhocOrderDto AdhocOrderDto) {
+		return adhocOrdersService.saveAdhocOrders(AdhocOrderDto);
 	}
 
 	@RequestMapping(value = "/getAllAdhocOrders", method = RequestMethod.POST, consumes = { "application/json" })
@@ -102,8 +114,7 @@ public class AdhocOrdersController {
 		return adhocOrdersService.getAllShipperDetails();
 	}
 
-	@RequestMapping(value = "/postMessage", method = RequestMethod.GET, consumes = { "application/json" })
-	@ResponseBody
+	@RequestMapping(value = "/postMessage", method = RequestMethod.GET)
 	public String testPostMessage() {
 		return "Your message has been posted to IOP. Reference No. #" + ServiceUtil.generateRandomDigits(16);
 	}
@@ -116,4 +127,16 @@ public class AdhocOrdersController {
 	 * currentUserDetails(@RequestBody @AuthenticationPrincipal Token token) {
 	 * return adhocOrdersService.getLoggedInUser(token); }
 	 */
+
+/*	@RequestMapping(value = "/getTableData", method = RequestMethod.POST, consumes = { "application/json" })
+	@ResponseBody
+	public List<PartNumberDescDto> getTableData(@RequestBody PartNumberDescDto partNumberDto) throws JCoException {
+		List<PartNumberDescDto> dtoList = new ArrayList<PartNumberDescDto>();
+		try {
+			return jcoApiConnector.getPartNumberDescDto("MAKT", partNumberDto.getPartNum(), Arrays.asList("MAKTX"), 1000, dtoList);
+		} catch (JCoException e) {
+			dtoList.add(new PartNumberDescDto("NA", "NA", e.toString()));
+			return dtoList;
+		}
+	}*/
 }

@@ -9,6 +9,8 @@ applications:
       SPRING_PROFILES_DEFAULT: cf
       XSAPPNAME: LCH
       TENANT_HOST_PATTERN: LCH- (.*). cfapps.eu10.hana.ondemand.com
+      SAP_JWT_TRUST_ACL: '[{"clientid":"*","identityzone":"*"}]'
+      xsuaa_connectivity_instance_name: "uaa_UserDetail"
    destinations: |
       [{
          "name":"lch_services",
@@ -17,3 +19,5 @@ applications:
       ]
    services:
    - uaa_UserDetail
+   - jco_con
+   - jco_des

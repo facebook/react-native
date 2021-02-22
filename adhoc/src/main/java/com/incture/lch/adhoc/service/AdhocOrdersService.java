@@ -20,6 +20,10 @@ public interface AdhocOrdersService {
 	public List<AdhocOrderDto> getAllAdhocOrders();
 
 	public ResponseDto addAdhocOrders(AdhocOrderDto adhocOrdersDto);
+	
+
+	public ResponseDto saveAdhocOrders(AdhocOrderDto adhocOrdersDto);
+
 
 	public ResponseDto deleteAdhocOrders(String adhocOrderId, String userId, String partNum);
 

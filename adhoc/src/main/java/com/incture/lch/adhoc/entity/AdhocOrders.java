@@ -59,7 +59,7 @@ public class AdhocOrders implements Serializable {
 	private String partDescription;
 
 	@Column(name = "quantity")
-	private int  quantity;
+	private int quantity;
 
 	@Column(name = "uom")
 	private String uom;
@@ -76,7 +76,7 @@ public class AdhocOrders implements Serializable {
 	@Column(name = "currency")
 	private String currency;
 
-	@Column(name = "weight", precision=25,scale=2)
+	@Column(name = "weight", precision = 25, scale = 2)
 	private BigDecimal weight;
 
 	@Column(name = "dimensionL", precision = 25, scale = 6)
@@ -226,6 +226,9 @@ public class AdhocOrders implements Serializable {
 
 	@Column(name = "PENDING_WITH")
 	private String pendingWith;
+
+	@Column(name = "IS_SAVED")
+	private Boolean isSaved;
 
 	public String getFwoNum() {
 		return fwoNum;
@@ -774,5 +777,15 @@ public class AdhocOrders implements Serializable {
 	public void setPendingWith(String pendingWith) {
 		this.pendingWith = pendingWith;
 	}
+
+	public Boolean getIsSaved() {
+		return isSaved;
+	}
+
+	public void setIsSaved(Boolean isSaved) {
+		this.isSaved = isSaved;
+	}
+
+	
 
 }

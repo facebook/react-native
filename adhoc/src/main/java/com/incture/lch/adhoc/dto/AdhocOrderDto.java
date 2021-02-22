@@ -135,6 +135,8 @@ public class AdhocOrderDto {
 
 	private String managerEmail;
 
+	private Boolean isSaved;
+
 	public String getAdhocOrderId() {
 		return adhocOrderId;
 	}
@@ -653,6 +655,14 @@ public class AdhocOrderDto {
 
 	public void setManagerEmail(String managerEmail) {
 		this.managerEmail = managerEmail;
+	}
+
+	public Boolean getIsSaved() {
+		return isSaved;
+	}
+
+	public void setIsSaved(Boolean isSaved) {
+		this.isSaved = isSaved;
 	}
 
 }
