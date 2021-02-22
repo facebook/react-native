@@ -42,14 +42,14 @@
 
     _imageSource = imageSource;
 
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+    self = [super initWithData:data];
+#else // ]TODO(macOS ISS#2323203)
     // grab image at the first index
     UIImage *image = [self animatedImageFrameAtIndex:0];
     if (!image) {
       return nil;
     }
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-    self = [image copy];
-#else // ]TODO(macOS ISS#2323203)
     self = [super initWithCGImage:image.CGImage scale:MAX(scale, 1) orientation:image.imageOrientation];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];

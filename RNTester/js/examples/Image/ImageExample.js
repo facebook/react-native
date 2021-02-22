@@ -842,7 +842,7 @@ exports.examples = [
         />
       );
     },
-    platform: 'ios',
+    platform: ['ios', 'macos'], // TODO(OSS Candidate ISS#2710739)
   },
   {
     title: 'Base64 image',
