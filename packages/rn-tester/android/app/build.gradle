@@ -8,6 +8,7 @@
 plugins {
     id("com.android.application")
     id("com.facebook.react.codegen")
+    id("com.facebook.react.app")
 }
 
 /**
@@ -75,21 +76,23 @@ plugins {
  * ]
  */
 
+reactApp {
+    cliPath = "$rootDir/cli.js"
+    bundleAssetName = "RNTesterApp.android.bundle"
+    entryFile = file("../../js/RNTesterApp.android.js")
+    reactRoot = rootDir
+    inputExcludes = ["android/**", "./**", ".gradle/**"]
+    composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
+    hermesCommand = "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc"
+    enableHermesForVariant { def v -> v.name.contains("hermes") }
+}
+
 project.ext.react = [
-    cliPath: "$rootDir/cli.js",
-    bundleAssetName: "RNTesterApp.android.bundle",
-    entryFile: file("../../js/RNTesterApp.android.js"),
-    root: "$rootDir",
-    inputExcludes: ["android/**", "./**", ".gradle/**"],
-    composeSourceMapsPath: "$rootDir/scripts/compose-source-maps.js",
-    hermesCommand: "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc",
-    enableHermesForVariant: { def v -> v.name.contains("hermes") },
-    jsRootDir: "$rootDir/RNTester",
     enableCodegen: true, // Keep this here until it's sync'ed to Android template.
-    enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean(),
+    enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean()
 ]
 
-apply from: "../../../../react.gradle"
+//apply from: "../../../../react.gradle"
 
 /**
  * Set this to true to create three separate APKs instead of one:

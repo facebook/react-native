@@ -11,7 +11,7 @@ plugins {
 
 gradlePlugin {
     plugins {
-        greeting {
+        codegen {
             id = 'com.facebook.react.codegen'
             implementationClass = 'com.facebook.react.codegen.plugin.CodegenPlugin'
         }
