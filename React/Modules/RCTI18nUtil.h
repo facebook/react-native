@@ -22,7 +22,6 @@
 /**
  * Should be used very early during app start up
  * Before the bridge is initialized
- * @return whether the app allows RTL layout, default is true
  */
 @property(atomic, readwrite, setter=allowRTL:) bool isRTLAllowed;
 
