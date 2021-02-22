@@ -18,11 +18,20 @@
 + (instancetype)sharedInstance;
 
 - (BOOL)isRTL;
-- (BOOL)isRTLAllowed;
-- (void)allowRTL:(BOOL)value;
-- (BOOL)isRTLForced;
-- (void)forceRTL:(BOOL)value;
-- (BOOL)doLeftAndRightSwapInRTL;
-- (void)swapLeftAndRightInRTL:(BOOL)value;
+
+/**
+ * Should be used very early during app start up
+ * Before the bridge is initialized
+ * @return whether the app allows RTL layout, default is true
+ */
+@property(atomic, readwrite, setter=allowRTL:) bool isRTLAllowed;
+
+/**
+ * Could be used to test RTL layout with English
+ * Used for development and testing purpose
+ */
+@property(atomic, readwrite, setter=forceRTL:) bool isRTLForced;
+
+@property(atomic, readwrite, setter=swapLeftAndRightInRTL:) bool doLeftAndRightSwapInRTL;
 
 @end
