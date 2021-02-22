@@ -22,16 +22,15 @@
 /**
  * Should be used very early during app start up
  * Before the bridge is initialized
- * @return whether the app allows RTL layout, default is true
  */
-@property(atomic, readwrite, setter=allowRTL:) bool isRTLAllowed;
+@property(atomic, setter=allowRTL:) BOOL isRTLAllowed;
 
 /**
  * Could be used to test RTL layout with English
  * Used for development and testing purpose
  */
-@property(atomic, readwrite, setter=forceRTL:) bool isRTLForced;
+@property(atomic, setter=forceRTL:) BOOL isRTLForced;
 
-@property(atomic, readwrite, setter=swapLeftAndRightInRTL:) bool doLeftAndRightSwapInRTL;
+@property(atomic, setter=swapLeftAndRightInRTL:) BOOL doLeftAndRightSwapInRTL;
 
 @end
