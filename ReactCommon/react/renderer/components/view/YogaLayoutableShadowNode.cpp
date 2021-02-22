@@ -363,48 +363,33 @@ void YogaLayoutableShadowNode::layoutTree(
   // implementation detail and are not defined in `CSS Flexible Box Layout
   // Module`. Yoga C++ API (and `YGNodeCalculateLayout` function particularly)
   // does not allow to specify the measure modes explicitly. Instead, it infers
-  // these from styles associated with the root node. The actual inferring logic
-  // is complex but it has a quite reasonable effect: to ensure applying proper
-  // layout restrictions we have to express constraints we have and avoid
-  // specifying anything that might trigger some unexpected side-effect. To do
-  // this, we clear all dimensional styles and apply only parts that we need to
-  // ensure.
+  // these from styles associated with the root node.
+  // To pass the actual layout constraints to Yoga we represent them as
+  // `(min/max)(Height/Width)` style properties. Also, we pass `ownerWidth` &
+  // `ownerHeight` to allow proper calculation of relative (e.g. specified in
+  // percents) style values.
 
   auto &yogaStyle = yogaNode_.getStyle();
 
-  yogaStyle.minDimensions()[YGDimensionWidth] = YGValueUndefined;
-  yogaStyle.minDimensions()[YGDimensionHeight] = YGValueUndefined;
-  yogaStyle.maxDimensions()[YGDimensionWidth] = YGValueUndefined;
-  yogaStyle.maxDimensions()[YGDimensionHeight] = YGValueUndefined;
-  yogaStyle.dimensions()[YGDimensionWidth] = YGValueUndefined;
-  yogaStyle.dimensions()[YGDimensionHeight] = YGValueUndefined;
+  auto ownerWidth = yogaFloatFromFloat(maximumSize.width);
+  auto ownerHeight = yogaFloatFromFloat(maximumSize.height);
 
-  auto ownerWidth = YGUndefined;
-  auto ownerHeight = YGUndefined;
+  yogaStyle.maxDimensions()[YGDimensionWidth] = std::isfinite(maximumSize.width)
+      ? yogaStyleValueFromFloat(maximumSize.width)
+      : YGValueUndefined;
 
-  if (!std::isinf(maximumSize.width)) {
-    yogaStyle.maxDimensions()[YGDimensionWidth] =
-        yogaStyleValueFromFloat(maximumSize.width);
+  yogaStyle.maxDimensions()[YGDimensionHeight] =
+      std::isfinite(maximumSize.height)
+      ? yogaStyleValueFromFloat(maximumSize.height)
+      : YGValueUndefined;
 
-    ownerWidth = yogaFloatFromFloat(maximumSize.width);
-  }
+  yogaStyle.minDimensions()[YGDimensionWidth] = minimumSize.width > 0
+      ? yogaStyleValueFromFloat(minimumSize.width)
+      : YGValueUndefined;
 
-  if (!std::isinf(maximumSize.height)) {
-    yogaStyle.maxDimensions()[YGDimensionHeight] =
-        yogaStyleValueFromFloat(maximumSize.height);
-
-    ownerHeight = yogaFloatFromFloat(maximumSize.height);
-  }
-
-  if (!std::isinf(minimumSize.width)) {
-    yogaStyle.minDimensions()[YGDimensionWidth] =
-        yogaStyleValueFromFloat(minimumSize.width);
-  }
-
-  if (!std::isinf(minimumSize.height)) {
-    yogaStyle.minDimensions()[YGDimensionHeight] =
-        yogaStyleValueFromFloat(minimumSize.height);
-  }
+  yogaStyle.minDimensions()[YGDimensionHeight] = minimumSize.height > 0
+      ? yogaStyleValueFromFloat(minimumSize.height)
+      : YGValueUndefined;
 
   auto direction =
       yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);

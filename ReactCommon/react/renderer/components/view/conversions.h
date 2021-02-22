@@ -48,7 +48,7 @@ inline Float floatFromYogaFloat(float value) {
 }
 
 inline float yogaFloatFromFloat(Float value) {
-  if (std::isinf(value)) {
+  if (!std::isfinite(value)) {
     return YGUndefined;
   }
 
@@ -90,7 +90,7 @@ inline YGFloatOptional yogaOptionalFloatFromFloat(Float value) {
 inline YGValue yogaStyleValueFromFloat(
     const Float &value,
     YGUnit unit = YGUnitPoint) {
-  if (std::isnan(value)) {
+  if (!std::isfinite(value)) {
     return YGValueUndefined;
   }
 
