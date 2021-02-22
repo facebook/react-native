@@ -9,14 +9,15 @@ package com.facebook.react
 
 import com.android.build.gradle.api.BaseVariant
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.api.Project
 import java.io.File
 
-open class ReactAppExtension(private val projectDir: File) {
+open class ReactAppExtension(private val project: Project) {
   var composeSourceMapsPath: String = "node_modules/react-native/scripts/compose-source-maps.js"
   var bundleAssetName: String = "index.android.bundle"
   var entryFile: File? = null
   var bundleCommand: String = "bundle"
-  var reactRoot: File = File(projectDir, "../../")
+  var reactRoot: File = File(project.projectDir, "../../")
   var inputExcludes: List<String> = listOf("android/**", "ios/**")
   var bundleConfig: String? = null
   var enableVmCleanup: Boolean = true
@@ -39,7 +40,7 @@ open class ReactAppExtension(private val projectDir: File) {
 
   internal val detectedCliPath: String
     get() = detectCliPath(
-      projectDir = projectDir,
+      projectDir = project.projectDir,
       reactRoot = reactRoot,
       preconfuredCliPath = cliPath
     )

@@ -10,15 +10,17 @@ package com.facebook.react
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.api.LibraryVariant
-import com.facebook.react.tasks.windowsAwareCommandLine
+import com.facebook.react.tasks.BundleJsAndAssetsTask
+import com.facebook.react.tasks.HermesBinaryTask
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.Copy
-import org.gradle.api.tasks.Exec
-import org.gradle.kotlin.dsl.withGroovyBuilder
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.register
 import java.io.File
+
+private const val REACT_GROUP = "react"
 
 @Suppress("SpreadOperator")
 internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppExtension) {
@@ -38,43 +40,26 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
   val jsOutputSourceMapFile = File(jsSourceMapsDir, "${config.bundleAssetName}.map")
 
   // Additional node and packager commandline arguments
-  val nodeExecutableAndArgs = config.nodeExecutableAndArgs.toTypedArray()
+  val nodeExecutableAndArgs = config.nodeExecutableAndArgs
   val cliPath = config.detectedCliPath
 
   val execCommand = nodeExecutableAndArgs + cliPath
   val enableHermes = config.enableHermesForVariant(variant)
   val bundleEnabled = variant.checkBundleEnabled(config)
 
-  val currentBundleTask = tasks.create<Exec>("bundle${targetName}JsAndAssets") {
-    group = "react"
-    description = "bundle JS and assets for $targetName."
+  val bundleTask = tasks.register<BundleJsAndAssetsTask>("bundle${targetName}JsAndAssets") {
+    val task = this
+    task.group = REACT_GROUP
+    task.description = "bundle JS and assets for $targetName."
 
-    // Create dirs if they are not there (e.g. the "clean" task just ran)
-    doFirst {
-      jsBundleDir.deleteRecursively()
-      jsBundleDir.mkdirs()
-      resourcesDir.deleteRecursively()
-      resourcesDir.mkdirs()
-      jsIntermediateSourceMapsDir.deleteRecursively()
-      jsIntermediateSourceMapsDir.mkdirs()
-      jsSourceMapsDir.deleteRecursively()
-      jsSourceMapsDir.mkdirs()
+    task.reactRoot = config.reactRoot
+    task.sources = fileTree(config.reactRoot) {
+      setExcludes(config.inputExcludes)
     }
-
-    // Set up inputs and outputs so gradle can cache the result
-    inputs.files(
-      fileTree(config.reactRoot) {
-        setExcludes(config.inputExcludes)
-      }
-    )
-    outputs.dir(jsBundleDir)
-    outputs.dir(resourcesDir)
-
-    // Set up the call to the react-native cli
-    workingDir(config.reactRoot)
-
-    // Set up dev mode
-    val devEnabled = !(variant.name in config.devDisabledInVariants || variant.isRelease)
+    task.execCommand = execCommand
+    task.bundleCommand = config.bundleCommand
+    task.devEnabled = !(variant.name in config.devDisabledInVariants || isRelease)
+    task.entryFile = config.detectedEntryFile
 
     val extraArgs = mutableListOf<String>()
 
@@ -91,79 +76,48 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
 
     extraArgs.addAll(config.extraPackagerArgs)
 
-    windowsAwareCommandLine(
-      *execCommand,
-      config.bundleCommand,
-      "--platform", "android",
-      "--dev", "$devEnabled",
-      "--reset-cache",
-      "--entry-file", config.detectedEntryFile,
-      "--bundle-output", jsBundleFile,
-      "--assets-dest", resourcesDir,
-      "--sourcemap-output", if (enableHermes) jsPackagerSourceMapFile else jsOutputSourceMapFile,
-      *extraArgs.toTypedArray()
-    )
+    task.extraArgs = emptyList()
 
-    if (enableHermes) {
-      doLast {
-        val hermesFlags = if (isRelease) {
-          config.hermesFlagsRelease
-        } else {
-          config.hermesFlagsDebug
-        }.toTypedArray()
-
-        val hbcTempFile = file("$jsBundleFile.hbc")
-        exec {
-          windowsAwareCommandLine(
-            config.osAwareHermesCommand,
-            "-emit-binary",
-            "-out", hbcTempFile, jsBundleFile,
-            *hermesFlags
-          )
-        }
-        ant.withGroovyBuilder {
-          "move"(
-              "file" to hbcTempFile,
-              "toFile" to jsBundleFile
-          )
-        }
-        if (hermesFlags.contains("-output-source-map")) {
-          ant.withGroovyBuilder {
-            "move"(
-              "file" to "$jsBundleFile.hbc.map",
-              "toFile" to jsCompilerSourceMapFile
-            )
-          }
-          exec {
-            // TODO: set task dependencies for caching
-
-            // Set up the call to the compose-source-maps script
-            workingDir(config.reactRoot)
-            windowsAwareCommandLine(
-              *nodeExecutableAndArgs,
-              config.composeSourceMapsPath,
-              jsPackagerSourceMapFile,
-              jsCompilerSourceMapFile,
-              "-o", jsOutputSourceMapFile)
-            }
-          }
-        }
-      }
+    task.jsBundleDir = jsBundleDir
+    task.jsBundleFile = jsBundleFile
+    task.resourcesDir = resourcesDir
+    task.jsIntermediateSourceMapsDir = jsIntermediateSourceMapsDir
+    task.jsSourceMapsDir = jsSourceMapsDir
+    task.jsSourceMapsFile = if (enableHermes) jsPackagerSourceMapFile else jsOutputSourceMapFile
 
     enabled = bundleEnabled
   }
 
+  val hermesTask = tasks.register<HermesBinaryTask>("emit${targetName}HermesResources") {
+    val task = this
+    task.group = REACT_GROUP
+    task.description = "bundle hermes resources for $targetName"
+
+    task.reactRoot = config.reactRoot
+    task.hermesCommand = config.osAwareHermesCommand
+    task.hermesFlags = if (isRelease) config.hermesFlagsRelease else config.hermesFlagsDebug
+    task.jsBundleFile = jsBundleFile
+    task.composeSourceMapsCommand = nodeExecutableAndArgs + config.composeSourceMapsPath
+    task.jsPackagerSourceMapFile = jsPackagerSourceMapFile
+    task.jsCompilerSourceMapFile = jsCompilerSourceMapFile
+    task.jsOutputSourceMapFile = jsOutputSourceMapFile
+
+    task.dependsOn(bundleTask)
+
+    enabled = bundleEnabled && enableHermes
+  }
+
   // todo expose bundle task and its generated folders
-  val generatedResFolders = files(resourcesDir).builtBy(currentBundleTask)
-//  val generatedAssetsFolders = files(jsBundleDir).builtBy(currentBundleTask)
+  val generatedResFolders = files(resourcesDir).builtBy(hermesTask, bundleTask)
+  //val generatedAssetsFolders = files(jsBundleDir).builtBy(hermesTask, bundleTask)
 
   variant.registerGeneratedResFolders(generatedResFolders)
-  variant.mergeResourcesProvider.get().dependsOn(currentBundleTask)
+  variant.mergeResourcesProvider.get().dependsOn(bundleTask, hermesTask)
 
   val packageTask = when (variant) {
     is ApplicationVariant -> variant.packageApplicationProvider.get()
     is LibraryVariant -> variant.packageLibraryProvider.get()
-    else -> tasks.findByName("package$targetName")!!
+    else -> tasks.findByName("package$targetName") ?: error("Couldn't find a package task for $targetName")
   }
 
   // pre bundle build task for Android plugin 3.2+
@@ -178,9 +132,9 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
       from(resourcesDir)
       into(file(resourcesDirConfigValue))
 
-      dependsOn(currentBundleTask)
+      dependsOn(bundleTask)
 
-      enabled = currentBundleTask.enabled
+      enabled = bundleEnabled
     }
 
     packageTask.dependsOn(currentCopyResTask)
@@ -215,7 +169,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
     // mergeAssets must run first, as it clears the intermediates directory
     dependsOn(variant.mergeAssetsProvider.get())
 
-    enabled = currentBundleTask.enabled
+    enabled = bundleEnabled
   }
 
   // mergeResources task runs before the bundle file is copied to the intermediate asset directory from Android plugin 4.1+.
@@ -262,8 +216,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
   }
 
   if (config.enableVmCleanup) {
-    val task = tasks.findByName("package$targetName")
-    task?.doFirst(vmSelectionAction)
+    packageTask.doFirst(vmSelectionAction)
   }
 }
 

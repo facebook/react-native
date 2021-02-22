@@ -17,8 +17,7 @@ import org.gradle.kotlin.dsl.getByType
 
 class ReactAppPlugin : Plugin<Project> {
   override fun apply(project: Project) {
-    // todo rename codegen or combine extensions
-    val config = project.extensions.create<ReactAppExtension>("reactApp", project.projectDir)
+    val config = project.extensions.create<ReactAppExtension>("reactApp", project)
 
     project.afterEvaluate {
       val androidConfiguration = extensions.getByType<BaseExtension>()

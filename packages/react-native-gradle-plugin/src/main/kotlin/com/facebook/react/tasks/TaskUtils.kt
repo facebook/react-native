@@ -10,11 +10,10 @@ package com.facebook.react.tasks
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.process.ExecSpec
 
-@Suppress("SpreadOperator")
 internal fun ExecSpec.windowsAwareCommandLine(vararg args: Any) {
   if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-    commandLine("cmd", "/c", *args)
+    commandLine(listOf("cmd", "/c") + args)
   } else {
-    commandLine(*args)
+    commandLine(args.toList())
   }
 }
