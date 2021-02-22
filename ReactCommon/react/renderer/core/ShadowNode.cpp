@@ -7,6 +7,7 @@
 
 #include "ShadowNode.h"
 #include "Constants.h"
+#include "DynamicPropsUtilities.h"
 #include "ShadowNodeFragment.h"
 
 #include <better/small_vector.h>
@@ -42,10 +43,9 @@ SharedProps ShadowNode::propsForClonedShadowNode(
     bool hasBeenMounted = sourceShadowNode.hasBeenMounted_;
     bool sourceNodeHasRawProps = !sourceShadowNode.getProps()->rawProps.empty();
     if (!hasBeenMounted && sourceNodeHasRawProps && props) {
-      auto copiedProps = sourceShadowNode.getProps()->rawProps;
-      copiedProps.merge_patch(props->rawProps);
       auto &castedProps = const_cast<Props &>(*props);
-      castedProps.rawProps = copiedProps;
+      castedProps.rawProps = mergeDynamicProps(
+          sourceShadowNode.getProps()->rawProps, props->rawProps);
       return props;
     }
   }
