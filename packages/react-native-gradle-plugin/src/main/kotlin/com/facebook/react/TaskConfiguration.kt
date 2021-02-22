@@ -10,13 +10,12 @@ package com.facebook.react
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.api.LibraryVariant
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.tasks.BundleJsAndAssetsTask
 import com.facebook.react.tasks.HermesBinaryTask
-import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.tasks.Copy
-import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.register
 import java.io.File
 
@@ -47,10 +46,10 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
   val enableHermes = config.enableHermesForVariant(variant)
   val bundleEnabled = variant.checkBundleEnabled(config)
 
-  val bundleTask = tasks.register<BundleJsAndAssetsTask>("bundle${targetName}JsAndAssets") {
+  val bundleTask = tasks.register<BundleJsAndAssetsTask>("createBundle${targetName}JsAndAssets") {
     val task = this
     task.group = REACT_GROUP
-    task.description = "bundle JS and assets for $targetName."
+    task.description = "create JS bundle and assets for $targetName."
 
     task.reactRoot = config.reactRoot
     task.sources = fileTree(config.reactRoot) {
@@ -85,7 +84,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
     task.jsSourceMapsDir = jsSourceMapsDir
     task.jsSourceMapsFile = if (enableHermes) jsPackagerSourceMapFile else jsOutputSourceMapFile
 
-    enabled = bundleEnabled
+    task.enabled = bundleEnabled
   }
 
   val hermesTask = tasks.register<HermesBinaryTask>("emit${targetName}HermesResources") {
@@ -104,28 +103,39 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
 
     task.dependsOn(bundleTask)
 
-    enabled = bundleEnabled && enableHermes
+    task.enabled = bundleEnabled && enableHermes
   }
 
-  // todo expose bundle task and its generated folders
-  val generatedResFolders = files(resourcesDir).builtBy(hermesTask, bundleTask)
-  //val generatedAssetsFolders = files(jsBundleDir).builtBy(hermesTask, bundleTask)
+  val aggregatedBundleTask = tasks.register("bundle${targetName}JsAndAssets") {
+    val task = this
+    task.group = REACT_GROUP
+    task.description = "bundle JS and resources for $targetName"
 
+    task.dependsOn(bundleTask, hermesTask)
+
+    // this was exposed before, do we still need it?
+    task.extra["generatedResFolders"] = files(resourcesDir).builtBy(task)
+    task.extra["generatedAssetsFolders"] = files(jsBundleDir).builtBy(task)
+  }
+
+  val generatedResFolders = files(resourcesDir).builtBy(aggregatedBundleTask)
+
+  // Android configuration
   variant.registerGeneratedResFolders(generatedResFolders)
-  variant.mergeResourcesProvider.get().dependsOn(bundleTask, hermesTask)
 
   val packageTask = when (variant) {
-    is ApplicationVariant -> variant.packageApplicationProvider.get()
-    is LibraryVariant -> variant.packageLibraryProvider.get()
-    else -> tasks.findByName("package$targetName") ?: error("Couldn't find a package task for $targetName")
+    is ApplicationVariant -> variant.packageApplicationProvider
+    is LibraryVariant -> variant.packageLibraryProvider
+    else -> tasks.named("package$targetName")
   }
 
-  // pre bundle build task for Android plugin 3.2+
-  val buildPreBundleTask = tasks.findByName("build${targetName}PreBundle")
+  val mergeResourcesTask = variant.mergeResourcesProvider
+  val mergeAssetsTask = variant.mergeAssetsProvider
+  val preBundleTask = tasks.named("build${targetName}PreBundle")
 
   val resourcesDirConfigValue = config.resourcesDir[variant.name]
   if (resourcesDirConfigValue != null) {
-    val currentCopyResTask = tasks.create<Copy>("copy${targetName}BundledResources") {
+    val currentCopyResTask = tasks.register<Copy>("copy${targetName}BundledResources") {
       group = "react"
       description = "copy bundled resources into custom location for $targetName."
 
@@ -138,48 +148,43 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
     }
 
     packageTask.dependsOn(currentCopyResTask)
-    buildPreBundleTask?.dependsOn(currentCopyResTask)
+    preBundleTask.dependsOn(currentCopyResTask)
   }
 
-  val currentAssetsCopyTask = tasks.create<Copy>("copy${targetName}BundledJs") {
+  packageTask.configure {
+    if (config.enableVmCleanup) {
+      doFirst {
+        cleanupVMFiles(enableHermes, isRelease, targetPath)
+      }
+    }
+  }
+
+  val currentAssetsCopyTask = tasks.register<Copy>("copy${targetName}BundledJs") {
     group = "react"
     description = "copy bundled JS into $targetName."
 
+    from(jsBundleDir)
+
     val jsBundleDirConfigValue = config.jsBundleDir[targetName]
     if (jsBundleDirConfigValue != null) {
-      from(jsBundleDir)
       into(jsBundleDirConfigValue)
     } else {
-      into("$buildDir/intermediates")
-      into("assets/$targetPath") {
-        from(jsBundleDir)
-      }
-
-      // Workaround for Android Gradle Plugin 3.2+ new asset directory
-      into("merged_assets/${variant.name}/merge${targetName}Assets/out") {
-        from(jsBundleDir)
-      }
-
-      // Workaround for Android Gradle Plugin 3.4+ new asset directory
-      into("merged_assets/${variant.name}/out") {
-        from(jsBundleDir)
-      }
+      into(mergeAssetsTask.map { it.outputDir.get() })
     }
 
-    // mergeAssets must run first, as it clears the intermediates directory
-    dependsOn(variant.mergeAssetsProvider.get())
+    dependsOn(mergeAssetsTask)
 
     enabled = bundleEnabled
   }
 
   // mergeResources task runs before the bundle file is copied to the intermediate asset directory from Android plugin 4.1+.
   // This ensures to copy the bundle file before mergeResources task starts
-  val mergeResourcesTask = tasks.findByName("merge${targetName}Resources")
-  mergeResourcesTask?.dependsOn(currentAssetsCopyTask)
-
+  mergeResourcesTask.dependsOn(currentAssetsCopyTask)
   packageTask.dependsOn(currentAssetsCopyTask)
-  buildPreBundleTask?.dependsOn(currentAssetsCopyTask)
+  preBundleTask.dependsOn(currentAssetsCopyTask)
+}
 
+private fun Project.cleanupVMFiles(enableHermes: Boolean, isRelease: Boolean, targetPath: String) {
   // Delete the VM related libraries that this build doesn't need.
   // The application can manage this manually by setting 'enableVmCleanup: false'
   //
@@ -187,36 +192,30 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
   // two separate HermesDebug and HermesRelease AARs, but until then we'll
   // kludge it by deleting the .so files out of the /transforms/ directory.
   val libDir = "$buildDir/intermediates/transforms/"
-  val vmSelectionAction = Action<Task> {
-    fileTree(libDir) {
-      if (enableHermes) {
-        // For Hermes, delete all the libjsc* files
-        include("**/libjsc*.so")
+  fileTree(libDir) {
+    if (enableHermes) {
+      // For Hermes, delete all the libjsc* files
+      include("**/libjsc*.so")
 
-        if (isRelease) {
-          // Reduce size by deleting the debugger/inspector
-          include("**/libhermes-inspector.so")
-          include("**/libhermes-executor-debug.so")
-        } else {
-          // Release libs take precedence and must be removed
-          // to allow debugging
-          include("**/libhermes-executor-release.so")
-        }
+      if (isRelease) {
+        // Reduce size by deleting the debugger/inspector
+        include("**/libhermes-inspector.so")
+        include("**/libhermes-executor-debug.so")
       } else {
-        // For JSC, delete all the libhermes* files
-        include("**/libhermes*.so")
+        // Release libs take precedence and must be removed
+        // to allow debugging
+        include("**/libhermes-executor-release.so")
       }
-    }.visit {
-      val targetVariant = ".*/transforms/[^/]*/$targetPath/.*".toRegex()
-      val path = file.absolutePath.replace(File.separatorChar, '/')
-      if (path.matches(targetVariant) && file.isFile()) {
-        file.delete()
-      }
+    } else {
+      // For JSC, delete all the libhermes* files
+      include("**/libhermes*.so")
     }
-  }
-
-  if (config.enableVmCleanup) {
-    packageTask.doFirst(vmSelectionAction)
+  }.visit {
+    val targetVariant = ".*/transforms/[^/]*/$targetPath/.*".toRegex()
+    val path = file.absolutePath.replace(File.separatorChar, '/')
+    if (path.matches(targetVariant) && file.isFile()) {
+      file.delete()
+    }
   }
 }
 

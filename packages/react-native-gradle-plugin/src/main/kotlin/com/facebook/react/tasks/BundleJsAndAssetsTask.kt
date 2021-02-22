@@ -17,34 +17,34 @@ import org.gradle.api.tasks.TaskAction
 import java.io.File
 
 open class BundleJsAndAssetsTask : DefaultTask() {
-  lateinit var reactRoot: File
+  internal lateinit var reactRoot: File
 
   @get:InputFiles
   @Suppress("UNUSED") // used to invalidate caches
-  lateinit var sources: FileTree
+  internal lateinit var sources: FileTree
   @get:Input
-  lateinit var execCommand: List<String>
+  internal lateinit var execCommand: List<String>
   @get:Input
-  lateinit var bundleCommand: String
+  internal lateinit var bundleCommand: String
   @get:Input
-  var devEnabled: Boolean = true
+  internal var devEnabled: Boolean = true
   @get:Input
-  lateinit var entryFile: File
+  internal lateinit var entryFile: File
   @get:Input
-  var extraArgs: List<String> = emptyList()
+  internal var extraArgs: List<String> = emptyList()
 
   @get:OutputDirectory
-  lateinit var jsBundleDir: File
+  internal lateinit var jsBundleDir: File
   @get:OutputFile
-  lateinit var jsBundleFile: File
+  internal lateinit var jsBundleFile: File
   @get:OutputDirectory
-  lateinit var resourcesDir: File
+  internal lateinit var resourcesDir: File
   @get:OutputDirectory
-  lateinit var jsIntermediateSourceMapsDir: File
+  internal lateinit var jsIntermediateSourceMapsDir: File
   @get:OutputDirectory
-  lateinit var jsSourceMapsDir: File
+  internal lateinit var jsSourceMapsDir: File
   @get:OutputFile
-  lateinit var jsSourceMapsFile: File
+  internal lateinit var jsSourceMapsFile: File
 
   @TaskAction
   fun run() {
