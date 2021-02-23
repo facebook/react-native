@@ -435,8 +435,8 @@ jsi::Value UIManagerBinding::get(
               jsi::Value const *arguments,
               size_t count) noexcept -> jsi::Value {
             auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
-            auto shadowNodeList =
-                shadowNodeListFromValue(runtime, arguments[1]);
+            auto weakShadowNodeList =
+                weakShadowNodeListFromValue(runtime, arguments[1]);
             static std::atomic_uint_fast8_t completeRootEventCounter{0};
             static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
             completeRootEventCounter += 1;
@@ -450,8 +450,12 @@ jsi::Value UIManagerBinding::get(
                     return completeRootEventCounter > eventCount &&
                         mostRecentSurfaceId == surfaceId;
                   };
-                  sharedUIManager->completeSurface(
-                      surfaceId, shadowNodeList, {true, shouldYield});
+                  auto shadowNodeList =
+                      shadowNodeListFromWeakList(weakShadowNodeList);
+                  if (shadowNodeList) {
+                    sharedUIManager->completeSurface(
+                        surfaceId, shadowNodeList, {true, shouldYield});
+                  }
                 });
 
             return jsi::Value::undefined();
