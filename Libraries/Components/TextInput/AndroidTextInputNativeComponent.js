@@ -411,7 +411,7 @@ export type NativeProps = $ReadOnly<{|
   /**
    * The string that will be rendered before text input has been entered.
    */
-  placeholder?: string,
+  placeholder?: ?string,
 
   /**
    * The text color of the placeholder string.
