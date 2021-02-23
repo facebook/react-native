@@ -4,11 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
-
-'use strict';
 
 const DeprecatedTextInputPropTypes = require('../../DeprecatedPropTypes/DeprecatedTextInputPropTypes');
 const Platform = require('../../Utilities/Platform');
@@ -869,13 +867,14 @@ function InternalTextInput(props: Props): React.Node {
     selection = null;
   }
 
-  let viewCommands: TextInputNativeCommands<HostComponent<any>>;
+  let viewCommands;
   if (AndroidTextInputCommands) {
     viewCommands = AndroidTextInputCommands;
   } else {
-    viewCommands = props.multiline
-      ? RCTMultilineTextInputNativeCommands
-      : RCTSinglelineTextInputNativeCommands;
+    viewCommands =
+      props.multiline === true
+        ? RCTMultilineTextInputNativeCommands
+        : RCTSinglelineTextInputNativeCommands;
   }
 
   const text =
@@ -1089,13 +1088,15 @@ function InternalTextInput(props: Props): React.Node {
   const {onBlur, onFocus, ...eventHandlers} = usePressability(config) || {};
 
   if (Platform.OS === 'ios') {
-    const RCTTextInputView = props.multiline
-      ? RCTMultilineTextInputView
-      : RCTSinglelineTextInputView;
+    const RCTTextInputView =
+      props.multiline === true
+        ? RCTMultilineTextInputView
+        : RCTSinglelineTextInputView;
 
-    const style = props.multiline
-      ? [styles.multilineInput, props.style]
-      : props.style;
+    const style =
+      props.multiline === true
+        ? [styles.multilineInput, props.style]
+        : props.style;
 
     textInput = (
       <RCTTextInputView
@@ -1125,7 +1126,7 @@ function InternalTextInput(props: Props): React.Node {
     let children = props.children;
     const childCount = React.Children.count(children);
     invariant(
-      !(props.value && childCount),
+      !(props.value != null && childCount),
       'Cannot specify both value and children.',
     );
     if (childCount > 1) {
@@ -1222,6 +1223,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// $FlowFixMe[unclear-type] Unclear type. Using `any` type is not safe.
 module.exports = ((ExportedForwardRef: any): React.AbstractComponent<
   React.ElementConfig<typeof InternalTextInput>,
   $ReadOnly<{|
