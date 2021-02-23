@@ -109,8 +109,13 @@ const ComponentExamples: Array<RNTesterExample> = [
     category: 'ListView',
   },
   {
-    key: 'SectionList_stickyHeadersEnabled',
+    key: 'SectionList-stickyHeadersEnabled',
     module: require('../examples/SectionList/SectionList-stickyHeadersEnabled'),
+    category: 'ListView',
+  },
+  {
+    key: 'SectionList-withSeparators',
+    module: require('../examples/SectionList/SectionList-withSeparators'),
     category: 'ListView',
   },
   {

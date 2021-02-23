@@ -8,7 +8,14 @@
  * @format
  */
 
-import {Button, SectionList, StyleSheet, Text, View} from 'react-native';
+import {
+  Pressable,
+  Button,
+  SectionList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import * as React from 'react';
 
 const DATA = [
@@ -36,11 +43,34 @@ const VIEWABILITY_CONFIG = {
   waitForInteraction: true,
 };
 
-const Item = ({title}) => (
-  <View style={styles.item} testID={title}>
-    <Text style={styles.title}>{title}</Text>
-  </View>
-);
+const Item = ({item, section, separators}) => {
+  return (
+    <Pressable
+      onPressIn={separators.highlight}
+      onPressOut={separators.unhighlight}
+      style={({pressed}) => [
+        styles.item,
+        {
+          backgroundColor: pressed ? 'red' : 'pink',
+        },
+      ]}
+      testID={item}>
+      <Text style={styles.title}>{item}</Text>
+    </Pressable>
+  );
+};
+
+const Separator = (defaultColor, highlightColor, text) => ({highlighted}) => {
+  return (
+    <View
+      style={[
+        styles.separator,
+        {backgroundColor: highlighted ? highlightColor : defaultColor},
+      ]}>
+      <Text style={styles.separtorText}>{text}</Text>
+    </View>
+  );
+};
 
 export function SectionList_inverted(): React.Node {
   const [output, setOutput] = React.useState('inverted false');
@@ -163,6 +193,29 @@ export function SectionList_onEndReached(): React.Node {
   );
 }
 
+export function SectionList_withSeparators(): React.Node {
+  const exampleProps = {
+    ItemSeparatorComponent: Separator('lightgreen', 'green', 'Item Separator'),
+    SectionSeparatorComponent: Separator(
+      'lightblue',
+      'blue',
+      'Section Separator',
+    ),
+  };
+  const ref = React.createRef<?React.ElementRef<typeof SectionList>>();
+
+  const onTest = null;
+
+  return (
+    <SectionListExampleWithForwardedRef
+      ref={ref}
+      exampleProps={exampleProps}
+      testOutput="Tap for press state of section and item separators"
+      onTest={onTest}
+    />
+  );
+}
+
 export function SectionList_onViewableItemsChanged(): React.Node {
   const [output, setOutput] = React.useState('');
   const exampleProps = {
@@ -216,7 +269,7 @@ const SectionListExampleWithForwardedRef = React.forwardRef(
           testID="section_list"
           sections={DATA}
           keyExtractor={(item, index) => item + index}
-          renderItem={({item}) => <Item title={item} />}
+          renderItem={Item}
           renderSectionHeader={({section: {title}}) => (
             <Text style={styles.header}>{title}</Text>
           )}
@@ -264,5 +317,11 @@ const styles = StyleSheet.create({
   },
   output: {
     fontSize: 12,
+  },
+  separator: {
+    height: 12,
+  },
+  separtorText: {
+    fontSize: 10,
   },
 });
