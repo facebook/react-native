@@ -137,6 +137,22 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    */
   var enableHermesForVariant: (BaseVariant) -> Boolean = { enableHermes.get() }
 
+  /**
+   * Functional interface specify flags for Hermes on specific [BaseVariant] Default: will
+   * return [hermesFlagsRelease] for Release variants and [hermesFlagsDebug] for Debug variants.
+   */
+  var hermesFlagsForVariant: (BaseVariant) -> List<String> = {
+    variant -> if (variant.isRelease) hermesFlagsRelease.get() else hermesFlagsDebug.get()
+  }
+
+  /**
+   * Functional interface to delete debug files only on specific [BaseVariant] Default: will
+   * return True for Release variants and False for Debug variants.
+   */
+  var deleteDebugFilesForVariant: (BaseVariant) -> Boolean = {
+    variant -> variant.isRelease
+  }
+
   /** Flags to pass to Hermes for Debug variants. Default: [] */
   val hermesFlagsDebug: ListProperty<String> =
       objects.listProperty(String::class.java).convention(emptyList())
