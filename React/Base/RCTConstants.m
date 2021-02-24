@@ -10,6 +10,9 @@
 NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
 
+/*
+ * On-demand view mounting
+ */
 static BOOL RCTExperimentOnDemandViewMounting = NO;
 
 BOOL RCTExperimentGetOnDemandViewMounting()
@@ -22,14 +25,47 @@ void RCTExperimentSetOnDemandViewMounting(BOOL value)
   RCTExperimentOnDemandViewMounting = value;
 }
 
-static BOOL RCTExperimentSyncPerformanceFlag = NO;
+/*
+ * Optimized hit-testing
+ */
+static BOOL RCTExperimentOptimizedHitTesting = NO;
 
-BOOL RCTExperimentGetSyncPerformanceFlag()
+BOOL RCTExperimentGetOptimizedHitTesting()
 {
-  return RCTExperimentSyncPerformanceFlag;
+  return RCTExperimentOptimizedHitTesting;
 }
 
-void RCTExperimentSetSyncPerformanceFlag(BOOL value)
+void RCTExperimentSetOptimizedHitTesting(BOOL value)
 {
-  RCTExperimentSyncPerformanceFlag = value;
+  RCTExperimentOptimizedHitTesting = value;
+}
+
+/*
+ * Preemptive View Allocation
+ */
+static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
+
+BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
+{
+  return RCTExperimentPreemptiveViewAllocationDisabled;
+}
+
+void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
+{
+  RCTExperimentPreemptiveViewAllocationDisabled = value;
+}
+
+/*
+ * Release resources when app enters background
+ */
+static BOOL RCTExperimentReleaseResourcesWhenBackgrounded = NO;
+
+BOOL RCTExperimentGetReleaseResourcesWhenBackgrounded()
+{
+  return RCTExperimentReleaseResourcesWhenBackgrounded;
+}
+
+void RCTExperimentSetReleaseResourcesWhenBackgrounded(BOOL value)
+{
+  RCTExperimentReleaseResourcesWhenBackgrounded = value;
 }

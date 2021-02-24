@@ -23,7 +23,7 @@ const {
 import type {
   ViewLayout,
   ViewLayoutEvent,
-} from '../../../../../Libraries/Components/View/ViewPropTypes';
+} from 'react-native/Libraries/Components/View/ViewPropTypes';
 
 type Props = $ReadOnly<{||}>;
 type State = {
@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'Layout Events';
+exports.category = 'UI';
 exports.description = ('Examples that show how Layout events can be used to ' +
   'measure view size and position.': string);
 exports.examples = [

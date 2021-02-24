@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {BubblingEventHandler, WithDefault} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';

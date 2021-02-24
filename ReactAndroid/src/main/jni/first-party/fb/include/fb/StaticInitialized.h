@@ -21,7 +21,7 @@ class StaticInitialized {
   constexpr StaticInitialized() : m_instance(nullptr) {}
 
   template <typename... Args>
-  void initialize(Args &&... arguments) {
+  void initialize(Args &&...arguments) {
     FBASSERT(!m_instance);
     m_instance = new T(std::forward<Args>(arguments)...);
   }

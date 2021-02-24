@@ -267,8 +267,9 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 {
   YGNodeRef yogaNode = _yogaNode;
 
-  CGSize oldMinimumSize = (CGSize){RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinWidth(yogaNode), 0.0),
-                                   RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinHeight(yogaNode), 0.0)};
+  CGSize oldMinimumSize = (CGSize){
+      RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinWidth(yogaNode), 0.0),
+      RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinHeight(yogaNode), 0.0)};
 
   if (!CGSizeEqualToSize(oldMinimumSize, minimumSize)) {
     YGNodeStyleSetMinWidth(yogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));

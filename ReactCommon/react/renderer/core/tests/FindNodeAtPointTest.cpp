@@ -6,134 +6,224 @@
  */
 
 #include <gtest/gtest.h>
+#include <react/renderer/element/Element.h>
+#include <react/renderer/element/testUtils.h>
+
 #include "TestComponent.h"
 
 using namespace facebook::react;
 
-/*
- *┌─────────────────────────┐
- *│nodeA_                   │
- *│                         │
- *│                         │
- *│                         │
- *│                         │
- *│                         │
- *│                         │
- *│      ┌────────────────┐ │
- *│      │nodeAA_         │ │
- *│      │                │ │
- *│      │     ┌───────┐  │ │
- *│      │     │nodeAA_│  │ │
- *│      │     │       │  │ │
- *│      │     └───────┘  │ │
- *│      └────────────────┘ │
- *└─────────────────────────┘
- */
-class FindNodeAtPointTest : public ::testing::Test {
- protected:
-  FindNodeAtPointTest()
-      : eventDispatcher_(std::shared_ptr<EventDispatcher const>()),
-        componentDescriptor_(TestComponentDescriptor({eventDispatcher_})) {
-    auto traits = TestShadowNode::BaseTraits();
+TEST(FindNodeAtPointTest, withoutTransform) {
+  auto builder = simpleComponentBuilder();
 
-    auto familyA = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 9,
-            /* .surfaceId = */ 1,
-            /* .eventEmitter = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
-
-    nodeA_ = std::make_shared<TestShadowNode>(
-        ShadowNodeFragment{
-            /* .props = */ std::make_shared<const TestProps>(),
-            /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
-        },
-        familyA,
-        traits);
-
-    auto familyAA = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 10,
-            /* .surfaceId = */ 1,
-            /* .eventEmitter = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
-
-    nodeAA_ = std::make_shared<TestShadowNode>(
-        ShadowNodeFragment{
-            /* .props = */ std::make_shared<const TestProps>(),
-            /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
-        },
-        familyAA,
-        traits);
-
-    auto familyAAA = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 11,
-            /* .surfaceId = */ 1,
-            /* .eventEmitter = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
-
-    nodeAAA_ = std::make_shared<TestShadowNode>(
-        ShadowNodeFragment{
-            /* .props = */ std::make_shared<const TestProps>(),
-            /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
-        },
-        familyAAA,
-        traits);
-
-    nodeA_->appendChild(nodeAA_);
-    nodeAA_->appendChild(nodeAAA_);
-
-    auto layoutMetrics = EmptyLayoutMetrics;
-
-    layoutMetrics.frame = facebook::react::Rect{
-        facebook::react::Point{0, 0}, facebook::react::Size{1000, 1000}};
-    nodeA_->setLayoutMetrics(layoutMetrics);
-
-    layoutMetrics.frame = facebook::react::Rect{
-        facebook::react::Point{100, 100}, facebook::react::Size{100, 100}};
-    nodeAA_->setLayoutMetrics(layoutMetrics);
-
-    layoutMetrics.frame = facebook::react::Rect{facebook::react::Point{10, 10},
-                                                facebook::react::Size{10, 10}};
-    nodeAAA_->setLayoutMetrics(layoutMetrics);
-  }
-
-  std::shared_ptr<EventDispatcher const> eventDispatcher_;
-  std::shared_ptr<TestShadowNode> nodeA_;
-  std::shared_ptr<TestShadowNode> nodeAA_;
-  std::shared_ptr<TestShadowNode> nodeAAA_;
-  TestComponentDescriptor componentDescriptor_;
-};
-
-TEST_F(FindNodeAtPointTest, withoutTransform) {
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .tag(1)
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {1000, 1000};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .tag(2)
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {100, 100};
+          layoutMetrics.frame.size = {100, 100};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .children({
+          Element<ViewShadowNode>()
+          .tag(3)
+          .finalize([](ViewShadowNode &shadowNode){
+            auto layoutMetrics = EmptyLayoutMetrics;
+            layoutMetrics.frame.origin = {10, 10};
+            layoutMetrics.frame.size = {10, 10};
+            shadowNode.setLayoutMetrics(layoutMetrics);
+          })
+        })
+    });
+  
+  auto parentShadowNode = builder.build(element);
+  
   EXPECT_EQ(
-      LayoutableShadowNode::findNodeAtPoint(nodeA_, {115, 115}), nodeAAA_);
-  EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(nodeA_, {105, 105}), nodeAA_);
-  EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(nodeA_, {900, 900}), nodeA_);
+            LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {115, 115})->getTag(), 3);
+  EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {105, 105})->getTag(), 2);
+  EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {900, 900})->getTag(), 1);
   EXPECT_EQ(
-      LayoutableShadowNode::findNodeAtPoint(nodeA_, {1001, 1001}), nullptr);
+      LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {1001, 1001}), nullptr);
 }
 
-TEST_F(FindNodeAtPointTest, viewIsTranslated) {
-  nodeA_->_contentOriginOffset = {-100, -100};
+TEST(FindNodeAtPointTest, viewIsTranslated) {
+  auto builder = simpleComponentBuilder();
+
+  // clang-format off
+  auto element =
+    Element<ScrollViewShadowNode>()
+      .tag(1)
+      .finalize([](ScrollViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {1000, 1000};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .stateData([](ScrollViewState &data) {
+        data.contentOffset = {100, 100};
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .tag(2)
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {100, 100};
+          layoutMetrics.frame.size = {100, 100};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .children({
+          Element<ViewShadowNode>()
+          .tag(3)
+          .finalize([](ViewShadowNode &shadowNode){
+            auto layoutMetrics = EmptyLayoutMetrics;
+            layoutMetrics.frame.origin = {10, 10};
+            layoutMetrics.frame.size = {10, 10};
+            shadowNode.setLayoutMetrics(layoutMetrics);
+          })
+        })
+    });
+  
+  auto parentShadowNode = builder.build(element);
 
   EXPECT_EQ(
-      LayoutableShadowNode::findNodeAtPoint(nodeA_, {15, 15})->getTag(),
-      nodeAAA_->getTag());
-  EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(nodeA_, {5, 5}), nodeAA_);
+      LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {15, 15})->getTag(),
+      3);
+  EXPECT_EQ(LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {5, 5})->getTag(), 2);
 }
 
-TEST_F(FindNodeAtPointTest, viewIsScaled) {
-  nodeAAA_->_transform = Transform::Identity() * Transform::Scale(0.5, 0.5, 0);
+TEST(FindNodeAtPointTest, viewIsScaled) {
+  auto builder = simpleComponentBuilder();
+
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .tag(1)
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {1000, 1000};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .tag(2)
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {100, 100};
+          layoutMetrics.frame.size = {100, 100};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .children({
+          Element<ViewShadowNode>()
+          .tag(3)
+          .props([] {
+            auto sharedProps = std::make_shared<ViewProps>();
+            sharedProps->transform = Transform::Scale(0.5, 0.5, 0);
+            return sharedProps;
+          })
+          .finalize([](ViewShadowNode &shadowNode){
+            auto layoutMetrics = EmptyLayoutMetrics;
+            layoutMetrics.frame.origin = {10, 10};
+            layoutMetrics.frame.size = {10, 10};
+            shadowNode.setLayoutMetrics(layoutMetrics);
+          })
+        })
+    });
+  
+  auto parentShadowNode = builder.build(element);
 
   EXPECT_EQ(
-      LayoutableShadowNode::findNodeAtPoint(nodeA_, {119, 119})->getTag(),
-      nodeAA_->getTag());
+      LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {119, 119})->getTag(),
+      2);
 }
+
+TEST(FindNodeAtPointTest, overlappingViews) {
+  auto builder = simpleComponentBuilder();
+
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .tag(1)
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {100, 100};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .tag(2)
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {25, 25};
+          layoutMetrics.frame.size = {50, 50};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        }),
+        Element<ViewShadowNode>()
+        .tag(3)
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {50, 50};
+          layoutMetrics.frame.size = {50, 50};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+    });
+  
+  auto parentShadowNode = builder.build(element);
+  
+  EXPECT_EQ(
+            LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {50, 50})->getTag(), 3);
+}
+
+TEST(FindNodeAtPointTest, overlappingViewsWithZIndex) {
+  auto builder = simpleComponentBuilder();
+
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .tag(1)
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {100, 100};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .tag(2)
+        .props([] {
+          auto sharedProps = std::make_shared<ViewProps>();
+          sharedProps->zIndex = 1;
+          auto &yogaStyle = sharedProps->yogaStyle;
+          yogaStyle.positionType() = YGPositionTypeAbsolute;
+          return sharedProps;
+        })
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {25, 25};
+          layoutMetrics.frame.size = {50, 50};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        }),
+        Element<ViewShadowNode>()
+        .tag(3)
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {50, 50};
+          layoutMetrics.frame.size = {50, 50};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+    });
+  
+  auto parentShadowNode = builder.build(element);
+  
+  EXPECT_EQ(
+            LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {50, 50})->getTag(), 2);
+}
+
+

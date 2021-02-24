@@ -107,7 +107,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   public ReactImageView createViewInstance(ThemedReactContext context) {
     Object callerContext =
         mCallerContextFactory != null
-            ? mCallerContextFactory.getOrCreateCallerContext(context.getSurfaceID(), null)
+            ? mCallerContextFactory.getOrCreateCallerContext(context.getModuleName(), null)
             : getCallerContext();
     return new ReactImageView(
         context, getDraweeControllerBuilder(), mGlobalImageLoadListener, callerContext);
@@ -129,7 +129,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     if (mCallerContextFactory != null) {
       view.updateCallerContext(
           mCallerContextFactory.getOrCreateCallerContext(
-              ((ThemedReactContext) view.getContext()).getSurfaceID(), analyticTag));
+              ((ThemedReactContext) view.getContext()).getModuleName(), analyticTag));
     }
   }
 

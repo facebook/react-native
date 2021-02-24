@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import * as React from 'react';
 import {
   Animated,
@@ -316,7 +314,9 @@ const styles = StyleSheet.create({
 
 exports.displayName = (undefined: ?string);
 exports.description = 'Component for making views pressable.';
-exports.title = '<Pressable>';
+exports.title = 'Pressable';
+exports.category = 'UI';
+exports.documentationURL = 'https://reactnative.dev/docs/pressable';
 exports.examples = [
   {
     title: 'Change content based on Press',

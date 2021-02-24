@@ -2,7 +2,8 @@
 
 exports[`GenerateModuleJavaSpec can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "NativeSampleTurboModuleSpec.java" => "/**
+  "java/com/facebook/fbreact/specs/NativeSampleTurboModuleSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -13,8 +14,9 @@ Map {
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -31,15 +33,19 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract WritableMap difficult(ReadableMap A);
 
   @ReactMethod
+  @DoNotStrip
   public abstract void optionals(ReadableMap A);
 
   @ReactMethod
-  public abstract void optionalMethod(ReadableMap options, Callback callback, ReadableArray extras);
+  @DoNotStrip
+  public void optionalMethod(ReadableMap options, Callback callback, ReadableArray extras) {}
 
   @ReactMethod
+  @DoNotStrip
   public abstract void getArrays(ReadableMap options);
 }
 ",
@@ -48,7 +54,8 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
 exports[`GenerateModuleJavaSpec can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "NativeSampleTurboModuleSpec.java" => "/**
+  "java/com/facebook/fbreact/specs/NativeSampleTurboModuleSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -59,8 +66,9 @@ Map {
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -80,7 +88,8 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
 exports[`GenerateModuleJavaSpec can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
 Map {
-  "NativeAliasTurboModuleSpec.java" => "/**
+  "java/com/facebook/fbreact/specs/AliasTurboModuleSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -91,8 +100,9 @@ Map {
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -100,12 +110,13 @@ import com.facebook.react.bridge.ReactModuleWithSpec;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 
-public abstract class NativeAliasTurboModuleSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
-  public NativeAliasTurboModuleSpec(ReactApplicationContext reactContext) {
+public abstract class AliasTurboModuleSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public AliasTurboModuleSpec(ReactApplicationContext reactContext) {
     super(reactContext);
   }
 
   @ReactMethod
+  @DoNotStrip
   public abstract void cropImage(ReadableMap cropData);
 }
 ",
@@ -114,7 +125,8 @@ public abstract class NativeAliasTurboModuleSpec extends ReactContextBaseJavaMod
 
 exports[`GenerateModuleJavaSpec can generate fixture REAL_MODULE_EXAMPLE 1`] = `
 Map {
-  "NativeCameraRollManagerSpec.java" => "/**
+  "java/com/facebook/fbreact/specs/NativeCameraRollManagerSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -125,8 +137,9 @@ Map {
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -142,16 +155,20 @@ public abstract class NativeCameraRollManagerSpec extends ReactContextBaseJavaMo
   }
 
   @ReactMethod
+  @DoNotStrip
   public abstract void getPhotos(ReadableMap params, Promise promise);
 
   @ReactMethod
+  @DoNotStrip
   public abstract void saveToCameraRoll(String uri, String type, Promise promise);
 
   @ReactMethod
+  @DoNotStrip
   public abstract void deletePhotos(ReadableArray assets, Promise promise);
 }
 ",
-  "NativeImagePickerIOSSpec.java" => "/**
+  "java/com/facebook/fbreact/specs/NativeExceptionsManagerSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -162,38 +179,9 @@ public abstract class NativeCameraRollManagerSpec extends ReactContextBaseJavaMo
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReactModuleWithSpec;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
-
-public abstract class NativeImagePickerIOSSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
-  public NativeImagePickerIOSSpec(ReactApplicationContext reactContext) {
-    super(reactContext);
-  }
-
-  @ReactMethod
-  public abstract void openCameraDialog(ReadableMap config, Callback successCallback, Callback cancelCallback);
-}
-",
-  "NativeExceptionsManagerSpec.java" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
- *
- * @generated by codegen project: GenerateModuleJavaSpec.js
- *
- * @nolint
- */
-
-package com.facebook.fbreact.specs.beta;
-
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -208,19 +196,24 @@ public abstract class NativeExceptionsManagerSpec extends ReactContextBaseJavaMo
   }
 
   @ReactMethod
+  @DoNotStrip
   public abstract void reportFatalException(String message, ReadableArray stack, double exceptionId);
 
   @ReactMethod
+  @DoNotStrip
   public abstract void reportSoftException(String message, ReadableArray stack, double exceptionId);
 
   @ReactMethod
-  public abstract void reportException(ReadableMap data);
+  @DoNotStrip
+  public void reportException(ReadableMap data) {}
 
   @ReactMethod
+  @DoNotStrip
   public abstract void updateExceptionMessage(String message, ReadableArray stack, double exceptionId);
 
   @ReactMethod
-  public abstract void dismissRedbox();
+  @DoNotStrip
+  public void dismissRedbox() {}
 }
 ",
 }
@@ -228,7 +221,8 @@ public abstract class NativeExceptionsManagerSpec extends ReactContextBaseJavaMo
 
 exports[`GenerateModuleJavaSpec can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "NativeSampleTurboModuleSpec.java" => "/**
+  "java/com/facebook/fbreact/specs/NativeSampleTurboModuleSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -239,8 +233,9 @@ Map {
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -267,6 +262,7 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   protected abstract Map<String, Object> getTypedExportedConstants();
 
   @Override
+  @DoNotStrip
   public final @Nullable Map<String, Object> getConstants() {
     Map<String, Object> constants = getTypedExportedConstants();
     if (ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD) {
@@ -292,33 +288,43 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   }
 
   @ReactMethod
+  @DoNotStrip
   public abstract void voidFunc();
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract boolean getBool(boolean arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract double getNumber(double arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract String getString(String arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract WritableArray getArray(ReadableArray arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract WritableMap getObject(ReadableMap arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract double getRootTag(double arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract WritableMap getValue(double x, String y, ReadableMap z);
 
   @ReactMethod
+  @DoNotStrip
   public abstract void getValueWithCallback(Callback callback);
 
   @ReactMethod
+  @DoNotStrip
   public abstract void getValueWithPromise(boolean error, Promise promise);
 }
 ",
@@ -327,7 +333,8 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
 exports[`GenerateModuleJavaSpec can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "NativeSampleTurboModuleSpec.java" => "/**
+  "java/com/facebook/fbreact/specs/NativeSampleTurboModuleSpec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -338,8 +345,9 @@ Map {
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -352,10 +360,12 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   }
 
   @ReactMethod
+  @DoNotStrip
   public abstract void voidFunc();
 }
 ",
-  "NativeSample2TurboModuleSpec.java" => "/**
+  "java/com/facebook/fbreact/specs/NativeSampleTurboModule2Spec.java" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE file in the root
@@ -366,81 +376,22 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReactModuleWithSpec;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 
-public abstract class NativeSample2TurboModuleSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
-  public NativeSample2TurboModuleSpec(ReactApplicationContext reactContext) {
+public abstract class NativeSampleTurboModule2Spec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public NativeSampleTurboModule2Spec(ReactApplicationContext reactContext) {
     super(reactContext);
   }
 
   @ReactMethod
-  public abstract void voidFunc();
-}
-",
-}
-`;
-
-exports[`GenerateModuleJavaSpec can generate fixture TWO_MODULES_SAME_FILE 1`] = `
-Map {
-  "NativeSampleTurboModuleSpec.java" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
- *
- * @generated by codegen project: GenerateModuleJavaSpec.js
- *
- * @nolint
- */
-
-package com.facebook.fbreact.specs.beta;
-
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReactModuleWithSpec;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
-
-public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
-  public NativeSampleTurboModuleSpec(ReactApplicationContext reactContext) {
-    super(reactContext);
-  }
-
-  @ReactMethod
-  public abstract void voidFunc();
-}
-",
-  "NativeSample2TurboModuleSpec.java" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
- *
- * @generated by codegen project: GenerateModuleJavaSpec.js
- *
- * @nolint
- */
-
-package com.facebook.fbreact.specs.beta;
-
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReactModuleWithSpec;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
-
-public abstract class NativeSample2TurboModuleSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
-  public NativeSample2TurboModuleSpec(ReactApplicationContext reactContext) {
-    super(reactContext);
-  }
-
-  @ReactMethod
+  @DoNotStrip
   public abstract void voidFunc();
 }
 ",

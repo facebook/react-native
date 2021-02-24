@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import ToastAndroid from '../Components/ToastAndroid/ToastAndroid';
 
 const TOAST_SHORT_DELAY = 2000;

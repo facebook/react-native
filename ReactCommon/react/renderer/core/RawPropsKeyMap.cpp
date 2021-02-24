@@ -7,6 +7,8 @@
 
 #include "RawPropsKeyMap.h"
 
+#include <react/debug/react_native_assert.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cstdlib>
@@ -79,12 +81,12 @@ void RawPropsKeyMap::reindex() noexcept {
 RawPropsValueIndex RawPropsKeyMap::at(
     char const *name,
     RawPropsPropNameLength length) noexcept {
-  assert(length > 0);
-  assert(length < kPropNameLengthHardCap);
+  react_native_assert(length > 0);
+  react_native_assert(length < kPropNameLengthHardCap);
   // 1. Find the bucket.
   auto lower = int{buckets_[length - 1]};
   auto upper = int{buckets_[length]} - 1;
-  assert(lower - 1 <= upper);
+  react_native_assert(lower - 1 <= upper);
 
   // 2. Binary search in the bucket.
   while (lower <= upper) {

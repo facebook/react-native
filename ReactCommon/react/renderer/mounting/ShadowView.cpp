@@ -22,6 +22,7 @@ static LayoutMetrics layoutMetricsFromShadowNode(ShadowNode const &shadowNode) {
 ShadowView::ShadowView(const ShadowNode &shadowNode)
     : componentName(shadowNode.getComponentName()),
       componentHandle(shadowNode.getComponentHandle()),
+      surfaceId(shadowNode.getSurfaceId()),
       tag(shadowNode.getTag()),
       props(shadowNode.getProps()),
       eventEmitter(shadowNode.getEventEmitter()),
@@ -30,6 +31,7 @@ ShadowView::ShadowView(const ShadowNode &shadowNode)
 
 bool ShadowView::operator==(const ShadowView &rhs) const {
   return std::tie(
+             this->surfaceId,
              this->tag,
              this->componentName,
              this->props,
@@ -37,6 +39,7 @@ bool ShadowView::operator==(const ShadowView &rhs) const {
              this->layoutMetrics,
              this->state) ==
       std::tie(
+             rhs.surfaceId,
              rhs.tag,
              rhs.componentName,
              rhs.props,
@@ -59,6 +62,7 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
     ShadowView const &object,
     DebugStringConvertibleOptions options) {
   return {
+      {"surfaceId", getDebugDescription(object.surfaceId, options)},
       {"tag", getDebugDescription(object.tag, options)},
       {"props", getDebugDescription(object.props, options)},
       {"eventEmitter", getDebugDescription(object.eventEmitter, options)},

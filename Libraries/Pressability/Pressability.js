@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import {isHoverEnabled} from './HoverState';
 import invariant from 'invariant';
 import SoundManager from '../Components/Sound/SoundManager';
@@ -276,8 +274,7 @@ const isPressInSignal = signal =>
 const isTerminalSignal = signal =>
   signal === 'RESPONDER_TERMINATED' || signal === 'RESPONDER_RELEASE';
 
-const DEFAULT_LONG_PRESS_DELAY_MS = 370; // 500 - 130
-const DEFAULT_PRESS_DELAY_MS = 130;
+const DEFAULT_LONG_PRESS_DELAY_MS = 500;
 const DEFAULT_PRESS_RECT_OFFSETS = {
   bottom: 30,
   left: 20,
@@ -472,12 +469,7 @@ export default class Pressability {
         this._touchState = 'NOT_RESPONDER';
         this._receiveSignal('RESPONDER_GRANT', event);
 
-        const delayPressIn = normalizeDelay(
-          this._config.delayPressIn,
-          0,
-          DEFAULT_PRESS_DELAY_MS,
-        );
-
+        const delayPressIn = normalizeDelay(this._config.delayPressIn);
         if (delayPressIn > 0) {
           this._pressDelayTimeout = setTimeout(() => {
             this._receiveSignal('DELAY', event);
@@ -489,7 +481,7 @@ export default class Pressability {
         const delayLongPress = normalizeDelay(
           this._config.delayLongPress,
           10,
-          DEFAULT_LONG_PRESS_DELAY_MS,
+          DEFAULT_LONG_PRESS_DELAY_MS - delayPressIn,
         );
         this._longPressDelayTimeout = setTimeout(() => {
           this._handleLongPress(event);
@@ -497,8 +489,9 @@ export default class Pressability {
       },
 
       onResponderMove: (event: PressEvent): void => {
-        if (this._config.onPressMove != null) {
-          this._config.onPressMove(event);
+        const {onPressMove} = this._config;
+        if (onPressMove != null) {
+          onPressMove(event);
         }
 
         // Region may not have finished being measured, yet.
@@ -550,8 +543,8 @@ export default class Pressability {
       },
 
       onClick: (event: PressEvent): void => {
-        const {onPress} = this._config;
-        if (onPress != null) {
+        const {onPress, disabled} = this._config;
+        if (onPress != null && disabled !== true) {
           onPress(event);
         }
       },
@@ -661,10 +654,10 @@ export default class Pressability {
       prevState === 'NOT_RESPONDER' &&
       nextState === 'RESPONDER_INACTIVE_PRESS_IN';
 
-    const isActivationTransiton =
+    const isActivationTransition =
       !isActivationSignal(prevState) && isActivationSignal(nextState);
 
-    if (isInitialTransition || isActivationTransiton) {
+    if (isInitialTransition || isActivationTransition) {
       this._measureResponderRegion();
     }
 
@@ -685,6 +678,11 @@ export default class Pressability {
     }
 
     if (isPressInSignal(prevState) && signal === 'RESPONDER_RELEASE') {
+      // If we never activated (due to delays), activate and deactivate now.
+      if (!isNextActive && !isPrevActive) {
+        this._activate(event);
+        this._deactivate(event);
+      }
       const {onLongPress, onPress, android_disableSound} = this._config;
       if (onPress != null) {
         const isPressCanceledByLongPress =
@@ -692,11 +690,6 @@ export default class Pressability {
           prevState === 'RESPONDER_ACTIVE_LONG_PRESS_IN' &&
           this._shouldLongPressCancelPress();
         if (!isPressCanceledByLongPress) {
-          // If we never activated (due to delays), activate and deactivate now.
-          if (!isNextActive && !isPrevActive) {
-            this._activate(event);
-            this._deactivate(event);
-          }
           if (Platform.OS === 'android' && android_disableSound !== true) {
             SoundManager.playTouchSound();
           }
@@ -710,11 +703,8 @@ export default class Pressability {
 
   _activate(event: PressEvent): void {
     const {onPressIn} = this._config;
-    const touch = getTouchFromPressEvent(event);
-    this._touchActivatePosition = {
-      pageX: touch.pageX,
-      pageY: touch.pageY,
-    };
+    const {pageX, pageY} = getTouchFromPressEvent(event);
+    this._touchActivatePosition = {pageX, pageY};
     this._touchActivateTime = Date.now();
     if (onPressIn != null) {
       onPressIn(event);

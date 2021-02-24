@@ -178,15 +178,12 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(
                 start, end, new ReactBackgroundColorSpan(textShadowNode.mBackgroundColor)));
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
-        if (!Float.isNaN(effectiveLetterSpacing)
-            && (parentTextAttributes == null
-                || parentTextAttributes.getEffectiveLetterSpacing() != effectiveLetterSpacing)) {
-          ops.add(
-              new SetSpanOperation(
-                  start, end, new CustomLetterSpacingSpan(effectiveLetterSpacing)));
-        }
+      float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
+      if (!Float.isNaN(effectiveLetterSpacing)
+          && (parentTextAttributes == null
+              || parentTextAttributes.getEffectiveLetterSpacing() != effectiveLetterSpacing)) {
+        ops.add(
+            new SetSpanOperation(start, end, new CustomLetterSpacingSpan(effectiveLetterSpacing)));
       }
       int effectiveFontSize = textAttributes.getEffectiveFontSize();
       if ( // `getEffectiveFontSize` always returns a value so don't need to check for anything like

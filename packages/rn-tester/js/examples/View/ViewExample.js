@@ -19,7 +19,9 @@ const {
   View,
 } = require('react-native');
 
-exports.title = '<View>';
+exports.title = 'View';
+exports.documentationURL = 'https://reactnative.dev/docs/view';
+exports.category = 'Basic';
 exports.description = ('Basic building block of all UI, examples that ' +
   'demonstrate some of the many styles available.': string);
 
@@ -369,6 +371,7 @@ exports.examples = [
           width: 100,
           height: 50,
           marginTop: -10,
+          position: 'relative',
         },
       });
 

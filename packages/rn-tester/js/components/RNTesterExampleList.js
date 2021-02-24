@@ -8,10 +8,8 @@
  * @flow
  */
 
-'use strict';
-
-const RNTesterActions = require('../utils/RNTesterActions');
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
+const RNTesterComponentTitle = require('./RNTesterComponentTitle');
 const React = require('react');
 
 const {
@@ -20,73 +18,85 @@ const {
   StyleSheet,
   Text,
   TouchableHighlight,
+  Image,
   View,
 } = require('react-native');
 
-import type {ViewStyleProp} from '../../../../Libraries/StyleSheet/StyleSheet';
-import type {RNTesterExample} from '../types/RNTesterTypes';
-
 import {RNTesterThemeContext} from './RNTesterTheme';
 
-type Props = {
-  onNavigate: Function,
-  list: {
-    ComponentExamples: Array<RNTesterExample>,
-    APIExamples: Array<RNTesterExample>,
-    ...
-  },
-  style?: ?ViewStyleProp,
-  ...
+const ExampleCard = ({
+  onShowUnderlay,
+  onHideUnderlay,
+  item,
+  toggleBookmark,
+  handlePress,
+}) => {
+  const theme = React.useContext(RNTesterThemeContext);
+  const platform = item.module.platform;
+  const onIos = !platform || platform === 'ios';
+  const onAndroid = !platform || platform === 'android';
+  return (
+    <TouchableHighlight
+      testID={item.module.title}
+      onShowUnderlay={onShowUnderlay}
+      onHideUnderlay={onHideUnderlay}
+      accessibilityLabel={item.module.title + ' ' + item.module.description}
+      style={styles.listItem}
+      underlayColor={'rgb(242,242,242)'}
+      onPress={() =>
+        handlePress({exampleType: item.exampleType, key: item.key})
+      }>
+      <View
+        style={[styles.row, {backgroundColor: theme.SystemBackgroundColor}]}>
+        <View style={styles.topRowStyle}>
+          <RNTesterComponentTitle>{item.module.title}</RNTesterComponentTitle>
+          <TouchableHighlight
+            style={styles.imageViewStyle}
+            onPress={() =>
+              toggleBookmark({exampleType: item.exampleType, key: item.key})
+            }>
+            <Image
+              style={styles.imageStyle}
+              source={
+                item.isBookmarked
+                  ? require('../assets/bookmark-outline-blue.png')
+                  : require('../assets/bookmark-outline-gray.png')
+              }
+            />
+          </TouchableHighlight>
+        </View>
+        <Text
+          style={[
+            styles.rowDetailText,
+            {color: theme.SecondaryLabelColor, marginBottom: 5},
+          ]}>
+          {item.module.description}
+        </Text>
+        <View style={styles.bottomRowStyle}>
+          <Text style={{color: theme.SecondaryLabelColor, width: 65}}>
+            {item.module.category || 'Other'}
+          </Text>
+          <View style={styles.platformLabelStyle}>
+            <Text
+              style={{
+                color: onIos ? '#787878' : theme.SeparatorColor,
+                fontWeight: onIos ? '500' : '300',
+              }}>
+              iOS
+            </Text>
+            <Text
+              style={{
+                color: onAndroid ? '#787878' : theme.SeparatorColor,
+                fontWeight: onAndroid ? '500' : '300',
+              }}>
+              Android
+            </Text>
+          </View>
+        </View>
+      </View>
+    </TouchableHighlight>
+  );
 };
-
-class RowComponent extends React.PureComponent<{
-  item: Object,
-  onNavigate: Function,
-  onPress?: Function,
-  onShowUnderlay?: Function,
-  onHideUnderlay?: Function,
-  ...
-}> {
-  _onPress = () => {
-    if (this.props.onPress) {
-      this.props.onPress();
-      return;
-    }
-    this.props.onNavigate(RNTesterActions.ExampleAction(this.props.item.key));
-  };
-  render() {
-    const {item} = this.props;
-    return (
-      <RNTesterThemeContext.Consumer>
-        {theme => {
-          return (
-            <TouchableHighlight
-              onShowUnderlay={this.props.onShowUnderlay}
-              onHideUnderlay={this.props.onHideUnderlay}
-              onPress={this._onPress}>
-              <View
-                style={[
-                  styles.row,
-                  {backgroundColor: theme.SystemBackgroundColor},
-                ]}>
-                <Text style={[styles.rowTitleText, {color: theme.LabelColor}]}>
-                  {item.module.title}
-                </Text>
-                <Text
-                  style={[
-                    styles.rowDetailText,
-                    {color: theme.SecondaryLabelColor},
-                  ]}>
-                  {item.module.description}
-                </Text>
-              </View>
-            </TouchableHighlight>
-          );
-        }}
-      </RNTesterThemeContext.Consumer>
-    );
-  }
-}
 
 const renderSectionHeader = ({section}) => (
   <RNTesterThemeContext.Consumer>
@@ -107,98 +117,58 @@ const renderSectionHeader = ({section}) => (
   </RNTesterThemeContext.Consumer>
 );
 
-class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
-  render(): React.Node {
-    const filter = ({example, filterRegex}) =>
-      filterRegex.test(example.module.title) && !Platform.isTV;
+const RNTesterExampleList: React$AbstractComponent<any, void> = React.memo(
+  ({sections, toggleBookmark, handleExampleCardPress}) => {
+    const theme = React.useContext(RNTesterThemeContext);
 
-    const sections = [
-      {
-        data: this.props.list.ComponentExamples,
-        title: 'COMPONENTS',
-        key: 'c',
-      },
-      {
-        data: this.props.list.APIExamples,
-        title: 'APIS',
-        key: 'a',
-      },
-    ];
+    const filter = ({example, filterRegex, category}) =>
+      filterRegex.test(example.module.title) &&
+      (!category || example.category === category) &&
+      (!Platform.isTV || example.supportsTVOS);
+
+    const renderListItem = ({item, section, separators}) => {
+      return (
+        <ExampleCard
+          item={item}
+          section={section}
+          onShowUnderlay={separators.highlight}
+          onHideUnderlay={separators.unhighlight}
+          toggleBookmark={toggleBookmark}
+          handlePress={handleExampleCardPress}
+        />
+      );
+    };
 
     return (
-      <RNTesterThemeContext.Consumer>
-        {theme => {
-          return (
-            <View
-              style={[
-                styles.listContainer,
-                this.props.style,
-                {backgroundColor: theme.SecondaryGroupedBackgroundColor},
-              ]}>
-              {this._renderTitleRow()}
-              <RNTesterExampleFilter
-                testID="explorer_search"
-                sections={sections}
-                filter={filter}
-                render={({filteredSections}) => (
-                  <SectionList
-                    ItemSeparatorComponent={ItemSeparator}
-                    contentContainerStyle={{
-                      backgroundColor: theme.SeparatorColor,
-                    }}
-                    style={{backgroundColor: theme.SystemBackgroundColor}}
-                    sections={filteredSections}
-                    renderItem={this._renderItem}
-                    keyboardShouldPersistTaps="handled"
-                    automaticallyAdjustContentInsets={false}
-                    keyboardDismissMode="on-drag"
-                    renderSectionHeader={renderSectionHeader}
-                  />
-                )}
-              />
-            </View>
-          );
-        }}
-      </RNTesterThemeContext.Consumer>
+      <View
+        style={[
+          styles.listContainer,
+          {backgroundColor: theme.SecondaryGroupedBackgroundColor},
+        ]}>
+        <RNTesterExampleFilter
+          testID="explorer_search"
+          page="components_page"
+          sections={sections}
+          filter={filter}
+          hideFilterPills={true}
+          render={({filteredSections}) => (
+            <SectionList
+              sections={filteredSections}
+              extraData={filteredSections}
+              renderItem={renderListItem}
+              ItemSeparatorComponent={ItemSeparator}
+              keyboardShouldPersistTaps="handled"
+              automaticallyAdjustContentInsets={false}
+              keyboardDismissMode="on-drag"
+              renderSectionHeader={renderSectionHeader}
+              ListFooterComponent={() => <View style={{height: 80}} />}
+            />
+          )}
+        />
+      </View>
     );
-  }
-
-  _renderItem = ({item, separators}) => (
-    <RowComponent
-      item={item}
-      onNavigate={this.props.onNavigate}
-      onShowUnderlay={separators.highlight}
-      onHideUnderlay={separators.unhighlight}
-    />
-  );
-
-  _renderTitleRow(): ?React.Element<any> {
-    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.68 was deployed. To see the error delete this
-     * comment and run Flow. */
-    if (!this.props.displayTitleRow) {
-      return null;
-    }
-    return (
-      <RowComponent
-        item={{
-          module: {
-            title: 'RNTester',
-            description: 'React Native Examples',
-          },
-        }}
-        onNavigate={this.props.onNavigate}
-        onPress={() => {
-          this.props.onNavigate(RNTesterActions.ExampleList());
-        }}
-      />
-    );
-  }
-
-  _handleRowPress(exampleKey: string): void {
-    this.props.onNavigate(RNTesterActions.ExampleAction(exampleKey));
-  }
-}
+  },
+);
 
 const ItemSeparator = ({highlighted}) => (
   <RNTesterThemeContext.Consumer>
@@ -223,6 +193,9 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
   },
+  listItem: {
+    backgroundColor: Platform.select({ios: '#FFFFFF', android: '#F3F8FF'}),
+  },
   sectionHeader: {
     padding: 5,
     fontWeight: '500',
@@ -231,22 +204,49 @@ const styles = StyleSheet.create({
   row: {
     justifyContent: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 8,
+    paddingVertical: 12,
+    marginVertical: Platform.select({ios: 4, android: 8}),
+    marginHorizontal: 15,
+    overflow: 'hidden',
+    elevation: 5,
   },
   separator: {
-    height: StyleSheet.hairlineWidth,
-    marginLeft: 15,
+    height: Platform.select({ios: StyleSheet.hairlineWidth, android: 0}),
+    marginHorizontal: Platform.select({ios: 15, android: 0}),
   },
   separatorHighlighted: {
     height: StyleSheet.hairlineWidth,
   },
-  rowTitleText: {
-    fontSize: 17,
-    fontWeight: '500',
+  topRowStyle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flex: 1,
+  },
+  bottomRowStyle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   rowDetailText: {
-    fontSize: 15,
+    fontSize: 12,
     lineHeight: 20,
+  },
+  imageViewStyle: {
+    height: 30,
+    width: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    bottom: 5,
+  },
+  imageStyle: {
+    height: 25,
+    width: 25,
+  },
+  platformLabelStyle: {
+    flexDirection: 'row',
+    width: 100,
+    justifyContent: 'space-between',
   },
 });
 

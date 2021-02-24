@@ -90,9 +90,10 @@ class TextInputTraits final {
 
   /*
    * iOS & Android
-   * Default value: `None`.
+   * Default value: `Sentences`.
    */
-  AutocapitalizationType autocapitalizationType{AutocapitalizationType::None};
+  AutocapitalizationType autocapitalizationType{
+      AutocapitalizationType::Sentences};
 
   /*
    * Can be empty (`null` in JavaScript) which means `default`.

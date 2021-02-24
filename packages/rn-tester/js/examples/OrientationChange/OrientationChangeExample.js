@@ -8,13 +8,11 @@
  * @flow
  */
 
-'use strict';
-
 const React = require('react');
 
 const {DeviceEventEmitter, Text, View} = require('react-native');
 
-import {type EventSubscription} from '../../../../../Libraries/vendor/emitter/EventEmitter';
+import {type EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 class OrientationChangeExample extends React.Component<{...}, $FlowFixMeState> {
   _orientationSubscription: EventSubscription;
@@ -54,6 +52,7 @@ class OrientationChangeExample extends React.Component<{...}, $FlowFixMeState> {
 }
 
 exports.title = 'OrientationChangeExample';
+exports.category = 'Basic';
 exports.description = 'listening to orientation changes';
 exports.examples = [
   {

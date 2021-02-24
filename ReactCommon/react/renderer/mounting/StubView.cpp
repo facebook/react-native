@@ -10,9 +10,23 @@
 namespace facebook {
 namespace react {
 
+StubView::operator ShadowView() const {
+  auto shadowView = ShadowView{};
+  shadowView.componentName = componentName;
+  shadowView.componentHandle = componentHandle;
+  shadowView.surfaceId = surfaceId;
+  shadowView.tag = tag;
+  shadowView.props = props;
+  shadowView.eventEmitter = eventEmitter;
+  shadowView.layoutMetrics = layoutMetrics;
+  shadowView.state = state;
+  return shadowView;
+}
+
 void StubView::update(ShadowView const &shadowView) {
   componentName = shadowView.componentName;
   componentHandle = shadowView.componentHandle;
+  surfaceId = shadowView.surfaceId;
   tag = shadowView.tag;
   props = shadowView.props;
   eventEmitter = shadowView.eventEmitter;
@@ -33,14 +47,15 @@ bool operator!=(StubView const &lhs, StubView const &rhs) {
 
 std::string getDebugName(StubView const &stubView) {
   return std::string{"Stub"} +
-      std::string{stubView.componentHandle ? stubView.componentName
-                                           : "[invalid]"};
+      std::string{
+          stubView.componentHandle ? stubView.componentName : "[invalid]"};
 }
 
 std::vector<DebugStringConvertibleObject> getDebugProps(
     StubView const &stubView,
     DebugStringConvertibleOptions options) {
   return {
+      {"surfaceId", getDebugDescription(stubView.surfaceId, options)},
       {"tag", getDebugDescription(stubView.tag, options)},
       {"props", getDebugDescription(stubView.props, options)},
       {"eventEmitter", getDebugDescription(stubView.eventEmitter, options)},

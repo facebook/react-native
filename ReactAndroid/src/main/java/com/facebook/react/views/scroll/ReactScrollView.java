@@ -30,7 +30,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PixelUtil;
@@ -223,6 +222,7 @@ public class ReactScrollView extends ScrollView
     int scrollToY =
         pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
     reactScrollTo(scrollToX, scrollToY);
+    ReactScrollViewHelper.emitLayoutEvent(this);
   }
 
   @Override
@@ -382,9 +382,7 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
-    return ReactFeatureFlags.clipChildRectsIfOverflowIsHidden
-        ? ReactClippingViewGroupHelper.getChildVisibleRectHelper(child, r, offset, this, mOverflow)
-        : super.getChildVisibleRect(child, r, offset);
+    return super.getChildVisibleRect(child, r, offset);
   }
 
   @Override

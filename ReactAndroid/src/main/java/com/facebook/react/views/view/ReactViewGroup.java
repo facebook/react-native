@@ -31,7 +31,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
@@ -47,13 +46,15 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.yoga.YogaConstants;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
  * initializes most of the storage needed for them.
  */
-@TargetApi(Build.VERSION_CODES.KITKAT)
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class ReactViewGroup extends ViewGroup
     implements ReactInterceptingViewGroup,
         ReactClippingViewGroup,
@@ -119,7 +120,7 @@ public class ReactViewGroup extends ViewGroup
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing = false;
-  private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
+  private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper = null;
   private @Nullable Path mPath;
   private int mLayoutDirection;
   private float mBackfaceOpacity = 1.f;
@@ -128,7 +129,13 @@ public class ReactViewGroup extends ViewGroup
   public ReactViewGroup(Context context) {
     super(context);
     setClipChildren(false);
-    mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
+  }
+
+  private ViewGroupDrawingOrderHelper getDrawingOrderHelper() {
+    if (mDrawingOrderHelper == null) {
+      mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
+    }
+    return mDrawingOrderHelper;
   }
 
   @Override
@@ -411,9 +418,7 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
-    return ReactFeatureFlags.clipChildRectsIfOverflowIsHidden
-        ? ReactClippingViewGroupHelper.getChildVisibleRectHelper(child, r, offset, this, mOverflow)
-        : super.getChildVisibleRect(child, r, offset);
+    return super.getChildVisibleRect(child, r, offset);
   }
 
   @Override
@@ -432,12 +437,24 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
+  private boolean customDrawOrderDisabled() {
+    if (getId() == NO_ID) {
+      return false;
+    }
+    return ViewUtil.getUIManagerType(getId()) == UIManagerType.FABRIC;
+  }
+
   @Override
   public void addView(View child, int index, ViewGroup.LayoutParams params) {
     // This will get called for every overload of addView so there is not need to override every
     // method.
-    mDrawingOrderHelper.handleAddView(child);
-    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+
+    if (!customDrawOrderDisabled()) {
+      getDrawingOrderHelper().handleAddView(child);
+      setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
+    } else {
+      setChildrenDrawingOrderEnabled(false);
+    }
 
     super.addView(child, index, params);
   }
@@ -446,8 +463,12 @@ public class ReactViewGroup extends ViewGroup
   public void removeView(View view) {
     UiThreadUtil.assertOnUiThread();
 
-    mDrawingOrderHelper.handleRemoveView(view);
-    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+    if (!customDrawOrderDisabled()) {
+      getDrawingOrderHelper().handleRemoveView(view);
+      setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
+    } else {
+      setChildrenDrawingOrderEnabled(false);
+    }
 
     super.removeView(view);
   }
@@ -456,30 +477,47 @@ public class ReactViewGroup extends ViewGroup
   public void removeViewAt(int index) {
     UiThreadUtil.assertOnUiThread();
 
-    mDrawingOrderHelper.handleRemoveView(getChildAt(index));
-    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+    if (!customDrawOrderDisabled()) {
+      getDrawingOrderHelper().handleRemoveView(getChildAt(index));
+      setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
+    } else {
+      setChildrenDrawingOrderEnabled(false);
+    }
 
     super.removeViewAt(index);
   }
 
   @Override
   protected int getChildDrawingOrder(int childCount, int index) {
-    return mDrawingOrderHelper.getChildDrawingOrder(childCount, index);
-  }
+    UiThreadUtil.assertOnUiThread();
 
-  @Override
-  public int getZIndexMappedChildIndex(int index) {
-    if (mDrawingOrderHelper.shouldEnableCustomDrawingOrder()) {
-      return mDrawingOrderHelper.getChildDrawingOrder(getChildCount(), index);
+    if (!customDrawOrderDisabled()) {
+      return getDrawingOrderHelper().getChildDrawingOrder(childCount, index);
     } else {
       return index;
     }
   }
 
   @Override
+  public int getZIndexMappedChildIndex(int index) {
+    UiThreadUtil.assertOnUiThread();
+
+    if (!customDrawOrderDisabled() && getDrawingOrderHelper().shouldEnableCustomDrawingOrder()) {
+      return getDrawingOrderHelper().getChildDrawingOrder(getChildCount(), index);
+    }
+
+    // Fabric behavior
+    return index;
+  }
+
+  @Override
   public void updateDrawingOrder() {
-    mDrawingOrderHelper.update();
-    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+    if (customDrawOrderDisabled()) {
+      return;
+    }
+
+    getDrawingOrderHelper().update();
+    setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     invalidate();
   }
 
@@ -674,9 +712,7 @@ public class ReactViewGroup extends ViewGroup
     try {
       dispatchOverflowDraw(canvas);
       super.dispatchDraw(canvas);
-    } catch (NullPointerException e) {
-      FLog.e(TAG, "NullPointerException when executing ViewGroup.dispatchDraw method", e);
-    } catch (StackOverflowError e) {
+    } catch (NullPointerException | StackOverflowError e) {
       // Adding special exception management for StackOverflowError for logging purposes.
       // This will be removed in the future.
       RootView rootView = RootViewUtil.getRootView(ReactViewGroup.this);
