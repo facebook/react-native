@@ -67,6 +67,34 @@ inline static SharedShadowNodeUnsharedList shadowNodeListFromValue(
       ->shadowNodeList;
 }
 
+inline static ShadowNode::UnsharedListOfShared shadowNodeListFromWeakList(
+    ShadowNode::UnsharedListOfWeak const &weakShadowNodeList) {
+  auto result = std::make_shared<ShadowNode::ListOfShared>();
+  for (auto const &weakShadowNode : *weakShadowNodeList) {
+    auto sharedShadowNode = weakShadowNode.lock();
+    if (!sharedShadowNode) {
+      return nullptr;
+    }
+    result->push_back(sharedShadowNode);
+  }
+  return result;
+}
+
+inline static ShadowNode::UnsharedListOfWeak weakShadowNodeListFromValue(
+    jsi::Runtime &runtime,
+    jsi::Value const &value) {
+  auto shadowNodeList = value.getObject(runtime)
+                            .getHostObject<ShadowNodeListWrapper>(runtime)
+                            ->shadowNodeList;
+
+  auto weakShadowNodeList = std::make_shared<ShadowNode::ListOfWeak>();
+  for (auto const &shadowNode : *shadowNodeList) {
+    weakShadowNodeList->push_back(shadowNode);
+  }
+
+  return weakShadowNodeList;
+}
+
 inline static jsi::Value valueFromShadowNodeList(
     jsi::Runtime &runtime,
     const SharedShadowNodeUnsharedList &shadowNodeList) {

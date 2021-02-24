@@ -7,6 +7,8 @@
 
 #include "AttributedStringBox.h"
 
+#include <react/debug/react_native_assert.h>
+
 namespace facebook {
 namespace react {
 
@@ -37,14 +39,14 @@ AttributedStringBox::Mode AttributedStringBox::getMode() const {
 }
 
 AttributedString const &AttributedStringBox::getValue() const {
-  assert(mode_ == AttributedStringBox::Mode::Value);
-  assert(value_);
+  react_native_assert(mode_ == AttributedStringBox::Mode::Value);
+  react_native_assert(value_);
   return *value_;
 }
 
 std::shared_ptr<void> AttributedStringBox::getOpaquePointer() const {
-  assert(mode_ == AttributedStringBox::Mode::OpaquePointer);
-  assert(opaquePointer_);
+  react_native_assert(mode_ == AttributedStringBox::Mode::OpaquePointer);
+  react_native_assert(opaquePointer_);
   return opaquePointer_;
 }
 

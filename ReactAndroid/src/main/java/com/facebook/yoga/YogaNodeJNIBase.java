@@ -197,12 +197,17 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     long[] nativePointers = null;
     YogaNodeJNIBase[] nodes = null;
 
+    freeze();
+
     ArrayList<YogaNodeJNIBase> n = new ArrayList<>();
     n.add(this);
     for (int i = 0; i < n.size(); ++i) {
       List<YogaNodeJNIBase> children = n.get(i).mChildren;
       if (children != null) {
-        n.addAll(children);
+        for (YogaNodeJNIBase child : children) {
+          child.freeze();
+          n.add(child);
+        }
       }
     }
 
@@ -213,6 +218,13 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     }
 
     YogaNative.jni_YGNodeCalculateLayoutJNI(mNativePointer, width, height, nativePointers, nodes);
+  }
+
+  private void freeze() {
+    Object data = getData();
+    if (data instanceof Inputs) {
+      ((Inputs) data).freeze();
+    }
   }
 
   public void dirty() {

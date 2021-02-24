@@ -76,7 +76,6 @@ public class Binding {
 
   public native void driveCxxAnimations();
 
-  // TODO (T67721598) Remove the jsContext param once we've migrated to using RuntimeExecutor
   public void register(
       @NonNull RuntimeExecutor runtimeExecutor,
       @NonNull FabricUIManager fabricUIManager,

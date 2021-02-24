@@ -7,6 +7,7 @@
 
 #include "ComponentDescriptorRegistry.h"
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 
@@ -26,10 +27,10 @@ void ComponentDescriptorRegistry::add(
       {parameters_.eventDispatcher,
        parameters_.contextContainer,
        componentDescriptorProvider.flavor});
-  assert(
+  react_native_assert(
       componentDescriptor->getComponentHandle() ==
       componentDescriptorProvider.handle);
-  assert(
+  react_native_assert(
       componentDescriptor->getComponentName() ==
       componentDescriptorProvider.name);
 

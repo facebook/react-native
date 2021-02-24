@@ -63,7 +63,10 @@ export function getCollapseMessage(
 }
 
 function LogBoxInspectorStackFrames(props: Props): React.Node {
-  const [collapsed, setCollapsed] = React.useState(true);
+  const [collapsed, setCollapsed] = React.useState(() => {
+    // Only collapse frames initially if some frames are not collapsed.
+    return props.log.getAvailableStack().some(({collapse}) => !collapse);
+  });
 
   function getStackList() {
     if (collapsed === true) {

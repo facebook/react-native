@@ -9,14 +9,11 @@
 
 #include <better/map.h>
 #include <better/small_vector.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <algorithm>
 #include "ShadowView.h"
-
-// Uncomment this to enable verbose diffing logs, which can be useful for
-// debugging.
-// #define DEBUG_LOGS_DIFFER
 
 #ifdef DEBUG_LOGS_DIFFER
 #include <glog/logging.h>
@@ -86,7 +83,7 @@ class TinyMap final {
   inline Iterator find(KeyT key) {
     cleanVector();
 
-    assert(key != 0);
+    react_native_assert(key != 0);
 
     if (begin_() == nullptr) {
       return end();
@@ -102,7 +99,7 @@ class TinyMap final {
   }
 
   inline void insert(Pair pair) {
-    assert(pair.first != 0);
+    react_native_assert(pair.first != 0);
     vector_.push_back(pair);
   }
 
@@ -1220,18 +1217,9 @@ static void calculateShadowViewMutationsV2(
             }
           }
 
-          // We handled this case above. We fall through to check concreteness
-          // of old/new view to remove/insert create/delete above, and then bail
-          // out here.
-          if (oldChildPair.flattened != newChildPair.flattened) {
-            newInsertedPairs.erase(insertedIt);
-            oldIndex++;
-            continue;
-          }
-
           // old and new child pairs are both either flattened or unflattened at
           // this point. If they're not views, we don't need to update subtrees.
-          if (oldChildPair.isConcreteView) {
+          if (oldChildPair.isConcreteView && newChildPair.isConcreteView) {
             // TODO: do we always want to remove here? There are cases where we
             // might be able to remove this to prevent unnecessary
             // removes/inserts in cases of (un)flattening + reorders?
@@ -1245,7 +1233,8 @@ static void calculateShadowViewMutationsV2(
                   oldChildPair.shadowView, newChildPair.shadowView));
             }
           }
-          if (!oldChildPair.flattened &&
+
+          if (!oldChildPair.flattened && !newChildPair.flattened &&
               oldChildPair.shadowNode != newChildPair.shadowNode) {
             // Update subtrees
             auto oldGrandChildPairs =
@@ -1313,9 +1302,16 @@ static void calculateShadowViewMutationsV2(
             newChildPair.shadowView,
             newChildPair.mountIndex));
       }
+
+      // `inOtherTree` is only set to true during flattening/unflattening of
+      // parent. If the parent isn't (un)flattened, this will always be `false`,
+      // even if the node is in the other (old) tree. In this case, we expect
+      // the node to be removed from `newInsertedPairs` when we later encounter
+      // it in this loop.
       if (!newChildPair.inOtherTree) {
         newInsertedPairs.insert({newChildPair.shadowView.tag, &newChildPair});
       }
+
       newIndex++;
     }
 
@@ -1494,7 +1490,8 @@ ShadowViewMutation::List calculateShadowViewMutations(
   SystraceSection s("calculateShadowViewMutations");
 
   // Root shadow nodes must be belong the same family.
-  assert(ShadowNode::sameFamily(oldRootShadowNode, newRootShadowNode));
+  react_native_assert(
+      ShadowNode::sameFamily(oldRootShadowNode, newRootShadowNode));
 
   auto mutations = ShadowViewMutation::List{};
   mutations.reserve(256);

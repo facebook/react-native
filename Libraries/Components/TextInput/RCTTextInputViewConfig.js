@@ -11,7 +11,7 @@
 import ReactNativeViewViewConfig from '../../Components/View/ReactNativeViewViewConfig';
 import {type ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 
-const RCTSinglelineTextInputViewConfig = {
+const RCTTextInputViewConfig = {
   uiViewClassName: 'RCTSinglelineTextInputView',
   bubblingEventTypes: {
     topBlur: {
@@ -129,4 +129,4 @@ const RCTSinglelineTextInputViewConfig = {
   },
 };
 
-module.exports = (RCTSinglelineTextInputViewConfig: ViewConfig);
+module.exports = (RCTTextInputViewConfig: ViewConfig);

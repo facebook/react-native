@@ -9,6 +9,7 @@
 
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
 
@@ -29,7 +30,7 @@ static jsi::Object getModule(
   if (!moduleAsValue.isObject()) {
     LOG(ERROR) << "getModule of " << moduleName << " is not an object";
   }
-  assert(moduleAsValue.isObject());
+  react_native_assert(moduleAsValue.isObject());
   return moduleAsValue.asObject(runtime);
 }
 
@@ -170,7 +171,7 @@ void UIManagerBinding::dispatchEvent(
       if (!payload.isObject()) {
         LOG(ERROR) << "payload for dispatchEvent is not an object: " << eventTarget->getTag();
       }
-      assert(payload.isObject());
+      react_native_assert(payload.isObject());
       payload.asObject(runtime).setProperty(runtime, "target", eventTarget->getTag());
       return instanceHandle;
     }()
@@ -434,8 +435,8 @@ jsi::Value UIManagerBinding::get(
               jsi::Value const *arguments,
               size_t count) noexcept -> jsi::Value {
             auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
-            auto shadowNodeList =
-                shadowNodeListFromValue(runtime, arguments[1]);
+            auto weakShadowNodeList =
+                weakShadowNodeListFromValue(runtime, arguments[1]);
             static std::atomic_uint_fast8_t completeRootEventCounter{0};
             static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
             completeRootEventCounter += 1;
@@ -449,8 +450,12 @@ jsi::Value UIManagerBinding::get(
                     return completeRootEventCounter > eventCount &&
                         mostRecentSurfaceId == surfaceId;
                   };
-                  sharedUIManager->completeSurface(
-                      surfaceId, shadowNodeList, {true, shouldYield});
+                  auto shadowNodeList =
+                      shadowNodeListFromWeakList(weakShadowNodeList);
+                  if (shadowNodeList) {
+                    sharedUIManager->completeSurface(
+                        surfaceId, shadowNodeList, {true, shouldYield});
+                  }
                 });
 
             return jsi::Value::undefined();

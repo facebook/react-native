@@ -24,11 +24,12 @@ def get_preprocessor_flags_for_build_mode():
 def get_static_library_ios_flags():
     return _APPLE_COMPILER_FLAGS
 
-OBJC_ARC_PREPROCESSOR_FLAGS = [
-    "-fobjc-arc",
-    "-fno-objc-arc-exceptions",
-    "-Qunused-arguments",
-]
+def get_objc_arc_preprocessor_flags():
+    return [
+        "-fobjc-arc",
+        "-fno-objc-arc-exceptions",
+        "-Qunused-arguments",
+    ]
 
 IS_OSS_BUILD = True
 
@@ -64,6 +65,11 @@ def get_apple_inspector_flags():
     return []
 
 def get_android_inspector_flags():
+    return []
+
+def get_react_native_preprocessor_flags():
+    # TODO: use this to define the compiler flag REACT_NATIVE_DEBUG in debug/dev mode builds only.
+    # This is a replacement for NDEBUG since NDEBUG is always defined in Buck on all Android builds.
     return []
 
 # Building is not supported in OSS right now
