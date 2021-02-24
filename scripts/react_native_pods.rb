@@ -64,17 +64,17 @@ def use_react_native! (options={})
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
     pod 'hermes-engine'
-    pod 'libevent', :podspec => "#{prefix}/third-party-podspecs/libevent.podspec"
+    pod 'libevent', '~> 2.1.12'
   end
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
-  versions['Flipper'] ||= '~> 0.54.0'
+  versions['Flipper'] ||= '~> 0.75.1'
   versions['Flipper-DoubleConversion'] ||= '1.1.7'
-  versions['Flipper-Folly'] ||= '~> 2.2'
+  versions['Flipper-Folly'] ||= '~> 2.5'
   versions['Flipper-Glog'] ||= '0.3.6'
   versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
-  versions['Flipper-RSocket'] ||= '~> 1.1'
+  versions['Flipper-RSocket'] ||= '~> 1.3'
   pod 'FlipperKit', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
