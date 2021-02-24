@@ -534,11 +534,13 @@ jsi::Value UIManagerBinding::get(
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept -> jsi::Value {
-          uiManager->dispatchCommand(
-              shadowNodeFromValue(runtime, arguments[0]),
-              stringFromValue(runtime, arguments[1]),
-              commandArgsFromValue(runtime, arguments[2]));
-
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+          if (shadowNode) {
+            uiManager->dispatchCommand(
+                shadowNodeFromValue(runtime, arguments[0]),
+                stringFromValue(runtime, arguments[1]),
+                commandArgsFromValue(runtime, arguments[2]));
+          }
           return jsi::Value::undefined();
         });
   }
