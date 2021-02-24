@@ -13,7 +13,6 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
 /**
@@ -60,9 +59,12 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
   private @Nullable String mKey = null;
 
   public ReactEditTextInputConnectionWrapper(
-      InputConnection target, final ReactContext reactContext, final ReactEditText editText) {
+      InputConnection target,
+      final ReactContext reactContext,
+      final ReactEditText editText,
+      EventDispatcher eventDispatcher) {
     super(target, false);
-    mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    mEventDispatcher = eventDispatcher;
     mEditText = editText;
   }
 

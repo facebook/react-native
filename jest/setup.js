@@ -12,10 +12,14 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('../Libraries/polyfills/Object.es7.js');
-jest.requireActual('../Libraries/polyfills/error-guard');
+jest.requireActual('@react-native/polyfills/Object.es7');
+jest.requireActual('@react-native/polyfills/error-guard');
 
 global.__DEV__ = true;
+
+global.performance = {
+  now: jest.fn(Date.now),
+};
 
 global.Promise = jest.requireActual('promise');
 global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
@@ -35,6 +39,12 @@ jest.setMock(
 
 jest
   .mock('../Libraries/Core/InitializeCore', () => {})
+  .mock('../Libraries/Core/NativeExceptionsManager', () => ({
+    __esModule: true,
+    default: {
+      reportException: jest.fn(),
+    },
+  }))
   .mock('../Libraries/ReactNative/UIManager', () => ({
     AndroidViewPager: {
       Commands: {
@@ -58,6 +68,9 @@ jest
           },
         };
       }
+    }),
+    hasViewManagerConfig: jest.fn(name => {
+      return true;
     }),
     measure: jest.fn(),
     manageChildren: jest.fn(),
@@ -89,10 +102,12 @@ jest
     mockComponent('../Libraries/Text/Text', MockNativeMethods),
   )
   .mock('../Libraries/Components/TextInput/TextInput', () =>
-    mockComponent(
-      '../Libraries/Components/TextInput/TextInput',
-      MockNativeMethods,
-    ),
+    mockComponent('../Libraries/Components/TextInput/TextInput', {
+      ...MockNativeMethods,
+      isFocused: jest.fn(),
+      clear: jest.fn(),
+      getNativeRef: jest.fn(),
+    }),
   )
   .mock('../Libraries/Modal/Modal', () =>
     mockComponent('../Libraries/Modal/Modal'),
@@ -112,25 +127,42 @@ jest
     isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
     removeEventListener: jest.fn(),
     setAccessibilityFocus: jest.fn(),
+    sendAccessibilityEvent_unstable: jest.fn(),
   }))
   .mock('../Libraries/Components/RefreshControl/RefreshControl', () =>
     jest.requireActual(
       '../Libraries/Components/RefreshControl/__mocks__/RefreshControlMock',
     ),
   )
-  .mock('../Libraries/Components/ScrollView/ScrollView', () =>
-    jest.requireActual(
-      '../Libraries/Components/ScrollView/__mocks__/ScrollViewMock',
-    ),
-  )
+  .mock('../Libraries/Components/ScrollView/ScrollView', () => {
+    const baseComponent = mockComponent(
+      '../Libraries/Components/ScrollView/ScrollView',
+      {
+        ...MockNativeMethods,
+        getScrollResponder: jest.fn(),
+        getScrollableNode: jest.fn(),
+        getInnerViewNode: jest.fn(),
+        getInnerViewRef: jest.fn(),
+        getNativeScrollRef: jest.fn(),
+        scrollTo: jest.fn(),
+        scrollToEnd: jest.fn(),
+        flashScrollIndicators: jest.fn(),
+        scrollResponderZoomTo: jest.fn(),
+        scrollResponderScrollNativeHandleToKeyboard: jest.fn(),
+      },
+    );
+    const mockScrollView = jest.requireActual('./mockScrollView');
+    return mockScrollView(baseComponent);
+  })
   .mock('../Libraries/Components/ActivityIndicator/ActivityIndicator', () =>
     mockComponent(
       '../Libraries/Components/ActivityIndicator/ActivityIndicator',
     ),
   )
   .mock('../Libraries/AppState/AppState', () => ({
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
+    addEventListener: jest.fn(() => ({
+      remove: jest.fn(),
+    })),
   }))
   .mock('../Libraries/Linking/Linking', () => ({
     openURL: jest.fn(),
@@ -187,6 +219,10 @@ jest
           },
         };
       },
+    },
+    DevSettings: {
+      addMenuItem: jest.fn(),
+      reload: jest.fn(),
     },
     ImageLoader: {
       getSize: jest.fn(url => Promise.resolve({width: 320, height: 240})),
@@ -294,32 +330,19 @@ jest
       }),
     },
   }))
-  .mock('../Libraries/ReactNative/requireNativeComponent', () => {
-    const React = require('react');
-
-    return viewName => {
-      const Component = class extends React.Component {
-        render() {
-          return React.createElement(viewName, this.props, this.props.children);
-        }
-
-        // The methods that exist on host components
-        blur = jest.fn();
-        focus = jest.fn();
-        measure = jest.fn();
-        measureInWindow = jest.fn();
-        measureLayout = jest.fn();
-        setNativeProps = jest.fn();
-      };
-
-      if (viewName === 'RCTView') {
-        Component.displayName = 'View';
-      } else {
-        Component.displayName = viewName;
-      }
-
-      return Component;
+  .mock('../Libraries/NativeComponent/NativeComponentRegistry', () => {
+    return {
+      get: jest.fn((name, viewConfigProvider) => {
+        return jest.requireActual('./mockNativeComponent')(name);
+      }),
+      getWithFallback_DEPRECATED: jest.fn((name, viewConfigProvider) => {
+        return jest.requireActual('./mockNativeComponent')(name);
+      }),
+      setRuntimeConfigProvider: jest.fn(),
     };
+  })
+  .mock('../Libraries/ReactNative/requireNativeComponent', () => {
+    return jest.requireActual('./mockNativeComponent');
   })
   .mock(
     '../Libraries/Utilities/verifyComponentAttributeEquivalence',

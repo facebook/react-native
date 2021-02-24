@@ -10,7 +10,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
@@ -20,10 +20,7 @@ static NSString *RCTCurrentAppState()
   static NSDictionary *states;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    states = @{
-      @(UIApplicationStateActive): @"active",
-      @(UIApplicationStateBackground): @"background"
-    };
+    states = @{@(UIApplicationStateActive) : @"active", @(UIApplicationStateBackground) : @"background"};
   });
 
   if (RCTRunningInAppExtension()) {
@@ -33,11 +30,10 @@ static NSString *RCTCurrentAppState()
   return states[@(RCTSharedApplication().applicationState)] ?: @"unknown";
 }
 
-@interface RCTAppState() <NativeAppStateSpec>
+@interface RCTAppState () <NativeAppStateSpec>
 @end
 
-@implementation RCTAppState
-{
+@implementation RCTAppState {
   NSString *_lastKnownState;
 }
 
@@ -60,26 +56,32 @@ RCT_EXPORT_MODULE()
 
 - (facebook::react::ModuleConstants<JS::NativeAppState::Constants>)getConstants
 {
-  return facebook::react::typedConstants<JS::NativeAppState::Constants>({
-    .initialAppState = RCTCurrentAppState(),
+  __block facebook::react::ModuleConstants<JS::NativeAppState::Constants> constants;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    constants = facebook::react::typedConstants<JS::NativeAppState::Constants>({
+        .initialAppState = RCTCurrentAppState(),
+    });
   });
+
+  return constants;
 }
 
 #pragma mark - Lifecycle
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"appStateDidChange", @"memoryWarning"];
+  return @[ @"appStateDidChange", @"memoryWarning" ];
 }
 
 - (void)startObserving
 {
-  for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
-                           UIApplicationDidEnterBackgroundNotification,
-                           UIApplicationDidFinishLaunchingNotification,
-                           UIApplicationWillResignActiveNotification,
-                           UIApplicationWillEnterForegroundNotification]) {
-
+  for (NSString *name in @[
+         UIApplicationDidBecomeActiveNotification,
+         UIApplicationDidEnterBackgroundNotification,
+         UIApplicationDidFinishLaunchingNotification,
+         UIApplicationWillResignActiveNotification,
+         UIApplicationWillEnterForegroundNotification
+       ]) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAppStateDidChange:)
                                                  name:name
@@ -95,11 +97,6 @@ RCT_EXPORT_MODULE()
 - (void)stopObserving
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)invalidate
-{
-  [self stopObserving];
 }
 
 #pragma mark - App Notification Methods
@@ -126,8 +123,7 @@ RCT_EXPORT_MODULE()
   if (![newState isEqualToString:_lastKnownState]) {
     _lastKnownState = newState;
     if (self.bridge) {
-      [self sendEventWithName:@"appStateDidChange"
-      body:@{@"app_state": _lastKnownState}];
+      [self sendEventWithName:@"appStateDidChange" body:@{@"app_state" : _lastKnownState}];
     }
   }
 }
@@ -137,19 +133,20 @@ RCT_EXPORT_MODULE()
 /**
  * Get the current background/foreground state of the app
  */
-RCT_EXPORT_METHOD(getCurrentAppState:(RCTResponseSenderBlock)callback
-                  error:(__unused RCTResponseSenderBlock)error)
+RCT_EXPORT_METHOD(getCurrentAppState : (RCTResponseSenderBlock)callback error : (__unused RCTResponseSenderBlock)error)
 {
-  callback(@[@{@"app_state": RCTCurrentAppState()}]);
+  callback(@[ @{@"app_state" : RCTCurrentAppState()} ]);
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeAppStateSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeAppStateSpecJSI>(params);
 }
 
 @end
 
-Class RCTAppStateCls(void) {
+Class RCTAppStateCls(void)
+{
   return RCTAppState.class;
 }

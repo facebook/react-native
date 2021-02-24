@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
 #import <React/RCTComponent.h>
+#import <UIKit/UIKit.h>
 
 /**
  * Contains any methods related to scrolling. Any `RCTView` that has scrolling
@@ -37,5 +37,8 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onRefresh;
 @property (nonatomic, readonly, getter=isRefreshing) BOOL refreshing;
+
+@optional
+@property (nonatomic, weak) UIScrollView *scrollView;
 
 @end

@@ -8,12 +8,10 @@
  * @flow
  */
 
-'use strict';
-
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import AndroidSwipeRefreshLayoutNativeComponent, {
   Commands as AndroidSwipeRefreshLayoutCommands,
@@ -21,18 +19,6 @@ import AndroidSwipeRefreshLayoutNativeComponent, {
 import PullToRefreshViewNativeComponent, {
   Commands as PullToRefreshCommands,
 } from './PullToRefreshViewNativeComponent';
-
-let RefreshLayoutConsts: any;
-if (Platform.OS === 'android') {
-  const AndroidSwipeRefreshLayout = require('../../ReactNative/UIManager').getViewManagerConfig(
-    'AndroidSwipeRefreshLayout',
-  );
-  RefreshLayoutConsts = AndroidSwipeRefreshLayout
-    ? AndroidSwipeRefreshLayout.Constants
-    : {SIZE: {}};
-} else {
-  RefreshLayoutConsts = {SIZE: {}};
-}
 
 type IOSProps = $ReadOnly<{|
   /**
@@ -63,12 +49,9 @@ type AndroidProps = $ReadOnly<{|
    */
   progressBackgroundColor?: ?ColorValue,
   /**
-   * Size of the refresh indicator, see RefreshControl.SIZE.
+   * Size of the refresh indicator.
    */
-  size?: ?(
-    | typeof RefreshLayoutConsts.SIZE.DEFAULT
-    | typeof RefreshLayoutConsts.SIZE.LARGE
-  ),
+  size?: ?('default' | 'large'),
   /**
    * Progress view top offset
    */
@@ -137,8 +120,6 @@ export type RefreshControlProps = $ReadOnly<{|
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
 class RefreshControl extends React.Component<RefreshControlProps> {
-  static SIZE: any = RefreshLayoutConsts.SIZE;
-
   _nativeRef: ?React.ElementRef<
     | typeof PullToRefreshViewNativeComponent
     | typeof AndroidSwipeRefreshLayoutNativeComponent,

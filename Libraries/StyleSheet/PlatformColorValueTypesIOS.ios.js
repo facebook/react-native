@@ -8,9 +8,7 @@
  * @flow strict-local
  */
 
-'use strict';
-
-import type {ColorValue} from './StyleSheetTypes';
+import type {ColorValue} from './StyleSheet';
 import {DynamicColorIOSPrivate} from './PlatformColorValueTypes';
 
 export type DynamicColorIOSTuple = {

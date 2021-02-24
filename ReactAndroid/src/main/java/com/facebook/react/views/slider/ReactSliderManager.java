@@ -26,10 +26,11 @@ import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.viewmanagers.SliderManagerDelegate;
 import com.facebook.react.viewmanagers.SliderManagerInterface;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -72,7 +73,11 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
         float height,
         YogaMeasureMode heightMode) {
       if (!mMeasured) {
-        SeekBar reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
+        ReactSlider reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
+        // reactSlider is used for measurements purposes, it is not necessary to set a
+        // StateListAnimator.
+        // It is not safe to access StateListAnimator from a background thread.
+        reactSlider.disableStateListAnimatorIfNeeded();
         final int spec =
             View.MeasureSpec.makeMeasureSpec(
                 ViewGroup.LayoutParams.WRAP_CONTENT, View.MeasureSpec.UNSPECIFIED);
@@ -91,12 +96,14 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
         @Override
         public void onProgressChanged(SeekBar seekbar, int progress, boolean fromUser) {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
-          reactContext
-              .getNativeModule(UIManagerModule.class)
-              .getEventDispatcher()
-              .dispatchEvent(
-                  new ReactSliderEvent(
-                      seekbar.getId(), ((ReactSlider) seekbar).toRealProgress(progress), fromUser));
+          EventDispatcher eventDispatcher =
+              UIManagerHelper.getEventDispatcherForReactTag(reactContext, seekbar.getId());
+
+          if (eventDispatcher != null) {
+            eventDispatcher.dispatchEvent(
+                new ReactSliderEvent(
+                    seekbar.getId(), ((ReactSlider) seekbar).toRealProgress(progress), fromUser));
+          }
         }
 
         @Override
@@ -105,13 +112,16 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
         @Override
         public void onStopTrackingTouch(SeekBar seekbar) {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
-          reactContext
-              .getNativeModule(UIManagerModule.class)
-              .getEventDispatcher()
-              .dispatchEvent(
-                  new ReactSlidingCompleteEvent(
-                      seekbar.getId(),
-                      ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));
+          EventDispatcher eventDispatcher =
+              UIManagerHelper.getEventDispatcherForReactTag(reactContext, seekbar.getId());
+
+          if (eventDispatcher != null) {
+            eventDispatcher.dispatchEvent(
+                new ReactSlidingCompleteEvent(
+                    UIManagerHelper.getSurfaceId(seekbar),
+                    seekbar.getId(),
+                    ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));
+          }
         }
       };
 
@@ -251,7 +261,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
       YogaMeasureMode widthMode,
       float height,
       YogaMeasureMode heightMode,
-      @Nullable int[] attachmentsPositions) {
+      @Nullable float[] attachmentsPositions) {
     SeekBar reactSlider = new ReactSlider(context, null, STYLE);
     final int spec =
         View.MeasureSpec.makeMeasureSpec(

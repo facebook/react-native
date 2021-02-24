@@ -12,15 +12,14 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTDevSettings.h>
+#import <React/RCTJSInvokerModule.h>
 #import <React/RCTKeyCommands.h>
 #import <React/RCTLog.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
-
 #import "CoreModulesPlugins.h"
 
 #if RCT_DEV_MENU
-
 #if RCT_ENABLE_INSPECTOR
 #import <React/RCTInspectorDevServerHelper.h>
 #endif
@@ -87,7 +86,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
-@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, NativeDevMenuSpec>
+@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, NativeDevMenuSpec, RCTJSInvokerModule>
 
 @end
 
@@ -97,6 +96,8 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
+@synthesize invokeJS = _invokeJS;
 
 RCT_EXPORT_MODULE()
 
@@ -137,14 +138,16 @@ RCT_EXPORT_MODULE()
     [commands registerKeyCommandWithInput:@"i"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(__unused UIKeyCommand *command) {
-                                     [weakSelf.bridge.devSettings toggleElementInspector];
+                                     [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
+                                         toggleElementInspector];
                                    }];
 
     // Reload in normal mode
     [commands registerKeyCommandWithInput:@"n"
                             modifierFlags:UIKeyModifierCommand
                                    action:^(__unused UIKeyCommand *command) {
-                                     [weakSelf.bridge.devSettings setIsDebuggingRemotely:NO];
+                                     [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
+                                         setIsDebuggingRemotely:NO];
                                    }];
 #endif
   }
@@ -160,13 +163,20 @@ RCT_EXPORT_MODULE()
 {
   _presentedItems = nil;
   [_actionSheet dismissViewControllerAnimated:YES
-                                   completion:^(void){}];
+                                   completion:^(void){
+                                   }];
 }
 
 - (void)showOnShake
 {
-  if ([_bridge.devSettings isShakeToShowDevMenuEnabled]) {
-    [self show];
+  if ([((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]) isShakeToShowDevMenuEnabled]) {
+    for (UIWindow *window in [RCTSharedApplication() windows]) {
+      NSString *recursiveDescription = [window valueForKey:@"recursiveDescription"];
+      if ([recursiveDescription containsString:@"RCTView"]) {
+        [self show];
+        return;
+      }
+    }
   }
 }
 
@@ -211,7 +221,7 @@ RCT_EXPORT_MODULE()
 
   // Add built-in items
   __weak RCTBridge *bridge = _bridge;
-  __weak RCTDevSettings *devSettings = _bridge.devSettings;
+  __weak RCTDevSettings *devSettings = [_moduleRegistry moduleForName:"DevSettings"];
   __weak RCTDevMenu *weakSelf = self;
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Reload"
@@ -220,13 +230,53 @@ RCT_EXPORT_MODULE()
                                                }]];
 
   if (!devSettings.isProfilingEnabled) {
-    if (!devSettings.isRemoteDebuggingAvailable) {
+#if RCT_ENABLE_INSPECTOR
+    if (devSettings.isDeviceDebuggingAvailable) {
+      // For on-device debugging we link out to Flipper.
+      // Since we're assuming Flipper is available, also include the DevTools.
+      // Note: For parity with the Android code.
+      [items addObject:[RCTDevMenuItem
+                           buttonItemWithTitleBlock:^NSString * {
+                             return @"Open Debugger";
+                           }
+                           handler:^{
+                             [RCTInspectorDevServerHelper
+                                          openURL:@"flipper://null/Hermesdebuggerrn?device=React%20Native"
+                                    withBundleURL:bridge.bundleURL
+                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
+                           }]];
+
+      [items addObject:[RCTDevMenuItem
+                           buttonItemWithTitleBlock:^NSString * {
+                             return @"Open React DevTools";
+                           }
+                           handler:^{
+                             [RCTInspectorDevServerHelper
+                                          openURL:@"flipper://null/React?device=React%20Native"
+                                    withBundleURL:bridge.bundleURL
+                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
+                           }]];
+    } else if (devSettings.isRemoteDebuggingAvailable) {
+#else
+    if (devSettings.isRemoteDebuggingAvailable) {
+#endif
+      // For remote debugging, we open up Chrome running the app in a web worker.
+      // Note that this requires async communication, which will not work for Turbo Modules.
+      [items addObject:[RCTDevMenuItem
+                           buttonItemWithTitleBlock:^NSString * {
+                             return devSettings.isDebuggingRemotely ? @"Stop Debugging" : @"Debug with Chrome";
+                           }
+                           handler:^{
+                             devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
+                           }]];
+    } else {
+      // If neither are available, we're defaulting to a message that tells you about remote debugging.
       [items
           addObject:[RCTDevMenuItem
                         buttonItemWithTitle:@"Debugger Unavailable"
                                     handler:^{
                                       NSString *message = RCTTurboModuleEnabled()
-                                          ? @"Debugging is not currently supported when TurboModule is enabled."
+                                          ? @"Debugging with Chrome is not supported when TurboModules are enabled."
                                           : @"Include the RCTWebSocket library to enable JavaScript debugging.";
                                       UIAlertController *alertController =
                                           [UIAlertController alertControllerWithTitle:@"Debugger Unavailable"
@@ -245,30 +295,6 @@ RCT_EXPORT_MODULE()
                                                                                  animated:YES
                                                                                completion:NULL];
                                     }]];
-    } else {
-      [items addObject:[RCTDevMenuItem
-                           buttonItemWithTitleBlock:^NSString * {
-                             if (devSettings.isNuclideDebuggingAvailable) {
-                               return devSettings.isDebuggingRemotely ? @"Stop Chrome Debugger" : @"Debug with Chrome";
-                             } else {
-                               return devSettings.isDebuggingRemotely ? @"Stop Debugging" : @"Debug";
-                             }
-                           }
-                           handler:^{
-                             devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
-                           }]];
-    }
-
-    if (devSettings.isNuclideDebuggingAvailable && !devSettings.isDebuggingRemotely) {
-      [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Debug with Nuclide"
-                                                   handler:^{
-#if RCT_ENABLE_INSPECTOR
-                                                     [RCTInspectorDevServerHelper
-                                                         attachDebugger:@"ReactNative"
-                                                          withBundleURL:bridge.bundleURL
-                                                               withView:RCTPresentedViewController()];
-#endif
-                                                   }]];
     }
   }
 
@@ -289,40 +315,6 @@ RCT_EXPORT_MODULE()
                          handler:^{
                            devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
                          }]];
-  }
-
-  if (devSettings.isLiveReloadAvailable) {
-    [items addObject:[RCTDevMenuItem
-                         buttonItemWithTitleBlock:^NSString * {
-                           return devSettings.isDebuggingRemotely
-                               ? @"Systrace Unavailable"
-                               : devSettings.isProfilingEnabled ? @"Stop Systrace" : @"Start Systrace";
-                         }
-                         handler:^{
-                           if (devSettings.isDebuggingRemotely) {
-                             UIAlertController *alertController =
-                                 [UIAlertController alertControllerWithTitle:@"Systrace Unavailable"
-                                                                     message:@"Stop debugging to enable Systrace."
-                                                              preferredStyle:UIAlertControllerStyleAlert];
-                             __weak __typeof__(alertController) weakAlertController = alertController;
-                             [alertController
-                                 addAction:[UIAlertAction actionWithTitle:@"OK"
-                                                                    style:UIAlertActionStyleDefault
-                                                                  handler:^(__unused UIAlertAction *action) {
-                                                                    [weakAlertController
-                                                                        dismissViewControllerAnimated:YES
-                                                                                           completion:nil];
-                                                                  }]];
-                             [RCTPresentedViewController() presentViewController:alertController
-                                                                        animated:YES
-                                                                      completion:NULL];
-                           } else {
-                             devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
-                           }
-                         }]];
-    // "Live reload" which refreshes on every edit was removed in favor of "Fast Refresh".
-    // While native code for "Live reload" is still there, please don't add the option back.
-    // See D15958697 for more context.
   }
 
   [items
@@ -397,7 +389,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(show)
 {
-  if (_actionSheet || !_bridge || RCTRunningInAppExtension()) {
+  if (_actionSheet || RCTRunningInAppExtension()) {
     return;
   }
 
@@ -427,10 +419,11 @@ RCT_EXPORT_METHOD(show)
   _presentedItems = items;
   [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
 
-  [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter"
-                  method:@"emit"
-                    args:@[@"RCTDevMenuShown"]
-              completion:NULL];
+  if (_bridge) {
+    [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter" method:@"emit" args:@[ @"RCTDevMenuShown" ] completion:NULL];
+  } else {
+    _invokeJS(@"RCTNativeAppEventEmitter", @"emit", @[ @"RCTDevMenuShown" ]);
+  }
 }
 
 - (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item
@@ -451,12 +444,12 @@ RCT_EXPORT_METHOD(show)
 
 - (void)setShakeToShow:(BOOL)shakeToShow
 {
-  _bridge.devSettings.isShakeToShowDevMenuEnabled = shakeToShow;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isShakeToShowDevMenuEnabled = shakeToShow;
 }
 
 - (BOOL)shakeToShow
 {
-  return _bridge.devSettings.isShakeToShowDevMenuEnabled;
+  return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isShakeToShowDevMenuEnabled;
 }
 
 RCT_EXPORT_METHOD(reload)
@@ -468,41 +461,42 @@ RCT_EXPORT_METHOD(reload)
 RCT_EXPORT_METHOD(debugRemotely : (BOOL)enableDebug)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isDebuggingRemotely = enableDebug;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isDebuggingRemotely = enableDebug;
 }
 
 RCT_EXPORT_METHOD(setProfilingEnabled : (BOOL)enabled)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isProfilingEnabled = enabled;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isProfilingEnabled = enabled;
 }
 
 - (BOOL)profilingEnabled
 {
-  return _bridge.devSettings.isProfilingEnabled;
+  return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isProfilingEnabled;
 }
 
 RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isHotLoadingEnabled = enabled;
+  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isHotLoadingEnabled = enabled;
 }
 
 - (BOOL)hotLoadingEnabled
 {
-  return _bridge.devSettings.isHotLoadingEnabled;
+  return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isHotLoadingEnabled;
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(params);
 }
 
 @end
 
 #else // Unavailable when not in dev mode
 
-@interface RCTDevMenu() <NativeDevMenuSpec>
+@interface RCTDevMenu () <NativeDevMenuSpec>
 @end
 
 @implementation RCTDevMenu
@@ -520,7 +514,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 {
 }
 
-- (void)debugRemotely : (BOOL)enableDebug
+- (void)debugRemotely:(BOOL)enableDebug
 {
 }
 
@@ -533,9 +527,10 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
   return @"DevMenu";
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(params);
 }
 
 @end
@@ -568,6 +563,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 
 @end
 
-Class RCTDevMenuCls(void) {
+Class RCTDevMenuCls(void)
+{
   return RCTDevMenu.class;
 }

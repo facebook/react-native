@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const Keyboard = require('./Keyboard');
 const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
 const Platform = require('../../Utilities/Platform');
@@ -18,7 +16,7 @@ const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type EmitterSubscription from '../../vendor/emitter/EmitterSubscription';
+import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
 import type {
   ViewProps,
   ViewLayout,
@@ -67,7 +65,8 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   };
 
   _frame: ?ViewLayout = null;
-  _subscriptions: Array<EmitterSubscription> = [];
+  _keyboardEvent: ?KeyboardEvent = null;
+  _subscriptions: Array<EventSubscription> = [];
   viewRef: {current: React.ElementRef<any> | null, ...};
   _initialFrameHeight: number = 0;
 
@@ -91,12 +90,30 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   }
 
   _onKeyboardChange = (event: ?KeyboardEvent) => {
-    if (event == null) {
+    this._keyboardEvent = event;
+    this._updateBottomIfNecesarry();
+  };
+
+  _onLayout = (event: ViewLayoutEvent) => {
+    const wasFrameNull = this._frame == null;
+    this._frame = event.nativeEvent.layout;
+    if (!this._initialFrameHeight) {
+      // save the initial frame height, before the keyboard is visible
+      this._initialFrameHeight = this._frame.height;
+    }
+
+    if (wasFrameNull) {
+      this._updateBottomIfNecesarry();
+    }
+  };
+
+  _updateBottomIfNecesarry = () => {
+    if (this._keyboardEvent == null) {
       this.setState({bottom: 0});
       return;
     }
 
-    const {duration, easing, endCoordinates} = event;
+    const {duration, easing, endCoordinates} = this._keyboardEvent;
     const height = this._relativeKeyboardHeight(endCoordinates);
 
     if (this.state.bottom === height) {
@@ -114,14 +131,6 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       });
     }
     this.setState({bottom: height});
-  };
-
-  _onLayout = (event: ViewLayoutEvent) => {
-    this._frame = event.nativeEvent.layout;
-    if (!this._initialFrameHeight) {
-      // save the initial frame height, before the keyboard is visible
-      this._initialFrameHeight = this._frame.height;
-    }
   };
 
   componentDidMount(): void {
@@ -170,10 +179,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
         return (
           <View
             ref={this.viewRef}
-            style={StyleSheet.compose(
-              style,
-              heightStyle,
-            )}
+            style={StyleSheet.compose(style, heightStyle)}
             onLayout={this._onLayout}
             {...props}>
             {children}
@@ -188,12 +194,9 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
             onLayout={this._onLayout}
             {...props}>
             <View
-              style={StyleSheet.compose(
-                contentContainerStyle,
-                {
-                  bottom: bottomHeight,
-                },
-              )}>
+              style={StyleSheet.compose(contentContainerStyle, {
+                bottom: bottomHeight,
+              })}>
               {children}
             </View>
           </View>
@@ -203,10 +206,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
         return (
           <View
             ref={this.viewRef}
-            style={StyleSheet.compose(
-              style,
-              {paddingBottom: bottomHeight},
-            )}
+            style={StyleSheet.compose(style, {paddingBottom: bottomHeight})}
             onLayout={this._onLayout}
             {...props}>
             {children}

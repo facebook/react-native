@@ -8,13 +8,12 @@
  * @format
  */
 
-'use strict';
-
 const DeprecatedImagePropType = require('../DeprecatedPropTypes/DeprecatedImagePropType');
 const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
 const StyleSheet = require('../StyleSheet/StyleSheet');
 
+const ImageAnalyticsTagContext = require('./ImageAnalyticsTagContext').default;
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const resolveAssetSource = require('./resolveAssetSource');
 
@@ -58,6 +57,23 @@ function getSizeWithHeaders(
     );
 }
 
+function prefetchWithMetadata(
+  url: string,
+  queryRootName: string,
+  rootTag?: ?number,
+): any {
+  if (NativeImageLoaderIOS.prefetchImageWithMetadata) {
+    // number params like rootTag cannot be nullable before TurboModules is available
+    return NativeImageLoaderIOS.prefetchImageWithMetadata(
+      url,
+      queryRootName,
+      rootTag ? rootTag : 0,
+    );
+  } else {
+    return NativeImageLoaderIOS.prefetchImage(url);
+  }
+}
+
 function prefetch(url: string): any {
   return NativeImageLoaderIOS.prefetchImage(url);
 }
@@ -72,6 +88,7 @@ type ImageComponentStatics = $ReadOnly<{|
   getSize: typeof getSize,
   getSizeWithHeaders: typeof getSizeWithHeaders,
   prefetch: typeof prefetch,
+  prefetchWithMetadata: typeof prefetchWithMetadata,
   queryCache: typeof queryCache,
   resolveAssetSource: typeof resolveAssetSource,
   propTypes: typeof DeprecatedImagePropType,
@@ -124,14 +141,21 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   }
 
   return (
-    <ImageViewNativeComponent
-      {...props}
-      ref={forwardedRef}
-      style={style}
-      resizeMode={resizeMode}
-      tintColor={tintColor}
-      source={sources}
-    />
+    <ImageAnalyticsTagContext.Consumer>
+      {analyticTag => {
+        return (
+          <ImageViewNativeComponent
+            {...props}
+            ref={forwardedRef}
+            style={style}
+            resizeMode={resizeMode}
+            tintColor={tintColor}
+            source={sources}
+            internal_analyticTag={analyticTag}
+          />
+        );
+      }}
+    </ImageAnalyticsTagContext.Consumer>
   );
 };
 
@@ -172,6 +196,17 @@ Image.getSizeWithHeaders = getSizeWithHeaders;
  * error found when Flow v0.89 was deployed. To see the error, delete this
  * comment and run Flow. */
 Image.prefetch = prefetch;
+
+/**
+ * Prefetches a remote image for later use by downloading it to the disk
+ * cache, and adds metadata for queryRootName and rootTag.
+ *
+ * See https://reactnative.dev/docs/image.html#prefetch
+ */
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.prefetchWithMetadata = prefetchWithMetadata;
 
 /**
  * Performs cache interrogation.

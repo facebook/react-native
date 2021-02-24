@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {
   BubblingEventHandler,
@@ -21,12 +19,12 @@ import type {
 } from '../../Types/CodegenTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
-import * as React from 'react';
+import type {TextInputNativeCommands} from './TextInputNativeCommands';
 import AndroidTextInputViewConfig from './AndroidTextInputViewConfig';
-const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 
 export type KeyboardType =
   // Cross Platform
@@ -182,7 +180,6 @@ export type NativeProps = $ReadOnly<{|
   /**
    * When `false`, it will prevent the soft keyboard from showing when the field is focused.
    * Defaults to `true`.
-   * @platform android
    */
   showSoftInputOnFocus?: ?boolean,
 
@@ -540,42 +537,16 @@ export type NativeProps = $ReadOnly<{|
 
 type NativeType = HostComponent<NativeProps>;
 
-interface NativeCommands {
-  +focus: (viewRef: React.ElementRef<NativeType>) => void;
-  +blur: (viewRef: React.ElementRef<NativeType>) => void;
-  +setMostRecentEventCount: (
-    viewRef: React.ElementRef<NativeType>,
-    eventCount: Int32,
-  ) => void;
-  +setTextAndSelection: (
-    viewRef: React.ElementRef<NativeType>,
-    mostRecentEventCount: Int32,
-    value: ?string, // in theory this is nullable
-    start: Int32,
-    end: Int32,
-  ) => void;
-}
+type NativeCommands = TextInputNativeCommands<NativeType>;
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: [
-    'focus',
-    'blur',
-    'setMostRecentEventCount',
-    'setTextAndSelection',
-  ],
+  supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
-let AndroidTextInputNativeComponent;
-if (global.RN$Bridgeless) {
-  ReactNativeViewConfigRegistry.register('AndroidTextInput', () => {
-    return AndroidTextInputViewConfig;
-  });
-  AndroidTextInputNativeComponent = 'AndroidTextInput';
-} else {
-  AndroidTextInputNativeComponent = requireNativeComponent<NativeProps>(
-    'AndroidTextInput',
-  );
-}
+let AndroidTextInputNativeComponent = NativeComponentRegistry.get<NativeProps>(
+  'AndroidTextInput',
+  () => AndroidTextInputViewConfig,
+);
 
 // flowlint-next-line unclear-type:off
 export default ((AndroidTextInputNativeComponent: any): HostComponent<NativeProps>);

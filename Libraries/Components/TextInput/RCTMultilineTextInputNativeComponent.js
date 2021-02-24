@@ -8,43 +8,32 @@
  * @format
  */
 
-'use strict';
-
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
-import type {Int32} from '../../Types/CodegenTypes';
-import * as React from 'react';
+import type {TextInputNativeCommands} from './TextInputNativeCommands';
+import RCTTextInputViewConfig from './RCTTextInputViewConfig';
+const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
 
 type NativeType = HostComponent<mixed>;
 
-interface NativeCommands {
-  +focus: (viewRef: React.ElementRef<NativeType>) => void;
-  +blur: (viewRef: React.ElementRef<NativeType>) => void;
-  +setMostRecentEventCount: (
-    viewRef: React.ElementRef<NativeType>,
-    eventCount: Int32,
-  ) => void;
-  +setTextAndSelection: (
-    viewRef: React.ElementRef<NativeType>,
-    mostRecentEventCount: Int32,
-    value: ?string, // in theory this is nullable
-    start: Int32,
-    end: Int32,
-  ) => void;
-}
+type NativeCommands = TextInputNativeCommands<NativeType>;
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: [
-    'focus',
-    'blur',
-    'setMostRecentEventCount',
-    'setTextAndSelection',
-  ],
+  supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
-const SinglelineTextInputNativeComponent: HostComponent<mixed> = requireNativeComponent<mixed>(
-  'RCTMultilineTextInputView',
-);
+let MultilineTextInputNativeComponent;
+if (global.RN$Bridgeless) {
+  ReactNativeViewConfigRegistry.register('RCTMultilineTextInputView', () => {
+    return RCTTextInputViewConfig;
+  });
+  MultilineTextInputNativeComponent = 'RCTMultilineTextInputView';
+} else {
+  MultilineTextInputNativeComponent = requireNativeComponent<mixed>(
+    'RCTMultilineTextInputView',
+  );
+}
 
-export default SinglelineTextInputNativeComponent;
+// flowlint-next-line unclear-type:off
+export default ((MultilineTextInputNativeComponent: any): HostComponent<mixed>);

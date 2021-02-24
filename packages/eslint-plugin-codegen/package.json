@@ -1,0 +1,21 @@
+{
+  "name": "@react-native/eslint-plugin-codegen",
+  "version": "0.0.1",
+  "description": "ESLint rules to validate NativeModule and Component Specs",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/eslint-plugin-codegen"
+  },
+  "dependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-transform-flow-strip-types": "^7.0.0",
+    "flow-parser": "^0.121.0",
+    "make-dir": "^2.1.0",
+    "pirates":"^4.0.1",
+    "react-native-codegen": "*",
+    "source-map-support": "0.5.0"
+  },
+  "license": "MIT"
+}

@@ -14,10 +14,12 @@ DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
 # Enables iOS devices to get the IP address of the machine running Metro
 if [[ "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator ]]; then
-  IP=$(ipconfig getifaddr en0)
-  if [[ -z "$IP" || -n "`ifconfig $value | grep 'baseT'`" ]]; then
-    IP=$(ipconfig getifaddr en1)
-  fi
+  for num in 0 1 2 3 4 5 6 7 8; do
+    IP=$(ipconfig getifaddr en${num})
+    if [ ! -z "$IP" ]; then
+      break
+    fi
+  done
   if [ -z "$IP" ]; then
     IP=$(ifconfig | grep 'inet ' | grep -v ' 127.' | grep -v ' 169.254.' |cut -d\   -f2  | awk 'NR==1{print $1}')
   fi
@@ -70,9 +72,14 @@ if [[ "$ENTRY_FILE" ]]; then
   # Use ENTRY_FILE defined by user
   :
 elif [[ -s "index.ios.js" ]]; then
-   ENTRY_FILE=${1:-index.ios.js}
- else
-   ENTRY_FILE=${1:-index.js}
+  ENTRY_FILE=${1:-index.ios.js}
+else
+  ENTRY_FILE=${1:-index.js}
+fi
+
+if [[ $DEV != true && ! -f "$ENTRY_FILE" ]]; then
+  echo "error: Entry file $ENTRY_FILE does not exist. If you use another file as your entry point, pass ENTRY_FILE=myindex.js" >&2
+  exit 2
 fi
 
 if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
@@ -100,11 +107,27 @@ fi
 # shellcheck source=/dev/null
 source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
+[ -z "$HERMES_CLI_PATH" ] && HERMES_CLI_PATH="$PODS_ROOT/hermes-engine/destroot/bin/hermesc"
+
+if [[ -z "$USE_HERMES" && -f "$HERMES_CLI_PATH" ]]; then
+  echo "Enabling Hermes byte-code compilation. Disable with USE_HERMES=false if needed."
+  USE_HERMES=true
+fi
+
+if [[ $USE_HERMES == true && ! -f "$HERMES_CLI_PATH" ]]; then
+  echo "error: USE_HERMES is set to true but the hermesc binary could not be " \
+       "found at ${HERMES_CLI_PATH}. Perhaps you need to run pod install or otherwise " \
+       "point the HERMES_CLI_PATH variable to your custom location." >&2
+  exit 2
+fi
+
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""
 
 [ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/cli.js"
 
 [ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
+
+[ -z "$COMPOSE_SOURCEMAP_PATH" ] && COMPOSE_SOURCEMAP_PATH="$REACT_NATIVE_DIR/scripts/compose-source-maps.js"
 
 if [[ -z "$BUNDLE_CONFIG" ]]; then
   CONFIG_ARG=""
@@ -112,17 +135,70 @@ else
   CONFIG_ARG="--config $BUNDLE_CONFIG"
 fi
 
-BUNDLE_FILE="$DEST/main.jsbundle"
+BUNDLE_FILE="$CONFIGURATION_BUILD_DIR/main.jsbundle"
+
+EXTRA_ARGS=
+
+case "$PLATFORM_NAME" in
+  "macosx")
+    BUNDLE_PLATFORM="macos"
+    ;;
+  *)
+    BUNDLE_PLATFORM="ios"
+    ;;
+esac
+
+EMIT_SOURCEMAP=
+if [[ ! -z "$SOURCEMAP_FILE" ]]; then
+  EMIT_SOURCEMAP=true
+fi
+
+PACKAGER_SOURCEMAP_FILE=
+if [[ $EMIT_SOURCEMAP == true ]]; then
+  if [[ $USE_HERMES == true ]]; then
+    PACKAGER_SOURCEMAP_FILE="$CONFIGURATION_BUILD_DIR/$(basename $SOURCEMAP_FILE)"
+  else
+    PACKAGER_SOURCEMAP_FILE="$SOURCEMAP_FILE"
+  fi
+  EXTRA_ARGS="$EXTRA_ARGS --sourcemap-output $PACKAGER_SOURCEMAP_FILE"
+fi
+
+# Hermes doesn't require JS minification.
+if [[ $USE_HERMES == true && $DEV == false ]]; then
+  EXTRA_ARGS="$EXTRA_ARGS --minify false"
+fi
 
 "$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
   $CONFIG_ARG \
   --entry-file "$ENTRY_FILE" \
-  --platform ios \
+  --platform "$BUNDLE_PLATFORM" \
   --dev $DEV \
   --reset-cache \
   --bundle-output "$BUNDLE_FILE" \
   --assets-dest "$DEST" \
+  $EXTRA_ARGS \
   $EXTRA_PACKAGER_ARGS
+
+if [[ $USE_HERMES != true ]]; then
+  cp "$BUNDLE_FILE" "$DEST/"
+  BUNDLE_FILE="$DEST/main.jsbundle"
+else
+  EXTRA_COMPILER_ARGS=
+  if [[ $DEV == true ]]; then
+    EXTRA_COMPILER_ARGS=-Og
+  else
+    EXTRA_COMPILER_ARGS=-O
+  fi
+  if [[ $EMIT_SOURCEMAP == true ]]; then
+    EXTRA_COMPILER_ARGS="$EXTRA_COMPILER_ARGS -output-source-map"
+  fi
+  "$HERMES_CLI_PATH" -emit-binary $EXTRA_COMPILER_ARGS -out "$DEST/main.jsbundle" "$BUNDLE_FILE"
+  if [[ $EMIT_SOURCEMAP == true ]]; then
+    HBC_SOURCEMAP_FILE="$BUNDLE_FILE.map"
+    "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$SOURCEMAP_FILE"
+  fi
+  BUNDLE_FILE="$DEST/main.jsbundle"
+fi
 
 if [[ $DEV != true && ! -f "$BUNDLE_FILE" ]]; then
   echo "error: File $BUNDLE_FILE does not exist. This must be a bug with" >&2

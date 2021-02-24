@@ -13,8 +13,8 @@
 #import <better/map.h>
 #import <better/mutex.h>
 
-#import <react/core/ReactPrimitives.h>
-#import <react/uimanager/ComponentDescriptorProviderRegistry.h>
+#import <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#import <react/renderer/core/ReactPrimitives.h>
 
 #ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTFabricComponentPlugin/RCTFabricPluginProvider.h>
@@ -117,6 +117,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 
 - (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass
 {
+  RCTAssert(componentViewClass, @"RCTComponentViewFactory: Provided `componentViewClass` is `nil`.");
   std::unique_lock<better::shared_mutex> lock(_mutex);
 
   auto componentDescriptorProvider = [componentViewClass componentDescriptorProvider];

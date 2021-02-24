@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import typeof BatchedBridge from '../BatchedBridge/BatchedBridge.js';
+import typeof BatchedBridge from '../BatchedBridge/BatchedBridge';
 import typeof ExceptionsManager from '../Core/ExceptionsManager';
 import typeof Platform from '../Utilities/Platform';
 import typeof RCTEventEmitter from '../EventEmitter/RCTEventEmitter';
@@ -18,12 +18,14 @@ import typeof UIManager from '../ReactNative/UIManager';
 import typeof deepDiffer from '../Utilities/differ/deepDiffer';
 import typeof deepFreezeAndThrowOnMutationInDev from '../Utilities/deepFreezeAndThrowOnMutationInDev';
 import typeof flattenStyle from '../StyleSheet/flattenStyle';
+import {type DangerouslyImpreciseStyleProp} from '../StyleSheet/StyleSheet';
 import typeof ReactFiberErrorDialog from '../Core/ReactFiberErrorDialog';
+import typeof legacySendAccessibilityEvent from '../Components/AccessibilityInfo/legacySendAccessibilityEvent';
 
 // flowlint unsafe-getters-setters:off
 module.exports = {
   get BatchedBridge(): BatchedBridge {
-    return require('../BatchedBridge/BatchedBridge.js');
+    return require('../BatchedBridge/BatchedBridge');
   },
   get ExceptionsManager(): ExceptionsManager {
     return require('../Core/ExceptionsManager');
@@ -52,10 +54,13 @@ module.exports = {
   > {
     return require('../Utilities/deepFreezeAndThrowOnMutationInDev');
   },
-  get flattenStyle(): flattenStyle {
+  get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp> {
     return require('../StyleSheet/flattenStyle');
   },
   get ReactFiberErrorDialog(): ReactFiberErrorDialog {
     return require('../Core/ReactFiberErrorDialog');
+  },
+  get legacySendAccessibilityEvent(): legacySendAccessibilityEvent {
+    return require('../Components/AccessibilityInfo/legacySendAccessibilityEvent');
   },
 };

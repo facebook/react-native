@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import LogBoxInspectorCodeFrame from './LogBoxInspectorCodeFrame';
 import * as React from 'react';
 import ScrollView from '../../Components/ScrollView/ScrollView';
@@ -87,11 +85,11 @@ function LogBoxInspector(props: Props): React.Node {
 }
 
 const headerTitleMap = {
-  warn: 'Warning',
-  error: 'Error',
-  fatal: 'Exception',
+  warn: 'Console Warning',
+  error: 'Console Error',
+  fatal: 'Uncaught Error',
   syntax: 'Syntax Error',
-  component: 'Component Exception',
+  component: 'Render Error',
 };
 
 function LogBoxInspectorBody(props) {

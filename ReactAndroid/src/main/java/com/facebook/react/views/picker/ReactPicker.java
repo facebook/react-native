@@ -8,12 +8,14 @@
 package com.facebook.react.views.picker;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.core.view.ViewCompat;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class ReactPicker extends AppCompatSpinner {
   private @Nullable List<ReactPickerItem> mStagedItems;
   private @Nullable Integer mStagedSelection;
   private @Nullable Integer mStagedPrimaryTextColor;
+  private @Nullable Integer mStagedBackgroundColor;
 
   private final OnItemSelectedListener mItemSelectedListener =
       new OnItemSelectedListener() {
@@ -136,6 +139,10 @@ public class ReactPicker extends AppCompatSpinner {
     mStagedPrimaryTextColor = primaryColor;
   }
 
+  /* package */ void setStagedBackgroundColor(@Nullable Integer backgroundColor) {
+    mStagedBackgroundColor = backgroundColor;
+  }
+
   /**
    * Used to commit staged data into ReactPicker view. During this period, we will disable {@link
    * OnSelectListener#onItemSelected(int)} temporarily, so we don't get an event when changing the
@@ -168,7 +175,15 @@ public class ReactPicker extends AppCompatSpinner {
         && adapter != null
         && mStagedPrimaryTextColor != adapter.getPrimaryTextColor()) {
       adapter.setPrimaryTextColor(mStagedPrimaryTextColor);
+      ViewCompat.setBackgroundTintList(this, ColorStateList.valueOf(mStagedPrimaryTextColor));
       mStagedPrimaryTextColor = null;
+    }
+
+    if (mStagedBackgroundColor != null
+        && adapter != null
+        && mStagedBackgroundColor != adapter.getBackgroundColor()) {
+      adapter.setBackgroundColor(mStagedBackgroundColor);
+      mStagedBackgroundColor = null;
     }
 
     setOnItemSelectedListener(mItemSelectedListener);

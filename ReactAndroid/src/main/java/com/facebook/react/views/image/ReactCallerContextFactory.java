@@ -1,3 +1,5 @@
+// (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
+
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -7,7 +9,7 @@
 
 package com.facebook.react.views.image;
 
-import com.facebook.react.uimanager.ThemedReactContext;
+import androidx.annotation.Nullable;
 
 /**
  * This interface is used from {@link ReactImageManager} to customize the CallerContext object
@@ -18,8 +20,9 @@ public interface ReactCallerContextFactory {
   /**
    * This method will be called at the time {@link ReactImageManager} creates {@link ReactImageView}
    *
-   * @param reactContext {@link ThemedReactContext} used to create the {@link ReactImageView}
+   * @param surfaceName {@link String} used to log the name of the surface
    * @return an {@link Object} that represents the CallerContext.
    */
-  Object getOrCreateCallerContext(ThemedReactContext reactContext);
+  @Nullable
+  Object getOrCreateCallerContext(@Nullable String surfaceName, @Nullable String analyticTag);
 }

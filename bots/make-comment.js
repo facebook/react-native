@@ -9,27 +9,13 @@
 
 'use strict';
 
-const {GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, GITHUB_PR_NUMBER} = process.env;
-if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO || !GITHUB_PR_NUMBER) {
-  if (!GITHUB_TOKEN) {
-    console.error(
-      'Missing GITHUB_TOKEN. Example: 5fd88b964fa214c4be2b144dc5af5d486a2f8c1e. PR feedback cannot be provided on GitHub without a valid token.',
-    );
-  }
-  if (!GITHUB_OWNER) {
-    console.error('Missing GITHUB_OWNER. Example: facebook');
-  }
-  if (!GITHUB_REPO) {
-    console.error('Missing GITHUB_REPO. Example: react-native');
-  }
-  if (!GITHUB_PR_NUMBER) {
-    console.error(
-      'Missing GITHUB_PR_NUMBER. Example: 4687. PR feedback cannot be provided on GitHub without a valid pull request number.',
-    );
-  }
-  process.exit(1);
-}
-
+/**
+ * Updates the comment matching specified pattern.
+ * @param {import('@octokit/rest').Octokit} octokit Octokit instance
+ * @param {{ owner: string; repo: string; issue_number: string; }} issueParams
+ * @param {string} body Comment body
+ * @param {string} replacePattern Pattern for finding the comment to update
+ */
 async function updateComment(octokit, issueParams, body, replacePattern) {
   if (!replacePattern) {
     return false;
@@ -64,7 +50,38 @@ async function updateComment(octokit, issueParams, body, replacePattern) {
   return true;
 }
 
-async function main(body, replacePattern) {
+/**
+ * Creates or updates a comment with specified pattern.
+ * @param {string} body Comment body
+ * @param {string} replacePattern Pattern for finding the comment to update
+ */
+async function createOrUpdateComment(body, replacePattern) {
+  const {
+    GITHUB_TOKEN,
+    GITHUB_OWNER,
+    GITHUB_REPO,
+    GITHUB_PR_NUMBER,
+  } = process.env;
+  if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO || !GITHUB_PR_NUMBER) {
+    if (!GITHUB_TOKEN) {
+      console.error(
+        'Missing GITHUB_TOKEN. Example: 5fd88b964fa214c4be2b144dc5af5d486a2f8c1e. PR feedback cannot be provided on GitHub without a valid token.',
+      );
+    }
+    if (!GITHUB_OWNER) {
+      console.error('Missing GITHUB_OWNER. Example: facebook');
+    }
+    if (!GITHUB_REPO) {
+      console.error('Missing GITHUB_REPO. Example: react-native');
+    }
+    if (!GITHUB_PR_NUMBER) {
+      console.error(
+        'Missing GITHUB_PR_NUMBER. Example: 4687. PR feedback cannot be provided on GitHub without a valid pull request number.',
+      );
+    }
+    process.exit(1);
+  }
+
   if (!body) {
     return;
   }
@@ -90,5 +107,6 @@ async function main(body, replacePattern) {
   });
 }
 
-const {[2]: body, [3]: replacePattern} = process.argv;
-main(body, replacePattern);
+module.exports = {
+  createOrUpdateComment,
+};

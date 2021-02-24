@@ -87,9 +87,12 @@
     NSNumber *gifLoopCount = gifProperties[(__bridge NSString *)kCGImagePropertyGIFLoopCount];
     if (gifLoopCount != nil) {
       loopCount = gifLoopCount.unsignedIntegerValue;
-      // A loop count of 1 means it should repeat twice, 2 means, thrice, etc.
-      if (loopCount != 0) {
-        loopCount++;
+      if (@available(iOS 14, *)) {
+      } else {
+      // A loop count of 1 means it should animate twice, 2 means, thrice, etc.
+        if (loopCount != 0) {
+          loopCount++;
+        }
       }
     }
   }
@@ -107,7 +110,7 @@
   NSDictionary *gifProperties = frameProperties[(NSString *)kCGImagePropertyGIFDictionary];
 
   NSNumber *delayTimeUnclampedProp = gifProperties[(NSString *)kCGImagePropertyGIFUnclampedDelayTime];
-  if (delayTimeUnclampedProp != nil) {
+  if (delayTimeUnclampedProp != nil && [delayTimeUnclampedProp floatValue] != 0.0f) {
     frameDuration = [delayTimeUnclampedProp floatValue];
   } else {
     NSNumber *delayTimeProp = gifProperties[(NSString *)kCGImagePropertyGIFDelayTime];

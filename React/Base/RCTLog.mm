@@ -12,21 +12,21 @@
 #import <objc/message.h>
 #import <os/log.h>
 
-#import "RCTRedBoxSetEnabled.h"
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTDefines.h"
+#import "RCTRedBoxSetEnabled.h"
 #import "RCTUtils.h"
 
 static NSString *const RCTLogFunctionStack = @"RCTLogFunctionStack";
 
 const char *RCTLogLevels[] = {
-  "trace",
-  "info",
-  "warn",
-  "error",
-  "fatal",
+    "trace",
+    "info",
+    "warn",
+    "error",
+    "fatal",
 };
 
 /* os log will discard debug and info messages if they are not needed */
@@ -40,7 +40,8 @@ RCTLogLevel RCTGetLogThreshold()
   return RCTCurrentLogThreshold;
 }
 
-void RCTSetLogThreshold(RCTLogLevel threshold) {
+void RCTSetLogThreshold(RCTLogLevel threshold)
+{
   RCTCurrentLogThreshold = threshold;
 }
 
@@ -77,16 +78,14 @@ static os_log_t RCTLogForLogSource(RCTLogSource source)
   }
 }
 
-RCTLogFunction RCTDefaultLogFunction = ^(
-  RCTLogLevel level,
-  RCTLogSource source,
-  __unused NSString *fileName,
-  __unused NSNumber *lineNumber,
-  NSString *message
-)
-{
-  os_log_with_type(RCTLogForLogSource(source), RCTLogTypeForLogLevel(level), "%{public}s", message.UTF8String);
-};
+RCTLogFunction RCTDefaultLogFunction =
+    ^(RCTLogLevel level,
+      RCTLogSource source,
+      __unused NSString *fileName,
+      __unused NSNumber *lineNumber,
+      NSString *message) {
+      os_log_with_type(RCTLogForLogSource(source), RCTLogTypeForLogLevel(level), "%{public}s", message.UTF8String);
+    };
 
 void RCTSetLogFunction(RCTLogFunction logFunction)
 {
@@ -105,10 +104,11 @@ void RCTAddLogFunction(RCTLogFunction logFunction)
 {
   RCTLogFunction existing = RCTGetLogFunction();
   if (existing) {
-    RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
-      existing(level, source, fileName, lineNumber, message);
-      logFunction(level, source, fileName, lineNumber, message);
-    });
+    RCTSetLogFunction(
+        ^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+          existing(level, source, fileName, lineNumber, message);
+          logFunction(level, source, fileName, lineNumber, message);
+        });
   } else {
     RCTSetLogFunction(logFunction);
   }
@@ -146,21 +146,15 @@ void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix)
 {
   RCTLogFunction logFunction = RCTGetLocalLogFunction();
   if (logFunction) {
-    RCTPerformBlockWithLogFunction(block, ^(RCTLogLevel level, RCTLogSource source,
-                                            NSString *fileName, NSNumber *lineNumber,
-                                            NSString *message) {
-      logFunction(level, source, fileName, lineNumber, [prefix stringByAppendingString:message]);
-    });
+    RCTPerformBlockWithLogFunction(
+        block, ^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+          logFunction(level, source, fileName, lineNumber, [prefix stringByAppendingString:message]);
+        });
   }
 }
 
-NSString *RCTFormatLog(
-  NSDate *timestamp,
-  RCTLogLevel level,
-  NSString *fileName,
-  NSNumber *lineNumber,
-  NSString *message
-)
+NSString *
+RCTFormatLog(NSDate *timestamp, RCTLogLevel level, NSString *fileName, NSNumber *lineNumber, NSString *message)
 {
   NSMutableString *log = [NSMutableString new];
   if (timestamp) {
@@ -195,21 +189,22 @@ NSString *RCTFormatLog(
 
 NSString *RCTFormatLogLevel(RCTLogLevel level)
 {
-    NSDictionary *levelsToString = @{@(RCTLogLevelTrace) : @"trace",
-                                    @(RCTLogLevelInfo)    : @"info",
-                                    @(RCTLogLevelWarning) : @"warning",
-                                    @(RCTLogLevelFatal)   : @"fatal",
-                                    @(RCTLogLevelError)   : @"error"};
+  NSDictionary *levelsToString = @{
+    @(RCTLogLevelTrace) : @"trace",
+    @(RCTLogLevelInfo) : @"info",
+    @(RCTLogLevelWarning) : @"warning",
+    @(RCTLogLevelFatal) : @"fatal",
+    @(RCTLogLevelError) : @"error"
+  };
 
-    return levelsToString[@(level)];
+  return levelsToString[@(level)];
 }
 
 NSString *RCTFormatLogSource(RCTLogSource source)
 {
-    NSDictionary *sourcesToString = @{@(RCTLogSourceNative) : @"native",
-                                     @(RCTLogSourceJavaScript)    : @"js"};
+  NSDictionary *sourcesToString = @{@(RCTLogSourceNative) : @"native", @(RCTLogSourceJavaScript) : @"js"};
 
-    return sourcesToString[@(source)];
+  return sourcesToString[@(source)];
 }
 
 static NSRegularExpression *nativeStackFrameRegex()
@@ -218,7 +213,9 @@ static NSRegularExpression *nativeStackFrameRegex()
   static NSRegularExpression *_regex;
   dispatch_once(&onceToken, ^{
     NSError *regexError;
-    _regex = [NSRegularExpression regularExpressionWithPattern:@"0x[0-9a-f]+ (.*) \\+ (\\d+)$" options:0 error:&regexError];
+    _regex = [NSRegularExpression regularExpressionWithPattern:@"0x[0-9a-f]+ (.*) \\+ (\\d+)$"
+                                                       options:0
+                                                         error:&regexError];
     if (regexError) {
       RCTLogError(@"Failed to build regex: %@", [regexError localizedDescription]);
     }
@@ -239,14 +236,14 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
 
     // Call log function
     if (logFunction) {
-      logFunction(level, RCTLogSourceNative, fileName ? @(fileName) : nil, lineNumber > 0 ? @(lineNumber) : nil, message);
+      logFunction(
+          level, RCTLogSourceNative, fileName ? @(fileName) : nil, lineNumber > 0 ? @(lineNumber) : nil, message);
     }
 
     // Log to red box if one is configured.
     if (RCTSharedApplication() && RCTRedBoxGetEnabled() && level >= RCTLOG_REDBOX_LEVEL) {
       NSArray<NSString *> *stackSymbols = [NSThread callStackSymbols];
-      NSMutableArray<NSDictionary *> *stack =
-        [NSMutableArray arrayWithCapacity:(stackSymbols.count - 1)];
+      NSMutableArray<NSDictionary *> *stack = [NSMutableArray arrayWithCapacity:(stackSymbols.count - 1)];
       [stackSymbols enumerateObjectsUsingBlock:^(NSString *frameSymbols, NSUInteger idx, __unused BOOL *stop) {
         if (idx == 0) {
           // don't include the current frame
@@ -268,9 +265,9 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
 
         if (idx == 1 && fileName) {
           NSString *file = [@(fileName) componentsSeparatedByString:@"/"].lastObject;
-          [stack addObject:@{@"methodName": methodName, @"file": file, @"lineNumber": @(lineNumber)}];
+          [stack addObject:@{@"methodName" : methodName, @"file" : file, @"lineNumber" : @(lineNumber)}];
         } else {
-          [stack addObject:@{@"methodName": methodName}];
+          [stack addObject:@{@"methodName" : methodName}];
         }
       }];
 
@@ -279,7 +276,8 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
         // race condition that causes the module to be accessed before it has loaded
         id redbox = [[RCTBridge currentBridge] moduleForName:@"RedBox" lazilyLoadIfNecessary:YES];
         if (redbox) {
-          void (*showErrorMessage)(id, SEL, NSString *, NSMutableArray<NSDictionary *> *) = (__typeof__(showErrorMessage))objc_msgSend;
+          void (*showErrorMessage)(id, SEL, NSString *, NSMutableArray<NSDictionary *> *) =
+              (__typeof__(showErrorMessage))objc_msgSend;
           SEL showErrorMessageSEL = NSSelectorFromString(@"showErrorMessage:withStack:");
 
           if ([redbox respondsToSelector:showErrorMessageSEL]) {
@@ -295,7 +293,6 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
       [[RCTBridge currentBridge] logMessage:message level:level ? @(RCTLogLevels[level]) : @"info"];
     }
 #endif
-
   }
 }
 

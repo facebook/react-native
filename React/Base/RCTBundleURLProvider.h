@@ -31,16 +31,34 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
  */
 - (void)resetToDefaults;
 
-#if RCT_DEV
-- (BOOL)isPackagerRunning:(NSString *)host;
-#endif
+/**
+ * Return the server host. If its a development build and there's no jsLocation defined,
+ * it will return the server host IP address
+ */
+- (NSString *)packagerServerHost;
+
+/**
+ * Return the server host with optional port. If its a development build and there's no jsLocation defined,
+ * it will return the server host IP address
+ */
+- (NSString *)packagerServerHostPort;
+
+/**
+ * Returns if there's a packager running at the given host port.
+ * The port is optional, if not specified, kRCTBundleURLProviderDefaultPort will be used
+ */
++ (BOOL)isPackagerRunning:(NSString *)hostPort;
 
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle if the packager is not running.
  */
-- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                fallbackURLProvider:(NSURL *(^)(void))fallbackURLProvider;
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackURLProvider:(NSURL * (^)(void))fallbackURLProvider;
+
+/**
+ * Returns the jsBundleURL for a given split bundle entrypoint in development
+ */
+- (NSURL *)jsBundleURLForSplitBundleRoot:(NSString *)bundleRoot;
 
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and
@@ -56,16 +74,14 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle if the packager is not running.
  */
-- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                   fallbackResource:(NSString *)resourceName;
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName;
 
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle. If resourceName or extension
  * are nil, "main" and "jsbundle" will be used, respectively.
  */
-- (NSURL *)jsBundleURLForFallbackResource:(NSString *)resourceName
-                        fallbackExtension:(NSString *)extension;
+- (NSURL *)jsBundleURLForFallbackResource:(NSString *)resourceName fallbackExtension:(NSString *)extension;
 
 /**
  * Returns the resourceURL for a given bundle entrypoint and
@@ -88,22 +104,35 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
 + (instancetype)sharedSettings;
 
 /**
- Given a hostname for the packager and a bundle root, returns the URL to the js bundle. Generally you should use the
- instance method -jsBundleURLForBundleRoot:fallbackResource: which includes logic to guess if the packager is running
- and fall back to a pre-packaged bundle if it is not.
+ * Given a hostname for the packager and a bundle root, returns the URL to the js bundle. Generally you should use the
+ * instance method -jsBundleURLForBundleRoot:fallbackResource: which includes logic to guess if the packager is running
+ * and fall back to a pre-packaged bundle if it is not.
+ *
+ * The options here mirror some of Metro's Bundling Options:
+ * - enableDev: Whether to keep or remove `__DEV__` blocks from the bundle.
+ * - enableMinification: Enables or disables minification. Usually production bundles are minified and development
+ *     bundles are not.
+ * - modulesOnly: When true, will only send module definitions without polyfills and without the require-runtime.
+ * - runModule: When true, will run the main module after defining all modules. This is used in the main bundle but not
+ *     in split bundles.
  */
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                        packagerHost:(NSString *)packagerHost
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification;
 
++ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                       packagerHost:(NSString *)packagerHost
+                          enableDev:(BOOL)enableDev
+                 enableMinification:(BOOL)enableMinification
+                        modulesOnly:(BOOL)modulesOnly
+                          runModule:(BOOL)runModule;
+
 /**
  * Given a hostname for the packager and a resource path (including "/"), return the URL to the resource.
  * In general, please use the instance method to decide if the packager is running and fallback to the pre-packaged
  * resource if it is not: -resourceURLForResourceRoot:resourceName:resourceExtension:offlineBundle:
  */
-+ (NSURL *)resourceURLForResourcePath:(NSString *)path
-                         packagerHost:(NSString *)packagerHost
-                                query:(NSString *)query;
++ (NSURL *)resourceURLForResourcePath:(NSString *)path packagerHost:(NSString *)packagerHost query:(NSString *)query;
 
 @end

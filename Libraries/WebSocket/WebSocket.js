@@ -8,20 +8,17 @@
  * @flow
  */
 
-'use strict';
-
-const Blob = require('../Blob/Blob');
-const BlobManager = require('../Blob/BlobManager');
-const EventTarget = require('event-target-shim');
-const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-const WebSocketEvent = require('./WebSocketEvent');
-
-const base64 = require('base64-js');
-const binaryToBase64 = require('../Utilities/binaryToBase64');
-const invariant = require('invariant');
-
-import type EventSubscription from '../vendor/emitter/EventSubscription';
+import Blob from '../Blob/Blob';
+import type {BlobData} from '../Blob/BlobTypes';
+import BlobManager from '../Blob/BlobManager';
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import binaryToBase64 from '../Utilities/binaryToBase64';
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeWebSocketModule from './NativeWebSocketModule';
+import WebSocketEvent from './WebSocketEvent';
+import base64 from 'base64-js';
+import EventTarget from 'event-target-shim';
+import invariant from 'invariant';
 
 type ArrayBufferView =
   | Int8Array
@@ -48,6 +45,17 @@ const WEBSOCKET_EVENTS = ['close', 'error', 'message', 'open'];
 
 let nextWebSocketId = 0;
 
+type WebSocketEventDefinitions = {
+  websocketOpen: [{id: number, protocol: string}],
+  websocketClosed: [{id: number, code: number, reason: string}],
+  websocketMessage: [
+    | {type: 'binary', id: number, data: string}
+    | {type: 'text', id: number, data: string}
+    | {type: 'blob', id: number, data: BlobData},
+  ],
+  websocketFailed: [{id: number, message: string}],
+};
+
 /**
  * Browser-compatible WebSockets implementation.
  *
@@ -66,7 +74,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
   CLOSED: number = CLOSED;
 
   _socketId: number;
-  _eventEmitter: NativeEventEmitter;
+  _eventEmitter: NativeEventEmitter<WebSocketEventDefinitions>;
   _subscriptions: Array<EventSubscription>;
   _binaryType: ?BinaryType;
 
@@ -87,6 +95,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
     options: ?{headers?: {origin?: string, ...}, ...},
   ) {
     super();
+    this.url = url;
     if (typeof protocols === 'string') {
       protocols = [protocols];
     }

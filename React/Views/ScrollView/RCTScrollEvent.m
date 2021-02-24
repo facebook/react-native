@@ -8,8 +8,7 @@
 #import "RCTScrollEvent.h"
 #import <React/RCTAssert.h>
 
-@implementation RCTScrollEvent
-{
+@implementation RCTScrollEvent {
   CGPoint _scrollViewContentOffset;
   UIEdgeInsets _scrollViewContentInset;
   CGSize _scrollViewContentSize;
@@ -33,7 +32,7 @@
                     coalescingKey:(uint16_t)coalescingKey
 {
   RCTAssertParam(reactTag);
-  
+
   if ((self = [super init])) {
     _eventName = [eventName copy];
     _viewTag = reactTag;
@@ -48,7 +47,7 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (uint16_t)coalescingKey
 {
@@ -58,33 +57,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (NSDictionary *)body
 {
   NSDictionary *body = @{
-                         @"contentOffset": @{
-                             @"x": @(_scrollViewContentOffset.x),
-                             @"y": @(_scrollViewContentOffset.y)
-                             },
-                         @"contentInset": @{
-                             @"top": @(_scrollViewContentInset.top),
-                             @"left": @(_scrollViewContentInset.left),
-                             @"bottom": @(_scrollViewContentInset.bottom),
-                             @"right": @(_scrollViewContentInset.right)
-                             },
-                         @"contentSize": @{
-                             @"width": @(_scrollViewContentSize.width),
-                             @"height": @(_scrollViewContentSize.height)
-                             },
-                         @"layoutMeasurement": @{
-                             @"width": @(_scrollViewFrame.size.width),
-                             @"height": @(_scrollViewFrame.size.height)
-                             },
-                         @"zoomScale": @(_scrollViewZoomScale ?: 1),
-                         };
-  
+    @"contentOffset" : @{@"x" : @(_scrollViewContentOffset.x), @"y" : @(_scrollViewContentOffset.y)},
+    @"contentInset" : @{
+      @"top" : @(_scrollViewContentInset.top),
+      @"left" : @(_scrollViewContentInset.left),
+      @"bottom" : @(_scrollViewContentInset.bottom),
+      @"right" : @(_scrollViewContentInset.right)
+    },
+    @"contentSize" : @{@"width" : @(_scrollViewContentSize.width), @"height" : @(_scrollViewContentSize.height)},
+    @"layoutMeasurement" : @{@"width" : @(_scrollViewFrame.size.width), @"height" : @(_scrollViewFrame.size.height)},
+    @"zoomScale" : @(_scrollViewZoomScale ?: 1),
+  };
+
   if (_userData) {
     NSMutableDictionary *mutableBody = [body mutableCopy];
     [mutableBody addEntriesFromDictionary:_userData];
     body = mutableBody;
   }
-  
+
   return body;
 }
 
@@ -95,13 +85,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (RCTScrollEvent *)coalesceWithEvent:(RCTScrollEvent *)newEvent
 {
-  NSArray<NSDictionary *> *updatedChildFrames = [_userData[@"updatedChildFrames"] arrayByAddingObjectsFromArray:newEvent->_userData[@"updatedChildFrames"]];
+  NSArray<NSDictionary *> *updatedChildFrames =
+      [_userData[@"updatedChildFrames"] arrayByAddingObjectsFromArray:newEvent->_userData[@"updatedChildFrames"]];
   if (updatedChildFrames) {
     NSMutableDictionary *userData = [newEvent->_userData mutableCopy];
     userData[@"updatedChildFrames"] = updatedChildFrames;
     newEvent->_userData = userData;
   }
-  
+
   return newEvent;
 }
 
@@ -112,7 +103,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSArray *)arguments
 {
-  return @[self.viewTag, RCTNormalizeInputEventName(self.eventName), [self body]];
+  return @[ self.viewTag, RCTNormalizeInputEventName(self.eventName), [self body] ];
 }
 
 @end

@@ -2,20 +2,18 @@
 
 buildscript {
     ext {
-        buildToolsVersion = "29.0.2"
-        minSdkVersion = 16
+        buildToolsVersion = "29.0.3"
+        minSdkVersion = 21
         compileSdkVersion = 29
         targetSdkVersion = 29
+        ndkVersion = "20.1.5948944"
     }
     repositories {
         google()
         jcenter()
     }
-    ext.kotlinVersion = '1.3.0'
     dependencies {
-        classpath("com.android.tools.build:gradle:3.5.3")
-        // for Detox
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath("com.android.tools.build:gradle:4.1.0")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

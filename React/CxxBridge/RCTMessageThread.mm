@@ -24,20 +24,23 @@ namespace facebook {
 namespace react {
 
 RCTMessageThread::RCTMessageThread(NSRunLoop *runLoop, RCTJavaScriptCompleteBlock errorBlock)
-  : m_cfRunLoop([runLoop getCFRunLoop])
-  , m_errorBlock(errorBlock)
-  , m_shutdown(false) {
+    : m_cfRunLoop([runLoop getCFRunLoop]), m_errorBlock(errorBlock), m_shutdown(false)
+{
   CFRetain(m_cfRunLoop);
 }
 
-RCTMessageThread::~RCTMessageThread() {
+RCTMessageThread::~RCTMessageThread()
+{
+  RCTAssert(m_shutdown, @"RCTMessageThread: quitSynchronous() not called before destructor");
   CFRelease(m_cfRunLoop);
 }
 
 // This is analogous to dispatch_async
-void RCTMessageThread::runAsync(std::function<void()> func) {
+void RCTMessageThread::runAsync(std::function<void()> func)
+{
   CFRunLoopPerformBlock(m_cfRunLoop, kCFRunLoopCommonModes, ^{
-    // Create an autorelease pool each run loop to prevent memory footprint from growing too large, which can lead to performance problems.
+    // Create an autorelease pool each run loop to prevent memory footprint from growing too large, which can lead to
+    // performance problems.
     @autoreleasepool {
       func();
     }
@@ -46,57 +49,62 @@ void RCTMessageThread::runAsync(std::function<void()> func) {
 }
 
 // This is analogous to dispatch_sync
-void RCTMessageThread::runSync(std::function<void()> func) {
+void RCTMessageThread::runSync(std::function<void()> func)
+{
   if (m_cfRunLoop == CFRunLoopGetCurrent()) {
     func();
     return;
   }
 
   dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-  runAsync([func=std::make_shared<std::function<void()>>(std::move(func)), &sema] {
+  runAsync([func = std::make_shared<std::function<void()>>(std::move(func)), &sema] {
     (*func)();
     dispatch_semaphore_signal(sema);
   });
   dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
 }
 
-void RCTMessageThread::tryFunc(const std::function<void()>& func) {
+void RCTMessageThread::tryFunc(const std::function<void()> &func)
+{
   NSError *error = tryAndReturnError(func);
   if (error) {
     m_errorBlock(error);
   }
 }
 
-void RCTMessageThread::runOnQueue(std::function<void()>&& func) {
+void RCTMessageThread::runOnQueue(std::function<void()> &&func)
+{
   if (m_shutdown) {
     return;
   }
-
-  runAsync([this, func=std::make_shared<std::function<void()>>(std::move(func))] {
-    if (!m_shutdown) {
-      tryFunc(*func);
+  runAsync([sharedThis = shared_from_this(), func = std::make_shared<std::function<void()>>(std::move(func))] {
+    if (!sharedThis->m_shutdown) {
+      sharedThis->tryFunc(*func);
     }
   });
 }
 
-void RCTMessageThread::runOnQueueSync(std::function<void()>&& func) {
+void RCTMessageThread::runOnQueueSync(std::function<void()> &&func)
+{
   if (m_shutdown) {
     return;
   }
-  runSync([this, func=std::move(func)] {
-    if (!m_shutdown) {
-      tryFunc(func);
+  runSync([sharedThis = shared_from_this(), func = std::move(func)] {
+    if (!sharedThis->m_shutdown) {
+      sharedThis->tryFunc(func);
     }
   });
 }
 
-void RCTMessageThread::quitSynchronous() {
+void RCTMessageThread::quitSynchronous()
+{
   m_shutdown = true;
-  runSync([]{});
+  runSync([] {});
   CFRunLoopStop(m_cfRunLoop);
 }
 
-void RCTMessageThread::setRunLoop(NSRunLoop *runLoop) {
+void RCTMessageThread::setRunLoop(NSRunLoop *runLoop)
+{
   CFRelease(m_cfRunLoop);
   m_cfRunLoop = [runLoop getCFRunLoop];
   CFRetain(m_cfRunLoop);

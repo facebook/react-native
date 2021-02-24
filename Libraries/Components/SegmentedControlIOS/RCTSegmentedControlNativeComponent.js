@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
@@ -18,7 +16,7 @@ import type {
   WithDefault,
   Int32,
 } from '../../Types/CodegenTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 export type OnChangeEvent = $ReadOnly<{|
   value: Int32,

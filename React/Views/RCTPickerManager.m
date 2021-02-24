@@ -7,10 +7,10 @@
 
 #import "RCTPickerManager.h"
 
-#import "RCTBridge.h"
-#import "RCTPicker.h"
-#import "RCTFont.h"
 #import <React/RCTUIManager.h>
+#import "RCTBridge.h"
+#import "RCTFont.h"
+#import "RCTPicker.h"
 
 @implementation RCTPickerManager
 
@@ -55,7 +55,7 @@ RCT_EXPORT_METHOD(setNativeSelectedIndex : (nonnull NSNumber *)viewTag toIndex :
       // This component is used in Fabric through LegacyInteropLayer.
       // `RCTPicker` view is subview of `RCTLegacyViewManagerInteropComponentView`.
       // `viewTag` passed as parameter to this method is tag of the `RCTLegacyViewManagerInteropComponentView`.
-      UIView *subview = view.subviews.firstObject;
+      UIView *subview = [uiManager viewForReactTag:viewTag].subviews.firstObject;
       if ([subview isKindOfClass:[RCTPicker class]]) {
         [(RCTPicker *)subview setSelectedIndex:index.integerValue];
       } else {

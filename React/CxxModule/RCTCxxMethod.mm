@@ -20,8 +20,7 @@
 using facebook::xplat::module::CxxModule;
 using namespace facebook::react;
 
-@implementation RCTCxxMethod
-{
+@implementation RCTCxxMethod {
   std::unique_ptr<CxxModule::Method> _method;
 }
 
@@ -50,9 +49,7 @@ using namespace facebook::react;
   }
 }
 
-- (id)invokeWithBridge:(RCTBridge *)bridge
-                module:(id)module
-             arguments:(NSArray *)arguments
+- (id)invokeWithBridge:(RCTBridge *)bridge module:(id)module arguments:(NSArray *)arguments
 {
   // module is unused except for printing errors. The C++ object it represents
   // is also baked into _method.
@@ -65,26 +62,35 @@ using namespace facebook::react;
   CxxModule::Callback second;
 
   if (arguments.count < _method->callbacks) {
-    RCTLogError(@"Method %@.%s expects at least %zu arguments, but got %tu",
-                RCTBridgeModuleNameForClass([module class]), _method->name.c_str(),
-                _method->callbacks, arguments.count);
+    RCTLogError(
+        @"Method %@.%s expects at least %zu arguments, but got %tu",
+        RCTBridgeModuleNameForClass([module class]),
+        _method->name.c_str(),
+        _method->callbacks,
+        arguments.count);
     return nil;
   }
 
   if (_method->callbacks >= 1) {
     if (![arguments[arguments.count - 1] isKindOfClass:[NSNumber class]]) {
-      RCTLogError(@"Argument %tu (%@) of %@.%s should be a function",
-                  arguments.count - 1, arguments[arguments.count - 1],
-                  RCTBridgeModuleNameForClass([module class]), _method->name.c_str());
+      RCTLogError(
+          @"Argument %tu (%@) of %@.%s should be a function",
+          arguments.count - 1,
+          arguments[arguments.count - 1],
+          RCTBridgeModuleNameForClass([module class]),
+          _method->name.c_str());
       return nil;
     }
 
     NSNumber *id1;
     if (_method->callbacks == 2) {
       if (![arguments[arguments.count - 2] isKindOfClass:[NSNumber class]]) {
-        RCTLogError(@"Argument %tu (%@) of %@.%s should be a function",
-                    arguments.count - 2, arguments[arguments.count - 2],
-                    RCTBridgeModuleNameForClass([module class]), _method->name.c_str());
+        RCTLogError(
+            @"Argument %tu (%@) of %@.%s should be a function",
+            arguments.count - 2,
+            arguments[arguments.count - 2],
+            RCTBridgeModuleNameForClass([module class]),
+            _method->name.c_str());
         return nil;
       }
 
@@ -116,9 +122,11 @@ using namespace facebook::react;
       return convertFollyDynamicToId(result);
     }
   } catch (const facebook::xplat::JsArgumentException &ex) {
-    RCTLogError(@"Method %@.%s argument error: %s",
-                RCTBridgeModuleNameForClass([module class]), _method->name.c_str(),
-                ex.what());
+    RCTLogError(
+        @"Method %@.%s argument error: %s",
+        RCTBridgeModuleNameForClass([module class]),
+        _method->name.c_str(),
+        ex.what());
     return nil;
   }
 }

@@ -48,10 +48,7 @@ typedef NS_ENUM(NSInteger, RCTLogLevel) {
 /**
  * An enum representing the source of a log message.
  */
-typedef NS_ENUM(NSInteger, RCTLogSource) {
-  RCTLogSourceNative = 1,
-  RCTLogSourceJavaScript = 2
-};
+typedef NS_ENUM(NSInteger, RCTLogSource) { RCTLogSourceNative = 1, RCTLogSourceJavaScript = 2 };
 
 /**
  * A block signature to be used for custom logging functions. In most cases you
@@ -59,24 +56,18 @@ typedef NS_ENUM(NSInteger, RCTLogSource) {
  * generate a string.
  */
 typedef void (^RCTLogFunction)(
-  RCTLogLevel level,
-  RCTLogSource source,
-  NSString *fileName,
-  NSNumber *lineNumber,
-  NSString *message
-);
+    RCTLogLevel level,
+    RCTLogSource source,
+    NSString *fileName,
+    NSNumber *lineNumber,
+    NSString *message);
 
 /**
  * A method to generate a string from a collection of log data. To omit any
  * particular data from the log, just pass nil or zero for the argument.
  */
-RCT_EXTERN NSString *RCTFormatLog(
-  NSDate *timestamp,
-  RCTLogLevel level,
-  NSString *fileName,
-  NSNumber *lineNumber,
-  NSString *message
-);
+RCT_EXTERN NSString *
+RCTFormatLog(NSDate *timestamp, RCTLogLevel level, NSString *fileName, NSNumber *lineNumber, NSString *message);
 
 /**
  * A method to generate a string RCTLogLevel
@@ -136,8 +127,10 @@ RCT_EXTERN void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *pref
 #if RCTLOG_ENABLED
 #define _RCTLog(lvl, ...) _RCTLogNativeInternal(lvl, __FILE__, __LINE__, __VA_ARGS__)
 #else
-#define _RCTLog(lvl, ...) do { } while (0)
+#define _RCTLog(lvl, ...) \
+  do {                    \
+  } while (0)
 #endif
 
-RCT_EXTERN void _RCTLogNativeInternal(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4,5);
+RCT_EXTERN void _RCTLogNativeInternal(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4, 5);
 RCT_EXTERN void _RCTLogJavaScriptInternal(RCTLogLevel, NSString *);

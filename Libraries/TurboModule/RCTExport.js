@@ -25,7 +25,7 @@
  * information, native base classes, etc. For now, simply use `void` type as
  * there's nothing to give hint about.
  *
- * NOTE: This export is deprecated. Please us TurboModule.
+ * NOTE: This export is deprecated. Please use TurboModule.
  */
 
 // eslint-disable-next-line no-unused-vars
@@ -34,3 +34,5 @@ export interface DEPRECATED_RCTExport<T: void = void> {
 }
 
 export interface TurboModule extends DEPRECATED_RCTExport<void> {}
+
+export type {RootTag} from '../ReactNative/RootTag.js';

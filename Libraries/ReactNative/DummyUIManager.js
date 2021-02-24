@@ -20,10 +20,12 @@ module.exports = {
     }
     return null;
   },
+  hasViewManagerConfig: (viewManagerName: string): boolean => {
+    return viewManagerName === 'RCTVirtualText';
+  },
   getConstants: (): {...} => ({}),
   getConstantsForViewManager: (viewManagerName: string) => {},
   getDefaultEventTypes: (): Array<$FlowFixMe> => [],
-  playTouchSound: () => {},
   lazilyLoadView: (name: string) => {},
   createView: (
     reactTag: ?number,

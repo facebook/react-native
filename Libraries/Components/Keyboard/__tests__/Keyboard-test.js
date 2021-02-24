@@ -9,41 +9,27 @@
  * @emails oncall+react_native
  */
 
-'use strict';
-
-const Keyboard = require('../Keyboard');
-const dismissKeyboard = require('../../../Utilities/dismissKeyboard');
 const LayoutAnimation = require('../../../LayoutAnimation/LayoutAnimation');
-
-const NativeEventEmitter = require('../../../EventEmitter/NativeEventEmitter');
-const NativeModules = require('../../../BatchedBridge/NativeModules');
+const dismissKeyboard = require('../../../Utilities/dismissKeyboard');
+const Keyboard = require('../Keyboard');
 
 jest.mock('../../../LayoutAnimation/LayoutAnimation');
+jest.mock('../../../Utilities/dismissKeyboard');
 
 describe('Keyboard', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  it('exposes KeyboardEventEmitter methods', () => {
-    const KeyboardObserver = NativeModules.KeyboardObserver;
-    const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
-
-    // $FlowFixMe
-    expect(Keyboard._subscriber).toBe(KeyboardEventEmitter._subscriber);
-    // $FlowFixMe Cannot access private property
-    expect(Keyboard._nativeModule).toBe(KeyboardEventEmitter._nativeModule);
-  });
-
   it('uses dismissKeyboard utility', () => {
-    expect(Keyboard.dismiss).toBe(dismissKeyboard);
+    Keyboard.dismiss();
+    expect(dismissKeyboard).toHaveBeenCalled();
   });
 
   describe('scheduling layout animation', () => {
-    const scheduleLayoutAnimation = (
-      duration: number | null,
-      easing: string | null,
-    ): void => Keyboard.scheduleLayoutAnimation({duration, easing});
+    const scheduleLayoutAnimation = (duration, easing): void =>
+      // $FlowFixMe[incompatible-call]
+      Keyboard.scheduleLayoutAnimation({duration, easing});
 
     it('triggers layout animation', () => {
       scheduleLayoutAnimation(12, 'spring');

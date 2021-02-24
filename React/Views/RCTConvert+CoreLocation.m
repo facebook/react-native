@@ -7,7 +7,7 @@
 
 #import "RCTConvert+CoreLocation.h"
 
-@implementation RCTConvert(CoreLocation)
+@implementation RCTConvert (CoreLocation)
 
 RCT_CONVERTER(CLLocationDegrees, CLLocationDegrees, doubleValue);
 RCT_CONVERTER(CLLocationDistance, CLLocationDistance, doubleValue);
@@ -16,9 +16,7 @@ RCT_CONVERTER(CLLocationDistance, CLLocationDistance, doubleValue);
 {
   json = [self NSDictionary:json];
   return (CLLocationCoordinate2D){
-    [self CLLocationDegrees:json[@"latitude"]],
-    [self CLLocationDegrees:json[@"longitude"]]
-  };
+      [self CLLocationDegrees:json[@"latitude"]], [self CLLocationDegrees:json[@"longitude"]]};
 }
 
 @end

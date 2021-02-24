@@ -10,8 +10,8 @@
 #import <React/RCTPrimitives.h>
 #import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTSurfaceStage.h>
+#import <ReactCommon/RuntimeExecutor.h>
 #import <react/utils/ContextContainer.h>
-#import <react/utils/RuntimeExecutor.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -74,6 +74,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;
 
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer;
+
+/*
+ * Please do not use this, this will be deleted soon.
+ */
+- (nullable UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag;
 
 @end
 

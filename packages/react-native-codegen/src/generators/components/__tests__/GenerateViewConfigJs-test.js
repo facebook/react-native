@@ -30,6 +30,7 @@ describe('GenerateViewConfigJs', () => {
       generator.generate('DEPRECATED_VIEW_CONFIG_NAME', {
         modules: {
           Component: {
+            type: 'Component',
             components: {
               NativeComponentName: {
                 paperComponentNameDeprecated: 'DeprecatedNativeComponentName',

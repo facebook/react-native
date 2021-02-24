@@ -31,8 +31,10 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.events.Event;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.HashMap;
 
 /**
@@ -42,6 +44,7 @@ import java.util.HashMap;
 public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
 
   private static final String TAG = "ReactAccessibilityDelegate";
+  public static final String TOP_ACCESSIBILITY_ACTION_EVENT = "topAccessibilityAction";
   private static int sCounter = 0x3f000000;
   private static final int TIMEOUT_SEND_ACCESSIBILITY_EVENT = 200;
   private static final int SEND_EVENT = 1;
@@ -242,6 +245,15 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         }
       }
     }
+
+    // Expose the testID prop as the resource-id name of the view. Black-box E2E/UI testing
+    // frameworks, which interact with the UI through the accessibility framework, do not have
+    // access to view tags. This allows developers/testers to avoid polluting the
+    // content-description with test identifiers.
+    final String testId = (String) host.getTag(R.id.react_test_id);
+    if (testId != null) {
+      info.setViewIdResourceName(testId);
+    }
   }
 
   @Override
@@ -281,9 +293,25 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       event.putString("actionName", mAccessibilityActionsMap.get(action));
       ReactContext reactContext = (ReactContext) host.getContext();
       if (reactContext.hasActiveCatalystInstance()) {
-        reactContext
-            .getJSModule(RCTEventEmitter.class)
-            .receiveEvent(host.getId(), "topAccessibilityAction", event);
+        final int reactTag = host.getId();
+        final int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
+        UIManager uiManager = UIManagerHelper.getUIManager(reactContext, reactTag);
+        if (uiManager != null) {
+          uiManager
+              .<EventDispatcher>getEventDispatcher()
+              .dispatchEvent(
+                  new Event(surfaceId, reactTag) {
+                    @Override
+                    public String getEventName() {
+                      return TOP_ACCESSIBILITY_ACTION_EVENT;
+                    }
+
+                    @Override
+                    protected WritableMap getEventData() {
+                      return event;
+                    }
+                  });
+        }
       } else {
         ReactSoftException.logSoftException(
             TAG, new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
@@ -406,7 +434,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     if (!ViewCompat.hasAccessibilityDelegate(view)
         && (view.getTag(R.id.accessibility_role) != null
             || view.getTag(R.id.accessibility_state) != null
-            || view.getTag(R.id.accessibility_actions) != null)) {
+            || view.getTag(R.id.accessibility_actions) != null
+            || view.getTag(R.id.react_test_id) != null)) {
       ViewCompat.setAccessibilityDelegate(view, new ReactAccessibilityDelegate());
     }
   }

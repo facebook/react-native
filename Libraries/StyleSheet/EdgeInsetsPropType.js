@@ -10,6 +10,6 @@
 
 'use strict';
 
-import type {Rect} from './Rect.js';
+import type {Rect} from './Rect';
 
 export type EdgeInsetsProp = Rect;

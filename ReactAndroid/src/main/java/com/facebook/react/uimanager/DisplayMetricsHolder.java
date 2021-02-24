@@ -8,15 +8,12 @@
 package com.facebook.react.uimanager;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.WritableNativeMap;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,26 +60,7 @@ public class DisplayMetricsHolder {
     //
     // See:
     // http://developer.android.com/reference/android/view/Display.html#getRealMetrics(android.util.DisplayMetrics)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      display.getRealMetrics(screenDisplayMetrics);
-    } else {
-      // For 14 <= API level <= 16, we need to invoke getRawHeight and getRawWidth to get the real
-      // dimensions.
-      // Since react-native only supports API level 16+ we don't have to worry about other cases.
-      //
-      // Reflection exceptions are rethrown at runtime.
-      //
-      // See:
-      // http://stackoverflow.com/questions/14341041/how-to-get-real-screen-height-and-width/23861333#23861333
-      try {
-        Method mGetRawH = Display.class.getMethod("getRawHeight");
-        Method mGetRawW = Display.class.getMethod("getRawWidth");
-        screenDisplayMetrics.widthPixels = (Integer) mGetRawW.invoke(display);
-        screenDisplayMetrics.heightPixels = (Integer) mGetRawH.invoke(display);
-      } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-        throw new RuntimeException("Error getting real dimensions for API level < 17", e);
-      }
-    }
+    display.getRealMetrics(screenDisplayMetrics);
     DisplayMetricsHolder.setScreenDisplayMetrics(screenDisplayMetrics);
   }
 
@@ -104,8 +82,8 @@ public class DisplayMetricsHolder {
   }
 
   public static Map<String, Map<String, Object>> getDisplayMetricsMap(double fontScale) {
-    Assertions.assertNotNull(
-        sWindowDisplayMetrics != null || sScreenDisplayMetrics != null,
+    Assertions.assertCondition(
+        sWindowDisplayMetrics != null && sScreenDisplayMetrics != null,
         "DisplayMetricsHolder must be initialized with initDisplayMetricsIfNotInitialized or initDisplayMetrics");
     final Map<String, Map<String, Object>> result = new HashMap<>();
     result.put("windowPhysicalPixels", getPhysicalPixelsMap(sWindowDisplayMetrics, fontScale));
@@ -114,8 +92,8 @@ public class DisplayMetricsHolder {
   }
 
   public static WritableNativeMap getDisplayMetricsNativeMap(double fontScale) {
-    Assertions.assertNotNull(
-        sWindowDisplayMetrics != null || sScreenDisplayMetrics != null,
+    Assertions.assertCondition(
+        sWindowDisplayMetrics != null && sScreenDisplayMetrics != null,
         "DisplayMetricsHolder must be initialized with initDisplayMetricsIfNotInitialized or initDisplayMetrics");
     final WritableNativeMap result = new WritableNativeMap();
     result.putMap(

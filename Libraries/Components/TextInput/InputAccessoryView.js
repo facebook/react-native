@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
@@ -17,7 +15,7 @@ const StyleSheet = require('../../StyleSheet/StyleSheet');
 import RCTInputAccessoryViewNativeComponent from './RCTInputAccessoryViewNativeComponent';
 
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 /**
  * Note: iOS only

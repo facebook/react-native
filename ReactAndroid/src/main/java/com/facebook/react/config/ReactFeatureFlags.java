@@ -16,15 +16,6 @@ package com.facebook.react.config;
  */
 public class ReactFeatureFlags {
 
-  /** Whether we should load a specific view manager immediately or when it is accessed by JS */
-  public static boolean lazilyLoadViewManagers = false;
-
-  /** Reduce the number of Java-JS interops while accessing native arrays */
-  public static boolean useArrayNativeAccessor = false;
-
-  /** Reduce the number of Java-JS interops while accessing native maps */
-  public static boolean useMapNativeAccessor = false;
-
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
    * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
@@ -32,17 +23,8 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
-  /**
-   * Log tags of when a view deleted on the native side {@link
-   * com.facebook.react.uimanager.NativeViewHierarchyManager dropView}
-   */
-  public static boolean logDroppedViews = false;
-
-  /*
-   * This feature flag enables extra logging on ReactWebViews.
-   * Default value is false.
-   */
-  public static boolean enableExtraWebViewLogs = false;
+  /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
+  public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
 
   /*
    * This feature flag enables logs for Fabric
@@ -57,37 +39,24 @@ public class ReactFeatureFlags {
   public static boolean useViewManagerDelegates = false;
 
   /**
-   * Should this application use Catalyst Teardown V2? This is an experiment to use a V2 of the
-   * CatalystInstanceImpl `destroy` method.
+   * Should this application use a {@link com.facebook.react.uimanager.ViewManagerDelegate} (if
+   * provided) to execute the view commands. If {@code false}, then {@code receiveCommand} method
+   * inside view manager will be called instead.
    */
-  public static boolean useCatalystTeardownV2 = false;
+  public static boolean useViewManagerDelegatesForCommands = false;
 
   /**
-   * When the ReactContext is destroyed, should the CatalystInstance immediately be nullified? This
-   * is the safest thing to do since the CatalystInstance shouldn't be used, and should be
-   * garbage-collected after it's destroyed, but this is a breaking change in that many native
-   * modules assume that a ReactContext will always have a CatalystInstance. This will be deleted
-   * and the CatalystInstance will always be destroyed in some future release.
+   * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
+   * remove this when bug is fixed
    */
-  public static boolean nullifyCatalystInstanceOnDestroy = false;
+  public static boolean enableTransitionLayoutOnlyViewCleanup = false;
 
-  /**
-   * Temporary flag that should be removed soon. See FabricUIManager: if this flag is disabled,
-   * mountItems scheduled on the UI thread will *always* be executed synchronously. If this flag is
-   * enabled, users of FabricUIManager may disable immediate execution of scheduled mount items.
-   * TODO T54997838: remove as followup
-   */
-  public static boolean allowDisablingImmediateExecutionOfScheduleMountItems = false;
+  /** Feature flag to configure eager initialization of Fabric */
+  public static boolean eagerInitializeFabric = false;
 
-  /**
-   * This react flag enables a custom algorithm for the getChildVisibleRect() method in the classes
-   * ReactViewGroup, ReactHorizontalScrollView and ReactScrollView.
-   *
-   * <p>This new algorithm clip child rects if overflow is set to ViewProps.HIDDEN. More details in
-   * https://github.com/facebook/react-native/issues/23870 and
-   * https://github.com/facebook/react-native/pull/26334
-   *
-   * <p>The react flag is disabled by default because this is increasing ANRs (T57363204)
-   */
-  public static boolean clipChildRectsIfOverflowIsHidden = false;
+  /** Enables Static ViewConfig in RN Android native code. */
+  public static boolean enableExperimentalStaticViewConfigs = false;
+
+  /** Enables a more aggressive cleanup during destruction of ReactContext */
+  public static boolean enableReactContextCleanupFix = false;
 }

@@ -9,7 +9,7 @@
 
 @class RCTLoadingProgress;
 
-@protocol RCTDevLoadingViewProtocol<NSObject>
+@protocol RCTDevLoadingViewProtocol <NSObject>
 + (void)setEnabled:(BOOL)enabled;
 - (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor;
 - (void)showWithURL:(NSURL *)URL;

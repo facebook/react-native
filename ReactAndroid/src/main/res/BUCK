@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "react_native_target", "rn_android_resource")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_resource")
 
 rn_android_resource(
     name = "devsupport",
@@ -15,6 +15,9 @@ rn_android_resource(
     res = "shell",
     visibility = [
         "PUBLIC",
+    ],
+    deps = [
+        react_native_dep("third-party/android/androidx:appcompat"),
     ],
 )
 

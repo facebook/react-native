@@ -30,12 +30,30 @@ using namespace facebook::react;
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
+  RCTAssert(
+      childComponentView.superview == nil,
+      @"Attempt to mount already mounted component view. (parent: %@, child: %@, index: %@)",
+      self,
+      childComponentView,
+      @(index));
   [self insertSubview:childComponentView atIndex:index];
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  RCTAssert(childComponentView.superview == self, @"Attempt to unmount improperly mounted component view.");
+  RCTAssert(
+      childComponentView.superview == self,
+      @"Attempt to unmount a view which is mounted inside different view. (parent: %@, child: %@, index: %@)",
+      self,
+      childComponentView,
+      @(index));
+  RCTAssert(
+      (self.subviews.count > index) && [self.subviews objectAtIndex:index] == childComponentView,
+      @"Attempt to unmount a view which has a different index. (parent: %@, child: %@, index: %@)",
+      self,
+      childComponentView,
+      @(index));
+
   [childComponentView removeFromSuperview];
 }
 
@@ -63,7 +81,9 @@ using namespace facebook::react;
 - (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
            oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
 {
-  if (layoutMetrics.frame != oldLayoutMetrics.frame) {
+  bool forceUpdate = oldLayoutMetrics == EmptyLayoutMetrics;
+
+  if (forceUpdate || (layoutMetrics.frame != oldLayoutMetrics.frame)) {
     CGRect frame = RCTCGRectFromRect(layoutMetrics.frame);
 
     if (!std::isfinite(frame.origin.x) || !std::isfinite(frame.origin.y) || !std::isfinite(frame.size.width) ||
@@ -77,22 +97,21 @@ using namespace facebook::react;
           @"-[UIView(ComponentViewProtocol) updateLayoutMetrics:oldLayoutMetrics:]: Received invalid layout metrics (%@) for a view (%@).",
           NSStringFromCGRect(frame),
           self);
-      return;
+    } else {
+      // Note: Changing `frame` when `layer.transform` is not the `identity transform` is undefined behavior.
+      // Therefore, we must use `center` and `bounds`.
+      self.center = CGPoint{CGRectGetMidX(frame), CGRectGetMidY(frame)};
+      self.bounds = CGRect{CGPointZero, frame.size};
     }
-
-    // Note: Changing `frame` when `layer.transform` is not the `identity transform` is undefined behavior.
-    // Therefore, we must use `center` and `bounds`.
-    self.center = CGPoint{CGRectGetMidX(frame), CGRectGetMidY(frame)};
-    self.bounds = CGRect{CGPointZero, frame.size};
   }
 
-  if (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection) {
+  if (forceUpdate || (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection)) {
     self.semanticContentAttribute = layoutMetrics.layoutDirection == LayoutDirection::RightToLeft
         ? UISemanticContentAttributeForceRightToLeft
         : UISemanticContentAttributeForceLeftToRight;
   }
 
-  if (layoutMetrics.displayType != oldLayoutMetrics.displayType) {
+  if (forceUpdate || (layoutMetrics.displayType != oldLayoutMetrics.displayType)) {
     self.hidden = layoutMetrics.displayType == DisplayType::None;
   }
 }
@@ -111,6 +130,27 @@ using namespace facebook::react;
 {
   RCTAssert(NO, @"props access should be implemented by RCTViewComponentView.");
   return nullptr;
+}
+
+- (BOOL)isJSResponder
+{
+  // Default implementation always returns `NO`.
+  return NO;
+}
+
+- (void)setIsJSResponder:(BOOL)isJSResponder
+{
+  // Default implementation does nothing.
+}
+
+- (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)propKeys
+{
+  // Default implementation does nothing.
+}
+
+- (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN
+{
+  return nil;
 }
 
 @end

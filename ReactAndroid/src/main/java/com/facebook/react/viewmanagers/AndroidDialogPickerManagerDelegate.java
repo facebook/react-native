@@ -26,6 +26,9 @@ public class AndroidDialogPickerManagerDelegate<T extends View, U extends BaseVi
       case "color":
         mViewManager.setColor(view, value == null ? null : ((Double) value).intValue());
         break;
+      case "backgroundColor":
+        mViewManager.setBackgroundColor(view, value == null ? null : ((Double) value).intValue());
+        break;
       case "enabled":
         mViewManager.setEnabled(view, value == null ? true : (boolean) value);
         break;

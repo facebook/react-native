@@ -1,7 +1,4 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
- *
  * react-dom v16.x.x libdefs from flow-typed
  *
  * @noformat

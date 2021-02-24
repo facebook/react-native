@@ -10,7 +10,9 @@
 #include <functional>
 #include <memory>
 
-#ifndef __ANDROID__
+#ifdef _WINDOWS
+#include <thread>
+#elif !defined(__ANDROID__)
 #include <pthread.h>
 #include <thread>
 #endif

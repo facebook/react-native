@@ -352,8 +352,8 @@ WIN_EXPORT void YGConfigSetContext(YGConfigRef config, void* context);
 WIN_EXPORT void* YGConfigGetContext(YGConfigRef config);
 
 WIN_EXPORT float YGRoundValueToPixelGrid(
-    float value,
-    float pointScaleFactor,
+    double value,
+    double pointScaleFactor,
     bool forceCeil,
     bool forceFloor);
 

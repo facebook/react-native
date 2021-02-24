@@ -8,13 +8,13 @@
 #import "RCTKeyboardObserver.h"
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 
 #import "CoreModulesPlugins.h"
 
 static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification);
 
-@interface RCTKeyboardObserver() <NativeKeyboardObserverSpec>
+@interface RCTKeyboardObserver () <NativeKeyboardObserverSpec>
 @end
 
 @implementation RCTKeyboardObserver
@@ -23,12 +23,9 @@ RCT_EXPORT_MODULE()
 
 - (void)startObserving
 {
-#if !TARGET_OS_TV
-
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-#define ADD_KEYBOARD_HANDLER(NAME, SELECTOR) \
-  [nc addObserver:self selector:@selector(SELECTOR:) name:NAME object:nil]
+#define ADD_KEYBOARD_HANDLER(NAME, SELECTOR) [nc addObserver:self selector:@selector(SELECTOR:) name:NAME object:nil]
 
   ADD_KEYBOARD_HANDLER(UIKeyboardWillShowNotification, keyboardWillShow);
   ADD_KEYBOARD_HANDLER(UIKeyboardDidShowNotification, keyboardDidShow);
@@ -38,19 +35,18 @@ RCT_EXPORT_MODULE()
   ADD_KEYBOARD_HANDLER(UIKeyboardDidChangeFrameNotification, keyboardDidChangeFrame);
 
 #undef ADD_KEYBOARD_HANDLER
-
-#endif
-
 }
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"keyboardWillShow",
-           @"keyboardDidShow",
-           @"keyboardWillHide",
-           @"keyboardDidHide",
-           @"keyboardWillChangeFrame",
-           @"keyboardDidChangeFrame"];
+  return @[
+    @"keyboardWillShow",
+    @"keyboardDidShow",
+    @"keyboardWillHide",
+    @"keyboardDidHide",
+    @"keyboardWillChangeFrame",
+    @"keyboardDidChangeFrame"
+  ];
 }
 
 - (void)stopObserving
@@ -61,15 +57,14 @@ RCT_EXPORT_MODULE()
 // Bridge might be already invalidated by the time the keyboard is about to be dismissed.
 // This might happen, for example, when reload from the packager is performed.
 // Thus we need to check against nil here.
-#define IMPLEMENT_KEYBOARD_HANDLER(EVENT) \
-- (void)EVENT:(NSNotification *)notification \
-{ \
-  if (!self.bridge) { \
-    return; \
-  } \
-  [self sendEventWithName:@#EVENT \
-    body:RCTParseKeyboardNotification(notification)]; \
-}
+#define IMPLEMENT_KEYBOARD_HANDLER(EVENT)                                              \
+  -(void)EVENT : (NSNotification *)notification                                        \
+  {                                                                                    \
+    if (!self.bridge && !self.invokeJS) {                                              \
+      return;                                                                          \
+    }                                                                                  \
+    [self sendEventWithName:@ #EVENT body:RCTParseKeyboardNotification(notification)]; \
+  }
 
 IMPLEMENT_KEYBOARD_HANDLER(keyboardWillShow)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardDidShow)
@@ -78,9 +73,10 @@ IMPLEMENT_KEYBOARD_HANDLER(keyboardDidHide)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardWillChangeFrame)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardDidChangeFrame)
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeKeyboardObserverSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeKeyboardObserverSpecJSI>(params);
 }
 
 @end
@@ -88,10 +84,10 @@ IMPLEMENT_KEYBOARD_HANDLER(keyboardDidChangeFrame)
 NS_INLINE NSDictionary *RCTRectDictionaryValue(CGRect rect)
 {
   return @{
-    @"screenX": @(rect.origin.x),
-    @"screenY": @(rect.origin.y),
-    @"width": @(rect.size.width),
-    @"height": @(rect.size.height),
+    @"screenX" : @(rect.origin.x),
+    @"screenY" : @(rect.origin.y),
+    @"width" : @(rect.size.width),
+    @"height" : @(rect.size.height),
   };
 }
 
@@ -113,26 +109,24 @@ static NSString *RCTAnimationNameForCurve(UIViewAnimationCurve curve)
 
 static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
 {
-#if TARGET_OS_TV
-  return @{};
-#else
   NSDictionary *userInfo = notification.userInfo;
   CGRect beginFrame = [userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
   CGRect endFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
   NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-  UIViewAnimationCurve curve = static_cast<UIViewAnimationCurve>([userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]);
+  UIViewAnimationCurve curve =
+      static_cast<UIViewAnimationCurve>([userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]);
   NSInteger isLocalUserInfoKey = [userInfo[UIKeyboardIsLocalUserInfoKey] integerValue];
 
   return @{
-    @"startCoordinates": RCTRectDictionaryValue(beginFrame),
-    @"endCoordinates": RCTRectDictionaryValue(endFrame),
-    @"duration": @(duration * 1000.0), // ms
-    @"easing": RCTAnimationNameForCurve(curve),
-    @"isEventFromThisApp": isLocalUserInfoKey == 1 ? @YES : @NO,
+    @"startCoordinates" : RCTRectDictionaryValue(beginFrame),
+    @"endCoordinates" : RCTRectDictionaryValue(endFrame),
+    @"duration" : @(duration * 1000.0), // ms
+    @"easing" : RCTAnimationNameForCurve(curve),
+    @"isEventFromThisApp" : isLocalUserInfoKey == 1 ? @YES : @NO,
   };
-#endif
 }
 
-Class RCTKeyboardObserverCls(void) {
+Class RCTKeyboardObserverCls(void)
+{
   return RCTKeyboardObserver.class;
 }

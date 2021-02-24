@@ -24,8 +24,14 @@ folly::Optional<bool> RCTBridgingToOptionalBool(id value)
 
 NSString *RCTBridgingToString(id value)
 {
-  return [RCTConvert NSString:value];
+  return [RCTConvert NSString:RCTNilIfNull(value)];
 }
+
+NSString *RCTBridgingToOptionalString(id value)
+{
+  return RCTBridgingToString(value);
+}
+
 
 folly::Optional<double> RCTBridgingToOptionalDouble(id value)
 {
