@@ -64,9 +64,6 @@ PROJECT_ROOT=${PROJECT_ROOT:-"$REACT_NATIVE_DIR/../.."}
 
 cd "$PROJECT_ROOT" || exit
 
-# Define NVM_DIR and source the nvm.sh setup script
-[ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
-
 # Define entry file
 if [[ "$ENTRY_FILE" ]]; then
   # Use ENTRY_FILE defined by user

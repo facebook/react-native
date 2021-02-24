@@ -6,6 +6,9 @@
 
 set -e
 
+# Define NVM_DIR and source the nvm.sh setup script
+[ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
+
 if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
   . "$HOME/.nvm/nvm.sh"
 elif [[ -x "$(command -v brew)" && -s "$(brew --prefix nvm)/nvm.sh" ]]; then
