@@ -69,7 +69,6 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 
 	@Autowired
 	private LkShipperDetailsDao lkShipperDao;
-	
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdhocOrdersRepositoryImpl.class);
 
@@ -358,40 +357,45 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		session.close();
 		return AdhocOrderDtos;
 	}
-	
-	
+
 	//////////////////////////////////////////////////////////////////
-	public List<AdhocOrderDto> getKpi(int days)
-	{
-		List<AdhocOrderDto> AdhocOrderDtos= new ArrayList<>();
+	public List<AdhocOrderDto> getKpi(int days) {
+		List<AdhocOrderDto> AdhocOrderDtos = new ArrayList<>();
 		List<AdhocOrders> adhocOrders = new ArrayList<>();
-		
+
 		Session session = sessionFactory.openSession();
-		Transaction tx= session.beginTransaction();
-		
-		Timestamp t= new Timestamp(System.currentTimeMillis());
-		
-		Calendar cal= Calendar.getInstance();
+		Transaction tx = session.beginTransaction();
+
+		Timestamp t = new Timestamp(System.currentTimeMillis());
+		Timestamp t3;
+		Calendar cal = Calendar.getInstance();
 		cal.setTime(t);
 		cal.add(Calendar.DATE, days);
-		
-		Timestamp t2= new Timestamp(cal.getTime().getTime());
-		
+
+		Calendar cal2 = Calendar.getInstance();
+		cal2.setTime(t);
+		cal2.add(Calendar.DATE, 1);// The day after the current Day
+		t3 = new Timestamp(cal2.getTime().getTime());
+
+		Timestamp t2 = new Timestamp(cal.getTime().getTime());
+
 		Criteria crit = session.createCriteria(AdhocOrders.class);
-		crit.add(Restrictions.between("shipDate",t,t2));
+		if (days == 1)
+			crit.add(Restrictions.between("shipDate", t, t2));
+		else
+			crit.add(Restrictions.between("shipDate", t3, t2));
+		
 		//crit.add(Restrictions.eq("isSaved", false));
 		crit.addOrder(Order.asc("shipDate"));
-					
-				adhocOrders = crit.list();
-				
-				for(AdhocOrders a:adhocOrders)
-				{
-					AdhocOrderDtos.add(exportAdhocOrdersDto(a));
-				}
-			        
-				
-				return AdhocOrderDtos;
-			    			
+
+		adhocOrders = crit.list();
+
+		for (AdhocOrders a : adhocOrders) {
+			AdhocOrderDtos.add(exportAdhocOrdersDto(a));
+		}
+
+		return AdhocOrderDtos;
+
 	}
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
@@ -507,7 +511,8 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 
 		if (!ServiceUtil.isEmpty(AdhocOrderDto.getAdhocOrderId())) {
 			if (AdhocOrderDto.getAdhocOrderId().startsWith("TEM")) {
-			//adhocOrders.setFwoNum(AdhocOrderDto.getAdhocOrderId().replace("TEM", "ADH"));
+				// adhocOrders.setFwoNum(AdhocOrderDto.getAdhocOrderId().replace("TEM",
+				// "ADH"));
 				// NO ACTION NEEDED
 			}
 		} else {
