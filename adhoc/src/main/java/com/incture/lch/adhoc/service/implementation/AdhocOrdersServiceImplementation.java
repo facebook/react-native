@@ -178,4 +178,10 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 	}
 
 
+	@Override
+	public List<AdhocOrderDto> getDrafts() {
+		return adhocOrdersRepository.getDrafts();
+	}
+
+
 }

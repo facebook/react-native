@@ -21,6 +21,7 @@ public interface AdhocOrdersService {
 	public List<AdhocOrderDto> getAllAdhocOrders();
 	public List<AdhocOrderDto> getKpi(int days);
 
+	public List<AdhocOrderDto> getDrafts();
 	public ResponseDto addAdhocOrders(AdhocOrderDto adhocOrdersDto);
 	
 

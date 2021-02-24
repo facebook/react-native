@@ -358,6 +358,30 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		return AdhocOrderDtos;
 	}
 
+	@Override
+	public List<AdhocOrderDto> getDrafts() {
+		List<AdhocOrderDto> AdhocOrderDtos = new ArrayList<>();
+		List<AdhocOrders> adhocOrders = new ArrayList<>();
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		String queryStr = "select ad from AdhocOrders ad Order By fwoNum desc";
+		
+		
+		Criteria crit = session.createCriteria(AdhocOrders.class);
+		crit.add(Restrictions.eq("isSaved", false));
+		crit.add(Restrictions.like("fwoNum","TEM%",MatchMode.ANYWHERE));
+
+
+		adhocOrders= crit.list();
+		for (AdhocOrders adOrders : adhocOrders) {
+			AdhocOrderDtos.add(exportAdhocOrdersDto(adOrders));
+		}
+		session.flush();
+		session.clear();
+		tx.commit();
+		session.close();
+		return AdhocOrderDtos;
+	}
 	//////////////////////////////////////////////////////////////////
 	public List<AdhocOrderDto> getKpi(int days) {
 		List<AdhocOrderDto> AdhocOrderDtos = new ArrayList<>();
@@ -394,6 +418,10 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 			AdhocOrderDtos.add(exportAdhocOrdersDto(a));
 		}
 
+		session.flush();
+		session.clear();
+		tx.commit();
+		session.close();
 		return AdhocOrderDtos;
 
 	}
@@ -798,5 +826,7 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		return listOfShipper;
 
 	}
+
+	
 
 }
