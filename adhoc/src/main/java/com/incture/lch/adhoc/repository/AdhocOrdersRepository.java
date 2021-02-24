@@ -8,6 +8,7 @@ import com.incture.lch.adhoc.dto.AdhocRequestDto;
 import com.incture.lch.adhoc.dto.LkCountriesDto;
 import com.incture.lch.adhoc.dto.LkDivisionsDto;
 import com.incture.lch.adhoc.dto.LkShipperDetailsDto;
+import com.incture.lch.adhoc.dto.PartNumberDescDto;
 import com.incture.lch.adhoc.dto.ReasonCodeDto;
 import com.incture.lch.adhoc.dto.ResponseDto;
 import com.incture.lch.adhoc.entity.AdhocOrders;
@@ -23,7 +24,7 @@ public interface AdhocOrdersRepository {
 	public ResponseDto addAdhocOrders(AdhocOrderDto adhocOrdersDto);
 	
 	
-	public ResponseDto saveAdhocOrders(AdhocOrderDto adhocOrdersDto);
+	public AdhocOrderDto saveAdhocOrders(AdhocOrderDto adhocOrdersDto);
 
 	public int deleteAdhocOrders(String adhocOrderId, String userId, String partNum);
 
@@ -42,5 +43,7 @@ public interface AdhocOrdersRepository {
 	public List<LkCountriesDto> getAllCountries();
 	
 	public List<LkShipperDetailsDto> getAllShipperDetails();
+
+	public PartNumberDescDto getByPartNumber(PartNumberDescDto partNum);
 
 }

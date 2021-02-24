@@ -21,6 +21,7 @@ import com.incture.lch.adhoc.dto.AdhocRequestDto;
 import com.incture.lch.adhoc.dto.LkCountriesDto;
 import com.incture.lch.adhoc.dto.LkDivisionsDto;
 import com.incture.lch.adhoc.dto.LkShipperDetailsDto;
+import com.incture.lch.adhoc.dto.PartNumberDescDto;
 import com.incture.lch.adhoc.dto.ReasonCodeDto;
 import com.incture.lch.adhoc.dto.ResponseDto;
 import com.incture.lch.adhoc.service.AdhocOrdersService;
@@ -48,7 +49,7 @@ public class AdhocOrdersController {
 	
 	@RequestMapping(value = "/saveAdhocOrders", method = RequestMethod.POST, consumes = { "application/json" })
 	@ResponseBody
-	public ResponseDto saveAdhocOrders(@RequestBody AdhocOrderDto AdhocOrderDto) {
+	public AdhocOrderDto saveAdhocOrders(@RequestBody AdhocOrderDto AdhocOrderDto) {
 		return adhocOrdersService.saveAdhocOrders(AdhocOrderDto);
 	}
 
@@ -56,6 +57,12 @@ public class AdhocOrdersController {
 	@ResponseBody
 	public List<AdhocOrderDto> getAllAdhocOrders() {
 		return adhocOrdersService.getAllAdhocOrders();
+	}
+	
+	@RequestMapping(value = "/getByPartNumber", method = RequestMethod.POST, consumes = { "application/json" })
+	@ResponseBody
+	public PartNumberDescDto getByPartNumber(@RequestBody PartNumberDescDto partNum) {
+		return adhocOrdersService.getByPartNumber(partNum);
 	}
 
 	@RequestMapping(value = "/deleteAdhocOrders", method = RequestMethod.DELETE, consumes = { "application/json" })

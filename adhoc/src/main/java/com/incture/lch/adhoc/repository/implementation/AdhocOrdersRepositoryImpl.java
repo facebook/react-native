@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.RestTemplate;
 
 import com.incture.lch.adhoc.dao.LkCountriesDao;
 import com.incture.lch.adhoc.dao.LkDivisionDao;
@@ -28,6 +29,7 @@ import com.incture.lch.adhoc.dto.AdhocRequestDto;
 import com.incture.lch.adhoc.dto.LkCountriesDto;
 import com.incture.lch.adhoc.dto.LkDivisionsDto;
 import com.incture.lch.adhoc.dto.LkShipperDetailsDto;
+import com.incture.lch.adhoc.dto.PartNumberDescDto;
 import com.incture.lch.adhoc.dto.ReasonCodeDto;
 import com.incture.lch.adhoc.dto.ResponseDto;
 import com.incture.lch.adhoc.entity.AdhocOrders;
@@ -64,6 +66,7 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 
 	@Autowired
 	private LkShipperDetailsDao lkShipperDao;
+	
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdhocOrdersRepositoryImpl.class);
 
@@ -341,7 +344,7 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		Transaction tx = session.beginTransaction();
 		String queryStr = "select ad from AdhocOrders ad Order By fwoNum desc";
 		Query query = session.createQuery(queryStr);
-		query.setParameter("isOrderSubmitted", true);
+		// query.setParameter("isOrderSubmitted", true);
 		adhocOrders = query.list();
 		for (AdhocOrders adOrders : adhocOrders) {
 			AdhocOrderDtos.add(exportAdhocOrdersDto(adOrders));
@@ -358,6 +361,7 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		ResponseDto responseDto = new ResponseDto();
 		AdhocOrders adhocOrders = new AdhocOrders();
 		adhocOrders = importAdhocOrdersDto(AdhocOrderDto);
+		adhocOrders.setCreatedBy("LCH");
 		LkShipperDetailsDto shipDetDto = new LkShipperDetailsDto();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
@@ -403,7 +407,7 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 
 		if (adhocOrders.getFwoNum() == null || adhocOrders.getFwoNum().equals("")) {
 			adhocOrders.setFwoNum(adhocOrderId);
-		
+
 		}
 
 		session.saveOrUpdate(adhocOrders);
@@ -418,11 +422,12 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 	}
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	public ResponseDto saveAdhocOrders(AdhocOrderDto AdhocOrderDto) {
-		ResponseDto responseDto = new ResponseDto();
+	public AdhocOrderDto saveAdhocOrders(AdhocOrderDto AdhocOrderDto) {
+		// ResponseDto responseDto = new ResponseDto();
 		AdhocOrders adhocOrders = new AdhocOrders();
 		adhocOrders = importAdhocOrdersDto(AdhocOrderDto);
 		adhocOrders.setIsSaved(true);
+		adhocOrders.setCreatedBy("LCH");
 		LkShipperDetailsDto shipDetDto = new LkShipperDetailsDto();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
@@ -464,7 +469,8 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 
 		if (!ServiceUtil.isEmpty(AdhocOrderDto.getAdhocOrderId())) {
 			if (AdhocOrderDto.getAdhocOrderId().startsWith("TEM")) {
-				adhocOrders.setFwoNum(AdhocOrderDto.getAdhocOrderId().replace("TEM", "ADH"));
+			//adhocOrders.setFwoNum(AdhocOrderDto.getAdhocOrderId().replace("TEM", "ADH"));
+				// NO ACTION NEEDED
 			}
 		} else {
 
@@ -477,14 +483,15 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		}
 
 		session.saveOrUpdate(adhocOrders);
-		responseDto.setMessage("Save success");
-		responseDto.setStatus("SUCCESS");
-		responseDto.setCode("00");
+		/*
+		 * responseDto.setMessage("Save success");
+		 * responseDto.setStatus("SUCCESS"); responseDto.setCode("00");
+		 */
 		session.flush();
 		session.clear();
 		tx.commit();
 		session.close();
-		return responseDto;
+		return exportAdhocOrdersDto(adhocOrders);
 	}
 
 	public int deleteAdhocOrders(String adhocOrderId, String userId, String partNum) {
@@ -671,6 +678,20 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 			session.close();
 		}
 		return shipDtoList;
+
+	}
+
+	public PartNumberDescDto getByPartNumber(PartNumberDescDto partNumber) {
+		RestTemplate callRestApi = new RestTemplate();
+		try {
+			PartNumberDescDto obj = callRestApi.postForObject(
+					"https://jco-lch.cfapps.eu10.hana.ondemand.com/rest/jco/getTableDataByRFCTest", partNumber,
+					PartNumberDescDto.class);
+			return obj;
+		} catch (Exception e) {
+			partNumber.setMessage(e.toString());
+			return partNumber;
+		}
 
 	}
 

@@ -11,6 +11,7 @@ import com.incture.lch.adhoc.dto.AdhocRequestDto;
 import com.incture.lch.adhoc.dto.LkCountriesDto;
 import com.incture.lch.adhoc.dto.LkDivisionsDto;
 import com.incture.lch.adhoc.dto.LkShipperDetailsDto;
+import com.incture.lch.adhoc.dto.PartNumberDescDto;
 import com.incture.lch.adhoc.dto.ReasonCodeDto;
 import com.incture.lch.adhoc.dto.Response;
 import com.incture.lch.adhoc.dto.ResponseDto;
@@ -22,7 +23,7 @@ public interface AdhocOrdersService {
 	public ResponseDto addAdhocOrders(AdhocOrderDto adhocOrdersDto);
 	
 
-	public ResponseDto saveAdhocOrders(AdhocOrderDto adhocOrdersDto);
+	public AdhocOrderDto saveAdhocOrders(AdhocOrderDto adhocOrdersDto);
 
 
 	public ResponseDto deleteAdhocOrders(String adhocOrderId, String userId, String partNum);
@@ -45,6 +46,8 @@ public interface AdhocOrdersService {
 
 	// public ResponseEntity<Response<?>> getLoggedInUser(Jwt token);
 	public Map<String, Object> getLoggedInUser(Jwt token);
+
+	public PartNumberDescDto getByPartNumber(PartNumberDescDto partNum);
 	
 	
 

@@ -17,6 +17,7 @@ import com.incture.lch.adhoc.dto.AdhocRequestDto;
 import com.incture.lch.adhoc.dto.LkCountriesDto;
 import com.incture.lch.adhoc.dto.LkDivisionsDto;
 import com.incture.lch.adhoc.dto.LkShipperDetailsDto;
+import com.incture.lch.adhoc.dto.PartNumberDescDto;
 import com.incture.lch.adhoc.dto.ReasonCodeDto;
 import com.incture.lch.adhoc.dto.ResponseDto;
 import com.incture.lch.adhoc.repository.AdhocOrdersRepository;
@@ -42,7 +43,7 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 	}
 	
 	@Override
-	public ResponseDto saveAdhocOrders(AdhocOrderDto AdhocOrderDto) {
+	public AdhocOrderDto saveAdhocOrders(AdhocOrderDto AdhocOrderDto) {
 		return adhocOrdersRepository.saveAdhocOrders(AdhocOrderDto);
 	}
 
@@ -120,6 +121,10 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 
 	public List<LkShipperDetailsDto> getAllShipperDetails() {
 		return adhocOrdersRepository.getAllShipperDetails();
+	}
+	
+	public PartNumberDescDto getByPartNumber(PartNumberDescDto partNum){
+		return adhocOrdersRepository.getByPartNumber(partNum);
 	}
 
 	public Map<String, Object> getLoggedInUser(Jwt jwt) {
