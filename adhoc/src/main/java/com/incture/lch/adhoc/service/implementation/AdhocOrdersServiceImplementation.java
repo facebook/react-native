@@ -36,6 +36,14 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 	public List<AdhocOrderDto> getAllAdhocOrders() {
 		return adhocOrdersRepository.getAllAdhocOrders();
 	}
+	
+
+	@Override
+	public List<AdhocOrderDto> getKpi(int days) 
+	{
+		return adhocOrdersRepository.getKpi(days);
+		
+	}
 
 	@Override
 	public ResponseDto addAdhocOrders(AdhocOrderDto AdhocOrderDto) {
@@ -168,5 +176,6 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 
 		return null;
 	}
+
 
 }

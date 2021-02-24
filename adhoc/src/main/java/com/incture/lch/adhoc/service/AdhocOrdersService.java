@@ -19,6 +19,7 @@ import com.incture.lch.adhoc.dto.ResponseDto;
 public interface AdhocOrdersService {
 
 	public List<AdhocOrderDto> getAllAdhocOrders();
+	public List<AdhocOrderDto> getKpi(int days);
 
 	public ResponseDto addAdhocOrders(AdhocOrderDto adhocOrdersDto);
 	

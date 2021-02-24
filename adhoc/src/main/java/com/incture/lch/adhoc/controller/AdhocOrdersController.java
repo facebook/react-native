@@ -1,7 +1,5 @@
 package com.incture.lch.adhoc.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +56,14 @@ public class AdhocOrdersController {
 	public List<AdhocOrderDto> getAllAdhocOrders() {
 		return adhocOrdersService.getAllAdhocOrders();
 	}
+	
+	@RequestMapping(value = "/getKpiBasedResult/{days}", method = RequestMethod.POST, consumes = { "application/json" })
+	@ResponseBody
+	public List<AdhocOrderDto> getKpiBasedResult(@PathVariable(value = "days") int  days) {
+		return adhocOrdersService.getKpi(days);
+	}
+	
+
 	
 	@RequestMapping(value = "/getByPartNumber", method = RequestMethod.POST, consumes = { "application/json" })
 	@ResponseBody
@@ -125,6 +131,8 @@ public class AdhocOrdersController {
 	public String testPostMessage() {
 		return "Your message has been posted to IOP. Reference No. #" + ServiceUtil.generateRandomDigits(16);
 	}
+	
+	
 
 	/*
 	 * @RequestMapping(value = "/UserDetails/currentuser", method =

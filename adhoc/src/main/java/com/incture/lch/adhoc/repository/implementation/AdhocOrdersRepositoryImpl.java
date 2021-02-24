@@ -1,8 +1,10 @@
 package com.incture.lch.adhoc.repository.implementation;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +15,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
@@ -354,6 +357,41 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		tx.commit();
 		session.close();
 		return AdhocOrderDtos;
+	}
+	
+	
+	//////////////////////////////////////////////////////////////////
+	public List<AdhocOrderDto> getKpi(int days)
+	{
+		List<AdhocOrderDto> AdhocOrderDtos= new ArrayList<>();
+		List<AdhocOrders> adhocOrders = new ArrayList<>();
+		
+		Session session = sessionFactory.openSession();
+		Transaction tx= session.beginTransaction();
+		
+		Timestamp t= new Timestamp(System.currentTimeMillis());
+		
+		Calendar cal= Calendar.getInstance();
+		cal.setTime(t);
+		cal.add(Calendar.DATE, days);
+		
+		Timestamp t2= new Timestamp(cal.getTime().getTime());
+		
+		Criteria crit = session.createCriteria(AdhocOrders.class);
+		crit.add(Restrictions.between("shipDate",t,t2));
+		//crit.add(Restrictions.eq("isSaved", false));
+		crit.addOrder(Order.asc("shipDate"));
+					
+				adhocOrders = crit.list();
+				
+				for(AdhocOrders a:adhocOrders)
+				{
+					AdhocOrderDtos.add(exportAdhocOrdersDto(a));
+				}
+			        
+				
+				return AdhocOrderDtos;
+			    			
 	}
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
