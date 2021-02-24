@@ -13,6 +13,7 @@ import {
   StyleSheet,
   useColorScheme,
   View,
+  Text,
   LogBox,
 } from 'react-native';
 import * as React from 'react';
@@ -49,6 +50,12 @@ const DisplayIfVisible = ({isVisible, children}) =>
       {children}
     </View>
   ) : null;
+
+// Disable yellowbox when detox/jest is running so that they don't cover the
+// API's tab and make it inaccessible for detox.
+if (process.env.JEST_WORKER_ID !== undefined) {
+  console.disableYellowBox = true;
+}
 
 type ExampleListsContainerProps = $ReadOnly<{|
   theme: RNTesterTheme,

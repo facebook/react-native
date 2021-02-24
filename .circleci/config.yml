@@ -809,12 +809,11 @@ workflows:
       #     run_unit_tests: true
       #     requires:
       #       - setup_ios
-      # DISABLED: Detox tests need to be fixed
-      # - test_ios:
-      #     name: test_ios_detox
-      #     run_detox_tests: true
-      #     requires:
-      #       - setup_ios
+      - test_ios:
+          name: test_ios_detox
+          run_detox_tests: true
+          requires:
+            - setup_ios
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_detox_frameworks
