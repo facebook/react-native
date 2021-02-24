@@ -21,7 +21,7 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_SHARED_LIBRARIES := libfbjni libreact_codegen_rncore libreact_render_imagemanager libreactnativeutilsjni libreact_render_componentregistry libreact_render_uimanager librrc_image libyoga libfolly_futures glog libfolly_json libglog_init libreact_render_core libreact_render_debug libreact_render_graphics librrc_view
+LOCAL_SHARED_LIBRARIES := libfbjni libreact_codegen_rncore libreact_render_imagemanager libreactnativeutilsjni libreact_render_componentregistry libreact_render_uimanager librrc_image libyoga libfolly_futures glog libfolly_json libglog_init libreact_render_core libreact_render_debug libreact_render_graphics librrc_view libreact_debug
 
 include $(BUILD_SHARED_LIBRARY)
 
