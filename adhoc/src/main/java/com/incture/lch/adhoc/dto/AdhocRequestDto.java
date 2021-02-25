@@ -9,7 +9,8 @@ public class AdhocRequestDto {
 	private String fromDate;
 	private String toDate;
 	private String partNo;
-	private String createdBy;
+	private String createdBy;//userName
+	private String userId;//userid
 
 	public String getAdhocOrderId() {
 		return adhocOrderId;

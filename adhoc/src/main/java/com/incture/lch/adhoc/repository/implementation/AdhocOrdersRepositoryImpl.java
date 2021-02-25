@@ -105,6 +105,7 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 	public AdhocOrderDto exportAdhocOrdersDto(AdhocOrders adhocOrders) {
 		AdhocOrderDto AdhocOrderDto = new AdhocOrderDto();
 
+		//System.out.println("Inside DTO CLass");
 		AdhocOrderDto.setAdhocOrderId(adhocOrders.getFwoNum());
 		AdhocOrderDto.setBusinessDivision(adhocOrders.getBusinessDivision());
 		if (adhocOrders.getCharge() != null) {
@@ -209,6 +210,8 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		AdhocOrderDto.setPendingWith(adhocOrders.getPendingWith());
 		AdhocOrderDto.setManagerEmail(adhocOrders.getManagerEmail());
 		AdhocOrderDto.setIsSaved(adhocOrders.getIsSaved());
+		//System.out.println("End of DTO CLass");
+
 		return AdhocOrderDto;
 	}
 
@@ -364,42 +367,79 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		List<AdhocOrders> adhocOrders = new ArrayList<>();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
-		String queryStr = "select ad from AdhocOrders ad Order By fwoNum desc";
+		StringBuilder queryStr= new StringBuilder();
+		queryStr.append("select ao from AdhocOrders ao where ao.isSaved = true ");
 		
 		
-		Criteria crit = session.createCriteria(AdhocOrders.class);
-		crit.add(Restrictions.eq("isSaved", true));
-		crit.add(Restrictions.like("fwoNum","TEM%",MatchMode.ANYWHERE));
+		//Criteria crit = session.createCriteria(AdhocOrders.class);
+		//crit.add(Restrictions.eq("isSaved", true));
+		//crit.add(Restrictions.like("fwoNum","TEM%",MatchMode.ANYWHERE));
+		//queryStr.append("");
 
 		if (adhocRequestDto.getAdhocOrderId() != null && !(adhocRequestDto.getAdhocOrderId().equals(""))) {
-			//queryString.append(" AND ao.fwoNum=:fwoNum");
-			crit.add(Restrictions.eq("adhocOrderId", adhocRequestDto.getAdhocOrderId()));
+			queryStr.append(" AND ao.fwoNum=:fwoNum");
+			//crit.add(Restrictions.eq("adhocOrderId", adhocRequestDto.getAdhocOrderId()));
 
 		}
 		if ((adhocRequestDto.getFromDate() != null && !(adhocRequestDto.getFromDate().equals("")))
 				&& (adhocRequestDto.getToDate() != null) && !(adhocRequestDto.getToDate().equals(""))) {
-			//queryString.append(" AND ao.createdDate BETWEEN :fromDate AND :toDate");
-			crit.add(Restrictions.between("createdDate", adhocRequestDto.getFromDate(), adhocRequestDto.getToDate()));
+			queryStr.append(" AND ao.createdDate BETWEEN :fromDate AND :toDate");
+			//crit.add(Restrictions.between("createdDate", adhocRequestDto.getFromDate(), adhocRequestDto.getToDate()));
 		}
 		if (adhocRequestDto.getCreatedBy() != null && !(adhocRequestDto.getCreatedBy().equals(""))) {
-			//queryString.append(" AND ao.userId=:userId");
-			crit.add(Restrictions.eq("userId",adhocRequestDto.getCreatedBy()));
+			queryStr.append(" AND ao.userId=:userId");
+			//crit.add(Restrictions.eq("userId",adhocRequestDto.getCreatedBy()));
 		}
 		if (adhocRequestDto.getPartNo() != null && !(adhocRequestDto.getPartNo().equals(""))) {
-			//queryString.append(" AND ao.partNum=:partNum");
-			crit.add(Restrictions.eq("partNo", adhocRequestDto.getPartNo()));
+			queryStr.append(" AND ao.partNum=:partNum");
+			//crit.add(Restrictions.eq("partNo", adhocRequestDto.getPartNo()));
 		}
 
+		
 
-		adhocOrders= crit.list();
-		for (AdhocOrders adOrders : adhocOrders) {
-			AdhocOrderDtos.add(exportAdhocOrdersDto(adOrders));
+		//adhocOrders= crit.list();
+		Query query =session.createQuery(queryStr.toString());
+		
+
+		if (adhocRequestDto.getAdhocOrderId() != null && !(adhocRequestDto.getAdhocOrderId().equals(""))) {
+			query.setParameter("fwoNum", adhocRequestDto.getAdhocOrderId());
 		}
+		if ((adhocRequestDto.getFromDate() != null && !(adhocRequestDto.getFromDate().equals("")))
+				&& (adhocRequestDto.getToDate() != null) && !(adhocRequestDto.getToDate().equals(""))) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			try {
+				Date d1 = (Date) sdf.parse(adhocRequestDto.getFromDate());
+				Date d2 = (Date) sdf.parse(adhocRequestDto.getToDate());
+				query.setParameter("fromDate", d1);
+				query.setParameter("toDate", d2);
+			} catch (ParseException e) {
+				LOGGER.error("Exception On Date format:" + e.getMessage());
+			}
+
+		}
+		if (adhocRequestDto.getCreatedBy() != null && !(adhocRequestDto.getCreatedBy().equals(""))) {
+			query.setParameter("userId", adhocRequestDto.getCreatedBy());
+		}
+		if (adhocRequestDto.getPartNo() != null && !(adhocRequestDto.getPartNo().equals(""))) {
+			query.setParameter("partNum", adhocRequestDto.getPartNo());
+		}
+
+		System.out.println(adhocRequestDto.getCreatedBy());
+		
+		List<AdhocOrderDto> list = new ArrayList<>();
+		@SuppressWarnings("unchecked")
+		List<AdhocOrders> objectsList = (List<AdhocOrders>) query.list();
+		System.out.println(objectsList.size());
+		
+		for (AdhocOrders ao : objectsList) {
+			list.add(exportAdhocOrdersDto(ao));
+		}
+
 		session.flush();
 		session.clear();
 		tx.commit();
 		session.close();
-		return AdhocOrderDtos;
+		return list;
 	}
 	//////////////////////////////////////////////////////////////////
 	public List<AdhocOrderDto> getKpi(int days,AdhocRequestDto adhocRequestDto)
