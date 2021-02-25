@@ -59,14 +59,14 @@ public class AdhocOrdersController {
 	
 	@RequestMapping(value = "/getDrafts", method = RequestMethod.POST, consumes = { "application/json" })
 	@ResponseBody
-	public List<AdhocOrderDto> getDrafts() {
-		return adhocOrdersService.getDrafts();
+	public List<AdhocOrderDto> getDrafts(@RequestBody AdhocRequestDto adhocRequestDto) {
+		return adhocOrdersService.getDrafts(adhocRequestDto);
 	}
 	
 	@RequestMapping(value = "/getKpiBasedResult/{days}", method = RequestMethod.POST, consumes = { "application/json" })
 	@ResponseBody
-	public List<AdhocOrderDto> getKpiBasedResult(@PathVariable(value = "days") int  days) {
-		return adhocOrdersService.getKpi(days);
+	public List<AdhocOrderDto> getKpiBasedResult(@PathVariable(value = "days") int  days,@RequestBody AdhocRequestDto adhocRequestDto) {
+		return adhocOrdersService.getKpi(days,adhocRequestDto);
 	}
 	
 

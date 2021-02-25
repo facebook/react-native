@@ -37,13 +37,7 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 		return adhocOrdersRepository.getAllAdhocOrders();
 	}
 	
-
-	@Override
-	public List<AdhocOrderDto> getKpi(int days) 
-	{
-		return adhocOrdersRepository.getKpi(days);
-		
-	}
+  
 
 	@Override
 	public ResponseDto addAdhocOrders(AdhocOrderDto AdhocOrderDto) {
@@ -179,8 +173,15 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 
 
 	@Override
-	public List<AdhocOrderDto> getDrafts() {
-		return adhocOrdersRepository.getDrafts();
+	public List<AdhocOrderDto> getDrafts(AdhocRequestDto adhocRequestDto) {
+		return adhocOrdersRepository.getDrafts(adhocRequestDto);
+	}
+
+
+
+	@Override
+	public List<AdhocOrderDto> getKpi(int days,AdhocRequestDto adhocRequestDto) {
+		return adhocOrdersRepository.getKpi(days,adhocRequestDto);
 	}
 
 

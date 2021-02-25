@@ -20,8 +20,12 @@ public interface AdhocOrdersRepository {
 	public AdhocOrders importAdhocOrdersDto(AdhocOrderDto adhocOrdersDto);
 
 	public List<AdhocOrderDto> getAllAdhocOrders();
-	public List<AdhocOrderDto> getKpi(int days);
-	public List<AdhocOrderDto> getDrafts();
+
+	//////////
+	List<AdhocOrderDto> getKpi(int days,AdhocRequestDto adhocRequestDto);
+	
+	
+	public List<AdhocOrderDto> getDrafts(AdhocRequestDto adhocRequestDto);
 
 	public ResponseDto addAdhocOrders(AdhocOrderDto adhocOrdersDto);
 	
