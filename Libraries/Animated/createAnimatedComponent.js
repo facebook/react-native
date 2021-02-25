@@ -299,6 +299,8 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       this._propsAnimated && this._propsAnimated.__detach();
       this._detachNativeEvents();
       this._markUpdateComplete();
+      this._component = null;
+      this._prevComponent = null;
     }
   }
 
