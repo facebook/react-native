@@ -10,6 +10,7 @@ package com.facebook.react.views.text;
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Layout;
@@ -24,7 +25,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.TintContextWrapper;
-import android.graphics.Canvas;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -456,7 +456,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
   }
 
-  @Override 
+  @Override
   public void onDraw(Canvas canvas) {
     super.onDraw(canvas);
     setTextIsSelectable(mSelectableText);
