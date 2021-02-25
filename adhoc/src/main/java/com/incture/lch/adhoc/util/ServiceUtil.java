@@ -387,8 +387,13 @@ public class ServiceUtil {
 	}
 
 	public static BigDecimal convertStringToBigDecimal(String input) {
+
+		if(input!=null && input.equalsIgnoreCase(""))
+		{
 		BigDecimal output = new BigDecimal(input);
 		return output;
+		}
+		return null;
 	}
 
 	public static Boolean convertStringToBoolean(String input) {
@@ -400,8 +405,13 @@ public class ServiceUtil {
 	}
 
 	public static Integer convertStringToInteger(String input) {
+		
+		if(input!=null && input.equalsIgnoreCase(""))
+		{
 		Integer output = Integer.parseInt(input);
 		return output;
+		}
+		return null;
 	}
 
 	public static String paddingZeros(String number) {

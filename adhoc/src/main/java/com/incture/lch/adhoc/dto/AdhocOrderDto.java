@@ -1,5 +1,7 @@
 package com.incture.lch.adhoc.dto;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -31,11 +33,16 @@ public class AdhocOrderDto {
 
 	private String destinationAddress;
 
-	private String dimensionL;
+	/*private String dimensionL;
 
 	private String dimensionH;
 
-	private String dimensionB;
+	private String dimensionB;*/
+	private BigDecimal dimensionL;
+	
+	private BigDecimal dimensionH;
+	
+	private BigDecimal dimensionB;
 
 	private String expectedDeliveryDate;
 
@@ -69,7 +76,16 @@ public class AdhocOrderDto {
 
 	private String projectNumber;
 
-	private String quantity;
+	//private String quantity;
+
+	private int  quantity;
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
 
 	private String reasonCode;
 
@@ -97,8 +113,10 @@ public class AdhocOrderDto {
 
 	private String value;
 
-	private String weight;
+//	private String weight;
 
+	
+	private BigDecimal weight;
 	private String vinNumber;
 
 	private String shipperNameFreeText;
@@ -241,7 +259,7 @@ public class AdhocOrderDto {
 		this.destinationAddress = destinationAddress;
 	}
 
-	public String getDimensionL() {
+	/*public String getDimensionL() {
 		return dimensionL;
 	}
 
@@ -264,7 +282,7 @@ public class AdhocOrderDto {
 	public void setDimensionB(String dimensionB) {
 		this.dimensionB = dimensionB;
 	}
-
+*/
 	public String getExpectedDeliveryDate() {
 		return expectedDeliveryDate;
 	}
@@ -393,13 +411,13 @@ public class AdhocOrderDto {
 		this.projectNumber = projectNumber;
 	}
 
-	public String getQuantity() {
+	/*public String getQuantity() {
 		return quantity;
 	}
 
 	public void setQuantity(String quantity) {
 		this.quantity = quantity;
-	}
+	}*/
 
 	public String getReasonCode() {
 		return reasonCode;
@@ -415,6 +433,38 @@ public class AdhocOrderDto {
 
 	public void setReceivingContact(String receivingContact) {
 		this.receivingContact = receivingContact;
+	}
+
+	public BigDecimal getDimensionL() {
+		return dimensionL;
+	}
+
+	public void setDimensionL(BigDecimal dimensionL) {
+		this.dimensionL = dimensionL;
+	}
+
+	public BigDecimal getDimensionH() {
+		return dimensionH;
+	}
+
+	public void setDimensionH(BigDecimal dimensionH) {
+		this.dimensionH = dimensionH;
+	}
+
+	public BigDecimal getDimensionB() {
+		return dimensionB;
+	}
+
+	public void setDimensionB(BigDecimal dimensionB) {
+		this.dimensionB = dimensionB;
+	}
+
+	public BigDecimal getWeight() {
+		return weight;
+	}
+
+	public void setWeight(BigDecimal weight) {
+		this.weight = weight;
 	}
 
 	public String getReferenceNumber() {
@@ -505,13 +555,13 @@ public class AdhocOrderDto {
 		this.value = value;
 	}
 
-	public String getWeight() {
+	/*public String getWeight() {
 		return weight;
 	}
 
 	public void setWeight(String weight) {
 		this.weight = weight;
-	}
+	}*/
 
 	public String getVinNumber() {
 		return vinNumber;
