@@ -236,14 +236,20 @@ jsi::Value UIManagerBinding::get(
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept -> jsi::Value {
+          auto eventTarget =
+              eventTargetFromValue(runtime, arguments[4], arguments[0]);
+          if (!eventTarget) {
+            react_native_assert(false);
+            return jsi::Value::undefined();
+          }
           return valueFromShadowNode(
               runtime,
               uiManager->createNode(
-                  tagFromValue(runtime, arguments[0]),
+                  tagFromValue(arguments[0]),
                   stringFromValue(runtime, arguments[1]),
                   surfaceIdFromValue(runtime, arguments[2]),
                   RawProps(runtime, arguments[3]),
-                  eventTargetFromValue(runtime, arguments[4], arguments[0])));
+                  eventTarget));
         });
   }
 

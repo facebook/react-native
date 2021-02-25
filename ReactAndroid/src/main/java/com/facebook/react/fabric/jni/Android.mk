@@ -11,7 +11,7 @@ LOCAL_MODULE := fabricjni
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
-LOCAL_SHARED_LIBRARIES := libreactconfig librrc_slider librrc_progressbar librrc_switch librrc_modal libyoga libglog libfb libfbjni libglog_init libfolly_json libfolly_futures libreact_render_mounting libreactnativeutilsjni libreact_utils libreact_render_debug libreact_render_graphics libreact_render_core libreact_render_mapbuffer react_render_componentregistry librrc_view librrc_unimplementedview librrc_root librrc_scrollview libbetter libreact_render_attributedstring libreact_render_uimanager libreact_render_templateprocessor libreact_render_scheduler libreact_render_animations libreact_render_imagemanager libreact_render_textlayoutmanager libreact_codegen_rncore rrc_text librrc_image rrc_textinput rrc_picker
+LOCAL_SHARED_LIBRARIES := libreactconfig librrc_slider librrc_progressbar librrc_switch librrc_modal libyoga libglog libfb libfbjni libglog_init libfolly_json libfolly_futures libreact_render_mounting libreactnativeutilsjni libreact_utils libreact_render_debug libreact_render_graphics libreact_render_core libreact_render_mapbuffer react_render_componentregistry librrc_view librrc_unimplementedview librrc_root librrc_scrollview libbetter libreact_render_attributedstring libreact_render_uimanager libreact_render_templateprocessor libreact_render_scheduler libreact_render_animations libreact_render_imagemanager libreact_render_textlayoutmanager libreact_codegen_rncore rrc_text librrc_image librrc_textinput librrc_picker libreact_debug
 
 LOCAL_STATIC_LIBRARIES :=
 
@@ -34,6 +34,7 @@ $(call import-module,yogajni)
 $(call import-module,glog)
 
 $(call import-module,react/utils)
+$(call import-module,react/debug)
 $(call import-module,react/config)
 $(call import-module,react/renderer/animations)
 $(call import-module,react/renderer/attributedstring)
