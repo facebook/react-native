@@ -28,12 +28,13 @@ function renderApplication<Props: Object>(
   showArchitectureIndicator?: boolean,
   scopedPerformanceLogger?: IPerformanceLogger,
   isLogBox?: boolean,
+  debugName?: string,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
   const performanceLogger = scopedPerformanceLogger ?? GlobalPerformanceLogger;
 
-  const renderable = (
+  let renderable = (
     <PerformanceLoggerContext.Provider value={performanceLogger}>
       <AppContainer
         rootTag={rootTag}
@@ -46,6 +47,16 @@ function renderApplication<Props: Object>(
       </AppContainer>
     </PerformanceLoggerContext.Provider>
   );
+
+  if (__DEV__ && debugName) {
+    const RootComponentWithMeaningfulName = ({children}) => children;
+    RootComponentWithMeaningfulName.displayName = `${debugName}(RootComponent)`;
+    renderable = (
+      <RootComponentWithMeaningfulName>
+        {renderable}
+      </RootComponentWithMeaningfulName>
+    );
+  }
 
   performanceLogger.startTimespan('renderApplication_React_render');
   performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
