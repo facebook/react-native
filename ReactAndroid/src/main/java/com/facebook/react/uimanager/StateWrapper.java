@@ -22,8 +22,8 @@ public interface StateWrapper {
   ReadableNativeMap getState();
 
   /**
-   * Pass a map of values back to the C++ layer. /Last/ runnable passed into updateState is called
-   * if an updateState call fails.
+   * Pass a map of values back to the C++ layer. The operation is performed synchronously and cannot
+   * fail.
    */
-  void updateState(WritableMap map, Runnable failureCallback);
+  void updateState(WritableMap map);
 }

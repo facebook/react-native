@@ -5,7 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "SynchronousEventBeat.h"
+#include "SynchronousEventBeat.h"
+
+#include <react/debug/react_native_assert.h>
 
 namespace facebook {
 namespace react {
@@ -23,7 +25,7 @@ SynchronousEventBeat::SynchronousEventBeat(
 void SynchronousEventBeat::activityDidChange(
     RunLoopObserver::Delegate const *delegate,
     RunLoopObserver::Activity activity) const noexcept {
-  assert(delegate == this);
+  react_native_assert(delegate == this);
   lockExecutorAndBeat();
 }
 

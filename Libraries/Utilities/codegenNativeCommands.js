@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import {dispatchCommand} from '../../Libraries/Renderer/shims/ReactNative';
 
 type Options<T = string> = $ReadOnly<{|

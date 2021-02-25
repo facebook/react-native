@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const BatchedBridge = require('../BatchedBridge/BatchedBridge');
 const BugReporting = require('../BugReporting/BugReporting');
 const ReactNative = require('../Renderer/shims/ReactNative');
@@ -18,9 +16,9 @@ const SceneTracker = require('../Utilities/SceneTracker');
 const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
 const renderApplication = require('./renderApplication');
-const createPerformanceLogger = require('../Utilities/createPerformanceLogger');
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
+import createPerformanceLogger from '../Utilities/createPerformanceLogger';
 import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
 
@@ -126,6 +124,7 @@ const AppRegistry = {
           showArchitectureIndicator,
           scopedPerformanceLogger,
           appKey === 'LogBox',
+          appKey,
         );
       },
     };

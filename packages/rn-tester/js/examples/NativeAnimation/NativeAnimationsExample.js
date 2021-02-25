@@ -195,13 +195,13 @@ class InternalSettings extends React.Component<
           initialValue={false}
           label="Track JS Stalls"
           onEnable={() => {
-            require('../../../../../Libraries/Interaction/JSEventLoopWatchdog').install(
+            require('react-native/Libraries/Interaction/JSEventLoopWatchdog').install(
               {
                 thresholdMS: 25,
               },
             );
             this.setState({busyTime: '<none>'});
-            require('../../../../../Libraries/Interaction/JSEventLoopWatchdog').addHandler(
+            require('react-native/Libraries/Interaction/JSEventLoopWatchdog').addHandler(
               {
                 onStall: ({busyTime}) =>
                   this.setState(state => ({
@@ -374,6 +374,7 @@ const styles = StyleSheet.create({
 
 exports.framework = 'React';
 exports.title = 'Native Animated Example';
+exports.category = 'UI';
 exports.description = 'Test out Native Animations';
 
 exports.examples = [

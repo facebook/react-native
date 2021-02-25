@@ -10,13 +10,14 @@
 #include <cassert>
 #include <cstring>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawPropsPrimitives.h>
 
 namespace facebook {
 namespace react {
 
-void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length) const
-    noexcept {
+void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length)
+    const noexcept {
   *length = 0;
 
   // Prefix
@@ -37,14 +38,14 @@ void RawPropsKey::render(char *buffer, RawPropsPropNameLength *length) const
     std::memcpy(buffer + *length, suffix, suffixLength);
     *length += suffixLength;
   }
-  assert(*length < kPropNameLengthHardCap);
+  react_native_assert(*length < kPropNameLengthHardCap);
 }
 
 RawPropsKey::operator std::string() const noexcept {
   char buffer[kPropNameLengthHardCap];
   RawPropsPropNameLength length = 0;
   render(buffer, &length);
-  assert(length < kPropNameLengthHardCap);
+  react_native_assert(length < kPropNameLengthHardCap);
   return std::string{buffer, length};
 }
 

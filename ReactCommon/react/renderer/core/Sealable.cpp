@@ -7,7 +7,7 @@
 
 #include "Sealable.h"
 
-#include <cassert>
+#include <react/debug/react_native_assert.h>
 
 namespace facebook {
 namespace react {
@@ -56,7 +56,7 @@ bool Sealable::getSealed() const {
 }
 
 void Sealable::ensureUnsealed() const {
-  assert(!sealed_ && "Attempt to mutate a sealed object.");
+  react_native_assert(!sealed_ && "Attempt to mutate a sealed object.");
 }
 
 #endif

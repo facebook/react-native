@@ -10,6 +10,7 @@
 #include <better/optional.h>
 #include <chrono>
 
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/MountingTransaction.h>
@@ -39,10 +40,7 @@ class MountingCoordinator final {
    * The constructor is meant to be used only inside `ShadowTree`, and it's
    * `public` only to enable using with `std::make_shared<>`.
    */
-  MountingCoordinator(
-      ShadowTreeRevision baseRevision,
-      std::weak_ptr<MountingOverrideDelegate const> delegate,
-      bool enableReparentingDetection = false);
+  MountingCoordinator(ShadowTreeRevision baseRevision);
 
   /*
    * Returns the id of the surface that the coordinator belongs to.
@@ -81,13 +79,16 @@ class MountingCoordinator final {
   void updateBaseRevision(ShadowTreeRevision const &baseRevision) const;
   void resetLatestRevision() const;
 
+  void setMountingOverrideDelegate(
+      std::weak_ptr<MountingOverrideDelegate const> delegate) const;
+
   /*
    * Methods from this section are meant to be used by `ShadowTree` only.
    */
  private:
   friend class ShadowTree;
 
-  void push(ShadowTreeRevision &&revision) const;
+  void push(ShadowTreeRevision const &revision) const;
 
   /*
    * Revokes the last pushed `ShadowTreeRevision`.
@@ -106,16 +107,12 @@ class MountingCoordinator final {
   mutable better::optional<ShadowTreeRevision> lastRevision_{};
   mutable MountingTransaction::Number number_{0};
   mutable std::condition_variable signal_;
-  std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate_;
+  mutable std::weak_ptr<MountingOverrideDelegate const>
+      mountingOverrideDelegate_;
 
   TelemetryController telemetryController_;
 
-  bool enableReparentingDetection_{false}; // temporary
-
 #ifdef RN_SHADOW_TREE_INTROSPECTION
-  void validateTransactionAgainstStubViewTree(
-      ShadowViewMutationList const &mutations,
-      bool assertEquality) const;
   mutable StubViewTree stubViewTree_; // Protected by `mutex_`.
 #endif
 };

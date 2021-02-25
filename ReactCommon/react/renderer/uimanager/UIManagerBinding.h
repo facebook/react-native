@@ -31,6 +31,12 @@ class UIManagerBinding : public jsi::HostObject {
   static std::shared_ptr<UIManagerBinding> createAndInstallIfNeeded(
       jsi::Runtime &runtime);
 
+  /*
+   * Returns a pointer to UIManagerBinding previously installed into a runtime.
+   * Thread synchronization must be enforced externally.
+   */
+  static std::shared_ptr<UIManagerBinding> getBinding(jsi::Runtime &runtime);
+
   ~UIManagerBinding();
 
   /*
@@ -47,8 +53,8 @@ class UIManagerBinding : public jsi::HostObject {
   void startSurface(
       jsi::Runtime &runtime,
       SurfaceId surfaceId,
-      const std::string &moduleName,
-      const folly::dynamic &initalProps) const;
+      std::string const &moduleName,
+      folly::dynamic const &initalProps) const;
 
   /*
    * Stops React Native Surface with given id.
@@ -62,9 +68,9 @@ class UIManagerBinding : public jsi::HostObject {
    */
   void dispatchEvent(
       jsi::Runtime &runtime,
-      const EventTarget *eventTarget,
-      const std::string &type,
-      const ValueFactory &payloadFactory) const;
+      EventTarget const *eventTarget,
+      std::string const &type,
+      ValueFactory const &payloadFactory) const;
 
   /*
    * Invalidates the binding and underlying UIManager.
@@ -78,11 +84,11 @@ class UIManagerBinding : public jsi::HostObject {
   /*
    * `jsi::HostObject` specific overloads.
    */
-  jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &name) override;
+  jsi::Value get(jsi::Runtime &runtime, jsi::PropNameID const &name) override;
 
  private:
   std::shared_ptr<UIManager> uiManager_;
-  std::unique_ptr<const EventHandler> eventHandler_;
+  std::unique_ptr<EventHandler const> eventHandler_;
 };
 
 } // namespace react

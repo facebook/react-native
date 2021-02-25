@@ -21,17 +21,19 @@ import android.view.FocusFinder;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.HorizontalScrollView;
 import android.widget.OverScroller;
 import androidx.annotation.Nullable;
 import androidx.core.text.TextUtilsCompat;
+import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PixelUtil;
@@ -103,6 +105,23 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     super(context);
     mReactBackgroundManager = new ReactViewBackgroundManager(this);
     mFpsListener = fpsListener;
+
+    ViewCompat.setAccessibilityDelegate(
+        this,
+        new AccessibilityDelegateCompat() {
+          @Override
+          public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
+            super.onInitializeAccessibilityEvent(host, event);
+            event.setScrollable(mScrollEnabled);
+          }
+
+          @Override
+          public void onInitializeAccessibilityNodeInfo(
+              View host, AccessibilityNodeInfoCompat info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            info.setScrollable(mScrollEnabled);
+          }
+        });
 
     mScroller = getOverScrollerFromParent();
   }
@@ -246,6 +265,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     int scrollToY =
         pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
     reactScrollTo(scrollToX, scrollToY);
+    ReactScrollViewHelper.emitLayoutEvent(this);
   }
 
   /**
@@ -525,9 +545,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
-    return ReactFeatureFlags.clipChildRectsIfOverflowIsHidden
-        ? ReactClippingViewGroupHelper.getChildVisibleRectHelper(child, r, offset, this, mOverflow)
-        : super.getChildVisibleRect(child, r, offset);
+    return super.getChildVisibleRect(child, r, offset);
   }
 
   private int getSnapInterval() {
@@ -796,7 +814,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
 
     // get the nearest snap points to the target offset
-    if (mSnapOffsets != null) {
+    if (mSnapOffsets != null && !mSnapOffsets.isEmpty()) {
       firstOffset = mSnapOffsets.get(0);
       lastOffset = mSnapOffsets.get(mSnapOffsets.size() - 1);
 

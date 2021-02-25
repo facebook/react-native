@@ -16,6 +16,7 @@ fb_native.remote_file(
 rn_android_library(
     name = "annotations",
     srcs = glob(["*.java"]),
+    autoglob = False,
     proguard_config = "proguard_annotations.pro",
     visibility = [
         "PUBLIC",

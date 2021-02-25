@@ -8,23 +8,10 @@
  * @flow
  */
 
-'use strict';
-
-import type {ComponentType} from 'react';
 import * as React from 'react';
 
-export type RNTesterProps = $ReadOnly<{|
-  navigator?: ?$ReadOnlyArray<
-    $ReadOnly<{|
-      title: string,
-      component: ComponentType<any>,
-      backButtonTitle: string,
-      passProps: any,
-    |}>,
-  >,
-|}>;
-
 export type RNTesterExampleModuleItem = $ReadOnly<{|
+  name?: string,
   title: string,
   platform?: string,
   description?: string,
@@ -33,14 +20,47 @@ export type RNTesterExampleModuleItem = $ReadOnly<{|
 
 export type RNTesterExampleModule = $ReadOnly<{|
   title: string,
+  testTitle?: ?string,
   description: string,
   displayName?: ?string,
+  documentationURL?: ?string,
+  category?: ?string,
   framework?: string,
   examples: Array<RNTesterExampleModuleItem>,
   simpleExampleContainer?: ?boolean,
+  category?: string,
+  documentationURL?: string,
 |}>;
 
 export type RNTesterExample = $ReadOnly<{|
   key: string,
   module: RNTesterExampleModule,
+  category?: string,
+  supportsTVOS?: boolean,
+  documentationURL?: string,
+  isBookmarked?: boolean,
+  exampleType?: 'components' | 'apis',
 |}>;
+
+export type SectionData = {
+  key: string,
+  title: string,
+  data: Array<RNTesterExample>,
+};
+
+export type ExamplesList = $ReadOnly<{|
+  components: SectionData[],
+  apis: SectionData[],
+  bookmarks: SectionData[],
+|}>;
+
+export type ScreenTypes = 'components' | 'apis' | 'bookmarks' | null;
+
+export type ComponentList = null | {components: string[], apis: string[]};
+
+export type RNTesterState = {
+  openExample: null | string,
+  screen: ScreenTypes,
+  bookmarks: ComponentList,
+  recentlyUsed: ComponentList,
+};

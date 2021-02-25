@@ -57,16 +57,14 @@ ShadowViewMutation ShadowViewMutation::RemoveMutation(
 }
 
 ShadowViewMutation ShadowViewMutation::UpdateMutation(
-    ShadowView parentShadowView,
     ShadowView oldChildShadowView,
-    ShadowView newChildShadowView,
-    int index) {
+    ShadowView newChildShadowView) {
   return {
       /* .type = */ Update,
-      /* .parentShadowView = */ parentShadowView,
+      /* .parentShadowView = */ {},
       /* .oldChildShadowView = */ oldChildShadowView,
       /* .newChildShadowView = */ newChildShadowView,
-      /* .index = */ index,
+      /* .index = */ -1,
   };
 }
 

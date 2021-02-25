@@ -11,8 +11,6 @@
 'use strict';
 
 const React = require('react');
-
-const {SimpleAlertExampleBlock} = require('./AlertExample');
 const {
   StyleSheet,
   View,
@@ -20,6 +18,10 @@ const {
   TouchableHighlight,
   Alert,
 } = require('react-native');
+
+const {examples: SharedAlertExamples} = require('./AlertExample');
+
+import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
 
 type Props = $ReadOnly<{||}>;
 type State = {|promptValue: ?string|};
@@ -152,15 +154,11 @@ const styles = StyleSheet.create({
 });
 
 exports.framework = 'React';
-exports.title = 'Alert';
+exports.title = 'Alerts';
 exports.description = 'iOS alerts and action sheets';
-exports.examples = [
-  {
-    title: 'Alerts',
-    render(): React.Node {
-      return <SimpleAlertExampleBlock />;
-    },
-  },
+exports.documentationURL = 'https://reactnative.dev/docs/alert';
+exports.examples = ([
+  ...SharedAlertExamples,
   {
     title: 'Prompt Options',
     render(): React.Element<any> {
@@ -201,4 +199,4 @@ exports.examples = [
       );
     },
   },
-];
+]: RNTesterExampleModuleItem[]);

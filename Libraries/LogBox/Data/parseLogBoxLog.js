@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import UTFSequence from '../../UTFSequence';
 import stringifySafe from '../../Utilities/stringifySafe';
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';
@@ -131,8 +129,8 @@ export function parseInterpolation(
 }
 
 function isComponentStack(consoleArgument: string) {
-  const isOldComponentStackFormat = /\s{4}in/.test(consoleArgument);
-  const isNewComponentStackFormat = /\s{4}at/.test(consoleArgument);
+  const isOldComponentStackFormat = / {4}in/.test(consoleArgument);
+  const isNewComponentStackFormat = / {4}at/.test(consoleArgument);
   const isNewJSCComponentStackFormat = /@.*\n/.test(consoleArgument);
 
   return (

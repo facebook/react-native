@@ -6,6 +6,7 @@
  */
 
 #include <jsi/test/testlib.h>
+
 #include <gtest/gtest.h>
 #include <jsi/decorator.h>
 #include <jsi/jsi.h>
@@ -392,6 +393,23 @@ TEST_P(JSITest, HostObjectTest) {
   EXPECT_FALSE(hasOwnPropertyName
                    .call(rt, howpn, String::createFromAscii(rt, "not_existing"))
                    .getBool());
+}
+
+TEST_P(JSITest, HostObjectProtoTest) {
+  class ProtoHostObject : public HostObject {
+    Value get(Runtime& rt, const PropNameID&) override {
+      return String::createFromAscii(rt, "phoprop");
+    }
+  };
+
+  rt.global().setProperty(
+      rt,
+      "pho",
+      Object::createFromHostObject(rt, std::make_shared<ProtoHostObject>()));
+
+  EXPECT_EQ(
+      eval("({__proto__: pho})[Symbol.toPrimitive]").getString(rt).utf8(rt),
+      "phoprop");
 }
 
 TEST_P(JSITest, ArrayTest) {

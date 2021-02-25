@@ -262,6 +262,7 @@ class TimerTester extends React.Component<TimerTesterProps> {
 
 exports.framework = 'React';
 exports.title = 'Timers';
+exports.category = 'UI';
 exports.description = 'A demonstration of Timers in React Native.';
 
 exports.examples = [

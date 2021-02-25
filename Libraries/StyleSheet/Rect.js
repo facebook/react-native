@@ -8,8 +8,6 @@
  * @flow strict
  */
 
-'use strict';
-
 export type Rect = $ReadOnly<{|
   bottom?: ?number,
   left?: ?number,

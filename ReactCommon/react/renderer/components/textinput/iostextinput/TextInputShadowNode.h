@@ -37,6 +37,7 @@ class TextInputShadowNode : public ConcreteViewShadowNode<
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::TextKind);
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    traits.set(ShadowNodeTraits::Trait::MeasurableYogaNode);
     return traits;
   }
 

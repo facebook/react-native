@@ -1,0 +1,17 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+java_library(
+    name = "robolectric",
+    srcs = [],
+    labels = [
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    resources = [
+        "robolectric.properties",
+    ],
+    resources_root = ".",
+    visibility = ["PUBLIC"],
+)

@@ -8,7 +8,7 @@
 package com.facebook.react.codegen.generator.model;
 
 public final class PromiseType extends Type {
-  public static final String TYPE_NAME = "GenericPromiseTypeAnnotation";
+  public static final String TYPE_NAME = "PromiseTypeAnnotation";
 
   public PromiseType(final TypeId typeId) {
     super(typeId);

@@ -9,6 +9,7 @@
 
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
@@ -175,7 +176,7 @@ inline std::string toString(const FontStyle &fontStyle) {
 }
 
 inline void fromRawValue(const RawValue &value, FontVariant &result) {
-  assert(value.hasType<std::vector<std::string>>());
+  react_native_assert(value.hasType<std::vector<std::string>>());
   result = FontVariant::Default;
   auto items = std::vector<std::string>{value};
   for (const auto &item : items) {
@@ -767,6 +768,10 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   if (textAttributes.layoutDirection.has_value()) {
     _textAttributes(
         "layoutDirection", toString(*textAttributes.layoutDirection));
+  }
+  if (textAttributes.accessibilityRole.has_value()) {
+    _textAttributes(
+        "accessibilityRole", toString(*textAttributes.accessibilityRole));
   }
   return _textAttributes;
 }

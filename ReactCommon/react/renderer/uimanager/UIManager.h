@@ -10,6 +10,8 @@
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
 
+#include <ReactCommon/RuntimeExecutor.h>
+
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/core/ShadowNode.h>
@@ -25,6 +27,7 @@ namespace facebook {
 namespace react {
 
 class UIManagerBinding;
+class UIManagerCommitHook;
 
 class UIManager final : public ShadowTreeDelegate {
  public:
@@ -41,6 +44,8 @@ class UIManager final : public ShadowTreeDelegate {
   void setDelegate(UIManagerDelegate *delegate);
   UIManagerDelegate *getDelegate();
 
+  void setRuntimeExecutor(RuntimeExecutor const &runtimeExecutor);
+
   void setBackgroundExecutor(BackgroundExecutor const &backgroundExecutor);
 
   /**
@@ -49,6 +54,11 @@ class UIManager final : public ShadowTreeDelegate {
    * the pointer before being destroyed.
    */
   void setAnimationDelegate(UIManagerAnimationDelegate *delegate);
+
+  /**
+   * Execute stopSurface on any UIMAnagerAnimationDelegate.
+   */
+  void stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const;
 
   void animationTick();
 
@@ -59,8 +69,28 @@ class UIManager final : public ShadowTreeDelegate {
    * The callback is called synchronously on the same thread.
    */
   void visitBinding(
-      std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
-      const;
+      std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
+      jsi::Runtime &runtime) const;
+
+  /*
+   * Registers and unregisters a commit hook.
+   */
+  void registerCommitHook(UIManagerCommitHook const &commitHook) const;
+  void unregisterCommitHook(UIManagerCommitHook const &commitHook) const;
+
+  ShadowNode::Shared getNewestCloneOfShadowNode(
+      ShadowNode const &shadowNode) const;
+
+#pragma mark - Surface Start & Stop
+
+  ShadowTree const &startSurface(
+      SurfaceId surfaceId,
+      std::string const &moduleName,
+      folly::dynamic const &props,
+      LayoutConstraints const &layoutConstraints,
+      LayoutContext const &layoutContext) const;
+
+  void stopSurface(SurfaceId surfaceId) const;
 
 #pragma mark - ShadowTreeDelegate
 
@@ -68,9 +98,15 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override;
 
+  RootShadowNode::Unshared shadowTreeWillCommit(
+      ShadowTree const &shadowTree,
+      RootShadowNode::Shared const &oldRootShadowNode,
+      RootShadowNode::Unshared const &newRootShadowNode) const override;
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
+  friend class SurfaceHandler;
 
   ShadowNode::Shared createNode(
       Tag tag,
@@ -90,23 +126,16 @@ class UIManager final : public ShadowTreeDelegate {
 
   void completeSurface(
       SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildren) const;
+      SharedShadowNodeUnsharedList const &rootChildren,
+      ShadowTree::CommitOptions commitOptions) const;
 
-  void setNativeProps(ShadowNode const &shadowNode, RawProps const &rawProps)
-      const;
-
-  void setJSResponder(
-      const ShadowNode::Shared &shadowNode,
-      const bool blockNativeResponder) const;
-
-  void clearJSResponder() const;
+  void setIsJSResponder(
+      ShadowNode::Shared const &shadowNode,
+      bool isJSResponder) const;
 
   ShadowNode::Shared findNodeAtPoint(
       ShadowNode::Shared const &shadowNode,
       Point point) const;
-
-  ShadowNode::Shared getNewestCloneOfShadowNode(
-      ShadowNode const &shadowNode) const;
 
   /*
    * Returns layout metrics of given `shadowNode` relative to
@@ -129,6 +158,10 @@ class UIManager final : public ShadowTreeDelegate {
       std::string const &commandName,
       folly::dynamic const args) const;
 
+  void sendAccessibilityEvent(
+      const ShadowNode::Shared &shadowNode,
+      std::string const &eventType);
+
   /**
    * Configure a LayoutAnimation to happen on the next commit.
    * This API configures a global LayoutAnimation starting from the root node.
@@ -136,8 +169,8 @@ class UIManager final : public ShadowTreeDelegate {
   void configureNextLayoutAnimation(
       jsi::Runtime &runtime,
       RawValue const &config,
-      const jsi::Value &successCallback,
-      const jsi::Value &failureCallback) const;
+      jsi::Value const &successCallback,
+      jsi::Value const &failureCallback) const;
 
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 
@@ -145,8 +178,14 @@ class UIManager final : public ShadowTreeDelegate {
   UIManagerDelegate *delegate_;
   UIManagerAnimationDelegate *animationDelegate_{nullptr};
   UIManagerBinding *uiManagerBinding_;
+  RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
   BackgroundExecutor backgroundExecutor_{};
+
+  mutable better::shared_mutex commitHookMutex_;
+  mutable std::vector<UIManagerCommitHook const *> commitHooks_;
+
+  bool extractUIManagerBindingOnDemand_{};
 };
 
 } // namespace react

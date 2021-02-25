@@ -13,7 +13,8 @@
 'use strict';
 
 const babelRegisterOnly = require('metro-babel-register');
-const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
+const createCacheKeyFunction = require('@jest/create-cache-key-function')
+  .default;
 
 const {transformSync: babelTransformSync} = require('@babel/core');
 const generate = require('@babel/generator').default;
@@ -100,6 +101,7 @@ module.exports = {
 
     return generate(
       ast,
+      // $FlowFixMe[prop-missing] Error found when improving flow typing for libs
       {
         code: true,
         comments: false,

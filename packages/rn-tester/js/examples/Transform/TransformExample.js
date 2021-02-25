@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import React, {useEffect, useState} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 
@@ -237,6 +235,8 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'Transforms';
+exports.category = 'UI';
+exports.documentationURL = 'https://reactnative.dev/docs/transforms';
 exports.description = 'View transforms';
 exports.examples = [
   {

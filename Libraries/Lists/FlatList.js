@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const Platform = require('../Utilities/Platform');
 const deepDiffer = require('../Utilities/differ/deepDiffer');
 const React = require('react');
@@ -19,8 +17,8 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 
 const invariant = require('invariant');
 
+import typeof ScrollViewNativeComponent from '../Components/ScrollView/ScrollViewNativeComponent';
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
-import type {ScrollViewNativeComponentType} from '../Components/ScrollView/ScrollViewNativeComponentType.js';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewToken,
@@ -373,7 +371,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    */
   getNativeScrollRef():
     | ?React.ElementRef<typeof View>
-    | ?React.ElementRef<ScrollViewNativeComponentType> {
+    | ?React.ElementRef<ScrollViewNativeComponent> {
     if (this._listRef) {
       return this._listRef.getScrollRef();
     }
@@ -511,9 +509,12 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
           'array with 1-%s columns; instead, received a single item.',
         numColumns,
       );
-      return items
-        .map((it, kk) => keyExtractor(it, index * numColumns + kk))
-        .join(':');
+      return (
+        items
+          // $FlowFixMe[incompatible-call]
+          .map((it, kk) => keyExtractor(it, index * numColumns + kk))
+          .join(':')
+      );
     } else {
       // $FlowFixMe Can't call keyExtractor with an array
       return keyExtractor(items, index);
@@ -575,6 +576,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         // $FlowFixMe Component isn't valid
         return <ListItemComponent {...props} />;
       } else if (renderItem) {
+        // $FlowFixMe[incompatible-call]
         return renderItem(props);
       } else {
         return null;

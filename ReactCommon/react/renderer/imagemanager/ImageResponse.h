@@ -23,12 +23,18 @@ class ImageResponse final {
     Failed,
   };
 
-  ImageResponse(const std::shared_ptr<void> &image);
+  ImageResponse(
+      const std::shared_ptr<void> &image,
+      const std::shared_ptr<void> &metadata);
 
   std::shared_ptr<void> getImage() const;
 
+  std::shared_ptr<void> getMetadata() const;
+
  private:
   std::shared_ptr<void> image_{};
+
+  std::shared_ptr<void> metadata_{};
 };
 
 } // namespace react

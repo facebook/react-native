@@ -16,11 +16,8 @@ const NativeTiming = {
   setSendIdleEvents: jest.fn(),
 };
 
-const warning = jest.fn();
-
 jest
   .enableAutomock()
-  .mock('fbjs/lib/warning', () => warning, {virtual: true})
   .mock('../NativeTiming', () => ({
     __esModule: true,
     default: NativeTiming,
@@ -30,12 +27,13 @@ jest
 const JSTimers = require('../JSTimers');
 
 describe('JSTimers', function() {
-  const firstArgumentOfTheLastCallTo = function(func) {
-    return func.mock.calls[func.mock.calls.length - 1][0];
-  };
-
   beforeEach(function() {
+    jest.spyOn(console, 'warn');
     global.setTimeout = JSTimers.setTimeout;
+  });
+
+  afterEach(() => {
+    console.warn.mockRestore();
   });
 
   it('should call function with setTimeout', function() {
@@ -277,12 +275,12 @@ describe('JSTimers', function() {
     JSTimers.clearTimeout(timerID);
     JSTimers.callTimers([timerID]);
     expect(callback).not.toBeCalled();
-    expect(firstArgumentOfTheLastCallTo(warning)).toBe(true);
+    expect(console.warn).not.toBeCalled();
   });
 
   it('should warn when callTimers is called with garbage timer id', function() {
     JSTimers.callTimers([1337]);
-    expect(firstArgumentOfTheLastCallTo(warning)).toBe(false);
+    expect(console.warn).toBeCalled();
   });
 
   it('should only call callback once for setTimeout', function() {
@@ -294,7 +292,7 @@ describe('JSTimers', function() {
     // Second time it should be ignored
     JSTimers.callTimers([timerID]);
     expect(callback).toBeCalledTimes(1);
-    expect(firstArgumentOfTheLastCallTo(warning)).toBe(true);
+    expect(console.warn).not.toBeCalled();
   });
 
   it('should only call callback once for requestAnimationFrame', function() {
@@ -306,7 +304,7 @@ describe('JSTimers', function() {
     // Second time it should be ignored
     JSTimers.callTimers([timerID]);
     expect(callback).toBeCalledTimes(1);
-    expect(firstArgumentOfTheLastCallTo(warning)).toBe(true);
+    expect(console.warn).not.toBeCalled();
   });
 
   it('should re-throw first exception', function() {
