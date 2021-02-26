@@ -42,16 +42,18 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
   private static final String TAG = "ReactTextAnchorViewManager";
+  private Integer mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
 
   // maxLines can only be set in master view (block), doesn't really make sense to set in a span
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
   public void setNumberOfLines(ReactTextView view, int numberOfLines) {
+    mNumberOfLines = numberOfLines;
     view.setNumberOfLines(numberOfLines);
   }
 
   @ReactProp(name = ViewProps.ELLIPSIZE_MODE)
   public void setEllipsizeMode(ReactTextView view, @Nullable String ellipsizeMode) {
-    if (ellipsizeMode == null || ellipsizeMode.equals("tail")) {
+    if (ellipsizeMode == null || mNumberOfLines > 1 || ellipsizeMode.equals("tail")) {
       view.setEllipsizeLocation(TextUtils.TruncateAt.END);
     } else if (ellipsizeMode.equals("head")) {
       view.setEllipsizeLocation(TextUtils.TruncateAt.START);
