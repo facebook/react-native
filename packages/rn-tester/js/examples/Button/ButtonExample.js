@@ -176,8 +176,8 @@ exports.examples = [
   },
   {
     title: 'Button with accessibilityState={{disabled: true}}',
-    description: ('Note: This prop will announce on TalkBack that the button is disabled ' +
-      'onPress functionality has to be disabled by the buttons own disabled prop': string),
+    description: ('Note: This prop will announce on TalkBack that the button is disabled. ' +
+      'The "disabled" prop has higher precedence on the state of the component': string),
     render: function(): React.Node {
       return (
         <RNTesterThemeContext.Consumer>
