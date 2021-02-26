@@ -1621,6 +1621,7 @@ NSString* const downArrowPressKey = @"ArrowDown";
   BOOL rightArrowKey = NO;
   BOOL upArrowKey = NO;
   BOOL downArrowKey = NO;
+  BOOL tabKeyPressed = NO;
   BOOL escapeKeyPressed = NO;
   NSString *key = event.charactersIgnoringModifiers;
   unichar const code = [key characterAtIndex:0];
@@ -1636,9 +1637,16 @@ NSString* const downArrowPressKey = @"ArrowDown";
     downArrowKey = YES;
   }
   
-  // detect Escape key presses via the key code
-  if (event.keyCode == 53) {
-    escapeKeyPressed = YES;
+  // detect special key presses via the key code
+  switch (event.keyCode) {
+    case 48: // Tab
+      tabKeyPressed = YES;
+      break;
+    case 53: // Escape
+      escapeKeyPressed = YES;
+      break;
+    default:
+      break;
   }
 
   // detect modifier flags
@@ -1663,7 +1671,7 @@ NSString* const downArrowPressKey = @"ArrowDown";
   RCTViewKeyboardEvent *keyboardEvent = nil;
   // only post events for keys we care about
   if (downPress) {
-    NSString *keyToReturn = [self keyIsValid:key left:leftArrowKey right:rightArrowKey up:upArrowKey down:downArrowKey escapeKey:escapeKeyPressed validKeys:[self validKeysDown]];
+    NSString *keyToReturn = [self keyIsValid:key left:leftArrowKey right:rightArrowKey up:upArrowKey down:downArrowKey tabKey:tabKeyPressed escapeKey:escapeKeyPressed validKeys:[self validKeysDown]];
     if (keyToReturn != nil) {
       keyboardEvent = [RCTViewKeyboardEvent keyDownEventWithReactTag:self.reactTag
                                                          capsLockKey:capsLockKey
@@ -1681,7 +1689,7 @@ NSString* const downArrowPressKey = @"ArrowDown";
                                                                  key:keyToReturn];
     }
   } else {
-    NSString *keyToReturn = [self keyIsValid:key left:leftArrowKey right:rightArrowKey up:upArrowKey down:downArrowKey escapeKey:escapeKeyPressed validKeys:[self validKeysUp]];
+    NSString *keyToReturn = [self keyIsValid:key left:leftArrowKey right:rightArrowKey up:upArrowKey down:downArrowKey tabKey:tabKeyPressed escapeKey:escapeKeyPressed validKeys:[self validKeysUp]];
     if (keyToReturn != nil) {
       keyboardEvent = [RCTViewKeyboardEvent keyUpEventWithReactTag:self.reactTag
                                                        capsLockKey:capsLockKey
@@ -1704,18 +1712,21 @@ NSString* const downArrowPressKey = @"ArrowDown";
 
 // check if the user typed key matches a key we need to send an event for
 // translate key codes over to JS compatible keys
-- (NSString*)keyIsValid:(NSString*)key left:(BOOL)leftArrowPressed right:(BOOL)rightArrowPressed up:(BOOL)upArrowPressed down:(BOOL)downArrowPressed escapeKey:(BOOL)escapeKeyPressed validKeys:(NSArray<NSString*>*)validKeys {
+- (NSString*)keyIsValid:(NSString*)key left:(BOOL)leftArrowPressed right:(BOOL)rightArrowPressed up:(BOOL)upArrowPressed down:(BOOL)downArrowPressed tabKey:(BOOL)tabKeyPressed escapeKey:(BOOL)escapeKeyPressed validKeys:(NSArray<NSString*>*)validKeys {
   NSString *keyToReturn = key;
 
   // Allow the flexibility of defining special keys in multiple ways
   BOOL enterKeyValidityCheck = [key isEqualToString:@"\r"] && ([validKeys containsObject:@"Enter"] || [validKeys containsObject:@"\r"]);
+  BOOL tabKeyValidityCheck = tabKeyPressed && ([validKeys containsObject:@"Tab"]); // tab has to be checked via a key code so we can't just use the key itself here
   BOOL escapeKeyValidityCheck = escapeKeyPressed && ([validKeys containsObject:@"Esc"] || [validKeys containsObject:@"Escape"]); // escape has to be checked via a key code so we can't just use the key itself here
   BOOL leftArrowValidityCheck = [validKeys containsObject:leftArrowPressKey] && leftArrowPressed;
   BOOL rightArrowValidityCheck = [validKeys containsObject:rightArrowPressKey] && rightArrowPressed;
   BOOL upArrowValidityCheck = [validKeys containsObject:upArrowPressKey] && upArrowPressed;
   BOOL downArrowValidityCheck = [validKeys containsObject:downArrowPressKey] && downArrowPressed;
 
-  if (escapeKeyValidityCheck) {
+if (tabKeyValidityCheck) {
+    keyToReturn = @"Tab";
+  } else if (escapeKeyValidityCheck) {
     keyToReturn = @"Escape";
   } else if (enterKeyValidityCheck) {
     keyToReturn = @"Enter";

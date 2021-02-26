@@ -54,7 +54,7 @@ class KeyEventExample extends React.Component<{}, State> {
             <View
               acceptsKeyboardFocus={true}
               enableFocusRing={true}
-              validKeysDown={['g', 'Escape', 'Enter', 'ArrowLeft']}
+              validKeysDown={['g', 'Tab', 'Esc', 'Enter', 'ArrowLeft']}
               onKeyDown={this.onKeyDownEvent}
               validKeysUp={['c', 'd']}
               onKeyUp={this.onKeyUpEvent}>
