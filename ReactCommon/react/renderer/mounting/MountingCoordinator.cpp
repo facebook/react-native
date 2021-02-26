@@ -14,6 +14,7 @@
 
 #include <condition_variable>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook {
@@ -37,7 +38,7 @@ void MountingCoordinator::push(ShadowTreeRevision const &revision) const {
   {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    assert(
+    react_native_assert(
         !lastRevision_.has_value() || revision.number != lastRevision_->number);
 
     if (!lastRevision_.has_value() || lastRevision_->number < revision.number) {
@@ -162,7 +163,8 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
         }
       }
 
-      assert((treesEqual) && "Incorrect set of mutations detected.");
+      react_native_assert(
+          (treesEqual) && "Incorrect set of mutations detected.");
     }
   }
 #endif

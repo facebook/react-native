@@ -12,6 +12,7 @@
 
 #include <yoga/YGNode.h>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/YogaStylableProps.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/Sealable.h>
@@ -185,10 +186,10 @@ inline YogaLayoutableShadowNode const &
 traitCast<YogaLayoutableShadowNode const &>(ShadowNode const &shadowNode) {
   bool castable =
       shadowNode.getTraits().check(ShadowNodeTraits::Trait::YogaLayoutableKind);
-  assert(
+  react_native_assert(
       castable ==
       (dynamic_cast<YogaLayoutableShadowNode const *>(&shadowNode) != nullptr));
-  assert(castable);
+  react_native_assert(castable);
   (void)castable;
   return static_cast<YogaLayoutableShadowNode const &>(shadowNode);
 }
@@ -201,7 +202,7 @@ traitCast<YogaLayoutableShadowNode const *>(ShadowNode const *shadowNode) {
   }
   bool castable = shadowNode->getTraits().check(
       ShadowNodeTraits::Trait::YogaLayoutableKind);
-  assert(
+  react_native_assert(
       castable ==
       (dynamic_cast<YogaLayoutableShadowNode const *>(shadowNode) != nullptr));
   if (!castable) {

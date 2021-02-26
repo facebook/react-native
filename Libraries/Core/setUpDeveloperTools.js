@@ -17,8 +17,8 @@ declare var console: typeof console & {_isPolyfilled: boolean, ...};
  * You can use this module directly, or just require InitializeCore.
  */
 if (__DEV__) {
-  // TODO (T45803484) Enable devtools for bridgeless RN
-  if (!global.RN$Bridgeless) {
+  // TODO (T45803484) Enable devtools for bridgeless RN Android.
+  if (!global.RN$Bridgeless || Platform.OS === 'ios') {
     if (!global.__RCTProfileIsProfiling) {
       require('./setUpReactDevTools');
 

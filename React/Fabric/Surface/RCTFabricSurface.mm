@@ -34,6 +34,12 @@ using namespace facebook::react;
   // hence we wrap a value into `optional` to workaround it.
   better::optional<SurfaceHandler> _surfaceHandler;
 
+  // Protects Surface's start and stop processes.
+  // Even though SurfaceHandler is tread-safe, it will crash if we try to stop a surface that is not running.
+  // To make the API easy to use, we check the status of the surface before calling `start` or `stop`,
+  // and we need this mutex to prevent races.
+  std::mutex _surfaceMutex;
+
   // Can be accessed from the main thread only.
   RCTSurfaceView *_Nullable _view;
   RCTSurfaceTouchHandler *_Nullable _touchHandler;
@@ -81,6 +87,12 @@ using namespace facebook::react;
 
 - (BOOL)start
 {
+  std::lock_guard<std::mutex> lock(_surfaceMutex);
+
+  if (_surfaceHandler->getStatus() != SurfaceHandler::Status::Registered) {
+    return NO;
+  }
+
   _surfaceHandler->start();
   [self _propagateStageChange];
 
@@ -95,6 +107,12 @@ using namespace facebook::react;
 
 - (BOOL)stop
 {
+  std::lock_guard<std::mutex> lock(_surfaceMutex);
+
+  if (_surfaceHandler->getStatus() != SurfaceHandler::Status::Running) {
+    return NO;
+  }
+
   _surfaceHandler->stop();
   [self _propagateStageChange];
 

@@ -67,6 +67,11 @@ def get_apple_inspector_flags():
 def get_android_inspector_flags():
     return []
 
+def get_react_native_preprocessor_flags():
+    # TODO: use this to define the compiler flag REACT_NATIVE_DEBUG in debug/dev mode builds only.
+    # This is a replacement for NDEBUG since NDEBUG is always defined in Buck on all Android builds.
+    return []
+
 # Building is not supported in OSS right now
 def rn_xplat_cxx_library(name, **kwargs):
     new_kwargs = {

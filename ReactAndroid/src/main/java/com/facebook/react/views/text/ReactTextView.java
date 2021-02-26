@@ -31,6 +31,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -265,11 +266,13 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setText(ReactTextUpdate update) {
     mContainsImages = update.containsImages();
-    // Android's TextView crashes when it tries to relayout if LayoutParams are
-    // null; explicitly set the LayoutParams to prevent this crash. See:
-    // https://github.com/facebook/react-native/pull/7011
-    if (getLayoutParams() == null) {
-      setLayoutParams(EMPTY_LAYOUT_PARAMS);
+    if (ReactFeatureFlags.enableSettingEmptyLayoutParams) {
+      // Android's TextView crashes when it tries to relayout if LayoutParams are
+      // null; explicitly set the LayoutParams to prevent this crash. See:
+      // https://github.com/facebook/react-native/pull/7011
+      if (getLayoutParams() == null) {
+        setLayoutParams(EMPTY_LAYOUT_PARAMS);
+      }
     }
     Spannable spannable = update.getText();
     if (mLinkifyMaskType > 0) {

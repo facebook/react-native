@@ -85,7 +85,7 @@ const ComponentExamples: Array<RNTesterExample> = [
     category: 'ListView',
   },
   {
-    key: 'SectionList_inverted',
+    key: 'SectionList-inverted',
     module: require('../examples/SectionList/SectionList-inverted'),
     category: 'ListView',
   },
@@ -95,8 +95,13 @@ const ComponentExamples: Array<RNTesterExample> = [
     category: 'ListView',
   },
   {
-    key: 'SectionList_stickyHeadersEnabled',
+    key: 'SectionList-stickyHeadersEnabled',
     module: require('../examples/SectionList/SectionList-stickyHeadersEnabled'),
+    category: 'ListView',
+  },
+  {
+    key: 'SectionList-withSeparators',
+    module: require('../examples/SectionList/SectionList-withSeparators'),
     category: 'ListView',
   },
   {

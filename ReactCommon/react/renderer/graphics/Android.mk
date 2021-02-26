@@ -11,7 +11,7 @@ LOCAL_MODULE := react_render_graphics
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp $(LOCAL_PATH)/platform/cxx/react/renderer/graphics/*.cpp)
 
-LOCAL_SHARED_LIBRARIES := libfolly_json
+LOCAL_SHARED_LIBRARIES := libfolly_json libreact_debug
 
 LOCAL_STATIC_LIBRARIES :=
 
@@ -27,3 +27,4 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,folly)
+$(call import-module,react/debug)

@@ -124,6 +124,7 @@ const AppRegistry = {
           showArchitectureIndicator,
           scopedPerformanceLogger,
           appKey === 'LogBox',
+          appKey,
         );
       },
     };

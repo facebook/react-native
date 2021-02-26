@@ -6,6 +6,7 @@
  */
 
 #include "YogaLayoutableShadowNode.h"
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/core/LayoutConstraints.h>
@@ -42,7 +43,8 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   yogaNode_.setDirty(true);
 
   if (getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode)) {
-    assert(getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
+    react_native_assert(
+        getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
 
     yogaNode_.setMeasureFunc(
         YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector);
@@ -67,7 +69,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   // dirty flag, measure function, and other properties being set originally in
   // the `YogaLayoutableShadowNode` constructor above.
 
-  assert(
+  react_native_assert(
       static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
               .yogaNode_.isDirty() == yogaNode_.isDirty() &&
       "Yoga node must inherit dirty flag.");
@@ -118,7 +120,8 @@ void YogaLayoutableShadowNode::enableMeasurement() {
 
 void YogaLayoutableShadowNode::appendYogaChild(ShadowNode const &childNode) {
   // The caller must check this before calling this method.
-  assert(!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
+  react_native_assert(
+      !getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
 
   ensureYogaChildrenLookFine();
 
@@ -135,13 +138,14 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
   ensureYogaChildrenLookFine();
 
   // The caller must check this before calling this method.
-  assert(!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
+  react_native_assert(
+      !getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
 
   auto &children = getChildren();
 
   // Overflow checks.
-  assert(children.size() > index);
-  assert(children.size() >= yogaNode_.getChildren().size());
+  react_native_assert(children.size() > index);
+  react_native_assert(children.size() >= yogaNode_.getChildren().size());
 
   auto &childNode = *children.at(index);
 
@@ -151,13 +155,14 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
   // Note, the following (commented out) assert is conceptually valid but still
   // might produce false-positive signals because of the ABA problem (different
   // objects with non-interleaving life-times being allocated on the same
-  // address). assert(layoutableChildNode.yogaNode_.getOwner() != &yogaNode_);
+  // address). react_native_assert(layoutableChildNode.yogaNode_.getOwner() !=
+  // &yogaNode_);
 
   if (layoutableChildNode.yogaNode_.getOwner() == nullptr) {
     // The child node is not owned.
     layoutableChildNode.yogaNode_.setOwner(&yogaNode_);
     // At this point the child yoga node must be already inserted by the caller.
-    // assert(layoutableChildNode.yogaNode_.isDirty());
+    // react_native_assert(layoutableChildNode.yogaNode_.isDirty());
   } else {
     // The child is owned by some other node, we need to clone that.
     auto clonedChildNode = childNode.clone({});
@@ -165,7 +170,8 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
         traitCast<YogaLayoutableShadowNode const &>(*clonedChildNode);
 
     // The owner must be nullptr for a newly cloned node.
-    assert(layoutableClonedChildNode.yogaNode_.getOwner() == nullptr);
+    react_native_assert(
+        layoutableClonedChildNode.yogaNode_.getOwner() == nullptr);
 
     // Establishing ownership.
     layoutableClonedChildNode.yogaNode_.setOwner(&yogaNode_);
@@ -201,7 +207,8 @@ void YogaLayoutableShadowNode::appendChild(
 
   // All children of a non-leaf `YogaLayoutableShadowNode` must be a
   // `YogaLayoutableShadowNode`s.
-  assert(traitCast<YogaLayoutableShadowNode const *>(childNode.get()));
+  react_native_assert(
+      traitCast<YogaLayoutableShadowNode const *>(childNode.get()));
 
   // Appending the Yoga node.
   appendYogaChild(*childNode);
@@ -256,7 +263,7 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
     }
   }
 
-  assert(getChildren().size() == yogaNode_.getChildren().size());
+  react_native_assert(getChildren().size() == yogaNode_.getChildren().size());
 
   yogaNode_.setDirty(!isClean);
 }
@@ -338,66 +345,51 @@ void YogaLayoutableShadowNode::layoutTree(
 
   // The caller must ensure that layout constraints make sense.
   // Values cannot be NaN.
-  assert(!std::isnan(minimumSize.width));
-  assert(!std::isnan(minimumSize.height));
-  assert(!std::isnan(maximumSize.width));
-  assert(!std::isnan(maximumSize.height));
+  react_native_assert(!std::isnan(minimumSize.width));
+  react_native_assert(!std::isnan(minimumSize.height));
+  react_native_assert(!std::isnan(maximumSize.width));
+  react_native_assert(!std::isnan(maximumSize.height));
   // Values cannot be negative.
-  assert(minimumSize.width >= 0);
-  assert(minimumSize.height >= 0);
-  assert(maximumSize.width >= 0);
-  assert(maximumSize.height >= 0);
+  react_native_assert(minimumSize.width >= 0);
+  react_native_assert(minimumSize.height >= 0);
+  react_native_assert(maximumSize.width >= 0);
+  react_native_assert(maximumSize.height >= 0);
   // Mimimum size cannot be infinity.
-  assert(!std::isinf(minimumSize.width));
-  assert(!std::isinf(minimumSize.height));
+  react_native_assert(!std::isinf(minimumSize.width));
+  react_native_assert(!std::isinf(minimumSize.height));
 
   // Internally Yoga uses three different measurement modes controlling layout
   // constraints: `Undefined`, `Exactly`, and `AtMost`. These modes are an
   // implementation detail and are not defined in `CSS Flexible Box Layout
   // Module`. Yoga C++ API (and `YGNodeCalculateLayout` function particularly)
   // does not allow to specify the measure modes explicitly. Instead, it infers
-  // these from styles associated with the root node. The actual inferring logic
-  // is complex but it has a quite reasonable effect: to ensure applying proper
-  // layout restrictions we have to express constraints we have and avoid
-  // specifying anything that might trigger some unexpected side-effect. To do
-  // this, we clear all dimensional styles and apply only parts that we need to
-  // ensure.
+  // these from styles associated with the root node.
+  // To pass the actual layout constraints to Yoga we represent them as
+  // `(min/max)(Height/Width)` style properties. Also, we pass `ownerWidth` &
+  // `ownerHeight` to allow proper calculation of relative (e.g. specified in
+  // percents) style values.
 
   auto &yogaStyle = yogaNode_.getStyle();
 
-  yogaStyle.minDimensions()[YGDimensionWidth] = YGValueUndefined;
-  yogaStyle.minDimensions()[YGDimensionHeight] = YGValueUndefined;
-  yogaStyle.maxDimensions()[YGDimensionWidth] = YGValueUndefined;
-  yogaStyle.maxDimensions()[YGDimensionHeight] = YGValueUndefined;
-  yogaStyle.dimensions()[YGDimensionWidth] = YGValueUndefined;
-  yogaStyle.dimensions()[YGDimensionHeight] = YGValueUndefined;
+  auto ownerWidth = yogaFloatFromFloat(maximumSize.width);
+  auto ownerHeight = yogaFloatFromFloat(maximumSize.height);
 
-  auto ownerWidth = YGUndefined;
-  auto ownerHeight = YGUndefined;
+  yogaStyle.maxDimensions()[YGDimensionWidth] = std::isfinite(maximumSize.width)
+      ? yogaStyleValueFromFloat(maximumSize.width)
+      : YGValueUndefined;
 
-  if (!std::isinf(maximumSize.width)) {
-    yogaStyle.maxDimensions()[YGDimensionWidth] =
-        yogaStyleValueFromFloat(maximumSize.width);
+  yogaStyle.maxDimensions()[YGDimensionHeight] =
+      std::isfinite(maximumSize.height)
+      ? yogaStyleValueFromFloat(maximumSize.height)
+      : YGValueUndefined;
 
-    ownerWidth = yogaFloatFromFloat(maximumSize.width);
-  }
+  yogaStyle.minDimensions()[YGDimensionWidth] = minimumSize.width > 0
+      ? yogaStyleValueFromFloat(minimumSize.width)
+      : YGValueUndefined;
 
-  if (!std::isinf(maximumSize.height)) {
-    yogaStyle.maxDimensions()[YGDimensionHeight] =
-        yogaStyleValueFromFloat(maximumSize.height);
-
-    ownerHeight = yogaFloatFromFloat(maximumSize.height);
-  }
-
-  if (!std::isinf(minimumSize.width)) {
-    yogaStyle.minDimensions()[YGDimensionWidth] =
-        yogaStyleValueFromFloat(minimumSize.width);
-  }
-
-  if (!std::isinf(minimumSize.height)) {
-    yogaStyle.minDimensions()[YGDimensionHeight] =
-        yogaStyleValueFromFloat(minimumSize.height);
-  }
+  yogaStyle.minDimensions()[YGDimensionHeight] = minimumSize.height > 0
+      ? yogaStyleValueFromFloat(minimumSize.height)
+      : YGValueUndefined;
 
   auto direction =
       yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
@@ -440,7 +432,7 @@ static EdgeInsets calculateOverflowInset(
 
 void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   // Reading data from a dirtied node does not make sense.
-  assert(!yogaNode_.isDirty());
+  react_native_assert(!yogaNode_.isDirty());
 
   auto contentFrame = Rect{};
 
@@ -449,17 +441,17 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
         *static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
 
     // Verifying that the Yoga node belongs to the ShadowNode.
-    assert(&childNode.yogaNode_ == childYogaNode);
+    react_native_assert(&childNode.yogaNode_ == childYogaNode);
 
     if (childYogaNode->getHasNewLayout()) {
       childYogaNode->setHasNewLayout(false);
 
       // Reading data from a dirtied node does not make sense.
-      assert(!childYogaNode->isDirty());
+      react_native_assert(!childYogaNode->isDirty());
 
       // We must copy layout metrics from Yoga node only once (when the parent
       // node exclusively ownes the child node).
-      assert(childYogaNode->getOwner() == &yogaNode_);
+      react_native_assert(childYogaNode->getOwner() == &yogaNode_);
 
       // We are about to mutate layout metrics of the node.
       childNode.ensureUnsealed();
@@ -731,7 +723,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenOwnersConsistency() const {
   if (!yogaChildren.empty()) {
     auto owner = yogaChildren.at(0)->getOwner();
     for (auto const &child : yogaChildren) {
-      assert(child->getOwner() == owner);
+      react_native_assert(child->getOwner() == owner);
     }
   }
 #endif
@@ -746,10 +738,10 @@ void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
   auto &yogaChildren = yogaNode_.getChildren();
 
   for (auto const &yogaChild : yogaChildren) {
-    assert(yogaChild->getContext());
-    assert(yogaChild->getChildren().size() < 16384);
+    react_native_assert(yogaChild->getContext());
+    react_native_assert(yogaChild->getChildren().size() < 16384);
     if (!yogaChild->getChildren().empty()) {
-      assert(!yogaChild->hasMeasureFunc());
+      react_native_assert(!yogaChild->hasMeasureFunc());
     }
   }
 #endif
@@ -766,16 +758,16 @@ void YogaLayoutableShadowNode::ensureYogaChildrenAlighment() const {
   auto &children = getChildren();
 
   if (getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
-    assert(yogaChildren.empty());
+    react_native_assert(yogaChildren.empty());
     return;
   }
 
-  assert(yogaChildren.size() == children.size());
+  react_native_assert(yogaChildren.size() == children.size());
 
   for (size_t i = 0; i < children.size(); i++) {
     auto &yogaChild = yogaChildren.at(i);
     auto &child = children.at(i);
-    assert(
+    react_native_assert(
         yogaChild->getContext() ==
         traitCast<YogaLayoutableShadowNode const *>(child.get()));
   }

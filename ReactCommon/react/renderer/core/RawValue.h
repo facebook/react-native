@@ -12,6 +12,8 @@
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 
+#include <react/debug/react_native_assert.h>
+
 namespace facebook {
 namespace react {
 
@@ -189,7 +191,7 @@ class RawValue {
     }
 
     for (const auto &item : dynamic.items()) {
-      assert(item.first.isString());
+      react_native_assert(item.first.isString());
       if (!checkValueType(item.second, (T *)nullptr)) {
         return false;
       }
@@ -242,7 +244,7 @@ class RawValue {
   static std::vector<T> castValue(
       const folly::dynamic &dynamic,
       std::vector<T> *type) noexcept {
-    assert(dynamic.isArray());
+    react_native_assert(dynamic.isArray());
     auto result = std::vector<T>{};
     result.reserve(dynamic.size());
     for (const auto &item : dynamic) {
@@ -255,7 +257,7 @@ class RawValue {
   static std::vector<std::vector<T>> castValue(
       const folly::dynamic &dynamic,
       std::vector<std::vector<T>> *type) noexcept {
-    assert(dynamic.isArray());
+    react_native_assert(dynamic.isArray());
     auto result = std::vector<std::vector<T>>{};
     result.reserve(dynamic.size());
     for (const auto &item : dynamic) {
@@ -268,10 +270,10 @@ class RawValue {
   static better::map<std::string, T> castValue(
       const folly::dynamic &dynamic,
       better::map<std::string, T> *type) noexcept {
-    assert(dynamic.isObject());
+    react_native_assert(dynamic.isObject());
     auto result = better::map<std::string, T>{};
     for (const auto &item : dynamic.items()) {
-      assert(item.first.isString());
+      react_native_assert(item.first.isString());
       result[item.first.getString()] = castValue(item.second, (T *)nullptr);
     }
     return result;

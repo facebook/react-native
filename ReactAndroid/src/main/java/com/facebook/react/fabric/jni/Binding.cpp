@@ -432,7 +432,8 @@ void Binding::setConstraints(
     auto iterator = surfaceHandlerRegistry_.find(surfaceId);
 
     if (iterator == surfaceHandlerRegistry_.end()) {
-      LOG(ERROR) << "Binding::setConstraints: Surface with given id is not found";
+      LOG(ERROR)
+          << "Binding::setConstraints: Surface with given id is not found";
       return;
     }
 

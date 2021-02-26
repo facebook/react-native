@@ -80,7 +80,7 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/reac
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/${libraryName}
 
-LOCAL_SHARED_LIBRARIES := libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics
+LOCAL_SHARED_LIBRARIES := libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libreact_debug libreact_render_debug
 
 LOCAL_STATIC_LIBRARIES := libjsi
 

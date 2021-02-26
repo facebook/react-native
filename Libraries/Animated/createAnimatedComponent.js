@@ -87,6 +87,8 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       // When called during the first render, `_component` is always null.
       // Therefore, even if a component is rendered in Fabric, we can't detect
       // that until ref is set, which happens sometime after the first render.
+      // In cases where this value switching between "false" and "true" on Fabric
+      // causes issues, add an additional check for _component nullity.
       if (this._component == null) {
         return false;
       }
@@ -221,10 +223,24 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       const {style: passthruStyle = {}, ...passthruProps} =
         this.props.passthroughAnimatedPropExplicitValues || {};
       const mergedStyle = {...style, ...passthruStyle};
+
+      // On Fabric, we always want to ensure the container Animated View is *not*
+      // flattened.
+      // Because we do not get a host component ref immediately and thus cannot
+      // do a proper Fabric vs non-Fabric detection immediately, we default to assuming
+      // that Fabric *is* enabled until we know otherwise.
+      // Thus, in Fabric, this view will never be flattened. In non-Fabric, the view will
+      // not be flattened during the initial render but may be flattened in the second render
+      // and onwards.
+      const forceNativeIdFabric =
+        (this._component == null &&
+          (options?.collapsable === false || props.collapsable !== true)) ||
+        this._isFabric();
+
       const forceNativeId =
         props.collapsable ??
         (this._propsAnimated.__isNative ||
-          this._isFabric() ||
+          forceNativeIdFabric ||
           options?.collapsable === false);
       // The native driver updates views directly through the UI thread so we
       // have to make sure the view doesn't get optimized away because it cannot
@@ -283,6 +299,8 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       this._propsAnimated && this._propsAnimated.__detach();
       this._detachNativeEvents();
       this._markUpdateComplete();
+      this._component = null;
+      this._prevComponent = null;
     }
   }
 
