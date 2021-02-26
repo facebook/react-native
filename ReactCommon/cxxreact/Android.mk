@@ -34,8 +34,6 @@ LOCAL_MODULE := reactmarker
 
 LOCAL_SRC_FILES := $(LOCAL_PATH)/ReactMarker.cpp
 
-# LOCAL_LDLIBS := -lm -llog
-
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/..
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 

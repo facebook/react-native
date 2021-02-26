@@ -21,7 +21,7 @@
 #include "WritableNativeArray.h"
 #include "WritableNativeMap.h"
 
-#include <JReactMarker.h>
+#include "JReactMarker.h"
 #ifdef WITH_INSPECTOR
 #include "JInspector.h"
 #endif

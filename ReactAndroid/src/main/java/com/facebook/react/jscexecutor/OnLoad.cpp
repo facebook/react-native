@@ -57,10 +57,6 @@ class JSCExecutorHolder
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass>,
       ReadableNativeMap *) {
-    // This is kind of a weird place for stuff, but there's no other
-    // good place for initialization which is specific to JSC on
-    // Android.
-    JReactMarker::setLogPerfMarkerIfNeeded();
     // TODO mhorowitz T28461666 fill in some missing nice to have glue
     return makeCxxInstance(std::make_unique<JSCExecutorFactory>());
   }

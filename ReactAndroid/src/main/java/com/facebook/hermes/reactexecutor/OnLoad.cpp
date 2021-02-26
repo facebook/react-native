@@ -60,8 +60,6 @@ class HermesExecutorHolder
 
   static jni::local_ref<jhybriddata> initHybridDefaultConfig(
       jni::alias_ref<jclass>) {
-    JReactMarker::setLogPerfMarkerIfNeeded();
-
     return makeCxxInstance(
         std::make_unique<HermesExecutorFactory>(installBindings));
   }
@@ -69,7 +67,6 @@ class HermesExecutorHolder
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass>,
       jlong heapSizeMB) {
-    JReactMarker::setLogPerfMarkerIfNeeded();
     auto runtimeConfig = makeRuntimeConfig(heapSizeMB);
     return makeCxxInstance(std::make_unique<HermesExecutorFactory>(
         installBindings, JSIExecutor::defaultTimeoutInvoker, runtimeConfig));
