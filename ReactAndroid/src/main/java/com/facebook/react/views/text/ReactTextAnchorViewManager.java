@@ -53,7 +53,8 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
 
   @ReactProp(name = ViewProps.ELLIPSIZE_MODE)
   public void setEllipsizeMode(ReactTextView view, @Nullable String ellipsizeMode) {
-    if (ellipsizeMode == null || mNumberOfLines > 1 || ellipsizeMode.equals("tail")) {
+    boolean useDefaultValue = mNumberOfLines > 1 && !ellipsizeMode.equals("clip");
+    if (ellipsizeMode == null || useDefaultValue || ellipsizeMode.equals("tail")) {
       view.setEllipsizeLocation(TextUtils.TruncateAt.END);
     } else if (ellipsizeMode.equals("head")) {
       view.setEllipsizeLocation(TextUtils.TruncateAt.START);
