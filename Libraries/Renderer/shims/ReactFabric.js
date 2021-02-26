@@ -8,6 +8,8 @@
  * @flow
  */
 
+'use strict';
+
 import {BatchedBridge} from 'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface';
 
 // TODO @sema: Adjust types
