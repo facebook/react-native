@@ -128,6 +128,7 @@ jest
     removeEventListener: jest.fn(),
     setAccessibilityFocus: jest.fn(),
     sendAccessibilityEvent_unstable: jest.fn(),
+    getRecommendedTimeoutMillis: jest.fn(),
   }))
   .mock('../Libraries/Components/RefreshControl/RefreshControl', () =>
     jest.requireActual(

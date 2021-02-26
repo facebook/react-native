@@ -28,6 +28,11 @@ type AccessibilityEventDefinitions = {
 
 type AccessibilityEventTypes = 'focus';
 
+type AccessibilityUiContentFlagsTypes =
+  | 'FLAG_CONTENT_ICONS'
+  | 'FLAG_CONTENT_TEXT'
+  | 'FLAG_CONTENT_CONTROLS';
+
 const _subscriptions = new Map();
 
 /**
@@ -174,6 +179,28 @@ const AccessibilityInfo = {
     if (NativeAccessibilityInfo) {
       NativeAccessibilityInfo.announceForAccessibility(announcement);
     }
+  },
+
+  /**
+   * Get the recommended timeout for changes to the UI needed by this user.
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo.html#getRecommendedTimeoutMillis
+   */
+  getRecommendedTimeoutMillis: function(
+    originalTimeout: number,
+    uiContentFlags: AccessibilityUiContentFlagsTypes,
+  ): Promise<number | null> {
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityInfo) {
+        NativeAccessibilityInfo.getRecommendedTimeoutMillis(
+          originalTimeout,
+          uiContentFlags,
+          resolve,
+        );
+      } else {
+        reject(null);
+      }
+    });
   },
 };
 

@@ -67,6 +67,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   private final ContentResolver mContentResolver;
   private boolean mReduceMotionEnabled = false;
   private boolean mTouchExplorationEnabled = false;
+  private int mRecommendedTimeout;
 
   private static final String REDUCE_MOTION_EVENT_NAME = "reduceMotionDidChange";
   private static final String TOUCH_EXPLORATION_EVENT_NAME = "touchExplorationDidChange";
@@ -188,5 +189,30 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   @Override
   public void setAccessibilityFocus(double reactTag) {
     // iOS only
+  }
+
+  @Override
+  public void getRecommendedTimeoutMillis(
+      int originalTimeout, String uiContentFlags, Callback successCallback) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      successCallback.invoke(originalTimeout);
+      return;
+    }
+    int flag = 0;
+    switch (uiContentFlags) {
+      case "FLAG_CONTENT_CONTROLS":
+        flag = AccessibilityManager.FLAG_CONTENT_CONTROLS;
+        break;
+      case "FLAG_CONTENT_ICONS":
+        flag = AccessibilityManager.FLAG_CONTENT_ICONS;
+        break;
+      case "FLAG_CONTENT_TEXT":
+        flag = AccessibilityManager.FLAG_CONTENT_TEXT;
+        break;
+      default:
+        break;
+    }
+    mRecommendedTimeout = mAccessibilityManager.getRecommendedTimeoutMillis(originalTimeout, flag);
+    successCallback.invoke(mRecommendedTimeout);
   }
 }

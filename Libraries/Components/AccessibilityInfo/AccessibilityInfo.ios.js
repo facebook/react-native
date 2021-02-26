@@ -45,6 +45,11 @@ type AccessibilityEventDefinitions = {
 
 type AccessibilityEventTypes = 'focus';
 
+type AccessibilityUiContentFlagsTypes =
+  | 'FLAG_CONTENT_ICONS'
+  | 'FLAG_CONTENT_TEXT'
+  | 'FLAG_CONTENT_CONTROLS';
+
 const _subscriptions = new Map();
 
 /**
@@ -287,6 +292,16 @@ const AccessibilityInfo = {
     listener.remove();
     // $FlowFixMe[escaped-generic]
     _subscriptions.delete(handler);
+  },
+
+  /**
+   * Android only
+   */
+  getRecommendedTimeoutMillis: function(
+    originalTimeout: number,
+    uiContentFlags: AccessibilityUiContentFlagsTypes,
+  ): Promise<number> {
+    return Promise.resolve(originalTimeout);
   },
 };
 
