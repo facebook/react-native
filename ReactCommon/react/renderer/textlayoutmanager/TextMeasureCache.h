@@ -190,7 +190,9 @@ inline bool operator==(
              lhs.attributedString, rhs.attributedString) &&
       lhs.paragraphAttributes == rhs.paragraphAttributes &&
       lhs.layoutConstraints.maximumSize.width ==
-      rhs.layoutConstraints.maximumSize.width;
+      rhs.layoutConstraints.maximumSize.width &&
+      lhs.layoutConstraints.maximumSize.height ==
+      rhs.layoutConstraints.maximumSize.height;
 }
 
 inline bool operator!=(
