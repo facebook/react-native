@@ -98,5 +98,6 @@ fb_xplat_cxx_test(
         ":text",
         "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
+        react_native_xplat_target("react/debug:debug"),
     ],
 )
