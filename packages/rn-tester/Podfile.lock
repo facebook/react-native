@@ -802,7 +802,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  DoubleConversion: cde416483dac037923206447da6e1454df403714
+  DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
   FBLazyVector: 91e874a8823933a268c38765a88cbd5dba1fa024
   FBReactNativeSpec: 6793f00102a091fb931674853172fb22e5a2c4cf
   Flipper: d3da1aa199aad94455ae725e9f3aa43f3ec17021
@@ -812,7 +812,7 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 602921fee03edacf18f5d6f3d3594ba477f456e5
   FlipperKit: 8a20b5c5fcf9436cac58551dc049867247f64b00
-  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  glog: 5337263514dd6f09803962437687240c5dc39aa4
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
   RCT-Folly: ec7a233ccc97cc556cf7237f0db1ff65b986f27c
@@ -830,7 +830,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 52fe8073736a97304c9bc61a5bbae8b66ca55701
   React-perflogger: e5c447a0435eb9cdd1e5cd692a48b5c5463406b0
   React-RCTActionSheet: 555656ac47e1b81d986a3822e22c374523e0ed17
-  React-RCTAnimation: 639d6784188ee28b3cbb5c4915f18fb63b816a46
+  React-RCTAnimation: 0bb7a765e92907fb44073438b3a6752ca4ef0df1
   React-RCTBlob: b0af8ae625ea63199504c9cfe09151ebeae51884
   React-RCTFabric: 447f94b853788b8868157002022bcaa911f2cf00
   React-RCTImage: 8626895dc6dabc11f28e3d6a9eb866b2e2c2742d
@@ -842,7 +842,7 @@ SPEC CHECKSUMS:
   React-RCTText: 83931feaad2b470868af24bf7b943cc52a84603d
   React-RCTVibration: c739e240076fd7dabd90d6242d6a949297565f72
   React-runtimeexecutor: d3e89935c7d4733ddf7da3dd8e0b2533adb7bca4
-  ReactCommon: 293077fd73008093e681d96ae99e34e56d47160a
+  ReactCommon: 959d51c4ce5f5885ffd44115a38052dc45b4a489
   Yoga: 69c2b21737d8220f647e61141aec8c28f7249ef2
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 

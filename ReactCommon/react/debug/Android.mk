@@ -24,6 +24,8 @@ LOCAL_CFLAGS := \
 
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall -llog
 
+LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog
+
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,folly)
