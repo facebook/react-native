@@ -8,7 +8,12 @@
  * @flow strict
  */
 
-import type {ElementRef, ElementType, Element, AbstractComponent} from 'react';
+import type {
+  ElementRef,
+  ElementType,
+  MixedElement,
+  AbstractComponent,
+} from 'react';
 
 export type MeasureOnSuccessCallback = (
   x: number,
@@ -44,7 +49,7 @@ type AttributeType<T, V> =
 // or we allow them to define specific types and use this hack
 type AnyAttributeType = AttributeType<$FlowFixMe, $FlowFixMe>;
 
-export type AttributeConfiguration = $ReadOnly<{
+type AttributeConfiguration = $ReadOnly<{
   [propName: string]: AnyAttributeType,
   style: $ReadOnly<{
     [propName: string]: AnyAttributeType,
@@ -180,7 +185,7 @@ export type ReactNativeType = {
     eventType: string,
   ): void,
   render(
-    element: Element<ElementType>,
+    element: MixedElement,
     containerTag: number,
     callback: ?() => void,
   ): ?ElementRef<ElementType>,
@@ -208,7 +213,7 @@ export type ReactFabricType = {
     eventType: string,
   ): void,
   render(
-    element: Element<ElementType>,
+    element: MixedElement,
     containerTag: number,
     callback: ?() => void,
   ): ?ElementRef<ElementType>,

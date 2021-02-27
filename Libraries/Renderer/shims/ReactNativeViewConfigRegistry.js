@@ -8,10 +8,6 @@
  * @flow strict-local
  */
 
-/* eslint-disable react-internal/invariant-args */
-
-'use strict';
-
 import {type ViewConfig} from './ReactNativeTypes';
 import invariant from 'invariant';
 
