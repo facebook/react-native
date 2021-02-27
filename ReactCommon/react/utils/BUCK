@@ -59,5 +59,6 @@ rn_xplat_cxx_library(
         "//xplat/folly:molly",
         "//xplat/jsi:jsi",
         react_native_xplat_target("better:better"),
+        react_native_xplat_target("react/debug:debug"),
     ],
 )
