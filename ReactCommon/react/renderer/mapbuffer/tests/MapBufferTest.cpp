@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include <assert.h>
 #include <gtest/gtest.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 
