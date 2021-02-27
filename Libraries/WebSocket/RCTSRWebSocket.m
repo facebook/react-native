@@ -497,11 +497,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   CFStreamCreatePairWithSocketToHost(NULL, (__bridge CFStringRef)host, port, &readStream, &writeStream);
     
   CFDictionaryRef proxySettings = CFNetworkCopySystemProxySettings();
-  
-  if (CFDictionaryContainsKey(proxySettings, kCFStreamPropertySOCKSProxyHost)) {
-    NSLog(@"SocketRocket: kCFStreamPropertySOCKSProxyHost found in proxy settings, using it as our proxy. ");
-    CFReadStreamSetProperty((CFReadStreamRef)readStream, kCFStreamPropertySOCKSProxy, (CFTypeRef)proxySettings);
-    CFReadStreamSetProperty((CFReadStreamRef)writeStream, kCFStreamPropertySOCKSProxy, (CFTypeRef)proxySettings);
+  if (proxySettings != NULL) {
+    CFRelease(proxySettings);
+    
+    if (CFDictionaryContainsKey(proxySettings, kCFStreamPropertySOCKSProxyHost)) {
+      NSLog(@"SocketRocket: kCFStreamPropertySOCKSProxyHost found in proxy settings, using it as our proxy. ");
+      CFReadStreamSetProperty((CFReadStreamRef)readStream, kCFStreamPropertySOCKSProxy, (CFTypeRef)proxySettings);
+      CFReadStreamSetProperty((CFReadStreamRef)writeStream, kCFStreamPropertySOCKSProxy, (CFTypeRef)proxySettings);
+    }
   }
 
   _outputStream = CFBridgingRelease(writeStream);
