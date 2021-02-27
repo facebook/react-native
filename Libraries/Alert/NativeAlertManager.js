@@ -12,6 +12,7 @@
 
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+import type {DefaultInputsArray} from './AlertMacOS'; // TODO(macOS ISS#2323203)
 
 export type Args = {|
   title?: string,
@@ -22,6 +23,11 @@ export type Args = {|
   cancelButtonKey?: string,
   destructiveButtonKey?: string,
   keyboardType?: string,
+  // [TODO(macOS ISS#2323203)
+  defaultInputs?: DefaultInputsArray,
+  modal?: ?boolean,
+  critical?: ?boolean,
+  // ]TODO(macOS ISS#2323203)
 |};
 
 export interface Spec extends TurboModule {

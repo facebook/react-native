@@ -5,17 +5,29 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTViewManager.h>
-#import <ReactCommon/RCTTurboModuleManager.h>
+#import <NativeModules.h>
 
-@interface ScreenshotManagerTurboModuleManagerDelegate : NSObject<RCTTurboModuleManagerDelegate>
-- (std::shared_ptr<facebook::react::TurboModule>)
-  getTurboModule:(const std::string &)name
-  jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+REACT_STRUCT(ScreenshotArguments)
+struct ScreenshotArguments
+{
+};
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-  getTurboModule:(const std::string &)name
-  instance:(id<RCTTurboModule>)instance
-  jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+REACT_MODULE(ScreenshotManagerCxx, L"ScreenshotManager")
+struct ScreenshotManagerCxx
+{
+  REACT_INIT(Initialize)
+  void Initialize(const winrt::Microsoft::ReactNative::ReactContext& reactContext) noexcept
+  {
+    _reactContext = reactContext;
+  }
 
-@end
+  REACT_METHOD(TakeScreenshot, L"takeScreenshot")
+  void TakeScreenshot(
+                      std::string,
+                      ScreenshotArguments&&,
+                      winrt::Microsoft::ReactNative::ReactPromise<std::string> result
+                      ) noexcept;
+
+ private:
+  winrt::Microsoft::ReactNative::ReactContext _reactContext;
+};

@@ -348,6 +348,7 @@ PODS:
     - React-TurboModuleCxx-WinRTPort/WinRT (= 1000.0.0)
   - React-TurboModuleCxx-WinRTPort/Shared (1000.0.0)
   - React-TurboModuleCxx-WinRTPort/WinRT (1000.0.0):
+    - RCT-Folly (= 2020.01.13.00)
     - React-callinvoker (= 1000.0.0)
     - React-TurboModuleCxx-WinRTPort/Shared (= 1000.0.0)
   - ReactCommon/turbomodule/core (1000.0.0):
@@ -563,4 +564,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 18ca7d3b0e7db79041574a8bb6200b9e1c2d5359
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3

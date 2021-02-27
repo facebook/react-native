@@ -12,6 +12,8 @@
 #include <cmath>
 #include <functional>
 #include <optional>
+#include <folly/Hash.h>
+
 #include "Crash.h"
 
 inline int64_t _wcstoi64(const wchar_t* str, wchar_t** str_end, int base)
@@ -26,18 +28,6 @@ inline std::wstring operator+(const wchar_t* a, const std::wstring_view& b)
 {
   return a + std::wstring(b.cbegin(), b.cend());
 }
-
-template <class T, class U>
-struct hash<pair<T, U>>
-{
-    typedef pair<T, U>           argument_type;
-    typedef size_t               result_type;
-
-    result_type operator()(const pair<T, U>& p) const
-    {
-      return hash<T>()(p.first) | hash<U>()(p.second);
-    }
-};
 
 }
 

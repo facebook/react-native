@@ -14,8 +14,7 @@
 'use strict';
 
 import type {AlertType, AlertButtonStyle} from './Alert';
-
-var RCTAlertManager = require('../BatchedBridge/NativeModules').AlertManager;
+import RCTAlertManager from './RCTAlertManager';
 
 /**
  * Array or buttons
