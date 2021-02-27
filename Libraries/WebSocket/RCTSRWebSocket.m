@@ -498,8 +498,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     
   CFDictionaryRef proxySettings = CFNetworkCopySystemProxySettings();
   if (proxySettings != NULL) {
-    CFRelease(proxySettings);
-    
+    CFBridgingRelease(proxySettings);
     if (CFDictionaryContainsKey(proxySettings, kCFStreamPropertySOCKSProxyHost)) {
       NSLog(@"SocketRocket: kCFStreamPropertySOCKSProxyHost found in proxy settings, using it as our proxy. ");
       CFReadStreamSetProperty((CFReadStreamRef)readStream, kCFStreamPropertySOCKSProxy, (CFTypeRef)proxySettings);
