@@ -80,6 +80,7 @@ fb_xplat_cxx_test(
     deps = [
         "//xplat/folly:molly",
         "//xplat/js/react-native-github/ReactCommon/react/renderer/element:element",
+        react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/renderer/components/view:view"),
         react_native_xplat_target("react/renderer/components/scrollview:scrollview"),
         react_native_xplat_target("react/renderer/components/text:text"),
