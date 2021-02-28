@@ -761,12 +761,6 @@ class EnabledExamples extends React.Component<{}> {
                 eventListener="grayscaleChanged"
               />
             </RNTesterBlock>
-            <RNTesterBlock title="isInvertColorsEnabled()">
-              <EnabledExample
-                test="invert colors"
-                eventListener="invertColorsChanged"
-              />
-            </RNTesterBlock>
             <RNTesterBlock title="isReduceTransparencyEnabled()">
               <EnabledExample
                 test="reduce transparency"
@@ -787,6 +781,13 @@ class EnabledExamples extends React.Component<{}> {
           <EnabledExample
             test="screen reader"
             eventListener="screenReaderChanged"
+          />
+        </RNTesterBlock>
+
+        <RNTesterBlock title="isInvertColorsEnabled()">
+          <EnabledExample
+            test="invert colors"
+            eventListener="invertColorsChanged"
           />
         </RNTesterBlock>
       </View>

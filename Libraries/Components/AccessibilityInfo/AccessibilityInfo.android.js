@@ -18,10 +18,12 @@ import {type ElementRef} from 'react';
 
 const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
 const TOUCH_EXPLORATION_EVENT = 'touchExplorationDidChange';
+const INVERT_COLORS_EVENT = 'invertColorsDidChange;';
 
 type AccessibilityEventDefinitions = {
   reduceMotionChanged: [boolean],
   screenReaderChanged: [boolean],
+  invertColorsChanged: [boolean],
   // alias for screenReaderChanged
   change: [boolean],
 };
@@ -55,11 +57,14 @@ const AccessibilityInfo = {
     return Promise.resolve(false);
   },
 
-  /**
-   * iOS only
-   */
   isInvertColorsEnabled: function(): Promise<boolean> {
-    return Promise.resolve(false);
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityInfo) {
+        NativeAccessibilityInfo.isInvertColorsEnabled(resolve);
+      } else {
+        reject(false);
+      }
+    });
   },
 
   isReduceMotionEnabled: function(): Promise<boolean> {
@@ -116,6 +121,11 @@ const AccessibilityInfo = {
     } else if (eventName === 'reduceMotionChanged') {
       listener = RCTDeviceEventEmitter.addListener(
         REDUCE_MOTION_EVENT,
+        handler,
+      );
+    } else if (eventName === 'invertColorsChanged') {
+      listener = RCTDeviceEventEmitter.addListener(
+        INVERT_COLORS_EVENT,
         handler,
       );
     }
