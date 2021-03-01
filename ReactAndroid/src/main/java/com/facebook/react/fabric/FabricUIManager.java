@@ -1079,8 +1079,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         new MountItem() {
           @Override
           public void execute(MountingManager mountingManager) {
-            mountingManager.setJSResponder(
-                surfaceId, reactTag, initialReactTag, blockNativeResponder);
+            SurfaceMountingManager surfaceMountingManager =
+                mountingManager.getSurfaceManager(surfaceId);
+            if (surfaceMountingManager != null) {
+              surfaceMountingManager.setJSResponder(
+                  reactTag, initialReactTag, blockNativeResponder);
+            } else {
+              FLog.e(
+                  TAG, "setJSResponder skipped, surface no longer available [" + surfaceId + "]");
+            }
           }
 
           @Override

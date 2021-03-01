@@ -271,37 +271,14 @@ public class MountingManager {
   }
 
   /**
-   * Set the JS responder for the view associated with the tags received as a parameter.
-   *
-   * <p>The JSResponder coordinates the return values of the onInterceptTouch method in Android
-   * Views. This allows JS to coordinate when a touch should be handled by JS or by the Android
-   * native views. See {@link JSResponderHandler} for more details.
-   *
-   * <p>This method is going to be executed on the UIThread as soon as it is delivered from JS to
-   * RN.
-   *
-   * <p>Currently, there is no warranty that the view associated with the react tag exists, because
-   * this method is not handled by the react commit process.
-   *
-   * @param reactTag React tag of the first parent of the view that is NOT virtual
-   * @param initialReactTag React tag of the JS view that initiated the touch operation
-   * @param blockNativeResponder If native responder should be blocked or not
-   */
-  @UiThread
-  public synchronized void setJSResponder(
-      int surfaceId, int reactTag, int initialReactTag, boolean blockNativeResponder) {
-    UiThreadUtil.assertOnUiThread();
-
-    getSurfaceManagerEnforced(surfaceId, "setJSResponder")
-        .setJSResponder(reactTag, initialReactTag, blockNativeResponder);
-  }
-
-  /**
    * Clears the JS Responder specified by {@link #setJSResponder(int, int, int, boolean)}. After
    * this method is called, all the touch events are going to be handled by JS.
    */
   @UiThread
   public void clearJSResponder() {
+    // MountingManager and SurfaceMountingManagers all share the same JSResponderHandler.
+    // Must be called on MountingManager instead of SurfaceMountingManager, because we don't
+    // know what surfaceId it's being called for.
     mJSResponderHandler.clearJSResponder();
   }
 
