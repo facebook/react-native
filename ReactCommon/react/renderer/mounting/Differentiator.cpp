@@ -9,14 +9,11 @@
 
 #include <better/map.h>
 #include <better/small_vector.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <algorithm>
 #include "ShadowView.h"
-
-// Uncomment this to enable verbose diffing logs, which can be useful for
-// debugging.
-// #define DEBUG_LOGS_DIFFER
 
 #ifdef DEBUG_LOGS_DIFFER
 #include <glog/logging.h>
@@ -86,7 +83,7 @@ class TinyMap final {
   inline Iterator find(KeyT key) {
     cleanVector();
 
-    assert(key != 0);
+    react_native_assert(key != 0);
 
     if (begin_() == nullptr) {
       return end();
@@ -102,7 +99,7 @@ class TinyMap final {
   }
 
   inline void insert(Pair pair) {
-    assert(pair.first != 0);
+    react_native_assert(pair.first != 0);
     vector_.push_back(pair);
   }
 
@@ -1493,7 +1490,8 @@ ShadowViewMutation::List calculateShadowViewMutations(
   SystraceSection s("calculateShadowViewMutations");
 
   // Root shadow nodes must be belong the same family.
-  assert(ShadowNode::sameFamily(oldRootShadowNode, newRootShadowNode));
+  react_native_assert(
+      ShadowNode::sameFamily(oldRootShadowNode, newRootShadowNode));
 
   auto mutations = ShadowViewMutation::List{};
   mutations.reserve(256);

@@ -28,7 +28,7 @@ export interface IEventEmitter<TEventToArgsMap: {...}> {
    */
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => void,
+    listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
     context?: mixed,
   ): EventSubscription;
 

@@ -43,10 +43,29 @@ function configureNext(
     return;
   }
 
+  // Since LayoutAnimations may possibly be disabled for now on iOS (Fabric),
+  // or Android (non-Fabric) we race a setTimeout with animation completion,
+  // in case onComplete is never called
+  // from native. Once LayoutAnimations+Fabric unconditionally ship everywhere, we can
+  // delete this mechanism at least in the Fabric branch.
+  let animationCompletionHasRun = false;
+  const onAnimationComplete = () => {
+    if (animationCompletionHasRun) {
+      return;
+    }
+    animationCompletionHasRun = true;
+    clearTimeout(raceWithAnimationId);
+    onAnimationDidEnd?.();
+  };
+  const raceWithAnimationId = setTimeout(
+    onAnimationComplete,
+    (config.duration ?? 0) + 17 /* one frame + 1ms */,
+  );
+
   if (UIManager?.configureNextLayoutAnimation) {
     UIManager.configureNextLayoutAnimation(
       config,
-      onAnimationDidEnd ?? function() {},
+      onAnimationComplete ?? function() {},
       onAnimationDidFail ??
         function() {} /* this should never be called in Non-Fabric */,
     );
@@ -56,30 +75,6 @@ function configureNext(
   // conditionally enabled on iOS (pending fully shipping; this is a temporary state).
   const FabricUIManager: FabricUIManagerSpec = global?.nativeFabricUIManager;
   if (FabricUIManager?.configureNextLayoutAnimation) {
-    // Since LayoutAnimations may possibly be disabled for now on iOS, we race
-    // a setTimeout with animation completion, in case onComplete is never called
-    // from native. Once LayoutAnimations unconditionally ship everywhere, we can
-    // delete this mechanism.
-    // TODO: (T65643440) remove timeout once LayoutAnimation ships on iOS.
-    let animationCompletionHasRun = false;
-    const onAnimationComplete = () => {
-      if (Platform.OS === 'ios') {
-        if (animationCompletionHasRun) {
-          return;
-        }
-        animationCompletionHasRun = true;
-        clearTimeout(raceWithAnimationId);
-      }
-      onAnimationDidEnd?.();
-    };
-    const raceWithAnimationId =
-      Platform.OS === 'ios'
-        ? setTimeout(
-            onAnimationComplete,
-            (config.duration ?? 0) + 17 /* one frame + 1ms */,
-          )
-        : null;
-
     global?.nativeFabricUIManager?.configureNextLayoutAnimation(
       config,
       onAnimationComplete,

@@ -757,7 +757,7 @@ class ScrollView extends React.Component<Props, State> {
     layoutHeight: null,
   };
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     if (typeof this.props.keyboardShouldPersistTaps === 'boolean') {
       console.warn(
         `'keyboardShouldPersistTaps={${
@@ -795,25 +795,21 @@ class ScrollView extends React.Component<Props, State> {
     this._scrollAnimatedValue.setOffset(this.props.contentInset?.top ?? 0);
     this._stickyHeaderRefs = new Map();
     this._headerLayoutYs = new Map();
-  }
 
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
-    const currentContentInsetTop = this.props.contentInset
-      ? this.props.contentInset.top
-      : 0;
-    const nextContentInsetTop = nextProps.contentInset
-      ? nextProps.contentInset.top
-      : 0;
-    if (currentContentInsetTop !== nextContentInsetTop) {
-      this._scrollAnimatedValue.setOffset(nextContentInsetTop || 0);
-    }
-  }
-
-  componentDidMount() {
     this._updateAnimatedNodeAttachment();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: Props) {
+    const prevContentInsetTop = prevProps.contentInset
+      ? prevProps.contentInset.top
+      : 0;
+    const newContentInsetTop = this.props.contentInset
+      ? this.props.contentInset.top
+      : 0;
+    if (prevContentInsetTop !== newContentInsetTop) {
+      this._scrollAnimatedValue.setOffset(newContentInsetTop || 0);
+    }
+
     this._updateAnimatedNodeAttachment();
   }
 
