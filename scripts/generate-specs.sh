@@ -27,6 +27,10 @@ set -e
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 TEMP_DIR=$(mktemp -d /tmp/react-native-codegen-XXXXXXXX)
 RN_DIR=$(cd "$THIS_DIR/.." && pwd)
+
+# find node path
+source "$RN_DIR/scripts/find-node.sh"
+
 NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
 USE_FABRIC="${USE_FABRIC:-0}"
 
@@ -53,31 +57,17 @@ main() {
   TEMP_OUTPUT_DIR="$TEMP_DIR/out"
   SCHEMA_FILE="$TEMP_DIR/schema.json"
 
-  CODEGEN_REPO_PATH="$RN_DIR/packages/react-native-codegen"
-  CODEGEN_NPM_PATH="$RN_DIR/../react-native-codegen"
-
-if [ -z "$NODE_BINARY" ]; then
-    echo "Error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable." 1>&2
-    exit 1
-  fi
-
-  if [ -d "$CODEGEN_REPO_PATH" ]; then
-    CODEGEN_PATH=$(cd "$CODEGEN_REPO_PATH" && pwd)
-  elif [ -d "$CODEGEN_NPM_PATH" ]; then
-    CODEGEN_PATH=$(cd "$CODEGEN_NPM_PATH" && pwd)
-  else
-    echo "Error: Could not determine react-native-codegen location. Try running 'yarn install' or 'npm install' in your project root." 1>&2
-    exit 1
-  fi
-
-  if [ ! -d "$CODEGEN_PATH/lib" ]; then
-    describe "Building react-native-codegen package"
-    bash "$CODEGEN_PATH/scripts/oss/build.sh"
-  fi
-
   if [ -z "$NODE_BINARY" ]; then
     echo "Error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable." 1>&2
     exit 1
+  fi
+
+  CODEGEN_PATH=$("$NODE_BINARY" -e "console.log(require('path').dirname(require.resolve('react-native-codegen/package.json')))")
+
+  # Special case for running CodeGen from source: build it
+  if [ ! -d "$CODEGEN_PATH/lib" ]; then
+    describe "Building react-native-codegen package"
+    bash "$CODEGEN_PATH/scripts/oss/build.sh"
   fi
 
   describe "Generating schema from flow types"

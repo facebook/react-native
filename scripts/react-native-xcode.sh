@@ -64,9 +64,6 @@ PROJECT_ROOT=${PROJECT_ROOT:-"$REACT_NATIVE_DIR/../.."}
 
 cd "$PROJECT_ROOT" || exit
 
-# Define NVM_DIR and source the nvm.sh setup script
-[ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
-
 # Define entry file
 if [[ "$ENTRY_FILE" ]]; then
   # Use ENTRY_FILE defined by user
@@ -82,26 +79,8 @@ if [[ $DEV != true && ! -f "$ENTRY_FILE" ]]; then
   exit 2
 fi
 
-if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
-  . "$HOME/.nvm/nvm.sh"
-elif [[ -x "$(command -v brew)" && -s "$(brew --prefix nvm)/nvm.sh" ]]; then
-  . "$(brew --prefix nvm)/nvm.sh"
-fi
-
-# Set up the nodenv node version manager if present
-if [[ -x "$HOME/.nodenv/bin/nodenv" ]]; then
-  eval "$("$HOME/.nodenv/bin/nodenv" init -)"
-elif [[ -x "$(command -v brew)" && -x "$(brew --prefix nodenv)/bin/nodenv" ]]; then
-  eval "$("$(brew --prefix nodenv)/bin/nodenv" init -)"
-fi
-
-# Set up the ndenv of anyenv if preset
-if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
-  export PATH=${HOME}/.anyenv/bin:${PATH}
-  if [[ "$(anyenv envs | grep -c ndenv )" -eq 1 ]]; then
-    eval "$(anyenv init -)"
-  fi
-fi
+# find node path
+source "$REACT_NATIVE_DIR/scripts/find-node.sh"
 
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null
