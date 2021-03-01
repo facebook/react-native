@@ -6,11 +6,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name= "Preference")
+@Table(name= "T_Preference")
 public class Preference 
 {
 	@Id
 	private String PreferenceId;
+	
+	@Column(name="adhocOrderId")
+	private String adhocOrderId;
 	
 	@Column(name ="businessDivision")
 	private String businessDivision;
@@ -257,10 +260,20 @@ public class Preference
 	public String getWeight() {
 		return weight;
 	}
+ 
+	public String getAdhocOrderId() {
+		return adhocOrderId;
+	}
+
+	public void setAdhocOrderId(String adhocOrderId) {
+		this.adhocOrderId = adhocOrderId;
+	}
 
 	public void setWeight(String weight) {
 		this.weight = weight;
 	}
+	
+	
 	
 	
 	

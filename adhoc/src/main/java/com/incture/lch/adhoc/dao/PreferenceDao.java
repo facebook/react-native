@@ -107,8 +107,10 @@ public class PreferenceDao
 					dto.setIsEditable(true);
 				else
 					dto.setIsEditable(false);
-				dto.setSequence(Integer.parseInt(value.substring(3)));
-				//dto.setSequenceHistory(Integer.parseInt(value.substring(4)));
+				int i= value.indexOf(".");
+				int len=value.length();
+				dto.setSequence(Integer.parseInt(value.substring(3,i)));
+				dto.setSequenceHistory(Integer.parseInt(value.substring(i+1,len)));
 				
 				preferencedto.add(dto);
 				
@@ -127,6 +129,8 @@ public class PreferenceDao
 		for(PreferenceDto dto:preferencedto){
 			if(dto.getColumnName().equals("businessDivision"))
 				preference.setBusinessDivision(generateValue(dto));
+			else if(dto.getColumnName().equals("adhocOrderId"))
+				preference.setAdhocOrderId(generateValue(dto));
 			else if(dto.getColumnName().equals("countryOrigin"))
 				preference.setCountryOrigin(generateValue(dto));
 			else if(dto.getColumnName().equals("createdBy"))
@@ -204,7 +208,8 @@ public class PreferenceDao
 			value=value+"F";
 		
 		value=value+String.valueOf(dto.getSequence());
-		//value=value+String.valueOf(dto.getSequenceHistory());
+		value= value+String.valueOf(".");
+		value=value+String.valueOf(dto.getSequenceHistory());
 
 		return value;
 	}
