@@ -124,6 +124,24 @@ RCT_EXPORT_MODULE()
   ];
 }
 
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+RCT_EXPORT_METHOD(focus : (nonnull NSNumber *)viewTag)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) {
+    RCTUIView *view = viewRegistry[viewTag];
+    [view reactFocus];
+  }];
+}
+
+RCT_EXPORT_METHOD(blur : (nonnull NSNumber *)viewTag)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) {
+    RCTUIView *view = viewRegistry[viewTag];
+    [view reactBlur];
+  }];
+}
+#endif // ]TODO(macOS ISS#2323203)
+
 #pragma mark - View properties
 
 #if TARGET_OS_TV
