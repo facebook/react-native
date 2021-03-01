@@ -219,6 +219,13 @@
         <summary type="html"><![CDATA[At Shoutem, we've been fortunate enough to work with React Native from its very beginnings. We decided we wanted to be part of the amazing community from day one. Soon enough, we realized it's almost impossible to keep up with the pace the community was growing and improving. That's why we decided to organize a monthly meeting where all major React Native contributors can briefly present what their efforts and plans are.]]></summary>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Better List Views in React Native]]></title>
+        <id>Better List Views in React Native</id>
+        <link href="https://reactnative.dev/blog/2017/03/13/better-list-views"/>
+        <updated>2017-03-13T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Many of you have started playing with some of our new List components already after our teaser announcement in the community group, but we are officially announcing them today! No more ListViews or DataSources, stale rows, ignored bugs, or excessive memory consumption - with the latest React Native March 2017 release candidate (0.43-rc.1) you can pick from the new suite of components what best fits your use-case, with great perf and feature sets out of the box:]]></summary>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[idx: The Existential Function]]></title>
         <id>idx: The Existential Function</id>
         <link href="https://reactnative.dev/blog/2017/03/13/idx-the-existential-function"/>
@@ -231,13 +238,6 @@
         <link href="https://reactnative.dev/blog/2017/03/13/introducing-create-react-native-app"/>
         <updated>2017-03-13T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Today we’re announcing Create React Native App: a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of Create React App and is the product of a collaboration between Facebook and Expo (formerly Exponent).]]></summary>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Better List Views in React Native]]></title>
-        <id>Better List Views in React Native</id>
-        <link href="https://reactnative.dev/blog/2017/03/13/better-list-views"/>
-        <updated>2017-03-13T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[Many of you have started playing with some of our new List components already after our teaser announcement in the community group, but we are officially announcing them today! No more ListViews or DataSources, stale rows, ignored bugs, or excessive memory consumption - with the latest React Native March 2017 release candidate (0.43-rc.1) you can pick from the new suite of components what best fits your use-case, with great perf and feature sets out of the box:]]></summary>
     </entry>
     <entry>
         <title type="html"><![CDATA[Using Native Driver for Animated]]></title>
