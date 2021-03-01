@@ -25,7 +25,7 @@ const path = require('path');
 
 const GENERATORS = {
   android: ['modulesAndroid'],
-  ios: ['componentsIOS', 'modulesIOS'],
+  ios: ['modulesIOS'],
 };
 
 function generateSpec(
