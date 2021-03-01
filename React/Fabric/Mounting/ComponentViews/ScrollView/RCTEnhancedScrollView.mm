@@ -37,6 +37,11 @@
       self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
 
+    // We intentionally force `UIScrollView`s `semanticContentAttribute` to `LTR` here
+    // because this attribute affects a position of vertical scrollbar; we don't want this
+    // scrollbar flip because we also flip it with whole `UIScrollView` flip.
+    self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
+
     __weak __typeof(self) weakSelf = self;
     _delegateSplitter = [[RCTGenericDelegateSplitter alloc] initWithDelegateUpdateBlock:^(id delegate) {
       [weakSelf setPrivateDelegate:delegate];

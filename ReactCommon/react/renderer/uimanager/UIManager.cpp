@@ -7,6 +7,7 @@
 
 #include "UIManager.h"
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/graphics/Geometry.h>
@@ -357,7 +358,7 @@ ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
 void UIManager::registerCommitHook(
     UIManagerCommitHook const &commitHook) const {
   std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
-  assert(
+  react_native_assert(
       std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook) ==
       commitHooks_.end());
   commitHook.commitHookWasRegistered(*this);
@@ -369,7 +370,7 @@ void UIManager::unregisterCommitHook(
   std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
   auto iterator =
       std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook);
-  assert(iterator != commitHooks_.end());
+  react_native_assert(iterator != commitHooks_.end());
   commitHooks_.erase(iterator);
   commitHook.commitHookWasUnregistered(*this);
 }

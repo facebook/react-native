@@ -67,6 +67,34 @@ inline static SharedShadowNodeUnsharedList shadowNodeListFromValue(
       ->shadowNodeList;
 }
 
+inline static ShadowNode::UnsharedListOfShared shadowNodeListFromWeakList(
+    ShadowNode::UnsharedListOfWeak const &weakShadowNodeList) {
+  auto result = std::make_shared<ShadowNode::ListOfShared>();
+  for (auto const &weakShadowNode : *weakShadowNodeList) {
+    auto sharedShadowNode = weakShadowNode.lock();
+    if (!sharedShadowNode) {
+      return nullptr;
+    }
+    result->push_back(sharedShadowNode);
+  }
+  return result;
+}
+
+inline static ShadowNode::UnsharedListOfWeak weakShadowNodeListFromValue(
+    jsi::Runtime &runtime,
+    jsi::Value const &value) {
+  auto shadowNodeList = value.getObject(runtime)
+                            .getHostObject<ShadowNodeListWrapper>(runtime)
+                            ->shadowNodeList;
+
+  auto weakShadowNodeList = std::make_shared<ShadowNode::ListOfWeak>();
+  for (auto const &shadowNode : *shadowNodeList) {
+    weakShadowNodeList->push_back(shadowNode);
+  }
+
+  return weakShadowNodeList;
+}
+
 inline static jsi::Value valueFromShadowNodeList(
     jsi::Runtime &runtime,
     const SharedShadowNodeUnsharedList &shadowNodeList) {
@@ -74,16 +102,19 @@ inline static jsi::Value valueFromShadowNodeList(
       runtime, std::make_unique<ShadowNodeListWrapper>(shadowNodeList));
 }
 
+inline static Tag tagFromValue(jsi::Value const &value) {
+  return (Tag)value.getNumber();
+}
+
 inline static SharedEventTarget eventTargetFromValue(
     jsi::Runtime &runtime,
     jsi::Value const &eventTargetValue,
     jsi::Value const &tagValue) {
+  if (eventTargetValue.isNull()) {
+    return nullptr;
+  }
   return std::make_shared<EventTarget>(
-      runtime, eventTargetValue, tagValue.getNumber());
-}
-
-inline static Tag tagFromValue(jsi::Runtime &runtime, jsi::Value const &value) {
-  return (Tag)value.getNumber();
+      runtime, eventTargetValue, tagFromValue(tagValue));
 }
 
 inline static SurfaceId surfaceIdFromValue(

@@ -761,7 +761,8 @@ public class ReactInstanceManager {
   }
 
   @ThreadConfined(UI)
-  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+  public void onActivityResult(
+      Activity activity, int requestCode, int resultCode, @Nullable Intent data) {
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
       currentContext.onActivityResult(activity, requestCode, resultCode, data);
@@ -802,9 +803,7 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   private void clearReactRoot(ReactRoot reactRoot) {
     UiThreadUtil.assertOnUiThread();
-    if (ReactFeatureFlags.enableStartSurfaceRaceConditionFix) {
-      reactRoot.getState().compareAndSet(ReactRoot.STATE_STARTED, ReactRoot.STATE_STOPPED);
-    }
+    reactRoot.getState().compareAndSet(ReactRoot.STATE_STARTED, ReactRoot.STATE_STOPPED);
     ViewGroup rootViewGroup = reactRoot.getRootViewGroup();
     rootViewGroup.removeAllViews();
     rootViewGroup.setId(View.NO_ID);
@@ -825,12 +824,7 @@ public class ReactInstanceManager {
     // Calling clearReactRoot is necessary to initialize the Id on reactRoot
     // This is necessary independently if the RN Bridge has been initialized or not.
     // Ideally reactRoot should be initialized with id == NO_ID
-    if (ReactFeatureFlags.enableStartSurfaceRaceConditionFix) {
-      if (mAttachedReactRoots.add(reactRoot)) {
-        clearReactRoot(reactRoot);
-      }
-    } else {
-      mAttachedReactRoots.add(reactRoot);
+    if (mAttachedReactRoots.add(reactRoot)) {
       clearReactRoot(reactRoot);
     }
 
@@ -839,8 +833,7 @@ public class ReactInstanceManager {
     // reactRoot reactRoot list.
     ReactContext currentContext = getCurrentReactContext();
     if (mCreateReactContextThread == null && currentContext != null) {
-      if (!ReactFeatureFlags.enableStartSurfaceRaceConditionFix
-          || reactRoot.getState().compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
+      if (reactRoot.getState().compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
         attachRootViewToInstance(reactRoot);
       }
     }
@@ -1009,6 +1002,9 @@ public class ReactInstanceManager {
   private void runCreateReactContextOnNewThread(final ReactContextInitParams initParams) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.runCreateReactContextOnNewThread()");
     UiThreadUtil.assertOnUiThread();
+
+    // Mark start of bridge loading
+    ReactMarker.logMarker(ReactMarkerConstants.REACT_BRIDGE_LOADING_START);
     synchronized (mAttachedReactRoots) {
       synchronized (mReactContextLock) {
         if (mCurrentReactContext != null) {
@@ -1109,10 +1105,7 @@ public class ReactInstanceManager {
 
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
       for (ReactRoot reactRoot : mAttachedReactRoots) {
-        if (!ReactFeatureFlags.enableStartSurfaceRaceConditionFix
-            || reactRoot
-                .getState()
-                .compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
+        if (reactRoot.getState().compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
           attachRootViewToInstance(reactRoot);
         }
       }
@@ -1143,6 +1136,8 @@ public class ReactInstanceManager {
         });
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_END);
+    // Mark end of bridge loading
+    ReactMarker.logMarker(ReactMarkerConstants.REACT_BRIDGE_LOADING_END);
     reactContext.runOnJSQueueThread(
         new Runnable() {
           @Override
@@ -1288,34 +1283,34 @@ public class ReactInstanceManager {
 
     reactContext.initializeWithInstance(catalystInstance);
 
+    if (ReactFeatureFlags.useTurboModules && mTMMDelegateBuilder != null) {
+      TurboModuleManagerDelegate tmmDelegate =
+          mTMMDelegateBuilder
+              .setPackages(mPackages)
+              .setReactApplicationContext(reactContext)
+              .build();
+
+      TurboModuleManager turboModuleManager =
+          new TurboModuleManager(
+              catalystInstance.getRuntimeExecutor(),
+              tmmDelegate,
+              catalystInstance.getJSCallInvokerHolder(),
+              catalystInstance.getNativeCallInvokerHolder());
+
+      catalystInstance.setTurboModuleManager(turboModuleManager);
+
+      TurboModuleRegistry registry = (TurboModuleRegistry) turboModuleManager;
+
+      // Eagerly initialize TurboModules
+      for (String moduleName : registry.getEagerInitModuleNames()) {
+        registry.getModule(moduleName);
+      }
+    }
+
     if (mJSIModulePackage != null) {
       catalystInstance.addJSIModules(
           mJSIModulePackage.getJSIModules(
               reactContext, catalystInstance.getJavaScriptContextHolder()));
-
-      if (ReactFeatureFlags.useTurboModules && mTMMDelegateBuilder != null) {
-        TurboModuleManagerDelegate tmmDelegate =
-            mTMMDelegateBuilder
-                .setPackages(mPackages)
-                .setReactApplicationContext(reactContext)
-                .build();
-
-        TurboModuleManager turboModuleManager =
-            new TurboModuleManager(
-                catalystInstance.getRuntimeExecutor(),
-                tmmDelegate,
-                catalystInstance.getJSCallInvokerHolder(),
-                catalystInstance.getNativeCallInvokerHolder());
-
-        catalystInstance.setTurboModuleManager(turboModuleManager);
-
-        TurboModuleRegistry registry = (TurboModuleRegistry) turboModuleManager;
-
-        // Eagerly initialize TurboModules
-        for (String moduleName : registry.getEagerInitModuleNames()) {
-          registry.getModule(moduleName);
-        }
-      }
     }
     if (ReactFeatureFlags.eagerInitializeFabric) {
       catalystInstance.getJSIModule(JSIModuleType.UIManager);

@@ -7,10 +7,13 @@
 
 #pragma once
 
-#include <string>
+#include <react/renderer/mapbuffer/Primitives.h>
 
 namespace facebook {
 namespace react {
+
+// 506 = 5 entries = 50*10 + 6 sizeof(header)
+const int INITIAL_SIZE = 506;
 
 /**
  * MapBuffer is an optimized map format for transferring data like props between
@@ -28,11 +31,51 @@ namespace react {
  * - have minimal APK size and build time impact.
  */
 class MapBuffer {
- public:
-  MapBuffer();
-  virtual ~MapBuffer();
+ private:
+  Header _header = {ALIGNMENT, 0, 0};
 
-  int getSize();
+  void makeSpace();
+
+  void putBytes(Key key, uint8_t *value, int valueSize);
+
+  // Buffer and its size
+  uint8_t *_data;
+
+  uint16_t _dataSize;
+
+ public:
+  MapBuffer() : MapBuffer(INITIAL_SIZE) {}
+
+  MapBuffer(int initialSize);
+
+  ~MapBuffer();
+
+  void putInt(Key key, int value);
+
+  void putBool(Key key, bool value);
+
+  void putDouble(Key key, double value);
+
+  void putNull(Key key);
+
+  // TODO: create a MapBufferBuilder instead or add checks to verify
+  // if it's ok to read and write the Map
+  void finish();
+
+  int getInt(Key key);
+
+  bool getBool(Key key);
+
+  double getDouble(Key key);
+
+  uint16_t getBufferSize();
+
+  // TODO: review parameters of copy method
+  void copy(uint8_t *output);
+
+  bool isNull(Key key);
+
+  uint16_t getSize();
 };
 
 } // namespace react

@@ -4,22 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
+ * @flow strict-local
  */
 
-import {type HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
-import {type ViewProps as Props} from '../View/ViewPropTypes';
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
-const AndroidHorizontalScrollContentViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
+type NativeProps = $ReadOnly<{|
+  ...ViewProps,
+|}>;
+
+type NativeType = HostComponent<NativeProps>;
+
+export default (codegenNativeComponent<NativeProps>(
   'AndroidHorizontalScrollContentView',
-  () => ({
-    uiViewClassName: 'AndroidHorizontalScrollContentView',
-    bubblingEventTypes: {},
-    directEventTypes: {},
-    validAttributes: {},
-  }),
-);
-
-export default AndroidHorizontalScrollContentViewNativeComponent;
+): NativeType);

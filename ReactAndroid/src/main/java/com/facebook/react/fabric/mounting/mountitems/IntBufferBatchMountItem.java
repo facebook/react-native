@@ -161,8 +161,6 @@ public class IntBufferBatchMountItem implements MountItem {
           int y = mIntBuffer[i++];
           int width = mIntBuffer[i++];
           int height = mIntBuffer[i++];
-          // The final buffer, layoutDirection, seems unused?
-          i++;
           int displayType = mIntBuffer[i++];
           surfaceMountingManager.updateLayout(reactTag, x, y, width, height, displayType);
 
@@ -232,8 +230,7 @@ public class IntBufferBatchMountItem implements MountItem {
           } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
             s.append(
                 String.format(
-                    "UPDATE LAYOUT [%d]: x:%d y:%d w:%d h:%d layoutDirection:%d displayType:%d\n",
-                    mIntBuffer[i++],
+                    "UPDATE LAYOUT [%d]: x:%d y:%d w:%d h:%d displayType:%d\n",
                     mIntBuffer[i++],
                     mIntBuffer[i++],
                     mIntBuffer[i++],

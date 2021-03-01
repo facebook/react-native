@@ -64,7 +64,7 @@ public class TouchesHelper {
       touch.putDouble(LOCATION_Y_KEY, PixelUtil.toDIPFromPixel(locationY));
       touch.putInt(TARGET_SURFACE_KEY, surfaceId);
       touch.putInt(TARGET_KEY, reactTarget);
-      touch.putDouble(TIMESTAMP_KEY, event.getTimestampMs());
+      touch.putDouble(TIMESTAMP_KEY, event.getUnixTimestampMs());
       touch.putDouble(POINTER_IDENTIFIER_KEY, motionEvent.getPointerId(index));
       touches.pushMap(touch);
     }
