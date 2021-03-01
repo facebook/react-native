@@ -21,7 +21,7 @@
   BOOL _refreshingProgrammatically;
   NSString *_title;
   UIColor *_titleColor;
-  float _progressViewOffset;
+  CGFloat _progressViewOffset;
 }
 
 - (instancetype)init
@@ -175,7 +175,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   _currentRefreshingStateTimestamp = _currentRefreshingStateClock++;
 }
 
-- (void)setProgressViewOffset:(float)offset
+- (void)setProgressViewOffset:(CGFloat)offset
 {
   _progressViewOffset = offset;
   [self applyProgressViewOffset];
