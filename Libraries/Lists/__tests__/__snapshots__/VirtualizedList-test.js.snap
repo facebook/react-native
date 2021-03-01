@@ -1,5 +1,269 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initial render window 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+        "sticky": true,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+        "sticky": true,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+        "sticky": true,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+        "sticky": true,
+      },
+    ]
+  }
+  disableVirtualization={false}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  horizontal={false}
+  initialNumToRender={10}
+  keyExtractor={[Function]}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onEndReachedThreshold={2}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={
+    Array [
+      0,
+      3,
+      6,
+      9,
+    ]
+  }
+  updateCellsBatchingPeriod={50}
+  windowSize={21}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        value={5}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={6}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        value={7}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        value={8}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={9}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`VirtualizedList forwards correct stickyHeaderIndices when partially in initial render window 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+        "sticky": true,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+        "sticky": true,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+        "sticky": true,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+        "sticky": true,
+      },
+    ]
+  }
+  disableVirtualization={false}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  horizontal={false}
+  initialNumToRender={5}
+  keyExtractor={[Function]}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onEndReachedThreshold={2}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={
+    Array [
+      0,
+      3,
+    ]
+  }
+  updateCellsBatchingPeriod={50}
+  windowSize={21}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        value={4}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 50,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
 exports[`VirtualizedList handles nested lists 1`] = `
 <RCTScrollView
   data={
@@ -405,6 +669,362 @@ exports[`VirtualizedList handles separators correctly 3`] = `
         title="i2"
       />
     </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`VirtualizedList keeps sticky headers realized after scrolled out of viewport 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+        "sticky": true,
+      },
+      Object {
+        "key": 1,
+        "sticky": false,
+      },
+      Object {
+        "key": 2,
+        "sticky": false,
+      },
+      Object {
+        "key": 3,
+        "sticky": true,
+      },
+      Object {
+        "key": 4,
+        "sticky": false,
+      },
+      Object {
+        "key": 5,
+        "sticky": false,
+      },
+      Object {
+        "key": 6,
+        "sticky": true,
+      },
+      Object {
+        "key": 7,
+        "sticky": false,
+      },
+      Object {
+        "key": 8,
+        "sticky": false,
+      },
+      Object {
+        "key": 9,
+        "sticky": true,
+      },
+      Object {
+        "key": 10,
+        "sticky": false,
+      },
+      Object {
+        "key": 11,
+        "sticky": false,
+      },
+      Object {
+        "key": 12,
+        "sticky": true,
+      },
+      Object {
+        "key": 13,
+        "sticky": false,
+      },
+      Object {
+        "key": 14,
+        "sticky": false,
+      },
+      Object {
+        "key": 15,
+        "sticky": true,
+      },
+      Object {
+        "key": 16,
+        "sticky": false,
+      },
+      Object {
+        "key": 17,
+        "sticky": false,
+      },
+      Object {
+        "key": 18,
+        "sticky": true,
+      },
+      Object {
+        "key": 19,
+        "sticky": false,
+      },
+    ]
+  }
+  disableVirtualization={false}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  horizontal={false}
+  initialNumToRender={1}
+  keyExtractor={[Function]}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onEndReachedThreshold={2}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={
+    Array [
+      0,
+      2,
+      4,
+      7,
+      10,
+      13,
+    ]
+  }
+  updateCellsBatchingPeriod={50}
+  windowSize={1}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={0}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 50,
+        }
+      }
+    />
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={6}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 20,
+        }
+      }
+    />
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={9}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={false}
+        value={10}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={false}
+        value={11}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={12}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={false}
+        value={13}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={false}
+        value={14}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={15}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={false}
+        value={16}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={false}
+        value={17}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={18}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={false}
+        value={19}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`VirtualizedList realizes sticky headers in viewport on batched render 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+        "sticky": true,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+        "sticky": true,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+        "sticky": true,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+        "sticky": true,
+      },
+    ]
+  }
+  disableVirtualization={false}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  horizontal={false}
+  initialNumToRender={1}
+  keyExtractor={[Function]}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onEndReachedThreshold={2}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={
+    Array [
+      0,
+      3,
+    ]
+  }
+  updateCellsBatchingPeriod={50}
+  windowSize={1}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        sticky={true}
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <item
+        value={4}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 50,
+        }
+      }
+    />
   </View>
 </RCTScrollView>
 `;
