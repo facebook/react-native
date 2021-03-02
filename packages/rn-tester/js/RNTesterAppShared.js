@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import {
   BackHandler,
   StyleSheet,
@@ -45,11 +43,12 @@ const APP_STATE_KEY = 'RNTesterAppState.v3';
 // TODO: Vendor AsyncStorage or create our own.
 LogBox.ignoreLogs([/AsyncStorage has been extracted from react-native/]);
 
-const DisplayIfVisible = ({isVisible, children}) => (
-  <View style={[styles.container, !isVisible && styles.hidden]}>
-    {children}
-  </View>
-);
+const DisplayIfVisible = ({isVisible, children}) =>
+  isVisible ? (
+    <View style={[styles.container, !isVisible && styles.hidden]}>
+      {children}
+    </View>
+  ) : null;
 
 type ExampleListsContainerProps = $ReadOnly<{|
   theme: RNTesterTheme,

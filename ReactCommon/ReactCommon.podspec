@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "10.0" }
+  s.platforms              = { :ios => "11.0" }
   s.source                 = source
   s.header_dir             = "ReactCommon" # Use global header_dir for all subspecs for use_frameworks! compatibility
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
@@ -51,6 +51,10 @@ Pod::Spec.new do |s|
     ss.subspec "core" do |sss|
       sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}",
                          "react/nativemodule/core/platform/ios/**/*.{mm,cpp,h}"
+    end
+
+    s.subspec "react_debug_core" do |sss|
+        sss.source_files = "react/debug/*.{cpp,h}"
     end
 
     ss.subspec "samples" do |sss|

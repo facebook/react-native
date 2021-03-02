@@ -7,7 +7,10 @@
 
 package com.facebook.react.fabric;
 
+import static com.facebook.react.config.ReactFeatureFlags.enableExperimentalStaticViewConfigs;
+
 import androidx.annotation.NonNull;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
@@ -25,10 +28,10 @@ import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
 import com.facebook.react.fabric.mounting.mountitems.SendAccessibilityEvent;
 import com.facebook.react.uimanager.StateWrapper;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.systrace.Systrace;
 
 public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
@@ -82,11 +85,20 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   private FabricUIManager createUIManager(@NonNull EventBeatManager eventBeatManager) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.createUIManager");
-    EventDispatcher eventDispatcher = new EventDispatcherImpl(mReactApplicationContext);
-    FabricUIManager fabricUIManager =
-        new FabricUIManager(
-            mReactApplicationContext, mViewManagerRegistry, eventDispatcher, eventBeatManager);
 
+    FabricUIManager fabricUIManager;
+    if (enableExperimentalStaticViewConfigs) {
+      fabricUIManager =
+          new FabricUIManager(mReactApplicationContext, mViewManagerRegistry, eventBeatManager);
+    } else {
+      // TODO T83943316: Remove this code once StaticViewConfigs are enabled by default
+      UIManagerModule nativeModule =
+          Assertions.assertNotNull(mReactApplicationContext.getNativeModule(UIManagerModule.class));
+      EventDispatcher eventDispatcher = nativeModule.getEventDispatcher();
+      fabricUIManager =
+          new FabricUIManager(
+              mReactApplicationContext, mViewManagerRegistry, eventDispatcher, eventBeatManager);
+    }
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return fabricUIManager;
   }

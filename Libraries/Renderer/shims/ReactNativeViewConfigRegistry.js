@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import {type ViewConfig} from './ReactNativeTypes';
 import invariant from 'invariant';
 

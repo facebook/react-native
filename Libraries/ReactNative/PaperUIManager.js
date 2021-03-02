@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const NativeModules = require('../BatchedBridge/NativeModules');
 const Platform = require('../Utilities/Platform');
 const UIManagerProperties = require('./UIManagerProperties');
@@ -42,6 +40,12 @@ function getViewManagerConfig(viewManagerName: string): any {
         viewManagerName
       ] = NativeUIManager.getConstantsForViewManager(viewManagerName);
     } catch (e) {
+      console.error(
+        "NativeUIManager.getConstantsForViewManager('" +
+          viewManagerName +
+          "') threw an exception.",
+        e,
+      );
       viewManagerConfigs[viewManagerName] = null;
     }
   }
@@ -96,6 +100,9 @@ const UIManagerJS = {
   },
   getViewManagerConfig(viewManagerName: string): any {
     return getViewManagerConfig(viewManagerName);
+  },
+  hasViewManagerConfig(viewManagerName: string): boolean {
+    return getViewManagerConfig(viewManagerName) != null;
   },
 };
 

@@ -136,13 +136,13 @@ class Binding : public jni::HybridClass<Binding>,
       std::string const &commandName,
       folly::dynamic const args) override;
 
-  void schedulerDidSetJSResponder(
-      SurfaceId surfaceId,
+  void schedulerDidSendAccessibilityEvent(
       const ShadowView &shadowView,
-      const ShadowView &initialShadowView,
-      bool blockNativeResponder) override;
+      std::string const &eventType) override;
 
-  void schedulerDidClearJSResponder() override;
+  void schedulerDidSetIsJSResponder(
+      ShadowView const &shadowView,
+      bool isJSResponder) override;
 
   void setPixelDensity(float pointScaleFactor);
 
@@ -163,6 +163,10 @@ class Binding : public jni::HybridClass<Binding>,
 
   std::shared_ptr<Scheduler> scheduler_;
   std::mutex schedulerMutex_;
+
+  better::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
+  better::shared_mutex
+      surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
 
   std::recursive_mutex commitMutex_;
 

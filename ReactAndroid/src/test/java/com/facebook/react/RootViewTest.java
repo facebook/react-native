@@ -111,10 +111,11 @@ public class RootViewTest {
 
     ReactRootView rootView = new ReactRootView(mReactContext);
     rootView.setId(rootViewId);
+    rootView.setRootViewTag(rootViewId);
     rootView.startReactApplication(instanceManager, "");
     rootView.simulateAttachForTesting();
 
-    long ts = SystemClock.uptimeMillis();
+    long ts = SystemClock.currentTimeMillis();
 
     // Test ACTION_DOWN event
     rootView.onTouchEvent(MotionEvent.obtain(100, ts, MotionEvent.ACTION_DOWN, 0, 0, 0));
@@ -149,7 +150,9 @@ public class RootViewTest {
                 "timestamp",
                 (double) ts,
                 "identifier",
-                0.));
+                0.,
+                "targetSurface",
+                rootViewId));
 
     // Test ACTION_UP event
     reset(eventEmitterModuleMock, eventDispatcher);
@@ -185,7 +188,9 @@ public class RootViewTest {
                 "timestamp",
                 (double) ts,
                 "identifier",
-                0.));
+                0.,
+                "targetSurface",
+                rootViewId));
 
     // Test other action
     reset(eventDispatcher);

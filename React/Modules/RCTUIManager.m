@@ -555,11 +555,12 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     for (RCTShadowView *shadowView in affectedShadowViews) {
       reactTags[index] = shadowView.reactTag;
       RCTLayoutMetrics layoutMetrics = shadowView.layoutMetrics;
-      frameDataArray[index++] = (RCTFrameData){layoutMetrics.frame,
-                                               layoutMetrics.layoutDirection,
-                                               shadowView.isNewView,
-                                               shadowView.superview.isNewView,
-                                               layoutMetrics.displayType};
+      frameDataArray[index++] = (RCTFrameData){
+          layoutMetrics.frame,
+          layoutMetrics.layoutDirection,
+          shadowView.isNewView,
+          shadowView.superview.isNewView,
+          layoutMetrics.displayType};
     }
   }
 

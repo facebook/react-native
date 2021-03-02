@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import codegenNativeComponent from '../Utilities/codegenNativeComponent';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {

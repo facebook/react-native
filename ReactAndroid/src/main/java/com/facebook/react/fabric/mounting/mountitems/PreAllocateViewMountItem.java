@@ -16,39 +16,37 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.mounting.MountingManager;
+import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.uimanager.StateWrapper;
-import com.facebook.react.uimanager.ThemedReactContext;
 
 /** {@link MountItem} that is used to pre-allocate views for JS components. */
 public class PreAllocateViewMountItem implements MountItem {
 
   @NonNull private final String mComponent;
-  private final int mRootTag;
+  private final int mSurfaceId;
   private final int mReactTag;
   private final @Nullable ReadableMap mProps;
   private final @Nullable StateWrapper mStateWrapper;
-  private final @NonNull ThemedReactContext mContext;
   private final boolean mIsLayoutable;
 
   public PreAllocateViewMountItem(
-      @Nullable ThemedReactContext context,
-      int rootTag,
+      int surfaceId,
       int reactTag,
       @NonNull String component,
       @Nullable ReadableMap props,
       @NonNull StateWrapper stateWrapper,
       boolean isLayoutable) {
-    mContext = context;
     mComponent = component;
-    mRootTag = rootTag;
+    mSurfaceId = surfaceId;
     mProps = props;
     mStateWrapper = stateWrapper;
     mReactTag = reactTag;
     mIsLayoutable = isLayoutable;
   }
 
-  public int getRootTag() {
-    return mRootTag;
+  @Override
+  public int getSurfaceId() {
+    return mSurfaceId;
   }
 
   @Override
@@ -56,15 +54,15 @@ public class PreAllocateViewMountItem implements MountItem {
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Executing pre-allocation of: " + toString());
     }
-    if (mContext == null) {
-      throw new IllegalStateException(
-          "Cannot execute PreAllocateViewMountItem without Context for ReactTag: "
-              + mReactTag
-              + " and rootTag: "
-              + mRootTag);
+    SurfaceMountingManager surfaceMountingManager = mountingManager.getSurfaceManager(mSurfaceId);
+    if (surfaceMountingManager == null) {
+      FLog.e(
+          TAG,
+          "Skipping View PreAllocation; no SurfaceMountingManager found for [" + mSurfaceId + "]");
+      return;
     }
-    mountingManager.preallocateView(
-        mContext, mComponent, mReactTag, mProps, mStateWrapper, mIsLayoutable);
+    surfaceMountingManager.preallocateView(
+        mComponent, mReactTag, mProps, mStateWrapper, mIsLayoutable);
   }
 
   @Override
@@ -74,8 +72,8 @@ public class PreAllocateViewMountItem implements MountItem {
             .append(mReactTag)
             .append("] - component: ")
             .append(mComponent)
-            .append(" rootTag: ")
-            .append(mRootTag)
+            .append(" surfaceId: ")
+            .append(mSurfaceId)
             .append(" isLayoutable: ")
             .append(mIsLayoutable);
 

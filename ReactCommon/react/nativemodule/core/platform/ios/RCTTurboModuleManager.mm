@@ -745,8 +745,7 @@ static Class getFallbackClassFromName(const char *name)
    * aren't any strong references to it in ObjC. Hence, we give
    * __turboModuleProxy a strong reference to TurboModuleManager.
    */
-  auto turboModuleProvider =
-      [self](const std::string &name, const jsi::Value *schema) -> std::shared_ptr<react::TurboModule> {
+  auto turboModuleProvider = [self](const std::string &name) -> std::shared_ptr<react::TurboModule> {
     auto moduleName = name.c_str();
 
     TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
@@ -777,7 +776,7 @@ static Class getFallbackClassFromName(const char *name)
   };
 
   runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
-    react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider), RCTTurboModuleJSCodegenEnabled());
+    react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
   });
 }
 

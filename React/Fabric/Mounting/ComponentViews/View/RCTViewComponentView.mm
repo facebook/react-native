@@ -23,6 +23,7 @@ using namespace facebook::react;
   UIColor *_backgroundColor;
   CALayer *_borderLayer;
   BOOL _needsInvalidateLayer;
+  BOOL _isJSResponder;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
 
@@ -174,10 +175,11 @@ using namespace facebook::react;
 
   // `hitSlop`
   if (oldViewProps.hitSlop != newViewProps.hitSlop) {
-    self.hitTestEdgeInsets = {-newViewProps.hitSlop.top,
-                              -newViewProps.hitSlop.left,
-                              -newViewProps.hitSlop.bottom,
-                              -newViewProps.hitSlop.right};
+    self.hitTestEdgeInsets = {
+        -newViewProps.hitSlop.top,
+        -newViewProps.hitSlop.left,
+        -newViewProps.hitSlop.bottom,
+        -newViewProps.hitSlop.right};
   }
 
   // `overflow`
@@ -283,6 +285,16 @@ using namespace facebook::react;
   }
 }
 
+- (BOOL)isJSResponder
+{
+  return _isJSResponder;
+}
+
+- (void)setIsJSResponder:(BOOL)isJSResponder
+{
+  _isJSResponder = isJSResponder;
+}
+
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
   [super finalizeUpdates:updateMask];
@@ -309,6 +321,7 @@ using namespace facebook::react;
 
   _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   _eventEmitter.reset();
+  _isJSResponder = NO;
 }
 
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(NSSet<NSString *> *_Nullable)props
@@ -372,18 +385,20 @@ using namespace facebook::react;
 
 static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 {
-  return RCTCornerRadii{.topLeft = (CGFloat)borderRadii.topLeft,
-                        .topRight = (CGFloat)borderRadii.topRight,
-                        .bottomLeft = (CGFloat)borderRadii.bottomLeft,
-                        .bottomRight = (CGFloat)borderRadii.bottomRight};
+  return RCTCornerRadii{
+      .topLeft = (CGFloat)borderRadii.topLeft,
+      .topRight = (CGFloat)borderRadii.topRight,
+      .bottomLeft = (CGFloat)borderRadii.bottomLeft,
+      .bottomRight = (CGFloat)borderRadii.bottomRight};
 }
 
 static RCTBorderColors RCTCreateRCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
-  return RCTBorderColors{.top = RCTCreateCGColorRefFromSharedColor(borderColors.top),
-                         .left = RCTCreateCGColorRefFromSharedColor(borderColors.left),
-                         .bottom = RCTCreateCGColorRefFromSharedColor(borderColors.bottom),
-                         .right = RCTCreateCGColorRefFromSharedColor(borderColors.right)};
+  return RCTBorderColors{
+      .top = RCTCreateCGColorRefFromSharedColor(borderColors.top),
+      .left = RCTCreateCGColorRefFromSharedColor(borderColors.left),
+      .bottom = RCTCreateCGColorRefFromSharedColor(borderColors.bottom),
+      .right = RCTCreateCGColorRefFromSharedColor(borderColors.right)};
 }
 
 static void RCTReleaseRCTBorderColors(RCTBorderColors borderColors)
@@ -491,9 +506,9 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     } else {
       CGSize imageSize = image.size;
       UIEdgeInsets imageCapInsets = image.capInsets;
-      CGRect contentsCenter =
-          CGRect{CGPoint{imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
-                 CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
+      CGRect contentsCenter = CGRect{
+          CGPoint{imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
+          CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
 
       _borderLayer.contents = (id)image.CGImage;
       _borderLayer.contentsScale = image.scale;

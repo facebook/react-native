@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import {type ScrollViewNativeProps as Props} from './ScrollViewNativeComponentType';
 import {type HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';

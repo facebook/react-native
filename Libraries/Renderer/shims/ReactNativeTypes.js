@@ -99,7 +99,7 @@ export type PartialViewConfig = $ReadOnly<{
   validAttributes?: PartialAttributeConfiguration,
 }>;
 
-export type NativeMethods = {
+export type NativeMethods = {|
   blur(): void,
   focus(): void,
   measure(callback: MeasureOnSuccessCallback): void,
@@ -110,8 +110,7 @@ export type NativeMethods = {
     onFail?: () => void,
   ): void,
   setNativeProps(nativeProps: {...}): void,
-  ...
-};
+|};
 
 export type HostComponent<T> = AbstractComponent<T, $ReadOnly<NativeMethods>>;
 
@@ -180,6 +179,10 @@ export type ReactNativeType = {
     command: string,
     args: Array<mixed>,
   ): void,
+  sendAccessibilityEvent(
+    handle: ElementRef<HostComponent<mixed>>,
+    eventType: string,
+  ): void,
   render(
     element: MixedElement,
     containerTag: number,
@@ -203,6 +206,10 @@ export type ReactFabricType = {
     handle: ElementRef<HostComponent<mixed>>,
     command: string,
     args: Array<mixed>,
+  ): void,
+  sendAccessibilityEvent(
+    handle: ElementRef<HostComponent<mixed>>,
+    eventType: string,
   ): void,
   render(
     element: MixedElement,

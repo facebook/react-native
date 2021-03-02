@@ -7,11 +7,13 @@
 
 #include "ShadowTreeRegistry.h"
 
+#include <react/debug/react_native_assert.h>
+
 namespace facebook {
 namespace react {
 
 ShadowTreeRegistry::~ShadowTreeRegistry() {
-  assert(
+  react_native_assert(
       registry_.empty() && "Deallocation of non-empty `ShadowTreeRegistry`.");
 }
 

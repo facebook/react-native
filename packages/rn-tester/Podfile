@@ -1,7 +1,7 @@
 require_relative '../../scripts/react_native_pods'
 
 source 'https://cdn.cocoapods.org/'
-platform :ios, '10.0'
+platform :ios, '11.0'
 
 USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
 
@@ -57,7 +57,5 @@ target 'RNTesterIntegrationTests' do
 end
 
 post_install do |installer|
-  if !USE_FRAMEWORKS
-    flipper_post_install(installer)
-  end
+  react_native_post_install(installer)
 end

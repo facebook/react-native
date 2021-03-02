@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import * as React from 'react';
 
 const ScrollView = require('../../Components/ScrollView/ScrollView');

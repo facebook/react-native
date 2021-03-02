@@ -50,7 +50,7 @@ const CloseButton = props => {
         {marginHorizontal: props.behavior === 'position' ? 0 : 25},
       ]}>
       <Pressable
-        onPress={() => props.setModdalOpen(false)}
+        onPress={() => props.setModalOpen(false)}
         style={styles.closeButton}>
         <Text>Close</Text>
       </Pressable>
@@ -59,7 +59,7 @@ const CloseButton = props => {
 };
 
 const KeyboardAvoidingViewBehaviour = () => {
-  const [modalOpen, setModdalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [behavior, setBehavior] = useState('padding');
   return (
     <View style={styles.outerContainer}>
@@ -87,7 +87,7 @@ const KeyboardAvoidingViewBehaviour = () => {
                 {backgroundColor: behavior === 'position' ? 'blue' : 'white'},
               ]}>
               <Text style={{color: behavior === 'position' ? 'white' : 'blue'}}>
-                Padding
+                Position
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -104,12 +104,12 @@ const KeyboardAvoidingViewBehaviour = () => {
               </Text>
             </TouchableOpacity>
           </View>
-          <CloseButton behavior={behavior} setModdalOpen={setModdalOpen} />
+          <CloseButton behavior={behavior} setModalOpen={setModalOpen} />
           <TextInputForm />
         </KeyboardAvoidingView>
       </Modal>
       <View>
-        <Pressable onPress={() => setModdalOpen(true)}>
+        <Pressable onPress={() => setModalOpen(true)}>
           <Text>Open Example</Text>
         </Pressable>
       </View>
@@ -118,7 +118,7 @@ const KeyboardAvoidingViewBehaviour = () => {
 };
 
 const KeyboardAvoidingDisabled = () => {
-  const [modalOpen, setModdalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   return (
     <View style={styles.outerContainer}>
       <Modal animationType="fade" visible={modalOpen}>
@@ -126,12 +126,12 @@ const KeyboardAvoidingDisabled = () => {
           enabled={false}
           behavior={'height'}
           style={styles.container}>
-          <CloseButton behavior={'height'} setModdalOpen={setModdalOpen} />
+          <CloseButton behavior={'height'} setModalOpen={setModalOpen} />
           <TextInputForm />
         </KeyboardAvoidingView>
       </Modal>
       <View>
-        <Pressable onPress={() => setModdalOpen(true)}>
+        <Pressable onPress={() => setModalOpen(true)}>
           <Text>Open Example</Text>
         </Pressable>
       </View>
@@ -140,7 +140,7 @@ const KeyboardAvoidingDisabled = () => {
 };
 
 const KeyboardAvoidingVerticalOffset = () => {
-  const [modalOpen, setModdalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   return (
     <View style={styles.outerContainer}>
       <Modal animationType="fade" visible={modalOpen}>
@@ -148,12 +148,35 @@ const KeyboardAvoidingVerticalOffset = () => {
           keyboardVerticalOffset={20}
           behavior={'padding'}
           style={styles.container}>
-          <CloseButton behavior={'height'} setModdalOpen={setModdalOpen} />
+          <CloseButton behavior={'height'} setModalOpen={setModalOpen} />
           <TextInputForm />
         </KeyboardAvoidingView>
       </Modal>
       <View>
-        <Pressable onPress={() => setModdalOpen(true)}>
+        <Pressable onPress={() => setModalOpen(true)}>
+          <Text>Open Example</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+};
+
+const KeyboardAvoidingContentContainerStyle = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+  return (
+    <View>
+      <Modal animationType="fade" visible={modalOpen}>
+        <KeyboardAvoidingView
+          keyboardVerticalOffset={20}
+          behavior={'position'}
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}>
+          <CloseButton behavior={'height'} setModalOpen={setModalOpen} />
+          <TextInputForm />
+        </KeyboardAvoidingView>
+      </Modal>
+      <View>
+        <Pressable onPress={() => setModalOpen(true)}>
           <Text>Open Example</Text>
         </Pressable>
       </View>
@@ -171,6 +194,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 20,
+  },
+  contentContainer: {
+    paddingTop: 20,
+    backgroundColor: '#abdebf',
   },
   textInput: {
     borderRadius: 5,
@@ -223,6 +250,12 @@ exports.examples = [
     title: 'Keyboard Avoiding View with enabled={false}',
     render(): React.Node {
       return <KeyboardAvoidingDisabled />;
+    },
+  },
+  {
+    title: 'Keyboard Avoiding View with contentContainerStyle',
+    render(): React.Node {
+      return <KeyboardAvoidingContentContainerStyle />;
     },
   },
 ];

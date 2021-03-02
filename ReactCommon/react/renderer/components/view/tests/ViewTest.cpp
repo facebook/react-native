@@ -208,9 +208,10 @@ TEST_F(YogaDirtyFlagTest, updatingStateForScrollViewMistNotDirtyYogaNode) {
             oldShadowNode.getFamily(),
             std::make_shared<ScrollViewState>(state));
 
-        return oldShadowNode.clone({ShadowNodeFragment::propsPlaceholder(),
-                                    ShadowNodeFragment::childrenPlaceholder(),
-                                    newState});
+        return oldShadowNode.clone(
+            {ShadowNodeFragment::propsPlaceholder(),
+             ShadowNodeFragment::childrenPlaceholder(),
+             newState});
       });
 
   EXPECT_FALSE(

@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const BatchedBridge = require('../BatchedBridge/BatchedBridge');
 const BugReporting = require('../BugReporting/BugReporting');
 const ReactNative = require('../Renderer/shims/ReactNative');
@@ -126,6 +124,7 @@ const AppRegistry = {
           showArchitectureIndicator,
           scopedPerformanceLogger,
           appKey === 'LogBox',
+          appKey,
         );
       },
     };

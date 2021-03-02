@@ -57,8 +57,8 @@ static void testShadowNodeTreeLifeCycle(
 
     // Applying size constraints.
     emptyRootNode = emptyRootNode->clone(
-        LayoutConstraints{Size{512, 0},
-                          Size{512, std::numeric_limits<Float>::infinity()}},
+        LayoutConstraints{
+            Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
         LayoutContext{});
 
     // Generation of a random tree.
@@ -174,7 +174,9 @@ static void testShadowNodeTreeLifeCycle(
 
 using namespace facebook::react;
 
-TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMovesFlattener) {
+TEST(
+    ShadowTreeLifecyleTest,
+    stableBiggerTreeFewerIterationsOptimizedMovesFlattener) {
   testShadowNodeTreeLifeCycle(
       /* seed */ 0,
       /* size */ 512,
@@ -182,7 +184,9 @@ TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMovesFlattener) {
       /* stages */ 32);
 }
 
-TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMovesFlattener2) {
+TEST(
+    ShadowTreeLifecyleTest,
+    stableBiggerTreeFewerIterationsOptimizedMovesFlattener2) {
   testShadowNodeTreeLifeCycle(
       /* seed */ 1,
       /* size */ 512,
@@ -190,7 +194,9 @@ TEST(MountingTest, stableBiggerTreeFewerIterationsOptimizedMovesFlattener2) {
       /* stages */ 32);
 }
 
-TEST(MountingTest, stableSmallerTreeMoreIterationsOptimizedMovesFlattener) {
+TEST(
+    ShadowTreeLifecyleTest,
+    stableSmallerTreeMoreIterationsOptimizedMovesFlattener) {
   testShadowNodeTreeLifeCycle(
       /* seed */ 0,
       /* size */ 16,

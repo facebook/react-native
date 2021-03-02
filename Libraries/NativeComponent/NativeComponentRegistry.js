@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import {createViewConfig} from './ViewConfig';
 import UIManager from '../ReactNative/UIManager';
 import type {
@@ -122,4 +120,17 @@ export function getWithFallback_DEPRECATED<Config>(
 function hasNativeViewConfig(name: string): boolean {
   invariant(getRuntimeConfig == null, 'Unexpected invocation!');
   return UIManager.getViewManagerConfig(name) != null;
+}
+
+/**
+ * Unstable API. Do not use!
+ *
+ * This method returns if there is a StaticViewConfig registered for the
+ * component name received as a parameter.
+ */
+export function unstable_hasStaticViewConfig(name: string): boolean {
+  const {native} = getRuntimeConfig?.(name) ?? {
+    native: true,
+  };
+  return !native;
 }

@@ -14,17 +14,15 @@
 
 #include <condition_variable>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook {
 namespace react {
 
-MountingCoordinator::MountingCoordinator(
-    ShadowTreeRevision baseRevision,
-    std::weak_ptr<MountingOverrideDelegate const> delegate)
+MountingCoordinator::MountingCoordinator(ShadowTreeRevision baseRevision)
     : surfaceId_(baseRevision.rootShadowNode->getSurfaceId()),
       baseRevision_(baseRevision),
-      mountingOverrideDelegate_(delegate),
       telemetryController_(*this) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   stubViewTree_ = buildStubViewTreeWithoutUsingDifferentiator(
@@ -40,7 +38,7 @@ void MountingCoordinator::push(ShadowTreeRevision const &revision) const {
   {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    assert(
+    react_native_assert(
         !lastRevision_.has_value() || revision.number != lastRevision_->number);
 
     if (!lastRevision_.has_value() || lastRevision_->number < revision.number) {
@@ -165,7 +163,8 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
         }
       }
 
-      assert((treesEqual) && "Incorrect set of mutations detected.");
+      react_native_assert(
+          (treesEqual) && "Incorrect set of mutations detected.");
     }
   }
 #endif
@@ -179,6 +178,12 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
 
 TelemetryController const &MountingCoordinator::getTelemetryController() const {
   return telemetryController_;
+}
+
+void MountingCoordinator::setMountingOverrideDelegate(
+    std::weak_ptr<MountingOverrideDelegate const> delegate) const {
+  std::lock_guard<std::mutex> lock(mutex_);
+  mountingOverrideDelegate_ = delegate;
 }
 
 } // namespace react

@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "10.0" }
+  s.platforms              = { :ios => "11.0" }
   s.source                 = source
   s.source_files           = "dummyFile.cpp"
   s.library                = "stdc++"
@@ -232,7 +232,16 @@ Pod::Spec.new do |s|
     end
   end
 
-  s.subspec "debug" do |ss|
+  s.subspec "debug_core" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/debug/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/debug/tests"
+    ss.header_dir           = "react/debug"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+  end
+
+  s.subspec "debug_renderer" do |ss|
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "react/renderer/debug/**/*.{m,mm,cpp,h}"

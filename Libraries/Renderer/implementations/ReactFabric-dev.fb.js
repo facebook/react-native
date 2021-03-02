@@ -3730,7 +3730,8 @@ var _nativeFabricUIManage = nativeFabricUIManager,
   registerEventHandler = _nativeFabricUIManage.registerEventHandler,
   fabricMeasure = _nativeFabricUIManage.measure,
   fabricMeasureInWindow = _nativeFabricUIManage.measureInWindow,
-  fabricMeasureLayout = _nativeFabricUIManage.measureLayout;
+  fabricMeasureLayout = _nativeFabricUIManage.measureLayout,
+  sendAccessibilityEvent = _nativeFabricUIManage.sendAccessibilityEvent;
 var getViewConfigForType =
   ReactNativePrivateInterface.ReactNativeViewConfigRegistry.get; // Counter for uniquely identifying views.
 // % 10 === 1 means it is a rootTag.
@@ -21695,6 +21696,31 @@ function dispatchCommand(handle, command, args) {
   }
 }
 
+function sendAccessibilityEvent(handle, eventType) {
+  if (handle._nativeTag == null) {
+    {
+      error(
+        "sendAccessibilityEvent was called with a ref that isn't a " +
+          "native component. Use React.forwardRef to get access to the underlying native component"
+      );
+    }
+
+    return;
+  }
+
+  if (handle._internalInstanceHandle) {
+    nativeFabricUIManager.sendAccessibilityEvent(
+      handle._internalInstanceHandle.stateNode.node,
+      eventType
+    );
+  } else {
+    ReactNativePrivateInterface.legacySendAccessibilityEvent(
+      handle._nativeTag,
+      eventType
+    );
+  }
+}
+
 function render(element, containerTag, callback) {
   var root = roots.get(containerTag);
 
@@ -21750,6 +21776,7 @@ exports.createPortal = createPortal$1;
 exports.dispatchCommand = dispatchCommand;
 exports.findHostInstance_DEPRECATED = findHostInstance_DEPRECATED;
 exports.findNodeHandle = findNodeHandle;
+exports.sendAccessibilityEvent = sendAccessibilityEvent;
 exports.render = render;
 exports.stopSurface = stopSurface;
 exports.unmountComponentAtNode = unmountComponentAtNode;

@@ -10,11 +10,8 @@
 
 'use strict';
 
-const {
-  capitalize,
-  getSafePropertyName,
-  getNamespacedStructName,
-} = require('../Utils');
+const {getSafePropertyName, getNamespacedStructName} = require('../Utils');
+const {capitalize} = require('../../../Utils');
 
 import type {Nullable} from '../../../../CodegenSchema';
 import type {StructTypeAnnotation, RegularStruct} from '../StructCollector';
@@ -52,13 +49,15 @@ const MethodTemplate = ({
   hasteModuleName,
   structName,
   propertyName,
+  safePropertyName,
 }: $ReadOnly<{
   returnType: string,
   returnValue: string,
   hasteModuleName: string,
   structName: string,
   propertyName: string,
-}>) => `inline ${returnType}JS::${hasteModuleName}::${structName}::${propertyName}() const
+  safePropertyName: string,
+}>) => `inline ${returnType}JS::${hasteModuleName}::${structName}::${safePropertyName}() const
 {
   id const p = _v[@"${propertyName}"];
   return ${returnValue};
@@ -211,7 +210,7 @@ function serializeRegularStruct(
     structProperties: struct.properties
       .map(property => {
         const {typeAnnotation, optional} = property;
-        const propName = getSafePropertyName(property);
+        const safePropName = getSafePropertyName(property);
         const returnType = toObjCType(
           hasteModuleName,
           typeAnnotation,
@@ -219,15 +218,15 @@ function serializeRegularStruct(
         );
 
         const padding = ' '.repeat(returnType.endsWith('*') ? 0 : 1);
-        return `${returnType}${padding}${propName}() const;`;
+        return `${returnType}${padding}${safePropName}() const;`;
       })
       .join('\n      '),
   });
 
   const methods = struct.properties
     .map<string>(property => {
-      const {typeAnnotation, optional} = property;
-      const propName = getSafePropertyName(property);
+      const {typeAnnotation, optional, name: propName} = property;
+      const safePropertyName = getSafePropertyName(property);
       const returnType = toObjCType(hasteModuleName, typeAnnotation, optional);
       const returnValue = toObjCValue(
         hasteModuleName,
@@ -244,6 +243,7 @@ function serializeRegularStruct(
         returnType: returnType + padding,
         returnValue: returnValue,
         propertyName: propName,
+        safePropertyName,
       });
     })
     .join('\n');
