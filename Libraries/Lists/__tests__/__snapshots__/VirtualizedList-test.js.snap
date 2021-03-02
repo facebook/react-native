@@ -12,7 +12,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
       },
     ]
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}
@@ -49,7 +48,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
             },
           ]
         }
-        disableVirtualization={false}
         getItem={[Function]}
         getItemCount={[Function]}
         horizontal={false}
@@ -103,7 +101,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
             },
           ]
         }
-        disableVirtualization={false}
         getItem={[Function]}
         getItemCount={[Function]}
         horizontal={true}
@@ -178,7 +175,6 @@ exports[`VirtualizedList handles separators correctly 1`] = `
       },
     ]
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}
@@ -260,7 +256,6 @@ exports[`VirtualizedList handles separators correctly 2`] = `
       },
     ]
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}
@@ -342,7 +337,6 @@ exports[`VirtualizedList handles separators correctly 3`] = `
       },
     ]
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}
@@ -434,7 +428,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
       },
     ]
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
@@ -619,7 +612,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
 exports[`VirtualizedList renders empty list 1`] = `
 <RCTScrollView
   data={Array []}
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}
@@ -650,7 +642,6 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
   ListFooterComponent={[Function]}
   ListHeaderComponent={[Function]}
   data={Array []}
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}
@@ -697,7 +688,6 @@ exports[`VirtualizedList renders list with empty component 1`] = `
       },
     ]
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}
@@ -733,7 +723,6 @@ exports[`VirtualizedList renders list with empty component 1`] = `
 
 exports[`VirtualizedList renders null list 1`] = `
 <RCTScrollView
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}
@@ -773,7 +762,6 @@ exports[`VirtualizedList renders simple list 1`] = `
       },
     ]
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}
@@ -839,7 +827,6 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
       },
     ]
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}
@@ -897,7 +884,6 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
       },
     }
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}
@@ -941,7 +927,6 @@ exports[`VirtualizedList warns if both renderItem or ListItemComponent are speci
       },
     ]
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}

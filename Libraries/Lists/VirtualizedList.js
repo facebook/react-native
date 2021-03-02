@@ -92,12 +92,6 @@ type OptionalProps = {|
    */
   debug?: ?boolean,
   /**
-   * DEPRECATED: Virtualization provides significant performance and memory optimizations, but fully
-   * unmounts react instances that are outside of the render window. You should only need to disable
-   * this for debugging purposes.
-   */
-  disableVirtualization?: ?boolean,
-  /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
    * `data` prop, stick it here and treat it immutably.
@@ -304,7 +298,6 @@ type Props = {|
 |};
 
 type DefaultProps = {|
-  disableVirtualization: boolean,
   horizontal: boolean,
   initialNumToRender: number,
   keyExtractor: (item: Item, index: number) => string,
@@ -561,7 +554,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   static defaultProps: DefaultProps = {
-    disableVirtualization: false,
     horizontal: false,
     initialNumToRender: 10,
     keyExtractor: (item: Item, index: number) => {
@@ -833,10 +825,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     });
   };
 
-  _isVirtualizationDisabled(): boolean {
-    return this.props.disableVirtualization || false;
-  }
-
   _isNestedWithSameOrientation(): boolean {
     const nestedContext = this.context;
     return !!(
@@ -863,7 +851,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       ListHeaderComponent,
     } = this.props;
     const {data, horizontal} = this.props;
-    const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const inversionStyle = this.props.inverted
       ? this.props.horizontal
         ? styles.horizontallyInverted
@@ -918,7 +905,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         inversionStyle,
       );
       const firstAfterInitial = Math.max(lastInitialIndex + 1, first);
-      if (!isVirtualizationDisabled && first > lastInitialIndex + 1) {
+      if (first > lastInitialIndex + 1) {
         let insertedStickySpacer = false;
         if (stickyIndicesFromProps.size > 0) {
           const stickyOffset = ListHeaderComponent ? 1 : 0;
@@ -979,7 +966,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         );
         this._hasWarned.keys = true;
       }
-      if (!isVirtualizationDisabled && last < itemCount - 1) {
+      if (last < itemCount - 1) {
         const lastFrame = this._getFrameMetricsApprox(last);
         // Without getItemLayout, we limit our tail spacer to the _highestMeasuredFrameIndex to
         // prevent the user for hyperscrolling into un-measured area because otherwise content will
@@ -1677,48 +1664,34 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _updateCellsToRender = () => {
-    const {data, getItemCount, onEndReachedThreshold} = this.props;
-    const isVirtualizationDisabled = this._isVirtualizationDisabled();
+    const {data} = this.props;
     this._updateViewableItems(data);
     if (!data) {
       return;
     }
     this.setState(state => {
       let newState;
-      const {contentLength, offset, visibleLength} = this._scrollMetrics;
-      if (!isVirtualizationDisabled) {
-        // If we run this with bogus data, we'll force-render window {first: 0, last: 0},
-        // and wipe out the initialNumToRender rendered elements.
-        // So let's wait until the scroll view metrics have been set up. And until then,
-        // we will trust the initialNumToRender suggestion
-        if (visibleLength > 0 && contentLength > 0) {
-          // If we have a non-zero initialScrollIndex and run this before we've scrolled,
-          // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
-          // So let's wait until we've scrolled the view to the right place. And until then,
-          // we will trust the initialScrollIndex suggestion.
-          if (!this.props.initialScrollIndex || this._scrollMetrics.offset) {
-            newState = computeWindowedRenderLimits(
-              this.props,
-              state,
-              this._getFrameMetricsApprox,
-              this._scrollMetrics,
-            );
-          }
+      const {contentLength, visibleLength} = this._scrollMetrics;
+
+      // If we run this with bogus data, we'll force-render window {first: 0, last: 0},
+      // and wipe out the initialNumToRender rendered elements.
+      // So let's wait until the scroll view metrics have been set up. And until then,
+      // we will trust the initialNumToRender suggestion
+      if (visibleLength > 0 && contentLength > 0) {
+        // If we have a non-zero initialScrollIndex and run this before we've scrolled,
+        // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
+        // So let's wait until we've scrolled the view to the right place. And until then,
+        // we will trust the initialScrollIndex suggestion.
+        if (!this.props.initialScrollIndex || this._scrollMetrics.offset) {
+          newState = computeWindowedRenderLimits(
+            this.props,
+            state,
+            this._getFrameMetricsApprox,
+            this._scrollMetrics,
+          );
         }
-      } else {
-        const distanceFromEnd = contentLength - visibleLength - offset;
-        const renderAhead =
-          /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.63 was deployed. To see the error
-           * delete this comment and run Flow. */
-          distanceFromEnd < onEndReachedThreshold * visibleLength
-            ? this.props.maxToRenderPerBatch
-            : 0;
-        newState = {
-          first: 0,
-          last: Math.min(state.last + renderAhead, getItemCount(data) - 1),
-        };
       }
+
       if (newState && this._nestedChildLists.size > 0) {
         const newFirst = newState.first;
         const newLast = newState.last;

@@ -55,7 +55,6 @@ type State = {|
   filterText: string,
   fixedHeight: boolean,
   logViewable: boolean,
-  virtualized: boolean,
   empty: boolean,
   useFlatListItemComponent: boolean,
   fadingEdgeLength: number,
@@ -70,7 +69,6 @@ class FlatListExample extends React.PureComponent<Props, State> {
     filterText: '',
     fixedHeight: true,
     logViewable: false,
-    virtualized: true,
     empty: false,
     useFlatListItemComponent: false,
     fadingEdgeLength: 0,
@@ -126,11 +124,6 @@ class FlatListExample extends React.PureComponent<Props, State> {
               />
             </View>
             <View style={styles.options}>
-              {renderSmallSwitchOption(
-                'Virtualized',
-                this.state.virtualized,
-                this._setBooleanValue('virtualized'),
-              )}
               {renderSmallSwitchOption(
                 'Horizontal',
                 this.state.horizontal,
@@ -192,7 +185,6 @@ class FlatListExample extends React.PureComponent<Props, State> {
             ListEmptyComponent={ListEmptyComponent}
             data={this.state.empty ? [] : filteredData}
             debug={this.state.debug}
-            disableVirtualization={!this.state.virtualized}
             getItemLayout={
               this.state.fixedHeight ? this._getItemLayout : undefined
             }
