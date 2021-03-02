@@ -8,13 +8,11 @@
  * @format
  */
 
-'use strict';
-
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
-import RCTSinglelineTextInputViewConfig from './RCTSinglelineTextInputViewConfig';
+import RCTTextInputViewConfig from './RCTTextInputViewConfig';
 const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
 
 type NativeType = HostComponent<mixed>;
@@ -28,7 +26,7 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 let SinglelineTextInputNativeComponent;
 if (global.RN$Bridgeless) {
   ReactNativeViewConfigRegistry.register('RCTSinglelineTextInputView', () => {
-    return RCTSinglelineTextInputViewConfig;
+    return RCTTextInputViewConfig;
   });
   SinglelineTextInputNativeComponent = 'RCTSinglelineTextInputView';
 } else {

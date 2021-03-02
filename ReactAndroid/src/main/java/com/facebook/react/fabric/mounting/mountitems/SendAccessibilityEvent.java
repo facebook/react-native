@@ -43,6 +43,11 @@ public class SendAccessibilityEvent implements MountItem {
   }
 
   @Override
+  public int getSurfaceId() {
+    return mSurfaceId;
+  }
+
+  @Override
   public String toString() {
     return "SendAccessibilityEvent [" + mReactTag + "] " + mEventType;
   }

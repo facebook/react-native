@@ -104,6 +104,31 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'SectionList-inverted',
+    module: require('../examples/SectionList/SectionList-inverted'),
+    category: 'ListView',
+  },
+  {
+    key: 'SectionList-stickyHeadersEnabled',
+    module: require('../examples/SectionList/SectionList-stickyHeadersEnabled'),
+    category: 'ListView',
+  },
+  {
+    key: 'SectionList-withSeparators',
+    module: require('../examples/SectionList/SectionList-withSeparators'),
+    category: 'ListView',
+  },
+  {
+    key: 'SectionList-onEndReached',
+    module: require('../examples/SectionList/SectionList-onEndReached'),
+    category: 'ListView',
+  },
+  {
+    key: 'SectionList-onViewableItemsChanged',
+    module: require('../examples/SectionList/SectionList-onViewableItemsChanged'),
+    category: 'ListView',
+  },
+  {
     key: 'SectionListExample',
     module: require('../examples/SectionList/SectionListExample'),
     category: 'ListView',

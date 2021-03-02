@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 export default {
   primary: '#1292B4',
   white: '#FFF',

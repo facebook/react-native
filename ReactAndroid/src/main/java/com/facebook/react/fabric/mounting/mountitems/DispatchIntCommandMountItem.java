@@ -28,6 +28,11 @@ public class DispatchIntCommandMountItem extends DispatchCommandMountItem {
   }
 
   @Override
+  public int getSurfaceId() {
+    return mSurfaceId;
+  }
+
+  @Override
   public void execute(@NonNull MountingManager mountingManager) {
     mountingManager.receiveCommand(mSurfaceId, mReactTag, mCommandId, mCommandArgs);
   }

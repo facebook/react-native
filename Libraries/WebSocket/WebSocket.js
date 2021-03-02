@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import Blob from '../Blob/Blob';
 import type {BlobData} from '../Blob/BlobTypes';
 import BlobManager from '../Blob/BlobManager';

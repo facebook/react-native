@@ -35,7 +35,6 @@ import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
@@ -53,6 +52,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -68,15 +68,18 @@ import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
 import com.facebook.react.fabric.mounting.mountitems.SendAccessibilityEvent;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
+import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
@@ -89,11 +92,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @SuppressLint("MissingNativeLoadLibrary")
 public class FabricUIManager implements UIManager, LifecycleEventListener {
+  public static final String TAG = FabricUIManager.class.getSimpleName();
 
-  public static final String TAG = "FabricUIManager";
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
   // development environment. DO NOT ENABLE THIS ON PRODUCTION OR YOU WILL BE FIRED!
-  public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false;
+  public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false && ReactBuildConfig.DEBUG;
   public static final boolean ENABLE_FABRIC_LOGS =
       ReactFeatureFlags.enableFabricLogs
           || PrinterHolder.getPrinter()
@@ -141,6 +144,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    */
   private volatile boolean mDestroyed = false;
 
+  // TODO T83943316: Delete this variable once StaticViewConfigs are enabled by default
+  private volatile boolean mShouldDeallocateEventDispatcher = false;
+
   private boolean mDriveCxxAnimations = false;
 
   private long mRunStartTime = 0l;
@@ -157,6 +163,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   // from C++ to exceed 9,999 and it should be obvious what's going on when analyzing performance.
   private int mCurrentSynchronousCommitNumber = 10000;
 
+  // TODO T83943316: Deprecate and delete this constructor once StaticViewConfigs are enabled by
+  // default
   public FabricUIManager(
       ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagerRegistry,
@@ -166,6 +174,20 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mReactApplicationContext = reactContext;
     mMountingManager = new MountingManager(viewManagerRegistry);
     mEventDispatcher = eventDispatcher;
+    mShouldDeallocateEventDispatcher = false;
+    mEventBeatManager = eventBeatManager;
+    mReactApplicationContext.addLifecycleEventListener(this);
+  }
+
+  public FabricUIManager(
+      ReactApplicationContext reactContext,
+      ViewManagerRegistry viewManagerRegistry,
+      EventBeatManager eventBeatManager) {
+    mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
+    mReactApplicationContext = reactContext;
+    mMountingManager = new MountingManager(viewManagerRegistry);
+    mEventDispatcher = new EventDispatcherImpl(reactContext);
+    mShouldDeallocateEventDispatcher = true;
     mEventBeatManager = eventBeatManager;
     mReactApplicationContext.addLifecycleEventListener(this);
   }
@@ -174,15 +196,21 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   @UiThread
   @ThreadConfined(UI)
+  @Deprecated
   public <T extends View> int addRootView(
       final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
+    ReactSoftException.logSoftException(
+        TAG,
+        new IllegalViewOperationException(
+            "Do not call addRootView in Fabric; it is unsupported. Call startSurface instead."));
+
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ReactRoot reactRootView = (ReactRoot) rootView;
 
     ThemedReactContext reactContext =
         new ThemedReactContext(
-            mReactApplicationContext, rootView.getContext(), reactRootView.getSurfaceID());
-    mMountingManager.addRootView(rootTag, rootView, reactContext);
+            mReactApplicationContext, rootView.getContext(), reactRootView.getSurfaceID(), rootTag);
+    mMountingManager.startSurface(rootTag, rootView, reactContext);
     String moduleName = reactRootView.getJSModuleName();
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
@@ -213,18 +241,18 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     Context context = rootView.getContext();
     ThemedReactContext reactContext =
-        new ThemedReactContext(mReactApplicationContext, context, moduleName);
+        new ThemedReactContext(mReactApplicationContext, context, moduleName, rootTag);
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
-    mMountingManager.addRootView(rootTag, rootView, reactContext);
+    mMountingManager.startSurface(rootTag, rootView, reactContext);
 
     // If startSurface is executed in the UIThread then, it uses the ViewportOffset from the View,
     // Otherwise Fabric relies on calling {@link Binding#setConstraints} method to update the
     // ViewportOffset during measurement or onLayout.
     @SuppressLint("WrongThread")
     Point viewportOffset =
-        UiThreadUtil.isOnUiThread() ? ReactRootView.getViewportOffset(rootView) : new Point(0, 0);
+        UiThreadUtil.isOnUiThread() ? RootViewUtil.getViewportOffset(rootView) : new Point(0, 0);
 
     mBinding.startSurfaceWithConstraints(
         rootTag,
@@ -252,8 +280,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @ThreadConfined(ANY)
   @Override
   public void stopSurface(final int surfaceID) {
-    mBinding.stopSurface(surfaceID);
+    // Mark surfaceId as dead, stop executing mounting instructions
     mMountingManager.stopSurface(surfaceID);
+
+    // Communicate stopSurface to Cxx - causes an empty ShadowTree to be committed,
+    // but all mounting instructions will be ignored because stopSurface was called
+    // on the MountingManager
+    mBinding.stopSurface(surfaceID);
   }
 
   @Override
@@ -300,6 +333,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mBinding = null;
 
     ViewManagerPropertyUpdater.clear();
+
+    // When using ReactFeatureFlags.enableExperimentalStaticViewConfigs enabled, FabriUIManager is
+    // responsible for initializing and deallocating EventDispatcher.
+    // TODO T83943316: Remove this IF once StaticViewConfigs are enabled by default
+    if (mShouldDeallocateEventDispatcher) {
+      mEventDispatcher.onCatalystInstanceDestroyed();
+    }
   }
 
   @DoNotStrip
@@ -474,6 +514,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
                   new ReactNoCrashSoftException(
                       "Caught exception in synchronouslyUpdateViewOnUIThread", ex));
             }
+          }
+
+          @Override
+          public int getSurfaceId() {
+            return View.NO_ID;
           }
         };
 
@@ -861,11 +906,20 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int offsetY) {
 
     if (ENABLE_FABRIC_LOGS) {
-      FLog.d(TAG, "Updating Root Layout Specs");
+      FLog.d(TAG, "Updating Root Layout Specs for [%d]", surfaceId);
     }
 
-    SurfaceMountingManager surfaceMountingManager =
-        mMountingManager.getSurfaceManagerEnforced(surfaceId, "updateRootLayoutSpecs");
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+
+    // TODO T83615646: make this a hard-crash in the future.
+    if (surfaceMountingManager == null) {
+      ReactSoftException.logSoftException(
+          TAG,
+          new IllegalViewOperationException(
+              "Cannot updateRootLayoutSpecs on surfaceId that does not exist: " + surfaceId));
+      return;
+    }
+
     ThemedReactContext reactContext = surfaceMountingManager.getContext();
     boolean isRTL = false;
     boolean doLeftAndRightSwapInRTL = false;
@@ -888,7 +942,18 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
-    EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(reactTag);
+    receiveEvent(View.NO_ID, reactTag, eventName, params);
+  }
+
+  @Override
+  public void receiveEvent(
+      int surfaceId, int reactTag, String eventName, @Nullable WritableMap params) {
+    if (ReactBuildConfig.DEBUG && surfaceId == View.NO_ID) {
+      FLog.d(TAG, "Emitted event without surfaceId: [%d] %s", reactTag, eventName);
+    }
+
+    EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
+
     if (eventEmitter == null) {
       // This can happen if the view has disappeared from the screen (because of async events)
       FLog.d(TAG, "Unable to invoke event: " + eventName + " for reactTag: " + reactTag);
@@ -976,7 +1041,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void sendAccessibilityEvent(int reactTag, int eventType) {
     // Can be called from native, not just JS - we need to migrate the native callsites
     // before removing this entirely.
-    addMountItem(new SendAccessibilityEvent(-1, reactTag, eventType));
+    addMountItem(new SendAccessibilityEvent(View.NO_ID, reactTag, eventType));
   }
 
   @DoNotStrip
@@ -1014,8 +1079,20 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         new MountItem() {
           @Override
           public void execute(MountingManager mountingManager) {
-            mountingManager.setJSResponder(
-                surfaceId, reactTag, initialReactTag, blockNativeResponder);
+            SurfaceMountingManager surfaceMountingManager =
+                mountingManager.getSurfaceManager(surfaceId);
+            if (surfaceMountingManager != null) {
+              surfaceMountingManager.setJSResponder(
+                  reactTag, initialReactTag, blockNativeResponder);
+            } else {
+              FLog.e(
+                  TAG, "setJSResponder skipped, surface no longer available [" + surfaceId + "]");
+            }
+          }
+
+          @Override
+          public int getSurfaceId() {
+            return surfaceId;
           }
         });
   }
@@ -1031,6 +1108,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           @Override
           public void execute(MountingManager mountingManager) {
             mountingManager.clearJSResponder();
+          }
+
+          @Override
+          public int getSurfaceId() {
+            return View.NO_ID;
           }
         });
   }
@@ -1080,29 +1162,25 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return performanceCounters;
   }
 
-  /**
-   * Abstraction between concurrent and non-concurrent MountItem list.
-   *
-   * @param mountItem
-   */
   private void addMountItem(MountItem mountItem) {
     mMountItemsConcurrent.add(mountItem);
   }
 
-  /**
-   * Abstraction between concurrent and non-concurrent PreAllocateViewMountItem list.
-   *
-   * @param mountItem
-   */
   private void addPreAllocateMountItem(PreAllocateViewMountItem mountItem) {
-    mPreMountItemsConcurrent.add(mountItem);
+    // We do this check only for PreAllocateViewMountItem - and not DispatchMountItem or regular
+    // MountItem - because PreAllocateViewMountItem is not batched, and is relatively more expensive
+    // both to queue, to drain, and to execute.
+    if (!mMountingManager.surfaceIsStopped(mountItem.getSurfaceId())) {
+      mPreMountItemsConcurrent.add(mountItem);
+    } else if (IS_DEVELOPMENT_ENVIRONMENT) {
+      FLog.e(
+          TAG,
+          "Not queueing PreAllocateMountItem: surfaceId stopped: [%d] - %s",
+          mountItem.getSurfaceId(),
+          mountItem.toString());
+    }
   }
 
-  /**
-   * Abstraction between concurrent and non-concurrent DispatchCommandMountItem list.
-   *
-   * @param mountItem
-   */
   private void addViewCommandMountItem(DispatchCommandMountItem mountItem) {
     mViewCommandMountItemsConcurrent.add(mountItem);
   }
@@ -1139,13 +1217,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
       try {
         dispatchPreMountItems(frameTimeNanos);
-        boolean dispatchedMountItems = tryDispatchMountItems();
-
-        // Only if we did no work (besides preallocation) and have time left, evict stale
-        // SurfaceMountingManagers
-        if (!dispatchedMountItems && !haveExceededNonBatchedFrameTime(frameTimeNanos)) {
-          mMountingManager.evictStaleSurfaces();
-        }
+        tryDispatchMountItems();
       } catch (Exception ex) {
         FLog.e(TAG, "Exception thrown when executing UIFrameGuarded", ex);
         stop();

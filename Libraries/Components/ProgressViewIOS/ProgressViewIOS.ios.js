@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 

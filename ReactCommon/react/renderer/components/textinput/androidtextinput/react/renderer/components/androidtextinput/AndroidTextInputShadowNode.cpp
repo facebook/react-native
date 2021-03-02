@@ -8,6 +8,7 @@
 #include "AndroidTextInputShadowNode.h"
 
 #include <fbjni/fbjni.h>
+#include <react/debug/react_native_assert.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
@@ -118,8 +119,8 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   auto reactTreeAttributedString = getAttributedString();
   auto const &state = getStateData();
 
-  assert(textLayoutManager_);
-  assert(
+  react_native_assert(textLayoutManager_);
+  react_native_assert(
       (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
       "`StateData` refers to a different `TextLayoutManager`");
 

@@ -32,12 +32,22 @@ if [[ ${FBSOURCE_ENV:-0} -eq 1 ]]; then
   "$YARN_BINARY" run build
 
   popd >/dev/null
+
 else
   # Run yarn install in a separate tmp dir to avoid conflict with the rest of the repo.
   # Note: OSS-only.
   TMP_DIR=$(mktemp -d)
 
-  cp -R "$CODEGEN_DIR/." "$TMP_DIR"
+  # On Windows this script gets run by a seprate Git Bash instance, which cannot perform the copy
+  # due to file locks created by the host process. Need to exclude .lock files while copying.
+  # Using in-memory tar operation because piping `find` and `grep` doesn't preserve folder structure
+  # during recursive copying, and `rsync` is not installed by default in Git Bash.
+  # As an added benefit, blob copy is faster.
+  if [ "$OSTYPE" = "msys" ] || [ "$OSTYPE" = "cygwin" ]; then
+    tar cf - --exclude='*.lock' "$CODEGEN_DIR" | (cd "$TMP_DIR" && tar xvf - );
+  else
+    cp -R "$CODEGEN_DIR/." "$TMP_DIR";
+  fi
 
   pushd "$TMP_DIR" >/dev/null
 

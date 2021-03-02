@@ -152,6 +152,20 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   return concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>();
 }
 
+- (void)updateLayoutMetrics:(const LayoutMetrics &)layoutMetrics
+           oldLayoutMetrics:(const LayoutMetrics &)oldLayoutMetrics
+{
+  [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
+  if (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection) {
+    CGAffineTransform transform = (layoutMetrics.layoutDirection == LayoutDirection::LeftToRight)
+        ? CGAffineTransformIdentity
+        : CGAffineTransformMakeScale(-1, 1);
+
+    _containerView.transform = transform;
+    _scrollView.transform = transform;
+  }
+}
+
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(_props);
@@ -279,8 +293,27 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   }
 
   _contentSize = contentSize;
-  _containerView.frame = CGRect{CGPointZero, contentSize};
-  _scrollView.contentSize = contentSize;
+  _containerView.frame = CGRect{RCTCGPointFromPoint(data.contentBoundingRect.origin), contentSize};
+
+  [self _preserveContentOffsetIfNeededWithBlock:^{
+    self->_scrollView.contentSize = contentSize;
+  }];
+}
+
+/*
+ * Disables programmatical changing of ScrollView's `contentOffset` if a touch gesture is in progress.
+ */
+- (void)_preserveContentOffsetIfNeededWithBlock:(void (^)())block
+{
+  if (!block) {
+    return;
+  }
+
+  if (!_isUserTriggeredScrolling) {
+    return block();
+  }
+
+  [((RCTEnhancedScrollView *)_scrollView) preserveContentOffsetWithBlock:block];
 }
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
@@ -306,6 +339,28 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     RCTAssert(childComponentView.superview == _containerView, @"Attempt to unmount improperly mounted component view.");
     [childComponentView removeFromSuperview];
   }
+}
+
+/*
+ * Returns whether or not the scroll view interaction should be blocked because
+ * JavaScript was found to be the responder.
+ */
+- (BOOL)_shouldDisableScrollInteraction
+{
+  UIView *ancestorView = self.superview;
+
+  while (ancestorView) {
+    if ([ancestorView respondsToSelector:@selector(isJSResponder)]) {
+      BOOL isJSResponder = ((UIView<RCTComponentViewProtocol> *)ancestorView).isJSResponder;
+      if (isJSResponder) {
+        return YES;
+      }
+    }
+
+    ancestorView = ancestorView.superview;
+  }
+
+  return NO;
 }
 
 - (ScrollViewMetrics)_scrollViewMetrics
@@ -347,7 +402,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 {
   // Historically, `UIScrollView`s in React Native do not cancel touches
   // started on `UIControl`-based views (as normal iOS `UIScrollView`s do).
-  return YES;
+  return ![self _shouldDisableScrollInteraction];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView

@@ -49,6 +49,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   _isInitialRender = false;
 }
 
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+
+  // Since iOS 14 there seems to be a bug where refresh control becomes
+  // visible if the view gets removed from window then added back again.
+  // Calling endRefreshing fixes the layout.
+  if (!_currentRefreshingState) {
+    [super endRefreshing];
+  }
+}
+
 - (void)beginRefreshingProgrammatically
 {
   UInt64 beginRefreshingTimestamp = _currentRefreshingStateTimestamp;

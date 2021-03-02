@@ -54,15 +54,12 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
-  /** Disable UI update operations in non-Fabric renderer after catalyst instance was destroyed */
-  public static boolean disableNonFabricViewOperationsOnCatalystDestroy = false;
-
-  /**
-   * Fixes race-condition in the initialization of RN surface. TODO T78832286: remove this flag once
-   * we verify the fix is correct in production
-   */
-  public static boolean enableStartSurfaceRaceConditionFix = false;
-
   /** Enables Static ViewConfig in RN Android native code. */
   public static boolean enableExperimentalStaticViewConfigs = false;
+
+  /** Enables a more aggressive cleanup during destruction of ReactContext */
+  public static boolean enableReactContextCleanupFix = false;
+
+  /** Enables setting layout params to empty to fix a crash */
+  public static boolean enableSettingEmptyLayoutParams = false;
 }

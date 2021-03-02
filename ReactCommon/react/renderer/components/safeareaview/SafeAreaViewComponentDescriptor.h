@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/components/safeareaview/SafeAreaViewShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -20,11 +21,12 @@ class SafeAreaViewComponentDescriptor final
     : public ConcreteComponentDescriptor<SafeAreaViewShadowNode> {
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
   void adopt(UnsharedShadowNode shadowNode) const override {
-    assert(std::dynamic_pointer_cast<SafeAreaViewShadowNode>(shadowNode));
+    react_native_assert(
+        std::dynamic_pointer_cast<SafeAreaViewShadowNode>(shadowNode));
     auto safeAreaViewShadowNode =
         std::static_pointer_cast<SafeAreaViewShadowNode>(shadowNode);
 
-    assert(std::dynamic_pointer_cast<YogaLayoutableShadowNode>(
+    react_native_assert(std::dynamic_pointer_cast<YogaLayoutableShadowNode>(
         safeAreaViewShadowNode));
     auto layoutableShadowNode =
         std::static_pointer_cast<YogaLayoutableShadowNode>(

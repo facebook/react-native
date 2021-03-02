@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import {Dimensions, Text, useWindowDimensions} from 'react-native';
 import * as React from 'react';
 

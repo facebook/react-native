@@ -15,6 +15,7 @@
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
 #include <jsi/JSIDynamic.h>
+#include <react/debug/react_native_assert.h>
 #include <react/jni/NativeMap.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/jni/WritableNativeMap.h>
@@ -133,7 +134,7 @@ std::string stringifyJSIValue(const jsi::Value &v, jsi::Runtime *rt = nullptr) {
     return "a string (\"" + v.getString(*rt).utf8(*rt) + "\")";
   }
 
-  assert(v.isObject() && "Expecting object.");
+  react_native_assert(v.isObject() && "Expecting object.");
   return rt != nullptr && v.getObject(*rt).isFunction(*rt) ? "a function"
                                                            : "an object";
 }
@@ -682,10 +683,14 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
           [jargs,
            globalRefs,
            methodID,
-           instance_ = instance_,
+           instance_ = jni::make_weak(instance_),
            moduleNameStr = name_,
            methodNameStr,
            id = getUniqueId()]() mutable -> void {
+            auto instance = instance_.lockLocal();
+            if (!instance) {
+              return;
+            }
             /**
              * TODO(ramanpreet): Why do we have to require the environment
              * again? Why does JNI crash when we use the env from the upper
@@ -696,7 +701,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             const char *methodName = methodNameStr.c_str();
 
             TMPL::asyncMethodCallExecutionStart(moduleName, methodName, id);
-            env->CallVoidMethodA(instance_.get(), methodID, jargs.data());
+            env->CallVoidMethodA(instance.get(), methodID, jargs.data());
             try {
               FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
             } catch (...) {
@@ -777,10 +782,15 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                 [jargs,
                  globalRefs,
                  methodID,
-                 instance_ = instance_,
+                 instance_ = jni::make_weak(instance_),
                  moduleNameStr,
                  methodNameStr,
                  id = getUniqueId()]() mutable -> void {
+                  auto instance = instance_.lockLocal();
+
+                  if (!instance) {
+                    return;
+                  }
                   /**
                    * TODO(ramanpreet): Why do we have to require the
                    * environment again? Why does JNI crash when we use the env
@@ -792,7 +802,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
                   TMPL::asyncMethodCallExecutionStart(
                       moduleName, methodName, id);
-                  env->CallVoidMethodA(instance_.get(), methodID, jargs.data());
+                  env->CallVoidMethodA(instance.get(), methodID, jargs.data());
                   try {
                     FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
                   } catch (...) {

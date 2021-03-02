@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ConcreteState.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/ShadowNode.h>
@@ -92,8 +93,9 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Thread-safe after the node is sealed.
    */
   ConcreteProps const &getConcreteProps() const {
-    assert(BaseShadowNodeT::props_ && "Props must not be `nullptr`.");
-    assert(
+    react_native_assert(
+        BaseShadowNodeT::props_ && "Props must not be `nullptr`.");
+    react_native_assert(
         std::dynamic_pointer_cast<ConcreteProps const>(props_) &&
         "Props must be an instance of ConcreteProps class.");
     return static_cast<ConcreteProps const &>(*props_);
@@ -104,7 +106,7 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Thread-safe after the node is sealed.
    */
   ConcreteEventEmitter const &getConcreteEventEmitter() const {
-    assert(
+    react_native_assert(
         std::dynamic_pointer_cast<ConcreteEventEmitter const>(
             BaseShadowNodeT::getEventEmitter()) &&
         "EventEmitter must be an instance of ConcreteEventEmitter class.");
@@ -117,8 +119,8 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Thread-safe after the node is sealed.
    */
   ConcreteStateData const &getStateData() const {
-    assert(state_ && "State must not be `nullptr`.");
-    assert(
+    react_native_assert(state_ && "State must not be `nullptr`.");
+    react_native_assert(
         std::dynamic_pointer_cast<ConcreteState const>(state_) &&
         "State must be an instance of ConcreteState class.");
     return static_cast<ConcreteState const *>(state_.get())->getData();

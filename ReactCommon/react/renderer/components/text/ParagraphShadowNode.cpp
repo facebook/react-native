@@ -9,6 +9,7 @@
 
 #include <cmath>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
@@ -102,8 +103,8 @@ void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
 
   auto &state = getStateData();
 
-  assert(textLayoutManager_);
-  assert(
+  react_native_assert(textLayoutManager_);
+  react_native_assert(
       (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
       "`StateData` refers to a different `TextLayoutManager`");
 
@@ -191,7 +192,8 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   // only to keep it in memory for a while.
   auto paragraphOwningShadowNode = ShadowNode::Unshared{};
 
-  assert(content.attachments.size() == measurement.attachments.size());
+  react_native_assert(
+      content.attachments.size() == measurement.attachments.size());
 
   for (auto i = 0; i < content.attachments.size(); i++) {
     auto &attachment = content.attachments.at(i);

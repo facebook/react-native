@@ -22323,6 +22323,31 @@ function dispatchCommand(handle, command, args) {
   }
 }
 
+function sendAccessibilityEvent(handle, eventType) {
+  if (handle._nativeTag == null) {
+    {
+      error(
+        "sendAccessibilityEvent was called with a ref that isn't a " +
+          "native component. Use React.forwardRef to get access to the underlying native component"
+      );
+    }
+
+    return;
+  }
+
+  if (handle._internalInstanceHandle) {
+    nativeFabricUIManager.sendAccessibilityEvent(
+      handle._internalInstanceHandle.stateNode.node,
+      eventType
+    );
+  } else {
+    ReactNativePrivateInterface.legacySendAccessibilityEvent(
+      handle._nativeTag,
+      eventType
+    );
+  }
+}
+
 function render(element, containerTag, callback) {
   var root = roots.get(containerTag);
 
@@ -22396,6 +22421,7 @@ exports.dispatchCommand = dispatchCommand;
 exports.findHostInstance_DEPRECATED = findHostInstance_DEPRECATED;
 exports.findNodeHandle = findNodeHandle;
 exports.render = render;
+exports.sendAccessibilityEvent = sendAccessibilityEvent;
 exports.unmountComponentAtNode = unmountComponentAtNode;
 exports.unmountComponentAtNodeAndRemoveContainer = unmountComponentAtNodeAndRemoveContainer;
 exports.unstable_batchedUpdates = batchedUpdates;

@@ -7,6 +7,7 @@
 
 #include "RawProps.h"
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawPropsParser.h>
 
 namespace facebook {
@@ -47,7 +48,7 @@ RawProps::RawProps(folly::dynamic const &dynamic) noexcept {
 }
 
 void RawProps::parse(RawPropsParser const &parser) const noexcept {
-  assert(parser_ == nullptr && "A parser was already assigned.");
+  react_native_assert(parser_ == nullptr && "A parser was already assigned.");
   parser_ = &parser;
   parser.preparse(*this);
 }
@@ -84,7 +85,7 @@ const RawValue *RawProps::at(
     char const *name,
     char const *prefix,
     char const *suffix) const noexcept {
-  assert(
+  react_native_assert(
       parser_ &&
       "The object is not parsed. `parse` must be called before `at`.");
   return parser_->at(*this, RawPropsKey{prefix, name, suffix});

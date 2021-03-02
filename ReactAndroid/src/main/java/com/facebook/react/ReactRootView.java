@@ -27,7 +27,6 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -52,6 +51,7 @@ import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -85,7 +85,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private @Nullable String mInitialUITemplate;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
-  private int mRootViewTag;
+  private int mRootViewTag =
+      0; /* This should be View.NO_ID, but for legacy reasons we haven't migrated yet */
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
   private @Nullable JSTouchDispatcher mJSTouchDispatcher;
@@ -419,21 +420,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return mState;
   }
 
-  @UiThread
-  public static Point getViewportOffset(View v) {
-    int[] locationInWindow = new int[2];
-    v.getLocationInWindow(locationInWindow);
-
-    // we need to subtract visibleWindowCoords - to subtract possible window insets, split
-    // screen or multi window
-    Rect visibleWindowFrame = new Rect();
-    v.getWindowVisibleDisplayFrame(visibleWindowFrame);
-    locationInWindow[0] -= visibleWindowFrame.left;
-    locationInWindow[1] -= visibleWindowFrame.top;
-
-    return new Point(locationInWindow[0], locationInWindow[1]);
-  }
-
   /**
    * Call whenever measure specs change, or if you want to force an update of offsetX/offsetY. If
    * measureSpecsChanged is false and the offsetX/offsetY don't change, updateRootLayoutSpecs will
@@ -451,6 +437,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to update root layout specs for uninitialized ReactInstanceManager");
       return;
     }
+    // In Fabric we cannot call `updateRootLayoutSpecs` until a SurfaceId has been set.
+    // Sometimes,
+    if (getUIManagerType() == FABRIC && !isRootViewTagSet()) {
+      ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_UPDATE_LAYOUT_SPECS_END);
+      FLog.e(TAG, "Unable to update root layout specs for ReactRootView: no rootViewTag set yet");
+      return;
+    }
+
     final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
 
     if (reactApplicationContext != null) {
@@ -463,7 +457,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         int offsetX = 0;
         int offsetY = 0;
         if (getUIManagerType() == FABRIC) {
-          Point viewportOffset = getViewportOffset(this);
+          Point viewportOffset = RootViewUtil.getViewportOffset(this);
           offsetX = viewportOffset.x;
           offsetY = viewportOffset.y;
         }
@@ -502,18 +496,23 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         UIManager uiManager =
             UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
         if (uiManager != null) {
-          // TODO T48186892: remove when resolved
-          FLog.e(
-              TAG,
-              "stopSurface for surfaceId: " + this.getId(),
-              new RuntimeException("unmountReactApplication"));
-          if (getId() == NO_ID) {
+          final int surfaceId = this.getId();
+
+          // In case of "retry" or error dialogues being shown, this ReactRootView could be
+          // reused (with the same surfaceId, or a different one). Ensure the ReactRootView
+          // is marked as unused in case of that.
+          setId(NO_ID);
+
+          // Remove all children from ReactRootView
+          removeAllViews();
+
+          if (surfaceId == NO_ID) {
             ReactSoftException.logSoftException(
                 TAG,
                 new RuntimeException(
                     "unmountReactApplication called on ReactRootView with invalid id"));
           } else {
-            uiManager.stopSurface(this.getId());
+            uiManager.stopSurface(surfaceId);
           }
         }
       }
@@ -549,7 +548,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
   }
 
-  public void setEventListener(ReactRootViewEventListener eventListener) {
+  public void setEventListener(@Nullable ReactRootViewEventListener eventListener) {
     mRootViewEventListener = eventListener;
   }
 
@@ -572,7 +571,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   public void setAppProperties(@Nullable Bundle appProperties) {
     UiThreadUtil.assertOnUiThread();
     mAppProperties = appProperties;
-    if (getRootViewTag() != 0) {
+    if (isRootViewTagSet()) {
       runApplication();
     }
   }
@@ -637,6 +636,16 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachToReactInstanceManager");
     ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ATTACH_TO_REACT_INSTANCE_MANAGER_START);
 
+    // React Native requires that the RootView id be managed entirely by React Native, and will
+    // crash in addRootView/startSurface if the native View id isn't set to NO_ID.
+    if (getId() != View.NO_ID) {
+      throw new IllegalViewOperationException(
+          "Trying to attach a ReactRootView with an explicit id already set to ["
+              + getId()
+              + "]. React Native uses the id field to track react tags and will overwrite this"
+              + " field. If that is fine, explicitly overwrite the id field to View.NO_ID.");
+    }
+
     try {
       if (mIsAttachedToInstance) {
         return;
@@ -665,6 +674,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   public int getRootViewTag() {
     return mRootViewTag;
+  }
+
+  private boolean isRootViewTagSet() {
+    return mRootViewTag != 0 && mRootViewTag != NO_ID;
   }
 
   public void setRootViewTag(int rootViewTag) {

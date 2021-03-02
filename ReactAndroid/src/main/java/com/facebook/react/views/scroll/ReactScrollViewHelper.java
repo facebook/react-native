@@ -81,9 +81,11 @@ public class ReactScrollViewHelper {
     }
 
     ReactContext reactContext = (ReactContext) scrollView.getContext();
+    int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
     UIManagerHelper.getEventDispatcherForReactTag(reactContext, scrollView.getId())
         .dispatchEvent(
             ScrollEvent.obtain(
+                surfaceId,
                 scrollView.getId(),
                 scrollEventType,
                 scrollView.getScrollX(),
