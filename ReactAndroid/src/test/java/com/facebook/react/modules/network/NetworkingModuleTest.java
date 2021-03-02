@@ -76,8 +76,8 @@ public class NetworkingModuleTest {
 
   @Before
   public void prepareModules() {
-    mHttpClient = mock(OkHttpClient.class);
-    when(mHttpClient.cookieJar()).thenReturn(mock(CookieJarContainer.class));
+    mHttpClient = PowerMockito.mock(OkHttpClient.class);
+    PowerMockito.when(mHttpClient.cookieJar()).thenReturn(mock(CookieJarContainer.class));
     when(mHttpClient.newCall(any(Request.class)))
         .thenAnswer(
             new Answer<Object>() {
@@ -87,8 +87,8 @@ public class NetworkingModuleTest {
                 return callMock;
               }
             });
-    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
-    when(clientBuilder.build()).thenReturn(mHttpClient);
+    OkHttpClient.Builder clientBuilder = PowerMockito.mock(OkHttpClient.Builder.class);
+    PowerMockito.when(clientBuilder.build()).thenReturn(mHttpClient);
     when(mHttpClient.newBuilder()).thenReturn(clientBuilder);
 
     mEmitter = mock(RCTDeviceEventEmitter.class);
@@ -453,7 +453,7 @@ public class NetworkingModuleTest {
         .thenCallRealMethod();
     when(inputStream.available()).thenReturn("imageUri".length());
 
-    final MultipartBody.Builder multipartBuilder = mock(MultipartBody.Builder.class);
+    final MultipartBody.Builder multipartBuilder = PowerMockito.mock(MultipartBody.Builder.class);
     PowerMockito.whenNew(MultipartBody.Builder.class)
         .withNoArguments()
         .thenReturn(multipartBuilder);
