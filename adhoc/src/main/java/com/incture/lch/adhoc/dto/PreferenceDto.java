@@ -1,13 +1,22 @@
 package com.incture.lch.adhoc.dto;
 
 public class PreferenceDto {
+	private String preferenceId;
+	
+
 	private String columnName;
 	private Boolean isVisible;
 	private Boolean isMandatory;
 	private Boolean isEditable;
 	private int sequenceHistory;
 	private int sequence;
+	public String getPreferenceId() {
+		return preferenceId;
+	}
 
+	public void setPreferenceId(String preferenceId) {
+		this.preferenceId = preferenceId;
+	}
 	public String getColumnName() {
 		return columnName;
 	}

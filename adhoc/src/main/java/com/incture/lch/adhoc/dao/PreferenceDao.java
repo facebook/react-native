@@ -56,9 +56,12 @@ public class PreferenceDao
 			transaction = session.beginTransaction();
 			
 			Preference preferences=importDto(preferenceDto,userId);
+			System.out.println("inside DAO");
+
 			session.saveOrUpdate(preferences);
-			
+			//session.save(preferences);
 			transaction.commit();
+			System.out.println("After DAO");
 		}
 		catch(Exception e){
 			transaction.rollback();
@@ -125,7 +128,7 @@ public class PreferenceDao
 		Preference preference = new Preference();
 		
 		preference.setPreferenceId(userid);
-		
+System.out.println("inside import");
 		for(PreferenceDto dto:preferencedto){
 			if(dto.getColumnName().equals("businessDivision"))
 				preference.setBusinessDivision(generateValue(dto));
