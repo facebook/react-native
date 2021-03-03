@@ -8,7 +8,6 @@
 package com.facebook.react.views.scroll;
 
 import android.content.Context;
-import android.widget.HorizontalScrollView;
 import androidx.core.view.ViewCompat;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.views.view.ReactViewGroup;
@@ -40,10 +39,10 @@ public class ReactHorizontalScrollContainerView extends ReactViewGroup {
       setRight(newRight);
 
       // Call with the present values in order to re-layout if necessary
-      HorizontalScrollView parent = (HorizontalScrollView) getParent();
+      ReactHorizontalScrollView parent = (ReactHorizontalScrollView) getParent();
       // Fix the ScrollX position when using RTL language
       int offsetX = parent.getScrollX() + getWidth() - mCurrentWidth;
-      parent.scrollTo(offsetX, parent.getScrollY());
+      parent.reactScrollTo(offsetX, parent.getScrollY());
     }
     mCurrentWidth = getWidth();
   }
