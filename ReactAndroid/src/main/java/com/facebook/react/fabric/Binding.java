@@ -91,6 +91,7 @@ public class Binding {
         jsMessageQueueThread,
         componentFactory,
         reactNativeConfig);
+
     setPixelDensity(PixelUtil.getDisplayMetricDensity());
   }
 

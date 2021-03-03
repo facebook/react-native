@@ -9,6 +9,7 @@
 
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
 
@@ -29,7 +30,7 @@ static jsi::Object getModule(
   if (!moduleAsValue.isObject()) {
     LOG(ERROR) << "getModule of " << moduleName << " is not an object";
   }
-  assert(moduleAsValue.isObject());
+  react_native_assert(moduleAsValue.isObject());
   return moduleAsValue.asObject(runtime);
 }
 
@@ -170,7 +171,7 @@ void UIManagerBinding::dispatchEvent(
       if (!payload.isObject()) {
         LOG(ERROR) << "payload for dispatchEvent is not an object: " << eventTarget->getTag();
       }
-      assert(payload.isObject());
+      react_native_assert(payload.isObject());
       payload.asObject(runtime).setProperty(runtime, "target", eventTarget->getTag());
       return instanceHandle;
     }()
@@ -235,14 +236,20 @@ jsi::Value UIManagerBinding::get(
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept -> jsi::Value {
+          auto eventTarget =
+              eventTargetFromValue(runtime, arguments[4], arguments[0]);
+          if (!eventTarget) {
+            react_native_assert(false);
+            return jsi::Value::undefined();
+          }
           return valueFromShadowNode(
               runtime,
               uiManager->createNode(
-                  tagFromValue(runtime, arguments[0]),
+                  tagFromValue(arguments[0]),
                   stringFromValue(runtime, arguments[1]),
                   surfaceIdFromValue(runtime, arguments[2]),
                   RawProps(runtime, arguments[3]),
-                  eventTargetFromValue(runtime, arguments[4], arguments[0])));
+                  eventTarget));
         });
   }
 
@@ -434,8 +441,8 @@ jsi::Value UIManagerBinding::get(
               jsi::Value const *arguments,
               size_t count) noexcept -> jsi::Value {
             auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
-            auto shadowNodeList =
-                shadowNodeListFromValue(runtime, arguments[1]);
+            auto weakShadowNodeList =
+                weakShadowNodeListFromValue(runtime, arguments[1]);
             static std::atomic_uint_fast8_t completeRootEventCounter{0};
             static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
             completeRootEventCounter += 1;
@@ -449,8 +456,12 @@ jsi::Value UIManagerBinding::get(
                     return completeRootEventCounter > eventCount &&
                         mostRecentSurfaceId == surfaceId;
                   };
-                  sharedUIManager->completeSurface(
-                      surfaceId, shadowNodeList, {true, shouldYield});
+                  auto shadowNodeList =
+                      shadowNodeListFromWeakList(weakShadowNodeList);
+                  if (shadowNodeList) {
+                    sharedUIManager->completeSurface(
+                        surfaceId, shadowNodeList, {true, shouldYield});
+                  }
                 });
 
             return jsi::Value::undefined();
@@ -529,11 +540,13 @@ jsi::Value UIManagerBinding::get(
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept -> jsi::Value {
-          uiManager->dispatchCommand(
-              shadowNodeFromValue(runtime, arguments[0]),
-              stringFromValue(runtime, arguments[1]),
-              commandArgsFromValue(runtime, arguments[2]));
-
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+          if (shadowNode) {
+            uiManager->dispatchCommand(
+                shadowNodeFromValue(runtime, arguments[0]),
+                stringFromValue(runtime, arguments[1]),
+                commandArgsFromValue(runtime, arguments[2]));
+          }
           return jsi::Value::undefined();
         });
   }

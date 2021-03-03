@@ -67,6 +67,11 @@ def get_apple_inspector_flags():
 def get_android_inspector_flags():
     return []
 
+def get_react_native_preprocessor_flags():
+    # TODO: use this to define the compiler flag REACT_NATIVE_DEBUG in debug/dev mode builds only.
+    # This is a replacement for NDEBUG since NDEBUG is always defined in Buck on all Android builds.
+    return []
+
 # Building is not supported in OSS right now
 def rn_xplat_cxx_library(name, **kwargs):
     new_kwargs = {
@@ -121,6 +126,9 @@ def react_native_xplat_dep(path):
 def rn_extra_build_flags():
     return []
 
+def _unique(li):
+    return list({x: () for x in li})
+
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
     _ = kwargs.pop("autoglob", False)
@@ -134,7 +142,7 @@ def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
             ),
         ]
 
-        plugins = list(set(plugins + react_property_plugins))
+        plugins = _unique(plugins + react_property_plugins)
 
     if react_native_target(
         "java/com/facebook/react/module/annotations:annotations",
@@ -145,7 +153,7 @@ def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
             ),
         ]
 
-        plugins = list(set(plugins + react_module_plugins))
+        plugins = _unique(plugins + react_module_plugins)
 
     native.android_library(name = name, deps = deps, plugins = plugins, *args, **kwargs)
 

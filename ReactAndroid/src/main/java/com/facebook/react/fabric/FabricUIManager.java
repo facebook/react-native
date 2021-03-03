@@ -35,7 +35,6 @@ import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
@@ -73,6 +72,7 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
+import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -176,7 +176,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher = eventDispatcher;
     mShouldDeallocateEventDispatcher = false;
     mEventBeatManager = eventBeatManager;
-    mReactApplicationContext.addLifecycleEventListener(this);
+    mReactApplicationContext.addLifecycleEventListenerAndCheckState(this);
   }
 
   public FabricUIManager(
@@ -189,7 +189,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher = new EventDispatcherImpl(reactContext);
     mShouldDeallocateEventDispatcher = true;
     mEventBeatManager = eventBeatManager;
-    mReactApplicationContext.addLifecycleEventListener(this);
+    mReactApplicationContext.addLifecycleEventListenerAndCheckState(this);
   }
 
   // TODO (T47819352): Rename this to startSurface for consistency with xplat/iOS
@@ -252,7 +252,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // ViewportOffset during measurement or onLayout.
     @SuppressLint("WrongThread")
     Point viewportOffset =
-        UiThreadUtil.isOnUiThread() ? ReactRootView.getViewportOffset(rootView) : new Point(0, 0);
+        UiThreadUtil.isOnUiThread() ? RootViewUtil.getViewportOffset(rootView) : new Point(0, 0);
 
     mBinding.startSurfaceWithConstraints(
         rootTag,
@@ -280,8 +280,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @ThreadConfined(ANY)
   @Override
   public void stopSurface(final int surfaceID) {
-    mBinding.stopSurface(surfaceID);
+    // Mark surfaceId as dead, stop executing mounting instructions
     mMountingManager.stopSurface(surfaceID);
+
+    // Communicate stopSurface to Cxx - causes an empty ShadowTree to be committed,
+    // but all mounting instructions will be ignored because stopSurface was called
+    // on the MountingManager
+    mBinding.stopSurface(surfaceID);
   }
 
   @Override
@@ -1074,8 +1079,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         new MountItem() {
           @Override
           public void execute(MountingManager mountingManager) {
-            mountingManager.setJSResponder(
-                surfaceId, reactTag, initialReactTag, blockNativeResponder);
+            SurfaceMountingManager surfaceMountingManager =
+                mountingManager.getSurfaceManager(surfaceId);
+            if (surfaceMountingManager != null) {
+              surfaceMountingManager.setJSResponder(
+                  reactTag, initialReactTag, blockNativeResponder);
+            } else {
+              FLog.e(
+                  TAG, "setJSResponder skipped, surface no longer available [" + surfaceId + "]");
+            }
           }
 
           @Override

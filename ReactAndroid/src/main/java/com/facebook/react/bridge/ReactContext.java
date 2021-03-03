@@ -23,6 +23,7 @@ import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -182,9 +183,14 @@ public class ReactContext extends ContextWrapper {
     return mLifecycleState;
   }
 
+  @VisibleForTesting
   public void addLifecycleEventListener(final LifecycleEventListener listener) {
     mLifecycleEventListeners.add(listener);
-    if (hasActiveCatalystInstance() || isBridgeless()) {
+  }
+
+  public void addLifecycleEventListenerAndCheckState(final LifecycleEventListener listener) {
+    mLifecycleEventListeners.add(listener);
+    if (hasActiveCatalystInstance()) {
       switch (mLifecycleState) {
         case BEFORE_CREATE:
         case BEFORE_RESUME:

@@ -7,16 +7,11 @@
 
 #pragma once
 
-// Enable some or all of these to enable very verbose logging for
-// LayoutAnimations
-//#define LAYOUT_ANIMATION_VERBOSE_LOGGING 1
-//#define RN_SHADOW_TREE_INTROSPECTION
-//#define RN_DEBUG_STRING_CONVERTIBLE 1
-
 #include <ReactCommon/RuntimeExecutor.h>
 #include <better/optional.h>
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/RawValue.h>
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
