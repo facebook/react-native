@@ -176,7 +176,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher = eventDispatcher;
     mShouldDeallocateEventDispatcher = false;
     mEventBeatManager = eventBeatManager;
-    mReactApplicationContext.addLifecycleEventListener(this);
+    mReactApplicationContext.addLifecycleEventListenerAndCheckState(this);
   }
 
   public FabricUIManager(
@@ -189,7 +189,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher = new EventDispatcherImpl(reactContext);
     mShouldDeallocateEventDispatcher = true;
     mEventBeatManager = eventBeatManager;
-    mReactApplicationContext.addLifecycleEventListener(this);
+    mReactApplicationContext.addLifecycleEventListenerAndCheckState(this);
   }
 
   // TODO (T47819352): Rename this to startSurface for consistency with xplat/iOS

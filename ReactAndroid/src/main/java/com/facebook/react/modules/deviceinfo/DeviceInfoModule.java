@@ -37,7 +37,7 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mFontScale = reactContext.getResources().getConfiguration().fontScale;
     mReactApplicationContext = reactContext;
-    mReactApplicationContext.addLifecycleEventListener(this);
+    mReactApplicationContext.addLifecycleEventListenerAndCheckState(this);
   }
 
   public DeviceInfoModule(Context context) {
