@@ -35,7 +35,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:2.1
+      - image: reactnativecommunity/react-native-android:3.2
     resource_class: "large"
     environment:
       - TERM: "dumb"
@@ -617,7 +617,7 @@ jobs:
     environment:
       - ANDROID_HOME: "C:\\Android\\android-sdk"
       - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.1.5948944"
-      - ANDROID_BUILD_VERSION: 28
+      - ANDROID_BUILD_VERSION: 30
       - ANDROID_TOOLS_VERSION: 29.0.3
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
       - NDK_VERSION: 20.1.5948944
