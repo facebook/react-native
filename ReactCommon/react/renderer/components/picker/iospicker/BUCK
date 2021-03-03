@@ -48,6 +48,7 @@ rn_xplat_cxx_library(
     deps = [
         "//xplat/folly:headers_only",
         YOGA_CXX_TARGET,
+        react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/utils:utils"),
         react_native_xplat_target("react/renderer/attributedstring:attributedstring"),
         react_native_xplat_target("react/renderer/core:core"),

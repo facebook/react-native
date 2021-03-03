@@ -8,6 +8,7 @@
 #include "ShadowNodeFamily.h"
 #include "ShadowNode.h"
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/State.h>
 
@@ -29,7 +30,7 @@ ShadowNodeFamily::ShadowNodeFamily(
       componentName_(componentDescriptor.getComponentName()) {}
 
 void ShadowNodeFamily::setParent(ShadowNodeFamily::Shared const &parent) const {
-  assert(parent_.lock() == nullptr || parent_.lock() == parent);
+  react_native_assert(parent_.lock() == nullptr || parent_.lock() == parent);
   if (hasParent_) {
     return;
   }

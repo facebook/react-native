@@ -373,6 +373,8 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     | ?React.ElementRef<typeof View>
     | ?React.ElementRef<ScrollViewNativeComponent> {
     if (this._listRef) {
+      /* $FlowFixMe[incompatible-return] Suppresses errors found when fixing
+       * TextInput typing */
       return this._listRef.getScrollRef();
     }
   }

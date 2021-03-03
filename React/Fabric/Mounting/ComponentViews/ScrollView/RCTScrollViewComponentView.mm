@@ -152,6 +152,20 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   return concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>();
 }
 
+- (void)updateLayoutMetrics:(const LayoutMetrics &)layoutMetrics
+           oldLayoutMetrics:(const LayoutMetrics &)oldLayoutMetrics
+{
+  [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
+  if (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection) {
+    CGAffineTransform transform = (layoutMetrics.layoutDirection == LayoutDirection::LeftToRight)
+        ? CGAffineTransformIdentity
+        : CGAffineTransformMakeScale(-1, 1);
+
+    _containerView.transform = transform;
+    _scrollView.transform = transform;
+  }
+}
+
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(_props);
@@ -279,7 +293,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   }
 
   _contentSize = contentSize;
-  _containerView.frame = CGRect{CGPointZero, contentSize};
+  _containerView.frame = CGRect{RCTCGPointFromPoint(data.contentBoundingRect.origin), contentSize};
 
   [self _preserveContentOffsetIfNeededWithBlock:^{
     self->_scrollView.contentSize = contentSize;

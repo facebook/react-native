@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.mounting.MountingManager;
+import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.uimanager.StateWrapper;
 
 /** {@link MountItem} that is used to pre-allocate views for JS components. */
@@ -53,9 +54,15 @@ public class PreAllocateViewMountItem implements MountItem {
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Executing pre-allocation of: " + toString());
     }
-    mountingManager
-        .getSurfaceManagerEnforced(mSurfaceId, "PreAllocateViewMountItem")
-        .preallocateView(mComponent, mReactTag, mProps, mStateWrapper, mIsLayoutable);
+    SurfaceMountingManager surfaceMountingManager = mountingManager.getSurfaceManager(mSurfaceId);
+    if (surfaceMountingManager == null) {
+      FLog.e(
+          TAG,
+          "Skipping View PreAllocation; no SurfaceMountingManager found for [" + mSurfaceId + "]");
+      return;
+    }
+    surfaceMountingManager.preallocateView(
+        mComponent, mReactTag, mProps, mStateWrapper, mIsLayoutable);
   }
 
   @Override

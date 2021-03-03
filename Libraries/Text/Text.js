@@ -48,7 +48,10 @@ const Text: React.AbstractComponent<
   const [isHighlighted, setHighlighted] = useState(false);
 
   const isPressable =
-    onPress != null || onLongPress != null || onStartShouldSetResponder != null;
+    (onPress != null ||
+      onLongPress != null ||
+      onStartShouldSetResponder != null) &&
+    restProps.disabled !== true;
 
   const initialized = useLazyInitialization(isPressable);
   const config = useMemo(

@@ -7,7 +7,7 @@
 
 #include "TransactionTelemetry.h"
 
-#include <cassert>
+#include <react/debug/react_native_assert.h>
 
 namespace facebook {
 namespace react {
@@ -27,32 +27,32 @@ void TransactionTelemetry::unsetAsThreadLocal() {
 }
 
 void TransactionTelemetry::willCommit() {
-  assert(commitStartTime_ == kTelemetryUndefinedTimePoint);
-  assert(commitEndTime_ == kTelemetryUndefinedTimePoint);
+  react_native_assert(commitStartTime_ == kTelemetryUndefinedTimePoint);
+  react_native_assert(commitEndTime_ == kTelemetryUndefinedTimePoint);
   commitStartTime_ = telemetryTimePointNow();
 }
 
 void TransactionTelemetry::didCommit() {
-  assert(commitStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(commitEndTime_ == kTelemetryUndefinedTimePoint);
+  react_native_assert(commitStartTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(commitEndTime_ == kTelemetryUndefinedTimePoint);
   commitEndTime_ = telemetryTimePointNow();
 }
 
 void TransactionTelemetry::willDiff() {
-  assert(diffStartTime_ == kTelemetryUndefinedTimePoint);
-  assert(diffEndTime_ == kTelemetryUndefinedTimePoint);
+  react_native_assert(diffStartTime_ == kTelemetryUndefinedTimePoint);
+  react_native_assert(diffEndTime_ == kTelemetryUndefinedTimePoint);
   diffStartTime_ = telemetryTimePointNow();
 }
 
 void TransactionTelemetry::didDiff() {
-  assert(diffStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(diffEndTime_ == kTelemetryUndefinedTimePoint);
+  react_native_assert(diffStartTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(diffEndTime_ == kTelemetryUndefinedTimePoint);
   diffEndTime_ = telemetryTimePointNow();
 }
 
 void TransactionTelemetry::willLayout() {
-  assert(layoutStartTime_ == kTelemetryUndefinedTimePoint);
-  assert(layoutEndTime_ == kTelemetryUndefinedTimePoint);
+  react_native_assert(layoutStartTime_ == kTelemetryUndefinedTimePoint);
+  react_native_assert(layoutEndTime_ == kTelemetryUndefinedTimePoint);
   layoutStartTime_ = telemetryTimePointNow();
 }
 
@@ -61,20 +61,20 @@ void TransactionTelemetry::didMeasureText() {
 }
 
 void TransactionTelemetry::didLayout() {
-  assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(layoutEndTime_ == kTelemetryUndefinedTimePoint);
+  react_native_assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(layoutEndTime_ == kTelemetryUndefinedTimePoint);
   layoutEndTime_ = telemetryTimePointNow();
 }
 
 void TransactionTelemetry::willMount() {
-  assert(mountStartTime_ == kTelemetryUndefinedTimePoint);
-  assert(mountEndTime_ == kTelemetryUndefinedTimePoint);
+  react_native_assert(mountStartTime_ == kTelemetryUndefinedTimePoint);
+  react_native_assert(mountEndTime_ == kTelemetryUndefinedTimePoint);
   mountStartTime_ = telemetryTimePointNow();
 }
 
 void TransactionTelemetry::didMount() {
-  assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(mountEndTime_ == kTelemetryUndefinedTimePoint);
+  react_native_assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(mountEndTime_ == kTelemetryUndefinedTimePoint);
   mountEndTime_ = telemetryTimePointNow();
 }
 
@@ -83,50 +83,50 @@ void TransactionTelemetry::setRevisionNumber(int revisionNumber) {
 }
 
 TelemetryTimePoint TransactionTelemetry::getDiffStartTime() const {
-  assert(diffStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(diffEndTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(diffStartTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(diffEndTime_ != kTelemetryUndefinedTimePoint);
   return diffStartTime_;
 }
 
 TelemetryTimePoint TransactionTelemetry::getDiffEndTime() const {
-  assert(diffStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(diffEndTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(diffStartTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(diffEndTime_ != kTelemetryUndefinedTimePoint);
   return diffEndTime_;
 }
 
 TelemetryTimePoint TransactionTelemetry::getCommitStartTime() const {
-  assert(commitStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(commitEndTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(commitStartTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(commitEndTime_ != kTelemetryUndefinedTimePoint);
   return commitStartTime_;
 }
 
 TelemetryTimePoint TransactionTelemetry::getCommitEndTime() const {
-  assert(commitStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(commitEndTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(commitStartTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(commitEndTime_ != kTelemetryUndefinedTimePoint);
   return commitEndTime_;
 }
 
 TelemetryTimePoint TransactionTelemetry::getLayoutStartTime() const {
-  assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(layoutEndTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(layoutEndTime_ != kTelemetryUndefinedTimePoint);
   return layoutStartTime_;
 }
 
 TelemetryTimePoint TransactionTelemetry::getLayoutEndTime() const {
-  assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(layoutEndTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(layoutEndTime_ != kTelemetryUndefinedTimePoint);
   return layoutEndTime_;
 }
 
 TelemetryTimePoint TransactionTelemetry::getMountStartTime() const {
-  assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(mountEndTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(mountEndTime_ != kTelemetryUndefinedTimePoint);
   return mountStartTime_;
 }
 
 TelemetryTimePoint TransactionTelemetry::getMountEndTime() const {
-  assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
-  assert(mountEndTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
+  react_native_assert(mountEndTime_ != kTelemetryUndefinedTimePoint);
   return mountEndTime_;
 }
 

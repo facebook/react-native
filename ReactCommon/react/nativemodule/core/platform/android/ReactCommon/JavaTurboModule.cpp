@@ -15,6 +15,7 @@
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
 #include <jsi/JSIDynamic.h>
+#include <react/debug/react_native_assert.h>
 #include <react/jni/NativeMap.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/jni/WritableNativeMap.h>
@@ -133,7 +134,7 @@ std::string stringifyJSIValue(const jsi::Value &v, jsi::Runtime *rt = nullptr) {
     return "a string (\"" + v.getString(*rt).utf8(*rt) + "\")";
   }
 
-  assert(v.isObject() && "Expecting object.");
+  react_native_assert(v.isObject() && "Expecting object.");
   return rt != nullptr && v.getObject(*rt).isFunction(*rt) ? "a function"
                                                            : "an object";
 }

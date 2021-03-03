@@ -8,7 +8,14 @@
  * @format
  */
 
-import {Button, SectionList, StyleSheet, Text, View} from 'react-native';
+import {
+  Pressable,
+  Button,
+  SectionList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import * as React from 'react';
 
 const DATA = [
@@ -36,11 +43,53 @@ const VIEWABILITY_CONFIG = {
   waitForInteraction: true,
 };
 
-const Item = ({title}) => (
-  <View style={styles.item} testID={title}>
-    <Text style={styles.title}>{title}</Text>
-  </View>
-);
+const Item = ({item, section, separators}) => {
+  return (
+    <Pressable
+      onPressIn={() => {
+        separators.highlight();
+      }}
+      onPress={() => {
+        separators.updateProps('trailing', {hasBeenHighlighted: true});
+        separators.updateProps('leading', {hasBeenHighlighted: true});
+      }}
+      onPressOut={() => {
+        separators.unhighlight();
+      }}
+      style={({pressed}) => [
+        styles.item,
+        {
+          backgroundColor: pressed ? 'red' : 'pink',
+        },
+      ]}
+      testID={item}>
+      <Text style={styles.title}>{item}</Text>
+    </Pressable>
+  );
+};
+
+const Separator = (defaultColor, highlightColor, isSectionSeparator) => ({
+  leadingItem,
+  trailingItem,
+  highlighted,
+  hasBeenHighlighted,
+}) => {
+  const text = `${
+    isSectionSeparator ? 'Section ' : ''
+  }separator for leading ${leadingItem} and trailing ${trailingItem} has ${
+    !hasBeenHighlighted ? 'not ' : ''
+  }been pressed`;
+
+  return (
+    <View
+      style={[
+        styles.separator,
+        {backgroundColor: highlighted ? highlightColor : defaultColor},
+      ]}>
+      <Text style={styles.separtorText}>{text}</Text>
+    </View>
+  );
+};
 
 export function SectionList_inverted(): React.Node {
   const [output, setOutput] = React.useState('inverted false');
@@ -62,6 +111,50 @@ export function SectionList_inverted(): React.Node {
       onTest={onTest}
       testLabel={exampleProps.inverted ? 'Toggle false' : 'Toggle true'}
     />
+  );
+}
+
+export function SectionList_contentInset(): React.Node {
+  const [initialContentInset, toggledContentInset] = [44, 88];
+
+  const [output, setOutput] = React.useState(
+    `contentInset top: ${initialContentInset.toString()}`,
+  );
+  const [exampleProps, setExampleProps] = React.useState({
+    automaticallyAdjustContentInsets: false,
+    contentInset: {top: initialContentInset},
+    contentOffset: {y: -initialContentInset, x: 0},
+  });
+
+  const onTest = () => {
+    const newContentInset =
+      exampleProps.contentInset.top === initialContentInset
+        ? toggledContentInset
+        : initialContentInset;
+    setExampleProps({
+      automaticallyAdjustContentInsets: false,
+      contentInset: {top: newContentInset},
+      contentOffset: {y: -newContentInset, x: 0},
+    });
+    setOutput(`contentInset top: ${newContentInset.toString()}`);
+  };
+
+  return (
+    <>
+      <View
+        style={[
+          styles.titleContainer,
+          {height: exampleProps.contentInset.top},
+        ]}>
+        <Text style={styles.titleText}>Menu</Text>
+      </View>
+      <SectionListExampleWithForwardedRef
+        exampleProps={exampleProps}
+        testOutput={output}
+        onTest={onTest}
+        testLabel={'Toggle header size'}
+      />
+    </>
   );
 }
 
@@ -119,6 +212,18 @@ export function SectionList_onEndReached(): React.Node {
   );
 }
 
+export function SectionList_withSeparators(): React.Node {
+  const exampleProps = {
+    ItemSeparatorComponent: Separator('lightgreen', 'green', false),
+    SectionSeparatorComponent: Separator('lightblue', 'blue', true),
+  };
+  const ref = React.createRef<?React.ElementRef<typeof SectionList>>();
+
+  return (
+    <SectionListExampleWithForwardedRef ref={ref} exampleProps={exampleProps} />
+  );
+}
+
 export function SectionList_onViewableItemsChanged(): React.Node {
   const [output, setOutput] = React.useState('');
   const exampleProps = {
@@ -135,7 +240,6 @@ export function SectionList_onViewableItemsChanged(): React.Node {
   return (
     <SectionListExampleWithForwardedRef
       exampleProps={exampleProps}
-      onTest={null}
       testOutput={output}
     />
   );
@@ -145,7 +249,7 @@ type Props = {
   exampleProps: $Shape<React.ElementConfig<typeof SectionList>>,
   onTest?: ?() => void,
   testLabel?: ?string,
-  testOutput: ?string,
+  testOutput?: ?string,
 };
 
 const SectionListExampleWithForwardedRef = React.forwardRef(
@@ -155,24 +259,26 @@ const SectionListExampleWithForwardedRef = React.forwardRef(
   ): React.Node {
     return (
       <View>
-        <View testID="test_container" style={styles.testContainer}>
-          <Text numberOfLines={1} testID="output">
-            {props.testOutput}
-          </Text>
-          {props.onTest != null ? (
-            <Button
-              testID="start_test"
-              onPress={props.onTest}
-              title={props.testLabel ?? 'Test'}
-            />
-          ) : null}
-        </View>
+        {props.testOutput != null ? (
+          <View testID="test_container" style={styles.testContainer}>
+            <Text numberOfLines={1} testID="output">
+              {props.testOutput}
+            </Text>
+            {props.onTest != null ? (
+              <Button
+                testID="start_test"
+                onPress={props.onTest}
+                title={props.testLabel ?? 'Test'}
+              />
+            ) : null}
+          </View>
+        ) : null}
         <SectionList
           ref={ref}
           testID="section_list"
           sections={DATA}
           keyExtractor={(item, index) => item + index}
-          renderItem={({item}) => <Item title={item} />}
+          renderItem={Item}
           renderSectionHeader={({section: {title}}) => (
             <Text style={styles.header}>{title}</Text>
           )}
@@ -196,6 +302,21 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
   },
+  titleContainer: {
+    position: 'absolute',
+    top: 45,
+    left: 0,
+    right: 0,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: 'gray',
+    zIndex: 1,
+  },
+  titleText: {
+    fontSize: 24,
+    lineHeight: 44,
+    fontWeight: 'bold',
+  },
   testContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -205,5 +326,11 @@ const styles = StyleSheet.create({
   },
   output: {
     fontSize: 12,
+  },
+  separator: {
+    height: 12,
+  },
+  separtorText: {
+    fontSize: 10,
   },
 });

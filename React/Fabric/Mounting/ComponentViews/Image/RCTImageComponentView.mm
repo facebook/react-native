@@ -83,7 +83,8 @@ using namespace facebook::react;
 
   bool havePreviousData = oldImageState && oldImageState->getData().getImageSource() != ImageSource{};
 
-  if (!havePreviousData || newImageState->getData().getImageSource() != oldImageState->getData().getImageSource()) {
+  if (!havePreviousData ||
+      (newImageState && newImageState->getData().getImageSource() != oldImageState->getData().getImageSource())) {
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
     std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadStart();
