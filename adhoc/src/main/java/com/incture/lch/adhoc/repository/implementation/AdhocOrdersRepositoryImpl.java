@@ -366,7 +366,7 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		List<AdhocOrders> adhocOrders = new ArrayList<>();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
-		String queryStr = "select ad from AdhocOrders ad Order By fwoNum desc";
+		String queryStr = "select ad from AdhocOrders ad  Order By fwoNum desc";
 		Query query = session.createQuery(queryStr);
 		// query.setParameter("isOrderSubmitted", true);
 		adhocOrders = query.list();
@@ -380,44 +380,43 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		return AdhocOrderDtos;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<AdhocOrderDto> getDrafts(AdhocRequestDto adhocRequestDto) {
 		List<AdhocOrderDto> AdhocOrderDtos = new ArrayList<>();
 		List<AdhocOrders> adhocOrders = new ArrayList<>();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
-		StringBuilder queryStr = new StringBuilder();
-		queryStr.append("select ao from AdhocOrders ao where ao.isSaved = true ");
+		//StringBuilder queryStr = new StringBuilder();
+		//queryStr.append("select ao from AdhocOrders ao where ao.isSaved = true ");
 
-		// Criteria crit = session.createCriteria(AdhocOrders.class);
-		// crit.add(Restrictions.eq("isSaved", true));
-		// crit.add(Restrictions.like("fwoNum","TEM%",MatchMode.ANYWHERE));
+		Criteria crit = session.createCriteria(AdhocOrders.class);
+		crit.add(Restrictions.eq("isSaved", true));
+		crit.add(Restrictions.like("fwoNum","TEM%",MatchMode.ANYWHERE));
 		// queryStr.append("");
 
 		if (adhocRequestDto.getAdhocOrderId() != null && !(adhocRequestDto.getAdhocOrderId().equals(""))) {
-			queryStr.append(" AND ao.fwoNum=:fwoNum");
-			// crit.add(Restrictions.eq("adhocOrderId",
-			// adhocRequestDto.getAdhocOrderId()));
+			//queryStr.append(" AND ao.fwoNum=:fwoNum");
+			crit.add(Restrictions.eq("adhocOrderId",adhocRequestDto.getAdhocOrderId()));
 
 		}
 		if ((adhocRequestDto.getFromDate() != null && !(adhocRequestDto.getFromDate().equals("")))
 				&& (adhocRequestDto.getToDate() != null) && !(adhocRequestDto.getToDate().equals(""))) {
-			queryStr.append(" AND ao.createdDate BETWEEN :fromDate AND :toDate");
-			// crit.add(Restrictions.between("createdDate",
-			// adhocRequestDto.getFromDate(), adhocRequestDto.getToDate()));
+			//queryStr.append(" AND ao.createdDate BETWEEN :fromDate AND :toDate");
+			 crit.add(Restrictions.between("createdDate",adhocRequestDto.getFromDate(), adhocRequestDto.getToDate()));
 		}
 		if (adhocRequestDto.getCreatedBy() != null && !(adhocRequestDto.getCreatedBy().equals(""))) {
-			queryStr.append(" AND ao.userId=:userId");
-			// crit.add(Restrictions.eq("userId",adhocRequestDto.getCreatedBy()));
+			//queryStr.append(" AND ao.userId=:userId");
+			 crit.add(Restrictions.eq("userId",adhocRequestDto.getCreatedBy()));
 		}
 		if (adhocRequestDto.getPartNo() != null && !(adhocRequestDto.getPartNo().equals(""))) {
-			queryStr.append(" AND ao.partNum=:partNum");
-			// crit.add(Restrictions.eq("partNo", adhocRequestDto.getPartNo()));
+			//queryStr.append(" AND ao.partNum=:partNum");
+			 crit.add(Restrictions.eq("partNo", adhocRequestDto.getPartNo()));
 		}
 
-		// adhocOrders= crit.list();
-		Query query = session.createQuery(queryStr.toString());
-
+		adhocOrders= crit.list();
+		//Query query = session.createQuery(queryStr.toString());
+/*
 		if (adhocRequestDto.getAdhocOrderId() != null && !(adhocRequestDto.getAdhocOrderId().equals(""))) {
 			query.setParameter("fwoNum", adhocRequestDto.getAdhocOrderId());
 		}
@@ -440,15 +439,15 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		if (adhocRequestDto.getPartNo() != null && !(adhocRequestDto.getPartNo().equals(""))) {
 			query.setParameter("partNum", adhocRequestDto.getPartNo());
 		}
-
-		System.out.println(adhocRequestDto.getCreatedBy());
+*/
+		//System.out.println(adhocRequestDto.getCreatedBy());
 
 		List<AdhocOrderDto> list = new ArrayList<>();
-		@SuppressWarnings("unchecked")
-		List<AdhocOrders> objectsList = (List<AdhocOrders>) query.list();
-		System.out.println(objectsList.size());
+		//@SuppressWarnings("unchecked")
+		//List<AdhocOrders> objectsList = (List<AdhocOrders>) query.list();
+//		System.out.println(objectsList.size());
 
-		for (AdhocOrders ao : objectsList) {
+		for (AdhocOrders ao : adhocOrders) {
 			list.add(exportAdhocOrdersDto(ao));
 		}
 
@@ -531,6 +530,7 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		AdhocOrders adhocOrders = new AdhocOrders();
 		adhocOrders = importAdhocOrdersDto(AdhocOrderDto);
 		// adhocOrders.setCreatedBy("LCH");
+		adhocOrders.setIsSaved(false);
 		LkShipperDetailsDto shipDetDto = new LkShipperDetailsDto();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
@@ -695,8 +695,9 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		StringBuilder queryString = new StringBuilder();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
-		queryString.append("SELECT ao FROM AdhocOrders ao WHERE ao.fwoNum = ao.fwoNum");
+		queryString.append("SELECT ao FROM AdhocOrders ao WHERE ao.fwoNum = ao.fwoNum AND ao.fwoNum like 'ADH%'");
 
+		
 		if (adhocRequestDto.getAdhocOrderId() != null && !(adhocRequestDto.getAdhocOrderId().equals(""))) {
 			queryString.append(" AND ao.fwoNum=:fwoNum");
 		}

@@ -71,10 +71,13 @@ public class Preference
 	private String originZip;
 	
 
-	@Column(name ="ppackageType")
+	@Column(name ="packageType")
 	private String packageType;
 	
 
+	@Column(name="copy")
+	private String copy;
+	
 	@Column(name ="partNum")
 	private String partNum;
 	
@@ -271,6 +274,14 @@ public class Preference
 
 	public void setWeight(String weight) {
 		this.weight = weight;
+	}
+
+	public String getCopy() {
+		return copy;
+	}
+
+	public void setCopy(String copy) {
+		this.copy = copy;
 	}
 	
 	

@@ -1,7 +1,10 @@
 package com.incture.lch.adhoc.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.simple.JSONObject;
@@ -56,15 +59,16 @@ public class PreferenceController {
 	}
 
 	// @PostMapping("/setPreference")
-	/*
-	 * @RequestMapping(value = "/setPreference", method = RequestMethod.POST,
-	 * consumes = { "application/json" })
-	 * 
-	 * @ResponseBody public String setPreference(@RequestBody
-	 * List<PreferenceDto> preferenceDto, @RequestParam String userId) {
-	 * 
-	 * return preferenceService.setPreference(preferenceDto, userId); }
-	 */@RequestMapping(value = "/setPreference", method = RequestMethod.POST, consumes = { "application/json" })
+	
+	/*  @RequestMapping(value = "/setPreference", method = RequestMethod.POST,
+	  consumes = { "application/json" })
+	  
+	  @ResponseBody public String setPreference(@RequestBody  List<PreferenceDto> preferenceDto, @RequestParam String userId) {
+	  
+	  return preferenceService.setPreference(preferenceDto, userId);
+	  }*/
+	  
+	@RequestMapping(value = "/setPreference", method = RequestMethod.POST, consumes = { "application/json" })
 	public String setPreference(@RequestBody PreferenceResponseDto preferenceResponseDto) {
 
 		List<PreferenceDto> preferenceDto = new ArrayList<>();
@@ -75,5 +79,36 @@ public class PreferenceController {
 		System.out.println(userId);
 		return preferenceService.setPreference(preferenceResponseDto.getPreferenceDTOs(), userId);
 	}
+	
+	
+	
+	/////////////////////////////////////////////////////////////////////////
+	
+	/*
+	@RequestMapping(value = "/test", method = RequestMethod.POST, consumes = { "application/json" })
+	public String test(@RequestBody JSONObject userDetails) {
 
+		String email=(String)userDetails.get("id");
+		
+		
+		
+		System.out.println((userDetails.get("name")).getClass().getSimpleName());
+		System.out.println((userDetails.get("emails")).getClass().getSimpleName());
+		//List(userDetails.get("emails");
+		
+		List emails=new ArrayList<>();
+		
+		emails= (List) userDetails.get("emails");
+		System.out.println(emails.get(0));
+		System.out.println(emails.get(0).getClass().getSimpleName());
+		//String em=emails.get(0);
+		System.out.println();
+		LinkedHashMap<String, String> userEmailvalue = new LinkedHashMap<String , String >();
+		userEmailvalue.putAll((Map<String,String>) emails.get(0));
+		String em = userEmailvalue.get("value");
+		System.out.println(em);
+		return email;
+	}*/
+
+	
 }

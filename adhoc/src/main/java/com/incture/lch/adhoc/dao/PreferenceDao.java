@@ -28,11 +28,9 @@ public class PreferenceDao
 		
 		List<PreferenceDto> preferenceDto=new ArrayList<PreferenceDto>();
 		
-		/*String userId= userInfoDto;*/
 		try{
 			session=sessionFactory.openSession();
 			transaction = session.beginTransaction();
-			
 			
 			preferenceDto=exportDto(session.get(Preference.class, userId));
 			
@@ -48,6 +46,7 @@ public class PreferenceDao
 		return preferenceDto;
 	}
 	
+   //set Preference	
 	public String setPreference(List<PreferenceDto> preferenceDto,String userId)
 	{
 		
@@ -56,12 +55,11 @@ public class PreferenceDao
 			transaction = session.beginTransaction();
 			
 			Preference preferences=importDto(preferenceDto,userId);
-			System.out.println("inside DAO");
+			//System.out.println("inside DAO");
 
 			session.saveOrUpdate(preferences);
-			//session.save(preferences);
 			transaction.commit();
-			System.out.println("After DAO");
+			//System.out.println("After DAO");
 		}
 		catch(Exception e){
 			transaction.rollback();
@@ -71,6 +69,7 @@ public class PreferenceDao
 		}
 		
 		return "success";
+		//return preferenceDto;
 	}
 	
 	
@@ -128,7 +127,7 @@ public class PreferenceDao
 		Preference preference = new Preference();
 		
 		preference.setPreferenceId(userid);
-System.out.println("inside import");
+  // System.out.println("inside import");
 		for(PreferenceDto dto:preferencedto){
 			if(dto.getColumnName().equals("businessDivision"))
 				preference.setBusinessDivision(generateValue(dto));
@@ -185,6 +184,8 @@ System.out.println("inside import");
 			
 			else if(dto.getColumnName().equals("weight"))
 				preference.setWeight(generateValue(dto));
+			else if(dto.getColumnName().equals("copy"))
+				preference.setCopy(generateValue(dto));
 				
 		}
 		
