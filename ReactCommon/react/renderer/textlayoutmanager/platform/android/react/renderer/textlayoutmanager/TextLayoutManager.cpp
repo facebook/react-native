@@ -7,6 +7,8 @@
 
 #include "TextLayoutManager.h"
 
+#include <limits>
+
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/conversions.h>
@@ -29,12 +31,15 @@ TextMeasurement TextLayoutManager::measure(
     LayoutConstraints layoutConstraints) const {
   auto &attributedString = attributedStringBox.getValue();
 
-  return measureCache_.get(
+  auto measurement = measureCache_.get(
       {attributedString, paragraphAttributes, layoutConstraints},
       [&](TextMeasureCacheKey const &key) {
         return doMeasure(
             attributedString, paragraphAttributes, layoutConstraints);
       });
+
+  measurement.size = layoutConstraints.clamp(measurement.size);
+  return measurement;
 }
 
 TextMeasurement TextLayoutManager::measureCachedSpannableById(
@@ -126,6 +131,8 @@ TextMeasurement TextLayoutManager::doMeasure(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
+  layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
+
   int attachmentsCount = 0;
   for (auto fragment : attributedString.getFragments()) {
     if (fragment.isAttachment()) {

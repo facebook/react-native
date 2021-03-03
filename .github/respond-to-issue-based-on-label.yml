@@ -1,4 +1,4 @@
-# Configuration for Label Actions - https://github.com/marketplace/actions/label-actions
+# Configuration for Respond To Issue Based on Label https://github.com/marketplace/actions/respond-to-issue-based-on-label
 
 "Type: Invalid":
   close: true

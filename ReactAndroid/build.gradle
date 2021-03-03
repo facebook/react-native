@@ -378,7 +378,7 @@ task extractJNIFiles {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     ndkVersion ANDROID_NDK_VERSION
     compileOptions {
         sourceCompatibility(JavaVersion.VERSION_1_8)

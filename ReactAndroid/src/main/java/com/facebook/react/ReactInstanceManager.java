@@ -153,6 +153,7 @@ public class ReactInstanceManager {
   /* accessed from any thread */
   private final JavaScriptExecutorFactory mJavaScriptExecutorFactory;
 
+  private @Nullable List<String> mViewManagerNames = null;
   private final @Nullable JSBundleLoader mBundleLoader;
   private final @Nullable String mJSMainModulePath; /* path to JS bundle root on Metro */
   private final List<ReactPackage> mPackages;
@@ -711,6 +712,9 @@ public class ReactInstanceManager {
     synchronized (mHasStartedDestroying) {
       mHasStartedDestroying.notifyAll();
     }
+    synchronized (mPackages) {
+      mViewManagerNames = null;
+    }
     FLog.d(ReactConstants.TAG, "ReactInstanceManager has been destroyed");
   }
 
@@ -908,33 +912,38 @@ public class ReactInstanceManager {
 
   public @Nullable List<String> getViewManagerNames() {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerNames");
-    ReactApplicationContext context;
-    synchronized (mReactContextLock) {
-      context = (ReactApplicationContext) getCurrentReactContext();
-      if (context == null || !context.hasActiveCatalystInstance()) {
-        return null;
-      }
-    }
-
-    synchronized (mPackages) {
-      Set<String> uniqueNames = new HashSet<>();
-      for (ReactPackage reactPackage : mPackages) {
-        SystraceMessage.beginSection(
-                TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerName")
-            .arg("Package", reactPackage.getClass().getSimpleName())
-            .flush();
-        if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
-          List<String> names =
-              ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
-          if (names != null) {
-            uniqueNames.addAll(names);
-          }
+    if (mViewManagerNames == null) {
+      ReactApplicationContext context;
+      synchronized (mReactContextLock) {
+        context = (ReactApplicationContext) getCurrentReactContext();
+        if (context == null || !context.hasActiveCatalystInstance()) {
+          return null;
         }
-        SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
       }
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-      return new ArrayList<>(uniqueNames);
+
+      synchronized (mPackages) {
+        if (mViewManagerNames == null) {
+          Set<String> uniqueNames = new HashSet<>();
+          for (ReactPackage reactPackage : mPackages) {
+            SystraceMessage.beginSection(
+                    TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerName")
+                .arg("Package", reactPackage.getClass().getSimpleName())
+                .flush();
+            if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
+              List<String> names =
+                  ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
+              if (names != null) {
+                uniqueNames.addAll(names);
+              }
+            }
+            SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+          }
+          Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+          mViewManagerNames = new ArrayList<>(uniqueNames);
+        }
+      }
     }
+    return new ArrayList<>(mViewManagerNames);
   }
 
   /** Add a listener to be notified of react instance events. */

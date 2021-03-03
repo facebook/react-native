@@ -68,7 +68,7 @@ public final class TimingModule extends NativeTimingSpec
 
   @Override
   public void initialize() {
-    getReactApplicationContext().addLifecycleEventListener(this);
+    getReactApplicationContext().addLifecycleEventListenerAndCheckState(this);
     HeadlessJsTaskContext headlessJsTaskContext =
         HeadlessJsTaskContext.getInstance(getReactApplicationContext());
     headlessJsTaskContext.addTaskEventListener(this);
