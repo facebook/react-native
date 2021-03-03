@@ -9,7 +9,6 @@
 
 #include "Binding.h"
 #include "ComponentFactory.h"
-#include "ComponentNameResolverManager.h"
 #include "CoreComponentsRegistry.h"
 #include "EventBeatManager.h"
 #include "EventEmitterWrapper.h"
@@ -22,7 +21,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     facebook::react::EventEmitterWrapper::registerNatives();
     facebook::react::StateWrapperImpl::registerNatives();
     facebook::react::ComponentFactory::registerNatives();
-    facebook::react::ComponentNameResolverManager::registerNatives();
     facebook::react::CoreComponentsRegistry::registerNatives();
   });
 }

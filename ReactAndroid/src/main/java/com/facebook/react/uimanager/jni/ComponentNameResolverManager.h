@@ -26,10 +26,10 @@ class ComponentNameResolverManager
     : public jni::HybridClass<ComponentNameResolverManager> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/fabric/ComponentNameResolverManager;";
+      "Lcom/facebook/react/uimanager/ComponentNameResolverManager;";
 
   constexpr static auto ComponentNameResolverJavaDescriptor =
-      "com/facebook/react/fabric/ComponentNameResolver";
+      "com/facebook/react/uimanager/ComponentNameResolver";
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jhybridobject> jThis,

@@ -13,7 +13,7 @@
 
 #include "ComponentNameResolverManager.h"
 
-#include <react/renderer/componentregistry/NativeComponentRegistryBinding.h>
+#include <react/renderer/componentregistry/native/NativeComponentRegistryBinding.h>
 
 namespace facebook {
 namespace react {

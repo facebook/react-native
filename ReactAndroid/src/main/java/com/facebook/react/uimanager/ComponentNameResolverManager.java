@@ -5,16 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.fabric;
+package com.facebook.react.uimanager;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.RuntimeExecutor;
+import com.facebook.soloader.SoLoader;
 
 public class ComponentNameResolverManager {
 
   static {
-    FabricSoLoader.staticInit();
+    staticInit();
   }
 
   @DoNotStrip
@@ -31,4 +32,8 @@ public class ComponentNameResolverManager {
       RuntimeExecutor runtimeExecutor, Object componentNameResolver);
 
   private native void installJSIBindings();
+
+  private static void staticInit() {
+    SoLoader.loadLibrary("uimanagerjni");
+  }
 }
