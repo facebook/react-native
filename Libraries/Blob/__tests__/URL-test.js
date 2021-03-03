@@ -17,7 +17,7 @@ describe('URL', function() {
     const a = new URL('/', 'https://developer.mozilla.org');
     expect(a.href).toBe('https://developer.mozilla.org/');
     const b = new URL('https://developer.mozilla.org');
-    expect(b.href).toBe('https://developer.mozilla.org/');
+    expect(b.href).toBe('https://developer.mozilla.org');
     const c = new URL('en-US/docs', b);
     expect(c.href).toBe('https://developer.mozilla.org/en-US/docs');
     const d = new URL('/en-US/docs', b);
