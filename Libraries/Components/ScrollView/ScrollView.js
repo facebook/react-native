@@ -719,6 +719,13 @@ class ScrollView extends React.Component<Props, State> {
   static Context: typeof ScrollViewContext = ScrollViewContext;
   constructor(props: Props) {
     super(props);
+
+    this._scrollAnimatedValue = new AnimatedImplementation.Value(
+      this.props.contentOffset?.y ?? 0,
+    );
+    this._scrollAnimatedValue.setOffset(this.props.contentInset?.top ?? 0);
+    this._stickyHeaderRefs = new Map();
+    this._headerLayoutYs = new Map();
   }
 
   _scrollAnimatedValue: AnimatedImplementation.Value = new AnimatedImplementation.Value(
@@ -788,13 +795,6 @@ class ScrollView extends React.Component<Props, State> {
       'keyboardDidHide',
       this.scrollResponderKeyboardDidHide,
     );
-
-    this._scrollAnimatedValue = new AnimatedImplementation.Value(
-      this.props.contentOffset?.y ?? 0,
-    );
-    this._scrollAnimatedValue.setOffset(this.props.contentInset?.top ?? 0);
-    this._stickyHeaderRefs = new Map();
-    this._headerLayoutYs = new Map();
 
     this._updateAnimatedNodeAttachment();
   }
