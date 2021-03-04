@@ -268,7 +268,6 @@ class Button extends React.Component<ButtonProps> {
       nextFocusUp,
       disabled,
       testID,
-      accessibilityState = {},
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -279,10 +278,10 @@ class Button extends React.Component<ButtonProps> {
         buttonStyles.push({backgroundColor: color});
       }
     }
-
-    if (disabled != null) {
-      accessibilityState.disabled = disabled;
-    } //Should works for both disabled={true/false}
+    const accessibilityState =
+      disabled != null
+        ? {...this.props.accessibilityState, disabled}
+        : this.props.accessibilityState; //Should work for both disabled={true/false}
 
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
@@ -309,7 +308,7 @@ class Button extends React.Component<ButtonProps> {
         nextFocusRight={nextFocusRight}
         nextFocusUp={nextFocusUp}
         testID={testID}
-        disabled={disabled != null ? disabled : accessibilityState?.disabled}
+        disabled={disabled != null ? disabled : accessibilityState?.disabled} //This will sync accessibilityState={disabled} with disabled prop.
         onPress={onPress}
         touchSoundDisabled={touchSoundDisabled}>
         <View style={buttonStyles}>
