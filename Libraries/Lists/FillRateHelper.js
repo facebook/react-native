@@ -32,11 +32,9 @@ type FrameMetrics = {
   ...
 };
 
-const DEBUG = false;
-
 let _listeners: Array<(Info) => void> = [];
 let _minSampleCount = 10;
-let _sampleRate = DEBUG ? 1 : null;
+let _sampleRate = null;
 
 /**
  * A helper class for detecting when the maximem fill rate of `VirtualizedList` is exceeded.
@@ -84,7 +82,6 @@ class FillRateHelper {
 
   activate() {
     if (this._enabled && this._samplesStartTime == null) {
-      DEBUG && console.debug('FillRateHelper: activate');
       this._samplesStartTime = global.performance.now();
     }
   }
@@ -95,8 +92,6 @@ class FillRateHelper {
     }
     const start = this._samplesStartTime; // const for flow
     if (start == null) {
-      DEBUG &&
-        console.debug('FillRateHelper: bail on deactivate with no start time');
       return;
     }
     if (this._info.sample_count < _minSampleCount) {
@@ -109,24 +104,6 @@ class FillRateHelper {
       ...this._info,
       total_time_spent,
     };
-    if (DEBUG) {
-      const derived = {
-        avg_blankness: this._info.pixels_blank / this._info.pixels_sampled,
-        avg_speed: this._info.pixels_scrolled / (total_time_spent / 1000),
-        avg_speed_when_any_blank:
-          this._info.any_blank_speed_sum / this._info.any_blank_count,
-        any_blank_per_min:
-          this._info.any_blank_count / (total_time_spent / 1000 / 60),
-        any_blank_time_frac: this._info.any_blank_ms / total_time_spent,
-        mostly_blank_per_min:
-          this._info.mostly_blank_count / (total_time_spent / 1000 / 60),
-        mostly_blank_time_frac: this._info.mostly_blank_ms / total_time_spent,
-      };
-      for (const key in derived) {
-        derived[key] = Math.round(1000 * derived[key]) / 1000;
-      }
-      console.debug('FillRateHelper deactivateAndFlush: ', {derived, info});
-    }
     _listeners.forEach(listener => listener(info));
     this._resetData();
   }
