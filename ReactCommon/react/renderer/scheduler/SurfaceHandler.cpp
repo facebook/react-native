@@ -58,6 +58,9 @@ void SurfaceHandler::start() const noexcept {
     std::unique_lock<better::shared_mutex> lock(linkMutex_);
     react_native_assert(
         link_.status == Status::Registered && "Surface must be registered.");
+    react_native_assert(
+        getLayoutConstraints().layoutDirection != LayoutDirection::Undefined &&
+        "layoutDirection must be set.");
 
     auto parameters = Parameters{};
     {
