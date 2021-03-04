@@ -11,28 +11,31 @@
 import * as React from 'react';
 import {Appearance, Text, useColorScheme, View} from 'react-native';
 import type {AppearancePreferences} from 'react-native/Libraries/Utilities/NativeAppearance';
+import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 import {RNTesterThemeContext, themes} from '../../components/RNTesterTheme';
 
 class ColorSchemeSubscription extends React.Component<
   {...},
   {colorScheme: ?string, ...},
 > {
+  _subscription: ?EventSubscription;
+
   state = {
     colorScheme: Appearance.getColorScheme(),
   };
 
   componentDidMount() {
-    Appearance.addChangeListener(this._handleAppearanceChange);
+    this._subscription = Appearance.addChangeListener(
+      (preferences: AppearancePreferences) => {
+        const {colorScheme} = preferences;
+        this.setState({colorScheme});
+      },
+    );
   }
 
   componentWillUnmount() {
-    Appearance.removeChangeListener(this._handleAppearanceChange);
+    this._subscription?.remove();
   }
-
-  _handleAppearanceChange = (preferences: AppearancePreferences) => {
-    const {colorScheme} = preferences;
-    this.setState({colorScheme});
-  };
 
   render() {
     return (

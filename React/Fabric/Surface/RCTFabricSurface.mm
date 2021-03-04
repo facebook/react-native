@@ -168,6 +168,8 @@ using namespace facebook::react;
 - (void)_updateLayoutContext
 {
   auto layoutConstraints = _surfaceHandler->getLayoutConstraints();
+  layoutConstraints.layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL]);
+
   auto layoutContext = _surfaceHandler->getLayoutContext();
 
   layoutContext.pointScaleFactor = RCTScreenScale();

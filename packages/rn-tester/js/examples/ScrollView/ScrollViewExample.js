@@ -197,6 +197,7 @@ exports.examples = ([
     },
   },
   {
+    name: 'invertStickyHeaders',
     title: '<ScrollView> Invert Sticky Headers\n',
     description:
       'If sticky headers should stick at the bottom instead of the top of the ScrollView. This is usually used with inverted ScrollViews.',
@@ -904,19 +905,36 @@ const KeyboardExample = () => {
 
 const InvertStickyHeaders = () => {
   const [invertStickyHeaders, setInvertStickyHeaders] = useState(false);
+  const _scrollView = React.useRef<?React.ElementRef<typeof ScrollView>>(null);
   return (
     <View>
       <ScrollView
+        ref={_scrollView}
         style={[styles.scrollView, {height: 200}]}
         stickyHeaderIndices={[0]}
         invertStickyHeaders={invertStickyHeaders}
-        nestedScrollEnabled>
+        nestedScrollEnabled
+        testID="scroll_sticky_header">
         {<Text>STICKY HEADER</Text>}
         {ITEMS.map(createItemRow)}
       </ScrollView>
       <Button
         onPress={() => setInvertStickyHeaders(!invertStickyHeaders)}
         label={'invertStickyHeaders: ' + invertStickyHeaders.toString()}
+      />
+      <Button
+        label="Scroll to top"
+        onPress={() => {
+          nullthrows(_scrollView.current).scrollTo({y: 0});
+        }}
+        testID="scroll_to_top_button"
+      />
+      <Button
+        label="Scroll to bottom"
+        onPress={() => {
+          nullthrows(_scrollView.current).scrollToEnd({animated: true});
+        }}
+        testID="scroll_to_bottom_button"
       />
     </View>
   );

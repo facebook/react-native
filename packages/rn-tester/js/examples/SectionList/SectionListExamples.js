@@ -46,8 +46,16 @@ const VIEWABILITY_CONFIG = {
 const Item = ({item, section, separators}) => {
   return (
     <Pressable
-      onPressIn={separators.highlight}
-      onPressOut={separators.unhighlight}
+      onPressIn={() => {
+        separators.highlight();
+      }}
+      onPress={() => {
+        separators.updateProps('trailing', {hasBeenHighlighted: true});
+        separators.updateProps('leading', {hasBeenHighlighted: true});
+      }}
+      onPressOut={() => {
+        separators.unhighlight();
+      }}
       style={({pressed}) => [
         styles.item,
         {
@@ -60,7 +68,18 @@ const Item = ({item, section, separators}) => {
   );
 };
 
-const Separator = (defaultColor, highlightColor, text) => ({highlighted}) => {
+const Separator = (defaultColor, highlightColor, isSectionSeparator) => ({
+  leadingItem,
+  trailingItem,
+  highlighted,
+  hasBeenHighlighted,
+}) => {
+  const text = `${
+    isSectionSeparator ? 'Section ' : ''
+  }separator for leading ${leadingItem} and trailing ${trailingItem} has ${
+    !hasBeenHighlighted ? 'not ' : ''
+  }been pressed`;
+
   return (
     <View
       style={[
@@ -195,24 +214,13 @@ export function SectionList_onEndReached(): React.Node {
 
 export function SectionList_withSeparators(): React.Node {
   const exampleProps = {
-    ItemSeparatorComponent: Separator('lightgreen', 'green', 'Item Separator'),
-    SectionSeparatorComponent: Separator(
-      'lightblue',
-      'blue',
-      'Section Separator',
-    ),
+    ItemSeparatorComponent: Separator('lightgreen', 'green', false),
+    SectionSeparatorComponent: Separator('lightblue', 'blue', true),
   };
   const ref = React.createRef<?React.ElementRef<typeof SectionList>>();
 
-  const onTest = null;
-
   return (
-    <SectionListExampleWithForwardedRef
-      ref={ref}
-      exampleProps={exampleProps}
-      testOutput="Tap for press state of section and item separators"
-      onTest={onTest}
-    />
+    <SectionListExampleWithForwardedRef ref={ref} exampleProps={exampleProps} />
   );
 }
 
@@ -232,7 +240,6 @@ export function SectionList_onViewableItemsChanged(): React.Node {
   return (
     <SectionListExampleWithForwardedRef
       exampleProps={exampleProps}
-      onTest={null}
       testOutput={output}
     />
   );
@@ -242,7 +249,7 @@ type Props = {
   exampleProps: $Shape<React.ElementConfig<typeof SectionList>>,
   onTest?: ?() => void,
   testLabel?: ?string,
-  testOutput: ?string,
+  testOutput?: ?string,
 };
 
 const SectionListExampleWithForwardedRef = React.forwardRef(
@@ -252,18 +259,20 @@ const SectionListExampleWithForwardedRef = React.forwardRef(
   ): React.Node {
     return (
       <View>
-        <View testID="test_container" style={styles.testContainer}>
-          <Text numberOfLines={1} testID="output">
-            {props.testOutput}
-          </Text>
-          {props.onTest != null ? (
-            <Button
-              testID="start_test"
-              onPress={props.onTest}
-              title={props.testLabel ?? 'Test'}
-            />
-          ) : null}
-        </View>
+        {props.testOutput != null ? (
+          <View testID="test_container" style={styles.testContainer}>
+            <Text numberOfLines={1} testID="output">
+              {props.testOutput}
+            </Text>
+            {props.onTest != null ? (
+              <Button
+                testID="start_test"
+                onPress={props.onTest}
+                title={props.testLabel ?? 'Test'}
+              />
+            ) : null}
+          </View>
+        ) : null}
         <SectionList
           ref={ref}
           testID="section_list"
