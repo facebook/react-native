@@ -498,7 +498,6 @@ public class SurfaceMountingManager {
       view =
           viewManager.createView(
               reactTag, mThemedReactContext, propsDiffMap, stateWrapper, mJSResponderHandler);
-      view.setId(reactTag);
     }
 
     ViewState viewState = new ViewState(reactTag, view, viewManager);

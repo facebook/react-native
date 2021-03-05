@@ -282,14 +282,6 @@ public class NativeViewHierarchyManager {
           viewManager.createView(tag, themedContext, initialProps, null, mJSResponderHandler);
       mTagsToViews.put(tag, view);
       mTagsToViewManagers.put(tag, viewManager);
-
-      // Use android View id field to store React tag. This is possible since we don't inflate
-      // React views from layout xmls. Thus it is easier to just reuse that field instead of
-      // creating another (potentially much more expensive) mapping from view to React tag
-      view.setId(tag);
-      if (initialProps != null) {
-        viewManager.updateProperties(view, initialProps);
-      }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
     }
