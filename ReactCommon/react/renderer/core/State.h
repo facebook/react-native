@@ -24,7 +24,6 @@ namespace react {
 class State {
  public:
   using Shared = std::shared_ptr<const State>;
-  using Weak = std::weak_ptr<const State>;
 
   static size_t constexpr initialRevisionValue = 1;
 

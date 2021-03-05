@@ -32,7 +32,7 @@ class StateWrapperImpl : public jni::HybridClass<StateWrapperImpl> {
       jni::alias_ref<jobject> self,
       int callbackRefId);
 
-  State::Weak state_;
+  State::Shared state_;
 
  private:
   jni::alias_ref<StateWrapperImpl::jhybriddata> jhybridobject_;
