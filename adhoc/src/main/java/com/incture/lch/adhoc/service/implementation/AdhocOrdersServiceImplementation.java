@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import com.incture.lch.adhoc.dto.AdhocOrderDto;
+import com.incture.lch.adhoc.dto.AdhocOrderWorkflowDto;
 import com.incture.lch.adhoc.dto.AdhocRequestDto;
 import com.incture.lch.adhoc.dto.LkCountriesDto;
 import com.incture.lch.adhoc.dto.LkDivisionsDto;
@@ -183,6 +184,18 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 	public List<AdhocOrderDto> getKpi(int days,AdhocRequestDto adhocRequestDto) {
 		return adhocOrdersRepository.getKpi(days,adhocRequestDto);
 	}
+
+
+
+	@Override
+	public String updateWorflowDetails(AdhocOrderWorkflowDto workflowDto) 
+	{
+		return adhocOrdersRepository.updateWorflowDetails(workflowDto);
+	
+		
+	}
+	
+	
 
 
 }

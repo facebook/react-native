@@ -28,6 +28,7 @@ import com.incture.lch.adhoc.custom.dto.ResponseMessage;
 import com.incture.lch.adhoc.dao.AdhocApprovalRuleDao;
 import com.incture.lch.adhoc.dto.AdhocApprovalRuleDto;
 import com.incture.lch.adhoc.dto.AdhocOrderDto;
+import com.incture.lch.adhoc.dto.AdhocOrderWorkflowDto;
 import com.incture.lch.adhoc.dto.AdhocRequestDto;
 import com.incture.lch.adhoc.dto.LkCountriesDto;
 import com.incture.lch.adhoc.dto.LkDivisionsDto;
@@ -227,4 +228,11 @@ public class AdhocOrdersController {
 				.contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(file);
 	}
 
+	
+	@RequestMapping(value = "/updateWorkflowDetails", method = RequestMethod.POST)
+	public String updateWorflowDetails(@RequestBody AdhocOrderWorkflowDto workflowDto)
+	{
+		System.out.println(workflowDto.getAdhocOrderId());
+		return adhocOrdersService.updateWorflowDetails(workflowDto);
+	}
 }

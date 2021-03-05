@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import com.incture.lch.adhoc.dto.AdhocOrderDto;
+import com.incture.lch.adhoc.dto.AdhocOrderWorkflowDto;
 import com.incture.lch.adhoc.dto.AdhocRequestDto;
 import com.incture.lch.adhoc.dto.LkCountriesDto;
 import com.incture.lch.adhoc.dto.LkDivisionsDto;
@@ -56,6 +57,8 @@ public interface AdhocOrdersService {
 	public Map<String, Object> getLoggedInUser(Jwt token);
 
 	public PartNumberDescDto getByPartNumber(PartNumberDescDto partNum);
+	
+	public String updateWorflowDetails(AdhocOrderWorkflowDto workflowDto);
 	
 	
 

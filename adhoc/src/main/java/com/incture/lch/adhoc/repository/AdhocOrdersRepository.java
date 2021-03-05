@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.incture.lch.adhoc.dto.AdhocOrderDto;
+import com.incture.lch.adhoc.dto.AdhocOrderWorkflowDto;
 import com.incture.lch.adhoc.dto.AdhocRequestDto;
 import com.incture.lch.adhoc.dto.LkCountriesDto;
 import com.incture.lch.adhoc.dto.LkDivisionsDto;
@@ -51,5 +52,7 @@ public interface AdhocOrdersRepository {
 	public List<LkShipperDetailsDto> getAllShipperDetails();
 
 	public PartNumberDescDto getByPartNumber(PartNumberDescDto partNum);
+	
+	public String updateWorflowDetails(AdhocOrderWorkflowDto workflowDto);
 
 }

@@ -24,10 +24,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
+import com.incture.lch.adhoc.dao.AdhocOrderWorkflowDao;
 import com.incture.lch.adhoc.dao.LkCountriesDao;
 import com.incture.lch.adhoc.dao.LkDivisionDao;
 import com.incture.lch.adhoc.dao.LkShipperDetailsDao;
 import com.incture.lch.adhoc.dto.AdhocOrderDto;
+import com.incture.lch.adhoc.dto.AdhocOrderWorkflowDto;
 import com.incture.lch.adhoc.dto.AdhocRequestDto;
 import com.incture.lch.adhoc.dto.LkCountriesDto;
 import com.incture.lch.adhoc.dto.LkDivisionsDto;
@@ -36,6 +38,7 @@ import com.incture.lch.adhoc.dto.PartNumberDescDto;
 import com.incture.lch.adhoc.dto.ReasonCodeDto;
 import com.incture.lch.adhoc.dto.ResponseDto;
 import com.incture.lch.adhoc.dto.WorkflowInputDto;
+import com.incture.lch.adhoc.entity.AdhocOrderWorkflow;
 import com.incture.lch.adhoc.entity.AdhocOrders;
 import com.incture.lch.adhoc.entity.LkCountries;
 import com.incture.lch.adhoc.entity.LkDivisions;
@@ -56,12 +59,17 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 	public void setSessionFactory(SessionFactory sf) {
 		this.sessionFactory = sf;
 	}
+	
+	
 
 	@Autowired
 	GetReferenceData getReferenceData;
 
 	@Autowired
 	private LkShipperDetailsDao lkShipperDetailsDao;
+	
+	@Autowired
+	private AdhocOrderWorkflowDao adhocOrderWorkflowDao;
 
 	@Autowired
 	private LkDivisionDao lkDivDao;
@@ -106,6 +114,7 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 	 * 
 	 * }
 	 */
+	
 
 	public AdhocOrderDto exportAdhocOrdersDto(AdhocOrders adhocOrders) {
 		AdhocOrderDto AdhocOrderDto = new AdhocOrderDto();
@@ -350,6 +359,7 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		adhocOrders.setIsSaved(AdhocOrderDto.getIsSaved());
 		return adhocOrders;
 	}
+	
 
 	public ReasonCodeDto exportReasonCode(ReasonCode reasonCode) {
 		ReasonCodeDto reasonCodeDto = new ReasonCodeDto();
@@ -954,4 +964,57 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 
 	}
 
+	@SuppressWarnings({ "deprecation", "unchecked" })
+	public String updateWorflowDetails(AdhocOrderWorkflowDto workflowDto)
+	{
+		System.out.println("Yuhooo"  + workflowDto.getAdhocOrderId());
+
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		List<AdhocOrders> adhocOrder = new ArrayList<AdhocOrders>();
+		Criteria criteria = session.createCriteria(AdhocOrders.class);
+		criteria.add(Restrictions.eq("fwoNum", workflowDto.getAdhocOrderId()));
+		adhocOrder = criteria.list();
+
+		/*if(adhocOrder != null)
+		{
+			System.out.println("Not fetching any data");
+		}*/
+		System.out.println(adhocOrder.size());
+		for(AdhocOrders a: adhocOrder)
+		{
+
+		System.out.println(a.getFwoNum());
+		a.setUpdatedBy(workflowDto.getUpdatedBy());
+		a.setUpdatedDate((workflowDto.getUpdatedDate()));
+		a.setStatus(workflowDto.getStatus());
+		a.setPendingWith(workflowDto.getPendingWith());
+		session.saveOrUpdate(a);
+		}
+		List<AdhocOrderWorkflowDto> adhocOrderWorkflowDto= new ArrayList<AdhocOrderWorkflowDto>();
+		
+		/*Criteria criteria2 = session.createCriteria(AdhocOrderWorkflow.class);
+		criteria2.add(Restrictions.eq("adhocOrderId", workflowDto.getAdhocOrderId()));
+
+		adhocOrderWorkflowDto=criteria2.list();
+		
+		System.out.println(adhocOrderWorkflowDto.size());
+		for(AdhocOrderWorkflowDto a: adhocOrderWorkflowDto)
+		{			session.saveOrUpdate(adhocOrderWorkflowDao.importAdhocWorkflow(a));
+	
+		}*/
+	session.save(adhocOrderWorkflowDao.importAdhocWorkflow(workflowDto));
+		
+		
+			
+		
+		
+		session.flush();
+		session.clear();
+		tx.commit();
+		session.close();
+
+		System.out.println(workflowDto.getAdhocOrderId());
+		return workflowDto.getAdhocOrderId();
+	}
 }

@@ -71,4 +71,5 @@ public class AdhocOrderWorkflowDao {
 		session.close();
 	}
 
+	
 }
