@@ -51,6 +51,13 @@
 			<version>2.5.49</version>
 		</dependency>
 		<dependency>
+			<groupId>com.sap.cloud.sdk.services</groupId>
+			<artifactId>scp-workflow-cf</artifactId>
+			<!-- omit version identifier if SDK BOM is used -->
+			<!-- use at least version 3.19.1 -->
+			<version>3.26.0</version>
+		</dependency>
+		<dependency>
 			<groupId>com.sap.hana.cloud</groupId>
 			<artifactId>spring-cloud-cloudfoundry-hana-service-connector</artifactId>
 			<version>1.0.4.RELEASE</version>
@@ -70,6 +77,7 @@
 			<artifactId>poi</artifactId>
 			<version>4.1.2</version>
 		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.sap.hana.cloud/spring-cloud-sap-core -->
 		<dependency>
 			<groupId>com.sap.hana.cloud</groupId>
@@ -85,7 +93,22 @@
 			<version>[3.71.8,4.0.0)</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>4.1.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.sun.jersey.contribs/jersey-multipart -->
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-multipart</artifactId>
+			<version>1.19.4</version>
+		</dependency>
+
+
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

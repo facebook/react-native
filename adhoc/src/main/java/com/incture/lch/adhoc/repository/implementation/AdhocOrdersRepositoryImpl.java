@@ -35,6 +35,7 @@ import com.incture.lch.adhoc.dto.LkShipperDetailsDto;
 import com.incture.lch.adhoc.dto.PartNumberDescDto;
 import com.incture.lch.adhoc.dto.ReasonCodeDto;
 import com.incture.lch.adhoc.dto.ResponseDto;
+import com.incture.lch.adhoc.dto.WorkflowInputDto;
 import com.incture.lch.adhoc.entity.AdhocOrders;
 import com.incture.lch.adhoc.entity.LkCountries;
 import com.incture.lch.adhoc.entity.LkDivisions;
@@ -43,6 +44,7 @@ import com.incture.lch.adhoc.entity.ReasonCode;
 import com.incture.lch.adhoc.repository.AdhocOrdersRepository;
 import com.incture.lch.adhoc.util.GetReferenceData;
 import com.incture.lch.adhoc.util.ServiceUtil;
+import com.incture.lch.adhoc.workflow.service.WorkFlowServiceLocal;
 
 @Repository
 public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
@@ -69,6 +71,9 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 
 	@Autowired
 	private LkShipperDetailsDao lkShipperDao;
+
+	@Autowired
+	private WorkFlowServiceLocal wfService;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdhocOrdersRepositoryImpl.class);
 
@@ -387,65 +392,65 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		List<AdhocOrders> adhocOrders = new ArrayList<>();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
-		//StringBuilder queryStr = new StringBuilder();
-		//queryStr.append("select ao from AdhocOrders ao where ao.isSaved = true ");
+		// StringBuilder queryStr = new StringBuilder();
+		// queryStr.append("select ao from AdhocOrders ao where ao.isSaved =
+		// true ");
 
 		Criteria crit = session.createCriteria(AdhocOrders.class);
 		crit.add(Restrictions.eq("isSaved", true));
-		crit.add(Restrictions.like("fwoNum","TEM%",MatchMode.ANYWHERE));
+		crit.add(Restrictions.like("fwoNum", "TEM%", MatchMode.ANYWHERE));
 		// queryStr.append("");
 
 		if (adhocRequestDto.getAdhocOrderId() != null && !(adhocRequestDto.getAdhocOrderId().equals(""))) {
-			//queryStr.append(" AND ao.fwoNum=:fwoNum");
-			crit.add(Restrictions.eq("adhocOrderId",adhocRequestDto.getAdhocOrderId()));
+			// queryStr.append(" AND ao.fwoNum=:fwoNum");
+			crit.add(Restrictions.eq("adhocOrderId", adhocRequestDto.getAdhocOrderId()));
 
 		}
 		if ((adhocRequestDto.getFromDate() != null && !(adhocRequestDto.getFromDate().equals("")))
 				&& (adhocRequestDto.getToDate() != null) && !(adhocRequestDto.getToDate().equals(""))) {
-			//queryStr.append(" AND ao.createdDate BETWEEN :fromDate AND :toDate");
-			 crit.add(Restrictions.between("createdDate",adhocRequestDto.getFromDate(), adhocRequestDto.getToDate()));
+			// queryStr.append(" AND ao.createdDate BETWEEN :fromDate AND
+			// :toDate");
+			crit.add(Restrictions.between("createdDate", adhocRequestDto.getFromDate(), adhocRequestDto.getToDate()));
 		}
 		if (adhocRequestDto.getCreatedBy() != null && !(adhocRequestDto.getCreatedBy().equals(""))) {
-			//queryStr.append(" AND ao.userId=:userId");
-			 crit.add(Restrictions.eq("userId",adhocRequestDto.getCreatedBy()));
+			// queryStr.append(" AND ao.userId=:userId");
+			crit.add(Restrictions.eq("userId", adhocRequestDto.getCreatedBy()));
 		}
 		if (adhocRequestDto.getPartNo() != null && !(adhocRequestDto.getPartNo().equals(""))) {
-			//queryStr.append(" AND ao.partNum=:partNum");
-			 crit.add(Restrictions.eq("partNo", adhocRequestDto.getPartNo()));
+			// queryStr.append(" AND ao.partNum=:partNum");
+			crit.add(Restrictions.eq("partNo", adhocRequestDto.getPartNo()));
 		}
 
-		adhocOrders= crit.list();
-		//Query query = session.createQuery(queryStr.toString());
-/*
-		if (adhocRequestDto.getAdhocOrderId() != null && !(adhocRequestDto.getAdhocOrderId().equals(""))) {
-			query.setParameter("fwoNum", adhocRequestDto.getAdhocOrderId());
-		}
-		if ((adhocRequestDto.getFromDate() != null && !(adhocRequestDto.getFromDate().equals("")))
-				&& (adhocRequestDto.getToDate() != null) && !(adhocRequestDto.getToDate().equals(""))) {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			try {
-				Date d1 = (Date) sdf.parse(adhocRequestDto.getFromDate());
-				Date d2 = (Date) sdf.parse(adhocRequestDto.getToDate());
-				query.setParameter("fromDate", d1);
-				query.setParameter("toDate", d2);
-			} catch (ParseException e) {
-				LOGGER.error("Exception On Date format:" + e.getMessage());
-			}
-
-		}
-		if (adhocRequestDto.getCreatedBy() != null && !(adhocRequestDto.getCreatedBy().equals(""))) {
-			query.setParameter("userId", adhocRequestDto.getCreatedBy());
-		}
-		if (adhocRequestDto.getPartNo() != null && !(adhocRequestDto.getPartNo().equals(""))) {
-			query.setParameter("partNum", adhocRequestDto.getPartNo());
-		}
-*/
-		//System.out.println(adhocRequestDto.getCreatedBy());
+		adhocOrders = crit.list();
+		// Query query = session.createQuery(queryStr.toString());
+		/*
+		 * if (adhocRequestDto.getAdhocOrderId() != null &&
+		 * !(adhocRequestDto.getAdhocOrderId().equals(""))) {
+		 * query.setParameter("fwoNum", adhocRequestDto.getAdhocOrderId()); } if
+		 * ((adhocRequestDto.getFromDate() != null &&
+		 * !(adhocRequestDto.getFromDate().equals(""))) &&
+		 * (adhocRequestDto.getToDate() != null) &&
+		 * !(adhocRequestDto.getToDate().equals(""))) { SimpleDateFormat sdf =
+		 * new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); try { Date d1 = (Date)
+		 * sdf.parse(adhocRequestDto.getFromDate()); Date d2 = (Date)
+		 * sdf.parse(adhocRequestDto.getToDate());
+		 * query.setParameter("fromDate", d1); query.setParameter("toDate", d2);
+		 * } catch (ParseException e) { LOGGER.error("Exception On Date format:"
+		 * + e.getMessage()); }
+		 * 
+		 * } if (adhocRequestDto.getCreatedBy() != null &&
+		 * !(adhocRequestDto.getCreatedBy().equals(""))) {
+		 * query.setParameter("userId", adhocRequestDto.getCreatedBy()); } if
+		 * (adhocRequestDto.getPartNo() != null &&
+		 * !(adhocRequestDto.getPartNo().equals(""))) {
+		 * query.setParameter("partNum", adhocRequestDto.getPartNo()); }
+		 */
+		// System.out.println(adhocRequestDto.getCreatedBy());
 
 		List<AdhocOrderDto> list = new ArrayList<>();
-		//@SuppressWarnings("unchecked")
-		//List<AdhocOrders> objectsList = (List<AdhocOrders>) query.list();
-//		System.out.println(objectsList.size());
+		// @SuppressWarnings("unchecked")
+		// List<AdhocOrders> objectsList = (List<AdhocOrders>) query.list();
+		// System.out.println(objectsList.size());
 
 		for (AdhocOrders ao : adhocOrders) {
 			list.add(exportAdhocOrdersDto(ao));
@@ -585,8 +590,17 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		responseDto.setMessage("Save success");
 		responseDto.setStatus("SUCCESS");
 		responseDto.setCode("00");
+		WorkflowInputDto workFlowDto = new WorkflowInputDto();
+		workFlowDto.setAdhocType(adhocOrders.getAdhocType());
+		workFlowDto.setAdhocInfo(exportAdhocOrdersDto(adhocOrders));
+		workFlowDto.setRequestedBy(adhocOrders.getCreatedBy() + " " + adhocOrders.getUserName());
+		workFlowDto.setManager(adhocOrders.getUserId());
+		workFlowDto.setPlanner("Bindhu.Sivakumar@incture.com");
+		wfService.triggerWorkflow(workFlowDto);
+
 		session.flush();
 		session.clear();
+
 		tx.commit();
 		session.close();
 		return responseDto;
@@ -645,16 +659,16 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 				// NO ACTION NEEDED
 			}
 		} else {
-			
-			/*String  adhocOrderId = getReferenceData.getNextSeqNumberAdhoc(
-					getReferenceData.executeAdhoc("TEM" + AdhocOrderDto.getShipperName().substring(0, 2)), 5,
+
+			/*
+			 * String adhocOrderId = getReferenceData.getNextSeqNumberAdhoc(
+			 * getReferenceData.executeAdhoc("TEM" +
+			 * AdhocOrderDto.getShipperName().substring(0, 2)), 5,
+			 * sessionFactory);
+			 */
+			String adhocOrderId = getReferenceData.getNextSeqNumberAdhoc(getReferenceData.executeAdhoc("TEM"), 5,
 					sessionFactory);
-			*/
-			String  adhocOrderId = getReferenceData.getNextSeqNumberAdhoc(
-					getReferenceData.executeAdhoc("TEM"), 5,
-					sessionFactory);
-			
-			
+
 			if (adhocOrders.getFwoNum() == null || adhocOrders.getFwoNum().equals("")) {
 				adhocOrders.setFwoNum(adhocOrderId);
 			}
@@ -697,7 +711,6 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		Transaction tx = session.beginTransaction();
 		queryString.append("SELECT ao FROM AdhocOrders ao WHERE ao.fwoNum = ao.fwoNum AND ao.fwoNum like 'ADH%'");
 
-		
 		if (adhocRequestDto.getAdhocOrderId() != null && !(adhocRequestDto.getAdhocOrderId().equals(""))) {
 			queryString.append(" AND ao.fwoNum=:fwoNum");
 		}
