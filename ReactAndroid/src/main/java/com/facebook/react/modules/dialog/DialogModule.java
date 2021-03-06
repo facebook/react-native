@@ -156,7 +156,7 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
 
   @Override
   public void initialize() {
-    getReactApplicationContext().addLifecycleEventListener(this);
+    getReactApplicationContext().addLifecycleEventListenerAndCheckState(this);
   }
 
   @Override
@@ -239,5 +239,15 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
       return null;
     }
     return new FragmentManagerHelper(((FragmentActivity) activity).getSupportFragmentManager());
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
   }
 }
