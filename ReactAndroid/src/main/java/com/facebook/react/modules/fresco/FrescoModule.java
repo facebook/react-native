@@ -105,7 +105,7 @@ public class FrescoModule extends ReactContextBaseJavaModule
   @Override
   public void initialize() {
     super.initialize();
-    getReactApplicationContext().addLifecycleEventListener(this);
+    getReactApplicationContext().addLifecycleEventListenerAndCheckState(this);
     if (!hasBeenInitialized()) {
       if (mConfig == null) {
         mConfig = getDefaultConfig(getReactApplicationContext());
@@ -193,5 +193,15 @@ public class FrescoModule extends ReactContextBaseJavaModule
       mImagePipeline = Fresco.getImagePipeline();
     }
     return mImagePipeline;
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
   }
 }
