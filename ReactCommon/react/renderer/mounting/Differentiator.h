@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook {

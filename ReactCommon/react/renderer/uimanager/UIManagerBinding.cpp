@@ -7,10 +7,11 @@
 
 #include "UIManagerBinding.h"
 
-#include <react/renderer/debug/SystraceSection.h>
-
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
+#include <react/debug/react_native_assert.h>
+#include <react/renderer/core/LayoutableShadowNode.h>
+#include <react/renderer/debug/SystraceSection.h>
 
 namespace facebook {
 namespace react {
@@ -29,7 +30,7 @@ static jsi::Object getModule(
   if (!moduleAsValue.isObject()) {
     LOG(ERROR) << "getModule of " << moduleName << " is not an object";
   }
-  assert(moduleAsValue.isObject());
+  react_native_assert(moduleAsValue.isObject());
   return moduleAsValue.asObject(runtime);
 }
 
@@ -51,6 +52,20 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
 
   // The global namespace already has an instance of the binding;
   // we need to return that.
+  auto uiManagerObject = uiManagerValue.asObject(runtime);
+  return uiManagerObject.getHostObject<UIManagerBinding>(runtime);
+}
+
+std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
+    jsi::Runtime &runtime) {
+  auto uiManagerModuleName = "nativeFabricUIManager";
+
+  auto uiManagerValue =
+      runtime.global().getProperty(runtime, uiManagerModuleName);
+  if (uiManagerValue.isUndefined()) {
+    return nullptr;
+  }
+
   auto uiManagerObject = uiManagerValue.asObject(runtime);
   return uiManagerObject.getHostObject<UIManagerBinding>(runtime);
 }
@@ -156,7 +171,7 @@ void UIManagerBinding::dispatchEvent(
       if (!payload.isObject()) {
         LOG(ERROR) << "payload for dispatchEvent is not an object: " << eventTarget->getTag();
       }
-      assert(payload.isObject());
+      react_native_assert(payload.isObject());
       payload.asObject(runtime).setProperty(runtime, "target", eventTarget->getTag());
       return instanceHandle;
     }()
@@ -217,18 +232,24 @@ jsi::Value UIManagerBinding::get(
         name,
         5,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
+            size_t count) noexcept -> jsi::Value {
+          auto eventTarget =
+              eventTargetFromValue(runtime, arguments[4], arguments[0]);
+          if (!eventTarget) {
+            react_native_assert(false);
+            return jsi::Value::undefined();
+          }
           return valueFromShadowNode(
               runtime,
               uiManager->createNode(
-                  tagFromValue(runtime, arguments[0]),
+                  tagFromValue(arguments[0]),
                   stringFromValue(runtime, arguments[1]),
                   surfaceIdFromValue(runtime, arguments[2]),
                   RawProps(runtime, arguments[3]),
-                  eventTargetFromValue(runtime, arguments[4], arguments[0])));
+                  eventTarget));
         });
   }
 
@@ -239,27 +260,27 @@ jsi::Value UIManagerBinding::get(
         name,
         1,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
+            size_t count) noexcept -> jsi::Value {
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(shadowNodeFromValue(runtime, arguments[0])));
         });
   }
 
-  if (methodName == "setJSResponder") {
+  if (methodName == "setIsJSResponder") {
     return jsi::Function::createFromHostFunction(
         runtime,
         name,
         2,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
-          uiManager->setJSResponder(
+            size_t count) noexcept -> jsi::Value {
+          uiManager->setIsJSResponder(
               shadowNodeFromValue(runtime, arguments[0]),
               arguments[1].getBool());
 
@@ -273,10 +294,10 @@ jsi::Value UIManagerBinding::get(
         name,
         2,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
+            size_t count) noexcept -> jsi::Value {
           auto node = shadowNodeFromValue(runtime, arguments[0]);
           auto locationX = (Float)arguments[1].getNumber();
           auto locationY = (Float)arguments[2].getNumber();
@@ -297,22 +318,6 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "clearJSResponder") {
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        0,
-        [uiManager](
-            jsi::Runtime & runtime,
-            jsi::Value const &thisValue,
-            jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
-          uiManager->clearJSResponder();
-
-          return jsi::Value::undefined();
-        });
-  }
-
   // Semantic: Clones the node with *same* props and *empty* children.
   if (methodName == "cloneNodeWithNewChildren") {
     return jsi::Function::createFromHostFunction(
@@ -320,10 +325,10 @@ jsi::Value UIManagerBinding::get(
         name,
         1,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
+            size_t count) noexcept -> jsi::Value {
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
@@ -339,10 +344,10 @@ jsi::Value UIManagerBinding::get(
         name,
         2,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
+            size_t count) noexcept -> jsi::Value {
           auto const &rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
@@ -360,10 +365,10 @@ jsi::Value UIManagerBinding::get(
         name,
         2,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
+            size_t count) noexcept -> jsi::Value {
           auto const &rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
@@ -380,10 +385,10 @@ jsi::Value UIManagerBinding::get(
         name,
         2,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
+            size_t count) noexcept -> jsi::Value {
           uiManager->appendChild(
               shadowNodeFromValue(runtime, arguments[0]),
               shadowNodeFromValue(runtime, arguments[1]));
@@ -396,10 +401,10 @@ jsi::Value UIManagerBinding::get(
         runtime,
         name,
         1,
-        [](jsi::Runtime & runtime,
+        [](jsi::Runtime &runtime,
            jsi::Value const &thisValue,
            jsi::Value const *arguments,
-           size_t count) noexcept->jsi::Value {
+           size_t count) noexcept -> jsi::Value {
           auto shadowNodeList =
               std::make_shared<SharedShadowNodeList>(SharedShadowNodeList({}));
           return valueFromShadowNodeList(runtime, shadowNodeList);
@@ -411,10 +416,10 @@ jsi::Value UIManagerBinding::get(
         runtime,
         name,
         2,
-        [](jsi::Runtime & runtime,
+        [](jsi::Runtime &runtime,
            jsi::Value const &thisValue,
            jsi::Value const *arguments,
-           size_t count) noexcept->jsi::Value {
+           size_t count) noexcept -> jsi::Value {
           auto shadowNodeList = shadowNodeListFromValue(runtime, arguments[0]);
           auto shadowNode = shadowNodeFromValue(runtime, arguments[1]);
           shadowNodeList->push_back(shadowNode);
@@ -430,37 +435,34 @@ jsi::Value UIManagerBinding::get(
           runtime,
           name,
           2,
-          [ uiManager, sharedUIManager = uiManager_ ](
-              jsi::Runtime & runtime,
+          [sharedUIManager = uiManager_](
+              jsi::Runtime &runtime,
               jsi::Value const &thisValue,
               jsi::Value const *arguments,
-              size_t count) noexcept->jsi::Value {
+              size_t count) noexcept -> jsi::Value {
             auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
-            auto shadowNodeList =
-                shadowNodeListFromValue(runtime, arguments[1]);
-
-            if (sharedUIManager->backgroundExecutor_) {
-              sharedUIManager->completeRootEventCounter_ += 1;
-              sharedUIManager->backgroundExecutor_(
-                  [sharedUIManager,
-                   surfaceId,
-                   shadowNodeList,
-                   eventCount =
-                       sharedUIManager->completeRootEventCounter_.load()] {
-                    auto shouldCancel = [eventCount,
-                                         sharedUIManager]() -> bool {
-                      // If `eventCounter_` was incremented, another
-                      // `completeSurface` call has been scheduled and current
-                      // `completeSurface` should be cancelled.
-                      return sharedUIManager->completeRootEventCounter_ >
-                          eventCount;
-                    };
+            auto weakShadowNodeList =
+                weakShadowNodeListFromValue(runtime, arguments[1]);
+            static std::atomic_uint_fast8_t completeRootEventCounter{0};
+            static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
+            completeRootEventCounter += 1;
+            mostRecentSurfaceId = surfaceId;
+            sharedUIManager->backgroundExecutor_(
+                [=, eventCount = completeRootEventCounter.load()] {
+                  auto shouldYield = [=]() -> bool {
+                    // If `completeRootEventCounter` was incremented, another
+                    // `completeSurface` call has been scheduled and current
+                    // `completeSurface` should yield to it.
+                    return completeRootEventCounter > eventCount &&
+                        mostRecentSurfaceId == surfaceId;
+                  };
+                  auto shadowNodeList =
+                      shadowNodeListFromWeakList(weakShadowNodeList);
+                  if (shadowNodeList) {
                     sharedUIManager->completeSurface(
-                        surfaceId, shadowNodeList, {true, shouldCancel});
-                  });
-            } else {
-              uiManager->completeSurface(surfaceId, shadowNodeList, {true, {}});
-            }
+                        surfaceId, shadowNodeList, {true, shouldYield});
+                  }
+                });
 
             return jsi::Value::undefined();
           });
@@ -472,10 +474,10 @@ jsi::Value UIManagerBinding::get(
           name,
           2,
           [uiManager](
-              jsi::Runtime & runtime,
+              jsi::Runtime &runtime,
               jsi::Value const &thisValue,
               jsi::Value const *arguments,
-              size_t count) noexcept->jsi::Value {
+              size_t count) noexcept -> jsi::Value {
             uiManager->completeSurface(
                 surfaceIdFromValue(runtime, arguments[0]),
                 shadowNodeListFromValue(runtime, arguments[1]),
@@ -492,10 +494,10 @@ jsi::Value UIManagerBinding::get(
         name,
         1,
         [this](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
+            size_t count) noexcept -> jsi::Value {
           auto eventHandler =
               arguments[0].getObject(runtime).getFunction(runtime);
           eventHandler_ =
@@ -510,10 +512,10 @@ jsi::Value UIManagerBinding::get(
         name,
         2,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
+            size_t count) noexcept -> jsi::Value {
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               shadowNodeFromValue(runtime, arguments[1]).get(),
@@ -534,15 +536,17 @@ jsi::Value UIManagerBinding::get(
         name,
         3,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
-          uiManager->dispatchCommand(
-              shadowNodeFromValue(runtime, arguments[0]),
-              stringFromValue(runtime, arguments[1]),
-              commandArgsFromValue(runtime, arguments[2]));
-
+            size_t count) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+          if (shadowNode) {
+            uiManager->dispatchCommand(
+                shadowNodeFromValue(runtime, arguments[0]),
+                stringFromValue(runtime, arguments[1]),
+                commandArgsFromValue(runtime, arguments[2]));
+          }
           return jsi::Value::undefined();
         });
   }
@@ -554,10 +558,10 @@ jsi::Value UIManagerBinding::get(
         name,
         4,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
+            size_t count) noexcept -> jsi::Value {
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               shadowNodeFromValue(runtime, arguments[1]).get(),
@@ -590,14 +594,13 @@ jsi::Value UIManagerBinding::get(
         name,
         2,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
+            size_t count) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNodeFromValue(runtime, arguments[0]),
-              nullptr,
-              {/* .includeTransform = */ true});
+              *shadowNode, nullptr, {/* .includeTransform = */ true});
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
 
@@ -605,12 +608,20 @@ jsi::Value UIManagerBinding::get(
             onSuccessFunction.call(runtime, {0, 0, 0, 0, 0, 0});
             return jsi::Value::undefined();
           }
+          auto newestCloneOfShadowNode =
+              uiManager->getNewestCloneOfShadowNode(*shadowNode);
+
+          auto layoutableShadowNode = traitCast<LayoutableShadowNode const *>(
+              newestCloneOfShadowNode.get());
+          Point originRelativeToParent = layoutableShadowNode
+              ? layoutableShadowNode->getLayoutMetrics().frame.origin
+              : Point();
 
           auto frame = layoutMetrics.frame;
           onSuccessFunction.call(
               runtime,
-              {0,
-               0,
+              {jsi::Value{runtime, (double)originRelativeToParent.x},
+               jsi::Value{runtime, (double)originRelativeToParent.y},
                jsi::Value{runtime, (double)frame.size.width},
                jsi::Value{runtime, (double)frame.size.height},
                jsi::Value{runtime, (double)frame.origin.x},
@@ -625,10 +636,10 @@ jsi::Value UIManagerBinding::get(
         name,
         2,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
+            size_t count) noexcept -> jsi::Value {
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               nullptr,
@@ -654,16 +665,34 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "sendAccessibilityEvent") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const &thisValue,
+            jsi::Value const *arguments,
+            size_t count) noexcept -> jsi::Value {
+          uiManager->sendAccessibilityEvent(
+              shadowNodeFromValue(runtime, arguments[0]),
+              stringFromValue(runtime, arguments[1]));
+
+          return jsi::Value::undefined();
+        });
+  }
+
   if (methodName == "configureNextLayoutAnimation") {
     return jsi::Function::createFromHostFunction(
         runtime,
         name,
         3,
         [uiManager](
-            jsi::Runtime & runtime,
+            jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
+            size_t count) noexcept -> jsi::Value {
           uiManager->configureNextLayoutAnimation(
               runtime,
               // TODO: pass in JSI value instead of folly::dynamic to RawValue

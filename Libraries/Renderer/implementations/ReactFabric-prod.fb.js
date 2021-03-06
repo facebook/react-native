@@ -7702,6 +7702,18 @@ exports.render = function(element, containerTag, callback) {
   else element = null;
   return element;
 };
+exports.sendAccessibilityEvent = function(handle, eventType) {
+  null != handle._nativeTag &&
+    (handle._internalInstanceHandle
+      ? nativeFabricUIManager.sendAccessibilityEvent(
+          handle._internalInstanceHandle.stateNode.node,
+          eventType
+        )
+      : ReactNativePrivateInterface.legacySendAccessibilityEvent(
+          handle._nativeTag,
+          eventType
+        ));
+};
 exports.stopSurface = function(containerTag) {
   var root = roots.get(containerTag);
   root &&

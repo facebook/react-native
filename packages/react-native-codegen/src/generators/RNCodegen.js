@@ -44,7 +44,6 @@ type Options = $ReadOnly<{
   libraryName: string,
   schema: SchemaType,
   outputDirectory: string,
-  moduleSpecName: string,
   packageName?: string, // Some platforms have a notion of package, which should be configurable.
 }>;
 
@@ -77,12 +76,15 @@ const GENERATORS = {
   ],
   // TODO: Refactor this to consolidate various C++ output variation instead of forking per platform.
   componentsAndroid: [
-    // TODO: enable C++ output below:
-    // generateComponentDescriptorH.generate,
-    // generateEventEmitterCpp.generate,
-    // generateEventEmitterH.generate,
-    // generatePropsCpp.generate,
-    // generatePropsH.generate,
+    // JNI/C++ files
+    generateComponentDescriptorH.generate,
+    generateEventEmitterCpp.generate,
+    generateEventEmitterH.generate,
+    generatePropsCpp.generate,
+    generatePropsH.generate,
+    generateShadowNodeCpp.generate,
+    generateShadowNodeH.generate,
+    // Java files
     generatePropsJavaInterface.generate,
     generatePropsJavaDelegate.generate,
   ],
@@ -93,6 +95,8 @@ const GENERATORS = {
     generateComponentHObjCpp.generate,
     generatePropsCpp.generate,
     generatePropsH.generate,
+    generateShadowNodeCpp.generate,
+    generateShadowNodeH.generate,
   ],
   modulesAndroid: [
     GenerateModuleJniCpp.generate,
@@ -148,13 +152,7 @@ function checkFilesForChanges(
 
 module.exports = {
   generate(
-    {
-      libraryName,
-      schema,
-      outputDirectory,
-      moduleSpecName,
-      packageName,
-    }: Options,
+    {libraryName, schema, outputDirectory, packageName}: Options,
     {generators, test}: Config,
   ): boolean {
     schemaValidator.validate(schema);
@@ -162,9 +160,7 @@ module.exports = {
     const generatedFiles = [];
     for (const name of generators) {
       for (const generator of GENERATORS[name]) {
-        generatedFiles.push(
-          ...generator(libraryName, schema, moduleSpecName, packageName),
-        );
+        generatedFiles.push(...generator(libraryName, schema, packageName));
       }
     }
 

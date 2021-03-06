@@ -26,14 +26,6 @@ public class ReactFeatureFlags {
   /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
   public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
 
-  /** Enable TurboModule JS Codegen. */
-  public static volatile boolean useTurboModuleJSCodegen = false;
-
-  /**
-   * Enable the fix to validate the TurboReactPackage's module info before resolving a TurboModule.
-   */
-  public static volatile boolean enableTurboModulePackageInfoValidation = false;
-
   /*
    * This feature flag enables logs for Fabric
    */
@@ -62,24 +54,12 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
-  /** Use lock-free data structures for Fabric MountItems. */
-  public static boolean enableLockFreeMountInstructions = false;
-
-  /** Temporary flag for FB-internal workaround for RN:Litho interop in non-Fabric RN. */
-  public static boolean enableNonFabricRNLithoForceLayout = true;
-
-  /** Disable UI update operations in non-Fabric renderer after catalyst instance was destroyed */
-  public static boolean disableNonFabricViewOperationsOnCatalystDestroy = false;
-
-  /**
-   * Fixes race-condition in the initialization of RN surface. TODO T78832286: remove this flag once
-   * we verify the fix is correct in production
-   */
-  public static boolean enableStartSurfaceRaceConditionFix = false;
-
-  /** Enables the usage of an experimental optimized iterator for ReadableNativeMaps. */
-  public static boolean enableExperimentalReadableNativeMapIterator = false;
-
   /** Enables Static ViewConfig in RN Android native code. */
   public static boolean enableExperimentalStaticViewConfigs = false;
+
+  /** Enables a more aggressive cleanup during destruction of ReactContext */
+  public static boolean enableReactContextCleanupFix = false;
+
+  /** Enables setting layout params to empty to fix a crash */
+  public static boolean enableSettingEmptyLayoutParams = false;
 }

@@ -69,6 +69,9 @@ jest
         };
       }
     }),
+    hasViewManagerConfig: jest.fn(name => {
+      return true;
+    }),
     measure: jest.fn(),
     manageChildren: jest.fn(),
     removeSubviewsFromContainerWithID: jest.fn(),
@@ -124,6 +127,7 @@ jest
     isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
     removeEventListener: jest.fn(),
     setAccessibilityFocus: jest.fn(),
+    sendAccessibilityEvent_unstable: jest.fn(),
   }))
   .mock('../Libraries/Components/RefreshControl/RefreshControl', () =>
     jest.requireActual(
@@ -156,8 +160,9 @@ jest
     ),
   )
   .mock('../Libraries/AppState/AppState', () => ({
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
+    addEventListener: jest.fn(() => ({
+      remove: jest.fn(),
+    })),
   }))
   .mock('../Libraries/Linking/Linking', () => ({
     openURL: jest.fn(),

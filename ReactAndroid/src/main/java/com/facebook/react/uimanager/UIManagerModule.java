@@ -15,6 +15,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 import com.facebook.common.logging.FLog;
@@ -86,21 +87,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ReactModule(name = UIManagerModule.NAME)
 public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
-
-  /** Enables lazy discovery of a specific {@link ViewManager} by its name. */
-  public interface ViewManagerResolver {
-    /**
-     * {@class UIManagerModule} class uses this method to get a ViewManager by its name. This is the
-     * same name that comes from JS by {@code UIManager.ViewManagerName} call.
-     */
-    @Nullable
-    ViewManager getViewManager(String viewManagerName);
-
-    /**
-     * Provides a list of view manager names to register in JS as {@code UIManager.ViewManagerName}
-     */
-    List<String> getViewManagerNames();
-  }
+  public static final String TAG = UIManagerModule.class.getSimpleName();
 
   /** Resolves a name coming from native side to a name of the event that is exposed to JS. */
   public interface CustomEventNamesResolver {
@@ -171,7 +158,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
             mEventDispatcher,
             minTimeLeftInFrameForNonBatchedOperationMs);
 
-    reactContext.addLifecycleEventListener(this);
+    reactContext.addLifecycleEventListenerAndCheckState(this);
   }
 
   @Deprecated
@@ -193,7 +180,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
             mEventDispatcher,
             minTimeLeftInFrameForNonBatchedOperationMs);
 
-    reactContext.addLifecycleEventListener(this);
+    reactContext.addLifecycleEventListenerAndCheckState(this);
   }
 
   /**
@@ -208,7 +195,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public String getName() {
+  public @NonNull String getName() {
     return NAME;
   }
 
@@ -245,7 +232,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mEventDispatcher.onCatalystInstanceDestroyed();
     mUIImplementation.onCatalystInstanceDestroyed();
 
-    getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
+    ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+    if (ReactFeatureFlags.enableReactContextCleanupFix) {
+      reactApplicationContext.removeLifecycleEventListener(this);
+    }
+    reactApplicationContext.unregisterComponentCallbacks(mMemoryTrimCallback);
     YogaNodePool.get().clear();
     ViewManagerPropertyUpdater.clear();
   }
@@ -293,14 +284,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Helper method to pre-compute the constants for a view manager. This method ensures that we
    * don't block for getting the constants for view managers during TTI
    *
-   * @deprecated this method will not be available in FabricUIManager class.
+   * @deprecated this method will be removed in the future
    * @param viewManagerNames {@link List<String>} names of ViewManagers
    */
   @Deprecated
-  public void preComputeConstantsForViewManager(List<String> viewManagerNames) {
-    // TODO T81145457 - Implement pre-initialization of ViewManagers in Fabric Android
+  @Override
+  public void preInitializeViewManagers(List<String> viewManagerNames) {
     if (ReactFeatureFlags.enableExperimentalStaticViewConfigs) {
-      preInitializeViewManagers(viewManagerNames);
+      for (String viewManagerName : viewManagerNames) {
+        mUIImplementation.resolveViewManager(viewManagerName);
+      }
       // When Static view configs are enabled it is not necessary to pre-compute the constants for
       // viewManagers, although the pre-initialization of viewManager objects is still necessary
       // for performance reasons.
@@ -323,12 +316,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     // accessed - write one, read multiple times, and then throw the data away.
     mViewManagerConstantsCacheSize = viewManagerNames.size();
     mViewManagerConstantsCache = Collections.unmodifiableMap(constantsMap);
-  }
-
-  private void preInitializeViewManagers(List<String> viewManagerNames) {
-    for (String viewManagerName : viewManagerNames) {
-      mUIImplementation.resolveViewManager(viewManagerName);
-    }
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
@@ -423,21 +410,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   @Override
   public void synchronouslyUpdateViewOnUIThread(int tag, ReadableMap props) {
-    int uiManagerType = ViewUtil.getUIManagerType(tag);
-    if (uiManagerType == FABRIC) {
-      UIManager fabricUIManager =
-          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
-      if (fabricUIManager != null) {
-        fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
-      }
-    } else {
-      mUIImplementation.synchronouslyUpdateViewOnUIThread(tag, new ReactStylesDiffMap(props));
-    }
+    mUIImplementation.synchronouslyUpdateViewOnUIThread(tag, new ReactStylesDiffMap(props));
   }
 
   /**
    * Registers a new root view. JS can use the returned tag with manageChildren to add/remove
    * children to this view.
+   *
+   * <p>Calling addRootView through UIManagerModule calls addRootView in the non-Fabric renderer,
+   * always. This is deprecated in favor of calling startSurface in Fabric, which must be done
+   * directly through the FabricUIManager.
    *
    * <p>Note that this must be called after getWidth()/getHeight() actually return something. See
    * CatalystApplicationFragment as an example.
@@ -450,9 +432,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.addRootView");
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+
+    // We pass in a surfaceId of -1 here - it is used only in Fabric.
     final ThemedReactContext themedRootContext =
         new ThemedReactContext(
-            reactApplicationContext, rootView.getContext(), ((ReactRoot) rootView).getSurfaceID());
+            reactApplicationContext,
+            rootView.getContext(),
+            ((ReactRoot) rootView).getSurfaceID(),
+            -1);
 
     mUIImplementation.registerRootView(rootView, tag, themedRootContext);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -526,25 +513,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       FLog.d(ReactConstants.TAG, message);
       PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.UI_MANAGER, message);
     }
-    int uiManagerType = ViewUtil.getUIManagerType(tag);
-    if (uiManagerType == FABRIC) {
-      ReactApplicationContext reactApplicationContext = getReactApplicationContext();
-      if (reactApplicationContext.hasActiveCatalystInstance()) {
-        final UIManager fabricUIManager =
-            UIManagerHelper.getUIManager(reactApplicationContext, uiManagerType);
-        if (fabricUIManager != null) {
-          reactApplicationContext.runOnUiQueueThread(
-              new Runnable() {
-                @Override
-                public void run() {
-                  fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
-                }
-              });
-        }
-      }
-    } else {
-      mUIImplementation.updateView(tag, className, props);
-    }
+    mUIImplementation.updateView(tag, className, props);
   }
 
   /**
@@ -727,8 +696,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void dispatchViewManagerCommand(
       int reactTag, Dynamic commandId, @Nullable ReadableArray commandArgs) {
-    // TODO: this is a temporary approach to support ViewManagerCommands in Fabric until
-    // the dispatchViewManagerCommand() method is supported by Fabric JS API.
+    // Fabric dispatchCommands should go through the JSI API - this will crash in Fabric.
     @Nullable
     UIManager uiManager =
         UIManagerHelper.getUIManager(
@@ -988,9 +956,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event) {
+  public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap event) {
+    receiveEvent(-1, reactTag, eventName, event);
+  }
+
+  @Override
+  public void receiveEvent(
+      int surfaceId, int reactTag, String eventName, @Nullable WritableMap event) {
+    assert ViewUtil.getUIManagerType(reactTag) == DEFAULT;
     getReactApplicationContext()
         .getJSModule(RCTEventEmitter.class)
-        .receiveEvent(targetTag, eventName, event);
+        .receiveEvent(reactTag, eventName, event);
   }
 }

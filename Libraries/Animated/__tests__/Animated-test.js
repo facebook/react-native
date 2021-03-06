@@ -8,8 +8,6 @@
  * @emails oncall+react_native
  */
 
-'use strict';
-
 import TestRenderer from 'react-test-renderer';
 import * as React from 'react';
 

@@ -157,7 +157,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
   @Override
   public void initialize() {
-    getReactApplicationContext().addLifecycleEventListener(this);
+    getReactApplicationContext().addLifecycleEventListenerAndCheckState(this);
     updateAndSendTouchExplorationChangeEvent(mAccessibilityManager.isTouchExplorationEnabled());
     updateAndSendReduceMotionChangeEvent();
   }
@@ -165,7 +165,11 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   @Override
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
-    getReactApplicationContext().removeLifecycleEventListener(this);
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
   }
 
   @Override

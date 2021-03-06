@@ -7,9 +7,12 @@
 
 #include "UIManager.h"
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/uimanager/UIManagerBinding.h>
+#include <react/renderer/uimanager/UIManagerCommitHook.h>
 
 #include <glog/logging.h>
 
@@ -33,9 +36,9 @@ SharedShadowNode UIManager::createNode(
   auto fallbackDescriptor =
       componentDescriptorRegistry_->getFallbackComponentDescriptor();
 
-  auto family = componentDescriptor.createFamily(
-      ShadowNodeFamilyFragment{tag, surfaceId, nullptr},
-      std::move(eventTarget));
+  auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
+  auto family =
+      componentDescriptor.createFamily(fragment, std::move(eventTarget));
   auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
   auto const state =
       componentDescriptor.createInitialState(ShadowNodeFragment{props}, family);
@@ -110,33 +113,72 @@ void UIManager::completeSurface(
   });
 }
 
-void UIManager::setJSResponder(
-    const ShadowNode::Shared &shadowNode,
-    const bool blockNativeResponder) const {
+void UIManager::setIsJSResponder(
+    ShadowNode::Shared const &shadowNode,
+    bool isJSResponder) const {
   if (delegate_) {
-    delegate_->uiManagerDidSetJSResponder(
-        shadowNode->getSurfaceId(), shadowNode, blockNativeResponder);
+    delegate_->uiManagerDidSetIsJSResponder(shadowNode, isJSResponder);
   }
 }
 
-void UIManager::clearJSResponder() const {
-  if (delegate_) {
-    delegate_->uiManagerDidClearJSResponder();
+ShadowTree const &UIManager::startSurface(
+    SurfaceId surfaceId,
+    std::string const &moduleName,
+    folly::dynamic const &props,
+    LayoutConstraints const &layoutConstraints,
+    LayoutContext const &layoutContext) const {
+  SystraceSection s("UIManager::startSurface");
+
+  auto shadowTree = std::make_unique<ShadowTree>(
+      surfaceId, layoutConstraints, layoutContext, *this);
+  auto shadowTreePointer = shadowTree.get();
+  shadowTreeRegistry_.add(std::move(shadowTree));
+
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+    if (!uiManagerBinding) {
+      return;
+    }
+
+    uiManagerBinding->startSurface(runtime, surfaceId, moduleName, props);
+  });
+
+  return *shadowTreePointer;
+}
+
+void UIManager::stopSurface(SurfaceId surfaceId) const {
+  SystraceSection s("UIManager::stopSurface");
+
+  // Stop any ongoing animations.
+  stopSurfaceForAnimationDelegate(surfaceId);
+
+  // Waiting for all concurrent commits to be finished and unregistering the
+  // `ShadowTree`.
+  auto shadowTree = getShadowTreeRegistry().remove(surfaceId);
+
+  // As part of stopping a Surface, we need to properly destroy all
+  // mounted views, so we need to commit an empty tree to trigger all
+  // side-effects (including destroying and removing mounted views).
+  if (shadowTree) {
+    shadowTree->commitEmptyTree();
   }
+
+  // We execute JavaScript/React part of the process at the very end to minimize
+  // any visible side-effects of stopping the Surface. Any possible commits from
+  // the JavaScript side will not be able to reference a `ShadowTree` and will
+  // fail silently.
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+    if (!uiManagerBinding) {
+      return;
+    }
+
+    uiManagerBinding->stopSurface(runtime, surfaceId);
+  });
 }
 
 ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
     ShadowNode const &shadowNode) const {
-  auto findNewestChildInParent =
-      [&](auto const &parentNode) -> ShadowNode::Shared {
-    for (auto const &child : parentNode.getChildren()) {
-      if (ShadowNode::sameFamily(*child, shadowNode)) {
-        return child;
-      }
-    }
-    return nullptr;
-  };
-
   auto ancestorShadowNode = ShadowNode::Shared{};
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
@@ -153,7 +195,8 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
     return nullptr;
   }
 
-  return findNewestChildInParent(ancestors.rbegin()->first.get());
+  auto pair = ancestors.rbegin();
+  return pair->first.get().getChildren().at(pair->second);
 }
 
 ShadowNode::Shared UIManager::findNodeAtPoint(
@@ -199,8 +242,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
       shadowNode.getFamily(), *layoutableAncestorShadowNode, policy);
 }
 
-void UIManager::updateStateWithAutorepeat(
-    StateUpdate const &stateUpdate) const {
+void UIManager::updateState(StateUpdate const &stateUpdate) const {
   auto &callback = stateUpdate.callback;
   auto &family = stateUpdate.family;
   auto &componentDescriptor = family->getComponentDescriptor();
@@ -238,49 +280,20 @@ void UIManager::updateStateWithAutorepeat(
       });
 }
 
-void UIManager::updateState(StateUpdate const &stateUpdate) const {
-  if (stateUpdate.autorepeat || experimentEnableStateUpdateWithAutorepeat) {
-    updateStateWithAutorepeat(stateUpdate);
-    return;
-  }
-
-  auto &callback = stateUpdate.callback;
-  auto &family = stateUpdate.family;
-  auto &componentDescriptor = family->getComponentDescriptor();
-
-  shadowTreeRegistry_.visit(
-      family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        auto status = shadowTree.tryCommit([&](RootShadowNode const
-                                                   &oldRootShadowNode) {
-          return std::static_pointer_cast<RootShadowNode>(
-              oldRootShadowNode.cloneTree(
-                  *family, [&](ShadowNode const &oldShadowNode) {
-                    auto newData =
-                        callback(oldShadowNode.getState()->getDataPointer());
-                    auto newState =
-                        componentDescriptor.createState(*family, newData);
-
-                    return oldShadowNode.clone({
-                        /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                        /* .children = */
-                        ShadowNodeFragment::childrenPlaceholder(),
-                        /* .state = */ newState,
-                    });
-                  }));
-        });
-        if (status != ShadowTree::CommitStatus::Succeeded &&
-            stateUpdate.failureCallback) {
-          stateUpdate.failureCallback();
-        }
-      });
-}
-
 void UIManager::dispatchCommand(
     const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
     folly::dynamic const args) const {
   if (delegate_) {
     delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
+  }
+}
+
+void UIManager::sendAccessibilityEvent(
+    const ShadowNode::Shared &shadowNode,
+    std::string const &eventType) {
+  if (delegate_) {
+    delegate_->uiManagerDidSendAccessibilityEvent(shadowNode, eventType);
   }
 }
 
@@ -316,9 +329,21 @@ void UIManager::setBackgroundExecutor(
   backgroundExecutor_ = backgroundExecutor;
 }
 
+void UIManager::setRuntimeExecutor(RuntimeExecutor const &runtimeExecutor) {
+  runtimeExecutor_ = runtimeExecutor;
+}
+
 void UIManager::visitBinding(
-    std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
-    const {
+    std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
+    jsi::Runtime &runtime) const {
+  if (extractUIManagerBindingOnDemand_) {
+    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+    if (uiManagerBinding) {
+      callback(*uiManagerBinding_);
+    }
+    return;
+  }
+
   if (!uiManagerBinding_) {
     return;
   }
@@ -330,7 +355,42 @@ ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
   return shadowTreeRegistry_;
 }
 
+void UIManager::registerCommitHook(
+    UIManagerCommitHook const &commitHook) const {
+  std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
+  react_native_assert(
+      std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook) ==
+      commitHooks_.end());
+  commitHook.commitHookWasRegistered(*this);
+  commitHooks_.push_back(&commitHook);
+}
+
+void UIManager::unregisterCommitHook(
+    UIManagerCommitHook const &commitHook) const {
+  std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
+  auto iterator =
+      std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook);
+  react_native_assert(iterator != commitHooks_.end());
+  commitHooks_.erase(iterator);
+  commitHook.commitHookWasUnregistered(*this);
+}
+
 #pragma mark - ShadowTreeDelegate
+
+RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
+    ShadowTree const &shadowTree,
+    RootShadowNode::Shared const &oldRootShadowNode,
+    RootShadowNode::Unshared const &newRootShadowNode) const {
+  std::shared_lock<better::shared_mutex> lock(commitHookMutex_);
+
+  auto resultRootShadowNode = newRootShadowNode;
+  for (auto const *commitHook : commitHooks_) {
+    resultRootShadowNode = commitHook->shadowTreeWillCommit(
+        shadowTree, oldRootShadowNode, resultRootShadowNode);
+  }
+
+  return resultRootShadowNode;
+}
 
 void UIManager::shadowTreeDidFinishTransaction(
     ShadowTree const &shadowTree,
@@ -348,7 +408,7 @@ void UIManager::setAnimationDelegate(UIManagerAnimationDelegate *delegate) {
   animationDelegate_ = delegate;
 }
 
-void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) {
+void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
   if (animationDelegate_ != nullptr) {
     animationDelegate_->stopSurface(surfaceId);
   }

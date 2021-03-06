@@ -15,6 +15,7 @@
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
 #include <jsi/JSIDynamic.h>
+#include <react/debug/react_native_assert.h>
 #include <react/jni/NativeMap.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/jni/WritableNativeMap.h>
@@ -49,73 +50,6 @@ JavaTurboModule::~JavaTurboModule() {
      */
     instance.reset();
   });
-}
-
-bool JavaTurboModule::isPromiseAsyncDispatchEnabled_ = false;
-void JavaTurboModule::enablePromiseAsyncDispatch(bool enable) {
-  isPromiseAsyncDispatchEnabled_ = enable;
-}
-
-JavaTurboModule::JavaTurboModule(
-    const InitParams &params,
-    TurboModuleSchema &&schema)
-    : TurboModule(params.moduleName, params.jsInvoker),
-      instance_(jni::make_global(params.instance)),
-      nativeInvoker_(params.nativeInvoker),
-      turboModuleSchema_(std::move(schema)) {}
-
-jsi::Value JavaTurboModule::get(
-    jsi::Runtime &runtime,
-    const jsi::PropNameID &propName) {
-  if (!turboModuleSchema_) {
-    return TurboModule::get(runtime, propName);
-  }
-
-  std::string methodName = propName.utf8(runtime);
-  if (!turboModuleSchema_->hasMethod(methodName)) {
-    return jsi::Value::undefined();
-  }
-
-  using MethodImplStatus = TurboModuleSchema::Method::ImplStatus;
-  TurboModuleSchema::Method &method = turboModuleSchema_->getMethod(methodName);
-
-  if (method.isOptional) {
-    if (method.implStatus == MethodImplStatus::Unknown) {
-      auto instance = instance_.get();
-      JNIEnv *env = jni::Environment::current();
-      jclass cls = env->GetObjectClass(instance);
-      jmethodID methodID = env->GetMethodID(
-          cls, methodName.c_str(), method.jniSignature.c_str());
-
-      // If the method signature doesn't match, show a redbox here instead of
-      // crashing later.
-      FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
-      method.implStatus = methodID != nullptr ? MethodImplStatus::Implemented
-                                              : MethodImplStatus::Unimplemented;
-    }
-
-    if (method.implStatus == MethodImplStatus::Unimplemented) {
-      return jsi::Value::undefined();
-    }
-  }
-
-  return jsi::Function::createFromHostFunction(
-      runtime,
-      propName,
-      method.jsParamCount,
-      [this, method](
-          facebook::jsi::Runtime &runtime,
-          const facebook::jsi::Value &thisVal,
-          const facebook::jsi::Value *args,
-          size_t count) {
-        return invokeJavaMethod(
-            runtime,
-            method.jsReturnType,
-            method.name,
-            method.jniSignature,
-            args,
-            count);
-      });
 }
 
 namespace {
@@ -200,7 +134,7 @@ std::string stringifyJSIValue(const jsi::Value &v, jsi::Runtime *rt = nullptr) {
     return "a string (\"" + v.getString(*rt).utf8(*rt) + "\")";
   }
 
-  assert(v.isObject() && "Expecting object.");
+  react_native_assert(v.isObject() && "Expecting object.");
   return rt != nullptr && v.getObject(*rt).isFunction(*rt) ? "a function"
                                                            : "an object";
 }
@@ -322,8 +256,7 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
 
   auto makeGlobalIfNecessary =
       [&globalRefs, env, valueKind](jobject obj) -> jobject {
-    if (valueKind == VoidKind ||
-        (valueKind == PromiseKind && isPromiseAsyncDispatchEnabled_)) {
+    if (valueKind == VoidKind || valueKind == PromiseKind) {
       jobject globalObj = env->NewGlobalRef(obj);
       globalRefs.push_back(globalObj);
       env->DeleteLocalRef(obj);
@@ -491,9 +424,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   const char *methodName = methodNameStr.c_str();
   const char *moduleName = name_.c_str();
 
-  bool isMethodSync =
-      !(valueKind == VoidKind ||
-        (valueKind == PromiseKind && isPromiseAsyncDispatchEnabled_));
+  bool isMethodSync = !(valueKind == VoidKind || valueKind == PromiseKind);
 
   if (isMethodSync) {
     TMPL::syncMethodCallStart(moduleName, methodName);
@@ -752,10 +683,14 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
           [jargs,
            globalRefs,
            methodID,
-           instance_ = instance_,
+           instance_ = jni::make_weak(instance_),
            moduleNameStr = name_,
            methodNameStr,
            id = getUniqueId()]() mutable -> void {
+            auto instance = instance_.lockLocal();
+            if (!instance) {
+              return;
+            }
             /**
              * TODO(ramanpreet): Why do we have to require the environment
              * again? Why does JNI crash when we use the env from the upper
@@ -766,7 +701,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             const char *methodName = methodNameStr.c_str();
 
             TMPL::asyncMethodCallExecutionStart(moduleName, methodName, id);
-            env->CallVoidMethodA(instance_.get(), methodID, jargs.data());
+            env->CallVoidMethodA(instance.get(), methodID, jargs.data());
             try {
               FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
             } catch (...) {
@@ -834,60 +769,53 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             const char *moduleName = moduleNameStr.c_str();
             const char *methodName = methodNameStr.c_str();
 
-            if (isPromiseAsyncDispatchEnabled_) {
-              jobject globalPromise = env->NewGlobalRef(promise);
+            jobject globalPromise = env->NewGlobalRef(promise);
 
-              globalRefs.push_back(globalPromise);
-              env->DeleteLocalRef(promise);
+            globalRefs.push_back(globalPromise);
+            env->DeleteLocalRef(promise);
 
-              jargs[argCount].l = globalPromise;
-              TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
-              TMPL::asyncMethodCallDispatch(moduleName, methodName);
+            jargs[argCount].l = globalPromise;
+            TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
+            TMPL::asyncMethodCallDispatch(moduleName, methodName);
 
-              nativeInvoker_->invokeAsync(
-                  [jargs,
-                   globalRefs,
-                   methodID,
-                   instance_ = instance_,
-                   moduleNameStr,
-                   methodNameStr,
-                   id = getUniqueId()]() mutable -> void {
-                    /**
-                     * TODO(ramanpreet): Why do we have to require the
-                     * environment again? Why does JNI crash when we use the env
-                     * from the upper scope?
-                     */
-                    JNIEnv *env = jni::Environment::current();
-                    const char *moduleName = moduleNameStr.c_str();
-                    const char *methodName = methodNameStr.c_str();
+            nativeInvoker_->invokeAsync(
+                [jargs,
+                 globalRefs,
+                 methodID,
+                 instance_ = jni::make_weak(instance_),
+                 moduleNameStr,
+                 methodNameStr,
+                 id = getUniqueId()]() mutable -> void {
+                  auto instance = instance_.lockLocal();
 
-                    TMPL::asyncMethodCallExecutionStart(
+                  if (!instance) {
+                    return;
+                  }
+                  /**
+                   * TODO(ramanpreet): Why do we have to require the
+                   * environment again? Why does JNI crash when we use the env
+                   * from the upper scope?
+                   */
+                  JNIEnv *env = jni::Environment::current();
+                  const char *moduleName = moduleNameStr.c_str();
+                  const char *methodName = methodNameStr.c_str();
+
+                  TMPL::asyncMethodCallExecutionStart(
+                      moduleName, methodName, id);
+                  env->CallVoidMethodA(instance.get(), methodID, jargs.data());
+                  try {
+                    FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
+                  } catch (...) {
+                    TMPL::asyncMethodCallExecutionFail(
                         moduleName, methodName, id);
-                    env->CallVoidMethodA(
-                        instance_.get(), methodID, jargs.data());
-                    try {
-                      FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
-                    } catch (...) {
-                      TMPL::asyncMethodCallExecutionFail(
-                          moduleName, methodName, id);
-                      throw;
-                    }
+                    throw;
+                  }
 
-                    for (auto globalRef : globalRefs) {
-                      env->DeleteGlobalRef(globalRef);
-                    }
-                    TMPL::asyncMethodCallExecutionEnd(
-                        moduleName, methodName, id);
-                  });
-
-            } else {
-              jargs[argCount].l = promise;
-              TMPL::syncMethodCallArgConversionEnd(moduleName, methodName);
-              TMPL::syncMethodCallExecutionStart(moduleName, methodName);
-              env->CallVoidMethodA(instance_.get(), methodID, jargs.data());
-              TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
-              TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
-            }
+                  for (auto globalRef : globalRefs) {
+                    env->DeleteGlobalRef(globalRef);
+                  }
+                  TMPL::asyncMethodCallExecutionEnd(moduleName, methodName, id);
+                });
 
             return jsi::Value::undefined();
           });
@@ -896,12 +824,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
           Promise.callAsConstructor(runtime, promiseConstructorArg);
       checkJNIErrorForMethodCall();
 
-      if (isPromiseAsyncDispatchEnabled_) {
-        TMPL::asyncMethodCallEnd(moduleName, methodName);
-      } else {
-        TMPL::syncMethodCallReturnConversionEnd(moduleName, methodName);
-        TMPL::syncMethodCallEnd(moduleName, methodName);
-      }
+      TMPL::asyncMethodCallEnd(moduleName, methodName);
+
       return promise;
     }
     default:

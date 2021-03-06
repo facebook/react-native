@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import Animated from '../../Animated/Animated';
 import Easing from '../../Animated/Easing';
 import * as React from 'react';

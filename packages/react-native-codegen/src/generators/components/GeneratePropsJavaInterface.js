@@ -212,13 +212,10 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
     packageName?: string,
   ): FilesOutput {
     // TODO: This doesn't support custom package name yet.
-    // TODO: But it customizes the name here temporarily to prepare for Fabric RNTester support.
-    const normalizedPackageName =
-      packageName != null ? packageName : 'com.facebook.react.viewmanagers';
+    const normalizedPackageName = 'com.facebook.react.viewmanagers';
     const outputDir = `java/${normalizedPackageName.replace(/\./g, '/')}`;
 
     const files = new Map();

@@ -163,7 +163,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
-      reactApplicationContext.addLifecycleEventListener(this);
+      reactApplicationContext.addLifecycleEventListenerAndCheckState(this);
     }
   }
 
@@ -890,5 +890,13 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
             animatedNodesManager.getValue(animatedValueNodeTag, callback);
           }
         });
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    ReactApplicationContext context = getReactApplicationContextIfActiveOrWarn();
+    if (context != null) {
+      context.removeLifecycleEventListener(this);
+    }
   }
 }

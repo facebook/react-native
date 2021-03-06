@@ -18,7 +18,7 @@ public class UIImplementationProvider {
 
   public UIImplementation createUIImplementation(
       ReactApplicationContext reactContext,
-      UIManagerModule.ViewManagerResolver viewManagerResolver,
+      ViewManagerResolver viewManagerResolver,
       EventDispatcher eventDispatcher,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     Systrace.beginSection(

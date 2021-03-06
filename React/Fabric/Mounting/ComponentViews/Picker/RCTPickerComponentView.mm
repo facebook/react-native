@@ -15,8 +15,8 @@
 #import <react/renderer/components/iospicker/PickerProps.h>
 #import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
 #import "RCTConversions.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -160,11 +160,12 @@ using namespace facebook::react;
            reusingView:(UILabel *)label
 {
   if (!label) {
-    label = [[UILabel alloc] initWithFrame:(CGRect){CGPointZero,
-                                                    {
-                                                        [pickerView rowSizeForComponent:component].width,
-                                                        [pickerView rowSizeForComponent:component].height,
-                                                    }}];
+    label = [[UILabel alloc] initWithFrame:(CGRect){
+                                               CGPointZero,
+                                               {
+                                                   [pickerView rowSizeForComponent:component].width,
+                                                   [pickerView rowSizeForComponent:component].height,
+                                               }}];
   }
   NSMutableDictionary<NSAttributedStringKey, id> *attributes = [_textAttributes mutableCopy];
   // Color can be passed in from <Picker style={}/> or from <Picker.Item color={}/>

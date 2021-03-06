@@ -18,6 +18,8 @@
 namespace facebook {
 namespace react {
 
+static const int NO_VIEW_TAG = -1;
+
 class StubView final {
  public:
   using Shared = std::shared_ptr<StubView>;
@@ -31,12 +33,14 @@ class StubView final {
 
   ComponentName componentName;
   ComponentHandle componentHandle;
+  SurfaceId surfaceId;
   Tag tag;
   SharedProps props;
   SharedEventEmitter eventEmitter;
   LayoutMetrics layoutMetrics;
   State::Shared state;
   std::vector<StubView::Shared> children;
+  Tag parentTag{NO_VIEW_TAG};
 };
 
 bool operator==(StubView const &lhs, StubView const &rhs);

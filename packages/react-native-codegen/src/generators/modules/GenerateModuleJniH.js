@@ -61,6 +61,7 @@ std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string mod
 `;
 };
 
+// Note: this Android.mk template includes dependencies for both NativeModule and components.
 const AndroidMkTemplate = ({libraryName}: $ReadOnly<{libraryName: string}>) => {
   return `# Copyright (c) Facebook, Inc. and its affiliates.
 #
@@ -71,15 +72,15 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := ${libraryName}
+LOCAL_MODULE := react_codegen_${libraryName}
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/react/renderer/components/${libraryName}/*.cpp)
 
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/${libraryName}
 
-LOCAL_SHARED_LIBRARIES := libreact_nativemodule_core
+LOCAL_SHARED_LIBRARIES := libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libreact_debug libreact_render_debug
 
 LOCAL_STATIC_LIBRARIES := libjsi
 
@@ -96,7 +97,6 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
     packageName?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
@@ -112,7 +112,7 @@ module.exports = {
       .map(hasteModuleName => ModuleClassDeclarationTemplate({hasteModuleName}))
       .join('\n');
 
-    const fileName = `${moduleSpecName}.h`;
+    const fileName = `${libraryName}.h`;
     const replacedTemplate = HeaderFileTemplate({
       modules: modules,
       libraryName: libraryName.replace(/-/g, '_'),
@@ -122,7 +122,7 @@ module.exports = {
       [
         'jni/Android.mk',
         AndroidMkTemplate({
-          libraryName: `react_codegen_${libraryName.toLowerCase()}`,
+          libraryName: `${libraryName.toLowerCase()}`,
         }),
       ],
     ]);

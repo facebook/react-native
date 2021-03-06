@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import React, {useEffect, useState} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 

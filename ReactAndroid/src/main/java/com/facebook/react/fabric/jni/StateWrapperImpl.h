@@ -25,7 +25,7 @@ class StateWrapperImpl : public jni::HybridClass<StateWrapperImpl> {
 
   static void registerNatives();
 
-  jni::local_ref<ReadableNativeMap::jhybridobject> getState();
+  jni::local_ref<ReadableNativeMap::jhybridobject> getStateDataImpl();
   void updateStateImpl(NativeMap *map);
   void updateStateWithFailureCallbackImpl(
       NativeMap *map,
