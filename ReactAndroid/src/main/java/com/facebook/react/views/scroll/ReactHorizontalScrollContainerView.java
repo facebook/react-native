@@ -64,7 +64,7 @@ public class ReactHorizontalScrollContainerView extends ReactViewGroup {
         // Call with the present values in order to re-layout if necessary
         ReactHorizontalScrollView parent = (ReactHorizontalScrollView) getParent();
         // Fix the ScrollX position when using RTL language
-        int offsetX = parent.getScrollX() + getWidth() - mCurrentWidth;
+        int offsetX = parent.getScrollX() + getWidth() - mCurrentWidth - parent.getWidth();
         parent.reactScrollTo(offsetX, parent.getScrollY());
       }
     }
