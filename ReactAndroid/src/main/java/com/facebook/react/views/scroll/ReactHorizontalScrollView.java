@@ -33,6 +33,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
@@ -49,6 +50,9 @@ import java.util.List;
 /** Similar to {@link ReactScrollView} but only supports horizontal scrolling. */
 public class ReactHorizontalScrollView extends HorizontalScrollView
     implements ReactClippingViewGroup, FabricViewStateManager.HasFabricViewStateManager {
+
+  private static boolean DEBUG_MODE = false && ReactBuildConfig.DEBUG;
+  private static String TAG = ReactHorizontalScrollView.class.getSimpleName();
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
@@ -141,7 +145,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         sScrollerField.setAccessible(true);
       } catch (NoSuchFieldException e) {
         FLog.w(
-            ReactConstants.TAG,
+            TAG,
             "Failed to get mScroller field for HorizontalScrollView! "
                 + "This app will exhibit the bounce-back scrolling bug :(");
       }
@@ -154,7 +158,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
           scroller = (OverScroller) scrollerValue;
         } else {
           FLog.w(
-              ReactConstants.TAG,
+              TAG,
               "Failed to cast mScroller field in HorizontalScrollView (probably due to OEM changes to AOSP)! "
                   + "This app will exhibit the bounce-back scrolling bug :(");
           scroller = null;
@@ -238,6 +242,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   protected void onDraw(Canvas canvas) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "onDraw[%d]", getId());
+    }
+
     getDrawingRect(mRect);
 
     switch (mOverflow) {
@@ -255,12 +263,27 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     MeasureSpecAssertions.assertExplicitMeasureSpec(widthMeasureSpec, heightMeasureSpec);
 
-    setMeasuredDimension(
-        MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
+    int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
+    int measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
+
+    if (DEBUG_MODE) {
+      FLog.i(
+          TAG,
+          "onMeasure[%d] measured width: %d measured height: %d",
+          getId(),
+          measuredWidth,
+          measuredHeight);
+    }
+
+    setMeasuredDimension(measuredWidth, measuredHeight);
   }
 
   @Override
   protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "onLayout[%d] l %d t %d r %d b %d", getId(), l, t, r, b);
+    }
+
     // Call with the present values in order to re-layout if necessary
     // If a "pending" value has been set, we restore that value.
     // That value gets cleared by reactScrollTo.
@@ -344,6 +367,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   protected void onScrollChanged(int x, int y, int oldX, int oldY) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "onScrollChanged[%d] x %d y %d oldx %d oldy %d", getId(), x, y, oldX, oldY);
+    }
+
     super.onScrollChanged(x, y, oldX, oldY);
 
     mActivelyScrolling = true;
@@ -573,6 +600,17 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
+    if (DEBUG_MODE) {
+      FLog.i(
+          TAG,
+          "onOverScrolled[%d] scrollX %d scrollY %d clampedX %d clampedY %d",
+          getId(),
+          scrollX,
+          scrollY,
+          clampedX,
+          clampedY);
+    }
+
     if (mScroller != null) {
       // FB SCROLLVIEW CHANGE
 
@@ -978,6 +1016,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * scroll view and state. Calling raw `smoothScrollTo` doesn't update state.
    */
   public void reactSmoothScrollTo(int x, int y) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "reactSmoothScrollTo[%d] x %d y %d", getId(), x, y);
+    }
+
     // `smoothScrollTo` contains some logic that, if called multiple times in a short amount of
     // time, will treat all calls as part of the same animation and will not lengthen the duration
     // of the animation. This means that, for example, if the user is scrolling rapidly, multiple
@@ -1034,6 +1076,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * scroll view and state. Calling raw `reactScrollTo` doesn't update state.
    */
   public void reactScrollTo(int x, int y) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "reactScrollTo[%d] x %d y %d", getId(), x, y);
+    }
+
     scrollTo(x, y);
     updateStateOnScroll(x, y);
     setPendingContentOffsets(x, y);
@@ -1078,6 +1124,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       fabricScrollX = -(contentWidth - scrollX - getWidth());
     } else {
       fabricScrollX = scrollX;
+    }
+
+    if (DEBUG_MODE) {
+      FLog.i(
+          TAG,
+          "updateStateOnScroll[%d] scrollX %d scrollY %d fabricScrollX",
+          getId(),
+          scrollX,
+          scrollY,
+          fabricScrollX);
     }
 
     mFabricViewStateManager.setState(
