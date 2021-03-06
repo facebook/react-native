@@ -701,6 +701,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     } else if (this.props.onViewableItemsChanged) {
       this._viewabilityTuples.push({
         viewabilityHelper: new ViewabilityHelper(this.props.viewabilityConfig),
+        // $FlowFixMe[incompatible-call]
         onViewableItemsChanged: this.props.onViewableItemsChanged,
       });
     }
@@ -1744,6 +1745,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             }
           }
           if (someChildHasMore) {
+            // $FlowFixMe[incompatible-use]
             newState.last = ii;
             break;
           }
