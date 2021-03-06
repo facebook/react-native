@@ -23,9 +23,9 @@ void MapBuffer::makeSpace() {
   if (_dataSize >= std::numeric_limits<uint16_t>::max() / 2) {
     LOG(ERROR)
         << "Error: trying to assign a value beyond the capacity of uint16_t"
-        << _dataSize * 2;
+        << static_cast<uint32_t>(_dataSize) * 2;
     throw "Error: trying to assign a value beyond the capacity of uint16_t" +
-        std::to_string(_dataSize * 2);
+        std::to_string(static_cast<uint32_t>(_dataSize) * 2);
   }
   _dataSize *= 2;
   uint8_t *_newdata = new Byte[_dataSize];
