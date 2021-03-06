@@ -22,7 +22,8 @@ jni::local_ref<StateWrapperImpl::jhybriddata> StateWrapperImpl::initHybrid(
   return makeCxxInstance();
 }
 
-jni::local_ref<ReadableNativeMap::jhybridobject> StateWrapperImpl::getState() {
+jni::local_ref<ReadableNativeMap::jhybridobject>
+StateWrapperImpl::getStateDataImpl() {
   folly::dynamic map = state_->getDynamic();
   local_ref<ReadableNativeMap::jhybridobject> readableNativeMap =
       ReadableNativeMap::newObjectCxxArgs(map);
@@ -39,7 +40,7 @@ void StateWrapperImpl::updateStateImpl(NativeMap *map) {
 void StateWrapperImpl::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", StateWrapperImpl::initHybrid),
-      makeNativeMethod("getState", StateWrapperImpl::getState),
+      makeNativeMethod("getStateDataImpl", StateWrapperImpl::getStateDataImpl),
       makeNativeMethod("updateStateImpl", StateWrapperImpl::updateStateImpl),
   });
 }

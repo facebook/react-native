@@ -21,7 +21,6 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -204,8 +203,19 @@ public class SurfaceMountingManager {
       return;
     }
 
-    // Prevent more views from being created, or the hierarchy from being manipulated at all
+    // Prevent more views from being created, or the hierarchy from being manipulated at all. This
+    // causes further operations to noop.
     mIsStopped = true;
+
+    // Reset all StateWrapper objects
+    // Since this can happen on any thread, is it possible to race between StateWrapper destruction
+    // and some accesses from View classes in the UI thread?
+    for (ViewState viewState : mTagToViewState.values()) {
+      if (viewState.mStateWrapper != null) {
+        viewState.mStateWrapper.destroyState();
+        viewState.mStateWrapper = null;
+      }
+    }
 
     Runnable runnable =
         new Runnable() {
@@ -502,7 +512,7 @@ public class SurfaceMountingManager {
 
     ViewState viewState = new ViewState(reactTag, view, viewManager);
     viewState.mCurrentProps = propsDiffMap;
-    viewState.mCurrentState = (stateWrapper != null ? stateWrapper.getState() : null);
+    viewState.mStateWrapper = stateWrapper;
 
     mTagToViewState.put(reactTag, viewState);
   }
@@ -675,9 +685,9 @@ public class SurfaceMountingManager {
     }
 
     ViewState viewState = getViewState(reactTag);
-    @Nullable ReadableNativeMap newState = stateWrapper == null ? null : stateWrapper.getState();
 
-    viewState.mCurrentState = newState;
+    StateWrapper prevStateWrapper = viewState.mStateWrapper;
+    viewState.mStateWrapper = stateWrapper;
 
     ViewManager viewManager = viewState.mViewManager;
 
@@ -688,6 +698,12 @@ public class SurfaceMountingManager {
         viewManager.updateState(viewState.mView, viewState.mCurrentProps, stateWrapper);
     if (extraData != null) {
       viewManager.updateExtraData(viewState.mView, extraData);
+    }
+
+    // Immediately clear native side of previous state wrapper. This causes the State object in C++
+    // to be destroyed immediately instead of waiting for Java GC to kick in.
+    if (prevStateWrapper != null) {
+      prevStateWrapper.destroyState();
     }
   }
 
@@ -832,7 +848,7 @@ public class SurfaceMountingManager {
     @Nullable final ViewManager mViewManager;
     @Nullable public ReactStylesDiffMap mCurrentProps = null;
     @Nullable public ReadableMap mCurrentLocalData = null;
-    @Nullable public ReadableMap mCurrentState = null;
+    @Nullable public StateWrapper mStateWrapper = null;
     @Nullable public EventEmitterWrapper mEventEmitter = null;
 
     private ViewState(int reactTag, @Nullable View view, @Nullable ViewManager viewManager) {

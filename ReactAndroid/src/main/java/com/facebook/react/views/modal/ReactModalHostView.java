@@ -471,7 +471,7 @@ public class ReactModalHostView extends ViewGroup
 
       // Check incoming state values. If they're already the correct value, return early to prevent
       // infinite UpdateState/SetState loop.
-      ReadableMap currentState = getFabricViewStateManager().getState();
+      ReadableMap currentState = getFabricViewStateManager().getStateData();
       if (currentState != null) {
         float delta = (float) 0.9;
         float stateScreenHeight =
