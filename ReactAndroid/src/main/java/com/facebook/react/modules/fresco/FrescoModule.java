@@ -196,8 +196,8 @@ public class FrescoModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void invalidate() {
+    super.invalidate();
 
     ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
     if (applicationContext != null) {

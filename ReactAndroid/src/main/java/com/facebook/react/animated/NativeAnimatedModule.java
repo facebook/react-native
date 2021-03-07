@@ -893,7 +893,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
     ReactApplicationContext context = getReactApplicationContextIfActiveOrWarn();
     if (context != null) {
       context.removeLifecycleEventListener(this);

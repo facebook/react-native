@@ -121,8 +121,8 @@ public class AppStateModule extends NativeAppStateSpec
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void invalidate() {
+    super.invalidate();
 
     ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
     if (applicationContext != null) {

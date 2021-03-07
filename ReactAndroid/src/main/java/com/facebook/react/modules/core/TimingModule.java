@@ -129,7 +129,7 @@ public final class TimingModule extends NativeTimingSpec
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
     ReactApplicationContext reactApplicationContext = getReactApplicationContext();
 
     HeadlessJsTaskContext headlessJsTaskContext =
