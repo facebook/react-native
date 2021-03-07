@@ -326,8 +326,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       final TurboModule turboModule = getModule(moduleName, moduleHolder, false);
 
       if (turboModule != null) {
-        // TODO(T48014458): Rename this to invalidate()
-        ((NativeModule) turboModule).onCatalystInstanceDestroy();
+        turboModule.invalidate();
       }
     }
 
