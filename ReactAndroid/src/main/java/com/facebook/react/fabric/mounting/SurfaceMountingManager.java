@@ -778,6 +778,12 @@ public class SurfaceMountingManager {
     // or StopSurface being called, so we do not handle deleting descendents of the View.
     mTagToViewState.remove(reactTag);
 
+    // Destroy state immediately instead of waiting for Java GC.
+    if (viewState.mStateWrapper != null) {
+      viewState.mStateWrapper.destroyState();
+      viewState.mStateWrapper = null;
+    }
+
     // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
     ViewManager viewManager = viewState.mViewManager;
     if (!viewState.mIsRoot && viewManager != null) {
