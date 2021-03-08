@@ -163,7 +163,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
-      reactApplicationContext.addLifecycleEventListenerAndCheckState(this);
+      reactApplicationContext.addLifecycleEventListener(this);
     }
   }
 

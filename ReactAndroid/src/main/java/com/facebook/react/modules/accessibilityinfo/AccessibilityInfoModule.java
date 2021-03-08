@@ -157,7 +157,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
   @Override
   public void initialize() {
-    getReactApplicationContext().addLifecycleEventListenerAndCheckState(this);
+    getReactApplicationContext().addLifecycleEventListener(this);
     updateAndSendTouchExplorationChangeEvent(mAccessibilityManager.isTouchExplorationEnabled());
     updateAndSendReduceMotionChangeEvent();
   }

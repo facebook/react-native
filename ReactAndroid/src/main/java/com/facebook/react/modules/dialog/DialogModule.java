@@ -156,7 +156,7 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
 
   @Override
   public void initialize() {
-    getReactApplicationContext().addLifecycleEventListenerAndCheckState(this);
+    getReactApplicationContext().addLifecycleEventListener(this);
   }
 
   @Override

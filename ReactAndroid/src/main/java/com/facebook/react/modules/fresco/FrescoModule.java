@@ -105,7 +105,7 @@ public class FrescoModule extends ReactContextBaseJavaModule
   @Override
   public void initialize() {
     super.initialize();
-    getReactApplicationContext().addLifecycleEventListenerAndCheckState(this);
+    getReactApplicationContext().addLifecycleEventListener(this);
     if (!hasBeenInitialized()) {
       if (mConfig == null) {
         mConfig = getDefaultConfig(getReactApplicationContext());
