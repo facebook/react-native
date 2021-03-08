@@ -192,8 +192,10 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
       ReactHorizontalScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
+      scrollView.handleSmoothScrollMomentumEvents();
     } else {
       scrollView.reactScrollTo(data.mDestX, data.mDestY);
+      ReactScrollViewHelper.emitScrollMomentumEndEvent(scrollView);
     }
   }
 
@@ -205,8 +207,10 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     int right = scrollView.getChildAt(0).getWidth() + scrollView.getPaddingRight();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(right, scrollView.getScrollY());
+      scrollView.handleSmoothScrollMomentumEvents();
     } else {
       scrollView.reactScrollTo(right, scrollView.getScrollY());
+      ReactScrollViewHelper.emitScrollMomentumEndEvent(scrollView);
     }
   }
 

@@ -205,8 +205,10 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
       ReactScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
+      scrollView.handleSmoothScrollMomentumEvents();
     } else {
       scrollView.reactScrollTo(data.mDestX, data.mDestY);
+      ReactScrollViewHelper.emitScrollMomentumEndEvent(scrollView);
     }
   }
 
@@ -284,8 +286,10 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     int bottom = child.getHeight() + scrollView.getPaddingBottom();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(scrollView.getScrollX(), bottom);
+      scrollView.handleSmoothScrollMomentumEvents();
     } else {
       scrollView.reactScrollTo(scrollView.getScrollX(), bottom);
+      ReactScrollViewHelper.emitScrollMomentumEndEvent(scrollView);
     }
   }
 
