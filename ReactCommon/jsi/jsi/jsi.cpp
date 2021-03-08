@@ -140,7 +140,7 @@ Value Runtime::createValueFromJsonUtf8(const uint8_t* json, size_t length) {
   return parseJson.call(*this, String::createFromUtf8(*this, json, length));
 }
 
-Pointer& Pointer::operator=(Pointer&& other) {
+Pointer& Pointer::operator=(Pointer&& other) noexcept {
   if (ptr_) {
     ptr_->invalidate();
   }
@@ -215,7 +215,7 @@ Function Object::asFunction(Runtime& runtime) && {
   return std::move(*this).getFunction(runtime);
 }
 
-Value::Value(Value&& other) : Value(other.kind_) {
+Value::Value(Value&& other) noexcept : Value(other.kind_) {
   if (kind_ == BooleanKind) {
     data_.boolean = other.data_.boolean;
   } else if (kind_ == NumberKind) {
