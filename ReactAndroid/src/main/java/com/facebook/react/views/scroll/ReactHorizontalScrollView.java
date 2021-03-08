@@ -291,7 +291,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
     int scrollToY =
         pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
-    reactScrollTo(scrollToX, scrollToY);
+    scrollTo(scrollToX, scrollToY);
     ReactScrollViewHelper.emitLayoutEvent(this);
   }
 
@@ -1070,17 +1070,21 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   /**
-   * Calls `reactScrollTo` and updates state.
+   * Calls `super.scrollTo` and updates state.
    *
-   * <p>`reactScrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
-   * scroll view and state. Calling raw `reactScrollTo` doesn't update state.
+   * <p>`super.scrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
+   * scroll view and state.
+   *
+   * <p>Note that while we can override scrollTo, we *cannot* override `smoothScrollTo` because it
+   * is final. See `reactSmoothScrollTo`.
    */
-  public void reactScrollTo(int x, int y) {
+  @Override
+  public void scrollTo(int x, int y) {
     if (DEBUG_MODE) {
-      FLog.i(TAG, "reactScrollTo[%d] x %d y %d", getId(), x, y);
+      FLog.i(TAG, "scrollTo[%d] x %d y %d", getId(), x, y);
     }
 
-    scrollTo(x, y);
+    super.scrollTo(x, y);
     updateStateOnScroll(x, y);
     setPendingContentOffsets(x, y);
   }
