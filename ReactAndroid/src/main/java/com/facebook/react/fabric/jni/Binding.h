@@ -20,6 +20,7 @@
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
 #include "JBackgroundExecutor.h"
+#include "SurfaceHandlerBinding.h"
 
 namespace facebook {
 namespace react {
@@ -123,6 +124,10 @@ class Binding : public jni::HybridClass<Binding>,
   void renderTemplateToSurface(jint surfaceId, jstring uiTemplate);
 
   void stopSurface(jint surfaceId);
+
+  void registerSurface(SurfaceHandlerBinding *surfaceHandler);
+
+  void unregisterSurface(SurfaceHandlerBinding *surfaceHandler);
 
   void schedulerDidFinishTransaction(
       MountingCoordinator::Shared const &mountingCoordinator) override;

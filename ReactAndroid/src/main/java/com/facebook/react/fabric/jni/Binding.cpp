@@ -376,6 +376,14 @@ void Binding::stopSurface(jint surfaceId) {
   }
 }
 
+void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandler) {
+  surfaceHandler->registerScheduler(getScheduler());
+}
+
+void Binding::unregisterSurface(SurfaceHandlerBinding *surfaceHandler) {
+  surfaceHandler->unregisterScheduler(getScheduler());
+}
+
 static inline float scale(Float value, Float pointScaleFactor) {
   std::feclearexcept(FE_ALL_EXCEPT);
   float result = value * pointScaleFactor;
@@ -1214,21 +1222,24 @@ void Binding::schedulerDidSetIsJSResponder(
 }
 
 void Binding::registerNatives() {
-  registerHybrid(
-      {makeNativeMethod("initHybrid", Binding::initHybrid),
-       makeNativeMethod(
-           "installFabricUIManager", Binding::installFabricUIManager),
-       makeNativeMethod("startSurface", Binding::startSurface),
-       makeNativeMethod(
-           "startSurfaceWithConstraints", Binding::startSurfaceWithConstraints),
-       makeNativeMethod(
-           "renderTemplateToSurface", Binding::renderTemplateToSurface),
-       makeNativeMethod("stopSurface", Binding::stopSurface),
-       makeNativeMethod("setConstraints", Binding::setConstraints),
-       makeNativeMethod("setPixelDensity", Binding::setPixelDensity),
-       makeNativeMethod("driveCxxAnimations", Binding::driveCxxAnimations),
-       makeNativeMethod(
-           "uninstallFabricUIManager", Binding::uninstallFabricUIManager)});
+  registerHybrid({
+      makeNativeMethod("initHybrid", Binding::initHybrid),
+      makeNativeMethod(
+          "installFabricUIManager", Binding::installFabricUIManager),
+      makeNativeMethod("startSurface", Binding::startSurface),
+      makeNativeMethod(
+          "startSurfaceWithConstraints", Binding::startSurfaceWithConstraints),
+      makeNativeMethod(
+          "renderTemplateToSurface", Binding::renderTemplateToSurface),
+      makeNativeMethod("stopSurface", Binding::stopSurface),
+      makeNativeMethod("setConstraints", Binding::setConstraints),
+      makeNativeMethod("setPixelDensity", Binding::setPixelDensity),
+      makeNativeMethod("driveCxxAnimations", Binding::driveCxxAnimations),
+      makeNativeMethod(
+          "uninstallFabricUIManager", Binding::uninstallFabricUIManager),
+      makeNativeMethod("registerSurface", Binding::registerSurface),
+      makeNativeMethod("unregisterSurface", Binding::unregisterSurface),
+  });
 }
 
 } // namespace react

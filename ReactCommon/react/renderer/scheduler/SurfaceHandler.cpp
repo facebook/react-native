@@ -124,6 +124,11 @@ SurfaceId SurfaceHandler::getSurfaceId() const noexcept {
   return parameters_.surfaceId;
 }
 
+void SurfaceHandler::setSurfaceId(SurfaceId surfaceId) const noexcept {
+  std::unique_lock<better::shared_mutex> lock(parametersMutex_);
+  parameters_.surfaceId = surfaceId;
+}
+
 std::string SurfaceHandler::getModuleName() const noexcept {
   std::shared_lock<better::shared_mutex> lock(parametersMutex_);
   return parameters_.moduleName;

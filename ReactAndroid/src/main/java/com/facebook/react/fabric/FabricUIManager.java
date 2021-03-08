@@ -269,6 +269,39 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
+  public void startSurface(final View rootView, SurfaceHandler surfaceHandler) {
+    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+
+    Context context = rootView.getContext();
+    ThemedReactContext reactContext =
+        new ThemedReactContext(
+            mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
+    mMountingManager.startSurface(rootTag, rootView, reactContext);
+
+    surfaceHandler.setSurfaceId(rootTag);
+    if (surfaceHandler instanceof SurfaceHandlerBinding) {
+      mBinding.registerSurface((SurfaceHandlerBinding) surfaceHandler);
+    }
+    surfaceHandler.start();
+  }
+
+  public void stopSurface(SurfaceHandler surfaceHandler) {
+    if (!surfaceHandler.isRunning()) {
+      ReactSoftException.logSoftException(
+          FabricUIManager.TAG,
+          new IllegalStateException("Trying to stop surface that hasn't started yet"));
+      return;
+    }
+
+    mMountingManager.stopSurface(surfaceHandler.getSurfaceId());
+
+    surfaceHandler.stop();
+
+    if (surfaceHandler instanceof SurfaceHandlerBinding) {
+      mBinding.unregisterSurface((SurfaceHandlerBinding) surfaceHandler);
+    }
+  }
+
   /** Method called when an event has been dispatched on the C++ side. */
   @DoNotStrip
   @SuppressWarnings("unused")
