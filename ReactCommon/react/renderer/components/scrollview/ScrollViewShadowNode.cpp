@@ -33,8 +33,6 @@ void ScrollViewShadowNode::updateStateIfNeeded() {
 
 void ScrollViewShadowNode::updateScrollContentOffsetIfNeeded() {
 #ifndef ANDROID
-  react_native_assert(
-      children_->size() == 1 && "ScrollView only has single child");
   if (getLayoutMetrics().layoutDirection == LayoutDirection::RightToLeft) {
     // Yoga place `contentView` on the right side of `scrollView` when RTL
     // layout is enforced. To correct for this, in RTL setting, correct the
