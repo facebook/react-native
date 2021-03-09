@@ -1108,26 +1108,28 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int reactTag,
       final int initialReactTag,
       final boolean blockNativeResponder) {
-    addMountItem(
-        new MountItem() {
-          @Override
-          public void execute(MountingManager mountingManager) {
-            SurfaceMountingManager surfaceMountingManager =
-                mountingManager.getSurfaceManager(surfaceId);
-            if (surfaceMountingManager != null) {
-              surfaceMountingManager.setJSResponder(
-                  reactTag, initialReactTag, blockNativeResponder);
-            } else {
-              FLog.e(
-                  TAG, "setJSResponder skipped, surface no longer available [" + surfaceId + "]");
+    if (ReactFeatureFlags.enableJSResponder) {
+      addMountItem(
+          new MountItem() {
+            @Override
+            public void execute(MountingManager mountingManager) {
+              SurfaceMountingManager surfaceMountingManager =
+                  mountingManager.getSurfaceManager(surfaceId);
+              if (surfaceMountingManager != null) {
+                surfaceMountingManager.setJSResponder(
+                    reactTag, initialReactTag, blockNativeResponder);
+              } else {
+                FLog.e(
+                    TAG, "setJSResponder skipped, surface no longer available [" + surfaceId + "]");
+              }
             }
-          }
 
-          @Override
-          public int getSurfaceId() {
-            return surfaceId;
-          }
-        });
+            @Override
+            public int getSurfaceId() {
+              return surfaceId;
+            }
+          });
+    }
   }
 
   /**
@@ -1136,18 +1138,20 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    */
   @DoNotStrip
   public void clearJSResponder() {
-    addMountItem(
-        new MountItem() {
-          @Override
-          public void execute(MountingManager mountingManager) {
-            mountingManager.clearJSResponder();
-          }
+    if (ReactFeatureFlags.enableJSResponder) {
+      addMountItem(
+          new MountItem() {
+            @Override
+            public void execute(MountingManager mountingManager) {
+              mountingManager.clearJSResponder();
+            }
 
-          @Override
-          public int getSurfaceId() {
-            return View.NO_ID;
-          }
-        });
+            @Override
+            public int getSurfaceId() {
+              return View.NO_ID;
+            }
+          });
+    }
   }
 
   @Override
