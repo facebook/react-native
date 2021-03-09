@@ -269,7 +269,6 @@ class Button extends React.Component<ButtonProps> {
       nextFocusUp,
       disabled,
       testID,
-      accessibilityState = {},
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -280,6 +279,7 @@ class Button extends React.Component<ButtonProps> {
         buttonStyles.push({backgroundColor: color});
       }
     }
+    let accessibilityState = this.props.accessibilityState || {};
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
       textStyles.push(styles.textDisabled);
