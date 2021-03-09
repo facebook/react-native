@@ -23,6 +23,7 @@ const invariant = require('invariant');
 
 import type {PressEvent} from '../Types/CoreEventTypes';
 import type {ColorValue} from '../StyleSheet/StyleSheet';
+import type {AccessibilityState} from './View/ViewAccessibility';
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -122,6 +123,11 @@ type ButtonProps = $ReadOnly<{|
     Text to display for blindness accessibility features.
    */
   accessibilityLabel?: ?string,
+
+  /**
+    Indicates to accessibility services that UI Component is in a specific State.
+   */
+  accessibilityState?: ?AccessibilityState,
 
   /**
     If `true`, disable all interactions for this component.
