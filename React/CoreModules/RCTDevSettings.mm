@@ -119,7 +119,11 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
       _settings[key] = defaultValues[key];
     }
   }
-  [_userDefaults setObject:_settings forKey:kRCTDevSettingsUserDefaultsKey];
+
+  // TODO(macOS ISS#2323203): protect against race conditions where another thread holds a mutext trying to set this at the same time
+  RCTExecuteOnMainQueue(^{
+    [self->_userDefaults setObject:self->_settings forKey:kRCTDevSettingsUserDefaultsKey];
+  });
 }
 
 @end
