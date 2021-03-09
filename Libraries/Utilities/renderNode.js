@@ -15,7 +15,7 @@ const React = require('react');
 /**
  * A simple function that renders a React Node.
  * 
- * @param {string} Component - A React Node. Can be a React Component Class, a render function, or a rendered element.
+ * @param {React.ReactNode} Component - A React Node. Can be a React Component Class, a render function, or a rendered element.
  */
 function renderNode(Component?: React.ReactNode) {
   if (!Component) {
