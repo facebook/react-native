@@ -590,6 +590,11 @@ export type Props = $ReadOnly<{|
    */
   showsVerticalScrollIndicator?: ?boolean,
   /**
+   * When true, Sticky header is hidden when scrolling down, and dock at the top
+   * when scrolling up
+   */
+  stickyHeaderHiddenOnScroll?: ?boolean,
+  /**
    * An array of child indices determining which children get docked to the
    * top of the screen when scrolling. For example, passing
    * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
@@ -1642,6 +1647,7 @@ class ScrollView extends React.Component<Props, State> {
               onLayout={event => this._onStickyHeaderLayout(index, event, key)}
               scrollAnimatedValue={this._scrollAnimatedValue}
               inverted={this.props.invertStickyHeaders}
+              hiddenOnScroll={this.props.stickyHeaderHiddenOnScroll}
               scrollViewHeight={this.state.layoutHeight}>
               {child}
             </StickyHeaderComponent>
