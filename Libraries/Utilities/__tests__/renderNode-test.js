@@ -22,9 +22,7 @@ describe('renderNode', () => {
       }
     }
 
-    const component = ReactTestRenderer.create(
-      renderNode(Test),
-    );
+    const component = ReactTestRenderer.create(renderNode(Test));
     expect(component).toMatchSnapshot();
   });
 });
