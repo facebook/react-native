@@ -48,6 +48,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private static final ViewGroup.LayoutParams EMPTY_LAYOUT_PARAMS =
       new ViewGroup.LayoutParams(0, 0);
 
+  private static final ViewGroup.LayoutParams WRAP_CONTENT_LAYOUT_PARAMS =
+      new ViewGroup.LayoutParams(
+          ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
   private boolean mContainsImages;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
@@ -266,12 +270,14 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setText(ReactTextUpdate update) {
     mContainsImages = update.containsImages();
-    if (ReactFeatureFlags.enableSettingEmptyLayoutParams) {
-      // Android's TextView crashes when it tries to relayout if LayoutParams are
-      // null; explicitly set the LayoutParams to prevent this crash. See:
-      // https://github.com/facebook/react-native/pull/7011
-      if (getLayoutParams() == null) {
+    // Android's TextView crashes when it tries to relayout if LayoutParams are
+    // null; explicitly set the LayoutParams to prevent this crash. See:
+    // https://github.com/facebook/react-native/pull/7011
+    if (getLayoutParams() == null) {
+      if (ReactFeatureFlags.enableSettingEmptyLayoutParams) {
         setLayoutParams(EMPTY_LAYOUT_PARAMS);
+      } else {
+        setLayoutParams(WRAP_CONTENT_LAYOUT_PARAMS);
       }
     }
     Spannable spannable = update.getText();

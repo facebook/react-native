@@ -68,7 +68,7 @@ static std::string componentNameByReactViewName(std::string viewName) {
   }
 
   // TODO T63839307: remove this condition after deleting TextInlineImage from
-  // Paper
+  // non-Fabric code
   if (viewName == "TextInlineImage") {
     return "Image";
   }
@@ -94,9 +94,8 @@ static std::string componentNameByReactViewName(std::string viewName) {
 
   // We need this temporarily for testing purposes until we have proper
   // implementation of core components.
-  if (viewName == "ScrollContentView" ||
-      viewName == "AndroidHorizontalScrollContentView" // Android
-  ) {
+  // iOS-only
+  if (viewName == "ScrollContentView") {
     return "View";
   }
 

@@ -134,7 +134,9 @@ public class DisabledDevSupportManager implements DevSupportManager {
   public void loadSplitBundleFromServer(String bundlePath, DevSplitBundleCallback callback) {}
 
   @Override
-  public void isPackagerRunning(final PackagerStatusCallback callback) {}
+  public void isPackagerRunning(final PackagerStatusCallback callback) {
+    callback.onPackagerStatusFetched(false);
+  }
 
   @Override
   public @Nullable File downloadBundleResourceFromUrlSync(

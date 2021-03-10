@@ -6,6 +6,7 @@
  */
 
 #include "YogaLayoutableShadowNode.h"
+#include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/conversions.h>
@@ -715,7 +716,7 @@ void YogaLayoutableShadowNode::ensureConsistency() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenOwnersConsistency() const {
-#ifndef NDEBUG
+#ifdef REACT_NATIVE_DEBUG
   // Checking that all Yoga node children have the same `owner`.
   // The owner might be not equal to the `yogaNode_` though.
   auto &yogaChildren = yogaNode_.getChildren();
@@ -730,7 +731,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenOwnersConsistency() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
-#ifndef NDEBUG
+#ifdef REACT_NATIVE_DEBUG
   // Checking that the shapes of Yoga node children object look fine.
   // This is the only heuristic that might produce false-positive results
   // (really broken dangled nodes might look fine). This is useful as an early
@@ -748,7 +749,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenAlighment() const {
-#ifndef NDEBUG
+#ifdef REACT_NATIVE_DEBUG
   // If the node is not a leaf node, checking that:
   // - All children are `YogaLayoutableShadowNode` subclasses.
   // - All Yoga children are owned/connected to corresponding children of

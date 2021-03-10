@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableMap;
+import javax.annotation.Nullable;
 
 /**
  * This is a wrapper that can be used for passing State objects from Fabric C++ core to
@@ -19,11 +20,20 @@ public interface StateWrapper {
   /**
    * Get a ReadableNativeMap object from the C++ layer, which is a K/V map of string keys to values.
    */
-  ReadableNativeMap getState();
+  @Nullable
+  ReadableNativeMap getStateData();
 
   /**
    * Pass a map of values back to the C++ layer. The operation is performed synchronously and cannot
    * fail.
    */
   void updateState(WritableMap map);
+
+  /**
+   * Mark state as unused and clean up in Java and in native. This should be called as early as
+   * possible when you know a StateWrapper will no longer be used. If there's ANY chance of it being
+   * used legitimately, don't destroy it! It is expected that all StateWrappers are destroyed
+   * immediately upon stopSurface.
+   */
+  void destroyState();
 }

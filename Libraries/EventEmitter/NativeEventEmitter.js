@@ -66,6 +66,7 @@ export default class NativeEventEmitter<TEventToArgsMap: {...}>
       remove: () => {
         if (subscription != null) {
           this._nativeModule?.removeListeners(1);
+          // $FlowFixMe[incompatible-use]
           subscription.remove();
           subscription = null;
         }

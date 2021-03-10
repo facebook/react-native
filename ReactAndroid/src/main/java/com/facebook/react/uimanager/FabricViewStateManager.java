@@ -88,7 +88,7 @@ public class FabricViewStateManager {
     setState(mStateWrapper, stateUpdateCallback, 0);
   }
 
-  public @Nullable ReadableMap getState() {
-    return mStateWrapper != null ? mStateWrapper.getState() : null;
+  public @Nullable ReadableMap getStateData() {
+    return mStateWrapper != null ? mStateWrapper.getStateData() : null;
   }
 }

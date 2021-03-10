@@ -166,6 +166,16 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+#if RCT_ENABLE_INSPECTOR
+// In bridgeless mode, `setBridge` is not called, so dev server connection
+// must be kicked off here.
+- (void)setBundleURL:(NSURL *)bundleURL
+{
+  _bundleURL = bundleURL;
+  [RCTInspectorDevServerHelper connectWithBundleURL:_bundleURL];
+}
+#endif
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];

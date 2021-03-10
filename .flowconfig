@@ -48,6 +48,7 @@ suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
 experimental.abstract_locations=true
+experimental.new_signatures=true
 
 [lints]
 sketchy-null-number=warn
@@ -70,4 +71,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.145.0
+^0.146.0

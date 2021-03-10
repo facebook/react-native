@@ -58,6 +58,9 @@ void SurfaceHandler::start() const noexcept {
     std::unique_lock<better::shared_mutex> lock(linkMutex_);
     react_native_assert(
         link_.status == Status::Registered && "Surface must be registered.");
+    react_native_assert(
+        getLayoutConstraints().layoutDirection != LayoutDirection::Undefined &&
+        "layoutDirection must be set.");
 
     auto parameters = Parameters{};
     {
@@ -119,6 +122,11 @@ DisplayMode SurfaceHandler::getDisplayMode() const noexcept {
 SurfaceId SurfaceHandler::getSurfaceId() const noexcept {
   std::shared_lock<better::shared_mutex> lock(parametersMutex_);
   return parameters_.surfaceId;
+}
+
+void SurfaceHandler::setSurfaceId(SurfaceId surfaceId) const noexcept {
+  std::unique_lock<better::shared_mutex> lock(parametersMutex_);
+  parameters_.surfaceId = surfaceId;
 }
 
 std::string SurfaceHandler::getModuleName() const noexcept {

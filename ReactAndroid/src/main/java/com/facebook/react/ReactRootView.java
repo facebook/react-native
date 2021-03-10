@@ -27,7 +27,6 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -52,6 +51,7 @@ import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -420,21 +420,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return mState;
   }
 
-  @UiThread
-  public static Point getViewportOffset(View v) {
-    int[] locationInWindow = new int[2];
-    v.getLocationInWindow(locationInWindow);
-
-    // we need to subtract visibleWindowCoords - to subtract possible window insets, split
-    // screen or multi window
-    Rect visibleWindowFrame = new Rect();
-    v.getWindowVisibleDisplayFrame(visibleWindowFrame);
-    locationInWindow[0] -= visibleWindowFrame.left;
-    locationInWindow[1] -= visibleWindowFrame.top;
-
-    return new Point(locationInWindow[0], locationInWindow[1]);
-  }
-
   /**
    * Call whenever measure specs change, or if you want to force an update of offsetX/offsetY. If
    * measureSpecsChanged is false and the offsetX/offsetY don't change, updateRootLayoutSpecs will
@@ -472,7 +457,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         int offsetX = 0;
         int offsetY = 0;
         if (getUIManagerType() == FABRIC) {
-          Point viewportOffset = getViewportOffset(this);
+          Point viewportOffset = RootViewUtil.getViewportOffset(this);
           offsetX = viewportOffset.x;
           offsetY = viewportOffset.y;
         }
