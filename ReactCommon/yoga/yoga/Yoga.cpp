@@ -3557,7 +3557,8 @@ static void YGNodelayoutImpl(
   if (performLayout) {
     // STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN
     for (auto child : node->getChildren()) {
-      if (child->getStyle().positionType() != YGPositionTypeAbsolute) {
+      if (child->getStyle().display() == YGDisplayNone ||
+          child->getStyle().positionType() != YGPositionTypeAbsolute) {
         continue;
       }
       YGNodeAbsoluteLayoutChild(
