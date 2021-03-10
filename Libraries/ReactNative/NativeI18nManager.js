@@ -15,6 +15,7 @@ export interface Spec extends TurboModule {
   +getConstants: () => {|
     isRTL: boolean,
     doLeftAndRightSwapInRTL: boolean,
+    localeIdentifier: ?string,
   |};
   allowRTL: (allowRTL: boolean) => void;
   forceRTL: (forceRTL: boolean) => void;
