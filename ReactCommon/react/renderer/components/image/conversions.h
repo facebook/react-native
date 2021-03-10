@@ -50,7 +50,7 @@ inline void fromRawValue(const RawValue &value, ImageSource &result) {
         items.at("scale").hasType<Float>()) {
       result.scale = (Float)items.at("scale");
     } else {
-      result.scale = items.find("deprecated") != items.end() ? 0.0 : 1.0;
+      result.scale = items.find("deprecated") != items.end() ? 0.0f : 1.0f;
     }
 
     if (items.find("url") != items.end() &&
