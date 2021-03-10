@@ -330,7 +330,7 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 	return "Order Planned";
     }
 	
-	public String RevertOrders(String adhocOrderId) {
+	public String RevertOrders (String adhocOrderId) {
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		String queryStr = "DELETE FROM AdhocOrders ad WHERE ad.fwoNum=:fwoNum";
