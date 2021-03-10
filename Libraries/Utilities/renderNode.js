@@ -5,35 +5,30 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict
+ * @flow
  */
 
 'use strict';
 
 const React = require('react');
 
+type ReactNode = React.ComponentType<any> | React.Element<any> | boolean | null;
+
 /**
  * A simple function that renders a React Node.
  *
- * @param {React.ReactNode} Component - A React Node. Can be a React Component Class, a render function, or a rendered element.
+ * @param {ReactNode} Component - Can be a React Component Class, a render function, or a rendered element.
  */
-function renderNode(
-  // $FlowFixMe
-  Component?: React.ReactNode,
-): React.ElementType | null {
-  // $FlowFixMe
+function renderNode(Component?: ReactNode): React.Element<any> | null {
   if (!Component) {
     return null;
   } else if (
     React.isValidElement(Component) ||
     typeof Component !== 'function'
   ) {
-    return Component;
+    return (Component: any);
   } else {
-    return (
-      // $FlowFixMe
-      <Component />
-    );
+    return <Component />;
   }
 }
 

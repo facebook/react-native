@@ -889,10 +889,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               inversionStyle,
               this.props.ListHeaderComponentStyle,
             )}>
-            {
-              // $FlowFixMe - Typing ReactNativeComponent revealed errors
-              element
-            }
+            {element}
           </View>
         </VirtualizedListCellContextProvider>,
       );
@@ -1020,10 +1017,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               inversionStyle,
               this.props.ListFooterComponentStyle,
             )}>
-            {
-              // $FlowFixMe - Typing ReactNativeComponent revealed errors
-              element
-            }
+            {element}
           </View>
         </VirtualizedListCellContextProvider>,
       );
