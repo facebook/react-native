@@ -8,6 +8,7 @@
 package com.facebook.react.modules.i18nmanager;
 
 import android.content.Context;
+import android.os.Build;
 import com.facebook.react.bridge.ContextBaseJavaModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -36,7 +37,12 @@ public class I18nManagerModule extends ContextBaseJavaModule {
   @Override
   public Map<String, Object> getConstants() {
     final Context context = getContext();
-    final Locale locale = context.getResources().getConfiguration().locale;
+    final Locale locale;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      locale = context.getResources().getConfiguration().getLocales().get(0);
+    } else {
+      locale = context.getResources().getConfiguration().locale;
+    }
 
     final Map<String, Object> constants = MapBuilder.newHashMap();
     constants.put("isRTL", sharedI18nUtilInstance.isRTL(context));
