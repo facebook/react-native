@@ -103,6 +103,11 @@ if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
   fi
 fi
 
+# Set up the fnm node version manager if present
+if [ -x "$(command -v fnm)" ]; then
+  eval "$(fnm env)"
+fi
+
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null
 source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
