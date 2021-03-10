@@ -14,13 +14,16 @@ const React = require('react');
 
 /**
  * A simple function that renders a React Node.
- * 
+ *
  * @param {React.ReactNode} Component - A React Node. Can be a React Component Class, a render function, or a rendered element.
  */
 function renderNode(Component?: React.ReactNode) {
   if (!Component) {
     return null;
-  } else if (React.isValidElement(Component) || typeof Component !== 'function') {
+  } else if (
+    React.isValidElement(Component) ||
+    typeof Component !== 'function'
+  ) {
     return Component;
   } else {
     return (
@@ -29,5 +32,5 @@ function renderNode(Component?: React.ReactNode) {
     );
   }
 }
- 
+
 module.exports = renderNode;
