@@ -8,10 +8,8 @@
  * @flow
  */
 
-'use strict';
-
 const React = require('react');
-const {AsyncStorage} = require('react-native');
+import {AsyncStorage} from 'react-native';
 
 export type PassProps<State> = {
   state: State,
@@ -59,7 +57,11 @@ function createContainer<Props: Object, State>(
     _passSetState = (stateLamda: (state: State) => State): void => {
       this.setState(state => {
         const value = stateLamda(state.value);
-        AsyncStorage.setItem(this._cacheKey, JSON.stringify(value));
+        AsyncStorage.setItem(
+          this._cacheKey,
+          // $FlowFixMe[incompatible-call] Error surfaced when typing AsyncStorage
+          JSON.stringify(value),
+        );
         return {value};
       });
     };

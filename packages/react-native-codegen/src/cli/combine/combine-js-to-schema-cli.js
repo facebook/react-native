@@ -19,6 +19,19 @@ const path = require('path');
 
 const [outfile, ...fileList] = process.argv.slice(2);
 
+function filterJSFile(file) {
+  return (
+    /^(Native.+|.+NativeComponent)/.test(path.basename(file)) &&
+    // NativeUIManager will be deprecated by Fabric UIManager.
+    // For now, ignore this spec completely because the types are not fully supported.
+    !file.endsWith('NativeUIManager.js') &&
+    // NativeSampleTurboModule is for demo purpose. It should be added manually to the
+    // app for now.
+    !file.endsWith('NativeSampleTurboModule.js') &&
+    !file.includes('__tests')
+  );
+}
+
 const allFiles = [];
 fileList.forEach(file => {
   if (fs.lstatSync(file).isDirectory()) {
@@ -26,13 +39,9 @@ fileList.forEach(file => {
       .sync(`${file}/**/*.js`, {
         nodir: true,
       })
-      .filter(
-        f =>
-          /^(Native.+|.+NativeComponent)/.test(path.basename(f)) &&
-          !f.includes('__tests'),
-      );
+      .filter(filterJSFile);
     allFiles.push(...dirFiles);
-  } else {
+  } else if (filterJSFile(file)) {
     allFiles.push(file);
   }
 });

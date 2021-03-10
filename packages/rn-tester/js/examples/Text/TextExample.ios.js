@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const TextAncestor = require('../../../../../Libraries/Text/TextAncestor');
+const TextAncestor = require('react-native/Libraries/Text/TextAncestor');
 const TextInlineView = require('../../components/TextInlineView');
 const TextLegend = require('../../components/TextLegend');
 
@@ -479,7 +479,9 @@ class TextWithCapBaseBox extends React.Component<*, *> {
   }
 }
 
-exports.title = '<Text>';
+exports.title = 'Text';
+exports.documentationURL = 'https://reactnative.dev/docs/text';
+exports.category = 'Basic';
 exports.description = 'Base component for rendering styled text.';
 exports.displayName = 'TextExample';
 exports.examples = [

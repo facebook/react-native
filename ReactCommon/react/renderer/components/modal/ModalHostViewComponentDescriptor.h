@@ -8,6 +8,7 @@
 #pragma once
 
 #include <glog/logging.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/components/modal/ModalHostViewShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -24,11 +25,12 @@ class ModalHostViewComponentDescriptor final
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 
   void adopt(UnsharedShadowNode shadowNode) const override {
-    assert(std::dynamic_pointer_cast<ModalHostViewShadowNode>(shadowNode));
+    react_native_assert(
+        std::dynamic_pointer_cast<ModalHostViewShadowNode>(shadowNode));
     auto modalShadowNode =
         std::static_pointer_cast<ModalHostViewShadowNode>(shadowNode);
 
-    assert(
+    react_native_assert(
         std::dynamic_pointer_cast<YogaLayoutableShadowNode>(modalShadowNode));
     auto layoutableShadowNode =
         std::static_pointer_cast<YogaLayoutableShadowNode>(modalShadowNode);

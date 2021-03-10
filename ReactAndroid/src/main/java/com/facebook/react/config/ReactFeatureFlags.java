@@ -23,6 +23,9 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
+  /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
+  public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
+
   /*
    * This feature flag enables logs for Fabric
    */
@@ -43,18 +46,6 @@ public class ReactFeatureFlags {
   public static boolean useViewManagerDelegatesForCommands = false;
 
   /**
-   * This react flag enables a custom algorithm for the getChildVisibleRect() method in the classes
-   * ReactViewGroup, ReactHorizontalScrollView and ReactScrollView.
-   *
-   * <p>This new algorithm clip child rects if overflow is set to ViewProps.HIDDEN. More details in
-   * https://github.com/facebook/react-native/issues/23870 and
-   * https://github.com/facebook/react-native/pull/26334
-   *
-   * <p>The react flag is disabled by default because this is increasing ANRs (T57363204)
-   */
-  public static boolean clipChildRectsIfOverflowIsHidden = false;
-
-  /**
    * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
    * remove this when bug is fixed
    */
@@ -63,12 +54,15 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
-  /** Feature flag to configure initialization of Fabric surfaces. */
-  public static boolean enableFabricStartSurfaceWithLayoutMetrics = true;
+  /** Enables Static ViewConfig in RN Android native code. */
+  public static boolean enableExperimentalStaticViewConfigs = false;
 
-  /** Feature flag to use stopSurface when ReactRootView is unmounted. */
-  public static boolean enableStopSurfaceOnRootViewUnmount = false;
+  /** Enables a more aggressive cleanup during destruction of ReactContext */
+  public static boolean enableReactContextCleanupFix = false;
 
-  /** Use experimental SetState retry mechanism in view? */
-  public static boolean enableExperimentalStateUpdateRetry = false;
+  /** Enables setting layout params to empty to fix a crash */
+  public static boolean enableSettingEmptyLayoutParams = false;
+
+  /** Enables JS Responder in Fabric */
+  public static boolean enableJSResponder = false;
 }

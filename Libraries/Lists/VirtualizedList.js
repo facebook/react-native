@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const Batchinator = require('../Interaction/Batchinator');
 const FillRateHelper = require('./FillRateHelper');
 const ReactNative = require('../Renderer/shims/ReactNative');
@@ -22,7 +20,6 @@ const ViewabilityHelper = require('./ViewabilityHelper');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
-const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('./VirtualizeUtils');
 
@@ -704,6 +701,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     } else if (this.props.onViewableItemsChanged) {
       this._viewabilityTuples.push({
         viewabilityHelper: new ViewabilityHelper(this.props.viewabilityConfig),
+        // $FlowFixMe[incompatible-call]
         onViewableItemsChanged: this.props.onViewableItemsChanged,
       });
     }
@@ -847,14 +845,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
+  _getSpacerKey = (isVertical: boolean): string =>
+    isVertical ? 'height' : 'width';
+
   render(): React.Node {
     if (__DEV__) {
       const flatStyles = flattenStyle(this.props.contentContainerStyle);
-      warning(
-        flatStyles == null || flatStyles.flexWrap !== 'wrap',
-        '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
-          'Consider using `numColumns` with `FlatList` instead.',
-      );
+      if (flatStyles != null && flatStyles.flexWrap === 'wrap') {
+        console.warn(
+          '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
+            'Consider using `numColumns` with `FlatList` instead.',
+        );
+      }
     }
     const {
       ListEmptyComponent,
@@ -903,7 +905,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (itemCount > 0) {
       _usedIndexForKey = false;
       _keylessItemComponentName = '';
-      const spacerKey = !horizontal ? 'height' : 'width';
+      const spacerKey = this._getSpacerKey(!horizontal);
       const lastInitialIndex = this.props.initialScrollIndex
         ? -1
         : this.props.initialNumToRender - 1;
@@ -931,9 +933,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
                 initBlock.offset -
                 (this.props.initialScrollIndex ? 0 : initBlock.length);
               cells.push(
-                /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment
-                 * suppresses an error found when Flow v0.111 was deployed. To
-                 * see the error, delete this comment and run Flow. */
                 <View key="$sticky_lead" style={{[spacerKey]: leadSpace}} />,
               );
               this._pushCells(
@@ -948,9 +947,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
                 this._getFrameMetricsApprox(first).offset -
                 (stickyBlock.offset + stickyBlock.length);
               cells.push(
-                /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment
-                 * suppresses an error found when Flow v0.111 was deployed. To
-                 * see the error, delete this comment and run Flow. */
                 <View key="$sticky_trail" style={{[spacerKey]: trailSpace}} />,
               );
               insertedStickySpacer = true;
@@ -964,9 +960,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             this._getFrameMetricsApprox(first).offset -
             (initBlock.offset + initBlock.length);
           cells.push(
-            /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.111 was deployed. To see
-             * the error, delete this comment and run Flow. */
             <View key="$lead_spacer" style={{[spacerKey]: firstSpace}} />,
           );
         }
@@ -1001,9 +994,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           endFrame.length -
           (lastFrame.offset + lastFrame.length);
         cells.push(
-          /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.111 was deployed. To see the error,
-           * delete this comment and run Flow. */
           <View key="$tail_spacer" style={{[spacerKey]: tailSpacerLength}} />,
         );
       }
@@ -1061,6 +1051,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       onScroll: this._onScroll,
       onScrollBeginDrag: this._onScrollBeginDrag,
       onScrollEndDrag: this._onScrollEndDrag,
+      onMomentumScrollBegin: this._onMomentumScrollBegin,
       onMomentumScrollEnd: this._onMomentumScrollEnd,
       scrollEventThrottle: this.props.scrollEventThrottle, // TODO: Android support
       invertStickyHeaders:
@@ -1222,10 +1213,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       invariant(
         typeof props.refreshing === 'boolean',
         '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' +
-          /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.111 was deployed. To see the error,
-           * delete this comment and run Flow. */
-          JSON.stringify(props.refreshing) +
+          JSON.stringify(props.refreshing ?? 'undefined') +
           '`',
       );
       return (
@@ -1662,6 +1650,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _onScrollEndDrag = (e): void => {
+    this._nestedChildLists.forEach(childList => {
+      childList.ref && childList.ref._onScrollEndDrag(e);
+    });
     const {velocity} = e.nativeEvent;
     if (velocity) {
       this._scrollMetrics.velocity = this._selectOffset(velocity);
@@ -1670,7 +1661,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this.props.onScrollEndDrag && this.props.onScrollEndDrag(e);
   };
 
+  _onMomentumScrollBegin = (e): void => {
+    this._nestedChildLists.forEach(childList => {
+      childList.ref && childList.ref._onMomentumScrollBegin(e);
+    });
+    this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
+  };
+
   _onMomentumScrollEnd = (e): void => {
+    this._nestedChildLists.forEach(childList => {
+      childList.ref && childList.ref._onMomentumScrollEnd(e);
+    });
     this._scrollMetrics.velocity = 0;
     this._computeBlankness();
     this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e);
@@ -1744,6 +1745,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             }
           }
           if (someChildHasMore) {
+            // $FlowFixMe[incompatible-use]
             newState.last = ii;
             break;
           }

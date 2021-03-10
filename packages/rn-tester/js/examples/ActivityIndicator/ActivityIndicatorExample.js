@@ -8,7 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
 import type {Node} from 'React';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import React, {Component} from 'react';
@@ -70,8 +69,10 @@ const styles = StyleSheet.create({
 });
 
 exports.displayName = (undefined: ?string);
+exports.category = 'UI';
 exports.framework = 'React';
-exports.title = '<ActivityIndicator>';
+exports.title = 'ActivityIndicator';
+exports.documentationURL = 'https://reactnative.dev/docs/activityindicator';
 exports.description = 'Animated loading indicators.';
 
 exports.examples = [

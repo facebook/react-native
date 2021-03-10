@@ -55,10 +55,8 @@ struct ShadowViewMutation final {
    * Creates and returns an `Update` mutation.
    */
   static ShadowViewMutation UpdateMutation(
-      ShadowView parentShadowView,
       ShadowView oldChildShadowView,
-      ShadowView newChildShadowView,
-      int index);
+      ShadowView newChildShadowView);
 
 #pragma mark - Type
 
@@ -70,7 +68,7 @@ struct ShadowViewMutation final {
   ShadowView parentShadowView = {};
   ShadowView oldChildShadowView = {};
   ShadowView newChildShadowView = {};
-  int index = {};
+  int index = -1;
 };
 
 using ShadowViewMutationList = std::vector<ShadowViewMutation>;

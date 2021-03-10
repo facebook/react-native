@@ -36,7 +36,6 @@ module.exports = {
     'source-map',
     'fastpath',
     'denodeify',
-    'fbjs',
   ],
   testEnvironment: 'node',
   collectCoverageFrom: ['Libraries/**/*.js'],

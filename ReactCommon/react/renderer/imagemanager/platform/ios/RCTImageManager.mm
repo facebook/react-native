@@ -16,7 +16,6 @@
 #import <react/renderer/imagemanager/ImageResponse.h>
 #import <react/renderer/imagemanager/ImageResponseObserver.h>
 
-#import "RCTImageInstrumentationProxy.h"
 #import "RCTImagePrimitivesConversions.h"
 
 using namespace facebook::react;
@@ -41,8 +40,15 @@ using namespace facebook::react;
 {
   SystraceSection s("RCTImageManager::requestImage");
 
-  auto imageInstrumentation = std::make_shared<RCTImageInstrumentationProxy>(_imageLoader);
-  auto imageRequest = ImageRequest(imageSource, imageInstrumentation);
+  NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
+  std::shared_ptr<ImageTelemetry> telemetry;
+  if ([self->_imageLoader shouldEnablePerfLoggingForRequestUrl:request.URL]) {
+    telemetry = std::make_shared<ImageTelemetry>(surfaceId);
+  } else {
+    telemetry = nullptr;
+  }
+
+  auto imageRequest = ImageRequest(imageSource, telemetry);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 
@@ -60,16 +66,15 @@ using namespace facebook::react;
    * T46024425 for more details.
    */
   dispatch_async(_backgroundSerialQueue, ^{
-    NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
-
-    auto completionBlock = ^(NSError *error, UIImage *image) {
+    auto completionBlock = ^(NSError *error, UIImage *image, id metadata) {
       auto observerCoordinator = weakObserverCoordinator.lock();
       if (!observerCoordinator) {
         return;
       }
 
       if (image && !error) {
-        observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image)));
+        auto wrappedMetadata = metadata ? wrapManagedObject(metadata) : nullptr;
+        observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image), wrappedMetadata));
       } else {
         observerCoordinator->nativeImageResponseFailed();
       }
@@ -99,10 +104,6 @@ using namespace facebook::react;
                                     completionBlock:completionBlock];
     RCTImageLoaderCancellationBlock cancelationBlock = loaderRequest.cancellationBlock;
     sharedCancelationFunction.assign([cancelationBlock]() { cancelationBlock(); });
-
-    if (imageInstrumentation) {
-      imageInstrumentation->setImageURLLoaderRequest(loaderRequest);
-    }
   });
 
   return imageRequest;

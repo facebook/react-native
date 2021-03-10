@@ -7,6 +7,7 @@
 
 #include "ComponentDescriptorRegistry.h"
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 
@@ -26,10 +27,10 @@ void ComponentDescriptorRegistry::add(
       {parameters_.eventDispatcher,
        parameters_.contextContainer,
        componentDescriptorProvider.flavor});
-  assert(
+  react_native_assert(
       componentDescriptor->getComponentHandle() ==
       componentDescriptorProvider.handle);
-  assert(
+  react_native_assert(
       componentDescriptor->getComponentName() ==
       componentDescriptorProvider.name);
 
@@ -67,7 +68,7 @@ static std::string componentNameByReactViewName(std::string viewName) {
   }
 
   // TODO T63839307: remove this condition after deleting TextInlineImage from
-  // Paper
+  // non-Fabric code
   if (viewName == "TextInlineImage") {
     return "Image";
   }
@@ -91,15 +92,10 @@ static std::string componentNameByReactViewName(std::string viewName) {
     return "PullToRefreshView";
   }
 
-  if (viewName == "AndroidProgressBar") {
-    return "ActivityIndicatorView";
-  }
-
   // We need this temporarily for testing purposes until we have proper
   // implementation of core components.
-  if (viewName == "ScrollContentView" ||
-      viewName == "AndroidHorizontalScrollContentView" // Android
-  ) {
+  // iOS-only
+  if (viewName == "ScrollContentView") {
     return "View";
   }
 
@@ -189,9 +185,9 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
   auto unifiedComponentName = componentNameByReactViewName(viewName);
   auto const &componentDescriptor = this->at(unifiedComponentName);
 
-  auto family = componentDescriptor.createFamily(
-      ShadowNodeFamilyFragment{tag, surfaceId, nullptr},
-      std::move(eventTarget));
+  auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
+  auto family =
+      componentDescriptor.createFamily(fragment, std::move(eventTarget));
   auto const props =
       componentDescriptor.cloneProps(nullptr, RawProps(propsDynamic));
   auto const state =

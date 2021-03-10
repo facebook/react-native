@@ -12,13 +12,13 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTBundleHolderModule.h>
+#import <React/RCTDevMenu.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
-
-#import <React/RCTDevMenu.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -114,7 +114,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 @end
 
-@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec> {
+@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec, RCTBundleHolderModule> {
   BOOL _isJSLoaded;
 #if ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _reloadToken;
@@ -127,6 +127,8 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 @end
 
 @implementation RCTDevSettings
+
+@synthesize bundleURL = _bundleURL;
 
 RCT_EXPORT_MODULE()
 
@@ -156,9 +158,23 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(jsLoaded:)
                                                  name:RCTJavaScriptDidLoadNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(jsLoaded:)
+                                                 name:@"RCTInstanceDidLoadBundle"
+                                               object:nil];
   }
   return self;
 }
+
+#if RCT_ENABLE_INSPECTOR
+// In bridgeless mode, `setBridge` is not called, so dev server connection
+// must be kicked off here.
+- (void)setBundleURL:(NSURL *)bundleURL
+{
+  _bundleURL = bundleURL;
+  [RCTInspectorDevServerHelper connectWithBundleURL:_bundleURL];
+}
+#endif
 
 - (void)setBridge:(RCTBridge *)bridge
 {
@@ -202,6 +218,7 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+  [super invalidate];
 #if ENABLE_PACKAGER_CONNECTION
   [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_reloadToken];
 #endif
@@ -242,7 +259,12 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)isHotLoadingAvailable
 {
-  return self.bridge.bundleURL && !self.bridge.bundleURL.fileURL; // Only works when running from server
+  if (self.bridge.bundleURL) {
+    return !self.bridge.bundleURL.fileURL; // Only works when running from server
+  } else if (self.bundleURL) {
+    return !self.bundleURL.fileURL;
+  }
+  return NO;
 }
 
 RCT_EXPORT_METHOD(reload)
@@ -327,9 +349,17 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
       if (enabled) {
-        [self.bridge enqueueJSCall:@"HMRClient" method:@"enable" args:@[] completion:NULL];
+        if (self.bridge) {
+          [self.bridge enqueueJSCall:@"HMRClient" method:@"enable" args:@[] completion:NULL];
+        } else if (self.invokeJS) {
+          self.invokeJS(@"HMRClient", @"enable", @[]);
+        }
       } else {
-        [self.bridge enqueueJSCall:@"HMRClient" method:@"disable" args:@[] completion:NULL];
+        if (self.bridge) {
+          [self.bridge enqueueJSCall:@"HMRClient" method:@"disable" args:@[] completion:NULL];
+        } else if (self.invokeJS) {
+          self.invokeJS(@"HMRClient", @"disable", @[]);
+        }
       }
 #pragma clang diagnostic pop
     }
@@ -349,7 +379,7 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   if (_isJSLoaded) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [self.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+    [[self.moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"toggleElementInspector" body:nil];
 #pragma clang diagnostic pop
   }
 }
@@ -357,11 +387,11 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 {
   __weak __typeof(self) weakSelf = self;
-  [self.bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:title
-                                                           handler:^{
-                                                             [weakSelf sendEventWithName:@"didPressMenuItem"
-                                                                                    body:@{@"title" : title}];
-                                                           }]];
+  [(RCTDevMenu *)[self.moduleRegistry moduleForName:"DevMenu"]
+      addItem:[RCTDevMenuItem buttonItemWithTitle:title
+                                          handler:^{
+                                            [weakSelf sendEventWithName:@"didPressMenuItem" body:@{@"title" : title}];
+                                          }]];
 }
 
 - (BOOL)isElementInspectorShown
@@ -405,17 +435,18 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 
 - (void)setupHMRClientWithBundleURL:(NSURL *)bundleURL
 {
-  if (bundleURL && !bundleURL.fileURL) { // isHotLoadingAvailable check
+  if (bundleURL && !bundleURL.fileURL) {
     NSString *const path = [bundleURL.path substringFromIndex:1]; // Strip initial slash.
     NSString *const host = bundleURL.host;
     NSNumber *const port = bundleURL.port;
+    BOOL isHotLoadingEnabled = self.isHotLoadingEnabled;
     if (self.bridge) {
       [self.bridge enqueueJSCall:@"HMRClient"
                           method:@"setup"
-                            args:@[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]
+                            args:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]
                       completion:NULL];
     } else {
-      self.invokeJS(@"HMRClient", @"setup", @[ @"ios", path, host, RCTNullIfNil(port), @(YES) ]);
+      self.invokeJS(@"HMRClient", @"setup", @[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]);
     }
   }
 }
@@ -448,7 +479,10 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 
 - (void)jsLoaded:(NSNotification *)notification
 {
-  if (notification.userInfo[@"bridge"] != self.bridge) {
+  // In bridge mode, the bridge that sent the notif must be the same as the one stored in this module.
+  // In bridgless mode, we don't care about this.
+  if ([notification.name isEqualToString:RCTJavaScriptDidLoadNotification] &&
+      notification.userInfo[@"bridge"] != self.bridge) {
     return;
   }
 
@@ -461,7 +495,8 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
     if ([self isElementInspectorShown]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      [self.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+      [[self.moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"toggleElementInspector"
+                                                                                body:nil];
 #pragma clang diagnostic pop
     }
   });

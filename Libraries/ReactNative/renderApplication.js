@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const AppContainer = require('./AppContainer');
 import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
@@ -30,12 +28,14 @@ function renderApplication<Props: Object>(
   showArchitectureIndicator?: boolean,
   scopedPerformanceLogger?: IPerformanceLogger,
   isLogBox?: boolean,
+  debugName?: string,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
-  const renderable = (
-    <PerformanceLoggerContext.Provider
-      value={scopedPerformanceLogger ?? GlobalPerformanceLogger}>
+  const performanceLogger = scopedPerformanceLogger ?? GlobalPerformanceLogger;
+
+  let renderable = (
+    <PerformanceLoggerContext.Provider value={performanceLogger}>
       <AppContainer
         rootTag={rootTag}
         fabric={fabric}
@@ -48,13 +48,25 @@ function renderApplication<Props: Object>(
     </PerformanceLoggerContext.Provider>
   );
 
-  GlobalPerformanceLogger.startTimespan('renderApplication_React_render');
+  if (__DEV__ && debugName) {
+    const RootComponentWithMeaningfulName = ({children}) => children;
+    RootComponentWithMeaningfulName.displayName = `${debugName}(RootComponent)`;
+    renderable = (
+      <RootComponentWithMeaningfulName>
+        {renderable}
+      </RootComponentWithMeaningfulName>
+    );
+  }
+
+  performanceLogger.startTimespan('renderApplication_React_render');
+  performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
+
   if (fabric) {
     require('../Renderer/shims/ReactFabric').render(renderable, rootTag);
   } else {
     require('../Renderer/shims/ReactNative').render(renderable, rootTag);
   }
-  GlobalPerformanceLogger.stopTimespan('renderApplication_React_render');
+  performanceLogger.stopTimespan('renderApplication_React_render');
 }
 
 module.exports = renderApplication;

@@ -52,6 +52,8 @@ public class Binding {
       float maxWidth,
       float minHeight,
       float maxHeight,
+      float offsetX,
+      float offsetY,
       boolean isRTL,
       boolean doLeftAndRightSwapInRTL);
 
@@ -67,12 +69,13 @@ public class Binding {
       float maxWidth,
       float minHeight,
       float maxHeight,
+      float offsetX,
+      float offsetY,
       boolean isRTL,
       boolean doLeftAndRightSwapInRTL);
 
   public native void driveCxxAnimations();
 
-  // TODO (T67721598) Remove the jsContext param once we've migrated to using RuntimeExecutor
   public void register(
       @NonNull RuntimeExecutor runtimeExecutor,
       @NonNull FabricUIManager fabricUIManager,
@@ -88,6 +91,7 @@ public class Binding {
         jsMessageQueueThread,
         componentFactory,
         reactNativeConfig);
+
     setPixelDensity(PixelUtil.getDisplayMetricDensity());
   }
 
@@ -96,4 +100,8 @@ public class Binding {
   public void unregister() {
     uninstallFabricUIManager();
   }
+
+  public native void registerSurface(SurfaceHandlerBinding surfaceHandler);
+
+  public native void unregisterSurface(SurfaceHandlerBinding surfaceHandler);
 }

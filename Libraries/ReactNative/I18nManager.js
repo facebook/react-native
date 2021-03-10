@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import NativeI18nManager from './NativeI18nManager';
 
 const i18nConstants: {|

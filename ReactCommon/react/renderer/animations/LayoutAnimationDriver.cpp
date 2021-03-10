@@ -25,99 +25,10 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 #include <glog/logging.h>
+#include <react/debug/react_native_assert.h>
 
 namespace facebook {
 namespace react {
-
-static double
-getProgressFromValues(double start, double end, double currentValue) {
-  auto opacityMinmax = std::minmax({start, end});
-  auto min = opacityMinmax.first;
-  auto max = opacityMinmax.second;
-  return (
-      currentValue < min
-          ? 0
-          : (currentValue > max ? 0 : ((max - currentValue) / (max - min))));
-}
-
-/**
- * Given an animation and a ShadowView with properties set on it, detect how
- * far through the animation the ShadowView has progressed.
- *
- * @param mutationsList
- * @param now
- */
-double LayoutAnimationDriver::getProgressThroughAnimation(
-    AnimationKeyFrame const &keyFrame,
-    LayoutAnimation const *layoutAnimation,
-    ShadowView const &animationStateView) const {
-  auto layoutAnimationConfig = layoutAnimation->layoutAnimationConfig;
-  auto const mutationConfig =
-      *(keyFrame.type == AnimationConfigurationType::Delete
-            ? layoutAnimationConfig.deleteConfig
-            : (keyFrame.type == AnimationConfigurationType::Create
-                   ? layoutAnimationConfig.createConfig
-                   : layoutAnimationConfig.updateConfig));
-
-  auto initialProps = keyFrame.viewStart.props;
-  auto finalProps = keyFrame.viewEnd.props;
-
-  if (mutationConfig.animationProperty == AnimationProperty::Opacity) {
-    // Detect progress through opacity animation.
-    const auto &oldViewProps =
-        dynamic_cast<const ViewProps *>(initialProps.get());
-    const auto &newViewProps =
-        dynamic_cast<const ViewProps *>(finalProps.get());
-    const auto &animationStateViewProps =
-        dynamic_cast<const ViewProps *>(animationStateView.props.get());
-    if (oldViewProps != nullptr && newViewProps != nullptr &&
-        animationStateViewProps != nullptr) {
-      return getProgressFromValues(
-          oldViewProps->opacity,
-          newViewProps->opacity,
-          animationStateViewProps->opacity);
-    }
-  } else if (
-      mutationConfig.animationProperty != AnimationProperty::NotApplicable) {
-    // Detect progress through layout animation.
-    LayoutMetrics const &finalLayoutMetrics = keyFrame.viewEnd.layoutMetrics;
-    LayoutMetrics const &baselineLayoutMetrics =
-        keyFrame.viewStart.layoutMetrics;
-    LayoutMetrics const &animationStateLayoutMetrics =
-        animationStateView.layoutMetrics;
-
-    if (baselineLayoutMetrics.frame.size.height !=
-        finalLayoutMetrics.frame.size.height) {
-      return getProgressFromValues(
-          baselineLayoutMetrics.frame.size.height,
-          finalLayoutMetrics.frame.size.height,
-          animationStateLayoutMetrics.frame.size.height);
-    }
-    if (baselineLayoutMetrics.frame.size.width !=
-        finalLayoutMetrics.frame.size.width) {
-      return getProgressFromValues(
-          baselineLayoutMetrics.frame.size.width,
-          finalLayoutMetrics.frame.size.width,
-          animationStateLayoutMetrics.frame.size.width);
-    }
-    if (baselineLayoutMetrics.frame.origin.x !=
-        finalLayoutMetrics.frame.origin.x) {
-      return getProgressFromValues(
-          baselineLayoutMetrics.frame.origin.x,
-          finalLayoutMetrics.frame.origin.x,
-          animationStateLayoutMetrics.frame.origin.x);
-    }
-    if (baselineLayoutMetrics.frame.origin.y !=
-        finalLayoutMetrics.frame.origin.y) {
-      return getProgressFromValues(
-          baselineLayoutMetrics.frame.origin.y,
-          finalLayoutMetrics.frame.origin.y,
-          animationStateLayoutMetrics.frame.origin.y);
-    }
-  }
-
-  return 0;
-}
 
 void LayoutAnimationDriver::animationMutationsForFrame(
     SurfaceId surfaceId,
@@ -127,10 +38,16 @@ void LayoutAnimationDriver::animationMutationsForFrame(
     if (animation.surfaceId != surfaceId) {
       continue;
     }
+    if (animation.completed) {
+      continue;
+    }
 
     int incompleteAnimations = 0;
-    for (const auto &keyframe : animation.keyFrames) {
+    for (auto &keyframe : animation.keyFrames) {
       if (keyframe.type == AnimationConfigurationType::Noop) {
+        continue;
+      }
+      if (keyframe.invalidated) {
         continue;
       }
 
@@ -140,7 +57,7 @@ void LayoutAnimationDriver::animationMutationsForFrame(
       // The contract with the "keyframes generation" phase is that any animated
       // node will have a valid configuration.
       auto const layoutAnimationConfig = animation.layoutAnimationConfig;
-      auto const mutationConfig =
+      auto const &mutationConfig =
           (keyframe.type == AnimationConfigurationType::Delete
                ? layoutAnimationConfig.deleteConfig
                : (keyframe.type == AnimationConfigurationType::Create
@@ -149,19 +66,27 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
       // Interpolate
       std::pair<double, double> progress =
-          calculateAnimationProgress(now, animation, *mutationConfig);
+          calculateAnimationProgress(now, animation, mutationConfig);
       double animationTimeProgressLinear = progress.first;
       double animationInterpolationFactor = progress.second;
 
       auto mutatedShadowView = createInterpolatedShadowView(
-          animationInterpolationFactor,
-          *mutationConfig,
-          baselineShadowView,
-          finalShadowView);
+          animationInterpolationFactor, baselineShadowView, finalShadowView);
 
       // Create the mutation instruction
-      mutationsList.push_back(ShadowViewMutation::UpdateMutation(
-          keyframe.parentView, baselineShadowView, mutatedShadowView, -1));
+      auto updateMutation = ShadowViewMutation::UpdateMutation(
+          keyframe.viewPrev, mutatedShadowView);
+
+      // All generated Update mutations must have an "old" and "new"
+      // ShadowView. Checking for nonzero tag doesn't guarantee that the views
+      // are valid/correct, just that something is there.
+      react_native_assert(updateMutation.oldChildShadowView.tag > 0);
+      react_native_assert(updateMutation.newChildShadowView.tag > 0);
+
+      mutationsList.push_back(updateMutation);
+      PrintMutationInstruction("Animation Progress:", updateMutation);
+
+      keyframe.viewPrev = mutatedShadowView;
 
       if (animationTimeProgressLinear < 1) {
         incompleteAnimations++;
@@ -183,8 +108,44 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
       // Queue up "final" mutations for all keyframes in the completed animation
       for (auto const &keyframe : animation.keyFrames) {
+        if (keyframe.invalidated) {
+          continue;
+        }
         if (keyframe.finalMutationForKeyFrame.hasValue()) {
-          mutationsList.push_back(*keyframe.finalMutationForKeyFrame);
+          auto const &finalMutationForKeyFrame =
+              *keyframe.finalMutationForKeyFrame;
+          PrintMutationInstruction(
+              "Animation Complete: Queuing up Final Mutation:",
+              finalMutationForKeyFrame);
+
+          // Copy so that if something else mutates the inflight animations, it
+          // won't change this mutation after this point.
+          auto mutation = ShadowViewMutation{
+              finalMutationForKeyFrame.type,
+              finalMutationForKeyFrame.parentShadowView,
+              keyframe.viewPrev,
+              finalMutationForKeyFrame.newChildShadowView,
+              finalMutationForKeyFrame.index};
+          react_native_assert(mutation.oldChildShadowView.tag > 0);
+          react_native_assert(
+              mutation.newChildShadowView.tag > 0 ||
+              finalMutationForKeyFrame.type == ShadowViewMutation::Remove ||
+              finalMutationForKeyFrame.type == ShadowViewMutation::Delete);
+          mutationsList.push_back(mutation);
+        } else {
+          // Issue a final UPDATE so that the final props object sent to the
+          // mounting layer is the same as the one on the ShadowTree. This is
+          // mostly to make the MountingCoordinator StubViewTree assertions
+          // pass.
+          auto mutation = ShadowViewMutation{
+              ShadowViewMutation::Type::Update,
+              keyframe.parentView,
+              keyframe.viewPrev,
+              keyframe.viewEnd,
+              -1};
+          react_native_assert(mutation.oldChildShadowView.tag > 0);
+          react_native_assert(mutation.newChildShadowView.tag > 0);
+          mutationsList.push_back(mutation);
         }
       }
 
@@ -193,6 +154,13 @@ void LayoutAnimationDriver::animationMutationsForFrame(
       it++;
     }
   }
+
+  // Final step: make sure that all operations execute in the proper order.
+  // REMOVE operations with highest indices must operate first.
+  std::stable_sort(
+      mutationsList.begin(),
+      mutationsList.end(),
+      &shouldFirstComeBeforeSecondMutation);
 }
 
 } // namespace react

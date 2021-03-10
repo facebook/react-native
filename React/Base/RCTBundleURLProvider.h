@@ -37,7 +37,17 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
  */
 - (NSString *)packagerServerHost;
 
-+ (BOOL)isPackagerRunning:(NSString *)host;
+/**
+ * Return the server host with optional port. If its a development build and there's no jsLocation defined,
+ * it will return the server host IP address
+ */
+- (NSString *)packagerServerHostPort;
+
+/**
+ * Returns if there's a packager running at the given host port.
+ * The port is optional, if not specified, kRCTBundleURLProviderDefaultPort will be used
+ */
++ (BOOL)isPackagerRunning:(NSString *)hostPort;
 
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and

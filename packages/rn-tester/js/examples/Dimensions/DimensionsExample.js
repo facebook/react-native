@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import {Dimensions, Text, useWindowDimensions} from 'react-native';
 import * as React from 'react';
 
@@ -41,6 +39,8 @@ class DimensionsSubscription extends React.Component<
 }
 
 exports.title = 'Dimensions';
+exports.category = 'UI';
+exports.documentationURL = 'https://reactnative.dev/docs/dimensions';
 exports.description = 'Dimensions of the viewport';
 exports.examples = [
   {
