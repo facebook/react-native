@@ -740,13 +740,40 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
 
 - (RCTBorderColors)borderColors
 {
-  CGColorRef resolvedBorderTopColor = _borderTopColor.CGColor;
-  CGColorRef resolvedBorderRightColor = _borderRightColor.CGColor;
-  CGColorRef resolvedBorderBottomColor = _borderBottomColor.CGColor;
-  CGColorRef resolvedBorderLeftColor = _borderLeftColor.CGColor;
-  CGColorRef resolvedBorderStartColor = _borderStartColor.CGColor;
-  CGColorRef resolvedBorderEndColor = _borderEndColor.CGColor;
-  CGColorRef resolvedBorderColor = _borderColor.CGColor;
+  CGColorRef resolvedBorderTopColor;
+  CGColorRef resolvedBorderRightColor;
+  CGColorRef resolvedBorderBottomColor;
+  CGColorRef resolvedBorderLeftColor;
+  CGColorRef resolvedBorderStartColor;
+  CGColorRef resolvedBorderEndColor;
+  CGColorRef resolvedBorderColor;
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+  if (@available(iOS 13.0, *)) {
+    resolvedBorderTopColor = [_borderTopColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+    resolvedBorderRightColor = [_borderRightColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+    resolvedBorderBottomColor = [_borderBottomColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+    resolvedBorderLeftColor = [_borderLeftColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+    resolvedBorderStartColor = [_borderStartColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+    resolvedBorderEndColor = [_borderEndColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+    resolvedBorderColor = [_borderColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+  } else {
+    resolvedBorderTopColor = _borderTopColor.CGColor;
+    resolvedBorderRightColor = _borderRightColor.CGColor;
+    resolvedBorderBottomColor = _borderBottomColor.CGColor;
+    resolvedBorderLeftColor = _borderLeftColor.CGColor;
+    resolvedBorderStartColor = _borderStartColor.CGColor;
+    resolvedBorderEndColor = _borderEndColor.CGColor;
+    resolvedBorderColor = _borderColor.CGColor;
+  }
+#else
+  resolvedBorderTopColor = _borderTopColor.CGColor;
+  resolvedBorderRightColor = _borderRightColor.CGColor;
+  resolvedBorderBottomColor = _borderBottomColor.CGColor;
+  resolvedBorderLeftColor = _borderLeftColor.CGColor;
+  resolvedBorderStartColor = _borderStartColor.CGColor;
+  resolvedBorderEndColor = _borderEndColor.CGColor;
+  resolvedBorderColor = _borderColor.CGColor;
+#endif
     
   const BOOL isRTL = _reactLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
 
