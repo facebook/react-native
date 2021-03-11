@@ -10,7 +10,12 @@
 'use strict';
 
 const React = require('react');
-const {StyleSheet, View, PlatformColor, DynamicColorIOS} = require('react-native');
+const {
+  StyleSheet,
+  View,
+  PlatformColor,
+  DynamicColorIOS,
+} = require('react-native');
 
 const styles = StyleSheet.create({
   box: {
@@ -178,7 +183,7 @@ const styles = StyleSheet.create({
   },
   border16: {
     borderWidth: 10,
-    borderColor: DynamicColorIOS({ light: 'magenta', dark: 'cyan' }),
+    borderColor: DynamicColorIOS({light: 'magenta', dark: 'cyan'}),
   },
 });
 
