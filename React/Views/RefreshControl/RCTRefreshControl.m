@@ -21,6 +21,7 @@
   BOOL _refreshingProgrammatically;
   NSString *_title;
   UIColor *_titleColor;
+  CGFloat _progressViewOffset;
 }
 
 - (instancetype)init
@@ -40,6 +41,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+  [self _applyProgressViewOffset];
 
   // If the control is refreshing when mounted we need to call
   // beginRefreshing in layoutSubview or it doesn't work.
@@ -120,6 +122,19 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   }
 }
 
+- (void)_applyProgressViewOffset
+{
+  // progressViewOffset must be converted from the ScrollView parent's coordinate space to
+  // the coordinate space of the RefreshControl. This ensures that the control respects any
+  // offset in the view hierarchy, and that progressViewOffset is not inadvertently applied
+  // multiple times.
+  UIView *scrollView = self.superview;
+  UIView *target = scrollView.superview;
+  CGPoint rawOffset = CGPointMake(0, _progressViewOffset);
+  CGPoint converted = [self convertPoint:rawOffset fromView:target];
+  self.frame = CGRectOffset(self.frame, 0, converted.y);
+}
+
 - (NSString *)title
 {
   return _title;
@@ -170,6 +185,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 {
   _currentRefreshingState = refreshing;
   _currentRefreshingStateTimestamp = _currentRefreshingStateClock++;
+}
+
+- (void)setProgressViewOffset:(CGFloat)offset
+{
+  _progressViewOffset = offset;
+  [self _applyProgressViewOffset];
 }
 
 - (void)refreshControlValueChanged
