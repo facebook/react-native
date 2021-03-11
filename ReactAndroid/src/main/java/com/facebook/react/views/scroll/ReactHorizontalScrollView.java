@@ -525,6 +525,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public void fling(int velocityX) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "fling[%d] velocityX %d", getId(), velocityX);
+    }
 
     // Workaround.
     // On Android P if a ScrollView is inverted, we will get a wrong sign for
@@ -707,6 +710,15 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * runnable that checks if we scrolled in the last frame and if so assumes we are still scrolling.
    */
   private void handlePostTouchScrolling(int velocityX, int velocityY) {
+    if (DEBUG_MODE) {
+      FLog.i(
+          TAG,
+          "handlePostTouchScrolling[%d] velocityX %d velocityY %d",
+          getId(),
+          velocityX,
+          velocityY);
+    }
+
     // Check if we are already handling this which may occur if this is called by both the touch up
     // and a fling call
     if (mPostTouchRunnable != null) {
@@ -820,6 +832,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * scrolling, and handling any momentum scrolling.
    */
   private void smoothScrollAndSnap(int velocity) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "smoothScrollAndSnap[%d] velocity %d", getId(), velocity);
+    }
+
     double interval = (double) getSnapInterval();
     double currentOffset = (double) (getPostAnimationScrollX());
     double targetOffset = (double) predictFinalScrollPosition(velocity);
@@ -865,6 +881,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   private void flingAndSnap(int velocityX) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "smoothScrollAndSnap[%d] velocityX %d", getId(), velocityX);
+    }
+
     if (getChildCount() <= 0) {
       return;
     }
@@ -998,6 +1018,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   private void smoothScrollToNextPage(int direction) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "smoothScrollToNextPage[%d] direction %d", getId(), direction);
+    }
+
     int width = getWidth();
     int currentX = getScrollX();
 
@@ -1133,6 +1157,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * @param y
    */
   private void setPendingContentOffsets(int x, int y) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "setPendingContentOffsets[%d] x %d y %d", getId(), x, y);
+    }
     View child = getContentView();
     if (child != null && child.getWidth() != 0 && child.getHeight() != 0) {
       pendingContentOffsetX = UNSET_CONTENT_OFFSET;
@@ -1147,6 +1174,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
    */
   private void updateStateOnScroll(final int scrollX, final int scrollY) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "updateStateOnScroll[%d] scrollX %d scrollY %d", getId(), scrollX, scrollY);
+    }
+
     // Dedupe events to reduce JNI traffic
     if (scrollX == mLastStateUpdateScrollX && scrollY == mLastStateUpdateScrollY) {
       return;
