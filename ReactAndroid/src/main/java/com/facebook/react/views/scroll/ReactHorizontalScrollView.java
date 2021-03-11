@@ -54,11 +54,15 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private static boolean DEBUG_MODE = false && ReactBuildConfig.DEBUG;
   private static String TAG = ReactHorizontalScrollView.class.getSimpleName();
 
+  private static int NO_SCROLL_POSITION = Integer.MIN_VALUE;
+
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
   private static final String CONTENT_OFFSET_LEFT = "contentOffsetLeft";
   private static final String CONTENT_OFFSET_TOP = "contentOffsetTop";
   private int mLayoutDirection;
+
+  private int mScrollXAfterMeasure = NO_SCROLL_POSITION;
 
   private static final int UNSET_CONTENT_OFFSET = -1;
 
@@ -275,13 +279,45 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
           measuredHeight);
     }
 
+    boolean measuredHeightChanged = getMeasuredHeight() != measuredHeight;
+
     setMeasuredDimension(measuredWidth, measuredHeight);
+
+    // See how `mScrollXAfterMeasure` is used in `onLayout`, and why we only enable the
+    // hack if the height has changed.
+    if (measuredHeightChanged && mScroller != null) {
+      mScrollXAfterMeasure = mScroller.getCurrX();
+    }
   }
 
   @Override
   protected void onLayout(boolean changed, int l, int t, int r, int b) {
     if (DEBUG_MODE) {
       FLog.i(TAG, "onLayout[%d] l %d t %d r %d b %d", getId(), l, t, r, b);
+    }
+
+    // Has the scrollX changed between the last onMeasure and this layout?
+    // If so, cancel the animation.
+    // Essentially, if the height changes (due to keyboard popping up, for instance) the
+    // underlying View.layout method will in some cases scroll to an incorrect X position -
+    // see also the hacks in `fling`. The order of layout is called in the order of: onMeasure,
+    // layout, onLayout.
+    // We cannot override `layout` but we can detect the sequence of events between onMeasure
+    // and onLayout.
+    if (mScrollXAfterMeasure != NO_SCROLL_POSITION
+        && mScroller != null
+        && mScrollXAfterMeasure != mScroller.getFinalX()
+        && !mScroller.isFinished()) {
+      if (DEBUG_MODE) {
+        FLog.i(
+            TAG,
+            "onLayout[%d] scroll hack enabled: reset to previous scrollX position of %d",
+            getId(),
+            mScrollXAfterMeasure);
+      }
+      mScroller.startScroll(mScrollXAfterMeasure, mScroller.getFinalY(), 0, 0);
+      mScroller.forceFinished(true);
+      mScrollXAfterMeasure = NO_SCROLL_POSITION;
     }
 
     // Call with the present values in order to re-layout if necessary
