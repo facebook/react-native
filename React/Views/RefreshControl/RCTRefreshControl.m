@@ -43,24 +43,17 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   [super layoutSubviews];
   [self _applyProgressViewOffset];
 
+  // Fix for bug #7976
+  if (self.backgroundColor == nil) {
+    self.backgroundColor = [UIColor clearColor];
+  }
+  
   // If the control is refreshing when mounted we need to call
   // beginRefreshing in layoutSubview or it doesn't work.
   if (_currentRefreshingState && _isInitialRender) {
     [self beginRefreshingProgrammatically];
   }
   _isInitialRender = false;
-}
-
-- (void)didMoveToWindow
-{
-  [super didMoveToWindow];
-
-  // Since iOS 14 there seems to be a bug where refresh control becomes
-  // visible if the view gets removed from window then added back again.
-  // Calling endRefreshing fixes the layout.
-  if (!_currentRefreshingState) {
-    [super endRefreshing];
-  }
 }
 
 - (void)beginRefreshingProgrammatically
