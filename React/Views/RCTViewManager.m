@@ -258,14 +258,6 @@ RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
     view.layer.cornerRadius = json ? [RCTConvert CGFloat:json] : defaultView.layer.cornerRadius;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(borderColor, CGColor, RCTView)
-{
-  if ([view respondsToSelector:@selector(setBorderColor:)]) {
-    view.borderColor = json ? [RCTConvert CGColor:json] : defaultView.borderColor;
-  } else {
-    view.layer.borderColor = json ? [RCTConvert CGColor:json] : defaultView.layer.borderColor;
-  }
-}
 RCT_CUSTOM_VIEW_PROPERTY(borderWidth, float, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderWidth:)]) {
@@ -300,12 +292,7 @@ RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RCTView)
       view.border##SIDE##Width = json ? [RCTConvert CGFloat:json] : defaultView.border##SIDE##Width; \
     }                                                                                                \
   }                                                                                                  \
-  RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Color, UIColor, RCTView)                                    \
-  {                                                                                                  \
-    if ([view respondsToSelector:@selector(setBorder##SIDE##Color:)]) {                              \
-      view.border##SIDE##Color = json ? [RCTConvert CGColor:json] : defaultView.border##SIDE##Color; \
-    }                                                                                                \
-  }
+  RCT_EXPORT_VIEW_PROPERTY(border##SIDE##Color, UIColor)                                             \
 
 RCT_VIEW_BORDER_PROPERTY(Top)
 RCT_VIEW_BORDER_PROPERTY(Right)
@@ -313,6 +300,7 @@ RCT_VIEW_BORDER_PROPERTY(Bottom)
 RCT_VIEW_BORDER_PROPERTY(Left)
 RCT_VIEW_BORDER_PROPERTY(Start)
 RCT_VIEW_BORDER_PROPERTY(End)
+RCT_EXPORT_VIEW_PROPERTY(borderColor, UIColor)
 
 #define RCT_VIEW_BORDER_RADIUS_PROPERTY(SIDE)                                                          \
   RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Radius, CGFloat, RCTView)                                     \

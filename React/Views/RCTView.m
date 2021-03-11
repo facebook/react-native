@@ -100,6 +100,13 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 @implementation RCTView {
   UIColor *_backgroundColor;
+  UIColor *_borderTopColor;
+  UIColor *_borderRightColor;
+  UIColor *_borderBottomColor;
+  UIColor *_borderLeftColor;
+  UIColor *_borderStartColor;
+  UIColor *_borderEndColor;
+  UIColor *_borderColor;
   NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsNameMap;
   NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsLabelMap;
 }
@@ -126,6 +133,13 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _hitTestEdgeInsets = UIEdgeInsetsZero;
 
     _backgroundColor = super.backgroundColor;
+    _borderTopColor = nil;
+    _borderRightColor = nil;
+    _borderBottomColor = nil;
+    _borderLeftColor = nil;
+    _borderStartColor = nil;
+    _borderEndColor = nil;
+    _borderColor = nil;
   }
 
   return self;
@@ -726,31 +740,39 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
 
 - (RCTBorderColors)borderColors
 {
+  CGColorRef resolvedBorderTopColor = _borderTopColor.CGColor;
+  CGColorRef resolvedBorderRightColor = _borderRightColor.CGColor;
+  CGColorRef resolvedBorderBottomColor = _borderBottomColor.CGColor;
+  CGColorRef resolvedBorderLeftColor = _borderLeftColor.CGColor;
+  CGColorRef resolvedBorderStartColor = _borderStartColor.CGColor;
+  CGColorRef resolvedBorderEndColor = _borderEndColor.CGColor;
+  CGColorRef resolvedBorderColor = _borderColor.CGColor;
+    
   const BOOL isRTL = _reactLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
 
   if ([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
-    const CGColorRef borderStartColor = _borderStartColor ?: _borderLeftColor;
-    const CGColorRef borderEndColor = _borderEndColor ?: _borderRightColor;
+    const CGColorRef borderStartColor = resolvedBorderStartColor ?: resolvedBorderLeftColor;
+    const CGColorRef borderEndColor = resolvedBorderEndColor ?: resolvedBorderRightColor;
 
     const CGColorRef directionAwareBorderLeftColor = isRTL ? borderEndColor : borderStartColor;
     const CGColorRef directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor;
 
     return (RCTBorderColors){
-        _borderTopColor ?: _borderColor,
-        directionAwareBorderLeftColor ?: _borderColor,
-        _borderBottomColor ?: _borderColor,
-        directionAwareBorderRightColor ?: _borderColor,
+      resolvedBorderTopColor ?: resolvedBorderColor,
+        directionAwareBorderLeftColor ?: resolvedBorderColor,
+      resolvedBorderBottomColor ?: resolvedBorderColor,
+        directionAwareBorderRightColor ?: resolvedBorderColor,
     };
   }
 
-  const CGColorRef directionAwareBorderLeftColor = isRTL ? _borderEndColor : _borderStartColor;
-  const CGColorRef directionAwareBorderRightColor = isRTL ? _borderStartColor : _borderEndColor;
+  const CGColorRef directionAwareBorderLeftColor = isRTL ? resolvedBorderEndColor : resolvedBorderStartColor;
+  const CGColorRef directionAwareBorderRightColor = isRTL ? resolvedBorderStartColor : resolvedBorderEndColor;
 
   return (RCTBorderColors){
-      _borderTopColor ?: _borderColor,
-      directionAwareBorderLeftColor ?: _borderLeftColor ?: _borderColor,
-      _borderBottomColor ?: _borderColor,
-      directionAwareBorderRightColor ?: _borderRightColor ?: _borderColor,
+      resolvedBorderTopColor ?: resolvedBorderColor,
+      directionAwareBorderLeftColor ?: resolvedBorderLeftColor ?: resolvedBorderColor,
+    resolvedBorderBottomColor ?: resolvedBorderColor,
+      directionAwareBorderRightColor ?: resolvedBorderRightColor ?: resolvedBorderColor,
   };
 }
 
@@ -903,13 +925,12 @@ static void RCTUpdateShadowPathForView(RCTView *view)
 #pragma mark Border Color
 
 #define setBorderColor(side)                                \
-  -(void)setBorder##side##Color : (CGColorRef)color         \
+  -(void)setBorder##side##Color : (UIColor*)color           \
   {                                                         \
-    if (CGColorEqualToColor(_border##side##Color, color)) { \
+    if ([_borderColor isEqual:color]) {                     \
       return;                                               \
     }                                                       \
-    CGColorRelease(_border##side##Color);                   \
-    _border##side##Color = CGColorRetain(color);            \
+    _border##side##Color = color;                           \
     [self.layer setNeedsDisplay];                           \
   }
 
@@ -960,16 +981,5 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
   }
 
                                 setBorderStyle()
-
-    - (void)dealloc
-{
-  CGColorRelease(_borderColor);
-  CGColorRelease(_borderTopColor);
-  CGColorRelease(_borderRightColor);
-  CGColorRelease(_borderBottomColor);
-  CGColorRelease(_borderLeftColor);
-  CGColorRelease(_borderStartColor);
-  CGColorRelease(_borderEndColor);
-}
 
 @end
