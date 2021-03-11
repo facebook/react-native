@@ -603,7 +603,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     if (DEBUG_MODE) {
       FLog.i(
           TAG,
-          "onOverScrolled[%d] scrollX %d scrollY %d clampedX %d clampedY %d",
+          "onOverScrolled[%d] scrollX %d scrollY %d clampedX %b clampedY %b",
           getId(),
           scrollX,
           scrollY,
