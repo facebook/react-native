@@ -12,6 +12,7 @@
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/conversions.h>
+#include <react/renderer/mounting/TransactionTelemetry.h>
 #include <react/utils/LayoutManager.h>
 
 using namespace facebook::jni;
@@ -34,8 +35,19 @@ TextMeasurement TextLayoutManager::measure(
   auto measurement = measureCache_.get(
       {attributedString, paragraphAttributes, layoutConstraints},
       [&](TextMeasureCacheKey const &key) {
-        return doMeasure(
-            attributedString, paragraphAttributes, layoutConstraints);
+        auto telemetry = TransactionTelemetry::threadLocalTelemetry();
+        if (telemetry) {
+          telemetry->willMeasureText();
+        }
+
+        auto measurement =
+            doMeasure(attributedString, paragraphAttributes, layoutConstraints);
+
+        if (telemetry) {
+          telemetry->didMeasureText();
+        }
+
+        return measurement;
       });
 
   measurement.size = layoutConstraints.clamp(measurement.size);

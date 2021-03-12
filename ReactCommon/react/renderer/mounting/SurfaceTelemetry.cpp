@@ -16,6 +16,7 @@ void SurfaceTelemetry::incorporate(
     TransactionTelemetry const &telemetry,
     int numberOfMutations) {
   layoutTime_ += telemetry.getLayoutEndTime() - telemetry.getLayoutStartTime();
+  textMeasureTime_ += telemetry.getTextMeasureTime();
   commitTime_ += telemetry.getCommitEndTime() - telemetry.getCommitStartTime();
   diffTime_ += telemetry.getDiffEndTime() - telemetry.getDiffStartTime();
   mountTime_ += telemetry.getMountEndTime() - telemetry.getMountStartTime();
@@ -35,6 +36,10 @@ void SurfaceTelemetry::incorporate(
 
 TelemetryDuration SurfaceTelemetry::getLayoutTime() const {
   return layoutTime_;
+}
+
+TelemetryDuration SurfaceTelemetry::getTextMeasureTime() const {
+  return textMeasureTime_;
 }
 
 TelemetryDuration SurfaceTelemetry::getCommitTime() const {

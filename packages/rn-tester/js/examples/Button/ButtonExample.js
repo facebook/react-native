@@ -174,6 +174,29 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Button with accessibilityState={{disabled: true}}',
+    description: ('Note: This prop will announce on TalkBack that the button is disabled. ' +
+      'The "disabled" prop has higher precedence on the state of the component': string),
+    render: function(): React.Node {
+      return (
+        <RNTesterThemeContext.Consumer>
+          {theme => {
+            return (
+              <Button
+                accessibilityState={{disabled: true}}
+                onPress={() => onButtonPress('submitted')}
+                testID="accessibilityState_button"
+                color={theme.LinkColor}
+                title="Submit Application"
+                accessibilityLabel="Press to submit your application!"
+              />
+            );
+          }}
+        </RNTesterThemeContext.Consumer>
+      );
+    },
+  },
 ];
 
 const styles = StyleSheet.create({

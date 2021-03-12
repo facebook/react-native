@@ -10,6 +10,7 @@ package com.facebook.react.devsupport;
 import android.content.Context;
 import android.text.SpannedString;
 import androidx.annotation.Nullable;
+import com.facebook.react.devsupport.interfaces.ErrorType;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 
 /**
@@ -18,21 +19,6 @@ import com.facebook.react.devsupport.interfaces.StackFrame;
  * setRedBoxHandler in ReactInstanceManager.
  */
 public interface RedBoxHandler {
-  enum ErrorType {
-    JS("JS"),
-    NATIVE("Native");
-
-    private final String name;
-
-    ErrorType(String name) {
-      this.name = name;
-    }
-
-    public String getName() {
-      return name;
-    }
-  }
-
   /** Callback interface for {@link #reportRedbox}. */
   interface ReportCompletedListener {
     void onReportSuccess(SpannedString spannedString);

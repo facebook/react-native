@@ -10,6 +10,7 @@
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/EventHandler.h>
 #include <react/renderer/core/ShadowNode.h>
 
@@ -110,6 +111,7 @@ inline static SharedEventTarget eventTargetFromValue(
     jsi::Runtime &runtime,
     jsi::Value const &eventTargetValue,
     jsi::Value const &tagValue) {
+  react_native_assert(!eventTargetValue.isNull());
   if (eventTargetValue.isNull()) {
     return nullptr;
   }

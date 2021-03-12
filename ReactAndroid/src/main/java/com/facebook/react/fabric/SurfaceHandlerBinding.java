@@ -22,13 +22,11 @@ public class SurfaceHandlerBinding implements SurfaceHandler {
   private static final int NO_SURFACE_ID = 0;
 
   @DoNotStrip private final HybridData mHybridData;
-  private final float mPixelDensity;
 
   private static native HybridData initHybrid(int surfaceId, String moduleName);
 
-  public SurfaceHandlerBinding(String moduleName, float pixelDensity) {
+  public SurfaceHandlerBinding(String moduleName) {
     mHybridData = initHybrid(NO_SURFACE_ID, moduleName);
-    mPixelDensity = pixelDensity;
   }
 
   @Override
@@ -80,17 +78,18 @@ public class SurfaceHandlerBinding implements SurfaceHandler {
       int offsetX,
       int offsetY,
       boolean doLeftAndRightSwapInRTL,
-      boolean isRTL) {
+      boolean isRTL,
+      float pixelDensity) {
     setLayoutConstraintsNative(
-        getMinSize(widthMeasureSpec) / mPixelDensity,
-        getMaxSize(widthMeasureSpec) / mPixelDensity,
-        getMinSize(heightMeasureSpec) / mPixelDensity,
-        getMaxSize(heightMeasureSpec) / mPixelDensity,
-        offsetX / mPixelDensity,
-        offsetY / mPixelDensity,
+        getMinSize(widthMeasureSpec) / pixelDensity,
+        getMaxSize(widthMeasureSpec) / pixelDensity,
+        getMinSize(heightMeasureSpec) / pixelDensity,
+        getMaxSize(heightMeasureSpec) / pixelDensity,
+        offsetX / pixelDensity,
+        offsetY / pixelDensity,
         doLeftAndRightSwapInRTL,
         isRTL,
-        mPixelDensity);
+        pixelDensity);
   }
 
   private native void setLayoutConstraintsNative(

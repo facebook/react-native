@@ -16,6 +16,7 @@ import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
+import com.facebook.react.devsupport.interfaces.ErrorType;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
@@ -151,6 +152,11 @@ public class DisabledDevSupportManager implements DevSupportManager {
 
   @Override
   public @Nullable StackFrame[] getLastErrorStack() {
+    return null;
+  }
+
+  @Override
+  public @Nullable ErrorType getLastErrorType() {
     return null;
   }
 

@@ -36,6 +36,7 @@ class TransactionTelemetry final {
   void willCommit();
   void didCommit();
   void willLayout();
+  void willMeasureText();
   void didMeasureText();
   void didLayout();
   void willMount();
@@ -55,6 +56,7 @@ class TransactionTelemetry final {
   TelemetryTimePoint getMountStartTime() const;
   TelemetryTimePoint getMountEndTime() const;
 
+  TelemetryDuration getTextMeasureTime() const;
   int getNumberOfTextMeasurements() const;
   int getRevisionNumber() const;
 
@@ -67,6 +69,9 @@ class TransactionTelemetry final {
   TelemetryTimePoint layoutEndTime_{kTelemetryUndefinedTimePoint};
   TelemetryTimePoint mountStartTime_{kTelemetryUndefinedTimePoint};
   TelemetryTimePoint mountEndTime_{kTelemetryUndefinedTimePoint};
+
+  TelemetryTimePoint lastTextMeasureStartTime_{kTelemetryUndefinedTimePoint};
+  TelemetryDuration textMeasureTime_{0};
 
   int numberOfTextMeasurements_{0};
   int revisionNumber_{0};

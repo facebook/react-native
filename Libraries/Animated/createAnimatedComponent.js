@@ -53,8 +53,16 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
   );
 
   class AnimatedComponent extends React.Component<Object> {
+    constructor(props) {
+      super(props);
+      this._waitForUpdate();
+      this._attachProps(this.props);
+      this._lastProps = this.props;
+    }
+
     _component: any; // TODO T53738161: flow type this, and the whole file
     _invokeAnimatedPropsCallbackOnMount: boolean = false;
+    _lastProps: Object;
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
@@ -174,10 +182,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _attachProps(nextProps) {
       const oldPropsAnimated = this._propsAnimated;
 
-      if (nextProps === oldPropsAnimated) {
-        return;
-      }
-
       this._propsAnimated = new AnimatedProps(
         nextProps,
         this._animatedPropsCallback,
@@ -219,6 +223,11 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     });
 
     render() {
+      if (this._lastProps !== this.props) {
+        this._waitForUpdate();
+        this._attachProps(this.props);
+        this._lastProps = this.props;
+      }
       const {style = {}, ...props} = this._propsAnimated.__getValue() || {};
       const {style: passthruStyle = {}, ...passthruProps} =
         this.props.passthroughAnimatedPropExplicitValues || {};
@@ -263,11 +272,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       );
     }
 
-    UNSAFE_componentWillMount() {
-      this._waitForUpdate();
-      this._attachProps(this.props);
-    }
-
     componentDidMount() {
       if (this._invokeAnimatedPropsCallbackOnMount) {
         this._invokeAnimatedPropsCallbackOnMount = false;
@@ -277,11 +281,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       this._propsAnimated.setNativeView(this._component);
       this._attachNativeEvents();
       this._markUpdateComplete();
-    }
-
-    UNSAFE_componentWillReceiveProps(newProps) {
-      this._waitForUpdate();
-      this._attachProps(newProps);
     }
 
     componentDidUpdate(prevProps) {

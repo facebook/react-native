@@ -43,5 +43,6 @@ public interface SurfaceHandler {
       int offsetX,
       int offsetY,
       boolean doLeftAndRightSwapInRTL,
-      boolean isRTL);
+      boolean isRTL,
+      float pixelDensity);
 }
