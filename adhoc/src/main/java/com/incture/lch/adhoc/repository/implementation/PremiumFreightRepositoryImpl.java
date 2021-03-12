@@ -82,7 +82,7 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 		return premiumFreightOrderDto;
 	}
 
-	
+	 
 
 	// List of all the Premium Freight Orders based on the PlannerEmail
 	@SuppressWarnings({ "unchecked", "rawtypes" })
