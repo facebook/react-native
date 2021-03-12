@@ -2,12 +2,19 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://reactnative.dev/blog</id>
     <title>React Native Blog</title>
-    <updated>2021-03-08T00:00:00.000Z</updated>
+    <updated>2021-03-11T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://reactnative.dev/blog"/>
     <subtitle>React Native Blog</subtitle>
     <icon>https://reactnative.dev/img/favicon.ico</icon>
     <rights>Copyright © 2021 Facebook, Inc.</rights>
+    <entry>
+        <title type="html"><![CDATA[Announcing React Native 0.64 with Hermes on iOS]]></title>
+        <id>Announcing React Native 0.64 with Hermes on iOS</id>
+        <link href="https://reactnative.dev/blog/2021/03/11/version-0.64"/>
+        <updated>2021-03-11T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Today we’re releasing React Native 0.64 that ships with support for Hermes on iOS.]]></summary>
+    </entry>
     <entry>
         <title type="html"><![CDATA[The GAAD Pledge - Improving React Native Accessibility]]></title>
         <id>The GAAD Pledge - Improving React Native Accessibility</id>

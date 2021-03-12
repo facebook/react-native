@@ -4,10 +4,17 @@
         <title>React Native Blog</title>
         <link>https://reactnative.dev/blog</link>
         <description>React Native Blog</description>
-        <lastBuildDate>Mon, 08 Mar 2021 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 11 Mar 2021 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>Copyright © 2021 Facebook, Inc.</copyright>
+        <item>
+            <title><![CDATA[Announcing React Native 0.64 with Hermes on iOS]]></title>
+            <link>https://reactnative.dev/blog/2021/03/11/version-0.64</link>
+            <guid>Announcing React Native 0.64 with Hermes on iOS</guid>
+            <pubDate>Thu, 11 Mar 2021 00:00:00 GMT</pubDate>
+            <description><![CDATA[Today we’re releasing React Native 0.64 that ships with support for Hermes on iOS.]]></description>
+        </item>
         <item>
             <title><![CDATA[The GAAD Pledge - Improving React Native Accessibility]]></title>
             <link>https://reactnative.dev/blog/2021/03/08/GAAD-React-Native-Accessibility</link>
