@@ -1135,7 +1135,13 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand
   }
 
   NSArray *args = [@[ reactTag ] arrayByAddingObjectsFromArray:commandArgs];
-  [method invokeWithBridge:_bridge module:componentData.manager arguments:args];
+  if (moduleData.methodQueue) {
+    dispatch_async(moduleData.methodQueue, ^{
+      [method invokeWithBridge:self->_bridge module:componentData.manager arguments:args];
+    });
+  } else {
+    [method invokeWithBridge:_bridge module:componentData.manager arguments:args];
+  }
 }
 
 - (void)batchDidComplete
