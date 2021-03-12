@@ -20,6 +20,7 @@ const ViewabilityHelper = require('./ViewabilityHelper');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
+import VirtualizedListInjection from './VirtualizedListInjection';
 
 const {computeWindowedRenderLimits} = require('./VirtualizeUtils');
 
@@ -1312,8 +1313,32 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           const scrollMetrics = this._convertParentScrollMetrics(
             this.context.getScrollMetrics(),
           );
-          this._scrollMetrics.visibleLength = scrollMetrics.visibleLength;
-          this._scrollMetrics.offset = scrollMetrics.offset;
+
+          const metricsChanged =
+            this._scrollMetrics.visibleLength !== scrollMetrics.visibleLength ||
+            this._scrollMetrics.offset !== scrollMetrics.offset;
+
+          if (metricsChanged) {
+            this._scrollMetrics.visibleLength = scrollMetrics.visibleLength;
+            this._scrollMetrics.offset = scrollMetrics.offset;
+
+            if (
+              VirtualizedListInjection?.unstable_enableVirtualizedListRemeasureChildrenIfNeeded
+            ) {
+              // If metrics of the scrollView changed, then we triggered remeasure for child list
+              // to ensure VirtualizedList has the right information.
+              this._cellKeysToChildListKeys.forEach(childListKeys => {
+                if (childListKeys) {
+                  for (let childKey of childListKeys) {
+                    const childList = this._nestedChildLists.get(childKey);
+                    childList &&
+                      childList.ref &&
+                      childList.ref.measureLayoutRelativeToContainingList();
+                  }
+                }
+              });
+            }
+          }
         },
         error => {
           console.warn(
