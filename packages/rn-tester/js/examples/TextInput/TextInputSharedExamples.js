@@ -124,18 +124,23 @@ class RewriteExampleInvalidCharacters extends React.Component<
 > {
   constructor(props) {
     super(props);
-    this.state = {text: ''};
+    this.state = {text: '', focused: false};
   }
   render() {
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
+          accessible={true}
+          accessibilityState={{selected: this.state.focused}}
+          showSoftInputOnFocus={false}
           testID="rewrite_no_sp_input"
           autoCorrect={false}
           multiline={false}
           onChangeText={text => {
             this.setState({text: text.replace(/\s/g, '')});
           }}
+          onFocus={() => this.setState({focused: true})}
+          onBlur={() => this.setState({focused: false})}
           style={styles.default}
           value={this.state.text}
         />
@@ -152,13 +157,16 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
 
   constructor(props) {
     super(props);
-    this.state = {text: ''};
+    this.state = {text: '', focused: false};
   }
   render() {
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
           testID="rewrite_clear_input"
+          accessible={true}
+          accessibilityState={{selected: this.state.focused}}
+          showSoftInputOnFocus={false}
           autoCorrect={false}
           ref={ref => {
             this.inputRef = ref;
@@ -167,6 +175,8 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
           onChangeText={text => {
             this.setState({text: text.replace(/ /g, '')});
           }}
+          onFocus={() => this.setState({focused: true})}
+          onBlur={() => this.setState({focused: false})}
           style={styles.default}
           value={this.state.text}
         />
@@ -467,6 +477,7 @@ module.exports = ([
     render: function(): React.Node {
       return (
         <TextInput
+          showSoftInputOnFocus={false}
           autoFocus={true}
           style={styles.default}
           accessibilityLabel="I am the accessibility label for text input"
