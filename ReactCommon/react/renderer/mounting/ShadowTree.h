@@ -31,6 +31,8 @@ using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
  */
 class ShadowTree final {
  public:
+  using Unique = std::unique_ptr<ShadowTree>;
+
   /*
    * Represents a result of a `commit` operation.
    */

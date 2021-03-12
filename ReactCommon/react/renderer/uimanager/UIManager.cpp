@@ -146,7 +146,7 @@ ShadowTree const &UIManager::startSurface(
   return *shadowTreePointer;
 }
 
-void UIManager::stopSurface(SurfaceId surfaceId) const {
+ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("UIManager::stopSurface");
 
   // Stop any ongoing animations.
@@ -155,13 +155,6 @@ void UIManager::stopSurface(SurfaceId surfaceId) const {
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.
   auto shadowTree = getShadowTreeRegistry().remove(surfaceId);
-
-  // As part of stopping a Surface, we need to properly destroy all
-  // mounted views, so we need to commit an empty tree to trigger all
-  // side-effects (including destroying and removing mounted views).
-  if (shadowTree) {
-    shadowTree->commitEmptyTree();
-  }
 
   // We execute JavaScript/React part of the process at the very end to minimize
   // any visible side-effects of stopping the Surface. Any possible commits from
@@ -175,6 +168,8 @@ void UIManager::stopSurface(SurfaceId surfaceId) const {
 
     uiManagerBinding->stopSurface(runtime, surfaceId);
   });
+
+  return shadowTree;
 }
 
 ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(

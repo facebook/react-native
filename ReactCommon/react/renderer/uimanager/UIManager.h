@@ -90,7 +90,7 @@ class UIManager final : public ShadowTreeDelegate {
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext) const;
 
-  void stopSurface(SurfaceId surfaceId) const;
+  ShadowTree::Unique stopSurface(SurfaceId surfaceId) const;
 
 #pragma mark - ShadowTreeDelegate
 
