@@ -15,9 +15,6 @@ NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProvider
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
 
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
-// This option is no longer exposed in the dev menu UI.
-// It was renamed in D15958697 so it doesn't get stuck with no way to turn it off:
-static NSString *const kRCTEnableLiveReloadKey = @"RCT_enableLiveReload_LEGACY";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 
@@ -35,7 +32,6 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 - (NSDictionary *)defaults
 {
   return @{
-    kRCTEnableLiveReloadKey : @NO,
     kRCTEnableDevKey : @YES,
     kRCTEnableMinificationKey : @NO,
   };
@@ -275,11 +271,6 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   return [[NSUserDefaults standardUserDefaults] boolForKey:kRCTEnableDevKey];
 }
 
-- (BOOL)enableLiveReload
-{
-  return [[NSUserDefaults standardUserDefaults] boolForKey:kRCTEnableLiveReloadKey];
-}
-
 - (BOOL)enableMinification
 {
   return [[NSUserDefaults standardUserDefaults] boolForKey:kRCTEnableMinificationKey];
@@ -293,11 +284,6 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 - (void)setEnableDev:(BOOL)enableDev
 {
   [self updateValue:@(enableDev) forKey:kRCTEnableDevKey];
-}
-
-- (void)setEnableLiveReload:(BOOL)enableLiveReload
-{
-  [self updateValue:@(enableLiveReload) forKey:kRCTEnableLiveReloadKey];
 }
 
 - (void)setJsLocation:(NSString *)jsLocation
