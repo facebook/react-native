@@ -18,6 +18,7 @@ import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {AccessibilityState} from './View/ViewAccessibility';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -130,6 +131,12 @@ type Props = $ReadOnly<{|
    * Used to locate this view in UI automation tests.
    */
   testID?: ?string,
+
+  /**
+    Indicates to accessibility services that UI Component is in a specific State.
+   */
+  accessibilityState?: ?AccessibilityState,
+
 |}>;
 
 /**
@@ -197,6 +204,7 @@ const Slider = (
   forwardedRef?: ?React.Ref<typeof SliderNativeComponent>,
 ) => {
   const style = StyleSheet.compose(styles.slider, props.style);
+  const accessibilityState = props.accessibilityState || {};
 
   const {
     disabled = false,
@@ -233,6 +241,7 @@ const Slider = (
     <SliderNativeComponent
       {...localProps}
       // TODO: Reconcile these across the two platforms.
+      accessibilityState={accessibilityState}
       enabled={!disabled}
       disabled={disabled}
       maximumValue={maximumValue}
