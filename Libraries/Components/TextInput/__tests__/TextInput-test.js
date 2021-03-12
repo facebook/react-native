@@ -81,7 +81,27 @@ describe('TextInput tests', () => {
 
   it('should have support being focused and unfocused', () => {
     const textInputRef = React.createRef(null);
-    ReactTestRenderer.create(<TextInput ref={textInputRef} value="value1" />);
+    let onFocusListener = jest.fn();
+    let onBlurListener = jest.fn();
+    ReactTestRenderer.create(
+      <Component initialState={{text: initialValue, focused: false}}>
+        {({setState, state}) => (
+          <TextInput
+            ref={textInputRef}
+            accessibilityState={{selected: state.focused}}
+            value="value1"
+            onFocus={() => {
+              onFocusListener();
+              setState({focused: true});
+            }}
+            onBlur={() => {
+              onBlurListener();
+              setState({focused: false});
+            }}
+          />
+        )}
+      </Component>,
+    );
 
     expect(textInputRef.current.isFocused()).toBe(false);
     ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
@@ -100,14 +120,18 @@ describe('TextInput tests', () => {
     });
 
     TextInput.State.focusTextInput(textInputRef.current);
+    textInputRef.current.props.onFocus();
     expect(textInputRef.current.isFocused()).toBe(true);
+    expect(textInputRef.current.props.accessibilityState.selected).toBe(true);
     expect(TextInput.State.currentlyFocusedInput()).toBe(textInputRef.current);
     // This function is currently deprecated and will be removed in the future
     expect(TextInput.State.currentlyFocusedField()).toBe(
       ReactNative.findNodeHandle(textInputRef.current),
     );
     TextInput.State.blurTextInput(textInputRef.current);
+    textInputRef.current.props.onBlur();
     expect(textInputRef.current.isFocused()).toBe(false);
+    expect(textInputRef.current.props.accessibilityState.selected).toBe(false);
     expect(TextInput.State.currentlyFocusedInput()).toBe(null);
     // This function is currently deprecated and will be removed in the future
     expect(TextInput.State.currentlyFocusedField()).toBe(null);
