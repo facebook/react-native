@@ -10,7 +10,7 @@ public class PremiumRequestDto
 	private String toDate;
 	private String partNo;
 	private String plannerEmail;
-	
+	private String status;
 	
 	public String getAdhocOrderId() {
 		return adhocOrderId;
@@ -47,6 +47,12 @@ public class PremiumRequestDto
 	}
 	public void setPlannerEmail(String plannerEmail) {
 		this.plannerEmail = plannerEmail;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 	

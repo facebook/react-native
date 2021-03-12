@@ -82,42 +82,7 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 		return premiumFreightOrderDto;
 	}
 
-	/*
-	 * private PremiumFreightChargeDetails
-	 * importPremiumFreightCharges(CarrierAdminChargeRequestDto dto) {
-	 * 
-	 * PremiumFreightChargeDetails premiumFreightChargeDetails= new
-	 * PremiumFreightChargeDetails(); //
-	 * premiumFreightChargeDetails.setPremiumId(dto.getPremiumId());
-	 * premiumFreightChargeDetails.setAdhocOrderId(dto.getAdhocOrderId());
-	 * 
-	 * premiumFreightChargeDetails.setBpNumber(dto.getBpNumber());
-	 * premiumFreightChargeDetails.setCarrierDetails(dto.getCarrierDetails());
-	 * premiumFreightChargeDetails.setCarrierScac(dto.getCarrierScac());
-	 * premiumFreightChargeDetails.setCarrierMode(dto.getCarrierMode());
-	 * premiumFreightChargeDetails.setCharge(dto.getCharge());
-	 * 
-	 * premiumFreightChargeDetails.setDestinationName(dto.getDestinationName());
-	 * premiumFreightChargeDetails.setDestinationAdress(dto.getDestinationAdress
-	 * ());
-	 * premiumFreightChargeDetails.setDestinationCity(dto.getDestinationCity());
-	 * premiumFreightChargeDetails.setDestinationState(dto.getDestinationState()
-	 * ); premiumFreightChargeDetails.setDestinationCountry(dto.
-	 * getDestinationCountry());
-	 * premiumFreightChargeDetails.setDestinationZip(dto.getDestinationZip());
-	 * 
-	 * premiumFreightChargeDetails.setOriginName(dto.getOriginName());
-	 * premiumFreightChargeDetails.setOriginAddress(dto.getOriginAddress());
-	 * premiumFreightChargeDetails.setOriginCity(dto.getOriginCity());
-	 * premiumFreightChargeDetails.setOriginState(dto.getOriginState());
-	 * premiumFreightChargeDetails.setOriginCountry(dto.getOriginCountry());
-	 * premiumFreightChargeDetails.setOriginZip(dto.getDestinationZip());
-	 * 
-	 * 
-	 * premiumFreightChargeDetails.setCharge(dto.getCharge());
-	 * premiumFreightChargeDetails.setStatus(dto.getStatus()); return
-	 * premiumFreightChargeDetails; }
-	 */
+	
 
 	// List of all the Premium Freight Orders based on the PlannerEmail
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -144,6 +109,10 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 		if (premiumRequestDto.getPartNo() != null && !(premiumRequestDto.getPartNo().equals(""))) {
 			queryString.append(" AND ao.partNum=:partNum");
 		}
+		if(premiumRequestDto.getStatus()!=null && !(premiumRequestDto.getStatus().equals("")))
+		{
+			queryString.append("AND ao.status=:status");
+		}
 
 		queryString.append(" ORDER BY ao.createdDate DESC");
 		Query query = session.createQuery(queryString.toString());
@@ -169,6 +138,10 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 		}
 		if (premiumRequestDto.getPartNo() != null && !(premiumRequestDto.getPartNo().equals(""))) {
 			query.setParameter("partNum", premiumRequestDto.getPartNo());
+		}
+		if(premiumRequestDto.getStatus()!=null && !(premiumRequestDto.getStatus().equals("")))
+		{
+			query.setParameter("status", premiumRequestDto.getStatus());
 		}
 
 		List<AdhocOrders> adhocOrders = query.list();
@@ -217,7 +190,7 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 		// List<CarrierDetailsDto> carrierDetailsDtos=new ArrayList<>();
 		List<CarrierDetails> carrierDetails = new ArrayList<>();
 		try {
-			String queryStr = "select carrier from CarrierDetails carrier WHERE carrier.bpNumber:= bpnumber";
+			String queryStr = "select carrier from CarrierDetails carrier WHERE carrier.bpNumber=: bpnumber";
 			Query query = session.createQuery(queryStr);
 			query.setParameter("bpNumber", bpNumber);
 			carrierDetails = query.list();
@@ -351,37 +324,5 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 		return "deleted";
 
 	}
-
-	/*
-	 * //@Override public String
-	 * setCalculateCarrierCharge(CarrierAdminChargeRequestDto dto) {
-	 * PremiumFreightChargeDetails premiumFreightChargeDetails=new
-	 * PremiumFreightChargeDetails(); Session
-	 * session=sessionFactory.openSession(); Transaction tx =
-	 * session.beginTransaction();
-	 * 
-	 * premiumFreightChargeDetails = importPremiumFreightCharges(dto);
-	 * 
-	 * session.saveOrUpdate(premiumFreightChargeDetails);
-	 * 
-	 * session.flush(); session.clear(); tx.commit(); session.close(); return
-	 * "success"; }
-	 * 
-	 * public List<CarrierAdminChargeResponseDto> getPremiumOrderCost(String
-	 * adhocOrderId) { List<CarrierAdminChargeResponseDto>
-	 * carrierAdminChargeResponseDto= new
-	 * ArrayList<CarrierAdminChargeResponseDto>();
-	 * //CarrierAdminChargeRequestDto List<PremiumFreightChargeDetails>
-	 * premiumFreightChargeDetails = new
-	 * ArrayList<PremiumFreightChargeDetails>(); Session session =
-	 * sessionFactory.openSession(); Transaction tx= session.beginTransaction();
-	 * String queryStr =
-	 * "select ad from PremiumFreightChargeDetails p WHERE p.adhocOrderId:=id";
-	 * Query query = session.createQuery(queryStr); query.setParameter("id",
-	 * adhocOrderId); premiumFreightChargeDetails = query.list();
-	 * for(PremiumFreightChargeDetails p:premiumFreightChargeDetails) {
-	 * 
-	 * } return null; }
-	 */
-
+	
 }
