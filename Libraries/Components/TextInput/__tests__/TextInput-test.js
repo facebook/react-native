@@ -84,7 +84,7 @@ describe('TextInput tests', () => {
     let onFocusListener = jest.fn();
     let onBlurListener = jest.fn();
     ReactTestRenderer.create(
-      <Component initialState={{text: initialValue, focused: false}}>
+      <Component initialState={{focused: false}}>
         {({setState, state}) => (
           <TextInput
             ref={textInputRef}
@@ -119,6 +119,7 @@ describe('TextInput tests', () => {
       return 2;
     });
 
+    expect(textInputRef.current.props.accessibilityState.selected).toBe(false);
     TextInput.State.focusTextInput(textInputRef.current);
     textInputRef.current.props.onFocus();
     expect(textInputRef.current.isFocused()).toBe(true);
