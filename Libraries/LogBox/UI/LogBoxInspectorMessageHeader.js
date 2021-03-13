@@ -107,6 +107,7 @@ const messageStyles = StyleSheet.create({
   },
   messageText: {
     color: LogBoxStyle.getTextColor(0.6),
+    fontSize: 14,
   },
   collapse: {
     color: LogBoxStyle.getTextColor(0.7),

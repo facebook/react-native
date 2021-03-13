@@ -29,7 +29,7 @@ function LogBoxMessage(props: Props): React.Node {
   const {content, substitutions}: Message = props.message;
 
   if (props.plaintext === true) {
-    return <Text>{cleanContent(content)}</Text>;
+    return <Text style={props.style}>{cleanContent(content)}</Text>;
   }
 
   const maxLength = props.maxLength != null ? props.maxLength : Infinity;
@@ -63,7 +63,7 @@ function LogBoxMessage(props: Props): React.Node {
         substitution.offset - prevOffset,
       );
 
-      createUnderLength(key, prevPart);
+      createUnderLength(key, prevPart, substitutionStyle);
     }
 
     const substititionPart = content.substr(
@@ -77,7 +77,7 @@ function LogBoxMessage(props: Props): React.Node {
 
   if (lastOffset < content.length) {
     const lastPart = content.substr(lastOffset);
-    createUnderLength('-1', lastPart);
+    createUnderLength('-1', lastPart, substitutionStyle);
   }
 
   return <>{elements}</>;
