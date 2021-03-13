@@ -441,16 +441,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
         child.getGlobalVisibleRect(rectOnScreen);
 
-        if (!rectOnScreen.contains((int)ev.getRawX(), (int)ev.getRawY())) {
+        if (!rectOnScreen.contains((int) ev.getRawX(), (int) ev.getRawY())) {
           continue;
         }
 
         if (child instanceof ViewGroup) {
-          viewsToSearch.offer((ViewGroup)child);
+          viewsToSearch.offer((ViewGroup) child);
         }
 
         if (child instanceof ReactHorizontalScrollView) {
-          ReactHorizontalScrollView scrollView = (ReactHorizontalScrollView)child;
+          ReactHorizontalScrollView scrollView = (ReactHorizontalScrollView) child;
 
           if (!scrollView.mScrollEnabled) {
             continue;
@@ -458,7 +458,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         }
 
         if (child instanceof HorizontalScrollView) {
-          foundScrollView = (HorizontalScrollView)child;
+          foundScrollView = (HorizontalScrollView) child;
         }
       }
     }
@@ -472,7 +472,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       return false;
     }
 
-    if (ev.getAction() == MotionEvent.ACTION_DOWN && findNestedScrollViewForMotionEvent(ev) != null) {
+    if (ev.getAction() == MotionEvent.ACTION_DOWN
+        && findNestedScrollViewForMotionEvent(ev) != null) {
       return false;
     }
 
