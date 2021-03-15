@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.incture.lch.adhoc.dto.AdhocOrderDto;
 import com.incture.lch.adhoc.dto.AdhocRequestDto;
-import com.incture.lch.adhoc.dto.GetCostRequestDto;
+import com.incture.lch.adhoc.dto.ChargeRequestDto;
 import com.incture.lch.adhoc.dto.PremiumFreightOrderDto;
 import com.incture.lch.adhoc.dto.PremiumRequestDto;
 import com.incture.lch.adhoc.entity.AdhocOrders;

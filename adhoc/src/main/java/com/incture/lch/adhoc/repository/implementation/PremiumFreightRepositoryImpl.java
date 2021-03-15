@@ -6,9 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Logger;
 
-import org.apache.xmlbeans.impl.xb.xsdschema.RestrictionDocument.Restriction;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,19 +14,14 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.incture.lch.adhoc.dao.CarrierDetailsDao;
-import com.incture.lch.adhoc.dto.AdhocOrderDto;
-import com.incture.lch.adhoc.dto.CarrierAdminChargeRequestDto;
-import com.incture.lch.adhoc.dto.GetCostRequestDto;
 import com.incture.lch.adhoc.dto.CarrierDetailsDto;
-import com.incture.lch.adhoc.dto.LkShipperDetailsDto;
+import com.incture.lch.adhoc.dto.ChargeRequestDto;
 import com.incture.lch.adhoc.dto.PremiumFreightOrderDto;
 import com.incture.lch.adhoc.dto.PremiumRequestDto;
 import com.incture.lch.adhoc.entity.AdhocOrders;
 import com.incture.lch.adhoc.entity.CarrierDetails;
-import com.incture.lch.adhoc.entity.LkShipperDetails;
 import com.incture.lch.adhoc.entity.PremiumFreightChargeDetails;
 import com.incture.lch.adhoc.repository.PremiumFreightOrdersRepository;
 import com.incture.lch.adhoc.util.ServiceUtil;
@@ -78,6 +71,7 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 		premiumFreightOrderDto.setPremiumReasonCode(adhocOrders.getPremiumReasonCode());
 		premiumFreightOrderDto.setPlannerEmail(adhocOrders.getPlannerEmail());
 		premiumFreightOrderDto.setStatus(adhocOrders.getStatus());
+		//premiumFreightOrderDto.setStatus(status);
 
 		return premiumFreightOrderDto;
 	}
@@ -208,8 +202,50 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 
 		return modeList;
 	}
+	
+	
+	//This Function will receive the list of AdhocOrders whose charge we want the CA to calculate
+	//On getting the Charge respond the Same DTO Premium one for the CA 
+	//The status changes to Pending with Carrier admin
+	public List<PremiumFreightOrderDto> getChargeByCarrierAdmin(List<String> adhocOrderIds)
+	{
+		
+		Session session= sessionFactory.openSession();
+		Transaction tx= session.beginTransaction();
+		List<PremiumFreightOrderDto> premiumFreightOrderDtos=new ArrayList<PremiumFreightOrderDto>();
+		List<AdhocOrders> adhocOrders = new ArrayList<AdhocOrders>();
+		PremiumFreightOrderDto premiumdto =new PremiumFreightOrderDto();
+		for(String adid:adhocOrderIds)
+		{
+		try {
+			String queryStr = "SELECT ao FROM AdhocOrders ao WHERE ao.fwoNum = ao.fwoNum AND ao.fwoNum=:fwoNum";
+			Query query = session.createQuery(queryStr);
+			query.setParameter("fwoNum", adid);
+			adhocOrders = query.list();
+			for (AdhocOrders aorders : adhocOrders)
+			{
+				aorders.setStatus("Pending with Carrier Admin");
+				session.saveOrUpdate(aorders);
+				premiumdto= exportPremiumFreightOrders(aorders);
+				premiumdto.setStatus("Pending with Carrier Admin");
+				premiumFreightOrderDtos.add(premiumdto);
+			}
+		} catch (Exception e) {
+			// LOGGER.error("Exception in getReasonCode api" + e);
+		} finally {
+			session.flush();
+			session.clear();
+			tx.commit();
+			session.close();
+		}
+		}
+		return premiumFreightOrderDtos;
+	}
+	
+	//Charge is set by the carrier admin here. Once the Charge is set it updates the charge table 
+	//and update the Status as in progress
 
-	public int getCost(GetCostRequestDto dto)
+	public String setCharge(ChargeRequestDto dto)
 	{
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
@@ -240,16 +276,18 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 
 			premiumFreightChargeDetail.setReasonCode(a.getPremiumReasonCode());
 			premiumFreightChargeDetail.setPlannerEmail(a.getPlannerEmail());
-			premiumFreightChargeDetail.setStatus(a.getStatus());
+			//premiumFreightChargeDetail.setStatus(a.getStatus());
+			premiumFreightChargeDetail.setStatus("In Progress");
 
 		}
 		premiumFreightChargeDetail.setBpNumber(dto.getBpNumber());
 		premiumFreightChargeDetail.setCarrierScac(dto.getCarrierScac());
 		premiumFreightChargeDetail.setCarrierDetails(dto.getCarrierDetails());
 		premiumFreightChargeDetail.setCarrierMode(dto.getCarrierMode());
+		premiumFreightChargeDetail.setCharge(dto.getCharge());
 		// premiumFreightChargeDetail.setCarrierRatePerKM(dto.get);
 
-		Random rand = new Random();
+		/*Random rand = new Random();
 
 		int random_cost = rand.nextInt(5000);
 		
@@ -258,9 +296,13 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 		{
 		premiumFreightChargeDetail.setCharge(random_cost);
 		}
+*/		
 		session.saveOrUpdate(premiumFreightChargeDetail);
-		return premiumFreightChargeDetail.getCharge();
+		//return premiumFreightChargeDetail.getCharge();
+        return "Charge Set";
 	}
+	
+	
 
 	public String forwardToApprover(List<PremiumFreightChargeDetails> premiumFreightChargeDetail)
 	{
@@ -286,7 +328,7 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 			{
 				if(a.getStatus()==null && !a.getStatus().equals("") || !a.getStatus().equals("Approved"))
 				{
-					a.setStatus("PLANNED");
+					a.setStatus("Pending With Approver");
 				}
 			}
 			
@@ -294,16 +336,17 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 			{
 				if(a.getStatus()==null && !a.getStatus().equals("") || !a.getStatus().equals("Approved"))
 				{
-					a.setStatus("PLANNED");
+					a.setStatus("Pending with Approver");
 				}
 			}
 			
 		}
 		
-	return "Order Planned";
+	return "Pending with Approver";
     }
 	
-	public String RevertOrders (String adhocOrderId) {
+	
+	public String RejectPremiumOrder (String adhocOrderId) {
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		String queryStr = "DELETE FROM AdhocOrders ad WHERE ad.fwoNum=:fwoNum";
