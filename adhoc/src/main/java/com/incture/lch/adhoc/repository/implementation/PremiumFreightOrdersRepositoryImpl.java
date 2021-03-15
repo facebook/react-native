@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -26,7 +25,7 @@ import com.incture.lch.adhoc.entity.PremiumFreightChargeDetails;
 import com.incture.lch.adhoc.repository.PremiumFreightOrdersRepository;
 import com.incture.lch.adhoc.util.ServiceUtil;
 
-public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersRepository {
+public class PremiumFreightOrdersRepositoryImpl implements PremiumFreightOrdersRepository {
 
 	@Autowired
 	// @Qualifier("sessionDb")
@@ -78,7 +77,7 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 
 	 
 
-	// List of all the Premium Freight Orders based on the PlannerEmail
+	// List of all the Premium Freight Orders based on the PlannerEmail plus date filters
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public List<PremiumFreightOrderDto> getAllPremiumFreightOrders(PremiumRequestDto premiumRequestDto) {
@@ -151,6 +150,7 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 		return premiumFreightOrderDtos;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<CarrierDetailsDto> getAllCarrierDetails() 
 	{
@@ -177,6 +177,7 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 		return carrierDetailsDtos;
 	}
 
+	@Override
 	public List<String> getMode(String bpNumber) {
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
@@ -207,6 +208,7 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 	//This Function will receive the list of AdhocOrders whose charge we want the CA to calculate
 	//On getting the Charge respond the Same DTO Premium one for the CA 
 	//The status changes to Pending with Carrier admin
+	@Override
 	public List<PremiumFreightOrderDto> getChargeByCarrierAdmin(List<String> adhocOrderIds)
 	{
 		
@@ -245,6 +247,7 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 	//Charge is set by the carrier admin here. Once the Charge is set it updates the charge table 
 	//and update the Status as in progress
 
+	@Override
 	public String setCharge(ChargeRequestDto dto)
 	{
 		Session session = sessionFactory.openSession();
@@ -304,6 +307,7 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
 	
 	
 
+	@Override
 	public String forwardToApprover(List<PremiumFreightChargeDetails> premiumFreightChargeDetail)
 	{
 		PremiumFreightChargeDetails chargeDetails= new PremiumFreightChargeDetails();
@@ -346,6 +350,7 @@ public class PremiumFreightRepositoryImpl implements PremiumFreightOrdersReposit
     }
 	
 	
+	@Override	
 	public String RejectPremiumOrder (String adhocOrderId) {
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();

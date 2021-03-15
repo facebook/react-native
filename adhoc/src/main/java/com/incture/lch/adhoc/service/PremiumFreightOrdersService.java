@@ -1,4 +1,4 @@
-package com.incture.lch.adhoc.repository;
+package com.incture.lch.adhoc.service;
 
 import java.util.List;
 
@@ -6,14 +6,10 @@ import com.incture.lch.adhoc.dto.CarrierDetailsDto;
 import com.incture.lch.adhoc.dto.ChargeRequestDto;
 import com.incture.lch.adhoc.dto.PremiumFreightOrderDto;
 import com.incture.lch.adhoc.dto.PremiumRequestDto;
-import com.incture.lch.adhoc.entity.AdhocOrders;
 import com.incture.lch.adhoc.entity.PremiumFreightChargeDetails;
 
-public interface PremiumFreightOrdersRepository 
+public interface PremiumFreightOrdersService 
 {
-
-	public PremiumFreightOrderDto exportPremiumFreightOrders(AdhocOrders adhocOrders);
-		
 	public List<PremiumFreightOrderDto> getAllPremiumFreightOrders(PremiumRequestDto premiumRequestDto);
 
 	public List<CarrierDetailsDto> getAllCarrierDetails();
@@ -27,5 +23,6 @@ public interface PremiumFreightOrdersRepository
 	public String forwardToApprover(List<PremiumFreightChargeDetails> premiumFreightChargeDetail);
 	
 	public String RejectPremiumOrder (String adhocOrderId);
+
 
 }
