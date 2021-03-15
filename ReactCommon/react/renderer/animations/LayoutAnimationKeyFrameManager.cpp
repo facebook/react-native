@@ -406,7 +406,7 @@ void LayoutAnimationKeyFrameManager::
       isRemoveMutation || mutation.type == ShadowViewMutation::Type::Insert);
 
   // TODO: turn all of this into a lambda and share code?
-  if (mutatedViewIsVirtual(mutation)) {
+  if (mutation.mutatedViewIsVirtual()) {
     PrintMutationInstruction(
         "[IndexAdjustment] Not calling adjustImmediateMutationIndicesForDelayedMutations, is virtual, for:",
         mutation);
@@ -457,7 +457,7 @@ void LayoutAnimationKeyFrameManager::
       if (delayedMutation.type != ShadowViewMutation::Type::Remove) {
         continue;
       }
-      if (mutatedViewIsVirtual(delayedMutation)) {
+      if (delayedMutation.mutatedViewIsVirtual()) {
         continue;
       }
       if (delayedMutation.oldChildShadowView.tag ==
@@ -519,7 +519,7 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
   bool isInsertMutation = mutation.type == ShadowViewMutation::Type::Insert;
   react_native_assert(isRemoveMutation || isInsertMutation);
 
-  if (mutatedViewIsVirtual(mutation)) {
+  if (mutation.mutatedViewIsVirtual()) {
     PrintMutationInstruction(
         "[IndexAdjustment] Not calling adjustDelayedMutationIndicesForMutation, is virtual, for:",
         mutation);
@@ -573,7 +573,7 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
       if (finalAnimationMutation.type != ShadowViewMutation::Type::Remove) {
         continue;
       }
-      if (mutatedViewIsVirtual(*animatedKeyFrame.finalMutationForKeyFrame)) {
+      if (animatedKeyFrame.finalMutationForKeyFrame->mutatedViewIsVirtual()) {
         continue;
       }
 
@@ -674,8 +674,8 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
           // for example, "insert" mutations where the final update needs to set
           // opacity to "1", even if there's no final ShadowNode update.
           if (!(animatedKeyFrame.finalMutationForKeyFrame.has_value() &&
-                mutatedViewIsVirtual(
-                    *animatedKeyFrame.finalMutationForKeyFrame))) {
+                animatedKeyFrame.finalMutationForKeyFrame
+                    ->mutatedViewIsVirtual())) {
             conflictingAnimations.push_back(animatedKeyFrame);
           }
 
@@ -777,7 +777,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           continue;
         }
         if (keyframe.finalMutationForKeyFrame &&
-            !mutatedViewIsVirtual(*keyframe.finalMutationForKeyFrame)) {
+            !keyframe.finalMutationForKeyFrame->mutatedViewIsVirtual()) {
           std::string msg = "Animation " + std::to_string(i) + " keyframe " +
               std::to_string(j) + ": Final Animation";
           PrintMutationInstruction(msg, *keyframe.finalMutationForKeyFrame);
@@ -1594,7 +1594,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         continue;
       }
       if (keyframe.finalMutationForKeyFrame &&
-          !mutatedViewIsVirtual(*keyframe.finalMutationForKeyFrame)) {
+          !keyframe.finalMutationForKeyFrame->mutatedViewIsVirtual()) {
         std::string msg = "Animation " + std::to_string(i) + " keyframe " +
             std::to_string(j) + ": Final Animation";
         PrintMutationInstruction(msg, *keyframe.finalMutationForKeyFrame);
@@ -1624,21 +1624,6 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
   return MountingTransaction{
       surfaceId, transactionNumber, std::move(mutations), telemetry};
-}
-
-bool LayoutAnimationKeyFrameManager::mutatedViewIsVirtual(
-    ShadowViewMutation const &mutation) const {
-  bool viewIsVirtual = false;
-
-  // TODO: extract this into an Android platform-specific class?
-  // Explanation: for "Insert" mutations, oldChildShadowView is always empty.
-  //              for "Remove" mutations, newChildShadowView is always empty.
-#ifdef ANDROID
-  viewIsVirtual =
-      mutation.newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
-      mutation.oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
-#endif
-  return viewIsVirtual;
 }
 
 bool LayoutAnimationKeyFrameManager::hasComponentDescriptorForShadowView(

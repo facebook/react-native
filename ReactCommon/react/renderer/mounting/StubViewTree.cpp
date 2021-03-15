@@ -73,62 +73,67 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
       }
 
       case ShadowViewMutation::Insert: {
-        react_native_assert(mutation.oldChildShadowView == ShadowView{});
-        auto parentTag = mutation.parentShadowView.tag;
-        react_native_assert(registry.find(parentTag) != registry.end());
-        auto parentStubView = registry[parentTag];
-        auto childTag = mutation.newChildShadowView.tag;
-        react_native_assert(registry.find(childTag) != registry.end());
-        auto childStubView = registry[childTag];
-        react_native_assert(childStubView->parentTag == NO_VIEW_TAG);
-        childStubView->update(mutation.newChildShadowView);
-        STUB_VIEW_LOG({
-          LOG(ERROR) << "StubView: Insert [" << childTag << "] into ["
-                     << parentTag << "] @" << mutation.index << "("
-                     << parentStubView->children.size() << " children)";
-        });
-        react_native_assert(parentStubView->children.size() >= mutation.index);
-        childStubView->parentTag = parentTag;
-        parentStubView->children.insert(
-            parentStubView->children.begin() + mutation.index, childStubView);
+        if (!mutation.mutatedViewIsVirtual()) {
+          react_native_assert(mutation.oldChildShadowView == ShadowView{});
+          auto parentTag = mutation.parentShadowView.tag;
+          react_native_assert(registry.find(parentTag) != registry.end());
+          auto parentStubView = registry[parentTag];
+          auto childTag = mutation.newChildShadowView.tag;
+          react_native_assert(registry.find(childTag) != registry.end());
+          auto childStubView = registry[childTag];
+          react_native_assert(childStubView->parentTag == NO_VIEW_TAG);
+          childStubView->update(mutation.newChildShadowView);
+          STUB_VIEW_LOG({
+            LOG(ERROR) << "StubView: Insert [" << childTag << "] into ["
+                       << parentTag << "] @" << mutation.index << "("
+                       << parentStubView->children.size() << " children)";
+          });
+          react_native_assert(
+              parentStubView->children.size() >= mutation.index);
+          childStubView->parentTag = parentTag;
+          parentStubView->children.insert(
+              parentStubView->children.begin() + mutation.index, childStubView);
+        }
         break;
       }
 
       case ShadowViewMutation::Remove: {
-        react_native_assert(mutation.newChildShadowView == ShadowView{});
-        auto parentTag = mutation.parentShadowView.tag;
-        react_native_assert(registry.find(parentTag) != registry.end());
-        auto parentStubView = registry[parentTag];
-        auto childTag = mutation.oldChildShadowView.tag;
-        STUB_VIEW_LOG({
-          LOG(ERROR) << "StubView: Remove [" << childTag << "] from ["
-                     << parentTag << "] @" << mutation.index << " with "
-                     << parentStubView->children.size() << " children";
-        });
-        react_native_assert(parentStubView->children.size() > mutation.index);
-        react_native_assert(registry.find(childTag) != registry.end());
-        auto childStubView = registry[childTag];
-        react_native_assert(childStubView->parentTag == parentTag);
-        STUB_VIEW_LOG({
-          std::string strChildList = "";
-          int i = 0;
-          for (auto const &child : parentStubView->children) {
-            strChildList.append(std::to_string(i));
-            strChildList.append(":");
-            strChildList.append(std::to_string(child->tag));
-            strChildList.append(", ");
-            i++;
-          }
-          LOG(ERROR) << "StubView: BEFORE REMOVE: Children of " << parentTag
-                     << ": " << strChildList;
-        });
-        react_native_assert(
-            parentStubView->children.size() > mutation.index &&
-            parentStubView->children[mutation.index]->tag ==
-                childStubView->tag);
-        childStubView->parentTag = NO_VIEW_TAG;
-        parentStubView->children.erase(
-            parentStubView->children.begin() + mutation.index);
+        if (!mutation.mutatedViewIsVirtual()) {
+          react_native_assert(mutation.newChildShadowView == ShadowView{});
+          auto parentTag = mutation.parentShadowView.tag;
+          react_native_assert(registry.find(parentTag) != registry.end());
+          auto parentStubView = registry[parentTag];
+          auto childTag = mutation.oldChildShadowView.tag;
+          STUB_VIEW_LOG({
+            LOG(ERROR) << "StubView: Remove [" << childTag << "] from ["
+                       << parentTag << "] @" << mutation.index << " with "
+                       << parentStubView->children.size() << " children";
+          });
+          react_native_assert(parentStubView->children.size() > mutation.index);
+          react_native_assert(registry.find(childTag) != registry.end());
+          auto childStubView = registry[childTag];
+          react_native_assert(childStubView->parentTag == parentTag);
+          STUB_VIEW_LOG({
+            std::string strChildList = "";
+            int i = 0;
+            for (auto const &child : parentStubView->children) {
+              strChildList.append(std::to_string(i));
+              strChildList.append(":");
+              strChildList.append(std::to_string(child->tag));
+              strChildList.append(", ");
+              i++;
+            }
+            LOG(ERROR) << "StubView: BEFORE REMOVE: Children of " << parentTag
+                       << ": " << strChildList;
+          });
+          react_native_assert(
+              parentStubView->children.size() > mutation.index &&
+              parentStubView->children[mutation.index]->tag ==
+                  childStubView->tag);
+          childStubView->parentTag = NO_VIEW_TAG;
+          parentStubView->children.erase(
+              parentStubView->children.begin() + mutation.index);
+        }
         break;
       }
 

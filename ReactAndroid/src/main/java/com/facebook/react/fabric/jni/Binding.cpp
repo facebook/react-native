@@ -618,8 +618,7 @@ void Binding::schedulerDidFinishTransaction(
     auto &mutationType = mutation.type;
     auto &index = mutation.index;
 
-    bool isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
-        oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
+    bool isVirtual = mutation.mutatedViewIsVirtual();
 
     switch (mutationType) {
       case ShadowViewMutation::Create: {
