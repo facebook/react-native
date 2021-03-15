@@ -110,36 +110,6 @@ YOGA_EXPORT bool YGFloatIsUndefined(const float value) {
   return facebook::yoga::isUndefined(value);
 }
 
-detail::CompactValue YGComputedEdgeValue(
-    const YGStyle::Edges& edges,
-    YGEdge edge,
-    detail::CompactValue defaultValue) {
-  if (!edges[edge].isUndefined()) {
-    return edges[edge];
-  }
-
-  if ((edge == YGEdgeTop || edge == YGEdgeBottom) &&
-      !edges[YGEdgeVertical].isUndefined()) {
-    return edges[YGEdgeVertical];
-  }
-
-  if ((edge == YGEdgeLeft || edge == YGEdgeRight || edge == YGEdgeStart ||
-       edge == YGEdgeEnd) &&
-      !edges[YGEdgeHorizontal].isUndefined()) {
-    return edges[YGEdgeHorizontal];
-  }
-
-  if (!edges[YGEdgeAll].isUndefined()) {
-    return edges[YGEdgeAll];
-  }
-
-  if (edge == YGEdgeStart || edge == YGEdgeEnd) {
-    return detail::CompactValue::ofUndefined();
-  }
-
-  return defaultValue;
-}
-
 YOGA_EXPORT void* YGNodeGetContext(YGNodeRef node) {
   return node->getContext();
 }

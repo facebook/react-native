@@ -144,8 +144,3 @@ static const float kDefaultFlexShrink = 0.0f;
 static const float kWebDefaultFlexShrink = 1.0f;
 
 extern bool YGFloatsEqual(const float a, const float b);
-extern facebook::yoga::detail::CompactValue YGComputedEdgeValue(
-    const facebook::yoga::detail::Values<
-        facebook::yoga::enums::count<YGEdge>()>& edges,
-    YGEdge edge,
-    facebook::yoga::detail::CompactValue defaultValue);
