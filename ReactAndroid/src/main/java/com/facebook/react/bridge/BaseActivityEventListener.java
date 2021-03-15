@@ -9,7 +9,6 @@ package com.facebook.react.bridge;
 
 import android.app.Activity;
 import android.content.Intent;
-import javax.annotation.Nullable;
 
 /** An empty implementation of {@link ActivityEventListener} */
 public class BaseActivityEventListener implements ActivityEventListener {
@@ -19,8 +18,7 @@ public class BaseActivityEventListener implements ActivityEventListener {
   public void onActivityResult(int requestCode, int resultCode, Intent data) {}
 
   @Override
-  public void onActivityResult(
-      Activity activity, int requestCode, int resultCode, @Nullable Intent data) {}
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {}
 
   @Override
   public void onNewIntent(Intent intent) {}
