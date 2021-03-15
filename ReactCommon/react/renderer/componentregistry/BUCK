@@ -16,11 +16,11 @@ APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 rn_xplat_cxx_library(
     name = "componentregistry",
     srcs = glob(
-        ["**/*.cpp"],
+        ["*.cpp"],
         exclude = glob(["tests/**/*.cpp"]),
     ),
     headers = glob(
-        ["**/*.h"],
+        ["*.h"],
         exclude = glob(["tests/**/*.h"]),
     ),
     header_namespace = "",

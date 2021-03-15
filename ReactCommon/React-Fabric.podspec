@@ -93,6 +93,14 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 
+  s.subspec "componentregistrynative" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/componentregistry/native/**/*.{m,mm,cpp,h}"
+    ss.header_dir           = "react/renderer/componentregistry/native"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+  end
+
   s.subspec "components" do |ss|
     ss.subspec "activityindicator" do |sss|
       sss.dependency             folly_dep_name, folly_version
