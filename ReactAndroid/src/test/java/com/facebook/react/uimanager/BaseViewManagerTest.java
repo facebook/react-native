@@ -11,7 +11,6 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 import com.facebook.react.R;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
@@ -46,14 +45,6 @@ public class BaseViewManagerTest {
     mViewManager = new ReactViewManager();
     mView = new ReactViewGroup(RuntimeEnvironment.application);
     PowerMockito.mockStatic(Arguments.class);
-    PowerMockito.when(Arguments.createArray())
-        .thenAnswer(
-            new Answer<Object>() {
-              @Override
-              public Object answer(InvocationOnMock invocation) throws Throwable {
-                return new JavaOnlyArray();
-              }
-            });
     PowerMockito.when(Arguments.createMap())
         .thenAnswer(
             new Answer<Object>() {
@@ -79,7 +70,6 @@ public class BaseViewManagerTest {
 
   @Test
   public void testAccessibilityStateSelected() {
-    Locale.setDefault(Locale.forLanguageTag("tr-TR"));
     WritableMap accessibilityState = Arguments.createMap();
     accessibilityState.putBoolean("selected", true);
     mViewManager.setViewState(mView, accessibilityState);
