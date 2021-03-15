@@ -1848,21 +1848,11 @@ static void YGZeroOutLayoutRecursivly(
 
 static float YGNodeCalculateAvailableInnerDim(
     const YGNodeConstRef node,
-    YGFlexDirection axis,
-    float availableDim,
-    float ownerDim,
-    float ownerDimForMarginPadding) {
-  YGFlexDirection direction =
-      YGFlexDirectionIsRow(axis) ? YGFlexDirectionRow : YGFlexDirectionColumn;
-  YGDimension dimension =
-      YGFlexDirectionIsRow(axis) ? YGDimensionWidth : YGDimensionHeight;
-
-  const float margin =
-      node->getMarginForAxis(direction, ownerDimForMarginPadding).unwrap();
-  const float paddingAndBorder =
-      YGNodePaddingAndBorderForAxis(node, direction, ownerDimForMarginPadding);
-
-  float availableInnerDim = availableDim - margin - paddingAndBorder;
+    const YGDimension dimension,
+    const float availableDim,
+    const float paddingAndBorder,
+    const float ownerDim) {
+  float availableInnerDim = availableDim - paddingAndBorder;
   // Max dimension overrides predefined dimension value; Min dimension in turn
   // overrides both of the above
   if (!YGFloatIsUndefined(availableInnerDim)) {
@@ -2836,12 +2826,14 @@ static void YGNodelayoutImpl(
   const float mainAxisownerSize = isMainAxisRow ? ownerWidth : ownerHeight;
   const float crossAxisownerSize = isMainAxisRow ? ownerHeight : ownerWidth;
 
-  const float leadingPaddingAndBorderCross =
-      node->getLeadingPaddingAndBorder(crossAxis, ownerWidth).unwrap();
   const float paddingAndBorderAxisMain =
       YGNodePaddingAndBorderForAxis(node, mainAxis, ownerWidth);
+  const float leadingPaddingAndBorderCross =
+      node->getLeadingPaddingAndBorder(crossAxis, ownerWidth).unwrap();
+  const float trailingPaddingAndBorderCross =
+      node->getTrailingPaddingAndBorder(crossAxis, ownerWidth).unwrap();
   const float paddingAndBorderAxisCross =
-      YGNodePaddingAndBorderForAxis(node, crossAxis, ownerWidth);
+      leadingPaddingAndBorderCross + trailingPaddingAndBorderCross;
 
   YGMeasureMode measureModeMainDim =
       isMainAxisRow ? widthMeasureMode : heightMeasureMode;
@@ -2858,30 +2850,20 @@ static void YGNodelayoutImpl(
   const float marginAxisColumn =
       node->getMarginForAxis(YGFlexDirectionColumn, ownerWidth).unwrap();
 
-  const auto& minDimensions = node->getStyle().minDimensions();
-  const auto& maxDimensions = node->getStyle().maxDimensions();
-  const float minInnerWidth =
-      YGResolveValue(minDimensions[YGDimensionWidth], ownerWidth).unwrap() -
-      paddingAndBorderAxisRow;
-  const float maxInnerWidth =
-      YGResolveValue(maxDimensions[YGDimensionWidth], ownerWidth).unwrap() -
-      paddingAndBorderAxisRow;
-  const float minInnerHeight =
-      YGResolveValue(minDimensions[YGDimensionHeight], ownerHeight).unwrap() -
-      paddingAndBorderAxisColumn;
-  const float maxInnerHeight =
-      YGResolveValue(maxDimensions[YGDimensionHeight], ownerHeight).unwrap() -
-      paddingAndBorderAxisColumn;
-
-  const float minInnerMainDim = isMainAxisRow ? minInnerWidth : minInnerHeight;
-  const float maxInnerMainDim = isMainAxisRow ? maxInnerWidth : maxInnerHeight;
-
   // STEP 2: DETERMINE AVAILABLE SIZE IN MAIN AND CROSS DIRECTIONS
 
   float availableInnerWidth = YGNodeCalculateAvailableInnerDim(
-      node, YGFlexDirectionRow, availableWidth, ownerWidth, ownerWidth);
+      node,
+      YGDimensionWidth,
+      availableWidth - marginAxisRow,
+      paddingAndBorderAxisRow,
+      ownerWidth);
   float availableInnerHeight = YGNodeCalculateAvailableInnerDim(
-      node, YGFlexDirectionColumn, availableHeight, ownerHeight, ownerWidth);
+      node,
+      YGDimensionHeight,
+      availableHeight - marginAxisColumn,
+      paddingAndBorderAxisColumn,
+      ownerHeight);
 
   float availableInnerMainDim =
       isMainAxisRow ? availableInnerWidth : availableInnerHeight;
@@ -2953,6 +2935,28 @@ static void YGNodelayoutImpl(
     // If we don't measure with exact main dimension we want to ensure we don't
     // violate min and max
     if (measureModeMainDim != YGMeasureModeExactly) {
+      const auto& minDimensions = node->getStyle().minDimensions();
+      const auto& maxDimensions = node->getStyle().maxDimensions();
+      const float minInnerWidth =
+          YGResolveValue(minDimensions[YGDimensionWidth], ownerWidth).unwrap() -
+          paddingAndBorderAxisRow;
+      const float maxInnerWidth =
+          YGResolveValue(maxDimensions[YGDimensionWidth], ownerWidth).unwrap() -
+          paddingAndBorderAxisRow;
+      const float minInnerHeight =
+          YGResolveValue(minDimensions[YGDimensionHeight], ownerHeight)
+              .unwrap() -
+          paddingAndBorderAxisColumn;
+      const float maxInnerHeight =
+          YGResolveValue(maxDimensions[YGDimensionHeight], ownerHeight)
+              .unwrap() -
+          paddingAndBorderAxisColumn;
+
+      const float minInnerMainDim =
+          isMainAxisRow ? minInnerWidth : minInnerHeight;
+      const float maxInnerMainDim =
+          isMainAxisRow ? maxInnerWidth : maxInnerHeight;
+
       if (!YGFloatIsUndefined(minInnerMainDim) &&
           collectedFlexItemsValues.sizeConsumedOnCurrentLine <
               minInnerMainDim) {
