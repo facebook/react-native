@@ -153,7 +153,6 @@ function SectionListExample(Props: {...}): React.Element<typeof RNTesterPage> {
     {useNativeDriver: true},
   );
   const [filterText, setFilterText] = React.useState('');
-  const [virtualized, setVirtualized] = React.useState(true);
   const [logViewable, setLogViewable] = React.useState(false);
   const [debug, setDebug] = React.useState(false);
   const [inverted, setInverted] = React.useState(false);
@@ -225,7 +224,6 @@ function SectionListExample(Props: {...}): React.Element<typeof RNTesterPage> {
           value={filterText}
         />
         <View style={styles.optionSection}>
-          {renderSmallSwitchOption('Virtualized', virtualized, setVirtualized)}
           {renderSmallSwitchOption('Log Viewable', logViewable, setLogViewable)}
           {renderSmallSwitchOption('Debug', debug, setDebug)}
           {renderSmallSwitchOption('Inverted', inverted, setInverted)}
@@ -274,7 +272,6 @@ function SectionListExample(Props: {...}): React.Element<typeof RNTesterPage> {
         )}
         debug={debug}
         inverted={inverted}
-        disableVirtualization={!virtualized}
         onRefresh={() => Alert.alert('onRefresh: nothing to refresh :P')}
         onScroll={scrollSinkY}
         onViewableItemsChanged={onViewableItemsChanged}

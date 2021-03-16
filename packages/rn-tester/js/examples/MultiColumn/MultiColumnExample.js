@@ -41,14 +41,12 @@ class MultiColumnExample extends React.PureComponent<
         fixedHeight: boolean,
         logViewable: boolean,
         numColumns: number,
-        virtualized: boolean,
       |} = {
     data: genItemData(1000),
     filterText: '',
     fixedHeight: true,
     logViewable: false,
     numColumns: 2,
-    virtualized: true,
   };
   _onChangeFilterText = filterText => {
     this.setState(() => ({filterText}));
@@ -86,11 +84,6 @@ class MultiColumnExample extends React.PureComponent<
           </View>
           <View style={styles.row}>
             {renderSmallSwitchOption(
-              'Virtualized',
-              this.state.virtualized,
-              this._setBooleanValue('virtualized'),
-            )}
-            {renderSmallSwitchOption(
               'Fixed Height',
               this.state.fixedHeight,
               this._setBooleanValue('fixedHeight'),
@@ -117,7 +110,6 @@ class MultiColumnExample extends React.PureComponent<
           }
           refreshing={false}
           renderItem={this._renderItemComponent}
-          disableVirtualization={!this.state.virtualized}
           onViewableItemsChanged={this._onViewableItemsChanged}
         />
       </RNTesterPage>
