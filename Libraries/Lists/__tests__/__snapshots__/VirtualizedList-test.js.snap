@@ -43,7 +43,6 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -190,7 +189,6 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when partially in 
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
-  horizontal={false}
   initialNumToRender={5}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -276,7 +274,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -439,7 +436,6 @@ exports[`VirtualizedList handles separators correctly 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -520,7 +516,6 @@ exports[`VirtualizedList handles separators correctly 2`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -601,7 +596,6 @@ exports[`VirtualizedList handles separators correctly 3`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -754,7 +748,6 @@ exports[`VirtualizedList keeps sticky headers realized after scrolled out of vie
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
-  horizontal={false}
   initialNumToRender={1}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -947,7 +940,6 @@ exports[`VirtualizedList realizes sticky headers in viewport on batched render 1
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
-  horizontal={false}
   initialNumToRender={1}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -1047,7 +1039,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   invertStickyHeaders={true}
   inverted={true}
@@ -1230,7 +1221,6 @@ exports[`VirtualizedList renders empty list 1`] = `
   data={Array []}
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -1260,7 +1250,6 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
   data={Array []}
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -1306,7 +1295,6 @@ exports[`VirtualizedList renders list with empty component 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -1341,7 +1329,6 @@ exports[`VirtualizedList renders null list 1`] = `
 <RCTScrollView
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -1380,7 +1367,6 @@ exports[`VirtualizedList renders simple list 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -1445,7 +1431,6 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -1502,7 +1487,6 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -1545,7 +1529,6 @@ exports[`VirtualizedList warns if both renderItem or ListItemComponent are speci
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}

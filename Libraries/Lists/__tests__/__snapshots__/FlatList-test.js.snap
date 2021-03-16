@@ -28,7 +28,6 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -130,7 +129,6 @@ exports[`FlatList renders empty list 1`] = `
   data={Array []}
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -158,7 +156,6 @@ exports[`FlatList renders null list 1`] = `
 <RCTScrollView
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -199,7 +196,6 @@ exports[`FlatList renders simple list (multiple columns) 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -276,7 +272,6 @@ exports[`FlatList renders simple list 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -343,7 +338,6 @@ exports[`FlatList renders simple list using ListItemComponent (multiple columns)
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
@@ -420,7 +414,6 @@ exports[`FlatList renders simple list using ListItemComponent 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}

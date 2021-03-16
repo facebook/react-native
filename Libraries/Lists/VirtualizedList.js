@@ -304,7 +304,6 @@ type Props = {|
 |};
 
 type DefaultProps = {|
-  horizontal: boolean,
   initialNumToRender: number,
   keyExtractor: (item: Item, index: number) => string,
   maxToRenderPerBatch: number,
@@ -321,6 +320,10 @@ type State = {
   first: number,
   last: number,
 };
+
+function horizontalOrDefault(horizontal: ?boolean) {
+  return horizontal ?? false;
+}
 
 /**
  * Base implementation for the more convenient [`<FlatList>`](https://reactnative.dev/docs/flatlist.html)
@@ -380,7 +383,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     this._scrollRef.scrollTo(
-      this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
+      horizontalOrDefault(this.props.horizontal)
+        ? {x: offset, animated}
+        : {y: offset, animated},
     );
   }
 
@@ -502,7 +507,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     this._scrollRef.scrollTo(
-      this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
+      horizontalOrDefault(this.props.horizontal)
+        ? {x: offset, animated}
+        : {y: offset, animated},
     );
   }
 
@@ -560,7 +567,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   static defaultProps: DefaultProps = {
-    horizontal: false,
     initialNumToRender: 10,
     keyExtractor: (item: Item, index: number) => {
       if (item.key != null) {
@@ -594,7 +600,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return {
       listKey: this._getListKey(),
       cellKey: this._getCellKey(),
-      horizontal: !!this.props.horizontal,
+      horizontal: horizontalOrDefault(this.props.horizontal),
       parent: this.context?.debugInfo,
     };
   }
@@ -839,7 +845,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _isNestedWithSameOrientation(): boolean {
     const nestedContext = this.context;
     return !!(
-      nestedContext && !!nestedContext.horizontal === !!this.props.horizontal
+      nestedContext &&
+      !!nestedContext.horizontal === horizontalOrDefault(this.props.horizontal)
     );
   }
 
@@ -864,7 +871,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const {data, horizontal} = this.props;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const inversionStyle = this.props.inverted
-      ? this.props.horizontal
+      ? horizontalOrDefault(this.props.horizontal)
         ? styles.horizontallyInverted
         : styles.verticallyInverted
       : null;
@@ -1070,7 +1077,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         value={{
           cellKey: null,
           getScrollMetrics: this._getScrollMetrics,
-          horizontal: this.props.horizontal,
+          horizontal: horizontalOrDefault(this.props.horizontal),
           getOutermostParentListRef: this._getOutermostParentListRef,
           getNestedChildState: this._getNestedChildState,
           registerAsNestedChild: this._registerAsNestedChild,
@@ -1096,7 +1103,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           {scrollContext => {
             if (
               scrollContext != null &&
-              !scrollContext.horizontal === !this.props.horizontal &&
+              !scrollContext.horizontal ===
+                !horizontalOrDefault(this.props.horizontal) &&
               !this._hasWarned.nesting &&
               this.context == null
             ) {
@@ -1452,7 +1460,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       ...
     }>,
   ): number {
-    return !this.props.horizontal ? metrics.height : metrics.width;
+    return !horizontalOrDefault(this.props.horizontal)
+      ? metrics.height
+      : metrics.width;
   }
 
   _selectOffset(
@@ -1462,7 +1472,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       ...
     }>,
   ): number {
-    return !this.props.horizontal ? metrics.y : metrics.x;
+    return !horizontalOrDefault(this.props.horizontal) ? metrics.y : metrics.x;
   }
 
   _maybeCallOnEndReached() {
