@@ -34,7 +34,7 @@ public class AdhocApprovalRuleDao {
 		ruleDo.setAdhocType(dto.getAdhocType());
 		ruleDo.setUserGroup(dto.getUserGroup());
 		ruleDo.setApproverType(dto.getApproverType());
-		ruleDo.setApproverEmail(dto.getApproverEmail());
+		ruleDo.setUserId(dto.getUserId());
 		return ruleDo;
 
 	}
@@ -45,7 +45,7 @@ public class AdhocApprovalRuleDao {
 		ruleDto.setAdhocType(ruledo.getAdhocType());
 		ruleDto.setUserGroup(ruledo.getUserGroup());
 		ruleDto.setApproverType(ruledo.getApproverType());
-		ruleDto.setApproverEmail(ruledo.getApproverEmail());
+		ruleDto.setUserId(ruledo.getUserId());
 		return ruleDto;
 
 	}
@@ -61,7 +61,7 @@ public class AdhocApprovalRuleDao {
 		for (AdhocApprovalRuleDto dto : ruleList) {
 			try {
 				LOGGER.error("Enter into adhocApprovalRuleDao saveApproval end here " + dto.getAdhocType() + " - "
-						+ dto.getApproverEmail() + "- " + dto.getApproverType() + " - " + dto.getUserGroup());
+						+ dto.getUserId() + "- " + dto.getApproverType() + " - " + dto.getUserGroup());
 				session.save(importApprovalRule(dto));
 			} catch (Exception e) {
 				throw new RuntimeException("Error while saving data:: " + e.toString());

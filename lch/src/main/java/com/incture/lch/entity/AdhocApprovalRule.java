@@ -29,9 +29,13 @@ public class AdhocApprovalRule implements Serializable {
 	@Column(name = "APPROVER_TYP", columnDefinition = "NVARCHAR(200)")
 	private String approverType;
 
-	@Column(name = "APPROVER", columnDefinition = "NVARCHAR(200)")
-	private String approverEmail;
+	//@Column(name = "APPROVER", columnDefinition = "NVARCHAR(200)")
+	//private String approverEmail;
 
+	
+	@Column(name = "USER_ID", columnDefinition = "NVARCHAR(200)")
+	private String userId;
+	
 	public String getAdhocType() {
 		return adhocType;
 	}
@@ -56,16 +60,25 @@ public class AdhocApprovalRule implements Serializable {
 		this.approverType = approverType;
 	}
 
-	public String getApproverEmail() {
+	/*public String getApproverEmail() {
 		return approverEmail;
 	}
 
 	public void setApproverEmail(String approverEmail) {
 		this.approverEmail = approverEmail;
-	}
+	}*/
 
+	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public Long getId() {
@@ -79,7 +92,7 @@ public class AdhocApprovalRule implements Serializable {
 	@Override
 	public String toString() {
 		return "AdhocApprovalRule [id=" + id + ", adhocType=" + adhocType + ", userGroup=" + userGroup
-				+ ", approverType=" + approverType + ", approverEmail=" + approverEmail + "]";
+				+ ", approverType=" + approverType + ", approverEmail=" + userId + "]";
 	}
 
 }

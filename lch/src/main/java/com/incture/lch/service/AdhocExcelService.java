@@ -40,7 +40,7 @@ public class AdhocExcelService {
 		{
 			AdhocApprovalCustomDto customDto = new AdhocApprovalCustomDto();
 			customDto.setAdhocType(dto.getAdhocType());
-			customDto.setApproverEmail(dto.getApproverEmail());
+			customDto.setApproverEmail(dto.getUserId());
 			customDto.setApproverType(dto.getApproverType());
 			customDto.setUserGroup(dto.getUserGroup());
 			customAppList.add(customDto);

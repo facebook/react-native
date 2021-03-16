@@ -75,7 +75,7 @@ public class AdhocExcelHelper {
 						break;
 
 					case 3:
-						dto.setApproverEmail(currentCell.getStringCellValue());
+						dto.setUserId(currentCell.getStringCellValue());
 						break;
 
 					default:
