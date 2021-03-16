@@ -147,7 +147,8 @@ class Binding : public jni::HybridClass<Binding>,
 
   void schedulerDidSetIsJSResponder(
       ShadowView const &shadowView,
-      bool isJSResponder) override;
+      bool isJSResponder,
+      bool blockNativeResponder) override;
 
   void setPixelDensity(float pointScaleFactor);
 

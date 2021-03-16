@@ -115,9 +115,11 @@ void UIManager::completeSurface(
 
 void UIManager::setIsJSResponder(
     ShadowNode::Shared const &shadowNode,
-    bool isJSResponder) const {
+    bool isJSResponder,
+    bool blockNativeResponder) const {
   if (delegate_) {
-    delegate_->uiManagerDidSetIsJSResponder(shadowNode, isJSResponder);
+    delegate_->uiManagerDidSetIsJSResponder(
+        shadowNode, isJSResponder, blockNativeResponder);
   }
 }
 

@@ -300,10 +300,11 @@ void Scheduler::uiManagerDidSendAccessibilityEvent(
  */
 void Scheduler::uiManagerDidSetIsJSResponder(
     ShadowNode::Shared const &shadowNode,
-    bool isJSResponder) {
+    bool isJSResponder,
+    bool blockNativeResponder) {
   if (delegate_) {
     delegate_->schedulerDidSetIsJSResponder(
-        ShadowView(*shadowNode), isJSResponder);
+        ShadowView(*shadowNode), isJSResponder, blockNativeResponder);
   }
 }
 

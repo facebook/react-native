@@ -321,7 +321,8 @@ jsi::Value UIManagerBinding::get(
             size_t count) noexcept -> jsi::Value {
           uiManager->setIsJSResponder(
               shadowNodeFromValue(runtime, arguments[0]),
-              arguments[1].getBool());
+              arguments[1].getBool(),
+              arguments[2].getBool());
 
           return jsi::Value::undefined();
         });

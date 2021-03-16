@@ -131,7 +131,8 @@ class UIManager final : public ShadowTreeDelegate {
 
   void setIsJSResponder(
       ShadowNode::Shared const &shadowNode,
-      bool isJSResponder) const;
+      bool isJSResponder,
+      bool blockNativeResponder) const;
 
   ShadowNode::Shared findNodeAtPoint(
       ShadowNode::Shared const &shadowNode,

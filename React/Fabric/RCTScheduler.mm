@@ -45,7 +45,8 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
   }
 
-  void schedulerDidSetIsJSResponder(ShadowView const &shadowView, bool isJSResponder) override
+  void schedulerDidSetIsJSResponder(ShadowView const &shadowView, bool isJSResponder, bool blockNativeResponder)
+      override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidSetIsJSResponder:isJSResponder forShadowView:shadowView];
