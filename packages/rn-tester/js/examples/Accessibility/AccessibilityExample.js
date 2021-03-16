@@ -12,6 +12,7 @@
 const React = require('react');
 const {
   AccessibilityInfo,
+  TextInput,
   Button,
   Image,
   Text,
@@ -21,6 +22,7 @@ const {
   Alert,
   StyleSheet,
   Platform,
+  findNodeHandle,
 } = require('react-native');
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
@@ -31,6 +33,13 @@ const mixedCheckboxImageSource = require('./mixed.png');
 const {createRef} = require('react');
 
 const styles = StyleSheet.create({
+  default: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#0f0f0f',
+    flex: 1,
+    fontSize: 13,
+    padding: 4,
+  },
   image: {
     width: 20,
     height: 20,
@@ -716,10 +725,8 @@ class SetAccessibilityFocusExample extends React.Component<{}> {
 
     const onClose = () => {
       if (myRef && myRef.current) {
-        AccessibilityInfo.sendAccessiblityEvent_unstable(
-          myRef.current,
-          'focus',
-        );
+        const reactTag = findNodeHandle(myRef.current);
+        AccessibilityInfo.setAccessibilityFocus(reactTag);
       }
     };
 
@@ -846,6 +853,27 @@ class EnabledExample extends React.Component<{}> {
   }
 }
 
+class TextInputExamples extends React.Component<$FlowFixMeProps, any> {
+  constructor(props) {
+    super(props);
+    this.state = {focused: false};
+  }
+  render() {
+    return (
+      <View>
+        <TextInput
+          accessible={true}
+          accessibilityState={{selected: this.state.focused}}
+          showSoftInputOnFocus={false}
+          onFocus={() => this.setState({focused: true})}
+          onBlur={() => this.setState({focused: false})}
+          style={styles.default}
+        />
+      </View>
+    );
+  }
+}
+
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
@@ -890,6 +918,12 @@ exports.examples = [
     title: 'Check if these properties are enabled',
     render(): React.Element<typeof EnabledExamples> {
       return <EnabledExamples />;
+    },
+  },
+  {
+    title: 'TextInput Announces Selected after selection',
+    render(): React.Element<typeof EnabledExamples> {
+      return <TextInputExamples />;
     },
   },
 ];
