@@ -1,6 +1,6 @@
 package com.incture.lch.adhoc.dto;
 
-public class GetCostRequestDto
+public class ChargeRequestDto
 {
 	private Long id;
 	
@@ -19,6 +19,7 @@ public class GetCostRequestDto
 	
 	private String carrierMode;
 	
+	private int charge;
 	
 	public String getAdhocOrderId() {
 		return adhocOrderId;
@@ -66,6 +67,14 @@ public class GetCostRequestDto
 
 	public void setCarrierMode(String carrierMode) {
 		this.carrierMode = carrierMode;
+	}
+
+	public int getCharge() {
+		return charge;
+	}
+
+	public void setCharge(int charge) {
+		this.charge = charge;
 	}
 
 	

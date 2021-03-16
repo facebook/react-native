@@ -25,7 +25,6 @@ public interface AdhocOrdersRepository {
 
 	public List<AdhocOrderDto> getAllAdhocOrders();
 
-	//////////
 	List<AdhocOrderDto> getKpi(int days,AdhocRequestDto adhocRequestDto);
 	
 	
