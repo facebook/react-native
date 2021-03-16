@@ -52,13 +52,6 @@ public class PremiumFreightOrdersController
 		return premiumFreightOrdersService.getMode(bpNo);
 	}
 
-	/*@RequestMapping(value = "/getChargeByCarrierAdmin", method = RequestMethod.POST, consumes = { "application/json" })
-	@ResponseBody
-	public List<PremiumFreightOrderDto> getChargeByCarrierAdmin(@RequestBody JSONObject orderIdList) {
-		@SuppressWarnings("unchecked")
-		List<String> adhocOrderIds = (List<String>) orderIdList.get("adhocOrderIds");
-		return premiumFreightOrdersService.getChargeByCarrierAdmin(adhocOrderIds);
-	}*/
 	
 
 	@RequestMapping(value = "/setCarrierDetails", method = RequestMethod.POST, consumes = { "application/json" })
@@ -74,10 +67,11 @@ public class PremiumFreightOrdersController
 		return premiumFreightOrdersService.setCharge(dto);
 	}
 
+	
 	@RequestMapping(value = "/forwardToApprover", method = RequestMethod.POST, consumes = { "application/json" })
 	@ResponseBody
-	public String forwardToApprover(@RequestBody List<PremiumFreightChargeDetails> premiumFreightChargeDetail) {
-		return premiumFreightOrdersService.forwardToApprover(premiumFreightChargeDetail);
+	public String forwardToApprover(@RequestBody List<PremiumRequestDto> premiumRequestDtos) {
+		return premiumFreightOrdersService.forwardToApprover(premiumRequestDtos);
 	}
 
 	

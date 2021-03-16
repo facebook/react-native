@@ -20,7 +20,7 @@ public interface PremiumFreightOrdersService
 	
 	public String setCharge(ChargeRequestDto dto);
 
-	public String forwardToApprover(List<PremiumFreightChargeDetails> premiumFreightChargeDetail);
+	public String forwardToApprover(List<PremiumRequestDto> premiumRequestDtos);
 	
 	public String RejectPremiumOrder (String adhocOrderId);
 

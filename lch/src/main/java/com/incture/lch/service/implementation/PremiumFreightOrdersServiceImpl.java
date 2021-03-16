@@ -57,8 +57,8 @@ public class PremiumFreightOrdersServiceImpl implements PremiumFreightOrdersServ
 	}
 
 	@Override
-	public String forwardToApprover(List<PremiumFreightChargeDetails> premiumFreightChargeDetail) {
-		return premiumFreightOrdersRepo.forwardToApprover(premiumFreightChargeDetail);
+	public String forwardToApprover(List<PremiumRequestDto> premiumRequestDtos) {
+		return premiumFreightOrdersRepo.forwardToApprover(premiumRequestDtos);
 	}
 
 	@Override
