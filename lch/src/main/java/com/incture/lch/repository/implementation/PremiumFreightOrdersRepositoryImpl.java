@@ -240,7 +240,7 @@ public class PremiumFreightOrdersRepositoryImpl implements PremiumFreightOrdersR
 	//On getting the Charge respond the Same DTO Premium one for the CA 
 	//The status changes to Pending with Carrier admin
 	@Override
-	public List<PremiumFreightOrderDto> getChargeByCarrierAdmin(List<String> adhocOrderIds)
+	public List<PremiumFreightOrderDto> setCarrierDetails(List<ChargeRequestDto> chargeRequestDto)
 	{
 		
 		Session session= sessionFactory.openSession();
@@ -248,20 +248,66 @@ public class PremiumFreightOrdersRepositoryImpl implements PremiumFreightOrdersR
 		List<PremiumFreightOrderDto> premiumFreightOrderDtos=new ArrayList<PremiumFreightOrderDto>();
 		List<AdhocOrders> adhocOrders = new ArrayList<AdhocOrders>();
 		PremiumFreightOrderDto premiumdto =new PremiumFreightOrderDto();
-		for(String adid:adhocOrderIds)
+		List<String> adhocOrderIds = new ArrayList<String>();
+		for(ChargeRequestDto c: chargeRequestDto)
 		{
+			/*adhocOrderIds.add(c.getAdhocOrderId());
+		}
+		for(String adid:adhocOrderIds)
+		{*/
+			String adid=c.getAdhocOrderId();
 		try {
 			String queryStr = "SELECT ao FROM AdhocOrders ao WHERE ao.fwoNum = ao.fwoNum AND ao.fwoNum=:fwoNum";
 			Query query = session.createQuery(queryStr);
 			query.setParameter("fwoNum", adid);
 			adhocOrders = query.list();
+			 
+			
 			for (AdhocOrders aorders : adhocOrders)
 			{
+				PremiumFreightChargeDetails premiumFreightChargeDetails=new PremiumFreightChargeDetails();
+
 				aorders.setStatus("Pending with Carrier Admin");
 				session.saveOrUpdate(aorders);
 				premiumdto= exportPremiumFreightOrders(aorders);
 				premiumdto.setStatus("Pending with Carrier Admin");
 				premiumFreightOrderDtos.add(premiumdto);
+				Criteria criteria= session.createCriteria(PremiumFreightChargeDetails.class);
+				criteria.add(Restrictions.eq("adhocOrderId", adid));
+				 
+					premiumFreightChargeDetails.setAdhocOrderId(adid);
+					
+					premiumFreightChargeDetails.setBpNumber(c.getBpNumber());
+					premiumFreightChargeDetails.setCarrierDetails(c.getCarrierDetails());
+					premiumFreightChargeDetails.setCarrierMode(c.getCarrierMode());
+					premiumFreightChargeDetails.setCarrierScac(c.getCarrierScac());
+					
+					premiumFreightChargeDetails.setOriginName(aorders.getShipperName());
+					premiumFreightChargeDetails.setOriginAddress(aorders.getOriginAddress());
+					premiumFreightChargeDetails.setOriginCity(aorders.getOriginCity());
+					premiumFreightChargeDetails.setOriginState(aorders.getOriginState());
+					premiumFreightChargeDetails.setOriginCountry(aorders.getCountryOrigin());
+					premiumFreightChargeDetails.setOriginZip(aorders.getOriginZip());
+					
+					premiumFreightChargeDetails.setDestinationName(aorders.getDestinationName());
+					premiumFreightChargeDetails.setDestinationAdress(aorders.getDestinationAddress());
+					premiumFreightChargeDetails.setDestinationCity(aorders.getDestinationCity());
+					premiumFreightChargeDetails.setDestinationState(aorders.getDestinationState());
+					premiumFreightChargeDetails.setDestinationCountry(aorders.getDestinationCountry());
+					premiumFreightChargeDetails.setDestinationZip(aorders.getDestinationZip());
+					
+					premiumFreightChargeDetails.setCharge(0);
+					
+					premiumFreightChargeDetails.setReasonCode(aorders.getPremiumReasonCode());
+					premiumFreightChargeDetails.setStatus("Pending with Carrier Admin");
+					premiumFreightChargeDetails.setPlannerEmail(aorders.getPlannerEmail());
+					
+
+					
+
+					session.saveOrUpdate(premiumFreightChargeDetails);;
+				
+				
 			}
 		} catch (Exception e) {
 			// LOGGER.error("Exception in getReasonCode api" + e);
@@ -285,13 +331,18 @@ public class PremiumFreightOrdersRepositoryImpl implements PremiumFreightOrdersR
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		List<AdhocOrders> adhocOrders = new ArrayList<AdhocOrders>();
-		//List<PremiumFreightChargeDetails> premiumFreightChargeDetails = new ArrayList<PremiumFreightChargeDetails>();
 		PremiumFreightChargeDetails premiumFreightChargeDetail = new PremiumFreightChargeDetails();
-		//PremiumFreightOrderDto premiumFreightOrderDto = new PremiumFreightOrderDto();
+		List<PremiumFreightChargeDetails> premiumFreightChargeDetails= new ArrayList<PremiumFreightChargeDetails>();
 		@SuppressWarnings("deprecation")
 		Criteria criteria = session.createCriteria(AdhocOrders.class);
 		criteria.add(Restrictions.eq("fwoNum", dto.getAdhocOrderId()));
 		adhocOrders = criteria.list();
+		
+		Criteria criteria2 = session.createCriteria(PremiumFreightChargeDetails.class);
+		criteria2.add(Restrictions.eq("adhocOrderId", dto.getAdhocOrderId()));
+		premiumFreightChargeDetails=criteria2.list();
+		if(premiumFreightChargeDetails==null)
+		{
 		for (AdhocOrders a : adhocOrders) 
 		{
 			premiumFreightChargeDetail.setAdhocOrderId(a.getFwoNum());
@@ -322,29 +373,17 @@ public class PremiumFreightOrdersRepositoryImpl implements PremiumFreightOrdersR
 		premiumFreightChargeDetail.setCarrierDetails(dto.getCarrierDetails());
 		premiumFreightChargeDetail.setCarrierMode(dto.getCarrierMode());
 		premiumFreightChargeDetail.setCharge(dto.getCharge());
-		// premiumFreightChargeDetail.setCarrierRatePerKM(dto.get);
-
-		//Random rand = new Random();
-
-		/*byte[] array = new byte[10]; // length is bounded by 7
-	    new Random().nextBytes(array);
-	    String generatedPremiumID = new String(array, Charset.forName("UTF-8"));
-*/
-	    /*String generatedPremiumID = getReferenceData.getNextSeqNumberAdhoc(
-				getReferenceData.executeAdhoc("PRID"), 3,
-				sessionFactory);*/
-
-		/*if (adhocOrders.getFwoNum() == null || adhocOrders.getFwoNum().equals("")
-				|| adhocOrders.getFwoNum().substring(0, 3) == "TEM"
-				|| adhocOrders.getFwoNum().substring(0, 3).equals("TEM")) {
-			adhocOrders.setFwoNum(adhocOrderId);
-
-		}*/
-		/*premiumFreightChargeDetail.setPremiumId(generatedPremiumID);
-
-		System.out.println(premiumFreightChargeDetail.getPremiumId());*/
-		
 		session.saveOrUpdate(premiumFreightChargeDetail);
+		}
+		else
+		{
+			for(PremiumFreightChargeDetails p:premiumFreightChargeDetails)
+			{
+				p.setCharge(dto.getCharge());
+				p.setStatus("In Progress");
+				session.saveOrUpdate(p);
+			}
+		}
 		session.flush();
 		session.clear();
 		tx.commit();

@@ -2,7 +2,7 @@ package com.incture.lch.dto;
 
 public class ChargeRequestDto
 {
-	private Long id;
+	//private Long id;
 	
 	
 	private String adhocOrderId;
@@ -29,13 +29,13 @@ public class ChargeRequestDto
 		this.adhocOrderId = adhocOrderId;
 	}
 
-	public Long getId() {
+	/*public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
-	}
+	}*/
 
 	public String getBpNumber() {
 		return bpNumber;

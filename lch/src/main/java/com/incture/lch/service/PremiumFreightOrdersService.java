@@ -16,7 +16,7 @@ public interface PremiumFreightOrdersService
 	
 	public List<String> getMode(String bpNumber);
 
-	public List<PremiumFreightOrderDto> getChargeByCarrierAdmin(List<String> adhocOrderIds);
+	public List<PremiumFreightOrderDto> setCarrierDetails(List<ChargeRequestDto> chargeRequestDto);
 	
 	public String setCharge(ChargeRequestDto dto);
 

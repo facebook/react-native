@@ -47,8 +47,8 @@ public class PremiumFreightOrdersServiceImpl implements PremiumFreightOrdersServ
 	}
 
 	@Override
-	public List<PremiumFreightOrderDto> getChargeByCarrierAdmin(List<String> adhocOrderIds) {
-		return premiumFreightOrdersRepo.getChargeByCarrierAdmin(adhocOrderIds);
+	public List<PremiumFreightOrderDto> setCarrierDetails(List<ChargeRequestDto> chargeRequestDto) {
+		return premiumFreightOrdersRepo.setCarrierDetails(chargeRequestDto);
 	}
 
 	@Override

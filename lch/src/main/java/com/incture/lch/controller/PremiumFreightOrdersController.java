@@ -52,14 +52,22 @@ public class PremiumFreightOrdersController
 		return premiumFreightOrdersService.getMode(bpNo);
 	}
 
-	@RequestMapping(value = "/getChargeByCarrierAdmin", method = RequestMethod.POST, consumes = { "application/json" })
+	/*@RequestMapping(value = "/getChargeByCarrierAdmin", method = RequestMethod.POST, consumes = { "application/json" })
 	@ResponseBody
 	public List<PremiumFreightOrderDto> getChargeByCarrierAdmin(@RequestBody JSONObject orderIdList) {
 		@SuppressWarnings("unchecked")
 		List<String> adhocOrderIds = (List<String>) orderIdList.get("adhocOrderIds");
 		return premiumFreightOrdersService.getChargeByCarrierAdmin(adhocOrderIds);
-	}
+	}*/
+	
 
+	@RequestMapping(value = "/setCarrierDetails", method = RequestMethod.POST, consumes = { "application/json" })
+	@ResponseBody
+	public List<PremiumFreightOrderDto> setCarrierDetails(@RequestBody List<ChargeRequestDto> chargeRequestDto) {
+		/*@SuppressWarnings("unchecked")
+		List<String> adhocOrderIds = (List<String>) orderIdList.get("adhocOrderIds");*/
+		return premiumFreightOrdersService.setCarrierDetails(chargeRequestDto);
+	}
 	@RequestMapping(value = "/setCharge", method = RequestMethod.POST, consumes = { "application/json" })
 	@ResponseBody
 	public String setCharge(@RequestBody ChargeRequestDto dto) {

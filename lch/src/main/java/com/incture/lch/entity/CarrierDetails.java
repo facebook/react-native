@@ -21,7 +21,7 @@ public class CarrierDetails
 	@Column(name= "BP_NUMBER")
 	private String bpNumber;
 	
-	@Column(name = "CARRIER_SCAC", unique = true)
+	@Column(name = "CARRIER_SCAC")
 	private String carrierScac;
 	
 	@Column(name= "CARRIER_DETAILS")

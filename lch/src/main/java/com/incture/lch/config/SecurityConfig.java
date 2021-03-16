@@ -29,13 +29,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/lch/**").permitAll().anyRequest().authenticated().and().oauth2ResourceServer().jwt()
 				.jwtAuthenticationConverter(getJwtAuthenticationConverter());*/
 		
-		http
+		http.csrf().disable()
         //no authentication needed for these context paths
         .authorizeRequests()
         .antMatchers("/updateApprovalWorkflowDetails").permitAll()
         .antMatchers("/LCH/**").permitAll()
         .antMatchers("/lch/**").permitAll();
-        
+		//http.csrf().disable();
+
 	}
 
 	Converter<Jwt, AbstractAuthenticationToken> getJwtAuthenticationConverter() {
