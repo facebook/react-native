@@ -125,6 +125,11 @@ const Components: Array<RNTesterModuleInfo> = [
     supportsTVOS: true,
   },
   {
+    key: 'SoftInputViewExample',
+    module: require('../examples/SoftInputView/SoftInputViewExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'StatusBarExample',
     module: require('../examples/StatusBar/StatusBarExample'),
     supportsTVOS: false,

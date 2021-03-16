@@ -292,6 +292,14 @@ type IOSProps = $ReadOnly<{|
   scrollEnabled?: ?boolean,
 
   /**
+   * An optional identifier which links a custom SoftInputView to
+   * this text input. The SoftInputView is rendered instead of keyboard when
+   * this text input is focused.
+   * @platform ios
+   */
+  softInputViewID?: ?string,
+
+  /**
    * If `false`, disables spell-check style (i.e. red underlines).
    * The default value is inherited from `autoCorrect`.
    * @platform ios
@@ -1200,6 +1208,7 @@ const ExportedForwardRef: React.AbstractComponent<
   {
     allowFontScaling = true,
     rejectResponderTermination = true,
+    showSoftInputOnFocus = true,
     underlineColorAndroid = 'transparent',
     ...restProps
   },
@@ -1211,6 +1220,7 @@ const ExportedForwardRef: React.AbstractComponent<
     <InternalTextInput
       allowFontScaling={allowFontScaling}
       rejectResponderTermination={rejectResponderTermination}
+      showSoftInputOnFocus={showSoftInputOnFocus}
       underlineColorAndroid={underlineColorAndroid}
       {...restProps}
       forwardedRef={forwardedRef}

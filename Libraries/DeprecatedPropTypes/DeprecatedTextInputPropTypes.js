@@ -551,6 +551,13 @@ module.exports = {
    */
   inputAccessoryViewID: PropTypes.string,
   /**
+   * An optional identifier which links a custom SoftInputView to
+   * this text input. The SoftInputView is rendered instead of keyboard when
+   * this text input is focused.
+   * @platform ios
+   */
+  softInputViewID: PropTypes.string,
+  /**
    * Give the keyboard and the system information about the
    * expected semantic meaning for the content that users enter.
    * @platform ios

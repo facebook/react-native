@@ -27,6 +27,7 @@ void RCTCopyBackedTextInput(
   toTextInput.placeholderColor = fromTextInput.placeholderColor;
   toTextInput.textContainerInset = fromTextInput.textContainerInset;
   toTextInput.inputAccessoryView = fromTextInput.inputAccessoryView;
+  toTextInput.inputView = fromTextInput.inputView;
   toTextInput.textInputDelegate = fromTextInput.textInputDelegate;
   toTextInput.placeholderColor = fromTextInput.placeholderColor;
   toTextInput.defaultTextAttributes = fromTextInput.defaultTextAttributes;
@@ -43,6 +44,7 @@ void RCTCopyBackedTextInput(
   toTextInput.secureTextEntry = fromTextInput.secureTextEntry;
   toTextInput.keyboardType = fromTextInput.keyboardType;
   toTextInput.textContentType = fromTextInput.textContentType;
+  toTextInput.showSoftInputOnFocus = fromTextInput.showSoftInputOnFocus;
 
   if (@available(iOS 12.0, *)) {
     toTextInput.passwordRules = fromTextInput.passwordRules;

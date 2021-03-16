@@ -29,6 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
+@property (nonatomic, strong, nullable) NSString *softInputViewID;
+@property (nonatomic, assign) BOOL showSoftInputOnFocus;
 
 @end
 

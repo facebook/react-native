@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<SoftInputView /> should render as <RCTSoftInputView> when mocked 1`] = `
+<RCTSoftInputView
+  nativeID="1"
+  style={
+    Array [
+      undefined,
+      Object {
+        "position": "absolute",
+      },
+    ]
+  }
+>
+  <View />
+</RCTSoftInputView>
+`;
+
+exports[`<SoftInputView /> should render as <RCTSoftInputView> when not mocked 1`] = `
+<RCTSoftInputView
+  nativeID="1"
+  style={
+    Array [
+      undefined,
+      Object {
+        "position": "absolute",
+      },
+    ]
+  }
+>
+  <View />
+</RCTSoftInputView>
+`;
+
+exports[`<SoftInputView /> should shallow render as <SoftInputView> when mocked 1`] = `
+<SoftInputView
+  nativeID="1"
+>
+  <View />
+</SoftInputView>
+`;
+
+exports[`<SoftInputView /> should shallow render as <SoftInputView> when not mocked 1`] = `
+<SoftInputView
+  nativeID="1"
+>
+  <View />
+</SoftInputView>
+`;

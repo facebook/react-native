@@ -13,6 +13,7 @@
 #import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 #import <React/RCTBackedTextInputViewProtocol.h>
+#import <React/RCTSoftInputComponentView.h>
 #import <React/RCTUITextField.h>
 #import <React/RCTUITextView.h>
 #import <React/RCTUtils.h>
@@ -24,6 +25,26 @@
 #import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
+
+static RCTSoftInputComponentView *_Nullable RCTFindSoftInputWithNativeId(UIView *view, NSString *nativeId)
+{
+  if ([view respondsToSelector:@selector(nativeId)] &&
+      [view respondsToSelector:@selector(setNativeId:)]) {
+    RCTSoftInputComponentView *typed = (RCTSoftInputComponentView *)view;
+    if ([typed.nativeId isEqualToString:nativeId]) {
+      return typed;
+    }
+  }
+
+  for (UIView *subview in view.subviews) {
+    RCTSoftInputComponentView *result = RCTFindSoftInputWithNativeId(subview, nativeId);
+    if (result) {
+      return result;
+    }
+  }
+
+  return nil;
+}
 
 @interface RCTTextInputComponentView () <RCTBackedTextInputDelegate, RCTTextInputViewProtocol>
 @end
@@ -69,6 +90,7 @@ using namespace facebook::react;
 
     _backedTextInputView = props.traits.multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
     _backedTextInputView.textInputDelegate = self;
+    _backedTextInputView.showSoftInputOnFocus = props.traits.showSoftInputOnFocus;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
     _didMoveToWindow = NO;
@@ -168,6 +190,10 @@ using namespace facebook::react;
   if (newTextInputProps.traits.keyboardType != oldTextInputProps.traits.keyboardType) {
     _backedTextInputView.keyboardType = RCTUIKeyboardTypeFromKeyboardType(newTextInputProps.traits.keyboardType);
   }
+    
+  if (newTextInputProps.traits.showSoftInputOnFocus != oldTextInputProps.traits.showSoftInputOnFocus) {
+    _backedTextInputView.showSoftInputOnFocus = newTextInputProps.traits.showSoftInputOnFocus;
+  }
 
   if (newTextInputProps.traits.returnKeyType != oldTextInputProps.traits.returnKeyType) {
     _backedTextInputView.returnKeyType = RCTUIReturnKeyTypeFromReturnKeyType(newTextInputProps.traits.returnKeyType);
@@ -209,9 +235,14 @@ using namespace facebook::react;
     _backedTextInputView.inputAccessoryViewID = RCTNSStringFromString(newTextInputProps.inputAccessoryViewID);
   }
 
+  if (newTextInputProps.softInputViewID != oldTextInputProps.softInputViewID) {
+    _backedTextInputView.softInputViewID = RCTNSStringFromString(newTextInputProps.softInputViewID);
+  }
+
   [super updateProps:props oldProps:oldProps];
 
   [self setDefaultInputAccessoryView];
+  [self manageSoftInput];
 }
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
@@ -584,6 +615,22 @@ using namespace facebook::react;
     return ([newText.string isEqualToString:oldText.string]);
   } else {
     return ([newText isEqualToAttributedString:oldText]);
+  }
+}
+
+- (void)manageSoftInput
+{
+  if (_backedTextInputView.showSoftInputOnFocus) {
+    if (_backedTextInputView.softInputViewID) {
+      // There is custom soft input view assigned to that text input
+      _backedTextInputView.inputView = RCTFindSoftInputWithNativeId(self.window, _backedTextInputView.softInputViewID);
+    } else {
+      // Resets to default keyboard.
+      _backedTextInputView.inputView = nil;
+    }
+  } else {
+    // Hides keyboard, but keeps blinking cursor.
+    _backedTextInputView.inputView = [[UIView alloc] init];
   }
 }
 
