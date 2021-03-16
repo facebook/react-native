@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.slf4j.Logger;
@@ -32,6 +33,8 @@ import com.sap.core.connectivity.api.configuration.ConnectivityConfiguration;
 import com.sap.core.connectivity.api.configuration.DestinationConfiguration;
 
 public class ServiceUtil {
+	
+	private final Logger MYLOGGER = LoggerFactory.getLogger(this.getClass());
 
 	public static final String NOT_APPLICABLE = "N/A";
 	public static SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
@@ -462,8 +465,21 @@ public class ServiceUtil {
 
 	public static String getBasicAuth(String userName, String password) {
 		String userpass = userName + ":" + password;
+		System.out.println("getBasicAuth USER AND PASSWORD:: "+userpass);
+		System.out.println("getBasicAuth AUTH STRING ENC:: "+javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes()));
 		return "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
 	}
+	
+	public static String getBasicAuthWorkflow(String userName, String password) {
+		String userpass = userName + ":" + password;
+		String authStringEnc = new String(Base64.encodeBase64(userpass.getBytes()));
+		//MYLOGGER.debug("AUTH STRING ENC:: "+authStringEnc);
+		System.out.println("getBasicAuthWorkflow USER AND PASSWORD:: "+userpass);
+		System.out.println("getBasicAuthWorkflow AUTH STRING ENC:: "+authStringEnc);
+		
+		return "Basic " + authStringEnc;
+	}
+
 
 	public static boolean isEmpty(Cell cellIndex) {
 		DataFormatter df = new DataFormatter();

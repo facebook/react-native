@@ -1,15 +1,20 @@
 package com.incture.lch.adhoc.service.implementation;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.jwt.Jwt;
+//import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import com.incture.lch.adhoc.dto.AdhocOrderDto;
@@ -23,6 +28,7 @@ import com.incture.lch.adhoc.dto.ReasonCodeDto;
 import com.incture.lch.adhoc.dto.ResponseDto;
 import com.incture.lch.adhoc.repository.AdhocOrdersRepository;
 import com.incture.lch.adhoc.service.AdhocOrdersService;
+import com.incture.lch.adhoc.workflow.service.WorkflowInvoker;
 
 @Service
 @Transactional
@@ -32,6 +38,9 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 
 	@Autowired
 	private AdhocOrdersRepository adhocOrdersRepository;
+	
+	@Autowired
+	private WorkflowInvoker wfInvoker;
 
 	@Override
 	public List<AdhocOrderDto> getAllAdhocOrders() {
@@ -130,7 +139,7 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 		return adhocOrdersRepository.getByPartNumber(partNum);
 	}
 
-	public Map<String, Object> getLoggedInUser(Jwt jwt) {
+	/*public Map<String, Object> getLoggedInUser(Jwt jwt) {
 		try {
 			Map<String, Object> userDetailsMap = new LinkedHashMap<String, Object>();
 			if (!jwt.getClaims().isEmpty()) {
@@ -144,7 +153,7 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 				userDetailsMap.put("scope", jwt.getClaims().get("scope"));
 
 			}
-			/*
+			
 			 * UserDetailsDto loggedInUser = new UserDetailsDto();
 			 * loggedInUser.setID(token.getClaims().get("user_id").toString());
 			 * loggedInUser.setDisplayName(token.getClaims().get("given_name").
@@ -156,10 +165,10 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 			 * loggedInUser.setEmail(token.getClaims().get("email").toString());
 			 * return ResponseEntity.ok().body(new
 			 * Response<UserDetailsDto>(loggedInUser));
-			 */
+			 
 			return userDetailsMap;
 		} catch (Exception e) {
-			/*
+			
 			 * final Response<String> body = new
 			 * Response<String>(e.getMessage());
 			 * body.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()
@@ -167,11 +176,11 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 			 * return
 			 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body
 			 * );
-			 */}
+			 }
 
 		return null;
 	}
-
+*/
 
 	@Override
 	public List<AdhocOrderDto> getDrafts(AdhocRequestDto adhocRequestDto) {
@@ -193,6 +202,20 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 		return adhocOrdersRepository.updateWorflowDetails(workflowDto);
 	
 		
+	}
+	
+	@Override
+	public String updateApprovalWorflowDetails(JSONObject obj) throws JSONException
+	{
+		return adhocOrdersRepository.updateApprovalWorflowDetails(obj);
+	
+		
+	}
+	
+	
+	@Override
+	public HttpResponse approveTask(String taskId) throws ClientProtocolException, IOException, JSONException{
+		return wfInvoker.approveTask(null, taskId);
 	}
 	
 	

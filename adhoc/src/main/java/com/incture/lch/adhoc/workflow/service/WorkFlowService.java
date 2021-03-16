@@ -14,13 +14,10 @@ import org.springframework.stereotype.Service;
 import com.incture.lch.adhoc.dao.AdhocOrderWorkflowDao;
 import com.incture.lch.adhoc.dto.AdhocOrderWorkflowDto;
 import com.incture.lch.adhoc.dto.ResponseDataDto;
-/*import com.incture.lch.adhoc.dao.WorkflowDao;
-import com.incture.lch.adhoc.dao.WorkflowTaskDao;
-import com.incture.lch.adhoc.dto.WorkFlowTaskDto;
-import com.incture.lch.adhoc.dto.WorkflowDto;*/
-import com.incture.lch.adhoc.dto.WorkflowInputDto;
+import com.incture.lch.adhoc.helper.AdhocOrderWorkflowHelper;
 import com.incture.lch.adhoc.util.ServicesUtil;
 import com.incture.lch.adhoc.workflow.constant.WorkflowConstants;
+import com.incture.lch.adhoc.workflow.dto.WorkflowApprovalTaskDto;
 
 /**
  * @author Ravi Kumar P
@@ -37,34 +34,40 @@ public class WorkFlowService implements WorkFlowServiceLocal {
 
 	@Autowired
 	private WorkflowInvokerLocal workflowInvokerLocal;
+	
+	@Autowired
+	private AdhocOrderWorkflowHelper adhocOrderDao;
 
-	/**
+	/** 
 	 * Trigger workflow
 	 * 
 	 * @param WorkFlowTriggerInputDto
 	 * @return ResponseDto Success/Failure message
 	 */
 	@Override
-	public ResponseDataDto triggerWorkflow(WorkflowInputDto triggerWorkFlowDto) {
+	public ResponseDataDto triggerWorkflow(WorkflowApprovalTaskDto triggerWorkFlowDto) {
 		MYLOGGER.info(
 				"LCH | WorkFlowService | triggerWorkflow | Execution Start Input : " + triggerWorkFlowDto.toString());
 		ResponseDataDto responseDto = new ResponseDataDto();
 		try {
 
 			String wfInput = buildWorkflowTriggerPayload(triggerWorkFlowDto);
-			MYLOGGER.debug("LCH | WorkFlowService | triggerWorkflow | wfInput : " + wfInput);
+			MYLOGGER.error("LCH | WorkFlowService | triggerWorkflow | wfInput : " + wfInput);
 			// Map<String, String> destinationProperties = callDestination();
 			JSONObject resWfObj = workflowInvokerLocal.triggerWorkflow(wfInput);
+			MYLOGGER.error("LCH | WorkFlowService | triggerWorkflow | JSON WORKFLOW OUT DATA : " + resWfObj.toString());
 			AdhocOrderWorkflowDto workflowDto = new AdhocOrderWorkflowDto();
 			workflowDto.setInstanceId(resWfObj.getString("id"));
 			workflowDto.setDefinitionId(resWfObj.getString("definitionId"));
 			workflowDto.setWorkflowName("AdhocOrders");
 			workflowDto.setSubject(resWfObj.getString("subject"));
-			workflowDto.setBusinessKey(triggerWorkFlowDto.getAdhocInfo().getUserId());
+			//workflowDto.setDescription(resWfObj.getString("description"));
+			workflowDto.setBusinessKey(triggerWorkFlowDto.getAdhocOrderInfo().getUserId());
 			workflowDto.setRequestedDate(ServicesUtil.convertDate(new Date()));
-			workflowDto.setStatus(WorkflowConstants.INPROGRESS);
-			workflowDto.setRequestedBy(resWfObj.getString("createdBy"));
-			adhocOrderWorkflowDao.saveWorkFlowDetails(workflowDto);
+			workflowDto.setStatus(WorkflowConstants.PENDING_AT_MANAGER);
+			workflowDto.setRequestedBy(resWfObj.getString("startedBy"));
+			workflowDto.setPendingWith(triggerWorkFlowDto.getManager());
+			adhocOrderDao.updateWorflowDetails(workflowDto);
 			responseDto.setStatus(Boolean.TRUE);
 			responseDto.setStatusCode(200);
 		} catch (Exception e) {
@@ -115,21 +118,93 @@ public class WorkFlowService implements WorkFlowServiceLocal {
 	 * @throws JSONException
 	 * @return Context Json string
 	 */
-	private String buildWorkflowTriggerPayload(WorkflowInputDto triggerWorkFlowDto) throws JSONException {
+	private String buildWorkflowTriggerPayload(WorkflowApprovalTaskDto triggerWorkFlowDto) throws JSONException {
 		JSONObject reponse = new JSONObject();
 		JSONObject context = new JSONObject();
 		reponse.put(WorkflowConstants.DEFINITION_ID, WorkflowConstants.USER_WF_DEFINITION_ID);
-		context.put("adhocType", triggerWorkFlowDto.getAdhocType());
-		context.put("createdBy",
-				(triggerWorkFlowDto.getRequestedBy() == null ? "" : triggerWorkFlowDto.getRequestedBy()));
+		context.put("type", triggerWorkFlowDto.getAdhocType());
+		context.put("firstName", triggerWorkFlowDto.getCreatedBy());
+		context.put("lastName", triggerWorkFlowDto.getUserName());
+		context.put("createdDate", triggerWorkFlowDto.getCreatedDate());
+		context.put("userId",triggerWorkFlowDto.getUserId());
+		context.put("userEmail",triggerWorkFlowDto.getUserEmail());
 		context.put("manager", triggerWorkFlowDto.getManager());
 		context.put("planner", triggerWorkFlowDto.getPlanner());
-		context.put("adhocInfo", triggerWorkFlowDto.getAdhocInfo());
-		/*
-		 * context.put("roleId", triggerWorkFlowDto.getRoleId());
-		 * context.put("inboxUrl", triggerWorkFlowDto.getApproverInboxLink() !=
-		 * null ? triggerWorkFlowDto.getApproverInboxLink() : "");
-		 */
+		
+		//context.put("createdBy",
+			//	(triggerWorkFlowDto.getUserId() == null ? "" : triggerWorkFlowDto.getCreatedBy()));
+		//context.put("manager", triggerWorkFlowDto.getManager());
+		//context.put("planner", triggerWorkFlowDto.getPlanner());
+		//context.put("adhocInfo", triggerWorkFlowDto.getAdhocOrderInfo());
+		
+		context.put("adhocOrderId",triggerWorkFlowDto.getAdhocOrderId());
+		context.put("businessDivision",triggerWorkFlowDto.getBusinessDivision());
+		context.put("charge",triggerWorkFlowDto.getCharge());
+		
+		//context.put("createdBy",triggerWorkFlowDto.getCreatedBy());
+		//context.put("createdDate",triggerWorkFlowDto.getCreatedDate());
+		
+		
+		context.put("countryOrigin",triggerWorkFlowDto.getCountryOrigin());
+		context.put("currency",triggerWorkFlowDto.getCurrency());
+		context.put("customerOrderNo",triggerWorkFlowDto.getCustomerOrderNo());
+		context.put("destinationName",triggerWorkFlowDto.getDestinationName());
+		context.put("destinationCity",triggerWorkFlowDto.getDestinationCity());
+		context.put("destinationState",triggerWorkFlowDto.getDestinationState());
+		context.put("destinationZip",triggerWorkFlowDto.getDestinationZip());
+		context.put("destinationAddress",triggerWorkFlowDto.getDestinationAddress());
+		context.put("dimensionL",triggerWorkFlowDto.getDimensionL());
+		context.put("dimensionH",triggerWorkFlowDto.getDimensionH());
+		context.put("dimensionB",triggerWorkFlowDto.getDimensionB());
+		context.put("expectedDeliveryDate",triggerWorkFlowDto.getExpectedDeliveryDate());
+		context.put("glcode",triggerWorkFlowDto.getGlcode());
+		context.put("hazmatNumber",triggerWorkFlowDto.getHazmatNumber());
+		context.put("originAddress",triggerWorkFlowDto.getOriginAddress());
+		context.put("originCity",triggerWorkFlowDto.getOriginCity());
+		context.put("originState",triggerWorkFlowDto.getOriginState());
+		context.put("originZip",triggerWorkFlowDto.getOriginZip());
+		context.put("isInternational",triggerWorkFlowDto.getIsInternational());
+		
+		
+		//context.put("isTruck",triggerWorkFlowDto.getIsTruck());
+		
+		
+		context.put("isHazmat",triggerWorkFlowDto.getIsHazmat());
+		context.put("packageType",triggerWorkFlowDto.getPackageType());
+		context.put("partNum",triggerWorkFlowDto.getPartNum());
+		context.put("partDescription",triggerWorkFlowDto.getPartDescription());
+		context.put("PODataNumber",triggerWorkFlowDto.getPODataNumber());
+		context.put("premiumFreight",triggerWorkFlowDto.getPremiumFreight());
+		context.put("projectNumber",triggerWorkFlowDto.getProjectNumber());
+		context.put("quantity",triggerWorkFlowDto.getQuantity());
+		context.put("reasonCode",triggerWorkFlowDto.getReasonCode());
+		context.put("receivingContact",triggerWorkFlowDto.getReceivingContact());
+		context.put("referenceNumber",triggerWorkFlowDto.getReferenceNumber());
+		context.put("shipDate",triggerWorkFlowDto.getShipDate());
+		context.put("shipperName",triggerWorkFlowDto.getShipperName());
+		context.put("shippingInstruction",triggerWorkFlowDto.getShippingInstruction());
+		context.put("shippingContact",triggerWorkFlowDto.getShippingContact());
+		context.put("terms",triggerWorkFlowDto.getTerms());
+		context.put("uom",triggerWorkFlowDto.getUom());
+		context.put("value",triggerWorkFlowDto.getValue());
+		context.put("weight",triggerWorkFlowDto.getWeight());
+		
+		
+		//context.put("vinNumber",triggerWorkFlowDto.getVinNumber());
+		
+		
+		context.put("shipperNameFreeText",triggerWorkFlowDto.getShipperNameFreeText());
+		context.put("originCountry",triggerWorkFlowDto.getOriginCountry());
+		context.put("destinationNameFreeText",triggerWorkFlowDto.getDestinationNameFreeText());
+		context.put("destinationCountry",triggerWorkFlowDto.getDestinationCountry());
+		context.put("hazmatUn",triggerWorkFlowDto.getHazmatUn());
+		context.put("weightUom",triggerWorkFlowDto.getWeightUom());
+		context.put("dimensionsUom",triggerWorkFlowDto.getDimensionsUom());
+		context.put("shipperNameDesc",triggerWorkFlowDto.getShipperNameDesc());
+		context.put("destinationNameDesc",triggerWorkFlowDto.getDestinationNameDesc());
+		context.put("premiumReasonCode",triggerWorkFlowDto.getPremiumReasonCode());
+		context.put("plannerEmail",triggerWorkFlowDto.getPlannerEmail());
+		context.put("adhocType",triggerWorkFlowDto.getAdhocType());
 		reponse.put(WorkflowConstants.CONTEXT, context);
 		return reponse.toString();
 	}

@@ -38,6 +38,7 @@ public class AdhocOrderWorkflowDao {
 		ruleDo.setUpdatedDate(dto.getUpdatedDate());
 		ruleDo.setWorkflowName(dto.getWorkflowName());
 		ruleDo.setBusinessKey(dto.getBusinessKey());
+		ruleDo.setDescription(dto.getDescription());
 		return ruleDo;
 
 	}
@@ -57,6 +58,7 @@ public class AdhocOrderWorkflowDao {
 		ruleDto.setUpdatedDate(ruledo.getUpdatedDate());
 		ruleDto.setWorkflowName(ruledo.getWorkflowName());
 		ruleDto.setBusinessKey(ruledo.getBusinessKey());
+		ruleDto.setDescription(ruledo.getDescription());
 		return ruleDto;
 
 	}

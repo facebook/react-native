@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -24,9 +25,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
+		/*http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
 				.antMatchers("/lch/**").permitAll().anyRequest().authenticated().and().oauth2ResourceServer().jwt()
-				.jwtAuthenticationConverter(getJwtAuthenticationConverter());
+				.jwtAuthenticationConverter(getJwtAuthenticationConverter());*/
+		
+		http
+        //no authentication needed for these context paths
+        .authorizeRequests()
+        .antMatchers("/updateApprovalWorkflowDetails").permitAll()
+        .antMatchers("/LCH/**").permitAll()
+        .antMatchers("/lch/**").permitAll();
+        
 	}
 
 	Converter<Jwt, AbstractAuthenticationToken> getJwtAuthenticationConverter() {
@@ -34,5 +43,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		converter.setLocalScopeAsAuthorities(true);
 		return converter;
 	}
+	
+	  @Override
+      public void configure(WebSecurity webSecurity) throws Exception
+        {
+         webSecurity
+         .ignoring()
+          // All of Spring Security will ignore the requests
+          .antMatchers("/lch/**").antMatchers("/LCH/**");
+         }  
 
 }

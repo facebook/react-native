@@ -47,6 +47,7 @@ public class WorkflowInvoker implements WorkflowInvokerLocal {
 	public WorkflowInvoker() {
 		try {
 			JSONObject jsonObj = new JSONObject(System.getenv("VCAP_SERVICES"));
+			System.err.println("[WorkflowInvoker:VCAP_SERVICES] : " + jsonObj.toString());
 
 			JSONArray jsonArr = jsonObj.getJSONArray("workflow");
 			JSONObject credentials = jsonArr.getJSONObject(0).getJSONObject("credentials");
@@ -116,32 +117,45 @@ public class WorkflowInvoker implements WorkflowInvokerLocal {
 	@Override
 	public HttpResponse approveTask(String input, String taskInstanceId)
 			throws ClientProtocolException, IOException, JSONException {
-
+		MYLOGGER.error("ENTERING INTO approveTask INVOKER METHOD");
 		HttpResponse httpResponse = null;
 
 		HttpRequestBase httpRequestBase = null;
 		StringEntity data = null;
 		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-
+		try{
 		String bearerToken = getBearerToken(httpClient);
-
+		MYLOGGER.error("ENTERING INTO approveTask INVOKER METHOD bearerToken:: "+bearerToken);
 		httpRequestBase = new HttpPatch(workflow_rest_url + WorkflowConstants.APPROVE_TASK_URL + taskInstanceId);
-
+		MYLOGGER.error("ENTERING INTO approveTask INVOKER METHOD httpRequestBase:: "+httpRequestBase);
+		JSONObject context = new JSONObject();
+		context.put("status2", "Completed2");
+		context.put(WorkflowConstants.CONTEXT, context);
+		input = context.toString();
 		data = new StringEntity(input, "UTF-8");
 		data.setContentType(WorkflowConstants.CONTENT_TYPE);
-
+		MYLOGGER.error("ENTERING INTO approveTask INVOKER METHOD input:: "+input);
 		((HttpPatch) httpRequestBase).setEntity(data);
+
 		httpRequestBase.addHeader(WorkflowConstants.ACCEPT, WorkflowConstants.CONTENT_TYPE);
 		httpRequestBase.addHeader(WorkflowConstants.AUTHORIZATION, AuthorizationConstants.BEARER + " " + bearerToken);
-
+		MYLOGGER.error("ENTERING INTO approveTask INVOKER METHOD BEFORE EXECUTE:: "+input);
 		httpResponse = httpClient.execute(httpRequestBase);
+		MYLOGGER.error("ENTERING INTO approveTask INVOKER METHOD AFTER EXECUTE:: "+input);
 
 		if (httpResponse.getStatusLine().getStatusCode() == 400) {
 			MYLOGGER.error("WorkflowInvoker | approveTask | Error :" + input);
 		}
-
+		}
+		catch(Exception e)
+		{
+			MYLOGGER.error("WorkflowInvoker | approveTask | Exception :" + e.toString());
+		}
+		finally{
 		httpClient.close();
+		}
 
+		MYLOGGER.error("WorkflowInvoker | approveTask | httpResponse :" +httpResponse.toString());
 		return httpResponse;
 	}
 
@@ -193,13 +207,22 @@ public class WorkflowInvoker implements WorkflowInvokerLocal {
 			throws ClientProtocolException, IOException, JSONException {
 		MYLOGGER.info("LCH | WorkflowInvoker | getBearerToken | Execution Start ");
 		HttpRequestBase httpRequestBase = new HttpPost(url + "/oauth/token?grant_type=client_credentials");
+		ServiceUtil.getBasicAuthWorkflow(clientid, clientsecret);
 		httpRequestBase.addHeader(WorkflowConstants.AUTHORIZATION, ServiceUtil.getBasicAuth(clientid, clientsecret));
-		HttpResponse httpResponse = httpClient.execute(httpRequestBase);
-		String jsonString = EntityUtils.toString(httpResponse.getEntity());
-		JSONObject responseObj = new JSONObject(jsonString);
-		String token = responseObj.getString("access_token");
-		MYLOGGER.info("LCH | WorkflowInvoker | getBearerToken | Execution End ");
-		return token;
+		try {
+			HttpResponse httpResponse = httpClient.execute(httpRequestBase);
+			ServiceUtil.getBasicAuthWorkflow(clientid, clientsecret);
+			String jsonString = EntityUtils.toString(httpResponse.getEntity());
+			JSONObject responseObj = new JSONObject(jsonString);
+			String token = responseObj.getString("access_token");
+			MYLOGGER.info("LCH | WorkflowInvoker | getBearerToken | Execution End ");
+			return token;
+		} catch (Exception e) {
+			MYLOGGER.info("LCH | WorkflowInvoker | getBearerToken | Exception " + e.toString());
+		}
+
+		return null;
+
 	}
 
 }

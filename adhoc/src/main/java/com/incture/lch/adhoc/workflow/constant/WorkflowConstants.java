@@ -20,6 +20,8 @@ public class WorkflowConstants {
 	public static final String COMPLETED = "COMPLETED";
 	public static final String INPROGRESS = "INPROGRESS";
 	public static final String STATUS = "status";
+	public static final String WORKFLOWTRIGGERED ="WORKFLOW TRIGGERED";
+	public static final String PENDING_AT_MANAGER ="Pending with Manager";
 
 	public static final String CONTENT_TYPE = "application/json";
 	public static final String X_CSRF_TOKEN = "x-csrf-token";
@@ -28,10 +30,12 @@ public class WorkflowConstants {
 	public static final String FETCH = "fetch";
 
 	public static final String DEFINITION_ID = "definitionId";
-	public static final String USER_WF_DEFINITION_ID = "userprofilewf";
+	public static final String USER_WF_DEFINITION_ID = "adhoc_name";
 	public static final String CONTEXT = "context";
 
 	public static final String ID = "id";
 	public static final int SUCCESS_CODE = 204;
+	public static final String MANAGER = "MANAGER";
+	public static final String PLANNER = "PLANNER";
 
 }

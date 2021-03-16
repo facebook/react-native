@@ -24,10 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
+
+import com.incture.lch.adhoc.dao.AdhocApprovalRuleDao;
 import com.incture.lch.adhoc.dao.AdhocOrderWorkflowDao;
 import com.incture.lch.adhoc.dao.LkCountriesDao;
 import com.incture.lch.adhoc.dao.LkDivisionDao;
 import com.incture.lch.adhoc.dao.LkShipperDetailsDao;
+import com.incture.lch.adhoc.dto.AdhocApprovalRuleDto;
 import com.incture.lch.adhoc.dto.AdhocOrderDto;
 import com.incture.lch.adhoc.dto.AdhocOrderWorkflowDto;
 import com.incture.lch.adhoc.dto.AdhocRequestDto;
@@ -47,7 +50,11 @@ import com.incture.lch.adhoc.entity.ReasonCode;
 import com.incture.lch.adhoc.repository.AdhocOrdersRepository;
 import com.incture.lch.adhoc.util.GetReferenceData;
 import com.incture.lch.adhoc.util.ServiceUtil;
+import com.incture.lch.adhoc.workflow.constant.WorkflowConstants;
+import com.incture.lch.adhoc.workflow.dto.WorkflowApprovalTaskDto;
 import com.incture.lch.adhoc.workflow.service.WorkFlowServiceLocal;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 @Repository
 public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
@@ -59,15 +66,13 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 	public void setSessionFactory(SessionFactory sf) {
 		this.sessionFactory = sf;
 	}
-	
-	
 
 	@Autowired
 	GetReferenceData getReferenceData;
 
 	@Autowired
 	private LkShipperDetailsDao lkShipperDetailsDao;
-	
+
 	@Autowired
 	private AdhocOrderWorkflowDao adhocOrderWorkflowDao;
 
@@ -83,38 +88,10 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 	@Autowired
 	private WorkFlowServiceLocal wfService;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AdhocOrdersRepositoryImpl.class);
+	@Autowired
+	private AdhocApprovalRuleDao adhocApprovalRuleDao;
 
-	/*
-	 * public LkShipperDetails importShipperDetails(LkShipperDetailsDto dto) {
-	 * LkShipperDetails shipDetDo = new LkShipperDetails();
-	 * shipDetDo.setOnetimeLoc(true);
-	 * shipDetDo.setShipperCity(dto.getShipperCity());
-	 * shipDetDo.setShipperCountry(dto.getShipperCountry());
-	 * shipDetDo.setShipperState(dto.getShipperState());
-	 * shipDetDo.setShipperName(dto.getShipperName());
-	 * shipDetDo.setShipperZip(dto.getShipperZip());
-	 * shipDetDo.setShipperContact(dto.getShipperContact());
-	 * shipDetDo.setBpNumber(dto.getBpNumber());
-	 * shipDetDo.setOnetimeLocId(dto.getOnetimeLocId()); return shipDetDo;
-	 * 
-	 * }
-	 * 
-	 * public LkShipperDetailsDto exportShipperDetails(LkShipperDetails shipDo)
-	 * { LkShipperDetailsDto shipDetDto = new LkShipperDetailsDto();
-	 * shipDetDto.setOnetimeLoc(true);
-	 * shipDetDto.setShipperCity(shipDo.getShipperCity());
-	 * shipDetDto.setShipperCountry(shipDo.getShipperCountry());
-	 * shipDetDto.setShipperState(shipDo.getShipperState());
-	 * shipDetDto.setShipperName(shipDo.getShipperName());
-	 * shipDetDto.setShipperZip(shipDo.getShipperZip());
-	 * shipDetDto.setShipperContact(shipDo.getShipperContact());
-	 * shipDetDto.setBpNumber(shipDo.getBpNumber());
-	 * shipDetDto.setOnetimeLocId(shipDo.getOnetimeLocId()); return shipDetDto;
-	 * 
-	 * }
-	 */
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(AdhocOrdersRepositoryImpl.class);
 
 	public AdhocOrderDto exportAdhocOrdersDto(AdhocOrders adhocOrders) {
 		AdhocOrderDto AdhocOrderDto = new AdhocOrderDto();
@@ -359,7 +336,6 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		adhocOrders.setIsSaved(AdhocOrderDto.getIsSaved());
 		return adhocOrders;
 	}
-	
 
 	public ReasonCodeDto exportReasonCode(ReasonCode reasonCode) {
 		ReasonCodeDto reasonCodeDto = new ReasonCodeDto();
@@ -600,13 +576,107 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		responseDto.setMessage("Save success");
 		responseDto.setStatus("SUCCESS");
 		responseDto.setCode("00");
-		WorkflowInputDto workFlowDto = new WorkflowInputDto();
-		workFlowDto.setAdhocType(adhocOrders.getAdhocType());
-		workFlowDto.setAdhocInfo(exportAdhocOrdersDto(adhocOrders));
-		workFlowDto.setRequestedBy(adhocOrders.getCreatedBy() + " " + adhocOrders.getUserName());
-		workFlowDto.setManager(adhocOrders.getUserId());
-		workFlowDto.setPlanner("Bindhu.Sivakumar@incture.com");
-		wfService.triggerWorkflow(workFlowDto);
+
+		LOGGER.info("Starting Workflow");
+		WorkflowApprovalTaskDto workflowDto = new WorkflowApprovalTaskDto();
+		workflowDto.setAdhocOrderId(adhocOrders.getFwoNum());
+		workflowDto.setAdhocType(adhocOrders.getAdhocType());
+		workflowDto.setAdhocOrderInfo(exportAdhocOrdersDto(adhocOrders));
+
+		// workflowDto.setManager(manager);
+
+		workflowDto.setBusinessDivision(adhocOrders.getBusinessDivision());
+		workflowDto.setCharge(ServiceUtil.convertStringToBoolean(adhocOrders.getCharge()));
+		workflowDto.setCountryOrigin(adhocOrders.getCountryOrigin());
+		workflowDto.setCreatedDate(ServiceUtil.convertDateToString(adhocOrders.getCreatedDate()));
+		workflowDto.setCreatedBy(adhocOrders.getCreatedBy());
+		workflowDto.setCurrency(adhocOrders.getCurrency());
+		workflowDto.setCustomerOrderNo(adhocOrders.getCustomerOrderNo());
+		workflowDto.setDestinationAddress(adhocOrders.getDestinationAddress());
+		workflowDto.setDestinationCity(adhocOrders.getDestinationCity());
+		workflowDto.setDestinationName(adhocOrders.getDestinationName());
+		workflowDto.setDestinationNameDesc(adhocOrders.getDestinationNameDesc());
+		workflowDto.setDestinationNameFreeText(adhocOrders.getDestinationNameFreeText());
+		workflowDto.setDestinationState(adhocOrders.getDestinationState());
+		workflowDto.setDestinationZip(adhocOrders.getDestinationZip());
+		workflowDto.setDimensionB(adhocOrders.getDimensionB() != null ? adhocOrders.getDimensionB().toString() : null);
+		workflowDto.setDimensionH(adhocOrders.getDimensionH() != null ? adhocOrders.getDimensionH().toString() : null);
+		workflowDto.setDimensionL(adhocOrders.getDimensionL() != null ? adhocOrders.getDimensionL().toString() : null);
+		workflowDto.setDimensionsUom(adhocOrders.getDimensionsUom());
+		workflowDto.setExpectedDeliveryDate(ServiceUtil.convertDateToString(adhocOrders.getExpectedDeliveryDate()));
+		workflowDto.setGlcode(adhocOrders.getGlCode());
+		workflowDto.setHazmatNumber(adhocOrders.getHazmatNumber());
+		workflowDto.setIsHazmat(adhocOrders.getIsHazmat());
+		workflowDto.setIsInternational(adhocOrders.getIsInternational());
+		workflowDto.setIsTruck(adhocOrders.getIsTruck());
+		workflowDto.setOriginAddress(adhocOrders.getOriginAddress());
+		workflowDto.setOriginCity(adhocOrders.getOriginCity());
+		workflowDto.setOriginCountry(adhocOrders.getOriginCountry());
+		workflowDto.setOriginState(adhocOrders.getOriginState());
+		workflowDto.setOriginZip(adhocOrders.getOriginZip());
+		workflowDto.setPackageType(adhocOrders.getPackageType());
+		workflowDto.setPartDescription(adhocOrders.getPartDescription());
+		workflowDto.setPartNum(adhocOrders.getPartNum());
+
+		// workflowDto.setPlanner(adhocOrd);
+
+		workflowDto.setPlannerEmail(adhocOrders.getPlannerEmail());
+		workflowDto.setPODataNumber(adhocOrders.getPODataNumber());
+		workflowDto.setPremiumFreight(ServiceUtil.convertStringToBoolean(adhocOrders.getPremiumFreight()));
+		workflowDto.setPremiumReasonCode(adhocOrders.getPremiumReasonCode());
+		workflowDto.setPremiumReasonCode(adhocOrders.getPremiumReasonCode());
+		workflowDto.setProjectNumber(adhocOrders.getProjectNumber());
+		workflowDto.setQuantity(String.valueOf(adhocOrders.getQuantity()));
+		workflowDto.setReasonCode(adhocOrders.getReasonCode());
+		workflowDto.setReceivingContact(adhocOrders.getReceivingContact());
+		workflowDto.setReferenceNumber(adhocOrders.getReferenceNumber());
+		workflowDto.setShipDate(ServiceUtil.convertDateToString(adhocOrders.getShipDate()));
+		workflowDto.setShipperName(adhocOrders.getShipperName());
+		workflowDto.setShipperNameDesc(adhocOrders.getShipperNameDesc());
+		workflowDto.setShipperNameFreeText(adhocOrders.getShipperNameFreeText());
+		workflowDto.setShippingContact(adhocOrders.getShippingContact());
+		workflowDto.setShippingInstruction(adhocOrders.getShippingInstruction());
+		workflowDto.setTerms(adhocOrders.getTerms());
+		workflowDto.setUom(adhocOrders.getUom());
+		workflowDto.setUserEmail(adhocOrders.getUserEmail());
+
+		// workflowDto.setUserGroup(adhocOrders.get);
+
+		workflowDto.setUserId(adhocOrders.getUserId());
+		workflowDto.setUserName(adhocOrders.getUserName());
+		workflowDto.setValue(adhocOrders.getValue());
+		workflowDto.setVinNumber(adhocOrders.getVinNumber());
+		workflowDto.setWeight(String.valueOf(adhocOrders.getWeight()));
+		workflowDto.setWeightUom(adhocOrders.getWeightUom());
+
+		List<AdhocApprovalRuleDto> ruleDtoList = adhocApprovalRuleDao
+				.getAdhocApprovalsByAdhocTypeAndApprovalType(adhocOrders.getAdhocType());
+		StringBuilder managerBuilder = new StringBuilder();
+		StringBuilder plannerBuilder = new StringBuilder();
+		if (!ServiceUtil.isEmpty(ruleDtoList)) {
+			for (AdhocApprovalRuleDto dto : ruleDtoList) {
+				if (dto.getApproverType().equals(WorkflowConstants.MANAGER)) {
+					managerBuilder.append(dto.getApproverEmail());
+					managerBuilder.append(",");
+				}
+				if (dto.getApproverType().equals(WorkflowConstants.PLANNER)) {
+					plannerBuilder.append(dto.getApproverEmail());
+					plannerBuilder.append(",");
+				}
+			}
+		}
+
+		String manager = managerBuilder.substring(0, managerBuilder.length()
+		- 2).toString();
+		String planner = plannerBuilder.substring(0, plannerBuilder.length()
+		 - 2).toString();
+		
+		workflowDto.setManager(manager);
+		workflowDto.setPlanner(planner);
+		LOGGER.info("Workflow inputs........" + workflowDto.toString());
+		wfService.triggerWorkflow(workflowDto);
+
+		LOGGER.info("Workflow Started........");
 
 		session.flush();
 		session.clear();
@@ -965,9 +1035,8 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 	}
 
 	@SuppressWarnings({ "deprecation", "unchecked" })
-	public String updateWorflowDetails(AdhocOrderWorkflowDto workflowDto)
-	{
-		System.out.println("Yuhooo"  + workflowDto.getAdhocOrderId());
+	public String updateWorflowDetails(AdhocOrderWorkflowDto workflowDto) {
+		System.out.println("Yuhooo" + workflowDto.getAdhocOrderId());
 
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
@@ -976,39 +1045,20 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 		criteria.add(Restrictions.eq("fwoNum", workflowDto.getAdhocOrderId()));
 		adhocOrder = criteria.list();
 
-		/*if(adhocOrder != null)
-		{
-			System.out.println("Not fetching any data");
-		}*/
 		System.out.println(adhocOrder.size());
-		for(AdhocOrders a: adhocOrder)
-		{
+		for (AdhocOrders a : adhocOrder) {
 
-		System.out.println(a.getFwoNum());
-		a.setUpdatedBy(workflowDto.getUpdatedBy());
-		a.setUpdatedDate((workflowDto.getUpdatedDate()));
-		a.setStatus(workflowDto.getStatus());
-		a.setPendingWith(workflowDto.getPendingWith());
-		session.saveOrUpdate(a);
+			System.out.println(a.getFwoNum());
+			a.setUpdatedBy(workflowDto.getUpdatedBy());
+			a.setUpdatedDate((workflowDto.getUpdatedDate()));
+			a.setStatus(workflowDto.getStatus());
+			a.setPendingWith(workflowDto.getPendingWith());
+			session.saveOrUpdate(a);
 		}
-		List<AdhocOrderWorkflowDto> adhocOrderWorkflowDto= new ArrayList<AdhocOrderWorkflowDto>();
-		
-		/*Criteria criteria2 = session.createCriteria(AdhocOrderWorkflow.class);
-		criteria2.add(Restrictions.eq("adhocOrderId", workflowDto.getAdhocOrderId()));
+		List<AdhocOrderWorkflowDto> adhocOrderWorkflowDto = new ArrayList<AdhocOrderWorkflowDto>();
 
-		adhocOrderWorkflowDto=criteria2.list();
-		
-		System.out.println(adhocOrderWorkflowDto.size());
-		for(AdhocOrderWorkflowDto a: adhocOrderWorkflowDto)
-		{			session.saveOrUpdate(adhocOrderWorkflowDao.importAdhocWorkflow(a));
-	
-		}*/
-	session.save(adhocOrderWorkflowDao.importAdhocWorkflow(workflowDto));
-		
-		
-			
-		
-		
+		session.save(adhocOrderWorkflowDao.importAdhocWorkflow(workflowDto));
+
 		session.flush();
 		session.clear();
 		tx.commit();
@@ -1016,5 +1066,59 @@ public class AdhocOrdersRepositoryImpl implements AdhocOrdersRepository {
 
 		System.out.println(workflowDto.getAdhocOrderId());
 		return workflowDto.getAdhocOrderId();
+	}
+	
+	@SuppressWarnings({ "deprecation", "unchecked" })
+	public String updateApprovalWorflowDetails(JSONObject obj) throws JSONException {
+		AdhocOrderWorkflowDto workflowDto = new AdhocOrderWorkflowDto();
+		workflowDto = prepareAdhocApprovalWorkflowDto(obj);
+		System.out.println("Yuhooo" + workflowDto.getAdhocOrderId());
+
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		List<AdhocOrders> adhocOrder = new ArrayList<AdhocOrders>();
+		Criteria criteria = session.createCriteria(AdhocOrders.class);
+		criteria.add(Restrictions.eq("fwoNum", workflowDto.getAdhocOrderId()));
+		adhocOrder = criteria.list();
+
+		System.out.println(adhocOrder.size());
+		for (AdhocOrders a : adhocOrder) {
+
+			System.out.println(a.getFwoNum());
+			a.setUpdatedBy(workflowDto.getUpdatedBy());
+			a.setUpdatedDate((workflowDto.getUpdatedDate()));
+			a.setStatus(workflowDto.getStatus());
+			a.setPendingWith(workflowDto.getPendingWith());
+			session.saveOrUpdate(a);
+		}
+		List<AdhocOrderWorkflowDto> adhocOrderWorkflowDto = new ArrayList<AdhocOrderWorkflowDto>();
+
+		session.save(adhocOrderWorkflowDao.importAdhocWorkflow(workflowDto));
+
+		session.flush();
+		session.clear();
+		tx.commit();
+		session.close();
+
+		System.out.println(workflowDto.getAdhocOrderId());
+		return workflowDto.getAdhocOrderId();
+	}
+	
+	public AdhocOrderWorkflowDto prepareAdhocApprovalWorkflowDto(JSONObject data) throws JSONException
+	{
+		AdhocOrderWorkflowDto workflowDto = new AdhocOrderWorkflowDto();
+		JSONObject obj = data.getJSONObject("workflowInfo");
+		workflowDto.setAdhocOrderId(data.getString("adhocOrderId"));
+		workflowDto.setDescription(obj.getString("description"));
+		workflowDto.setInstanceId(obj.getString("id"));
+		workflowDto.setPendingWith(null);
+		workflowDto.setRequestedBy(obj.getString("createdBy"));
+		workflowDto.setRequestedDate(ServiceUtil.convertStringToDate(obj.getString("createdAt")));
+		workflowDto.setUpdatedDate(ServiceUtil.convertStringToDate(obj.getString("completedAt")));
+		workflowDto.setSubject(obj.getString("subject"));
+		workflowDto.setUpdatedBy(obj.getString("processor"));
+		workflowDto.setStatus(obj.getString("status"));
+		return workflowDto;
+		
 	}
 }

@@ -17,6 +17,7 @@ public class AdhocOrderWorkflowDto {
 	private String status;
 	private String pendingWith;
 	private String businessKey;
+	private String description;
 
 	public Long getId() {
 		return id;
@@ -114,8 +115,6 @@ public class AdhocOrderWorkflowDto {
 		this.workflowName = workflowName;
 	}
 
-	
-	
 	public String getBusinessKey() {
 		return businessKey;
 	}
@@ -123,8 +122,14 @@ public class AdhocOrderWorkflowDto {
 	public void setBusinessKey(String businessKey) {
 		this.businessKey = businessKey;
 	}
-	
-	
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	@Override
 	public String toString() {
@@ -132,9 +137,7 @@ public class AdhocOrderWorkflowDto {
 				+ ", requestedBy=" + requestedBy + ", requestedDate=" + requestedDate + ", instanceId=" + instanceId
 				+ ", definitionId=" + definitionId + ", subject=" + subject + ", updatedBy=" + updatedBy
 				+ ", updatedDate=" + updatedDate + ", status=" + status + ", pendingWith=" + pendingWith
-				+ ", businessKey=" + businessKey + "]";
+				+ ", businessKey=" + businessKey + ", description=" + description + "]";
 	}
-
-	
 
 }

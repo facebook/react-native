@@ -3,6 +3,9 @@ package com.incture.lch.adhoc.repository;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.simple.JSONObject;
+
 import com.incture.lch.adhoc.dto.AdhocOrderDto;
 import com.incture.lch.adhoc.dto.AdhocOrderWorkflowDto;
 import com.incture.lch.adhoc.dto.AdhocRequestDto;
@@ -54,5 +57,7 @@ public interface AdhocOrdersRepository {
 	public PartNumberDescDto getByPartNumber(PartNumberDescDto partNum);
 	
 	public String updateWorflowDetails(AdhocOrderWorkflowDto workflowDto);
+	
+	public String updateApprovalWorflowDetails(org.json.JSONObject obj) throws JSONException;
 
 }

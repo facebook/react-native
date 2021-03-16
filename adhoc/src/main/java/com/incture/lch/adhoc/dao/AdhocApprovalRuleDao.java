@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import com.incture.lch.adhoc.dto.AdhocApprovalRuleDto;
 import com.incture.lch.adhoc.entity.AdhocApprovalRule;
+import com.incture.lch.adhoc.entity.ReasonCode;
 
 @Repository("adhocApprovalRuleDao")
 public class AdhocApprovalRuleDao {
@@ -98,6 +99,25 @@ public class AdhocApprovalRuleDao {
 		}
 		return appRuleList;
 
+	}
+	
+	public List<AdhocApprovalRuleDto> getAdhocApprovalsByAdhocTypeAndApprovalType(String type) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		List<AdhocApprovalRuleDto> appRuleList = new ArrayList<>();
+		String queryStr = "select rc from AdhocApprovalRule rc where rc.adhocType=:adhocType";
+		Query query = session.createQuery(queryStr);
+		query.setParameter("adhocType", type);
+		@SuppressWarnings("unchecked")
+		List<AdhocApprovalRule> listData = query.list();
+		for (AdhocApprovalRule rule : listData) {
+			appRuleList.add(exportApprovalRule(rule));
+		}
+		session.flush();
+		session.clear();
+		tx.commit();
+		session.close();
+		return appRuleList;
 	}
 
 }

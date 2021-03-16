@@ -1,8 +1,13 @@
 package com.incture.lch.adhoc.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,7 +44,6 @@ import com.incture.lch.adhoc.helper.AdhocExcelHelper;
 import com.incture.lch.adhoc.service.AdhocExcelService;
 import com.incture.lch.adhoc.service.AdhocOrdersService;
 import com.incture.lch.adhoc.util.ServiceUtil;
-//import com.sap.conn.jco.JCoException;
 
 @RestController
 @CrossOrigin
@@ -60,6 +63,7 @@ public class AdhocOrdersController {
 
 	@Autowired
 	private AdhocExcelService excelService;
+
 
 	@RequestMapping(value = "/addAdhocOrders", method = RequestMethod.POST, consumes = { "application/json" })
 	@ResponseBody
@@ -159,28 +163,6 @@ public class AdhocOrdersController {
 		return "Your message has been posted to IOP. Reference No. #" + ServiceUtil.generateRandomDigits(16);
 	}
 
-	/*
-	 * @RequestMapping(value = "/UserDetails/currentuser", method =
-	 * RequestMethod.GET)
-	 * 
-	 * @ResponseBody public ResponseEntity<Response<?>>
-	 * currentUserDetails(@RequestBody @AuthenticationPrincipal Token token) {
-	 * return adhocOrdersService.getLoggedInUser(token); }
-	 */
-
-	/*
-	 * @RequestMapping(value = "/getTableData", method = RequestMethod.POST,
-	 * consumes = { "application/json" })
-	 * 
-	 * @ResponseBody public List<PartNumberDescDto> getTableData(@RequestBody
-	 * PartNumberDescDto partNumberDto) throws JCoException {
-	 * List<PartNumberDescDto> dtoList = new ArrayList<PartNumberDescDto>(); try
-	 * { return jcoApiConnector.getPartNumberDescDto("MAKT",
-	 * partNumberDto.getPartNum(), Arrays.asList("MAKTX"), 1000, dtoList); }
-	 * catch (JCoException e) { dtoList.add(new PartNumberDescDto("NA", "NA",
-	 * e.toString())); return dtoList; } }
-	 */
-
 	@RequestMapping(value = "/excelUpload", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
@@ -218,7 +200,7 @@ public class AdhocOrdersController {
 		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
 				.contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(file);
 	}
-	
+
 	@GetMapping("/downloadSampleTemplate")
 	public ResponseEntity<Resource> getSampleFile() {
 		String filename = "Sample_Template.xlsx";
@@ -228,11 +210,18 @@ public class AdhocOrdersController {
 				.contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(file);
 	}
 
-	
 	@RequestMapping(value = "/updateWorkflowDetails", method = RequestMethod.POST)
-	public String updateWorflowDetails(@RequestBody AdhocOrderWorkflowDto workflowDto)
-	{
+	public String updateWorflowDetails(@RequestBody AdhocOrderWorkflowDto workflowDto) {
 		System.out.println(workflowDto.getAdhocOrderId());
 		return adhocOrdersService.updateWorflowDetails(workflowDto);
 	}
+
+	@RequestMapping(value = "/updateApprovalWorkflowDetails", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateApprovalWorkflowDetails(@RequestBody JSONObject obj)
+			throws ClientProtocolException, IOException, JSONException {
+		logger1.error("ENTERING INTO updateApprovalWorkflowDetails CONTROLLER");
+		return adhocOrdersService.updateApprovalWorflowDetails(obj);
+	}
+
 }

@@ -35,9 +35,13 @@ public class AdhocOrderWorkflow {
 
 	@Column(name = "DEFINITION_ID")
 	private String definitionId;
+	
 
 	@Column(name = "SUBJECT")
 	private String subject;
+	
+	@Column(name = "DESCRIPTION")
+	private String description;
 
 	@Column(name = "UPDATED_BY")
 	private String updatedBy;
@@ -161,6 +165,14 @@ public class AdhocOrderWorkflow {
 
 	public void setBusinessKey(String businessKey) {
 		this.businessKey = businessKey;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	
