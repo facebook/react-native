@@ -95,7 +95,7 @@ type OptionalProps = {|
   /**
    * DEPRECATED: Virtualization provides significant performance and memory optimizations, but fully
    * unmounts react instances that are outside of the render window. You should only need to disable
-   * this for debugging purposes.
+   * this for debugging purposes. Defaults to false.
    */
   disableVirtualization?: ?boolean,
   /**
@@ -304,7 +304,6 @@ type Props = {|
 |};
 
 type DefaultProps = {|
-  disableVirtualization: boolean,
   horizontal: boolean,
   initialNumToRender: number,
   keyExtractor: (item: Item, index: number) => string,
@@ -561,7 +560,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   static defaultProps: DefaultProps = {
-    disableVirtualization: false,
     horizontal: false,
     initialNumToRender: 10,
     keyExtractor: (item: Item, index: number) => {
