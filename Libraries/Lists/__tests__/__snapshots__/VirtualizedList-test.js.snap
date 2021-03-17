@@ -63,7 +63,6 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
     ]
   }
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -205,7 +204,6 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when partially in 
     ]
   }
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -282,7 +280,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -315,7 +312,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
         scrollEventThrottle={50}
         stickyHeaderIndices={Array []}
         updateCellsBatchingPeriod={50}
-        windowSize={21}
       >
         <View
           onLayout={[Function]}
@@ -365,7 +361,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
         scrollEventThrottle={50}
         stickyHeaderIndices={Array []}
         updateCellsBatchingPeriod={50}
-        windowSize={21}
       >
         <View>
           <View
@@ -435,7 +430,6 @@ exports[`VirtualizedList handles separators correctly 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -512,7 +506,6 @@ exports[`VirtualizedList handles separators correctly 2`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -589,7 +582,6 @@ exports[`VirtualizedList handles separators correctly 3`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -1047,7 +1039,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
     ]
   }
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <RCTRefreshControl />
   <View>
@@ -1204,7 +1195,6 @@ exports[`VirtualizedList renders empty list 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View />
 </RCTScrollView>
@@ -1230,7 +1220,6 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -1272,7 +1261,6 @@ exports[`VirtualizedList renders list with empty component 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -1303,7 +1291,6 @@ exports[`VirtualizedList renders null list 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View />
 </RCTScrollView>
@@ -1338,7 +1325,6 @@ exports[`VirtualizedList renders simple list 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -1398,7 +1384,6 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -1452,7 +1437,6 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -1491,7 +1475,6 @@ exports[`VirtualizedList warns if both renderItem or ListItemComponent are speci
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View

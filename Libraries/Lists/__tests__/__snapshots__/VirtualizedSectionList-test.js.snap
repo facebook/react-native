@@ -31,7 +31,6 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -73,7 +72,6 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         scrollEventThrottle={50}
         stickyHeaderIndices={Array []}
         updateCellsBatchingPeriod={50}
-        windowSize={21}
       >
         <View
           onLayout={[Function]}
@@ -136,7 +134,6 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         scrollEventThrottle={50}
         stickyHeaderIndices={Array []}
         updateCellsBatchingPeriod={50}
-        windowSize={21}
       >
         <View>
           <View
@@ -236,7 +233,6 @@ exports[`VirtualizedSectionList handles separators correctly 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -371,7 +367,6 @@ exports[`VirtualizedSectionList handles separators correctly 2`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -506,7 +501,6 @@ exports[`VirtualizedSectionList handles separators correctly 3`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -674,7 +668,6 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
     ]
   }
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <RCTRefreshControl />
   <View>
@@ -871,7 +864,6 @@ exports[`VirtualizedSectionList renders empty list 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View />
 </RCTScrollView>
@@ -897,7 +889,6 @@ exports[`VirtualizedSectionList renders empty list with empty component 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -944,7 +935,6 @@ exports[`VirtualizedSectionList renders list with empty component 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -1001,7 +991,6 @@ exports[`VirtualizedSectionList renders simple list 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View

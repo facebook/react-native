@@ -290,7 +290,7 @@ type OptionalProps = {|
    * this number will reduce memory consumption and may improve performance, but will increase the
    * chance that fast scrolling may reveal momentary blank areas of unrendered content.
    */
-  windowSize: number,
+  windowSize?: ?number,
   /**
    * The legacy implementation is no longer supported.
    */
@@ -306,7 +306,6 @@ type Props = {|
 type DefaultProps = {|
   keyExtractor: (item: Item, index: number) => string,
   updateCellsBatchingPeriod: number,
-  windowSize: number,
 |};
 
 let _usedIndexForKey = false;
@@ -335,6 +334,10 @@ function onEndReachedThresholdOrDefault(onEndReachedThreshold: ?number) {
 
 function scrollEventThrottleOrDefault(scrollEventThrottle: ?number) {
   return scrollEventThrottle ?? 50;
+}
+
+function windowSizeOrDefault(windowSize: ?number) {
+  return windowSize ?? 21;
 }
 
 /**
@@ -593,7 +596,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return String(index);
     },
     updateCellsBatchingPeriod: 50,
-    windowSize: 21, // multiples of length
   };
 
   _getCellKey(): string {
@@ -691,9 +693,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' +
         'to support native onScroll events with useNativeDriver',
     );
-
     invariant(
-      props.windowSize > 0,
+      windowSizeOrDefault(props.windowSize) > 0,
       'VirtualizedList: The windowSize prop must be present and set to a value greater than 0.',
     );
 
@@ -1753,7 +1754,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               this.props.data,
               this.props.getItemCount,
               maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch),
-              this.props.windowSize,
+              windowSizeOrDefault(this.props.windowSize),
               state,
               this._getFrameMetricsApprox,
               this._scrollMetrics,
