@@ -305,7 +305,6 @@ type Props = {|
 
 type DefaultProps = {|
   keyExtractor: (item: Item, index: number) => string,
-  scrollEventThrottle: number,
   updateCellsBatchingPeriod: number,
   windowSize: number,
 |};
@@ -332,6 +331,10 @@ function maxToRenderPerBatchOrDefault(maxToRenderPerBatch: ?number) {
 
 function onEndReachedThresholdOrDefault(onEndReachedThreshold: ?number) {
   return onEndReachedThreshold ?? 2;
+}
+
+function scrollEventThrottleOrDefault(scrollEventThrottle: ?number) {
+  return scrollEventThrottle ?? 50;
 }
 
 /**
@@ -589,7 +592,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
       return String(index);
     },
-    scrollEventThrottle: 50,
     updateCellsBatchingPeriod: 50,
     windowSize: 21, // multiples of length
   };
@@ -1068,7 +1070,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       onScrollEndDrag: this._onScrollEndDrag,
       onMomentumScrollBegin: this._onMomentumScrollBegin,
       onMomentumScrollEnd: this._onMomentumScrollEnd,
-      scrollEventThrottle: this.props.scrollEventThrottle, // TODO: Android support
+      scrollEventThrottle: scrollEventThrottleOrDefault(
+        this.props.scrollEventThrottle,
+      ), // TODO: Android support
       invertStickyHeaders:
         this.props.invertStickyHeaders !== undefined
           ? this.props.invertStickyHeaders
