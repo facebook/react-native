@@ -18,7 +18,6 @@ module.exports = {
 
   extends: [
     'plugin:prettier/recommended', // https://github.com/prettier/eslint-plugin-prettier#recommended-configuration
-    'prettier/react',
   ],
 
   plugins: [
