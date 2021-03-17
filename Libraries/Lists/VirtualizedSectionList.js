@@ -100,7 +100,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
   onEndReached?: ?({distanceFromEnd: number, ...}) => void,
 |};
 
-type VirtualizedListProps = React.ElementProps<typeof VirtualizedList>;
+type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
 export type Props<SectionT> = {|
   ...RequiredProps<SectionT>,
@@ -212,11 +212,11 @@ class VirtualizedSectionList<
     );
   }
 
-  _getItem = (
+  _getItem(
     props: Props<SectionT>,
     sections: ?$ReadOnlyArray<Item>,
     index: number,
-  ): ?Item => {
+  ): ?Item {
     if (!sections) {
       return null;
     }
@@ -238,7 +238,7 @@ class VirtualizedSectionList<
       }
     }
     return null;
-  };
+  }
 
   _keyExtractor = (item: Item, index: number) => {
     const info = this._subExtractor(index);
@@ -577,4 +577,11 @@ class ItemWithSeparator extends React.Component<
   }
 }
 
-module.exports = VirtualizedSectionList;
+module.exports = (VirtualizedSectionList: React.AbstractComponent<
+  React.ElementConfig<typeof VirtualizedSectionList>,
+  $ReadOnly<{
+    getListRef: () => ?React.ElementRef<typeof VirtualizedList>,
+    scrollToLocation: (params: ScrollToLocationParamsType) => void,
+    ...
+  }>,
+>);
