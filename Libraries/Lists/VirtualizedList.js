@@ -120,7 +120,7 @@ type OptionalProps = {|
    * much more. Note these items will never be unmounted as part of the windowed rendering in order
    * to improve perceived performance of scroll-to-top actions.
    */
-  initialNumToRender: number,
+  initialNumToRender?: ?number,
   /**
    * Instead of starting at the top with the first item, start at `initialScrollIndex`. This
    * disables the "scroll to top" optimization that keeps the first `initialNumToRender` items
@@ -304,7 +304,6 @@ type Props = {|
 |};
 
 type DefaultProps = {|
-  initialNumToRender: number,
   keyExtractor: (item: Item, index: number) => string,
   maxToRenderPerBatch: number,
   onEndReachedThreshold: number,
@@ -323,6 +322,10 @@ type State = {
 
 function horizontalOrDefault(horizontal: ?boolean) {
   return horizontal ?? false;
+}
+
+function initialNumToRenderOrDefault(initialNumToRender: ?number) {
+  return initialNumToRender ?? 10;
 }
 
 /**
@@ -567,7 +570,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   static defaultProps: DefaultProps = {
-    initialNumToRender: 10,
     keyExtractor: (item: Item, index: number) => {
       if (item.key != null) {
         return item.key;
@@ -715,7 +717,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       last:
         Math.min(
           this.props.getItemCount(this.props.data),
-          (this.props.initialScrollIndex || 0) + this.props.initialNumToRender,
+          (this.props.initialScrollIndex || 0) +
+            initialNumToRenderOrDefault(this.props.initialNumToRender),
         ) - 1,
     };
 
@@ -913,7 +916,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       const spacerKey = this._getSpacerKey(!horizontal);
       const lastInitialIndex = this.props.initialScrollIndex
         ? -1
-        : this.props.initialNumToRender - 1;
+        : initialNumToRenderOrDefault(this.props.initialNumToRender) - 1;
       const {first, last} = this.state;
       this._pushCells(
         cells,

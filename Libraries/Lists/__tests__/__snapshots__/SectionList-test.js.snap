@@ -19,7 +19,6 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
@@ -81,7 +80,6 @@ exports[`SectionList renders a footer when there is no data 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
@@ -135,7 +133,6 @@ exports[`SectionList renders a footer when there is no data and no header 1`] = 
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
@@ -411,7 +408,6 @@ exports[`SectionList renders empty list 1`] = `
   data={Array []}
   getItem={[Function]}
   getItemCount={[Function]}
-  initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
