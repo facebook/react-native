@@ -17,6 +17,7 @@ const VirtualizedList = require('./VirtualizedList');
 const invariant = require('invariant');
 
 import type {ViewToken} from './ViewabilityHelper';
+import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 
 type Item = any;
 
@@ -118,7 +119,6 @@ export type ScrollToLocationParamsType = {|
 |};
 
 type DefaultProps = {|
-  ...typeof VirtualizedList.defaultProps,
   data: $ReadOnlyArray<Item>,
 |};
 
@@ -133,7 +133,6 @@ class VirtualizedSectionList<
   SectionT: SectionBase<any>,
 > extends React.PureComponent<Props<SectionT>, State> {
   static defaultProps: DefaultProps = {
-    ...VirtualizedList.defaultProps,
     data: [],
   };
 
@@ -292,7 +291,8 @@ class VirtualizedSectionList<
           trailingSection: sections[i + 1],
         };
       } else {
-        const extractor = section.keyExtractor || keyExtractor;
+        const extractor =
+          section.keyExtractor || keyExtractor || defaultKeyExtractor;
         return {
           section,
           key:
