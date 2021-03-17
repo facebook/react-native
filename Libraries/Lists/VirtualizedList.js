@@ -305,7 +305,6 @@ type Props = {|
 
 type DefaultProps = {|
   keyExtractor: (item: Item, index: number) => string,
-  onEndReachedThreshold: number,
   scrollEventThrottle: number,
   updateCellsBatchingPeriod: number,
   windowSize: number,
@@ -329,6 +328,10 @@ function initialNumToRenderOrDefault(initialNumToRender: ?number) {
 
 function maxToRenderPerBatchOrDefault(maxToRenderPerBatch: ?number) {
   return maxToRenderPerBatch ?? 10;
+}
+
+function onEndReachedThresholdOrDefault(onEndReachedThreshold: ?number) {
+  return onEndReachedThreshold ?? 2;
 }
 
 /**
@@ -586,7 +589,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
       return String(index);
     },
-    onEndReachedThreshold: 2, // multiples of length
     scrollEventThrottle: 50,
     updateCellsBatchingPeriod: 50,
     windowSize: 21, // multiples of length
@@ -1492,9 +1494,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     } = this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
     const distanceFromEnd = contentLength - visibleLength - offset;
-    const threshold = onEndReachedThreshold
-      ? onEndReachedThreshold * visibleLength
-      : 2;
+    const threshold =
+      onEndReachedThreshold != null ? onEndReachedThreshold * visibleLength : 2;
     if (
       onEndReached &&
       this.state.last === getItemCount(data) - 1 &&
@@ -1633,11 +1634,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const {offset, visibleLength, velocity} = this._scrollMetrics;
     const itemCount = this.props.getItemCount(this.props.data);
     let hiPri = false;
-    const scrollingThreshold =
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete
-       * this comment and run Flow. */
-      (this.props.onEndReachedThreshold * visibleLength) / 2;
+    const onEndReachedThreshold = onEndReachedThresholdOrDefault(
+      this.props.onEndReachedThreshold,
+    );
+    const scrollingThreshold = (onEndReachedThreshold * visibleLength) / 2;
     // Mark as high priority if we're close to the start of the first item
     // But only if there are items before the first rendered item
     if (first > 0) {
@@ -1718,7 +1718,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _updateCellsToRender = () => {
-    const {data, getItemCount, onEndReachedThreshold} = this.props;
+    const {
+      data,
+      getItemCount,
+      onEndReachedThreshold: _onEndReachedThreshold,
+    } = this.props;
+    const onEndReachedThreshold = onEndReachedThresholdOrDefault(
+      _onEndReachedThreshold,
+    );
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     this._updateViewableItems(data);
     if (!data) {
