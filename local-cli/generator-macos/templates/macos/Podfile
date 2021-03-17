@@ -2,7 +2,7 @@ require_relative '../node_modules/react-native-macos/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 target 'HelloWorld-macOS' do
-  platform :macos, '10.13'
+  platform :macos, '10.14'
   use_native_modules!
   use_react_native!(
     :path => '../node_modules/react-native-macos',

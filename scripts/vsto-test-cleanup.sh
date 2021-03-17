@@ -2,7 +2,7 @@
 set -ex
 
 # Script used by the VSTO build agent to cleanup the packager and web socket server
-# after the XCode test step has completed
+# after the Xcode test step has completed
 
 # kill whatever is occupying port 8081 (packager)
 lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill

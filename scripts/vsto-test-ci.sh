@@ -18,27 +18,27 @@ npm install
 # Setup packager and WebSocket test server
 . ./scripts/vsto-test-setup.sh
 
-# XCode macOS test
+# Xcode macOS test
 xcodebuild -sdk macosx -configuration Debug -project ./RNTester/RNTester.xcodeproj -scheme RNTester-macOS build test DSTROOT=$OUTPUTDIR/macosx/Debug/build.dst OBJROOT=$OUTPUTDIR/macosx/Debug/build.obj SYMROOT=$OUTPUTDIR/macosx/Debug/build.sym SHARED_PRECOMPS_DIR=$OUTPUTDIR/macosx/Debug/build.pch -destination platform=macOS,arch=x86_64 ONLY_ACTIVE_ARCH=NO DEVELOPMENT_TEAM=UBF8T346G9 | /usr/local/bin/xcpretty -r junit --no-color
 
 if [ $? -ne 0 ]; then
-  echo "XCode macOS test FAILED"
+  echo "Xcode macOS test FAILED"
   exit 1
 else
 
-  # XCode iOS test
+  # Xcode iOS test
   xcodebuild -sdk iphonesimulator -configuration Debug -project ./RNTester/RNTester.xcodeproj -scheme RNTester build test DSTROOT=$OUTPUTDIR/iphonesimulator/Debug/build.dst OBJROOT=$OUTPUTDIR/iphonesimulator/Debug/build.obj SYMROOT=$OUTPUTDIR/iphonesimulator/Debug/build.sym SHARED_PRECOMPS_DIR=$OUTPUTDIR/iphonesimulator/Debug/build.pch -destination platform="iOS Simulator,OS=latest,name=iPhone 5s" ONLY_ACTIVE_ARCH=NO DEVELOPMENT_TEAM=UBF8T346G9 | /usr/local/bin/xcpretty -r junit --no-color
 
   if [ $? -ne 0 ]; then
-    echo "XCode iOS test FAILED"
+    echo "Xcode iOS test FAILED"
     exit 1
   else
 
-    # XCode tvOS test
+    # Xcode tvOS test
     xcodebuild -configuration Debug -project ./RNTester/RNTester.xcodeproj -scheme RNTester-tvOS build test DSTROOT=$OUTPUTDIR/iphoneos/Debug/build.dst OBJROOT=$OUTPUTDIR/iphoneos/Debug/build.obj SYMROOT=$OUTPUTDIR/iphoneos/Debug/build.sym SHARED_PRECOMPS_DIR=$OUTPUTDIR/iphoneos/Debug/build.pch -destination platform="tvOS Simulator,OS=latest,name=Apple TV" ONLY_ACTIVE_ARCH=NO DEVELOPMENT_TEAM=UBF8T346G9 | /usr/local/bin/xcpretty -r junit --no-color
 
     if [ $? -ne 0 ]; then
-      echo "XCode tvOS test FAILED"
+      echo "Xcode tvOS test FAILED"
       exit 1
     fi
   fi

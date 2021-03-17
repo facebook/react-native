@@ -7,6 +7,8 @@ parameters:
   xcode_actions_release: ''
   xcode_destination: ''
   apply_office_patches: ''
+  slice_name: ''
+  xcode_version: ''
 
 steps:
   # Clean DerivedData
@@ -18,6 +20,9 @@ steps:
 
   # Task Group: Xcode select proper version
   - template: apple-xcode-select.yml
+    parameters:
+      slice_name: ${{ parameters.slice_name }}
+      xcode_version: ${{ parameters.xcode_version }}
 
   - template: apple-droid-node-patching.yml
     parameters:

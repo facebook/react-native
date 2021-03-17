@@ -31,6 +31,8 @@ jobs:
       - template: templates/apple-job-javascript.yml
         parameters:
             apply_office_patches: $(apply_office_patches)
+            slice_name: $(slice_name)
+            xcode_version: $(xcode_version)
 
   - job: AppleRNPR
     displayName: Apple React Native PR
@@ -84,6 +86,8 @@ jobs:
           xcode_actions_release: $(xcode_actions_release)
           xcode_destination: $(xcode_destination)
           apply_office_patches: $(apply_office_patches)
+          slice_name: $(slice_name)
+          xcode_version: $(xcode_version)
 
   - job: CliInit
     displayName: Verify react-native-macos-init
