@@ -882,27 +882,6 @@ class EnabledExample extends React.Component<{}> {
   }
 }
 
-class TextInputExamples extends React.Component<$FlowFixMeProps, any> {
-  constructor(props) {
-    super(props);
-    this.state = {focused: false};
-  }
-  render() {
-    return (
-      <View>
-        <TextInput
-          accessible={true}
-          accessibilityState={{selected: this.state.focused}}
-          showSoftInputOnFocus={false}
-          onFocus={() => this.setState({focused: true})}
-          onBlur={() => this.setState({focused: false})}
-          style={styles.default}
-        />
-      </View>
-    );
-  }
-}
-
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
