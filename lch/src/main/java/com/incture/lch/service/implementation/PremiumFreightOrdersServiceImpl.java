@@ -65,5 +65,11 @@ public class PremiumFreightOrdersServiceImpl implements PremiumFreightOrdersServ
 	public String RejectPremiumOrder(String adhocOrderId) {
 		return premiumFreightOrdersRepo.RejectPremiumOrder(adhocOrderId);
 	}
+	
+	@Override
+	public String addCarrier(CarrierDetailsDto carrierdto)
+	{
+		return premiumFreightOrdersRepo.addCarrier(carrierdto); 
+	}
 
 }

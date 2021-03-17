@@ -3,9 +3,7 @@ package com.incture.lch.dao;
 import org.springframework.stereotype.Repository;
 
 import com.incture.lch.dto.CarrierDetailsDto;
-import com.incture.lch.dto.LkShipperDetailsDto;
 import com.incture.lch.entity.CarrierDetails;
-import com.incture.lch.entity.LkShipperDetails;
 
 @Repository
 public class CarrierDetailsDao 
@@ -33,5 +31,5 @@ public class CarrierDetailsDao
 		return carrierDetailsDto;
 
 	}
-
+	
 }

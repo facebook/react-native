@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.incture.lch.dao.CarrierDetailsDao;
+import com.incture.lch.dto.AdhocApprovalRuleDto;
 import com.incture.lch.dto.CarrierDetailsDto;
 import com.incture.lch.dto.ChargeRequestDto;
 import com.incture.lch.dto.PremiumFreightOrderDto;
@@ -465,5 +466,22 @@ public class PremiumFreightOrdersRepositoryImpl implements PremiumFreightOrdersR
 		return "deleted";
 
 	}
+	
+	@Override
+	public String addCarrier(CarrierDetailsDto carrierdto)
+	{
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		CarrierDetails cdetails = new CarrierDetails();
+		cdetails=carrierDetailsDao.importCarrierDetails(carrierdto);
+		session.saveOrUpdate(cdetails);
+		session.flush();
+		session.clear();
+		tx.commit();
+		session.close();
+		return "saved carrier";
+	}
 
 }
+
+

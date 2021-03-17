@@ -44,7 +44,7 @@ public class WorkflowInvoker implements WorkflowInvokerLocal {
 	private String clientid;
 	private String clientsecret;
 
-	/*public WorkflowInvoker() {
+	public WorkflowInvoker() {
 		try {
 			JSONObject jsonObj = new JSONObject(System.getenv("VCAP_SERVICES"));
 			System.err.println("[WorkflowInvoker:VCAP_SERVICES] : " + jsonObj.toString());
@@ -69,7 +69,7 @@ public class WorkflowInvoker implements WorkflowInvokerLocal {
 			MYLOGGER.error("[WorkflowInvoker] reading environmental variables failed:" + e.getMessage());
 		}
 	}
-*/
+
 	@Override
 	public JSONObject triggerWorkflow(String input) throws ClientProtocolException, IOException, JSONException {
 

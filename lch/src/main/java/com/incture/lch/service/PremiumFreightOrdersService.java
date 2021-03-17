@@ -23,6 +23,7 @@ public interface PremiumFreightOrdersService
 	public String forwardToApprover(List<PremiumRequestDto> premiumRequestDtos);
 	
 	public String RejectPremiumOrder (String adhocOrderId);
+	public String addCarrier(CarrierDetailsDto carrierdto);
 
 
 }

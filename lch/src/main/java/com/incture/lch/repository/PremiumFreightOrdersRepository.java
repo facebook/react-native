@@ -27,5 +27,6 @@ public interface PremiumFreightOrdersRepository
 	public String forwardToApprover(List<PremiumRequestDto> premiumRequestDtos);
 	
 	public String RejectPremiumOrder (String adhocOrderId);
+	public String addCarrier(CarrierDetailsDto carrierdto);
 
 }

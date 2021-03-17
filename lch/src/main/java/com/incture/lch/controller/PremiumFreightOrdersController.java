@@ -1,5 +1,7 @@
 package com.incture.lch.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -43,13 +45,33 @@ public class PremiumFreightOrdersController
 		return premiumFreightOrdersService.getAllCarrierDetails();
 	}
 
-	@RequestMapping(value = "/getMode", method = RequestMethod.POST, consumes = { "application/json" })
-	@ResponseBody
-	public List<String> getMode(@RequestBody JSONObject bpNumber) 
+	
+	/*public List<String> getModes(@RequestBody JSONObject bpNumber) 
 	{
 		String bpNo = (String) bpNumber.get("bpNumber");
 		System.out.println(bpNo);
 		return premiumFreightOrdersService.getMode(bpNo);
+	}*/
+	@RequestMapping(value = "/getMode", method = RequestMethod.POST, consumes = { "application/json" })
+	@ResponseBody
+	public List<HashMap<String,String>>getMode(@RequestBody  JSONObject bpNumber)
+	{
+		//int i=0;
+		String bpNo = (String) bpNumber.get("bpNumber");
+		List<String> mode = premiumFreightOrdersService.getMode(bpNo);
+	
+	
+		List<HashMap<String,String>> listMode= new ArrayList<HashMap<String,String>>();
+		//modes.put("mode", mode);
+		for(String s:mode)
+		{
+			HashMap<String,String> modes= new HashMap<String,String>();
+			
+			modes.put("mode",s);
+			
+			listMode.add(modes);
+		}
+		return listMode;
 	}
 
 	
@@ -96,5 +118,10 @@ public class PremiumFreightOrdersController
 		return premiumFreightApprovalRuleDao.saveApproval(ruleList);
 	}
 
+	@RequestMapping(value="/addCarrier", method = RequestMethod.POST)
+	public String addCarrier(CarrierDetailsDto carrierdto)
+	{
+		return premiumFreightOrdersService.addCarrier(carrierdto);
+	}
 
 }
