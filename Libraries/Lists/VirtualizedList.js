@@ -273,7 +273,7 @@ type OptionalProps = {|
    * Amount of time between low-pri item render batches, e.g. for rendering items quite a ways off
    * screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
    */
-  updateCellsBatchingPeriod: number,
+  updateCellsBatchingPeriod?: ?number,
   /**
    * See `ViewabilityHelper` for flow type and further documentation.
    */
@@ -305,7 +305,6 @@ type Props = {|
 
 type DefaultProps = {|
   keyExtractor: (item: Item, index: number) => string,
-  updateCellsBatchingPeriod: number,
 |};
 
 let _usedIndexForKey = false;
@@ -595,7 +594,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
       return String(index);
     },
-    updateCellsBatchingPeriod: 50,
   };
 
   _getCellKey(): string {
@@ -701,7 +699,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._fillRateHelper = new FillRateHelper(this._getFrameMetrics);
     this._updateCellsToRenderBatcher = new Batchinator(
       this._updateCellsToRender,
-      this.props.updateCellsBatchingPeriod,
+      this.props.updateCellsBatchingPeriod ?? 50,
     );
 
     if (this.props.viewabilityConfigCallbackPairs) {

@@ -48,7 +48,6 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
   viewabilityConfigCallbackPairs={Array []}
 >
   <RCTRefreshControl />
@@ -137,7 +136,6 @@ exports[`FlatList renders empty list 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
   viewabilityConfigCallbackPairs={Array []}
 >
   <View />
@@ -160,7 +158,6 @@ exports[`FlatList renders null list 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
   viewabilityConfigCallbackPairs={Array []}
 >
   <View />
@@ -196,7 +193,6 @@ exports[`FlatList renders simple list (multiple columns) 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
   viewabilityConfigCallbackPairs={Array []}
 >
   <View>
@@ -268,7 +264,6 @@ exports[`FlatList renders simple list 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
   viewabilityConfigCallbackPairs={Array []}
 >
   <View>
@@ -329,7 +324,6 @@ exports[`FlatList renders simple list using ListItemComponent (multiple columns)
   removeClippedSubviews={false}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
   viewabilityConfigCallbackPairs={Array []}
 >
   <View>
@@ -401,7 +395,6 @@ exports[`FlatList renders simple list using ListItemComponent 1`] = `
   removeClippedSubviews={false}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
   viewabilityConfigCallbackPairs={Array []}
 >
   <View>

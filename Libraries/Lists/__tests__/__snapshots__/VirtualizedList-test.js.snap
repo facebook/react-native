@@ -62,7 +62,6 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
       9,
     ]
   }
-  updateCellsBatchingPeriod={50}
 >
   <View>
     <View
@@ -203,7 +202,6 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when partially in 
       3,
     ]
   }
-  updateCellsBatchingPeriod={50}
 >
   <View>
     <View
@@ -279,7 +277,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
 >
   <View>
     <View
@@ -311,7 +308,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
         renderItem={[Function]}
         scrollEventThrottle={50}
         stickyHeaderIndices={Array []}
-        updateCellsBatchingPeriod={50}
       >
         <View
           onLayout={[Function]}
@@ -360,7 +356,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
         renderItem={[Function]}
         scrollEventThrottle={50}
         stickyHeaderIndices={Array []}
-        updateCellsBatchingPeriod={50}
       >
         <View>
           <View
@@ -429,7 +424,6 @@ exports[`VirtualizedList handles separators correctly 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
 >
   <View>
     <View
@@ -505,7 +499,6 @@ exports[`VirtualizedList handles separators correctly 2`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
 >
   <View>
     <View
@@ -581,7 +574,6 @@ exports[`VirtualizedList handles separators correctly 3`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
 >
   <View>
     <View
@@ -739,7 +731,6 @@ exports[`VirtualizedList keeps sticky headers realized after scrolled out of vie
       13,
     ]
   }
-  updateCellsBatchingPeriod={50}
   windowSize={1}
 >
   <View>
@@ -925,7 +916,6 @@ exports[`VirtualizedList realizes sticky headers in viewport on batched render 1
       3,
     ]
   }
-  updateCellsBatchingPeriod={50}
   windowSize={1}
 >
   <View>
@@ -1038,7 +1028,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
       undefined,
     ]
   }
-  updateCellsBatchingPeriod={50}
 >
   <RCTRefreshControl />
   <View>
@@ -1194,7 +1183,6 @@ exports[`VirtualizedList renders empty list 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
 >
   <View />
 </RCTScrollView>
@@ -1219,7 +1207,6 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
 >
   <View>
     <View
@@ -1260,7 +1247,6 @@ exports[`VirtualizedList renders list with empty component 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
 >
   <View>
     <View
@@ -1290,7 +1276,6 @@ exports[`VirtualizedList renders null list 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
 >
   <View />
 </RCTScrollView>
@@ -1324,7 +1309,6 @@ exports[`VirtualizedList renders simple list 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
 >
   <View>
     <View
@@ -1383,7 +1367,6 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
   onScrollEndDrag={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
 >
   <View>
     <View
@@ -1436,7 +1419,6 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
 >
   <View>
     <View
@@ -1474,7 +1456,6 @@ exports[`VirtualizedList warns if both renderItem or ListItemComponent are speci
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
 >
   <View>
     <View
