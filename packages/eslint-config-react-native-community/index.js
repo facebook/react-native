@@ -39,8 +39,8 @@ module.exports = {
   overrides: [
     {
       files: ['*.js'],
-      parser: 'babel-eslint',
-      plugins: ['flowtype'],
+      parser: '@babel/eslint-parser',
+      plugins: ['@babel', 'flowtype'],
       rules: {
         // Flow Plugin
         // The following rules are made available via `eslint-plugin-flowtype`
@@ -262,7 +262,8 @@ module.exports = {
     'no-mixed-spaces-and-tabs': 1, // disallow mixed spaces and tabs for indentation
     quotes: [1, 'single', 'avoid-escape'], // specify whether double or single quotes should be used
     'quote-props': 0, // require quotes around object literal property names (off by default)
-    semi: 1, // require or disallow use of semicolons instead of ASI
+    semi: 0, // require or disallow use of semicolons instead of ASI
+    '@babel/semi': 1, // handles class properties
     'sort-vars': 0, // sort variables within the same declaration block (off by default)
     'space-in-brackets': 0, // require or disallow spaces inside brackets (off by default)
     'space-in-parens': 0, // require or disallow spaces inside parentheses (off by default)
