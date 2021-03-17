@@ -19,6 +19,26 @@
 namespace facebook {
 namespace react {
 
+static std::unique_ptr<LeakChecker> constructLeakChecker(
+    RuntimeExecutor const &runtimeExecutor,
+    GarbageCollectionTrigger const &garbageCollectionTrigger) {
+  if (garbageCollectionTrigger) {
+    return std::make_unique<LeakChecker>(
+        runtimeExecutor, garbageCollectionTrigger);
+  } else {
+    return {};
+  }
+}
+
+UIManager::UIManager(
+    RuntimeExecutor const &runtimeExecutor,
+    BackgroundExecutor const &backgroundExecutor,
+    GarbageCollectionTrigger const &garbageCollectionTrigger)
+    : runtimeExecutor_(runtimeExecutor),
+      backgroundExecutor_(backgroundExecutor),
+      leakChecker_(
+          constructLeakChecker(runtimeExecutor, garbageCollectionTrigger)) {}
+
 UIManager::~UIManager() {
   LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
                << ").";
@@ -59,6 +79,9 @@ SharedShadowNode UIManager::createNode(
 
   if (delegate_) {
     delegate_->uiManagerDidCreateShadowNode(shadowNode);
+  }
+  if (leakChecker_) {
+    leakChecker_->uiManagerDidCreateShadowNodeFamily(family);
   }
 
   return shadowNode;
@@ -170,6 +193,10 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
 
     uiManagerBinding->stopSurface(runtime, surfaceId);
   });
+
+  if (leakChecker_) {
+    leakChecker_->stopSurface(surfaceId);
+  }
 
   return shadowTree;
 }
@@ -319,15 +346,6 @@ void UIManager::setDelegate(UIManagerDelegate *delegate) {
 
 UIManagerDelegate *UIManager::getDelegate() {
   return delegate_;
-}
-
-void UIManager::setBackgroundExecutor(
-    BackgroundExecutor const &backgroundExecutor) {
-  backgroundExecutor_ = backgroundExecutor;
-}
-
-void UIManager::setRuntimeExecutor(RuntimeExecutor const &runtimeExecutor) {
-  runtimeExecutor_ = runtimeExecutor;
 }
 
 void UIManager::visitBinding(

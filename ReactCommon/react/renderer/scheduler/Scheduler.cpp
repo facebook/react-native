@@ -43,7 +43,10 @@ Scheduler::Scheduler(
   eventDispatcher_ =
       std::make_shared<better::optional<EventDispatcher const>>();
 
-  auto uiManager = std::make_shared<UIManager>();
+  auto uiManager = std::make_shared<UIManager>(
+      runtimeExecutor_,
+      schedulerToolbox.backgroundExecutor,
+      schedulerToolbox.garbageCollectionTrigger);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -80,9 +83,7 @@ Scheduler::Scheduler(
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
       eventDispatcher, schedulerToolbox.contextContainer);
 
-  uiManager->setBackgroundExecutor(schedulerToolbox.backgroundExecutor);
   uiManager->setDelegate(this);
-  uiManager->setRuntimeExecutor(runtimeExecutor_);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {

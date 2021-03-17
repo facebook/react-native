@@ -102,7 +102,7 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   BOOL _layoutAnimationsEnabled;
 }
 
-- (instancetype)initWithToolbox:(facebook::react::SchedulerToolbox)toolbox
+- (instancetype)initWithToolbox:(SchedulerToolbox)toolbox
 {
   if (self = [super init]) {
     auto reactNativeConfig =
