@@ -107,7 +107,11 @@ export type Props<SectionT> = {|
   ...OptionalProps<SectionT>,
   ...$Diff<
     VirtualizedListProps,
-    {renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>, ...},
+    {
+      renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>,
+      data: $PropertyType<VirtualizedListProps, 'data'>,
+      ...
+    },
   >,
 |};
 export type ScrollToLocationParamsType = {|
@@ -116,10 +120,6 @@ export type ScrollToLocationParamsType = {|
   sectionIndex: number,
   viewOffset?: number,
   viewPosition?: number,
-|};
-
-type DefaultProps = {|
-  data: $ReadOnlyArray<Item>,
 |};
 
 type State = {childProps: VirtualizedListProps, ...};
@@ -132,10 +132,6 @@ type State = {childProps: VirtualizedListProps, ...};
 class VirtualizedSectionList<
   SectionT: SectionBase<any>,
 > extends React.PureComponent<Props<SectionT>, State> {
-  static defaultProps: DefaultProps = {
-    data: [],
-  };
-
   scrollToLocation(params: ScrollToLocationParamsType) {
     let index = params.itemIndex;
     for (let i = 0; i < params.sectionIndex; i++) {

@@ -117,7 +117,6 @@ export type Props<SectionT> = {|
 |};
 
 const defaultProps = {
-  ...VirtualizedSectionList.defaultProps,
   stickySectionHeadersEnabled: Platform.OS === 'ios',
 };
 
