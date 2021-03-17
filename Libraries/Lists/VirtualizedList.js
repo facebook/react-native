@@ -206,7 +206,7 @@ type OptionalProps = {|
    * once, the better the fill rate, but responsiveness may suffer because rendering content may
    * interfere with responding to button taps or other interactions.
    */
-  maxToRenderPerBatch: number,
+  maxToRenderPerBatch?: ?number,
   /**
    * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
    * content.
@@ -305,7 +305,6 @@ type Props = {|
 
 type DefaultProps = {|
   keyExtractor: (item: Item, index: number) => string,
-  maxToRenderPerBatch: number,
   onEndReachedThreshold: number,
   scrollEventThrottle: number,
   updateCellsBatchingPeriod: number,
@@ -326,6 +325,10 @@ function horizontalOrDefault(horizontal: ?boolean) {
 
 function initialNumToRenderOrDefault(initialNumToRender: ?number) {
   return initialNumToRender ?? 10;
+}
+
+function maxToRenderPerBatchOrDefault(maxToRenderPerBatch: ?number) {
+  return maxToRenderPerBatch ?? 10;
 }
 
 /**
@@ -583,7 +586,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
       return String(index);
     },
-    maxToRenderPerBatch: 10,
     onEndReachedThreshold: 2, // multiples of length
     scrollEventThrottle: 50,
     updateCellsBatchingPeriod: 50,
@@ -769,7 +771,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State): State {
-    const {data, getItemCount, maxToRenderPerBatch} = newProps;
+    const {data, getItemCount} = newProps;
+    const maxToRenderPerBatch = maxToRenderPerBatchOrDefault(
+      newProps.maxToRenderPerBatch,
+    );
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.
     return {
@@ -1736,7 +1741,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             newState = computeWindowedRenderLimits(
               this.props.data,
               this.props.getItemCount,
-              this.props.maxToRenderPerBatch,
+              maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch),
               this.props.windowSize,
               state,
               this._getFrameMetricsApprox,
@@ -1751,7 +1756,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
            * an error found when Flow v0.63 was deployed. To see the error
            * delete this comment and run Flow. */
           distanceFromEnd < onEndReachedThreshold * visibleLength
-            ? this.props.maxToRenderPerBatch
+            ? maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch)
             : 0;
         newState = {
           first: 0,
