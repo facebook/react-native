@@ -22,7 +22,7 @@ const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
 import VirtualizedListInjection from './VirtualizedListInjection';
 
-const {computeWindowedRenderLimits} = require('./VirtualizeUtils');
+import {computeWindowedRenderLimits} from './VirtualizeUtils';
 
 import * as React from 'react';
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
@@ -1734,7 +1734,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           // we will trust the initialScrollIndex suggestion.
           if (!this.props.initialScrollIndex || this._scrollMetrics.offset) {
             newState = computeWindowedRenderLimits(
-              this.props,
+              this.props.data,
+              this.props.getItemCount,
+              this.props.maxToRenderPerBatch,
+              this.props.windowSize,
               state,
               this._getFrameMetricsApprox,
               this._scrollMetrics,
