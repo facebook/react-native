@@ -40,11 +40,24 @@ const styles = StyleSheet.create({
     fontSize: 13,
     padding: 4,
   },
+  touchable: {
+    backgroundColor: 'blue',
+    borderColor: 'red',
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    borderStyle: 'solid',
+  },
   image: {
     width: 20,
     height: 20,
     resizeMode: 'contain',
     marginRight: 10,
+  },
+  containerAlignCenter: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
   },
 });
 
@@ -239,37 +252,53 @@ class SelectionExample extends React.Component {
   };
 
   render() {
+    const {isSelected, isEnabled} = this.state;
     let accessibilityHint = 'click me to select';
-    if (this.state.isSelected) {
+    if (isSelected) {
       accessibilityHint = 'click me to unselect';
     }
-    if (!this.state.isEnabled) {
+    if (!isEnabled) {
       accessibilityHint = 'use the button on the right to enable selection';
     }
-    let buttonTitle = this.state.isEnabled
-      ? 'Disable selection'
-      : 'Enable selection';
-
+    let buttonTitle = isEnabled ? 'Disable selection' : 'Enable selection';
+    const touchableHint = ` (touching the TouchableOpacity will ${
+      isSelected ? 'disable' : 'enable'
+    } accessibilityState.selected)`;
     return (
-      <View style={{flex: 1, flexDirection: 'row'}}>
+      <View style={styles.containerAlignCenter}>
         <TouchableOpacity
           ref={this.selectableElement}
           accessible={true}
           onPress={() => {
-            if (this.state.isEnabled) {
+            if (isEnabled) {
               this.setState({
-                isSelected: !this.state.isSelected,
+                isSelected: !isSelected,
               });
+            } else {
+              console.warn('selection is disabled, please enable selection.');
             }
           }}
           accessibilityLabel="element 19"
           accessibilityState={{
-            selected: this.state.isSelected,
-            disabled: !this.state.isEnabled,
+            selected: isSelected,
+            disabled: !isEnabled,
           }}
+          style={styles.touchable}
           accessibilityHint={accessibilityHint}>
-          <Text>Selectable element example</Text>
+          <Text style={{color: 'white'}}>
+            {`Selectable TouchableOpacity Example ${touchableHint}`}
+          </Text>
         </TouchableOpacity>
+        <TextInput
+          accessibilityLabel="element 20"
+          accessibilityState={{
+            selected: isSelected,
+          }}
+          multiline={true}
+          placeholder={`TextInput Example - ${
+            isSelected ? 'enabled' : 'disabled'
+          } selection`}
+        />
         <Button
           onPress={() => {
             this.setState({
@@ -918,12 +947,6 @@ exports.examples = [
     title: 'Check if these properties are enabled',
     render(): React.Element<typeof EnabledExamples> {
       return <EnabledExamples />;
-    },
-  },
-  {
-    title: 'TextInput Announces Selected after selection',
-    render(): React.Element<typeof EnabledExamples> {
-      return <TextInputExamples />;
     },
   },
 ];
