@@ -96,3 +96,19 @@ describe('<TouchableHighlight disabled={true} accessibilityState={{disabled: fal
     );
   });
 });
+
+describe('<TouchableHighlight disabled={undefined} accessibilityState={{disabled: true}} />', () => {
+  it('should disable button when accessibilityState is disabled', () => {
+    expectRendersMatchingSnapshot(
+      'TouchableHighlight',
+      () => (
+        <TouchableHighlight accessibilityState={{disabled: true}}>
+          <View />
+        </TouchableHighlight>
+      ),
+      () => {
+        jest.dontMock('../TouchableHighlight');
+      },
+    );
+  });
+});

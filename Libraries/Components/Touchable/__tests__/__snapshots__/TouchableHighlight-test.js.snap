@@ -256,6 +256,72 @@ exports[`<TouchableHighlight disabled={true} accessibilityState={{disabled: fals
 </ForwardRef>
 `;
 
+exports[`<TouchableHighlight disabled={undefined} accessibilityState={{disabled: true}} /> should disable button when accessibilityState is disabled: should deep render when mocked (please verify output manually) 1`] = `
+<View
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  focusable={false}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
+exports[`<TouchableHighlight disabled={undefined} accessibilityState={{disabled: true}} /> should disable button when accessibilityState is disabled: should deep render when not mocked (please verify output manually) 1`] = `
+<View
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  focusable={false}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
+exports[`<TouchableHighlight disabled={undefined} accessibilityState={{disabled: true}} /> should disable button when accessibilityState is disabled: should shallow render as <TouchableHighlight /> when mocked 1`] = `
+<ForwardRef
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+>
+  <View />
+</ForwardRef>
+`;
+
+exports[`<TouchableHighlight disabled={undefined} accessibilityState={{disabled: true}} /> should disable button when accessibilityState is disabled: should shallow render as <TouchableHighlight /> when not mocked 1`] = `
+<ForwardRef
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+>
+  <View />
+</ForwardRef>
+`;
+
 exports[`TouchableHighlight renders correctly 1`] = `
 <View
   accessible={true}
