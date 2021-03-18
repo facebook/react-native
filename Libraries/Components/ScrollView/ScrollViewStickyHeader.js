@@ -22,7 +22,7 @@ import type {LayoutEvent} from '../../Types/CoreEventTypes';
 
 const AnimatedView = AnimatedImplementation.createAnimatedComponent(View);
 
-export type Props = {
+export type Props = $ReadOnly<{
   children?: React.Element<any>,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutEvent) => void,
@@ -34,8 +34,7 @@ export type Props = {
   scrollViewHeight: ?number,
   nativeID?: ?string,
   hiddenOnScroll?: ?boolean,
-  ...
-};
+}>;
 
 type State = {
   measured: boolean,
