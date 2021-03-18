@@ -103,37 +103,26 @@ describe('VirtualizedSectionList', () => {
 
   it('handles separators correctly', () => {
     const infos = [];
-    let component;
-    ReactTestRenderer.act(() => {
-      component = ReactTestRenderer.create(
-        <VirtualizedSectionList
-          ItemSeparatorComponent={props => <separator {...props} />}
-          sections={[
-            {title: 's0', data: [{key: 'i0'}, {key: 'i1'}, {key: 'i2'}]},
-          ]}
-          renderItem={info => {
-            infos.push(info);
-            return <item title={info.item.key} />;
-          }}
-          getItem={(data, key) => data[key]}
-          getItemCount={data => data.length}
-        />,
-      );
-    });
+    const component = ReactTestRenderer.create(
+      <VirtualizedSectionList
+        ItemSeparatorComponent={props => <separator {...props} />}
+        sections={[
+          {title: 's0', data: [{key: 'i0'}, {key: 'i1'}, {key: 'i2'}]},
+        ]}
+        renderItem={info => {
+          infos.push(info);
+          return <item title={info.item.key} />;
+        }}
+        getItem={(data, key) => data[key]}
+        getItemCount={data => data.length}
+      />,
+    );
     expect(component).toMatchSnapshot();
-
-    ReactTestRenderer.act(() => {
-      infos[1].separators.highlight();
-    });
+    infos[1].separators.highlight();
     expect(component).toMatchSnapshot();
-    ReactTestRenderer.act(() => {
-      infos[2].separators.updateProps('leading', {press: true});
-    });
+    infos[2].separators.updateProps('leading', {press: true});
     expect(component).toMatchSnapshot();
-    ReactTestRenderer.act(() => {
-      infos[1].separators.unhighlight();
-    });
-    expect(component).toMatchSnapshot();
+    infos[1].separators.unhighlight();
   });
 
   it('handles nested lists', () => {

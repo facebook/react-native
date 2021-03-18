@@ -44,6 +44,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
   getItemCount={[Function]}
   getItemLayout={[Function]}
   initialNumToRender={10}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -185,6 +186,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when partially in 
   getItemCount={[Function]}
   getItemLayout={[Function]}
   initialNumToRender={5}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -264,6 +266,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -294,6 +297,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
         getItem={[Function]}
         getItemCount={[Function]}
         horizontal={false}
+        keyExtractor={[Function]}
         onContentSizeChange={[Function]}
         onLayout={[Function]}
         onMomentumScrollBegin={[Function]}
@@ -341,6 +345,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
         getItem={[Function]}
         getItemCount={[Function]}
         horizontal={true}
+        keyExtractor={[Function]}
         onContentSizeChange={[Function]}
         onLayout={[Function]}
         onMomentumScrollBegin={[Function]}
@@ -408,6 +413,7 @@ exports[`VirtualizedList handles separators correctly 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -482,6 +488,7 @@ exports[`VirtualizedList handles separators correctly 2`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -556,6 +563,7 @@ exports[`VirtualizedList handles separators correctly 3`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -703,6 +711,7 @@ exports[`VirtualizedList keeps sticky headers realized after scrolled out of vie
   getItemCount={[Function]}
   getItemLayout={[Function]}
   initialNumToRender={1}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -891,6 +900,7 @@ exports[`VirtualizedList realizes sticky headers in viewport on batched render 1
   getItemCount={[Function]}
   getItemLayout={[Function]}
   initialNumToRender={1}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -1162,6 +1172,7 @@ exports[`VirtualizedList renders empty list 1`] = `
   data={Array []}
   getItem={[Function]}
   getItemCount={[Function]}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -1185,6 +1196,7 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
   data={Array []}
   getItem={[Function]}
   getItemCount={[Function]}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -1224,6 +1236,7 @@ exports[`VirtualizedList renders list with empty component 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -1252,6 +1265,7 @@ exports[`VirtualizedList renders null list 1`] = `
 <RCTScrollView
   getItem={[Function]}
   getItemCount={[Function]}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -1284,6 +1298,7 @@ exports[`VirtualizedList renders simple list 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -1342,6 +1357,7 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -1392,6 +1408,7 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
   }
   getItem={[Function]}
   getItemCount={[Function]}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -1428,6 +1445,7 @@ exports[`VirtualizedList warns if both renderItem or ListItemComponent are speci
   }
   getItem={[Function]}
   getItemCount={[Function]}
+  keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
