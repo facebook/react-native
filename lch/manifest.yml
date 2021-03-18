@@ -1,0 +1,29 @@
+applications:
+-  name: LCH
+   memory: 700MB
+   path: target/LCH-0.0.1-SNAPSHOT.war
+   buildpacks:
+   - java_buildpack
+   health-check-type: none
+   env:
+      SPRING_PROFILES_DEFAULT: cf
+      XSAPPNAME: LCH
+      TENANT_HOST_PATTERN: LCH- (.*). cfapps.eu10.hana.ondemand.com
+      SAP_JWT_TRUST_ACL: '[{"clientid":"*","identityzone":"*"}]'
+      xsuaa_connectivity_instance_name: uaa_UserDetail
+   destinations: |
+      [
+        {
+         "name":"lch_services",
+         "url" :"LCH.cfapps.eu10.hana.ondemand.com",
+         "forwardAuthToken": true},
+         {
+         "name":"lch_service_wf",
+         "url" :"LCH.cfapps.eu10.hana.ondemand.com"
+         }
+      ]
+   services:
+   - uaa_UserDetail
+   - jco_con
+   - jco_des
+   - lch_workflow

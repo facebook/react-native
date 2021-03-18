@@ -3,7 +3,8 @@
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <property name="context-root" value="lch"/>
-        <property name="java-output-path" value="/LCH-updated/target/classes"/>
+        <property name="java-output-path" value="/lch/target/classes"/>
     </wb-module>
 </project-modules>
