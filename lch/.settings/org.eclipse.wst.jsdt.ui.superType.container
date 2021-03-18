@@ -1,0 +1,1 @@
+org.eclipse.wst.jsdt.launching.baseBrowserLibrary
