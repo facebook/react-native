@@ -754,8 +754,10 @@ class SetAccessibilityFocusExample extends React.Component<{}> {
 
     const onClose = () => {
       if (myRef && myRef.current) {
-        const reactTag = findNodeHandle(myRef.current);
-        AccessibilityInfo.setAccessibilityFocus(reactTag);
+        AccessibilityInfo.sendAccessiblityEvent_unstable(
+          myRef.current,
+          'focus',
+        );
       }
     };
 
