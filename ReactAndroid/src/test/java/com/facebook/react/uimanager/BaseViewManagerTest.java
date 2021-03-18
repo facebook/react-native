@@ -74,5 +74,6 @@ public class BaseViewManagerTest {
     accessibilityState.putBoolean("selected", true);
     mViewManager.setViewState(mView, accessibilityState);
     assertThat(mView.getTag(R.id.accessibility_state)).isEqualTo(accessibilityState);
+    assertThat(mView.isSelected()).isEqualTo(true);
   }
 }
