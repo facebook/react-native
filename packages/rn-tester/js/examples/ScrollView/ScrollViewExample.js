@@ -83,53 +83,27 @@ exports.examples = ([
     },
   },
   {
+    name: 'horizontalScrollTo',
     title: '<ScrollView> (horizontal = true)\n',
     description:
       "You can display <ScrollView>'s child components horizontally rather than vertically",
     render: function(): React.Node {
-      function renderScrollView(
-        title: string,
-        additionalStyles: ViewStyleProp,
-      ) {
-        let _scrollView: ?React.ElementRef<typeof ScrollView>;
-        return (
-          <View style={additionalStyles}>
-            <Text style={styles.text}>{title}</Text>
-            <ScrollView
-              ref={scrollView => {
-                _scrollView = scrollView;
-              }}
-              automaticallyAdjustContentInsets={false}
-              horizontal={true}
-              style={[styles.scrollView, styles.horizontalScrollView]}>
-              {ITEMS.map(createItemRow)}
-            </ScrollView>
-            <Button
-              label="Scroll to start"
-              onPress={() => {
-                nullthrows(_scrollView).scrollTo({x: 0});
-              }}
-            />
-            <Button
-              label="Scroll to end"
-              onPress={() => {
-                nullthrows(_scrollView).scrollToEnd({animated: true});
-              }}
-            />
-            <Button
-              label="Flash scroll indicators"
-              onPress={() => {
-                nullthrows(_scrollView).flashScrollIndicators();
-              }}
-            />
-          </View>
-        );
-      }
-
       return (
         <View>
-          {renderScrollView('LTR layout', {direction: 'ltr'})}
-          {renderScrollView('RTL layout', {direction: 'rtl'})}
+          <HorizontalScrollView direction="ltr" />
+        </View>
+      );
+    },
+  },
+  {
+    name: 'horizontalScrollToRTL',
+    title: '<ScrollView> (horizontal = true) in RTL\n',
+    description:
+      "You can display <ScrollView>'s child components horizontally rather than vertically",
+    render: function(): React.Node {
+      return (
+        <View>
+          <HorizontalScrollView direction="rtl" />
         </View>
       );
     },
@@ -496,6 +470,39 @@ const AndroidScrollBarOptions = () => {
       <Button
         label={'persistentScrollBar: ' + persistentScrollBar.toString()}
         onPress={() => setPersistentScrollBar(!persistentScrollBar)}
+      />
+    </View>
+  );
+};
+
+const HorizontalScrollView = (props: {direction: 'ltr' | 'rtl'}) => {
+  const {direction} = props;
+  const scrollRef = React.useRef<?React.ElementRef<typeof ScrollView>>();
+  const title = direction === 'ltr' ? 'LTR Layout' : 'RTL Layout';
+  return (
+    <View style={{direction}}>
+      <Text style={styles.text}>{title}</Text>
+      <ScrollView
+        ref={scrollRef}
+        automaticallyAdjustContentInsets={false}
+        horizontal={true}
+        style={[styles.scrollView, styles.horizontalScrollView]}
+        testID={'scroll_horizontal'}>
+        {ITEMS.map(createItemRow)}
+      </ScrollView>
+      <Button
+        label="Scroll to start"
+        onPress={() => {
+          nullthrows(scrollRef.current).scrollTo({x: 0});
+        }}
+        testID={'scroll_to_start_button'}
+      />
+      <Button
+        label="Scroll to end"
+        onPress={() => {
+          nullthrows(scrollRef.current).scrollToEnd({animated: true});
+        }}
+        testID={'scroll_to_end_button'}
       />
     </View>
   );
