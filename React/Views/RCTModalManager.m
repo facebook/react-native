@@ -40,3 +40,12 @@ RCT_EXPORT_MODULE();
 }
 
 @end
+
+@implementation RCTBridge (RCTDevSettings)
+
+- (RCTModalManager *)modalManager
+{
+  return [self moduleForClass:[RCTModalManager class]];
+}
+
+@end

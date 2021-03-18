@@ -351,6 +351,7 @@ const JSTimers = {
     }
 
     if (errors) {
+      // $FlowFixMe[incompatible-use]
       const errorCount = errors.length;
       if (errorCount > 1) {
         // Throw all the other errors in a setTimeout, which will throw each
@@ -359,11 +360,13 @@ const JSTimers = {
           JSTimers.setTimeout(
             (error => {
               throw error;
+              // $FlowFixMe[incompatible-use]
             }).bind(null, errors[ii]),
             0,
           );
         }
       }
+      // $FlowFixMe[incompatible-use]
       throw errors[0];
     }
   },

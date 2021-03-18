@@ -215,7 +215,7 @@ class RawValue {
   }
 
   static int castValue(const folly::dynamic &dynamic, int *type) noexcept {
-    return dynamic.asInt();
+    return static_cast<int>(dynamic.asInt());
   }
 
   static int64_t castValue(
@@ -225,7 +225,7 @@ class RawValue {
   }
 
   static float castValue(const folly::dynamic &dynamic, float *type) noexcept {
-    return dynamic.asDouble();
+    return static_cast<float>(dynamic.asDouble());
   }
 
   static double castValue(

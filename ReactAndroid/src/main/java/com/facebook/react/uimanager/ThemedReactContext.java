@@ -56,8 +56,8 @@ public class ThemedReactContext extends ReactContext {
   }
 
   @Override
-  public void addLifecycleEventListenerAndCheckState(LifecycleEventListener listener) {
-    mReactApplicationContext.addLifecycleEventListenerAndCheckState(listener);
+  public void addLifecycleEventListener(LifecycleEventListener listener) {
+    mReactApplicationContext.addLifecycleEventListener(listener);
   }
 
   @Override

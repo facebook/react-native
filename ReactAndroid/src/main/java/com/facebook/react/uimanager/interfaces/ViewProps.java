@@ -81,6 +81,7 @@ public class ViewProps {
   // Props that affect more than just layout
   public static final String ENABLED = "enabled";
   public static final String BACKGROUND_COLOR = "backgroundColor";
+  public static final String FOREGROUND_COLOR = "foregroundColor";
   public static final String COLOR = "color";
   public static final String FONT_SIZE = "fontSize";
   public static final String FONT_WEIGHT = "fontWeight";

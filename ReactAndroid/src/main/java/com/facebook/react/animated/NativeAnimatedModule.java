@@ -163,7 +163,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
-      reactApplicationContext.addLifecycleEventListenerAndCheckState(this);
+      reactApplicationContext.addLifecycleEventListener(this);
     }
   }
 
@@ -893,7 +893,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
     ReactApplicationContext context = getReactApplicationContextIfActiveOrWarn();
     if (context != null) {
       context.removeLifecycleEventListener(this);

@@ -56,8 +56,18 @@ void TransactionTelemetry::willLayout() {
   layoutStartTime_ = telemetryTimePointNow();
 }
 
+void TransactionTelemetry::willMeasureText() {
+  react_native_assert(
+      lastTextMeasureStartTime_ == kTelemetryUndefinedTimePoint);
+  lastTextMeasureStartTime_ = telemetryTimePointNow();
+}
+
 void TransactionTelemetry::didMeasureText() {
   numberOfTextMeasurements_++;
+  react_native_assert(
+      lastTextMeasureStartTime_ != kTelemetryUndefinedTimePoint);
+  textMeasureTime_ += telemetryTimePointNow() - lastTextMeasureStartTime_;
+  lastTextMeasureStartTime_ = kTelemetryUndefinedTimePoint;
 }
 
 void TransactionTelemetry::didLayout() {
@@ -128,6 +138,10 @@ TelemetryTimePoint TransactionTelemetry::getMountEndTime() const {
   react_native_assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
   react_native_assert(mountEndTime_ != kTelemetryUndefinedTimePoint);
   return mountEndTime_;
+}
+
+TelemetryDuration TransactionTelemetry::getTextMeasureTime() const {
+  return textMeasureTime_;
 }
 
 int TransactionTelemetry::getNumberOfTextMeasurements() const {

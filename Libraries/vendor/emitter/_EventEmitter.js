@@ -97,8 +97,7 @@ class EventEmitter<EventDefinitions: {...}>
   }
 
   /**
-   * Removes a specific subscription. Called by the `remove()` method of the
-   * subscription itself to ensure any necessary cleanup is performed.
+   * @deprecated Use `remove` on the EventSubscription from `addListener`.
    */
   removeSubscription<K: $Keys<EventDefinitions>>(
     subscription: EmitterSubscription<EventDefinitions, K>,
@@ -160,23 +159,18 @@ class EventEmitter<EventDefinitions: {...}>
   }
 
   /**
-   * Removes the given listener for event of specific type.
-   *
-   * @param {string} eventType - Name of the event to emit
-   * @param {function} listener - Function to invoke when the specified event is
-   *   emitted
-   *
-   * @example
-   *   emitter.removeListener('someEvent', function(message) {
-   *     console.log(message);
-   *   }); // removes the listener if already registered
-   *
+   * @deprecated Use `remove` on the EventSubscription from `addListener`.
    */
   removeListener<K: $Keys<EventDefinitions>>(
     eventType: K,
     // FIXME: listeners should return void instead of mixed to prevent issues
     listener: (...$ElementType<EventDefinitions, K>) => mixed,
   ): void {
+    console.error(
+      `EventEmitter.removeListener('${eventType}', ...): Method has been ` +
+        'deprecated. Please instead use `remove()` on the subscription ' +
+        'returned by `EventEmitter.addListener`.',
+    );
     const subscriptions = this._subscriber.getSubscriptionsForType(eventType);
     if (subscriptions) {
       for (let i = 0, l = subscriptions.length; i < l; i++) {

@@ -28,6 +28,7 @@ class SurfaceTelemetry final {
    * Metrics
    */
   TelemetryDuration getLayoutTime() const;
+  TelemetryDuration getTextMeasureTime() const;
   TelemetryDuration getCommitTime() const;
   TelemetryDuration getDiffTime() const;
   TelemetryDuration getMountTime() const;
@@ -50,6 +51,7 @@ class SurfaceTelemetry final {
  private:
   TelemetryDuration layoutTime_{};
   TelemetryDuration commitTime_{};
+  TelemetryDuration textMeasureTime_{};
   TelemetryDuration diffTime_{};
   TelemetryDuration mountTime_{};
 

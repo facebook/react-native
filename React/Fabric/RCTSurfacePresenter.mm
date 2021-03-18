@@ -10,6 +10,7 @@
 #import <mutex>
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTConstants.h>
@@ -288,6 +289,16 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_background_executor_ios")) {
     toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
   }
+
+#ifdef REACT_NATIVE_DEBUG
+  RCTBridge *bridge = (RCTBridge *)unwrapManagedObjectWeakly(_contextContainer->at<std::shared_ptr<void>>("Bridge"));
+  toolbox.garbageCollectionTrigger = [bridge]() {
+    RCTCxxBridge *batchedBridge = (RCTCxxBridge *)([bridge batchedBridge] ?: bridge);
+    if ([batchedBridge respondsToSelector:@selector(forceGarbageCollection)]) {
+      [batchedBridge forceGarbageCollection];
+    }
+  };
+#endif
 
   toolbox.synchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
     auto runLoopObserver =

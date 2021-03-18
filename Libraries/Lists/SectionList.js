@@ -67,7 +67,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    * much more. Note these items will never be unmounted as part of the windowed rendering in order
    * to improve perceived performance of scroll-to-top actions.
    */
-  initialNumToRender: number,
+  initialNumToRender?: ?number,
   /**
    * Reverses the direction of scroll. Uses scale transforms of -1.
    */

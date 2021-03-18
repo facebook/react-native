@@ -62,6 +62,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/components/view:view"),
         react_native_xplat_target("react/renderer/mounting:mounting"),
         react_native_xplat_target("react/renderer/core:core"),
+        react_native_xplat_target("react/renderer/leakchecker:leakchecker"),
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("runtimeexecutor:runtimeexecutor"),

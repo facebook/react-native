@@ -176,7 +176,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher = eventDispatcher;
     mShouldDeallocateEventDispatcher = false;
     mEventBeatManager = eventBeatManager;
-    mReactApplicationContext.addLifecycleEventListenerAndCheckState(this);
+    mReactApplicationContext.addLifecycleEventListener(this);
   }
 
   public FabricUIManager(
@@ -189,7 +189,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher = new EventDispatcherImpl(reactContext);
     mShouldDeallocateEventDispatcher = true;
     mEventBeatManager = eventBeatManager;
-    mReactApplicationContext.addLifecycleEventListenerAndCheckState(this);
+    mReactApplicationContext.addLifecycleEventListener(this);
   }
 
   // TODO (T47819352): Rename this to startSurface for consistency with xplat/iOS
@@ -267,6 +267,39 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         I18nUtil.getInstance().isRTL(context),
         I18nUtil.getInstance().doLeftAndRightSwapInRTL(context));
     return rootTag;
+  }
+
+  public void startSurface(final View rootView, SurfaceHandler surfaceHandler) {
+    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+
+    Context context = rootView.getContext();
+    ThemedReactContext reactContext =
+        new ThemedReactContext(
+            mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
+    mMountingManager.startSurface(rootTag, rootView, reactContext);
+
+    surfaceHandler.setSurfaceId(rootTag);
+    if (surfaceHandler instanceof SurfaceHandlerBinding) {
+      mBinding.registerSurface((SurfaceHandlerBinding) surfaceHandler);
+    }
+    surfaceHandler.start();
+  }
+
+  public void stopSurface(SurfaceHandler surfaceHandler) {
+    if (!surfaceHandler.isRunning()) {
+      ReactSoftException.logSoftException(
+          FabricUIManager.TAG,
+          new IllegalStateException("Trying to stop surface that hasn't started yet"));
+      return;
+    }
+
+    mMountingManager.stopSurface(surfaceHandler.getSurfaceId());
+
+    surfaceHandler.stop();
+
+    if (surfaceHandler instanceof SurfaceHandlerBinding) {
+      mBinding.unregisterSurface((SurfaceHandlerBinding) surfaceHandler);
+    }
   }
 
   /** Method called when an event has been dispatched on the C++ side. */
@@ -1075,26 +1108,28 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int reactTag,
       final int initialReactTag,
       final boolean blockNativeResponder) {
-    addMountItem(
-        new MountItem() {
-          @Override
-          public void execute(MountingManager mountingManager) {
-            SurfaceMountingManager surfaceMountingManager =
-                mountingManager.getSurfaceManager(surfaceId);
-            if (surfaceMountingManager != null) {
-              surfaceMountingManager.setJSResponder(
-                  reactTag, initialReactTag, blockNativeResponder);
-            } else {
-              FLog.e(
-                  TAG, "setJSResponder skipped, surface no longer available [" + surfaceId + "]");
+    if (ReactFeatureFlags.enableJSResponder) {
+      addMountItem(
+          new MountItem() {
+            @Override
+            public void execute(MountingManager mountingManager) {
+              SurfaceMountingManager surfaceMountingManager =
+                  mountingManager.getSurfaceManager(surfaceId);
+              if (surfaceMountingManager != null) {
+                surfaceMountingManager.setJSResponder(
+                    reactTag, initialReactTag, blockNativeResponder);
+              } else {
+                FLog.e(
+                    TAG, "setJSResponder skipped, surface no longer available [" + surfaceId + "]");
+              }
             }
-          }
 
-          @Override
-          public int getSurfaceId() {
-            return surfaceId;
-          }
-        });
+            @Override
+            public int getSurfaceId() {
+              return surfaceId;
+            }
+          });
+    }
   }
 
   /**
@@ -1103,18 +1138,20 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    */
   @DoNotStrip
   public void clearJSResponder() {
-    addMountItem(
-        new MountItem() {
-          @Override
-          public void execute(MountingManager mountingManager) {
-            mountingManager.clearJSResponder();
-          }
+    if (ReactFeatureFlags.enableJSResponder) {
+      addMountItem(
+          new MountItem() {
+            @Override
+            public void execute(MountingManager mountingManager) {
+              mountingManager.clearJSResponder();
+            }
 
-          @Override
-          public int getSurfaceId() {
-            return View.NO_ID;
-          }
-        });
+            @Override
+            public int getSurfaceId() {
+              return View.NO_ID;
+            }
+          });
+    }
   }
 
   @Override
