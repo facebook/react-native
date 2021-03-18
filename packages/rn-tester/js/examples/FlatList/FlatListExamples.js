@@ -11,37 +11,32 @@
 import {
   Pressable,
   Button,
-  SectionList,
+  FlatList,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 
 import * as React from 'react';
-type SectionListProps = React.ElementProps<typeof SectionList>;
+type FlatListProps = React.ElementProps<typeof FlatList>;
 
-type ViewabilityConfig = $PropertyType<SectionListProps, 'viewabilityConfig'>;
+type ViewabilityConfig = $PropertyType<FlatListProps, 'viewabilityConfig'>;
 
 const DATA = [
-  {
-    title: 'Main dishes',
-    data: ['Pizza', 'Burger', 'Risotto'],
-  },
-  {
-    title: 'Sides',
-    data: ['French Fries', 'Onion Rings', 'Fried Shrimps'],
-  },
-  {
-    title: 'Drinks',
-    data: ['Water', 'Coke', 'Beer'],
-  },
-  {
-    title: 'Desserts',
-    data: ['Cheesecake', 'Ice Cream'],
-  },
+  'Pizza',
+  'Burger',
+  'Risotto',
+  'French Fries',
+  'Onion Rings',
+  'Fried Shrimps',
+  'Water',
+  'Coke',
+  'Beer',
+  'Cheesecake',
+  'Ice Cream',
 ];
 
-const Item = ({item, section, separators}) => {
+const Item = ({item, separators}) => {
   return (
     <Pressable
       onPressIn={() => {
@@ -66,15 +61,13 @@ const Item = ({item, section, separators}) => {
   );
 };
 
-const Separator = (defaultColor, highlightColor, isSectionSeparator) => ({
+const Separator = (defaultColor, highlightColor) => ({
   leadingItem,
   trailingItem,
   highlighted,
   hasBeenHighlighted,
 }) => {
-  const text = `${
-    isSectionSeparator ? 'Section ' : ''
-  }separator for leading ${leadingItem} and trailing ${trailingItem} has ${
+  const text = `Separator for leading ${leadingItem} and trailing ${trailingItem} has ${
     !hasBeenHighlighted ? 'not ' : ''
   }been pressed`;
 
@@ -89,7 +82,7 @@ const Separator = (defaultColor, highlightColor, isSectionSeparator) => ({
   );
 };
 
-export function SectionList_inverted(): React.Node {
+export function FlatList_inverted(): React.Node {
   const [output, setOutput] = React.useState('inverted false');
   const [exampleProps, setExampleProps] = React.useState({
     inverted: false,
@@ -103,7 +96,7 @@ export function SectionList_inverted(): React.Node {
   };
 
   return (
-    <SectionListExampleWithForwardedRef
+    <FlatListExampleWithForwardedRef
       exampleProps={exampleProps}
       testOutput={output}
       onTest={onTest}
@@ -112,7 +105,7 @@ export function SectionList_inverted(): React.Node {
   );
 }
 
-export function SectionList_contentInset(): React.Node {
+export function FlatList_contentInset(): React.Node {
   const [initialContentInset, toggledContentInset] = [44, 88];
 
   const [output, setOutput] = React.useState(
@@ -146,7 +139,7 @@ export function SectionList_contentInset(): React.Node {
         ]}>
         <Text style={styles.titleText}>Menu</Text>
       </View>
-      <SectionListExampleWithForwardedRef
+      <FlatListExampleWithForwardedRef
         exampleProps={exampleProps}
         testOutput={output}
         onTest={onTest}
@@ -155,37 +148,7 @@ export function SectionList_contentInset(): React.Node {
     </>
   );
 }
-
-export function SectionList_stickySectionHeadersEnabled(): React.Node {
-  const [output, setOutput] = React.useState(
-    'stickySectionHeadersEnabled false',
-  );
-  const [exampleProps, setExampleProps] = React.useState({
-    stickySectionHeadersEnabled: false,
-  });
-
-  const onTest = () => {
-    setExampleProps({
-      stickySectionHeadersEnabled: !exampleProps.stickySectionHeadersEnabled,
-    });
-    setOutput(
-      `stickySectionHeadersEnabled ${(!exampleProps.stickySectionHeadersEnabled).toString()}`,
-    );
-  };
-
-  return (
-    <SectionListExampleWithForwardedRef
-      exampleProps={exampleProps}
-      testOutput={output}
-      onTest={onTest}
-      testLabel={
-        exampleProps.stickySectionHeadersEnabled ? 'Sticky Off' : 'Sticky On'
-      }
-    />
-  );
-}
-
-export function SectionList_onEndReached(): React.Node {
+export function FlatList_onEndReached(): React.Node {
   const [output, setOutput] = React.useState('');
   const exampleProps = {
     onEndReached: info => setOutput('onEndReached'),
@@ -201,7 +164,7 @@ export function SectionList_onEndReached(): React.Node {
   };
 
   return (
-    <SectionListExampleWithForwardedRef
+    <FlatListExampleWithForwardedRef
       ref={ref}
       exampleProps={exampleProps}
       testOutput={output}
@@ -210,56 +173,59 @@ export function SectionList_onEndReached(): React.Node {
   );
 }
 
-export function SectionList_withSeparators(): React.Node {
+export function FlatList_withSeparators(): React.Node {
   const exampleProps = {
-    ItemSeparatorComponent: Separator('lightgreen', 'green', false),
-    SectionSeparatorComponent: Separator('lightblue', 'blue', true),
+    ItemSeparatorComponent: Separator('lightgreen', 'green'),
   };
   const ref = React.useRef(null);
 
   return (
-    <SectionListExampleWithForwardedRef ref={ref} exampleProps={exampleProps} />
+    <FlatListExampleWithForwardedRef ref={ref} exampleProps={exampleProps} />
   );
 }
 
-export function SectionList_onViewableItemsChanged(props: {
+export function FlatList_onViewableItemsChanged(props: {
   viewabilityConfig: ViewabilityConfig,
   offScreen?: ?boolean,
   horizontal?: ?boolean,
 }): React.Node {
   const {viewabilityConfig, offScreen, horizontal} = props;
   const [output, setOutput] = React.useState('');
-  const exampleProps = {
-    onViewableItemsChanged: info =>
+  const onViewableItemsChanged = React.useCallback(
+    info =>
       setOutput(
         info.viewableItems
           .filter(viewToken => viewToken.index != null && viewToken.isViewable)
           .map(viewToken => viewToken.item)
           .join(', '),
       ),
+    [setOutput],
+  );
+  const exampleProps = {
+    onViewableItemsChanged,
     viewabilityConfig,
     horizontal,
   };
 
   return (
-    <SectionListExampleWithForwardedRef
+    <FlatListExampleWithForwardedRef
       exampleProps={exampleProps}
       testOutput={output}>
       {offScreen === true ? <View style={styles.offScreen} /> : null}
-    </SectionListExampleWithForwardedRef>
+    </FlatListExampleWithForwardedRef>
   );
 }
 
 type Props = {
-  exampleProps: $Shape<React.ElementConfig<typeof SectionList>>,
+  exampleProps: $Shape<React.ElementConfig<typeof FlatList>>,
   onTest?: ?() => void,
   testLabel?: ?string,
   testOutput?: ?string,
   children?: ?React.Node,
 };
 
-const SectionListExampleWithForwardedRef = React.forwardRef(
-  (props: Props, ref): React.Node => {
+const FlatListExampleWithForwardedRef = React.forwardRef(
+  (props: Props, ref) => {
     return (
       <View style={styles.container}>
         {props.testOutput != null ? (
@@ -277,17 +243,14 @@ const SectionListExampleWithForwardedRef = React.forwardRef(
           </View>
         ) : null}
         {props.children}
-        <SectionList
+        <FlatList
+          {...props.exampleProps}
           ref={ref}
-          testID="section_list"
-          sections={DATA}
+          testID="flat_list"
+          data={DATA}
           keyExtractor={(item, index) => item + index}
           style={styles.list}
           renderItem={Item}
-          renderSectionHeader={({section: {title}}) => (
-            <Text style={styles.header}>{title}</Text>
-          )}
-          {...props.exampleProps}
         />
       </View>
     );
