@@ -22,7 +22,6 @@ const {
   Alert,
   StyleSheet,
   Platform,
-  findNodeHandle,
 } = require('react-native');
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
