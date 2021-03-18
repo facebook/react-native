@@ -224,8 +224,10 @@ export function SectionList_withSeparators(): React.Node {
 
 export function SectionList_onViewableItemsChanged(props: {
   viewabilityConfig: ViewabilityConfig,
+  offScreen?: ?boolean,
+  horizontal?: ?boolean,
 }): React.Node {
-  const {viewabilityConfig} = props;
+  const {viewabilityConfig, offScreen, horizontal} = props;
   const [output, setOutput] = React.useState('');
   const exampleProps = {
     onViewableItemsChanged: info =>
@@ -236,13 +238,15 @@ export function SectionList_onViewableItemsChanged(props: {
           .join(', '),
       ),
     viewabilityConfig,
+    horizontal,
   };
 
   return (
     <SectionListExampleWithForwardedRef
       exampleProps={exampleProps}
-      testOutput={output}
-    />
+      testOutput={output}>
+      {offScreen === true ? <View style={styles.offScreen} /> : null}
+    </SectionListExampleWithForwardedRef>
   );
 }
 
@@ -251,6 +255,7 @@ type Props = {
   onTest?: ?() => void,
   testLabel?: ?string,
   testOutput?: ?string,
+  children?: ?React.Node,
 };
 
 const SectionListExampleWithForwardedRef = React.forwardRef(
@@ -274,6 +279,7 @@ const SectionListExampleWithForwardedRef = React.forwardRef(
             ) : null}
           </View>
         ) : null}
+        {props.children}
         <SectionList
           ref={ref}
           testID="section_list"
@@ -340,4 +346,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {flex: 1},
+  offScreen: {
+    height: 1000,
+  },
 });
