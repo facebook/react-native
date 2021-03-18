@@ -740,6 +740,16 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
 
   componentDidMount() {
     AccessibilityInfo.addEventListener(
+      'highContrastChanged',
+      this._handleHighContrastToggled,
+    );
+    AccessibilityInfo.isHighContrastEnabled().done(isEnabled => {
+      this.setState({
+        highContrastEnabled: isEnabled,
+      });
+    });
+
+    AccessibilityInfo.addEventListener(
       'invertColorsChanged',
       this._handleInvertColorsToggled,
     );
@@ -772,6 +782,10 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
 
   componentWillUnmount() {
     AccessibilityInfo.removeEventListener(
+      'highContrastChanged',
+      this._handleHighContrastToggled,
+    );
+    AccessibilityInfo.removeEventListener(
       'invertColorsChanged',
       this._handleInvertColorsToggled,
     );
@@ -784,6 +798,12 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
       this._handleReduceTransparencyToggled,
     );
   }
+
+  _handleHighContrastToggled = isEnabled => {
+    this.setState({
+      highContrastEnabled: isEnabled,
+    });
+  };
 
   _handleInvertColorsToggled = isEnabled => {
     this.setState({
@@ -806,6 +826,12 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
   render() {
     return (
       <View>
+        <View>
+          <Text>
+            High contrast is{' '}
+            {this.state.highContrastEnabled ? 'enabled' : 'disabled'}.
+          </Text>
+        </View>
         <View>
           <Text>
             Invert colors is{' '}

@@ -18,6 +18,7 @@ const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter'
 import NativeAccessibilityManager from './NativeAccessibilityManager';
 
 const CHANGE_EVENT_NAME = {
+  highContrastChanged: 'highContrastChanged',
   invertColorsChanged: 'invertColorsChanged',
   reduceMotionChanged: 'reduceMotionChanged',
   reduceTransparencyChanged: 'reduceTransparencyChanged',
@@ -26,6 +27,7 @@ const CHANGE_EVENT_NAME = {
 
 type ChangeEventName = $Keys<{
   change: string,
+  highContrastChanged: string,
   invertColorsChanged: string,
   reduceMotionChanged: string,
   reduceTransparencyChanged: string,
@@ -56,6 +58,22 @@ const AccessibilityInfo = {
    */
   isGrayscaleEnabled: function(): Promise<boolean> {
     return Promise.resolve(false);
+  },
+
+  /**
+   * Query whether high contrast is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when invert color is enabled and `false` otherwise.
+   */
+  isHighContrastEnabled: function(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentHighContrastState(resolve, reject);
+      } else {
+        reject(reject);
+      }
+    });
   },
 
   /**

@@ -22,6 +22,12 @@ export interface Spec extends TurboModule {
     onSuccess: (isGrayscaleEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
+  // [TODO(macOS ISS#2323203)
+  +getCurrentHighContrastState: (
+    onSuccess: (isHighContrastEnabled: boolean) => void,
+    onError: (error: Object) => void,
+  ) => void;
+  // ]TODO(macOS ISS#2323203)
   +getCurrentInvertColorsState: (
     onSuccess: (isInvertColorsEnabled: boolean) => void,
     onError: (error: Object) => void,

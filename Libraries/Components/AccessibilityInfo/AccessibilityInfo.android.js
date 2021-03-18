@@ -53,6 +53,13 @@ const AccessibilityInfo = {
   },
 
   /**
+   * macOS only
+   */
+  isHighContrastEnabled: function(): Promise<boolean> {
+    return Promise.resolve(false);
+  },
+
+  /**
    * iOS only
    */
   isInvertColorsEnabled: function(): Promise<boolean> {
