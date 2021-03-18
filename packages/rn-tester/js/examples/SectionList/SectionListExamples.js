@@ -16,7 +16,11 @@ import {
   Text,
   View,
 } from 'react-native';
+
 import * as React from 'react';
+type SectionListProps = React.ElementProps<typeof SectionList>;
+
+type ViewabilityConfig = $PropertyType<SectionListProps, 'viewabilityConfig'>;
 
 const DATA = [
   {
@@ -36,12 +40,6 @@ const DATA = [
     data: ['Cheesecake', 'Ice Cream'],
   },
 ];
-
-const VIEWABILITY_CONFIG = {
-  minimumViewTime: 1000,
-  viewAreaCoveragePercentThreshold: 100,
-  waitForInteraction: true,
-};
 
 const Item = ({item, section, separators}) => {
   return (
@@ -224,7 +222,10 @@ export function SectionList_withSeparators(): React.Node {
   );
 }
 
-export function SectionList_onViewableItemsChanged(): React.Node {
+export function SectionList_onViewableItemsChanged(props: {
+  viewabilityConfig: ViewabilityConfig,
+}): React.Node {
+  const {viewabilityConfig} = props;
   const [output, setOutput] = React.useState('');
   const exampleProps = {
     onViewableItemsChanged: info =>
@@ -234,7 +235,7 @@ export function SectionList_onViewableItemsChanged(): React.Node {
           .map(viewToken => viewToken.item)
           .join(', '),
       ),
-    viewabilityConfig: VIEWABILITY_CONFIG,
+    viewabilityConfig,
   };
 
   return (
@@ -258,7 +259,7 @@ const SectionListExampleWithForwardedRef = React.forwardRef(
     ref: ?React.ElementRef<typeof SectionListExampleWithForwardedRef>,
   ): React.Node {
     return (
-      <View>
+      <View style={styles.container}>
         {props.testOutput != null ? (
           <View testID="test_container" style={styles.testContainer}>
             <Text numberOfLines={1} testID="output">
@@ -278,6 +279,7 @@ const SectionListExampleWithForwardedRef = React.forwardRef(
           testID="section_list"
           sections={DATA}
           keyExtractor={(item, index) => item + index}
+          style={styles.list}
           renderItem={Item}
           renderSectionHeader={({section: {title}}) => (
             <Text style={styles.header}>{title}</Text>
@@ -323,6 +325,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f2f2f7ff',
     padding: 4,
+    height: 40,
   },
   output: {
     fontSize: 12,
@@ -333,4 +336,8 @@ const styles = StyleSheet.create({
   separtorText: {
     fontSize: 10,
   },
+  list: {
+    flex: 1,
+  },
+  container: {flex: 1},
 });
