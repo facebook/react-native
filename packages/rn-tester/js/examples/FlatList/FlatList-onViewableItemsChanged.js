@@ -9,7 +9,7 @@
  */
 
 'use strict';
-import {SectionList_onViewableItemsChanged} from './SectionListExamples';
+import {FlatList_onViewableItemsChanged} from './FlatListExamples';
 const React = require('react');
 
 const VIEWABILITY_CONFIG = {
@@ -18,7 +18,7 @@ const VIEWABILITY_CONFIG = {
   waitForInteraction: true,
 };
 
-exports.title = 'SectionList onViewableItemsChanged';
+exports.title = 'FlatList onViewableItemsChanged';
 exports.testTitle = 'Test onViewableItemsChanged callback';
 exports.category = 'ListView';
 exports.documentationURL = 'https://reactnative.dev/docs/sectionlist';
@@ -26,12 +26,10 @@ exports.description =
   'Scroll list to see what items are returned in `onViewableItemsChanged` callback.';
 exports.examples = [
   {
-    title: 'SectionList onViewableItemsChanged',
-    render: function(): React.Element<
-      typeof SectionList_onViewableItemsChanged,
-    > {
+    title: 'FlatList onViewableItemsChanged',
+    render: function(): React.Element<typeof FlatList_onViewableItemsChanged> {
       return (
-        <SectionList_onViewableItemsChanged
+        <FlatList_onViewableItemsChanged
           viewabilityConfig={VIEWABILITY_CONFIG}
         />
       );
