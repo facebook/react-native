@@ -12,14 +12,7 @@
 
 const RNTesterButton = require('../../components/RNTesterButton');
 const React = require('react');
-const {
-  Animated,
-  Easing,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} = require('react-native');
+const {Animated, Easing, StyleSheet, Text, View} = require('react-native');
 
 import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
 
@@ -90,17 +83,11 @@ exports.examples = ([
       }
 
       type Props = $ReadOnly<{||}>;
-      type State = {|
-        disabled: boolean,
-        pressCount: number,
-        show: boolean,
-      |};
+      type State = {|show: boolean|};
       class FadeInExample extends React.Component<Props, State> {
         constructor(props: Props) {
           super(props);
           this.state = {
-            disabled: true,
-            pressCount: 0,
             show: true,
           };
         }
@@ -110,35 +97,15 @@ exports.examples = ([
               <RNTesterButton
                 testID="toggle-button"
                 onPress={() => {
-                  this.setState(state => ({pressCount: 0, show: !state.show}));
+                  this.setState(state => ({show: !state.show}));
                 }}>
                 Press to {this.state.show ? 'Hide' : 'Show'}
               </RNTesterButton>
-              <RNTesterButton
-                testID="toggle-pressable"
-                onPress={() => {
-                  this.setState(state => ({disabled: !state.disabled}));
-                }}>
-                Press to {this.state.disabled ? 'Enable' : 'Disable'}
-              </RNTesterButton>
               {this.state.show && (
                 <FadeInView>
-                  <Pressable
-                    testID="fade-in-view"
-                    style={styles.content}
-                    disabled={this.state.disabled}
-                    onPress={() => {
-                      this.setState(state => ({
-                        pressCount: this.state.pressCount + 1,
-                      }));
-                    }}>
-                    <Text>
-                      FadeInView
-                      {this.state.disabled
-                        ? ''
-                        : ` Pressable: ${this.state.pressCount}`}
-                    </Text>
-                  </Pressable>
+                  <View testID="fade-in-view" style={styles.content}>
+                    <Text>FadeInView</Text>
+                  </View>
                 </FadeInView>
               )}
             </View>

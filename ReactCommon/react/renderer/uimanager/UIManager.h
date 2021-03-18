@@ -16,6 +16,7 @@
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/StateData.h>
+#include <react/renderer/leakchecker/LeakChecker.h>
 #include <react/renderer/mounting/ShadowTree.h>
 #include <react/renderer/mounting/ShadowTreeDelegate.h>
 #include <react/renderer/mounting/ShadowTreeRegistry.h>
@@ -31,6 +32,11 @@ class UIManagerCommitHook;
 
 class UIManager final : public ShadowTreeDelegate {
  public:
+  UIManager(
+      RuntimeExecutor const &runtimeExecutor,
+      BackgroundExecutor const &backgroundExecutor,
+      GarbageCollectionTrigger const &garbageCollectionTrigger);
+
   ~UIManager();
 
   void setComponentDescriptorRegistry(
@@ -43,10 +49,6 @@ class UIManager final : public ShadowTreeDelegate {
    */
   void setDelegate(UIManagerDelegate *delegate);
   UIManagerDelegate *getDelegate();
-
-  void setRuntimeExecutor(RuntimeExecutor const &runtimeExecutor);
-
-  void setBackgroundExecutor(BackgroundExecutor const &backgroundExecutor);
 
   /**
    * Sets and gets the UIManager's Animation APIs delegate.
@@ -90,7 +92,7 @@ class UIManager final : public ShadowTreeDelegate {
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext) const;
 
-  void stopSurface(SurfaceId surfaceId) const;
+  ShadowTree::Unique stopSurface(SurfaceId surfaceId) const;
 
 #pragma mark - ShadowTreeDelegate
 
@@ -131,7 +133,8 @@ class UIManager final : public ShadowTreeDelegate {
 
   void setIsJSResponder(
       ShadowNode::Shared const &shadowNode,
-      bool isJSResponder) const;
+      bool isJSResponder,
+      bool blockNativeResponder) const;
 
   ShadowNode::Shared findNodeAtPoint(
       ShadowNode::Shared const &shadowNode,
@@ -178,14 +181,16 @@ class UIManager final : public ShadowTreeDelegate {
   UIManagerDelegate *delegate_;
   UIManagerAnimationDelegate *animationDelegate_{nullptr};
   UIManagerBinding *uiManagerBinding_;
-  RuntimeExecutor runtimeExecutor_{};
+  RuntimeExecutor const runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
-  BackgroundExecutor backgroundExecutor_{};
+  BackgroundExecutor const backgroundExecutor_{};
 
   mutable better::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook const *> commitHooks_;
 
   bool extractUIManagerBindingOnDemand_{};
+
+  std::unique_ptr<LeakChecker> leakChecker_;
 };
 
 } // namespace react

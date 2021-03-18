@@ -82,13 +82,22 @@ void SurfaceHandler::start() const noexcept {
 }
 
 void SurfaceHandler::stop() const noexcept {
-  std::unique_lock<better::shared_mutex> lock(linkMutex_);
-  react_native_assert(
-      link_.status == Status::Running && "Surface must be running.");
+  auto shadowTree = ShadowTree::Unique{};
+  {
+    std::unique_lock<better::shared_mutex> lock(linkMutex_);
+    react_native_assert(
+        link_.status == Status::Running && "Surface must be running.");
 
-  link_.status = Status::Registered;
-  link_.shadowTree = nullptr;
-  link_.uiManager->stopSurface(parameters_.surfaceId);
+    link_.status = Status::Registered;
+    link_.shadowTree = nullptr;
+    shadowTree = link_.uiManager->stopSurface(parameters_.surfaceId);
+  }
+
+  // As part of stopping a Surface, we need to properly destroy all
+  // mounted views, so we need to commit an empty tree to trigger all
+  // side-effects (including destroying and removing mounted views).
+  react_native_assert(shadowTree && "`shadowTree` must not be null.");
+  shadowTree->commitEmptyTree();
 }
 
 void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {

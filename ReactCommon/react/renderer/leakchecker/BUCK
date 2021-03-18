@@ -14,13 +14,13 @@ load(
 APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
 rn_xplat_cxx_library(
-    name = "componentregistry",
+    name = "leakchecker",
     srcs = glob(
-        ["*.cpp"],
+        ["**/*.cpp"],
         exclude = glob(["tests/**/*.cpp"]),
     ),
     headers = glob(
-        ["*.h"],
+        ["**/*.h"],
         exclude = glob(["tests/**/*.h"]),
     ),
     header_namespace = "",
@@ -28,7 +28,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "react/renderer/componentregistry",
+        prefix = "react/renderer/leakchecker",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -48,16 +48,7 @@ rn_xplat_cxx_library(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        "//third-party/glog:glog",
-        "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only",
-        "//xplat/folly:memory",
-        "//xplat/folly:molly",
-        "//xplat/jsi:JSIDynamic",
-        "//xplat/jsi:jsi",
-        react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/renderer/core:core"),
-        react_native_xplat_target("react/renderer/debug:debug"),
-        react_native_xplat_target("react/utils:utils"),
+        react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
     ],
 )

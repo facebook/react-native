@@ -19,6 +19,26 @@
 namespace facebook {
 namespace react {
 
+static std::unique_ptr<LeakChecker> constructLeakChecker(
+    RuntimeExecutor const &runtimeExecutor,
+    GarbageCollectionTrigger const &garbageCollectionTrigger) {
+  if (garbageCollectionTrigger) {
+    return std::make_unique<LeakChecker>(
+        runtimeExecutor, garbageCollectionTrigger);
+  } else {
+    return {};
+  }
+}
+
+UIManager::UIManager(
+    RuntimeExecutor const &runtimeExecutor,
+    BackgroundExecutor const &backgroundExecutor,
+    GarbageCollectionTrigger const &garbageCollectionTrigger)
+    : runtimeExecutor_(runtimeExecutor),
+      backgroundExecutor_(backgroundExecutor),
+      leakChecker_(
+          constructLeakChecker(runtimeExecutor, garbageCollectionTrigger)) {}
+
 UIManager::~UIManager() {
   LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
                << ").";
@@ -59,6 +79,9 @@ SharedShadowNode UIManager::createNode(
 
   if (delegate_) {
     delegate_->uiManagerDidCreateShadowNode(shadowNode);
+  }
+  if (leakChecker_) {
+    leakChecker_->uiManagerDidCreateShadowNodeFamily(family);
   }
 
   return shadowNode;
@@ -115,9 +138,11 @@ void UIManager::completeSurface(
 
 void UIManager::setIsJSResponder(
     ShadowNode::Shared const &shadowNode,
-    bool isJSResponder) const {
+    bool isJSResponder,
+    bool blockNativeResponder) const {
   if (delegate_) {
-    delegate_->uiManagerDidSetIsJSResponder(shadowNode, isJSResponder);
+    delegate_->uiManagerDidSetIsJSResponder(
+        shadowNode, isJSResponder, blockNativeResponder);
   }
 }
 
@@ -146,7 +171,7 @@ ShadowTree const &UIManager::startSurface(
   return *shadowTreePointer;
 }
 
-void UIManager::stopSurface(SurfaceId surfaceId) const {
+ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("UIManager::stopSurface");
 
   // Stop any ongoing animations.
@@ -155,13 +180,6 @@ void UIManager::stopSurface(SurfaceId surfaceId) const {
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.
   auto shadowTree = getShadowTreeRegistry().remove(surfaceId);
-
-  // As part of stopping a Surface, we need to properly destroy all
-  // mounted views, so we need to commit an empty tree to trigger all
-  // side-effects (including destroying and removing mounted views).
-  if (shadowTree) {
-    shadowTree->commitEmptyTree();
-  }
 
   // We execute JavaScript/React part of the process at the very end to minimize
   // any visible side-effects of stopping the Surface. Any possible commits from
@@ -175,6 +193,12 @@ void UIManager::stopSurface(SurfaceId surfaceId) const {
 
     uiManagerBinding->stopSurface(runtime, surfaceId);
   });
+
+  if (leakChecker_) {
+    leakChecker_->stopSurface(surfaceId);
+  }
+
+  return shadowTree;
 }
 
 ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
@@ -322,15 +346,6 @@ void UIManager::setDelegate(UIManagerDelegate *delegate) {
 
 UIManagerDelegate *UIManager::getDelegate() {
   return delegate_;
-}
-
-void UIManager::setBackgroundExecutor(
-    BackgroundExecutor const &backgroundExecutor) {
-  backgroundExecutor_ = backgroundExecutor;
-}
-
-void UIManager::setRuntimeExecutor(RuntimeExecutor const &runtimeExecutor) {
-  runtimeExecutor_ = runtimeExecutor;
 }
 
 void UIManager::visitBinding(

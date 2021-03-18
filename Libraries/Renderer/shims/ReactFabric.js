@@ -6,7 +6,10 @@
  *
  * @format
  * @flow
+ * @generated SignedSource<<10abcc819e7817b4fb0aa307d047a19e>>
  */
+
+'use strict';
 
 import {BatchedBridge} from 'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface';
 

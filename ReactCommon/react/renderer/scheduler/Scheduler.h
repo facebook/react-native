@@ -94,7 +94,8 @@ class Scheduler final : public UIManagerDelegate {
       std::string const &eventType) override;
   void uiManagerDidSetIsJSResponder(
       ShadowNode::Shared const &shadowView,
-      bool isJSResponder) override;
+      bool isJSResponder,
+      bool blockNativeResponder) override;
 
  private:
   friend class SurfaceHandler;

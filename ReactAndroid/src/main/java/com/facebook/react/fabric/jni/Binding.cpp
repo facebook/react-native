@@ -618,8 +618,7 @@ void Binding::schedulerDidFinishTransaction(
     auto &mutationType = mutation.type;
     auto &index = mutation.index;
 
-    bool isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
-        oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
+    bool isVirtual = mutation.mutatedViewIsVirtual();
 
     switch (mutationType) {
       case ShadowViewMutation::Create: {
@@ -1190,7 +1189,8 @@ void Binding::schedulerDidSendAccessibilityEvent(
 
 void Binding::schedulerDidSetIsJSResponder(
     ShadowView const &shadowView,
-    bool isJSResponder) {
+    bool isJSResponder,
+    bool blockNativeResponder) {
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
     LOG(ERROR) << "Binding::schedulerSetJSResponder: JavaUIManager disappeared";
@@ -1215,7 +1215,7 @@ void Binding::schedulerDidSetIsJSResponder(
         // be flattened because the only component that uses this feature -
         // ScrollView - cannot be flattened.
         shadowView.tag,
-        (jboolean) true);
+        (jboolean)blockNativeResponder);
   } else {
     clearJSResponder(localJavaUIManager);
   }

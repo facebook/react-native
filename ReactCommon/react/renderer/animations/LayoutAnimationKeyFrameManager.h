@@ -226,8 +226,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable std::vector<SurfaceId> surfaceIdsToStop_{};
 
  protected:
-  bool mutatedViewIsVirtual(ShadowViewMutation const &mutation) const;
-
   bool hasComponentDescriptorForShadowView(ShadowView const &shadowView) const;
   ComponentDescriptor const &getComponentDescriptorForShadowView(
       ShadowView const &shadowView) const;
