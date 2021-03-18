@@ -36,6 +36,9 @@ public class PremiumFreightOrdersController
 	@RequestMapping(value = "/getAllPremiumOrders", method = RequestMethod.POST, consumes = { "application/json" })
 	@ResponseBody
 	public List<PremiumFreightOrderDto> getAllPremiumFreightOrders(@RequestBody PremiumRequestDto premiumRequestDto) {
+		System.out.println("HEY");
+		System.out.println(premiumRequestDto.getOriginName());
+		System.out.println(premiumRequestDto.getDestinationName());
 		return premiumFreightOrdersService.getAllPremiumFreightOrders(premiumRequestDto);
 	}
 
@@ -118,9 +121,10 @@ public class PremiumFreightOrdersController
 		return premiumFreightApprovalRuleDao.saveApproval(ruleList);
 	}
 
-	@RequestMapping(value="/addCarrier", method = RequestMethod.POST)
-	public String addCarrier(CarrierDetailsDto carrierdto)
+	@RequestMapping(value="/addCarrier", method = RequestMethod.POST, consumes={"application/json"})
+	public String addCarrier(@RequestBody CarrierDetailsDto carrierdto)
 	{
+		System.out.println(carrierdto.getBpNumber());
 		return premiumFreightOrdersService.addCarrier(carrierdto);
 	}
 

@@ -11,6 +11,8 @@ public class PremiumRequestDto
 	private String partNo;
 	private String plannerEmail;
 	private String status;
+	private String OriginName;
+	private String DestinationName;
 	
 	public String getAdhocOrderId() {
 		return adhocOrderId;
@@ -54,7 +56,20 @@ public class PremiumRequestDto
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public String getOriginName() {
+		return OriginName;
+	}
+	public void setOriginName(String originName) {
+		OriginName = originName;
+	}
+	public String getDestinationName() {
+		return DestinationName;
+	}
+	public void setDestinationName(String destinationName) {
+		DestinationName = destinationName;
+	}
 	
 	
 
+	
 }

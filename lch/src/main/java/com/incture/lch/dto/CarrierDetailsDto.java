@@ -8,6 +8,8 @@ public class CarrierDetailsDto
 	private String carrierDetails;
 	private String carrierMode;
 	private String carrierRatePerKM;
+	
+	
 	public String getId() {
 		return id;
 	}
@@ -44,6 +46,7 @@ public class CarrierDetailsDto
 	public void setCarrierRatePerKM(String carrierRatePerKM) {
 		this.carrierRatePerKM = carrierRatePerKM;
 	}
+	
 	
 	
 

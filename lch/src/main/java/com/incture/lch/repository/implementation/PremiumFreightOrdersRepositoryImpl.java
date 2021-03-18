@@ -90,86 +90,59 @@ public class PremiumFreightOrdersRepositoryImpl implements PremiumFreightOrdersR
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public List<PremiumFreightOrderDto> getAllPremiumFreightOrders(PremiumRequestDto premiumRequestDto) {
-		StringBuilder queryString = new StringBuilder();
 		List<PremiumFreightOrderDto> premiumFreightOrderDtos = new ArrayList<>();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 
-		// Querying A/T the details
-		// queryString.append("SELECT ao from AdhocOrders ao WHERE
-		// ao.premiumFreight=true");
 
 		Criteria criteria = session.createCriteria(AdhocOrders.class);
-		System.out.println(criteria.list().size());
+		//System.out.println(criteria.list().size());
 
 		criteria.add(Restrictions.eq("premiumFreight", "true"));
 
-		System.out.println(criteria.list().size());
+		//System.out.println(criteria.list().size());
 		if (premiumRequestDto.getAdhocOrderId() != null && !(premiumRequestDto.getAdhocOrderId().equals(""))) {
-			// queryString.append(" AND ao.fwoNum=:fwoNum");
 			criteria.add(Restrictions.eq("adhocOrderId", premiumRequestDto.getAdhocOrderId()));
 
 		}
 		if ((premiumRequestDto.getFromDate() != null && !(premiumRequestDto.getFromDate().equals("")))
 				&& (premiumRequestDto.getToDate() != null) && !(premiumRequestDto.getToDate().equals(""))) {
-			// queryString.append(" AND ao.createdDate BETWEEN :fromDate AND
-			// :toDate");
 			criteria.add(Restrictions.between("createdDate", premiumRequestDto.getFromDate(),
 					premiumRequestDto.getToDate()));
 
 		}
 		if (premiumRequestDto.getPlannerEmail() != null && !(premiumRequestDto.getPlannerEmail().equals(""))) {
-			// queryString.append(" AND ao.plannerEmail=:plannerEmail");
+			
+			//System.out.println(premiumRequestDto.getPlannerEmail());
 			criteria.add(Restrictions.eq("plannerEmail", premiumRequestDto.getPlannerEmail()));
+			//System.out.println(premiumRequestDto.getOriginName());
+
 
 		}
 		if (premiumRequestDto.getPartNo() != null && !(premiumRequestDto.getPartNo().equals(""))) {
-			// queryString.append(" AND ao.partNum=:partNum");
 			criteria.add(Restrictions.eq("partNo", premiumRequestDto.getPartNo()));
 
 		}
 		if (premiumRequestDto.getStatus() != null && !(premiumRequestDto.getStatus().equals(""))) {
-			// queryString.append("AND ao.status=:status");
 			criteria.add(Restrictions.eq("status", premiumRequestDto.getStatus()));
 		}
 
-		/*
-		 * queryString.append(" ORDER BY ao.createdDate DESC"); Query query =
-		 * session.createQuery(queryString.toString());
-		 * 
-		 * if (premiumRequestDto.getAdhocOrderId() != null &&
-		 * !(premiumRequestDto.getAdhocOrderId().equals(""))) {
-		 * query.setParameter("fwoNum", premiumRequestDto.getAdhocOrderId()); }
-		 * if ((premiumRequestDto.getFromDate() != null &&
-		 * !(premiumRequestDto.getFromDate().equals(""))) &&
-		 * (premiumRequestDto.getToDate() != null) &&
-		 * !(premiumRequestDto.getToDate().equals(""))) { SimpleDateFormat sdf =
-		 * new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); try { Date d1 = (Date)
-		 * sdf.parse(premiumRequestDto.getFromDate()); Date d2 = (Date)
-		 * sdf.parse(premiumRequestDto.getToDate());
-		 * query.setParameter("fromDate", d1); query.setParameter("toDate", d2);
-		 * } catch (ParseException e) { //
-		 * Logger.error("Exception On Date format:" + e.getMessage()); }
-		 * 
-		 * } if (premiumRequestDto.getPlannerEmail() != null &&
-		 * !(premiumRequestDto.getPlannerEmail().equals(""))) {
-		 * query.setParameter("plannerEmail",
-		 * premiumRequestDto.getPlannerEmail()); } if
-		 * (premiumRequestDto.getPartNo() != null &&
-		 * !(premiumRequestDto.getPartNo().equals(""))) {
-		 * query.setParameter("partNum", premiumRequestDto.getPartNo()); }
-		 * if(premiumRequestDto.getStatus()!=null &&
-		 * !(premiumRequestDto.getStatus().equals(""))) {
-		 * query.setParameter("status", premiumRequestDto.getStatus()); }
-		 * 
-		 * //List<AdhocOrders> adhocOrders = query.list();
-		 */
+		if(premiumRequestDto.getOriginName() != null && !(premiumRequestDto.getOriginName().equals("")))
+		{
+			//System.out.println(premiumRequestDto.getOriginName());
+			criteria.add(Restrictions.eq("shipperName", premiumRequestDto.getOriginName()));
+		}
+		
+		if(premiumRequestDto.getDestinationName() != null && !(premiumRequestDto.getDestinationName().equals("")))
+		{
+			criteria.add(Restrictions.eq("DestinationName", premiumRequestDto.getDestinationName()));
+		}
+		
 		List<AdhocOrders> adhocOrders = criteria.list();
 		System.out.println(adhocOrders.size());
 		for (AdhocOrders adOrders : adhocOrders) {
 			premiumFreightOrderDtos.add(exportPremiumFreightOrders(adOrders));
 		}
-		//
 		session.flush();
 		session.clear();
 		tx.commit();
@@ -222,8 +195,12 @@ public class PremiumFreightOrdersRepositoryImpl implements PremiumFreightOrdersR
 			 */
 			carrierDetails = criteria.list();
 
+			
 			for (CarrierDetails cdetails : carrierDetails) {
-				modeList.add(cdetails.getCarrierMode());
+				/*for(String s : cdetails.getCarrierMode())
+				{*/
+					modeList.add(cdetails.getCarrierMode());
+				//}
 			}
 		} catch (Exception e) {
 			// LOGGER.error("Exception in getReasonCode api" + e);
@@ -473,7 +450,9 @@ public class PremiumFreightOrdersRepositoryImpl implements PremiumFreightOrdersR
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		CarrierDetails cdetails = new CarrierDetails();
+		System.out.println(carrierdto.getBpNumber());
 		cdetails=carrierDetailsDao.importCarrierDetails(carrierdto);
+		System.out.println(cdetails.getBpNumber());
 		session.saveOrUpdate(cdetails);
 		session.flush();
 		session.clear();

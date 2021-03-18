@@ -1,11 +1,8 @@
 package com.incture.lch.entity;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -15,12 +12,15 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "T_CARRIER_DETAILS")
 public class CarrierDetails
 {
-	@Id
+	
+	
 	//@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id
 	@Column(name= "ID")
 	@GeneratedValue(generator="system-uuid")
 	@GenericGenerator(name="system-uuid", strategy = "uuid")
 	private String id;
+	
 	
 	@Column(name= "BP_NUMBER")
 	private String bpNumber;
@@ -33,8 +33,10 @@ public class CarrierDetails
 	
 	@Column(name= "CARRIER_MODE")
 	private String carrierMode;
-	//private List<String> carrierMode;
 
+	/*@Column(name="CARRIER_MODE")
+	private List<String> carrierMode;*/
+	
 	@Column(name="CARRIER_RATE_PER_KM")
 	private String carrierRatePerKM;
 	
@@ -79,6 +81,14 @@ public class CarrierDetails
 		this.carrierDetails = carrierDetails;
 	}
 
+	/*public List<String> getCarrierMode() {
+		return carrierMode;
+	}
+
+	public void setCarrierMode(List<String> carrierMode) {
+		this.carrierMode = carrierMode;
+	}
+*/
 	public String getCarrierMode() {
 		return carrierMode;
 	}
@@ -86,6 +96,8 @@ public class CarrierDetails
 	public void setCarrierMode(String carrierMode) {
 		this.carrierMode = carrierMode;
 	}
+	
+	
 	
 	
 
