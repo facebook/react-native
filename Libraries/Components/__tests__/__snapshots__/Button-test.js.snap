@@ -1,0 +1,879 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Button /> should be disabled when disabled is empty and accessibilityState={{disabled: true}}: should deep render when mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+        Object {},
+      ]
+    }
+  >
+    <Text
+      disabled={true}
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+          Object {
+            "color": "#cdcdcd",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should be disabled when disabled is empty and accessibilityState={{disabled: true}}: should deep render when not mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+        Object {},
+      ]
+    }
+  >
+    <Text
+      disabled={true}
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+          Object {
+            "color": "#cdcdcd",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should be disabled when disabled is empty and accessibilityState={{disabled: true}}: should shallow render as <Button /> when mocked 1`] = `
+<Button
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  title="Test Button"
+/>
+`;
+
+exports[`<Button /> should be disabled when disabled is empty and accessibilityState={{disabled: true}}: should shallow render as <Button /> when not mocked 1`] = `
+<Button
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  title="Test Button"
+/>
+`;
+
+exports[`<Button /> should be disabled when disabled={true} and accessibilityState={{disabled: true}}: should deep render when mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+        Object {},
+      ]
+    }
+  >
+    <Text
+      disabled={true}
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+          Object {
+            "color": "#cdcdcd",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should be disabled when disabled={true} and accessibilityState={{disabled: true}}: should deep render when not mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+        Object {},
+      ]
+    }
+  >
+    <Text
+      disabled={true}
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+          Object {
+            "color": "#cdcdcd",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should be disabled when disabled={true} and accessibilityState={{disabled: true}}: should shallow render as <Button /> when mocked 1`] = `
+<Button
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  disabled={true}
+  title="Test Button"
+/>
+`;
+
+exports[`<Button /> should be disabled when disabled={true} and accessibilityState={{disabled: true}}: should shallow render as <Button /> when not mocked 1`] = `
+<Button
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  disabled={true}
+  title="Test Button"
+/>
+`;
+
+exports[`<Button /> should be disabled when disabled={true}: should deep render when mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+        Object {},
+      ]
+    }
+  >
+    <Text
+      disabled={true}
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+          Object {
+            "color": "#cdcdcd",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should be disabled when disabled={true}: should deep render when not mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+        Object {},
+      ]
+    }
+  >
+    <Text
+      disabled={true}
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+          Object {
+            "color": "#cdcdcd",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should be disabled when disabled={true}: should shallow render as <Button /> when mocked 1`] = `
+<Button
+  disabled={true}
+  title="Test Button"
+/>
+`;
+
+exports[`<Button /> should be disabled when disabled={true}: should shallow render as <Button /> when not mocked 1`] = `
+<Button
+  disabled={true}
+  title="Test Button"
+/>
+`;
+
+exports[`<Button /> should not be disabled when disabled={false} and accessibilityState={{disabled: false}}: should deep render when mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "disabled": false,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+      ]
+    }
+  >
+    <Text
+      disabled={false}
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should not be disabled when disabled={false} and accessibilityState={{disabled: false}}: should deep render when not mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "disabled": false,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+      ]
+    }
+  >
+    <Text
+      disabled={false}
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should not be disabled when disabled={false} and accessibilityState={{disabled: false}}: should shallow render as <Button /> when mocked 1`] = `
+<Button
+  accessibilityState={
+    Object {
+      "disabled": false,
+    }
+  }
+  disabled={false}
+  title="Test Button"
+/>
+`;
+
+exports[`<Button /> should not be disabled when disabled={false} and accessibilityState={{disabled: false}}: should shallow render as <Button /> when not mocked 1`] = `
+<Button
+  accessibilityState={
+    Object {
+      "disabled": false,
+    }
+  }
+  disabled={false}
+  title="Test Button"
+/>
+`;
+
+exports[`<Button /> should not be disabled when disabled={false} and accessibilityState={{disabled: true}}: should deep render when mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "disabled": false,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+      ]
+    }
+  >
+    <Text
+      disabled={false}
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should not be disabled when disabled={false} and accessibilityState={{disabled: true}}: should deep render when not mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "disabled": false,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+      ]
+    }
+  >
+    <Text
+      disabled={false}
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should not be disabled when disabled={false} and accessibilityState={{disabled: true}}: should shallow render as <Button /> when mocked 1`] = `
+<Button
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  disabled={false}
+  title="Test Button"
+/>
+`;
+
+exports[`<Button /> should not be disabled when disabled={false} and accessibilityState={{disabled: true}}: should shallow render as <Button /> when not mocked 1`] = `
+<Button
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  disabled={false}
+  title="Test Button"
+/>
+`;
+
+exports[`<Button /> should overwrite accessibilityState with value of disabled prop: should deep render when mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+        Object {},
+      ]
+    }
+  >
+    <Text
+      disabled={true}
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+          Object {
+            "color": "#cdcdcd",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should overwrite accessibilityState with value of disabled prop: should deep render when not mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+        Object {},
+      ]
+    }
+  >
+    <Text
+      disabled={true}
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+          Object {
+            "color": "#cdcdcd",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should overwrite accessibilityState with value of disabled prop: should shallow render as <Button /> when mocked 1`] = `
+<Button
+  accessibilityState={
+    Object {
+      "disabled": false,
+    }
+  }
+  disabled={true}
+  title="Test Button"
+/>
+`;
+
+exports[`<Button /> should overwrite accessibilityState with value of disabled prop: should shallow render as <Button /> when not mocked 1`] = `
+<Button
+  accessibilityState={
+    Object {
+      "disabled": false,
+    }
+  }
+  disabled={true}
+  title="Test Button"
+/>
+`;
+
+exports[`<Button /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+      ]
+    }
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
+<View
+  accessibilityRole="button"
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      Array [
+        Object {},
+      ]
+    }
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "color": "#007AFF",
+            "fontSize": 18,
+            "margin": 8,
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      Test Button
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`<Button /> should render as expected: should shallow render as <Button /> when mocked 1`] = `
+<Button
+  title="Test Button"
+/>
+`;
+
+exports[`<Button /> should render as expected: should shallow render as <Button /> when not mocked 1`] = `
+<Button
+  title="Test Button"
+/>
+`;
