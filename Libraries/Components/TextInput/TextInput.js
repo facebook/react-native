@@ -21,7 +21,6 @@ const nullthrows = require('nullthrows');
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
 import usePressability from '../../Pressability/usePressability';
-import type {AccessibilityState} from '../View/ViewAccessibility';
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
@@ -442,11 +441,6 @@ export type Props = $ReadOnly<{|
    * default is `true`.
    */
   allowFontScaling?: ?boolean,
-
-  /**
-    Indicates to accessibility services that UI Component is in a specific State.
-   */
-  accessibilityState?: ?AccessibilityState,
 
   /**
    * If `true`, the text field will blur when submitted.
@@ -1066,7 +1060,6 @@ function InternalTextInput(props: Props): React.Node {
   const blurOnSubmit = props.blurOnSubmit ?? !props.multiline;
 
   const accessible = props.accessible !== false;
-  const accessibilityState = props.accessibilityState || {};
   const focusable = props.focusable !== false;
 
   const config = React.useMemo(
@@ -1155,7 +1148,6 @@ function InternalTextInput(props: Props): React.Node {
         {...props}
         {...eventHandlers}
         accessible={accessible}
-        accessibilityState={accessibilityState}
         autoCapitalize={autoCapitalize}
         blurOnSubmit={blurOnSubmit}
         caretHidden={caretHidden}
