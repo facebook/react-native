@@ -1,0 +1,329 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Switch /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
+<RCTSwitch
+  accessibilityRole="switch"
+  onChange={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "height": 31,
+      "width": 51,
+    }
+  }
+  value={false}
+>
+  <View />
+</RCTSwitch>
+`;
+
+exports[`<Switch /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
+<RCTSwitch
+  accessibilityRole="switch"
+  onChange={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "height": 31,
+      "width": 51,
+    }
+  }
+  value={false}
+>
+  <View />
+</RCTSwitch>
+`;
+
+exports[`<Switch /> should render as expected: should shallow render as <Switch /> when mocked 1`] = `
+<Switch>
+  <View />
+</Switch>
+`;
+
+exports[`<Switch /> should render as expected: should shallow render as <Switch /> when not mocked 1`] = `
+<Switch>
+  <View />
+</Switch>
+`;
+
+exports[`<Switch disabled={true} /> should be disabled when disabled is true: should deep render when mocked (please verify output manually) 1`] = `
+<RCTSwitch
+  accessibilityRole="switch"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  disabled={true}
+  onChange={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "height": 31,
+      "width": 51,
+    }
+  }
+  value={false}
+>
+  <View />
+</RCTSwitch>
+`;
+
+exports[`<Switch disabled={true} /> should be disabled when disabled is true: should deep render when not mocked (please verify output manually) 1`] = `
+<RCTSwitch
+  accessibilityRole="switch"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  disabled={true}
+  onChange={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "height": 31,
+      "width": 51,
+    }
+  }
+  value={false}
+>
+  <View />
+</RCTSwitch>
+`;
+
+exports[`<Switch disabled={true} /> should be disabled when disabled is true: should shallow render as <Switch /> when mocked 1`] = `
+<Switch
+  disabled={true}
+>
+  <View />
+</Switch>
+`;
+
+exports[`<Switch disabled={true} /> should be disabled when disabled is true: should shallow render as <Switch /> when not mocked 1`] = `
+<Switch
+  disabled={true}
+>
+  <View />
+</Switch>
+`;
+
+exports[`<Switch disabled={true} accessibilityState={{}} /> should be disabled when disabled is true and accessibilityState is empty: should deep render when mocked (please verify output manually) 1`] = `
+<RCTSwitch
+  accessibilityRole="switch"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  disabled={true}
+  onChange={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "height": 31,
+      "width": 51,
+    }
+  }
+  value={false}
+>
+  <View />
+</RCTSwitch>
+`;
+
+exports[`<Switch disabled={true} accessibilityState={{}} /> should be disabled when disabled is true and accessibilityState is empty: should deep render when not mocked (please verify output manually) 1`] = `
+<RCTSwitch
+  accessibilityRole="switch"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  disabled={true}
+  onChange={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "height": 31,
+      "width": 51,
+    }
+  }
+  value={false}
+>
+  <View />
+</RCTSwitch>
+`;
+
+exports[`<Switch disabled={true} accessibilityState={{}} /> should be disabled when disabled is true and accessibilityState is empty: should shallow render as <Switch /> when mocked 1`] = `
+<Switch
+  accessibilityState={Object {}}
+  disabled={true}
+>
+  <View />
+</Switch>
+`;
+
+exports[`<Switch disabled={true} accessibilityState={{}} /> should be disabled when disabled is true and accessibilityState is empty: should shallow render as <Switch /> when not mocked 1`] = `
+<Switch
+  accessibilityState={Object {}}
+  disabled={true}
+>
+  <View />
+</Switch>
+`;
+
+exports[`<Switch disabled={true} accessibilityState={{checked: true}} /> should keep accessibilityState when disabled is true: should deep render when mocked (please verify output manually) 1`] = `
+<RCTSwitch
+  accessibilityRole="switch"
+  accessibilityState={
+    Object {
+      "checked": true,
+      "disabled": true,
+    }
+  }
+  disabled={true}
+  onChange={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "height": 31,
+      "width": 51,
+    }
+  }
+  value={false}
+>
+  <View />
+</RCTSwitch>
+`;
+
+exports[`<Switch disabled={true} accessibilityState={{checked: true}} /> should keep accessibilityState when disabled is true: should deep render when not mocked (please verify output manually) 1`] = `
+<RCTSwitch
+  accessibilityRole="switch"
+  accessibilityState={
+    Object {
+      "checked": true,
+      "disabled": true,
+    }
+  }
+  disabled={true}
+  onChange={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "height": 31,
+      "width": 51,
+    }
+  }
+  value={false}
+>
+  <View />
+</RCTSwitch>
+`;
+
+exports[`<Switch disabled={true} accessibilityState={{checked: true}} /> should keep accessibilityState when disabled is true: should shallow render as <Switch /> when mocked 1`] = `
+<Switch
+  accessibilityState={
+    Object {
+      "checked": true,
+    }
+  }
+  disabled={true}
+>
+  <View />
+</Switch>
+`;
+
+exports[`<Switch disabled={true} accessibilityState={{checked: true}} /> should keep accessibilityState when disabled is true: should shallow render as <Switch /> when not mocked 1`] = `
+<Switch
+  accessibilityState={
+    Object {
+      "checked": true,
+    }
+  }
+  disabled={true}
+>
+  <View />
+</Switch>
+`;
+
+exports[`<Switch disabled={true} accessibilityState={{disabled: false}} /> should overwrite accessibilityState with value of disabled prop: should deep render when mocked (please verify output manually) 1`] = `
+<RCTSwitch
+  accessibilityRole="switch"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  disabled={true}
+  onChange={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "height": 31,
+      "width": 51,
+    }
+  }
+  value={false}
+>
+  <View />
+</RCTSwitch>
+`;
+
+exports[`<Switch disabled={true} accessibilityState={{disabled: false}} /> should overwrite accessibilityState with value of disabled prop: should deep render when not mocked (please verify output manually) 1`] = `
+<RCTSwitch
+  accessibilityRole="switch"
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  disabled={true}
+  onChange={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "height": 31,
+      "width": 51,
+    }
+  }
+  value={false}
+>
+  <View />
+</RCTSwitch>
+`;
+
+exports[`<Switch disabled={true} accessibilityState={{disabled: false}} /> should overwrite accessibilityState with value of disabled prop: should shallow render as <Switch /> when mocked 1`] = `
+<Switch
+  accessibilityState={
+    Object {
+      "disabled": false,
+    }
+  }
+  disabled={true}
+>
+  <View />
+</Switch>
+`;
+
+exports[`<Switch disabled={true} accessibilityState={{disabled: false}} /> should overwrite accessibilityState with value of disabled prop: should shallow render as <Switch /> when not mocked 1`] = `
+<Switch
+  accessibilityState={
+    Object {
+      "disabled": false,
+    }
+  }
+  disabled={true}
+>
+  <View />
+</Switch>
+`;
