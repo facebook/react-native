@@ -10,6 +10,7 @@
 #import <mutex>
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTConstants.h>
@@ -39,25 +40,6 @@
 #import "RCTConversions.h"
 
 using namespace facebook::react;
-
-static inline LayoutConstraints RCTGetLayoutConstraintsForSize(CGSize minimumSize, CGSize maximumSize)
-{
-  return {
-      .minimumSize = RCTSizeFromCGSize(minimumSize),
-      .maximumSize = RCTSizeFromCGSize(maximumSize),
-      .layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL]),
-  };
-}
-
-static inline LayoutContext RCTGetLayoutContext(CGPoint viewportOffset)
-{
-  return {
-      .pointScaleFactor = RCTScreenScale(),
-      .swapLeftAndRightInRTL =
-          [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL],
-      .fontSizeMultiplier = RCTFontSizeMultiplier(),
-      .viewportOffset = RCTPointFromCGPoint(viewportOffset)};
-}
 
 static dispatch_queue_t RCTGetBackgroundQueue()
 {
@@ -119,14 +101,14 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     _observers = [NSMutableArray array];
 
     _scheduler = [self _createScheduler];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_handleContentSizeCategoryDidChangeNotification:)
-                                                 name:UIContentSizeCategoryDidChangeNotification
-                                               object:nil];
   }
 
   return self;
+}
+
+- (RCTMountingManager *)mountingManager
+{
+  return _mountingManager;
 }
 
 - (RCTScheduler *_Nullable)_scheduler
@@ -163,10 +145,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (void)registerSurface:(RCTFabricSurface *)surface
 {
-  RCTScheduler *scheduler = [self _scheduler];
   [_surfaceRegistry registerSurface:surface];
+  RCTScheduler *scheduler = [self _scheduler];
   if (scheduler) {
-    [self _startSurface:surface scheduler:scheduler];
+    [scheduler registerSurface:surface.surfaceHandler];
   }
 }
 
@@ -174,52 +156,14 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   RCTScheduler *scheduler = [self _scheduler];
   if (scheduler) {
-    [self _stopSurface:surface scheduler:scheduler];
+    [scheduler unregisterSurface:surface.surfaceHandler];
   }
   [_surfaceRegistry unregisterSurface:surface];
-}
-
-- (void)setProps:(NSDictionary *)props surface:(RCTFabricSurface *)surface
-{
-  RCTScheduler *scheduler = [self _scheduler];
-  if (scheduler) {
-    [self _stopSurface:surface scheduler:scheduler];
-    [self _startSurface:surface scheduler:scheduler];
-  }
 }
 
 - (RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag
 {
   return [_surfaceRegistry surfaceForRootTag:rootTag];
-}
-
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
-                      maximumSize:(CGSize)maximumSize
-                          surface:(RCTFabricSurface *)surface
-{
-  RCTScheduler *scheduler = [self _scheduler];
-  if (!scheduler) {
-    return minimumSize;
-  }
-  LayoutContext layoutContext = RCTGetLayoutContext(surface.viewportOffset);
-  LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(minimumSize, maximumSize);
-  return [scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
-                                          layoutContext:layoutContext
-                                              surfaceId:surface.rootTag];
-}
-
-- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize surface:(RCTFabricSurface *)surface
-{
-  RCTScheduler *scheduler = [self _scheduler];
-  if (!scheduler) {
-    return;
-  }
-
-  LayoutContext layoutContext = RCTGetLayoutContext(surface.viewportOffset);
-  LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(minimumSize, maximumSize);
-  [scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
-                                            layoutContext:layoutContext
-                                                surfaceId:surface.rootTag];
 }
 
 - (UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag
@@ -253,22 +197,9 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   return YES;
 }
 
-- (BOOL)synchronouslyWaitSurface:(RCTFabricSurface *)surface timeout:(NSTimeInterval)timeout
+- (void)setupAnimationDriverWithSurfaceHandler:(facebook::react::SurfaceHandler const &)surfaceHandler
 {
-  RCTScheduler *scheduler = [self _scheduler];
-  if (!scheduler) {
-    return NO;
-  }
-
-  auto mountingCoordinator = [scheduler mountingCoordinatorWithSurfaceId:surface.rootTag];
-
-  if (!mountingCoordinator->waitForTransaction(std::chrono::duration<NSTimeInterval>(timeout))) {
-    return NO;
-  }
-
-  [_mountingManager scheduleTransaction:mountingCoordinator];
-
-  return YES;
+  [[self _scheduler] setupAnimationDriver:surfaceHandler];
 }
 
 - (BOOL)suspend
@@ -359,6 +290,19 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
   }
 
+#ifdef REACT_NATIVE_DEBUG
+  auto optionalBridge = _contextContainer->find<std::shared_ptr<void>>("Bridge");
+  if (optionalBridge) {
+    RCTBridge *bridge = unwrapManagedObjectWeakly(optionalBridge.value());
+    toolbox.garbageCollectionTrigger = [bridge]() {
+      RCTCxxBridge *batchedBridge = (RCTCxxBridge *)([bridge batchedBridge] ?: bridge);
+      if ([batchedBridge respondsToSelector:@selector(forceGarbageCollection)]) {
+        [batchedBridge forceGarbageCollection];
+      }
+    };
+  }
+#endif
+
   toolbox.synchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
     auto runLoopObserver =
         std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
@@ -377,39 +321,12 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   return scheduler;
 }
 
-- (void)_startSurface:(RCTFabricSurface *)surface scheduler:(RCTScheduler *)scheduler
-{
-  RCTMountingManager *mountingManager = _mountingManager;
-  RCTExecuteOnMainQueue(^{
-    [mountingManager attachSurfaceToView:surface.view surfaceId:surface.rootTag];
-  });
-
-  LayoutContext layoutContext = RCTGetLayoutContext(surface.viewportOffset);
-
-  LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(surface.minimumSize, surface.maximumSize);
-
-  [scheduler startSurfaceWithSurfaceId:surface.rootTag
-                            moduleName:surface.moduleName
-                          initialProps:surface.properties
-                     layoutConstraints:layoutConstraints
-                         layoutContext:layoutContext];
-}
-
-- (void)_stopSurface:(RCTFabricSurface *)surface scheduler:(RCTScheduler *)scheduler
-{
-  [scheduler stopSurfaceWithSurfaceId:surface.rootTag];
-
-  RCTMountingManager *mountingManager = _mountingManager;
-  RCTExecuteOnMainQueue(^{
-    [mountingManager detachSurfaceFromView:surface.view surfaceId:surface.rootTag];
-  });
-}
-
 - (void)_startAllSurfacesWithScheduler:(RCTScheduler *)scheduler
 {
   [_surfaceRegistry enumerateWithBlock:^(NSEnumerator<RCTFabricSurface *> *enumerator) {
     for (RCTFabricSurface *surface in enumerator) {
-      [self _startSurface:surface scheduler:scheduler];
+      [scheduler registerSurface:surface.surfaceHandler];
+      [surface start];
     }
   }];
 }
@@ -418,24 +335,8 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   [_surfaceRegistry enumerateWithBlock:^(NSEnumerator<RCTFabricSurface *> *enumerator) {
     for (RCTFabricSurface *surface in enumerator) {
-      [self _stopSurface:surface scheduler:scheduler];
-    }
-  }];
-}
-
-- (void)_handleContentSizeCategoryDidChangeNotification:(NSNotification *)notification
-{
-  RCTScheduler *scheduler = [self _scheduler];
-
-  [_surfaceRegistry enumerateWithBlock:^(NSEnumerator<RCTFabricSurface *> *enumerator) {
-    for (RCTFabricSurface *surface in enumerator) {
-      LayoutContext layoutContext = RCTGetLayoutContext(surface.viewportOffset);
-
-      LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(surface.minimumSize, surface.maximumSize);
-
-      [scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
-                                                layoutContext:layoutContext
-                                                    surfaceId:surface.rootTag];
+      [surface stop];
+      [scheduler unregisterSurface:surface.surfaceHandler];
     }
   }];
 }

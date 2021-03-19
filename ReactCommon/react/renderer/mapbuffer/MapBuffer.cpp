@@ -12,7 +12,7 @@ using namespace facebook::react;
 namespace facebook {
 namespace react {
 
-MapBuffer::MapBuffer(int initialSize) {
+MapBuffer::MapBuffer(uint16_t initialSize) {
   _dataSize = initialSize;
   _data = new Byte[_dataSize];
   // TODO: Should we clean up memory here?
@@ -20,6 +20,13 @@ MapBuffer::MapBuffer(int initialSize) {
 
 void MapBuffer::makeSpace() {
   int oldDataSize = _dataSize;
+  if (_dataSize >= std::numeric_limits<uint16_t>::max() / 2) {
+    LOG(ERROR)
+        << "Error: trying to assign a value beyond the capacity of uint16_t"
+        << static_cast<uint32_t>(_dataSize) * 2;
+    throw "Error: trying to assign a value beyond the capacity of uint16_t" +
+        std::to_string(static_cast<uint32_t>(_dataSize) * 2);
+  }
   _dataSize *= 2;
   uint8_t *_newdata = new Byte[_dataSize];
   uint8_t *_oldData = _data;

@@ -12,6 +12,12 @@
 import {SectionList_onViewableItemsChanged} from './SectionListExamples';
 const React = require('react');
 
+const VIEWABILITY_CONFIG = {
+  minimumViewTime: 1000,
+  viewAreaCoveragePercentThreshold: 100,
+  waitForInteraction: true,
+};
+
 exports.title = 'SectionList onViewableItemsChanged';
 exports.testTitle = 'Test onViewableItemsChanged callback';
 exports.category = 'ListView';
@@ -24,7 +30,11 @@ exports.examples = [
     render: function(): React.Element<
       typeof SectionList_onViewableItemsChanged,
     > {
-      return <SectionList_onViewableItemsChanged />;
+      return (
+        <SectionList_onViewableItemsChanged
+          viewabilityConfig={VIEWABILITY_CONFIG}
+        />
+      );
     },
   },
 ];

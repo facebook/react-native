@@ -41,7 +41,7 @@ RawValue const *RawPropsParser::at(
     // This is not thread-safe part; this happens only during initialization of
     // a `ComponentDescriptor` where it is actually safe.
     keys_.push_back(key);
-    nameToIndex_.insert(key, size_);
+    nameToIndex_.insert(key, static_cast<RawPropsValueIndex>(size_));
     size_++;
     return nullptr;
   }
@@ -120,7 +120,8 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
 
         auto name = nameValue.utf8(runtime);
 
-        auto keyIndex = nameToIndex_.at(name.data(), name.size());
+        auto keyIndex = nameToIndex_.at(
+            name.data(), static_cast<RawPropsPropNameLength>(name.size()));
         if (keyIndex == kRawPropsValueIndexEmpty) {
           continue;
         }
@@ -141,7 +142,8 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
       for (auto const &pair : dynamic.items()) {
         auto name = pair.first.getString();
 
-        auto keyIndex = nameToIndex_.at(name.data(), name.size());
+        auto keyIndex = nameToIndex_.at(
+            name.data(), static_cast<RawPropsPropNameLength>(name.size()));
         if (keyIndex == kRawPropsValueIndexEmpty) {
           continue;
         }

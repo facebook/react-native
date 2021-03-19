@@ -16,7 +16,7 @@
 namespace facebook {
 namespace react {
 
-static jsi::Object getModule(
+static jsi::Value getModule(
     jsi::Runtime &runtime,
     std::string const &moduleName) {
   auto batchedBridge =
@@ -31,7 +31,30 @@ static jsi::Object getModule(
     LOG(ERROR) << "getModule of " << moduleName << " is not an object";
   }
   react_native_assert(moduleAsValue.isObject());
-  return moduleAsValue.asObject(runtime);
+  return moduleAsValue;
+}
+
+static bool checkBatchedBridgeIsActive(jsi::Runtime &runtime) {
+  if (!runtime.global().hasProperty(runtime, "__fbBatchedBridge")) {
+    LOG(ERROR)
+        << "getPropertyAsObject: property '__fbBatchedBridge' is undefined, expected an Object";
+    return false;
+  }
+  return true;
+}
+
+static bool checkGetCallableModuleIsActive(jsi::Runtime &runtime) {
+  if (!checkBatchedBridgeIsActive(runtime)) {
+    return false;
+  }
+  auto batchedBridge =
+      runtime.global().getPropertyAsObject(runtime, "__fbBatchedBridge");
+  if (!batchedBridge.hasProperty(runtime, "getCallableModule")) {
+    LOG(ERROR)
+        << "getPropertyAsFunction: function 'getCallableModule' is undefined, expected a Function";
+    return false;
+  }
+  return true;
 }
 
 std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
@@ -94,6 +117,27 @@ void UIManagerBinding::attach(std::shared_ptr<UIManager> const &uiManager) {
   }
 }
 
+static void callMethodOfModule(
+    jsi::Runtime &runtime,
+    std::string const &moduleName,
+    std::string const &methodName,
+    std::initializer_list<jsi::Value> args) {
+  if (checkGetCallableModuleIsActive(runtime)) {
+    auto module = getModule(runtime, moduleName.c_str());
+    if (module.isObject()) {
+      jsi::Object object = module.asObject(runtime);
+      react_native_assert(object.hasProperty(runtime, methodName.c_str()));
+      if (object.hasProperty(runtime, methodName.c_str())) {
+        auto method = object.getPropertyAsFunction(runtime, methodName.c_str());
+        method.callWithThis(runtime, object, args);
+      } else {
+        LOG(ERROR) << "getPropertyAsFunction: property '" << methodName
+                   << "' is undefined, expected a Function";
+      }
+    }
+  }
+}
+
 void UIManagerBinding::startSurface(
     jsi::Runtime &runtime,
     SurfaceId surfaceId,
@@ -115,12 +159,10 @@ void UIManagerBinding::startSurface(
         {jsi::String::createFromUtf8(runtime, moduleName),
          jsi::valueFromDynamic(runtime, parameters)});
   } else {
-    auto module = getModule(runtime, "AppRegistry");
-    auto method = module.getPropertyAsFunction(runtime, "runApplication");
-
-    method.callWithThis(
+    callMethodOfModule(
         runtime,
-        module,
+        "AppRegistry",
+        "runApplication",
         {jsi::String::createFromUtf8(runtime, moduleName),
          jsi::valueFromDynamic(runtime, parameters)});
   }
@@ -129,20 +171,17 @@ void UIManagerBinding::startSurface(
 void UIManagerBinding::stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId)
     const {
   auto global = runtime.global();
-  if (global.hasProperty(runtime, "RN$Bridgeless")) {
-    if (!global.hasProperty(runtime, "RN$stopSurface")) {
-      // ReactFabric module has not been loaded yet; there's no surface to stop.
-      return;
-    }
+  if (global.hasProperty(runtime, "RN$Bridgeless") &&
+      global.hasProperty(runtime, "RN$stopSurface")) {
     // Bridgeless mode uses a custom JSI binding instead of callable module.
     global.getPropertyAsFunction(runtime, "RN$stopSurface")
         .call(runtime, {jsi::Value{surfaceId}});
   } else {
-    auto module = getModule(runtime, "ReactFabric");
-    auto method =
-        module.getPropertyAsFunction(runtime, "unmountComponentAtNode");
-
-    method.callWithThis(runtime, module, {jsi::Value{surfaceId}});
+    callMethodOfModule(
+        runtime,
+        "ReactFabric",
+        "unmountComponentAtNode",
+        {jsi::Value{surfaceId}});
   }
 }
 
@@ -236,14 +275,20 @@ jsi::Value UIManagerBinding::get(
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept -> jsi::Value {
+          auto eventTarget =
+              eventTargetFromValue(runtime, arguments[4], arguments[0]);
+          if (!eventTarget) {
+            react_native_assert(false);
+            return jsi::Value::undefined();
+          }
           return valueFromShadowNode(
               runtime,
               uiManager->createNode(
-                  tagFromValue(runtime, arguments[0]),
+                  tagFromValue(arguments[0]),
                   stringFromValue(runtime, arguments[1]),
                   surfaceIdFromValue(runtime, arguments[2]),
                   RawProps(runtime, arguments[3]),
-                  eventTargetFromValue(runtime, arguments[4], arguments[0])));
+                  eventTarget));
         });
   }
 
@@ -276,7 +321,8 @@ jsi::Value UIManagerBinding::get(
             size_t count) noexcept -> jsi::Value {
           uiManager->setIsJSResponder(
               shadowNodeFromValue(runtime, arguments[0]),
-              arguments[1].getBool());
+              arguments[1].getBool(),
+              arguments[2].getBool());
 
           return jsi::Value::undefined();
         });
@@ -423,13 +469,14 @@ jsi::Value UIManagerBinding::get(
 
   if (methodName == "completeRoot") {
     if (uiManager->backgroundExecutor_) {
+      std::weak_ptr<UIManager> weakUIManager = uiManager_;
       // Enhanced version of the method that uses `backgroundExecutor` and
       // captures a shared pointer to `UIManager`.
       return jsi::Function::createFromHostFunction(
           runtime,
           name,
           2,
-          [sharedUIManager = uiManager_](
+          [weakUIManager, uiManager](
               jsi::Runtime &runtime,
               jsi::Value const &thisValue,
               jsi::Value const *arguments,
@@ -441,8 +488,11 @@ jsi::Value UIManagerBinding::get(
             static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
             completeRootEventCounter += 1;
             mostRecentSurfaceId = surfaceId;
-            sharedUIManager->backgroundExecutor_(
-                [=, eventCount = completeRootEventCounter.load()] {
+            uiManager->backgroundExecutor_(
+                [weakUIManager,
+                 weakShadowNodeList,
+                 surfaceId,
+                 eventCount = completeRootEventCounter.load()] {
                   auto shouldYield = [=]() -> bool {
                     // If `completeRootEventCounter` was incremented, another
                     // `completeSurface` call has been scheduled and current
@@ -452,8 +502,9 @@ jsi::Value UIManagerBinding::get(
                   };
                   auto shadowNodeList =
                       shadowNodeListFromWeakList(weakShadowNodeList);
-                  if (shadowNodeList) {
-                    sharedUIManager->completeSurface(
+                  auto strongUIManager = weakUIManager.lock();
+                  if (shadowNodeList && strongUIManager) {
+                    strongUIManager->completeSurface(
                         surfaceId, shadowNodeList, {true, shouldYield});
                   }
                 });
@@ -534,11 +585,13 @@ jsi::Value UIManagerBinding::get(
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept -> jsi::Value {
-          uiManager->dispatchCommand(
-              shadowNodeFromValue(runtime, arguments[0]),
-              stringFromValue(runtime, arguments[1]),
-              commandArgsFromValue(runtime, arguments[2]));
-
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+          if (shadowNode) {
+            uiManager->dispatchCommand(
+                shadowNodeFromValue(runtime, arguments[0]),
+                stringFromValue(runtime, arguments[1]),
+                commandArgsFromValue(runtime, arguments[2]));
+          }
           return jsi::Value::undefined();
         });
   }

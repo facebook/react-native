@@ -126,6 +126,9 @@ def react_native_xplat_dep(path):
 def rn_extra_build_flags():
     return []
 
+def _unique(li):
+    return list({x: () for x in li})
+
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
     _ = kwargs.pop("autoglob", False)
@@ -139,7 +142,7 @@ def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
             ),
         ]
 
-        plugins = list(set(plugins + react_property_plugins))
+        plugins = _unique(plugins + react_property_plugins)
 
     if react_native_target(
         "java/com/facebook/react/module/annotations:annotations",
@@ -150,7 +153,7 @@ def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
             ),
         ]
 
-        plugins = list(set(plugins + react_module_plugins))
+        plugins = _unique(plugins + react_module_plugins)
 
     native.android_library(name = name, deps = deps, plugins = plugins, *args, **kwargs)
 

@@ -1083,6 +1083,13 @@ function InternalTextInput(props: Props): React.Node {
     ],
   );
 
+  // Hide caret during test runs due to a flashing caret
+  // makes screenshot tests flakey
+  let caretHidden = props.caretHidden;
+  if (Platform.isTesting) {
+    caretHidden = true;
+  }
+
   // TextInput handles onBlur and onFocus events
   // so omitting onBlur and onFocus pressability handlers here.
   const {onBlur, onFocus, ...eventHandlers} = usePressability(config) || {};
@@ -1105,6 +1112,7 @@ function InternalTextInput(props: Props): React.Node {
         {...eventHandlers}
         accessible={accessible}
         blurOnSubmit={blurOnSubmit}
+        caretHidden={caretHidden}
         dataDetectorTypes={props.dataDetectorTypes}
         focusable={focusable}
         mostRecentEventCount={mostRecentEventCount}
@@ -1143,6 +1151,7 @@ function InternalTextInput(props: Props): React.Node {
         accessible={accessible}
         autoCapitalize={autoCapitalize}
         blurOnSubmit={blurOnSubmit}
+        caretHidden={caretHidden}
         children={children}
         disableFullscreenUI={props.disableFullscreenUI}
         focusable={focusable}

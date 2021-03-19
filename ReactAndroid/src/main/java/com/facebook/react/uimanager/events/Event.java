@@ -38,6 +38,15 @@ public abstract class Event<T extends Event> {
   private long mTimestampMs;
   private int mUniqueID = sUniqueID++;
 
+  // Android native Event times use 'uptimeMillis', and historically we've used `uptimeMillis`
+  // throughout this Event class as the coalescing key for events, and for other purposes.
+  // To get an accurate(ish) absolute UNIX time for the event, we store the initial clock time here.
+  // uptimeMillis can then be added to this to get an accurate UNIX time.
+  // However, we still default to uptimeMillis: you must explicitly request UNIX time if you want
+  // that; see `getUnixTimestampMs`.
+  public static final long sInitialClockTimeUnixOffset =
+      SystemClock.currentTimeMillis() - SystemClock.uptimeMillis();
+
   protected Event() {}
 
   @Deprecated
@@ -58,8 +67,10 @@ public abstract class Event<T extends Event> {
   protected void init(int surfaceId, int viewTag) {
     mSurfaceId = surfaceId;
     mViewTag = viewTag;
-    mTimestampMs = SystemClock.uptimeMillis();
     mInitialized = true;
+
+    // This is a *relative* time. See `getUnixTimestampMs`.
+    mTimestampMs = SystemClock.uptimeMillis();
   }
 
   /** @return the view id for the view that generated this event */
@@ -78,6 +89,11 @@ public abstract class Event<T extends Event> {
    */
   public final long getTimestampMs() {
     return mTimestampMs;
+  }
+
+  /** @return the time at which the event happened as a UNIX timestamp, in milliseconds. */
+  public final long getUnixTimestampMs() {
+    return sInitialClockTimeUnixOffset + mTimestampMs;
   }
 
   /** @return false if this Event can *never* be coalesced */

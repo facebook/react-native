@@ -6,6 +6,7 @@
  */
 
 #import "RCTTurboModule.h"
+#import "RCTBlockGuard.h"
 
 #import <objc/message.h>
 #import <objc/runtime.h>
@@ -170,6 +171,16 @@ static RCTResponseSenderBlock
 convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   auto weakWrapper = CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
+  RCTBlockGuard *blockGuard;
+  if (RCTTurboModuleBlockGuardEnabled()) {
+    blockGuard = [[RCTBlockGuard alloc] initWithCleanup:^() {
+      auto strongWrapper = weakWrapper.lock();
+      if (strongWrapper) {
+        strongWrapper->destroy();
+      }
+    }];
+  }
+
   BOOL __block wrapperWasCalled = NO;
   RCTResponseSenderBlock callback = ^(NSArray *responses) {
     if (wrapperWasCalled) {
@@ -181,7 +192,7 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
       return;
     }
 
-    strongWrapper->jsInvoker().invokeAsync([weakWrapper, responses]() {
+    strongWrapper->jsInvoker().invokeAsync([weakWrapper, responses, blockGuard]() {
       auto strongWrapper2 = weakWrapper.lock();
       if (!strongWrapper2) {
         return;
@@ -190,6 +201,9 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
       std::vector<jsi::Value> args = convertNSArrayToStdVector(strongWrapper2->runtime(), responses);
       strongWrapper2->callback().call(strongWrapper2->runtime(), (const jsi::Value *)args.data(), args.size());
       strongWrapper2->destroy();
+
+      // Delete the CallbackWrapper when the block gets dealloced without being invoked.
+      (void)blockGuard;
     });
 
     wrapperWasCalled = YES;

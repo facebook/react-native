@@ -17,10 +17,14 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../
 
 LOCAL_SHARED_LIBRARIES := libfolly_json
 
+LOCAL_LDLIBS := -llog
+
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
 
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall -llog
+
+LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog
 
 include $(BUILD_SHARED_LIBRARY)
 

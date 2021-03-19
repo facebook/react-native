@@ -13,7 +13,7 @@ namespace facebook {
 namespace react {
 
 // 506 = 5 entries = 50*10 + 6 sizeof(header)
-const int INITIAL_SIZE = 506;
+constexpr uint16_t INITIAL_SIZE = 506;
 
 /**
  * MapBuffer is an optimized map format for transferring data like props between
@@ -46,7 +46,7 @@ class MapBuffer {
  public:
   MapBuffer() : MapBuffer(INITIAL_SIZE) {}
 
-  MapBuffer(int initialSize);
+  MapBuffer(uint16_t initialSize);
 
   ~MapBuffer();
 

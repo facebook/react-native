@@ -8,7 +8,9 @@
  * @flow strict-local
  */
 
-import EventEmitter from '../vendor/emitter/EventEmitter';
+import EventEmitter, {
+  type EventSubscription,
+} from '../vendor/emitter/EventEmitter';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeAppearance, {
   type AppearancePreferences,
@@ -78,16 +80,19 @@ module.exports = {
     );
     return nativeColorScheme;
   },
+
   /**
    * Add an event handler that is fired when appearance preferences change.
    */
-  addChangeListener(listener: AppearanceListener): void {
-    eventEmitter.addListener('change', listener);
+  addChangeListener(listener: AppearanceListener): EventSubscription {
+    return eventEmitter.addListener('change', listener);
   },
+
   /**
-   * Remove an event handler.
+   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
    */
   removeChangeListener(listener: AppearanceListener): void {
+    // NOTE: This will report a deprecation notice via `console.error`.
     eventEmitter.removeListener('change', listener);
   },
 };

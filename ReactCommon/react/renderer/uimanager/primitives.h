@@ -10,6 +10,7 @@
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/EventHandler.h>
 #include <react/renderer/core/ShadowNode.h>
 
@@ -102,16 +103,20 @@ inline static jsi::Value valueFromShadowNodeList(
       runtime, std::make_unique<ShadowNodeListWrapper>(shadowNodeList));
 }
 
+inline static Tag tagFromValue(jsi::Value const &value) {
+  return (Tag)value.getNumber();
+}
+
 inline static SharedEventTarget eventTargetFromValue(
     jsi::Runtime &runtime,
     jsi::Value const &eventTargetValue,
     jsi::Value const &tagValue) {
+  react_native_assert(!eventTargetValue.isNull());
+  if (eventTargetValue.isNull()) {
+    return nullptr;
+  }
   return std::make_shared<EventTarget>(
-      runtime, eventTargetValue, tagValue.getNumber());
-}
-
-inline static Tag tagFromValue(jsi::Runtime &runtime, jsi::Value const &value) {
-  return (Tag)value.getNumber();
+      runtime, eventTargetValue, tagFromValue(tagValue));
 }
 
 inline static SurfaceId surfaceIdFromValue(

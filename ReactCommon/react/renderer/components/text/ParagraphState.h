@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
@@ -54,7 +55,7 @@ class ParagraphState final {
   ParagraphState(
       ParagraphState const &previousState,
       folly::dynamic const &data) {
-    assert(false && "Not supported");
+    react_native_assert(false && "Not supported");
   };
   folly::dynamic getDynamic() const;
 #endif

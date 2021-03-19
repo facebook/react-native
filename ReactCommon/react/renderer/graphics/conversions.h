@@ -39,7 +39,7 @@ inline void fromRawValue(const RawValue &value, SharedColor &result) {
     red = items.at(0);
     green = items.at(1);
     blue = items.at(2);
-    alpha = length == 4 ? items.at(3) : 1.0;
+    alpha = length == 4 ? items.at(3) : 1.0f;
   } else {
     abort();
   }

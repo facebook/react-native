@@ -7,11 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 
 @interface RCTModalManager : RCTEventEmitter <RCTBridgeModule>
 
 - (void)modalDismissed:(NSNumber *)modalID;
+
+@end
+
+@interface RCTBridge (RCTModalManager)
+
+@property (nonatomic, readonly) RCTModalManager *modalManager;
 
 @end

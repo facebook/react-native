@@ -41,9 +41,6 @@ allprojects {
         jcenter {
           content {
             includeModule("org.jetbrains.trove4j", "trove4j")
-            includeModule("com.facebook.flipper", "flipper-network-plugin")
-            includeModule("com.facebook.flipper", "flipper")
-            includeModule("com.facebook.flipper", "flipper-fresco-plugin")
             includeModule("com.facebook.yoga", "proguard-annotations")
             includeModule("com.facebook.fbjni", "fbjni-java-only")
             includeModule("com.facebook.fresco", "stetho")

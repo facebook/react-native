@@ -114,7 +114,12 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 @end
 
-@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec, RCTBundleHolderModule> {
+@interface RCTDevSettings () <
+    RCTBridgeModule,
+    RCTInvalidating,
+    NativeDevSettingsSpec,
+    RCTBundleHolderModule,
+    RCTDevSettingsInspectable> {
   BOOL _isJSLoaded;
 #if ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _reloadToken;
@@ -129,6 +134,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 @implementation RCTDevSettings
 
 @synthesize bundleURL = _bundleURL;
+@synthesize isInspectable = _isInspectable;
 
 RCT_EXPORT_MODULE()
 
@@ -165,6 +171,16 @@ RCT_EXPORT_MODULE()
   }
   return self;
 }
+
+#if RCT_ENABLE_INSPECTOR
+// In bridgeless mode, `setBridge` is not called, so dev server connection
+// must be kicked off here.
+- (void)setBundleURL:(NSURL *)bundleURL
+{
+  _bundleURL = bundleURL;
+  [RCTInspectorDevServerHelper connectWithBundleURL:_bundleURL];
+}
+#endif
 
 - (void)setBridge:(RCTBridge *)bridge
 {
@@ -232,7 +248,11 @@ RCT_EXPORT_MODULE()
 - (BOOL)isDeviceDebuggingAvailable
 {
 #if RCT_ENABLE_INSPECTOR
-  return self.bridge.isInspectable;
+  if (self.bridge) {
+    return self.bridge.isInspectable;
+  } else {
+    return self.isInspectable;
+  }
 #else
   return false;
 #endif // RCT_ENABLE_INSPECTOR

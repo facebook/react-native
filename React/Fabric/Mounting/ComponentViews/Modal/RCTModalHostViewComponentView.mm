@@ -7,6 +7,8 @@
 
 #import "RCTModalHostViewComponentView.h"
 
+#import <React/RCTBridge+Private.h>
+#import <React/RCTModalManager.h>
 #import <React/UIView+React.h>
 #import <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
 #import <react/renderer/components/modal/ModalHostViewState.h>
@@ -137,7 +139,16 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 - (void)dismissViewController:(UIViewController *)modalViewController animated:(BOOL)animated
 {
-  [modalViewController dismissViewControllerAnimated:animated completion:nil];
+  [modalViewController dismissViewControllerAnimated:animated
+                                          completion:^{
+                                            [self didDismissViewController];
+                                          }];
+}
+
+- (void)didDismissViewController
+{
+  const auto &props = *std::static_pointer_cast<ModalHostViewProps const>(_props);
+  [[RCTBridge currentBridge].modalManager modalDismissed:@(props.identifier)];
 }
 
 - (void)ensurePresentedOnlyIfNeeded

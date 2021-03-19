@@ -59,4 +59,10 @@ public class ReactFeatureFlags {
 
   /** Enables a more aggressive cleanup during destruction of ReactContext */
   public static boolean enableReactContextCleanupFix = false;
+
+  /** Enables setting layout params to empty to fix a crash */
+  public static boolean enableSettingEmptyLayoutParams = false;
+
+  /** Enables JS Responder in Fabric */
+  public static boolean enableJSResponder = false;
 }

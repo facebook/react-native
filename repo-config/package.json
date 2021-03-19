@@ -33,7 +33,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-react-native": "3.10.0",
     "eslint-plugin-relay": "1.8.1",
-    "flow-bin": "^0.145.0",
+    "flow-bin": "^0.146.0",
     "jest": "^26.5.2",
     "jest-junit": "^10.0.0",
     "jscodeshift": "^0.11.0",

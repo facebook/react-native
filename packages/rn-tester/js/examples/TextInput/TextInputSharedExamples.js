@@ -327,7 +327,9 @@ class TokenizedTextExample extends React.Component<
         index = 1;
       }
       parts.push(_text.substr(0, index));
+      // $FlowFixMe[incompatible-use]
       parts.push(token[0]);
+      // $FlowFixMe[incompatible-use]
       index = index + token[0].length;
       _text = _text.slice(index);
     }

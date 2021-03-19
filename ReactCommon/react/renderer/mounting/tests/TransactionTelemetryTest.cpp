@@ -49,8 +49,16 @@ TEST(TransactionTelemetryTest, normalUseCase) {
   telemetry.willLayout();
   sleep<TelemetryClock>(0.2);
 
-  telemetry.didMeasureText();
+  TransactionTelemetry::threadLocalTelemetry()->willMeasureText();
+  sleep<TelemetryClock>(0.1);
   TransactionTelemetry::threadLocalTelemetry()->didMeasureText();
+
+  TransactionTelemetry::threadLocalTelemetry()->willMeasureText();
+  sleep<TelemetryClock>(0.2);
+  TransactionTelemetry::threadLocalTelemetry()->didMeasureText();
+
+  TransactionTelemetry::threadLocalTelemetry()->willMeasureText();
+  sleep<TelemetryClock>(0.3);
   TransactionTelemetry::threadLocalTelemetry()->didMeasureText();
 
   telemetry.didLayout();
@@ -74,11 +82,15 @@ TEST(TransactionTelemetryTest, normalUseCase) {
   auto mountDuration = telemetryDurationToMilliseconds(
       telemetry.getMountEndTime() - telemetry.getMountStartTime());
 
-  EXPECT_EQ_WITH_THRESHOLD(commitDuration, 400, threshold);
-  EXPECT_EQ_WITH_THRESHOLD(layoutDuration, 200, threshold);
+  EXPECT_EQ_WITH_THRESHOLD(commitDuration, 1000, threshold);
+  EXPECT_EQ_WITH_THRESHOLD(layoutDuration, 800, threshold);
   EXPECT_EQ_WITH_THRESHOLD(mountDuration, 100, threshold);
 
   EXPECT_EQ(telemetry.getNumberOfTextMeasurements(), 3);
+  EXPECT_EQ_WITH_THRESHOLD(
+      telemetryDurationToMilliseconds(telemetry.getTextMeasureTime()),
+      600,
+      threshold);
   EXPECT_EQ(telemetry.getRevisionNumber(), 42);
 }
 

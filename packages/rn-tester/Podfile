@@ -57,7 +57,5 @@ target 'RNTesterIntegrationTests' do
 end
 
 post_install do |installer|
-  if !USE_FRAMEWORKS
-    flipper_post_install(installer)
-  end
+  react_native_post_install(installer)
 end

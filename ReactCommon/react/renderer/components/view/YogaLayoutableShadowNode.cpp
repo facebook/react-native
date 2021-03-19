@@ -6,6 +6,7 @@
  */
 
 #include "YogaLayoutableShadowNode.h"
+#include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/conversions.h>
@@ -128,7 +129,8 @@ void YogaLayoutableShadowNode::appendYogaChild(ShadowNode const &childNode) {
   auto &layoutableChildNode =
       traitCast<YogaLayoutableShadowNode const &>(childNode);
   yogaNode_.insertChild(
-      &layoutableChildNode.yogaNode_, yogaNode_.getChildren().size());
+      &layoutableChildNode.yogaNode_,
+      static_cast<uint32_t>(yogaNode_.getChildren().size()));
 
   ensureYogaChildrenLookFine();
 }
@@ -177,10 +179,11 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     layoutableClonedChildNode.yogaNode_.setOwner(&yogaNode_);
 
     // Replace the child node with a newly cloned one in the children list.
-    replaceChild(childNode, clonedChildNode, index);
+    replaceChild(childNode, clonedChildNode, static_cast<int>(index));
 
     // Replace the Yoga node inside the Yoga node children list.
-    yogaNode_.replaceChild(&layoutableClonedChildNode.yogaNode_, index);
+    yogaNode_.replaceChild(
+        &layoutableClonedChildNode.yogaNode_, static_cast<int>(index));
   }
 
   ensureYogaChildrenLookFine();
@@ -715,7 +718,7 @@ void YogaLayoutableShadowNode::ensureConsistency() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenOwnersConsistency() const {
-#ifndef NDEBUG
+#ifdef REACT_NATIVE_DEBUG
   // Checking that all Yoga node children have the same `owner`.
   // The owner might be not equal to the `yogaNode_` though.
   auto &yogaChildren = yogaNode_.getChildren();
@@ -730,7 +733,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenOwnersConsistency() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
-#ifndef NDEBUG
+#ifdef REACT_NATIVE_DEBUG
   // Checking that the shapes of Yoga node children object look fine.
   // This is the only heuristic that might produce false-positive results
   // (really broken dangled nodes might look fine). This is useful as an early
@@ -748,7 +751,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenAlighment() const {
-#ifndef NDEBUG
+#ifdef REACT_NATIVE_DEBUG
   // If the node is not a leaf node, checking that:
   // - All children are `YogaLayoutableShadowNode` subclasses.
   // - All Yoga children are owned/connected to corresponding children of

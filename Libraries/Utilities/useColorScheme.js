@@ -18,8 +18,10 @@ export default function useColorScheme(): ?ColorSchemeName {
     () => ({
       getCurrentValue: () => Appearance.getColorScheme(),
       subscribe: callback => {
-        Appearance.addChangeListener(callback);
-        return () => Appearance.removeChangeListener(callback);
+        const appearanceSubscription = Appearance.addChangeListener(callback);
+        return () => {
+          appearanceSubscription.remove();
+        };
       },
     }),
     [],

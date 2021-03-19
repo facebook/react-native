@@ -56,7 +56,8 @@ class UIManagerDelegate {
    */
   virtual void uiManagerDidSetIsJSResponder(
       ShadowNode::Shared const &shadowNode,
-      bool isJSResponder) = 0;
+      bool isJSResponder,
+      bool blockNativeResponder) = 0;
 
   virtual ~UIManagerDelegate() noexcept = default;
 };

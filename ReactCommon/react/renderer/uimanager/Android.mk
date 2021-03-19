@@ -21,7 +21,7 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_SHARED_LIBRARIES := libreact_render_graphics libfolly_futures libruntimeexecutor libreact_render_componentregistry glog libreactconfig libfolly_json libjsi libreact_render_core libreact_render_debug librrc_view librrc_root libreact_render_mounting
+LOCAL_SHARED_LIBRARIES := libreact_render_graphics libfolly_futures libruntimeexecutor libreact_render_componentregistry glog libreactconfig libfolly_json libjsi libreact_render_core libreact_render_debug librrc_view librrc_root libreact_render_mounting libreact_debug libreact_render_leakchecker
 
 include $(BUILD_SHARED_LIBRARY)
 
@@ -33,7 +33,9 @@ $(call import-module,react/renderer/components/root)
 $(call import-module,react/renderer/components/view)
 $(call import-module,react/renderer/componentregistry)
 $(call import-module,react/renderer/core)
+$(call import-module,react/renderer/leakchecker)
 $(call import-module,react/renderer/debug)
 $(call import-module,react/renderer/graphics)
 $(call import-module,react/renderer/mounting)
+$(call import-module,react/debug)
 $(call import-module,runtimeexecutor)
