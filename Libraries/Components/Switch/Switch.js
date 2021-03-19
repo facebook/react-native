@@ -135,7 +135,6 @@ class Switch extends React.Component<Props> {
 
   render(): React.Node {
     const {
-      disabled,
       ios_backgroundColor,
       onChange,
       onValueChange,
@@ -148,6 +147,16 @@ class Switch extends React.Component<Props> {
 
     const trackColorForFalse = trackColor?.false;
     const trackColorForTrue = trackColor?.true;
+
+    const disabled =
+      this.props.disabled != null
+        ? this.props.disabled
+        : this.props.accessibilityState?.disabled;
+
+    const accessibilityState =
+      disabled !== this.props.accessibilityState?.disabled
+        ? {...this.props.accessibilityState, disabled}
+        : this.props.accessibilityState;
 
     if (Platform.OS === 'android') {
       const platformProps = {
@@ -164,6 +173,7 @@ class Switch extends React.Component<Props> {
         <AndroidSwitchNativeComponent
           {...props}
           {...platformProps}
+          accessibilityState={accessibilityState}
           accessibilityRole={props.accessibilityRole ?? 'switch'}
           onChange={this._handleChange}
           onResponderTerminationRequest={returnsFalse}
@@ -196,6 +206,7 @@ class Switch extends React.Component<Props> {
         <SwitchNativeComponent
           {...props}
           {...platformProps}
+          accessibilityState={accessibilityState}
           accessibilityRole={props.accessibilityRole ?? 'switch'}
           onChange={this._handleChange}
           onResponderTerminationRequest={returnsFalse}
