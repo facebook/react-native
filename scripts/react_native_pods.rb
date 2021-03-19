@@ -149,7 +149,7 @@ def use_react_native_codegen!(spec, options={})
   return if ENV['DISABLE_CODEGEN'] == '1'
 
   # The path to react-native (e.g. react_native_path)
-  prefix = options[:path] ||= File.join(__dir__, "..")
+  prefix = options[:path] ||= "../../node_modules/react-native"
 
   # The path to JavaScript files
   srcs_dir = options[:srcs_dir] ||= File.join(prefix, "Libraries")
