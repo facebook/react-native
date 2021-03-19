@@ -191,8 +191,9 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     // iOS only
   }
 
+  @Override
   public void getRecommendedTimeoutMillis(
-      int originalTimeout, String uiContentFlags, Callback successCallback) {
+      double originalTimeout, String uiContentFlags, Callback successCallback) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
       successCallback.invoke(originalTimeout);
       return;
