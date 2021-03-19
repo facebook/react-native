@@ -623,12 +623,18 @@ export default class Pressability {
         : '<<host component>>',
     );
     if (prevState !== nextState) {
-      PressabilityPerformanceEventEmitter.emitEvent(() => {
-        return {
-          signal,
-          touchDelayMs: Date.now() - event.nativeEvent.timestamp,
-        };
-      });
+      // Especially on iOS, not all events have timestamps associated.
+      // For telemetry purposes, this doesn't matter too much, as long as *some* do.
+      // Since the native timestamp is integral for logging telemetry, just skip
+      // events if they don't have a timestamp attached.
+      if (event.nativeEvent.timestamp != null) {
+        PressabilityPerformanceEventEmitter.emitEvent(() => {
+          return {
+            signal,
+            touchDelayMs: Date.now() - event.nativeEvent.timestamp,
+          };
+        });
+      }
 
       this._performTransitionSideEffects(prevState, nextState, signal, event);
       this._touchState = nextState;
