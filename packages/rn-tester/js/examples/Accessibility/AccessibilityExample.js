@@ -752,7 +752,12 @@ class SetAccessibilityFocusExample extends React.Component<{}> {
     const myRef = createRef();
 
     const onClose = () => {
-      if (myRef && myRef.current) {
+      if (
+        myRef &&
+        myRef.current &&
+        AccessibilityInfo.sendAccessibilityEvent_unstable &&
+        AccessibilityInfo.sendAccessibilityEvent
+      ) {
         AccessibilityInfo.sendAccessibilityEvent_unstable(
           myRef.current,
           'focus',
