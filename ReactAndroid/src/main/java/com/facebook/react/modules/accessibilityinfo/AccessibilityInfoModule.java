@@ -195,7 +195,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   public void getRecommendedTimeoutMillis(
       double originalTimeout, String uiContentFlags, Callback successCallback) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-      successCallback.invoke(originalTimeout);
+      successCallback.invoke((int)originalTimeout);
       return;
     }
     int flag = 0;
@@ -212,7 +212,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
       default:
         break;
     }
-    mRecommendedTimeout = mAccessibilityManager.getRecommendedTimeoutMillis(originalTimeout, flag);
+    mRecommendedTimeout = mAccessibilityManager.getRecommendedTimeoutMillis((int)originalTimeout, flag);
     successCallback.invoke(mRecommendedTimeout);
   }
 }
