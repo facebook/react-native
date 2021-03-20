@@ -26,7 +26,7 @@ type AccessibilityEventDefinitions = {
   change: [boolean],
 };
 
-type AccessibilityEventTypes = 'focus';
+type AccessibilityEventTypes = 'focus' | 'click';
 
 const _subscriptions = new Map();
 
@@ -162,7 +162,12 @@ const AccessibilityInfo = {
     eventType: AccessibilityEventTypes,
   ) {
     // route through React renderer to distinguish between Fabric and non-Fabric handles
-    sendAccessibilityEvent(handle, eventType);
+    // iOS only supports 'focus' event types
+    if (eventType === 'focus') {
+      sendAccessibilityEvent(handle, eventType);
+    } else if (eventType === 'click') {
+      // Do nothing!
+    }
   },
 
   /**

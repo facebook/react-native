@@ -43,7 +43,8 @@ type AccessibilityEventDefinitions = {
   ],
 };
 
-type AccessibilityEventTypes = 'focus';
+// 'click' event type is not implemented in iOS. It's declared here to avoid flow type errors
+type AccessibilityEventTypes = 'focus' | 'click';
 
 const _subscriptions = new Map();
 
