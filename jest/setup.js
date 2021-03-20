@@ -119,6 +119,7 @@ jest
     addEventListener: jest.fn(),
     announceForAccessibility: jest.fn(),
     fetch: jest.fn(),
+    getInstalledAccessibilityServiceList: jest.fn(),
     isBoldTextEnabled: jest.fn(),
     isGrayscaleEnabled: jest.fn(),
     isInvertColorsEnabled: jest.fn(),

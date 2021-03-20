@@ -175,6 +175,19 @@ const AccessibilityInfo = {
       NativeAccessibilityInfo.announceForAccessibility(announcement);
     }
   },
+
+  /**
+   * Returns the AccessibilityServiceInfos of the installed accessibility services.
+   */
+  getInstalledAccessibilityServiceList: function(): Promise<Array<Object> | null> {
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityInfo) {
+        NativeAccessibilityInfo.getInstalledAccessibilityServiceList(resolve);
+      } else {
+        reject(null);
+      }
+    });
+  },
 };
 
 module.exports = AccessibilityInfo;
