@@ -33,6 +33,10 @@ inline bool isUndefined(float value) {
   return std::isnan(value);
 }
 
+inline bool isUndefined(double value) {
+  return std::isnan(value);
+}
+
 } // namespace yoga
 } // namespace facebook
 

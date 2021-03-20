@@ -106,6 +106,10 @@ static int YGDefaultLog(
 #undef YG_UNUSED
 #endif
 
+static inline bool YGDoubleIsUndefined(const double value) {
+  return facebook::yoga::isUndefined(value);
+}
+
 YOGA_EXPORT bool YGFloatIsUndefined(const float value) {
   return facebook::yoga::isUndefined(value);
 }
@@ -3620,10 +3624,10 @@ YOGA_EXPORT float YGRoundValueToPixelGrid(
     const double pointScaleFactor,
     const bool forceCeil,
     const bool forceFloor) {
-  double scaledValue = ((double) value) * pointScaleFactor;
+  double scaledValue = value * pointScaleFactor;
   // We want to calculate `fractial` such that `floor(scaledValue) = scaledValue
   // - fractial`.
-  double fractial = fmod(scaledValue, 1.0f);
+  double fractial = fmod(scaledValue, 1.0);
   if (fractial < 0) {
     // This branch is for handling negative numbers for `value`.
     //
@@ -3645,25 +3649,25 @@ YOGA_EXPORT float YGRoundValueToPixelGrid(
   if (YGDoubleEqual(fractial, 0)) {
     // First we check if the value is already rounded
     scaledValue = scaledValue - fractial;
-  } else if (YGDoubleEqual(fractial, 1.0f)) {
-    scaledValue = scaledValue - fractial + 1.0f;
+  } else if (YGDoubleEqual(fractial, 1.0)) {
+    scaledValue = scaledValue - fractial + 1.0;
   } else if (forceCeil) {
     // Next we check if we need to use forced rounding
-    scaledValue = scaledValue - fractial + 1.0f;
+    scaledValue = scaledValue - fractial + 1.0;
   } else if (forceFloor) {
     scaledValue = scaledValue - fractial;
   } else {
     // Finally we just round the value
     scaledValue = scaledValue - fractial +
-        (!YGFloatIsUndefined(fractial) &&
-                 (fractial > 0.5f || YGDoubleEqual(fractial, 0.5f))
-             ? 1.0f
-             : 0.0f);
+        (!YGDoubleIsUndefined(fractial) &&
+                 (fractial > 0.5 || YGDoubleEqual(fractial, 0.5))
+             ? 1.0
+             : 0.0);
   }
-  return (YGFloatIsUndefined(scaledValue) ||
-          YGFloatIsUndefined(pointScaleFactor))
+  return (YGDoubleIsUndefined(scaledValue) ||
+          YGDoubleIsUndefined(pointScaleFactor))
       ? YGUndefined
-      : scaledValue / pointScaleFactor;
+      : (float) (scaledValue / pointScaleFactor);
 }
 
 YOGA_EXPORT bool YGNodeCanUseCachedMeasurement(
