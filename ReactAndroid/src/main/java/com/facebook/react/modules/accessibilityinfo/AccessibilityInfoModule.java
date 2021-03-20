@@ -25,13 +25,13 @@ import com.facebook.fbreact.specs.NativeAccessibilityInfoSpec;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Module that monitors and provides information about the state of Touch Exploration service on the
@@ -198,29 +198,38 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
   @Override
   public void getInstalledAccessibilityServiceList(Callback successCallback) {
-    List<AccessibilityServiceInfo> servicesList = mAccessibilityManager.getInstalledAccessibilityServiceList();
-    
-    WritableArray result = Arguments.fromArray(servicesList.stream().map( service -> {
-      Bundle map = new Bundle();
-      map.putString("id", service.getId());
-      map.putString("capabilities", AccessibilityServiceInfo.capabilityToString(service.getCapabilities()));
-      map.putString("eventTypes", AccessibilityEvent.eventTypeToString(service.eventTypes));
-      map.putString("feedbackType", AccessibilityServiceInfo.feedbackTypeToString(service.feedbackType));
-      map.putString("flags",AccessibilityServiceInfo.flagToString(service.flags));
-      map.putDouble("notificationTimeout", service.notificationTimeout);
-      if (service.packageNames != null ) {
-        ArrayList<String> packageNames = new ArrayList<String>();
-        Collections.addAll(packageNames, service.packageNames);
-        map.putStringArrayList("packageNames", packageNames);
-      }
-      
-      return map;
-    }).toArray(Bundle[]::new));
-    
+    List<AccessibilityServiceInfo> servicesList =
+        mAccessibilityManager.getInstalledAccessibilityServiceList();
+
+     WritableArray result =
+        Arguments.fromArray(
+            servicesList.stream()
+                .map(
+                    service -> {
+                      Bundle map = new Bundle();
+                      map.putString("id", service.getId());
+                      map.putString(
+                          "capabilities",
+                          AccessibilityServiceInfo.capabilityToString(service.getCapabilities()));
+                      map.putString(
+                          "eventTypes", AccessibilityEvent.eventTypeToString(service.eventTypes));
+                      map.putString(
+                          "feedbackType",
+                          AccessibilityServiceInfo.feedbackTypeToString(service.feedbackType));
+                      map.putString("flags", AccessibilityServiceInfo.flagToString(service.flags));
+                      map.putDouble("notificationTimeout", service.notificationTimeout);
+                      if (service.packageNames != null) {
+                        ArrayList<String> packageNames = new ArrayList<String>();
+                        Collections.addAll(packageNames, service.packageNames);
+                        map.putStringArrayList("packageNames", packageNames);
+                      }
+
+                       return map;
+                    })
+                .toArray(Bundle[]::new));    
 
     successCallback.invoke(result);
   }
-
 
   @Override
   public void setAccessibilityFocus(double reactTag) {
