@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "10.0" }
+  s.platforms              = { :ios => "11.0" }
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "{Drivers/*,Nodes/*,*}.{m,mm}"
@@ -39,9 +39,9 @@ Pod::Spec.new do |s|
                              }
 
   s.dependency "RCT-Folly", folly_version
+  s.dependency "FBReactNativeSpec", version
   s.dependency "RCTTypeSafety", version
   s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
-  s.dependency "FBReactNativeSpec", version
   s.dependency "React-Core/RCTAnimationHeaders", version
 end

@@ -10,8 +10,6 @@
 
 // This is a controlled component version of RCTPickerIOS.
 
-'use strict';
-
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');

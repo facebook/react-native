@@ -27,6 +27,7 @@ typedef NS_ENUM(NSUInteger, RCTPLTag) {
   RCTPLBridgeStartup,
   RCTPLTTI,
   RCTPLBundleSize,
+  RCTPLReactInstanceInit,
   RCTPLSize // This is used to count the size
 };
 

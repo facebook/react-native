@@ -8,18 +8,17 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import * as React from 'react';
 
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
-import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 
 import type {
   DirectEventHandler,
   Int32,
   WithDefault,
 } from '../../Types/CodegenTypes';
+
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
@@ -51,11 +50,9 @@ type NativeProps = $ReadOnly<{|
   onSelect?: DirectEventHandler<PickerItemSelectEvent>,
 |}>;
 
-type NativeType = HostComponent<NativeProps>;
-
 interface NativeCommands {
   +setNativeSelectedPosition: (
-    viewRef: React.ElementRef<NativeType>,
+    viewRef: React.ElementRef<typeof AndroidDropdownPickerNativeComponent>,
     index: number,
   ) => void;
 }
@@ -64,6 +61,22 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setNativeSelectedPosition'],
 });
 
-export default (requireNativeComponent<NativeProps>(
+const AndroidDropdownPickerNativeComponent: HostComponent<NativeProps> = NativeComponentRegistry.get<NativeProps>(
   'AndroidDropdownPicker',
-): NativeType);
+  () => ({
+    uiViewClassName: 'AndroidDropdownPicker',
+    bubblingEventTypes: {},
+    directEventTypes: {},
+    validAttributes: {
+      color: {process: require('../../StyleSheet/processColor')},
+      backgroundColor: {process: require('../../StyleSheet/processColor')},
+      enabled: true,
+      items: true,
+      prompt: true,
+      selected: true,
+      onSelect: true,
+    },
+  }),
+);
+
+export default AndroidDropdownPickerNativeComponent;

@@ -14,12 +14,14 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.ThreadConfined;
+import java.util.List;
 
 public interface UIManager extends JSIModule, PerformanceCounter {
 
-  /** Registers a new root view. */
+  /** Registers a new root view. @Deprecated call startSurface instead */
   @UiThread
   @ThreadConfined(UI)
+  @Deprecated
   <T extends View> int addRootView(
       final T rootView, WritableMap initialProps, @Nullable String initialUITemplate);
 
@@ -83,7 +85,7 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * layout-related propertied won't be handled properly. Make sure you know what you're doing
    * before calling this method :)
    *
-   * @param tag {@link int} that identifies the view that will be updated
+   * @param reactTag {@link int} that identifies the view that will be updated
    * @param props {@link ReadableMap} props that should be immediately updated in view
    */
   @UiThread
@@ -123,10 +125,33 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * @param eventName name of the event
    * @param event parameters
    */
+  @Deprecated
   void receiveEvent(int reactTag, String eventName, @Nullable WritableMap event);
+
+  /**
+   * This method dispatches events from RN Android code to JS. The delivery of this event will not
+   * be queued in EventDispatcher class.
+   *
+   * @param surfaceId
+   * @param reactTag tag
+   * @param eventName name of the event
+   * @param event parameters
+   */
+  void receiveEvent(int surfaceId, int reactTag, String eventName, @Nullable WritableMap event);
 
   /** Resolves Direct Event name exposed to JS from the one known to the Native side. */
   @Deprecated
   @Nullable
   String resolveCustomDirectEventName(@Nullable String eventName);
+
+  /**
+   * Helper method to pre-initialize view managers. When using Native ViewConfigs this method will
+   * also pre-compute the constants for a view manager. The purpose is to ensure that we don't block
+   * for getting the constants for view managers during initial rendering of a surface.
+   *
+   * @deprecated this method will be removed in the future
+   * @param viewManagerNames {@link List <String>} names of ViewManagers
+   */
+  @Deprecated
+  void preInitializeViewManagers(List<String> viewManagerNames);
 }

@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_prebuilt_ja
 
 rn_android_library(
     name = "mockito",
+    autoglob = False,
     visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":mockito-core",

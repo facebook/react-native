@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_libra
 rn_android_library(
     name = "logging",
     srcs = glob(["**/*.java"]),
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],

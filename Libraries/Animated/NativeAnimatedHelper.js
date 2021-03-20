@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import NativeAnimatedNonTurboModule from './NativeAnimatedModule';
 import NativeAnimatedTurboModule from './NativeAnimatedTurboModule';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
@@ -53,11 +51,11 @@ const API = {
       NativeAnimatedModule.getValue(tag, saveValueCallback);
     }
   },
-  setWaitingForIdentifier: function(id: number): void {
+  setWaitingForIdentifier: function(id: string): void {
     waitingForQueuedOperations.add(id);
     queueOperations = true;
   },
-  unsetWaitingForIdentifier: function(id: number): void {
+  unsetWaitingForIdentifier: function(id: string): void {
     waitingForQueuedOperations.delete(id);
 
     if (waitingForQueuedOperations.size === 0) {

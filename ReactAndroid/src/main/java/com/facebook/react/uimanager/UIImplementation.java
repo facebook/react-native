@@ -51,6 +51,13 @@ public class UIImplementation {
   private long mLastCalculateLayoutTime = 0;
   protected @Nullable LayoutUpdateListener mLayoutUpdateListener;
 
+  /**
+   * When react instance is being shutdown, there could be some pending operations queued in the JS
+   * thread. This flag ensures view related operations are not triggered if the Catalyst instance
+   * was destroyed.
+   */
+  private volatile boolean mViewOperationsEnabled = true;
+
   /** Interface definition for a callback to be invoked when the layout has been updated */
   public interface LayoutUpdateListener {
 
@@ -60,7 +67,7 @@ public class UIImplementation {
 
   public UIImplementation(
       ReactApplicationContext reactContext,
-      UIManagerModule.ViewManagerResolver viewManagerResolver,
+      ViewManagerResolver viewManagerResolver,
       EventDispatcher eventDispatcher,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     this(
@@ -234,6 +241,10 @@ public class UIImplementation {
 
   /** Invoked by React to create a new node with a given tag, class name and properties. */
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     synchronized (uiImplementationThreadLock) {
       ReactShadowNode cssNode = createShadowNode(className);
       ReactShadowNode rootNode = mShadowNodeRegistry.getNode(rootViewTag);
@@ -264,6 +275,10 @@ public class UIImplementation {
 
   /** Invoked by React to create a new node with a given tag has its properties changed. */
   public void updateView(int tag, String className, ReadableMap props) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     ViewManager viewManager = mViewManagers.get(className);
     if (viewManager == null) {
       throw new IllegalViewOperationException("Got unknown view type: " + className);
@@ -314,6 +329,10 @@ public class UIImplementation {
       @Nullable ReadableArray addChildTags,
       @Nullable ReadableArray addAtIndices,
       @Nullable ReadableArray removeFrom) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     synchronized (uiImplementationThreadLock) {
       ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
 
@@ -420,6 +439,10 @@ public class UIImplementation {
    * @param childrenTags tags of the children
    */
   public void setChildren(int viewTag, ReadableArray childrenTags) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     synchronized (uiImplementationThreadLock) {
       ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
 
@@ -530,6 +553,10 @@ public class UIImplementation {
    * view and returns the values via an async callback.
    */
   public void measure(int reactTag, Callback callback) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     // This method is called by the implementation of JS touchable interface (see Touchable.js for
     // more details) at the moment of touch activation. That is after user starts the gesture from
     // a touchable view with a given reactTag, or when user drag finger back into the press
@@ -543,6 +570,10 @@ public class UIImplementation {
    * things like the status bar
    */
   public void measureInWindow(int reactTag, Callback callback) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     mOperationsQueue.enqueueMeasureInWindow(reactTag, callback);
   }
 
@@ -554,6 +585,10 @@ public class UIImplementation {
    */
   public void measureLayout(
       int tag, int ancestorTag, Callback errorCallback, Callback successCallback) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     try {
       measureLayout(tag, ancestorTag, mMeasureBuffer);
       float relativeX = PixelUtil.toDIPFromPixel(mMeasureBuffer[0]);
@@ -571,6 +606,10 @@ public class UIImplementation {
    */
   public void measureLayoutRelativeToParent(
       int tag, Callback errorCallback, Callback successCallback) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
     try {
       measureLayoutRelativeToParent(tag, mMeasureBuffer);
       float relativeX = PixelUtil.toDIPFromPixel(mMeasureBuffer[0]);
@@ -747,6 +786,10 @@ public class UIImplementation {
 
   public void onHostDestroy() {}
 
+  public void onCatalystInstanceDestroyed() {
+    mViewOperationsEnabled = false;
+  }
+
   public void setViewHierarchyUpdateDebugListener(
       @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
     mOperationsQueue.setViewHierarchyUpdateDebugListener(listener);
@@ -913,6 +956,7 @@ public class UIImplementation {
       if (frameDidChange && cssNode.shouldNotifyOnLayout()) {
         mEventDispatcher.dispatchEvent(
             OnLayoutEvent.obtain(
+                -1, /* surfaceId not used in classic renderer */
                 tag,
                 cssNode.getScreenX(),
                 cssNode.getScreenY(),

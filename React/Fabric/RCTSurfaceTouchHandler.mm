@@ -10,6 +10,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
 #import <UIKit/UIGestureRecognizerSubclass.h>
+#import <UIKit/UIKit.h>
 
 #import "RCTConversions.h"
 #import "RCTTouchableComponentViewProtocol.h"
@@ -82,7 +83,8 @@ static void UpdateActiveTouchWithUITouch(
     ActiveTouch &activeTouch,
     UITouch *uiTouch,
     UIView *rootComponentView,
-    CGPoint rootViewOriginOffset)
+    CGPoint rootViewOriginOffset,
+    NSTimeInterval unixTimestampBasis)
 {
   CGPoint offsetPoint = [uiTouch locationInView:activeTouch.componentView];
   CGPoint screenPoint = [uiTouch locationInView:uiTouch.window];
@@ -93,14 +95,18 @@ static void UpdateActiveTouchWithUITouch(
   activeTouch.touch.screenPoint = RCTPointFromCGPoint(screenPoint);
   activeTouch.touch.pagePoint = RCTPointFromCGPoint(pagePoint);
 
-  activeTouch.touch.timestamp = uiTouch.timestamp;
+  activeTouch.touch.timestamp = unixTimestampBasis + uiTouch.timestamp;
 
   if (RCTForceTouchAvailable()) {
-    activeTouch.touch.force = uiTouch.force / uiTouch.maximumPossibleForce;
+    activeTouch.touch.force = RCTZeroIfNaN(uiTouch.force / uiTouch.maximumPossibleForce);
   }
 }
 
-static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView, CGPoint rootViewOriginOffset)
+static ActiveTouch CreateTouchWithUITouch(
+    UITouch *uiTouch,
+    UIView *rootComponentView,
+    CGPoint rootViewOriginOffset,
+    NSTimeInterval unixTimestampBasis)
 {
   ActiveTouch activeTouch = {};
 
@@ -117,7 +123,7 @@ static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponen
     componentView = componentView.superview;
   }
 
-  UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView, rootViewOriginOffset);
+  UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView, rootViewOriginOffset, unixTimestampBasis);
   return activeTouch;
 }
 
@@ -167,6 +173,12 @@ struct PointerHasher {
    */
   __weak UIView *_rootComponentView;
   IdentifierPool<11> _identifierPool;
+
+  /*
+   * See Touch.h and usage. This gives us a time-basis for a monotonic
+   * clock that acts like a timestamp of milliseconds elapsed since UNIX epoch.
+   */
+  NSTimeInterval _unixEpochBasisTime;
 }
 
 - (instancetype)init
@@ -181,6 +193,8 @@ struct PointerHasher {
     self.delaysTouchesEnded = NO;
 
     self.delegate = self;
+
+    _unixEpochBasisTime = [[NSDate date] timeIntervalSince1970] - [NSProcessInfo processInfo].systemUptime;
   }
 
   return self;
@@ -208,7 +222,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 - (void)_registerTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    auto activeTouch = CreateTouchWithUITouch(touch, _rootComponentView, _viewOriginOffset);
+    auto activeTouch = CreateTouchWithUITouch(touch, _rootComponentView, _viewOriginOffset, _unixEpochBasisTime);
     activeTouch.touch.identifier = _identifierPool.dequeue();
     _activeTouches.emplace(touch, activeTouch);
   }
@@ -223,7 +237,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
       continue;
     }
 
-    UpdateActiveTouchWithUITouch(iterator->second, touch, _rootComponentView, _viewOriginOffset);
+    UpdateActiveTouchWithUITouch(iterator->second, touch, _rootComponentView, _viewOriginOffset, _unixEpochBasisTime);
   }
 }
 
@@ -408,6 +422,24 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   // Same condition for `failure of` as for `be prevented by`.
   return [self canBePreventedByGestureRecognizer:otherGestureRecognizer];
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+  BOOL canBePrevented = [self canBePreventedByGestureRecognizer:otherGestureRecognizer];
+  if (canBePrevented) {
+    [self _cancelTouches];
+  }
+  return NO;
+}
+
+#pragma mark -
+
+- (void)_cancelTouches
+{
+  [self setEnabled:NO];
+  [self setEnabled:YES];
 }
 
 @end

@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import {Property} from './Property';
 import {toCppNamespace, toCppType} from './Converters';
 

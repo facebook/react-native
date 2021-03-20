@@ -25,7 +25,7 @@ void ImageShadowNode::setImageManager(const SharedImageManager &imageManager) {
 void ImageShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
-  auto const &imageSource = getImageSource();
+  auto imageSource = getImageSource();
   auto const &currentState = getStateData();
   bool hasSameRadius =
       getConcreteProps().blurRadius == currentState.getBlurRadius();
@@ -35,10 +35,10 @@ void ImageShadowNode::updateStateIfNeeded() {
     return;
   }
 
-  auto state =
-      ImageState{imageSource,
-                 imageManager_->requestImage(imageSource, getSurfaceId()),
-                 getConcreteProps().blurRadius};
+  auto state = ImageState{
+      imageSource,
+      imageManager_->requestImage(imageSource, getSurfaceId()),
+      getConcreteProps().blurRadius};
   setStateData(std::move(state));
 }
 

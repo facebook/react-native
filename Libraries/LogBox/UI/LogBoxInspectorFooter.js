@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {LogLevel} from '../Data/LogBoxLog';
 
 import * as React from 'react';

@@ -9,8 +9,6 @@
  * @generate-docs
  */
 
-'use strict';
-
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';

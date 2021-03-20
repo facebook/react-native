@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 #include "AndroidProgressBarMeasurementsManager.h"
 #include "AndroidProgressBarShadowNode.h"
@@ -30,7 +31,8 @@ class AndroidProgressBarComponentDescriptor final
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    assert(std::dynamic_pointer_cast<AndroidProgressBarShadowNode>(shadowNode));
+    react_native_assert(
+        std::dynamic_pointer_cast<AndroidProgressBarShadowNode>(shadowNode));
     auto androidProgressBarShadowNode =
         std::static_pointer_cast<AndroidProgressBarShadowNode>(shadowNode);
 

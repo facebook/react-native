@@ -7,6 +7,7 @@ rn_android_library(
             "*.java",
         ],
     ),
+    autoglob = False,
     labels = [
         "supermodule:xplat/default/public.react_native.infra",
     ],

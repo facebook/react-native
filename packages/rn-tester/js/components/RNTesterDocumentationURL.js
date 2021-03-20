@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import * as React from 'react';
 import {Image, StyleSheet, TouchableOpacity} from 'react-native';
 import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';

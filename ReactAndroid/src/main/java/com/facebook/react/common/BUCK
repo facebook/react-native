@@ -10,6 +10,7 @@ rn_android_library(
         ["**/*.java"],
         exclude = SUB_PROJECTS,
     ),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
@@ -39,6 +40,7 @@ rn_android_build_config(
     package = "com.facebook.react",
     values = [
         "boolean IS_INTERNAL_BUILD = true",
+        "int HERMES_BYTECODE_VERSION = 0",
     ],
     visibility = [
         "PUBLIC",

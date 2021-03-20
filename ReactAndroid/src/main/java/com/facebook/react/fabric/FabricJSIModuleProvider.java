@@ -7,6 +7,8 @@
 
 package com.facebook.react.fabric;
 
+import static com.facebook.react.config.ReactFeatureFlags.enableExperimentalStaticViewConfigs;
+
 import androidx.annotation.NonNull;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSIModuleProvider;
@@ -18,23 +20,16 @@ import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.mounting.LayoutMetricsConversions;
 import com.facebook.react.fabric.mounting.MountingManager;
-import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
-import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchIntCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountItem;
-import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
+import com.facebook.react.fabric.mounting.mountitems.IntBufferBatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
-import com.facebook.react.fabric.mounting.mountitems.RemoveDeleteMultiMountItem;
 import com.facebook.react.fabric.mounting.mountitems.SendAccessibilityEvent;
-import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem;
-import com.facebook.react.fabric.mounting.mountitems.UpdateLayoutMountItem;
-import com.facebook.react.fabric.mounting.mountitems.UpdatePaddingMountItem;
-import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
-import com.facebook.react.fabric.mounting.mountitems.UpdateStateMountItem;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -44,18 +39,22 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   @NonNull private final ReactApplicationContext mReactApplicationContext;
   @NonNull private final ComponentFactory mComponentFactory;
   @NonNull private final ReactNativeConfig mConfig;
+  @NonNull private final ViewManagerRegistry mViewManagerRegistry;
 
   public FabricJSIModuleProvider(
       @NonNull ReactApplicationContext reactApplicationContext,
       @NonNull ComponentFactory componentFactory,
-      @NonNull ReactNativeConfig config) {
+      @NonNull ReactNativeConfig config,
+      @NonNull ViewManagerRegistry viewManagerRegistry) {
     mReactApplicationContext = reactApplicationContext;
     mComponentFactory = componentFactory;
     mConfig = config;
+    mViewManagerRegistry = viewManagerRegistry;
   }
 
   @Override
   public UIManager get() {
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.get");
     final EventBeatManager eventBeatManager = new EventBeatManager(mReactApplicationContext);
     final FabricUIManager uiManager = createUIManager(eventBeatManager);
     Systrace.beginSection(
@@ -76,23 +75,30 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
         jsMessageQueueThread,
         mComponentFactory,
         mConfig);
+
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+
     return uiManager;
   }
 
   private FabricUIManager createUIManager(@NonNull EventBeatManager eventBeatManager) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.createUIManager");
-    UIManagerModule nativeModule =
-        Assertions.assertNotNull(mReactApplicationContext.getNativeModule(UIManagerModule.class));
-    EventDispatcher eventDispatcher = nativeModule.getEventDispatcher();
-    FabricUIManager fabricUIManager =
-        new FabricUIManager(
-            mReactApplicationContext,
-            nativeModule.getViewManagerRegistry_DO_NOT_USE(),
-            eventDispatcher,
-            eventBeatManager);
 
+    FabricUIManager fabricUIManager;
+    if (enableExperimentalStaticViewConfigs) {
+      fabricUIManager =
+          new FabricUIManager(mReactApplicationContext, mViewManagerRegistry, eventBeatManager);
+    } else {
+      // TODO T83943316: Remove this code once StaticViewConfigs are enabled by default
+      UIManagerModule nativeModule =
+          Assertions.assertNotNull(mReactApplicationContext.getNativeModule(UIManagerModule.class));
+      EventDispatcher eventDispatcher = nativeModule.getEventDispatcher();
+      fabricUIManager =
+          new FabricUIManager(
+              mReactApplicationContext, mViewManagerRegistry, eventDispatcher, eventBeatManager);
+    }
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return fabricUIManager;
   }
@@ -103,21 +109,12 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     EventBeatManager.class.getClass();
     EventEmitterWrapper.class.getClass();
     FabricEventEmitter.class.getClass();
-    BatchMountItem.class.getClass();
-    CreateMountItem.class.getClass();
     DispatchCommandMountItem.class.getClass();
     DispatchIntCommandMountItem.class.getClass();
     DispatchStringCommandMountItem.class.getClass();
-    InsertMountItem.class.getClass();
     MountItem.class.getClass();
     PreAllocateViewMountItem.class.getClass();
-    RemoveDeleteMultiMountItem.class.getClass();
     SendAccessibilityEvent.class.getClass();
-    UpdateEventEmitterMountItem.class.getClass();
-    UpdateLayoutMountItem.class.getClass();
-    UpdatePaddingMountItem.class.getClass();
-    UpdatePropsMountItem.class.getClass();
-    UpdateStateMountItem.class.getClass();
     LayoutMetricsConversions.class.getClass();
     MountingManager.class.getClass();
     Binding.class.getClass();
@@ -130,5 +127,6 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     StateWrapperImpl.class.getClass();
     BatchEventDispatchedListener.class.getClass();
     ReactNativeConfig.class.getClass();
+    IntBufferBatchMountItem.class.getClass();
   }
 }

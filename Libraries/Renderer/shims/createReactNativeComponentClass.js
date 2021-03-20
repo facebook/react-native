@@ -6,13 +6,13 @@
  *
  * @format
  * @flow strict-local
+ * @generated SignedSource<<745b7b5c173d0bc75b6d97938c98728d>>
  */
 
 'use strict';
 
 import {ReactNativeViewConfigRegistry} from 'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface';
-
-import type {ViewConfigGetter} from './ReactNativeTypes';
+import {type ViewConfig} from './ReactNativeTypes';
 
 const {register} = ReactNativeViewConfigRegistry;
 
@@ -26,7 +26,7 @@ const {register} = ReactNativeViewConfigRegistry;
  */
 const createReactNativeComponentClass = function(
   name: string,
-  callback: ViewConfigGetter,
+  callback: () => ViewConfig,
 ): string {
   return register(name, callback);
 };

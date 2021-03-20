@@ -26,21 +26,6 @@ void RCTExperimentSetOnDemandViewMounting(BOOL value)
 }
 
 /*
- * Sync performance flag
- */
-static BOOL RCTExperimentSyncPerformanceFlag = NO;
-
-BOOL RCTExperimentGetSyncPerformanceFlag()
-{
-  return RCTExperimentSyncPerformanceFlag;
-}
-
-void RCTExperimentSetSyncPerformanceFlag(BOOL value)
-{
-  RCTExperimentSyncPerformanceFlag = value;
-}
-
-/*
  * Optimized hit-testing
  */
 static BOOL RCTExperimentOptimizedHitTesting = NO;
@@ -68,4 +53,19 @@ BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
 void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 {
   RCTExperimentPreemptiveViewAllocationDisabled = value;
+}
+
+/*
+ * Release resources when app enters background
+ */
+static BOOL RCTExperimentReleaseResourcesWhenBackgrounded = NO;
+
+BOOL RCTExperimentGetReleaseResourcesWhenBackgrounded()
+{
+  return RCTExperimentReleaseResourcesWhenBackgrounded;
+}
+
+void RCTExperimentSetReleaseResourcesWhenBackgrounded(BOOL value)
+{
+  RCTExperimentReleaseResourcesWhenBackgrounded = value;
 }

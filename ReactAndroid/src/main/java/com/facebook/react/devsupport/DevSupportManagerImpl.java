@@ -44,14 +44,14 @@ public final class DevSupportManagerImpl extends DevSupportManagerBase {
 
   public DevSupportManagerImpl(
       Context applicationContext,
-      ReactInstanceManagerDevHelper reactInstanceManagerHelper,
+      ReactInstanceDevHelper reactInstanceDevHelper,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
       int minNumShakes) {
 
     super(
         applicationContext,
-        reactInstanceManagerHelper,
+        reactInstanceDevHelper,
         packagerPathForJSBundleName,
         enableOnCreate,
         null,
@@ -62,7 +62,7 @@ public final class DevSupportManagerImpl extends DevSupportManagerBase {
 
   public DevSupportManagerImpl(
       Context applicationContext,
-      ReactInstanceManagerDevHelper reactInstanceManagerHelper,
+      ReactInstanceDevHelper reactInstanceManagerHelper,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
       @Nullable RedBoxHandler redBoxHandler,

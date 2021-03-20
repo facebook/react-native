@@ -24,6 +24,8 @@ export type AnimationConfig = {
   iterations?: number,
 };
 
+let startNativeAnimationNextId = 1;
+
 // Important note: start() and stop() will only be called at most once.
 // Once an animation has been stopped or finished its course, it will
 // not be reused.
@@ -57,8 +59,11 @@ class Animation {
     onEnd && onEnd(result);
   }
   __startNativeAnimation(animatedValue: AnimatedValue): void {
-    const arbitraryValue = Math.random();
-    NativeAnimatedHelper.API.setWaitingForIdentifier(arbitraryValue);
+    const startNativeAnimationWaitId = `${startNativeAnimationNextId}:startAnimation`;
+    startNativeAnimationNextId += 1;
+    NativeAnimatedHelper.API.setWaitingForIdentifier(
+      startNativeAnimationWaitId,
+    );
     try {
       animatedValue.__makeNative();
       this.__nativeId = NativeAnimatedHelper.generateNewAnimationId();
@@ -71,7 +76,9 @@ class Animation {
     } catch (e) {
       throw e;
     } finally {
-      NativeAnimatedHelper.API.unsetWaitingForIdentifier(arbitraryValue);
+      NativeAnimatedHelper.API.unsetWaitingForIdentifier(
+        startNativeAnimationWaitId,
+      );
     }
   }
 }

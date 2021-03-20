@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 import {
@@ -67,6 +65,8 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
         null,
       ]),
     getObject: () =>
+      NativeSampleTurboModule.getObject({a: 1, b: 'foo', c: null}),
+    getUnsafeObject: () =>
       NativeSampleTurboModule.getObject({a: 1, b: 'foo', c: null}),
     getRootTag: () => NativeSampleTurboModule.getRootTag(this.context),
     getValue: () =>

@@ -1,8 +1,9 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_root_target", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "swiperefresh",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
@@ -25,6 +26,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/views/scroll:scroll"),
     ],
     exported_deps = [
-        react_native_target("java/com/facebook/react/viewmanagers:viewmanagers"),
+        react_native_root_target("Libraries:generated_components_java-FBReactNativeComponentSpec"),
     ],
 )

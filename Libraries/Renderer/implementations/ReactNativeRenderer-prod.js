@@ -1138,7 +1138,6 @@ var ReactSharedInternals =
   REACT_SUSPENSE_LIST_TYPE = 60120,
   REACT_MEMO_TYPE = 60115,
   REACT_LAZY_TYPE = 60116,
-  REACT_BLOCK_TYPE = 60121,
   REACT_DEBUG_TRACING_MODE_TYPE = 60129,
   REACT_OFFSCREEN_TYPE = 60130,
   REACT_LEGACY_HIDDEN_TYPE = 60131;
@@ -1156,7 +1155,6 @@ if ("function" === typeof Symbol && Symbol.for) {
   REACT_SUSPENSE_LIST_TYPE = symbolFor("react.suspense_list");
   REACT_MEMO_TYPE = symbolFor("react.memo");
   REACT_LAZY_TYPE = symbolFor("react.lazy");
-  REACT_BLOCK_TYPE = symbolFor("react.block");
   symbolFor("react.scope");
   REACT_DEBUG_TRACING_MODE_TYPE = symbolFor("react.debug_trace_mode");
   REACT_OFFSCREEN_TYPE = symbolFor("react.offscreen");
@@ -1203,8 +1201,6 @@ function getComponentName(type) {
         );
       case REACT_MEMO_TYPE:
         return getComponentName(type.type);
-      case REACT_BLOCK_TYPE:
-        return getComponentName(type._render);
       case REACT_LAZY_TYPE:
         innerType = type._payload;
         type = type._init;
@@ -2104,8 +2100,6 @@ function describeFiber(fiber) {
       return describeFunctionComponentFrame(fiber.type, null);
     case 11:
       return describeFunctionComponentFrame(fiber.type.render, null);
-    case 22:
-      return describeFunctionComponentFrame(fiber.type._render, null);
     case 1:
       return (fiber = describeFunctionComponentFrame(fiber.type, null)), fiber;
     default:
@@ -3225,7 +3219,6 @@ function ChildReconciler(shouldTrackSideEffects) {
     if ("undefined" === typeof newChild && !isUnkeyedTopLevelFragment)
       switch (returnFiber.tag) {
         case 1:
-        case 22:
         case 0:
         case 11:
         case 15:
@@ -5143,8 +5136,8 @@ function completeWork(current, workInProgress, renderLanes) {
           ),
           current)
         : null;
+    case 22:
     case 23:
-    case 24:
       return (
         popRenderLanes(),
         null !== current &&
@@ -5197,8 +5190,8 @@ function unwindWork(workInProgress) {
       return popHostContainer(), null;
     case 10:
       return popProvider(workInProgress), null;
+    case 22:
     case 23:
-    case 24:
       return popRenderLanes(), null;
     default:
       return null;
@@ -5289,7 +5282,6 @@ function commitBeforeMutationLifeCycles(current, finishedWork) {
     case 0:
     case 11:
     case 15:
-    case 22:
       return;
     case 1:
       if (finishedWork.flags & 256 && null !== current) {
@@ -5322,7 +5314,6 @@ function commitLifeCycles(finishedRoot, current, finishedWork) {
     case 0:
     case 11:
     case 15:
-    case 22:
       current = finishedWork.updateQueue;
       current = null !== current ? current.lastEffect : null;
       if (null !== current) {
@@ -5401,8 +5392,8 @@ function commitLifeCycles(finishedRoot, current, finishedWork) {
     case 17:
     case 20:
     case 21:
+    case 22:
     case 23:
-    case 24:
       return;
   }
   throw Error(
@@ -5448,7 +5439,7 @@ function hideOrUnhideAllChildren(finishedWork, isHidden) {
     } else {
       if (6 === node.tag) throw Error("Not yet implemented.");
       if (
-        ((23 !== node.tag && 24 !== node.tag) ||
+        ((22 !== node.tag && 23 !== node.tag) ||
           null === node.memoizedState ||
           node === finishedWork) &&
         null !== node.child
@@ -5477,7 +5468,6 @@ function commitUnmount(finishedRoot, current) {
     case 11:
     case 14:
     case 15:
-    case 22:
       finishedRoot = current.updateQueue;
       if (
         null !== finishedRoot &&
@@ -5796,7 +5786,6 @@ function commitWork(current, finishedWork) {
     case 11:
     case 14:
     case 15:
-    case 22:
       var updateQueue = finishedWork.updateQueue;
       updateQueue = null !== updateQueue ? updateQueue.lastEffect : null;
       if (null !== updateQueue) {
@@ -5862,8 +5851,8 @@ function commitWork(current, finishedWork) {
       return;
     case 17:
       return;
+    case 22:
     case 23:
-    case 24:
       hideOrUnhideAllChildren(
         finishedWork,
         null !== finishedWork.memoizedState
@@ -6301,8 +6290,8 @@ function prepareFreshStack(root, lanes) {
         case 10:
           popProvider(interruptedWork);
           break;
+        case 22:
         case 23:
-        case 24:
           popRenderLanes();
       }
       timeoutHandle = timeoutHandle.return;
@@ -6550,7 +6539,7 @@ function completeUnitOfWork(unitOfWork) {
       }
       current = completedWork;
       if (
-        (24 !== current.tag && 23 !== current.tag) ||
+        (23 !== current.tag && 22 !== current.tag) ||
         null === current.memoizedState ||
         0 !== (subtreeRenderLanes & 1073741824) ||
         0 === (current.mode & 4)
@@ -7046,8 +7035,8 @@ beginWork$1 = function(current, workInProgress, renderLanes) {
           push(suspenseStackCursor, suspenseStackCursor.current);
           if (updateLanes) break;
           else return null;
+        case 22:
         case 23:
-        case 24:
           return (
             (workInProgress.lanes = 0),
             updateOffscreenComponent(current, workInProgress, renderLanes)
@@ -7490,9 +7479,9 @@ beginWork$1 = function(current, workInProgress, renderLanes) {
       );
     case 19:
       return updateSuspenseListComponent(current, workInProgress, renderLanes);
-    case 23:
+    case 22:
       return updateOffscreenComponent(current, workInProgress, renderLanes);
-    case 24:
+    case 23:
       return updateOffscreenComponent(current, workInProgress, renderLanes);
   }
   throw Error(
@@ -7619,7 +7608,7 @@ function createFiberFromTypeAndProps(
         return createFiberFromOffscreen(pendingProps, mode, lanes, key);
       case REACT_LEGACY_HIDDEN_TYPE:
         return (
-          (type = createFiber(24, pendingProps, key, mode)),
+          (type = createFiber(23, pendingProps, key, mode)),
           (type.elementType = REACT_LEGACY_HIDDEN_TYPE),
           (type.lanes = lanes),
           type
@@ -7643,9 +7632,6 @@ function createFiberFromTypeAndProps(
               fiberTag = 16;
               owner = null;
               break a;
-            case REACT_BLOCK_TYPE:
-              fiberTag = 22;
-              break a;
           }
         throw Error(
           "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: " +
@@ -7665,7 +7651,7 @@ function createFiberFromFragment(elements, mode, lanes, key) {
   return elements;
 }
 function createFiberFromOffscreen(pendingProps, mode, lanes, key) {
-  pendingProps = createFiber(23, pendingProps, key, mode);
+  pendingProps = createFiber(22, pendingProps, key, mode);
   pendingProps.elementType = REACT_OFFSCREEN_TYPE;
   pendingProps.lanes = lanes;
   return pendingProps;
@@ -7826,7 +7812,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_908 = {
     findFiberByHostInstance: getInstanceFromTag,
     bundleType: 0,
-    version: "17.0.1-4e5d7faf5",
+    version: "17.0.1-454c2211c",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {

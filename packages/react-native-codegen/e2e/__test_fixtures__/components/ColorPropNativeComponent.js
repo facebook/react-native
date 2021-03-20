@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import type {ColorValue} from '../../../../../Libraries/StyleSheet/StyleSheet';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';

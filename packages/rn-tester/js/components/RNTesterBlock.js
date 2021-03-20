@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import * as React from 'react';
 import {RNTesterThemeContext} from './RNTesterTheme';
 import {StyleSheet, Text, View} from 'react-native';

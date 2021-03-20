@@ -240,4 +240,14 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
     }
     return new FragmentManagerHelper(((FragmentActivity) activity).getSupportFragmentManager());
   }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
+  }
 }

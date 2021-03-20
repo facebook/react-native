@@ -9,8 +9,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const React = require('react');
 const LogBoxButton = require('../LogBoxButton').default;
 const render = require('../../../../jest/renderer');

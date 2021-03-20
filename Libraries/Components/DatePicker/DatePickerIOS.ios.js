@@ -10,8 +10,6 @@
 
 // This is a controlled component version of RCTDatePickerIOS.
 
-'use strict';
-
 import RCTDatePickerNativeComponent, {
   Commands as DatePickerCommands,
 } from './RCTDatePickerNativeComponent';

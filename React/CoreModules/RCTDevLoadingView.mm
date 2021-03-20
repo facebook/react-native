@@ -15,7 +15,6 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTDevLoadingViewSetEnabled.h>
-#import <React/RCTModalHostViewController.h>
 #import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
@@ -39,6 +38,21 @@ using namespace facebook::react;
 
 RCT_EXPORT_MODULE()
 
+- (instancetype)init
+{
+  if (self = [super init]) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(hide)
+                                                 name:RCTJavaScriptDidLoadNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(hide)
+                                                 name:RCTJavaScriptDidFailToLoadNotification
+                                               object:nil];
+  }
+  return self;
+}
+
 + (void)setEnabled:(BOOL)enabled
 {
   RCTDevLoadingViewSetEnabled(enabled);
@@ -52,15 +66,6 @@ RCT_EXPORT_MODULE()
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(hide)
-                                               name:RCTJavaScriptDidLoadNotification
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(hide)
-                                               name:RCTJavaScriptDidFailToLoadNotification
-                                             object:nil];
 
   if (bridge.loading) {
     [self showWithURL:bridge.bundleURL];

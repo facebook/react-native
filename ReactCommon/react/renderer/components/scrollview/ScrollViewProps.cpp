@@ -164,7 +164,12 @@ ScrollViewProps::ScrollViewProps(
           rawProps,
           "contentInsetAdjustmentBehavior",
           sourceProps.contentInsetAdjustmentBehavior,
-          {ContentInsetAdjustmentBehavior::Never})) {}
+          {ContentInsetAdjustmentBehavior::Never})),
+      scrollToOverflowEnabled(convertRawProp(
+          rawProps,
+          "scrollToOverflowEnabled",
+          sourceProps.scrollToOverflowEnabled,
+          {})) {}
 
 #pragma mark - DebugStringConvertible
 

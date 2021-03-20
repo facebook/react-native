@@ -52,7 +52,38 @@ struct Touch {
   Float force;
 
   /*
-   * The time in seconds when the touch occurred or when it was last mutated.
+   * The time in seconds (with fractional milliseconds) when the touch occurred
+   * or when it was last mutated.
+   *
+   * Whenever possible this should be computed as:
+   * 1. Pick MONO_CLOCK_NOW, a monotonic system clock. Generally, something like
+   * `systemUptimeMillis`.
+   * 2. BASIS_TIME = unix timestamp from unix epoch (ms) - MONO_CLOCK_NOW
+   * 3. Then assign timestamp = BASIS_TIME + MONO_CLOCK_NOW
+   *
+   * The effect should be UNIX timestamp from UNIX epoch, but as a monotonic
+   * clock (if you just assign to current system time, it can move backwards due
+   * to clock adjustements, leap seconds, etc etc). So the vast majority of the
+   * time it will look identical to current UNIX time, but there are some
+   * edge-cases where it can drift.
+   *
+   * If you are not able to use the scheme above for some reason, prefer to use
+   * a monotonic clock. This timestamp MUST be monotonic. Do NOT just pass along
+   * system time.
+   *
+   * The goal is to allow touch latency to be computed in JS. JS does not have
+   * access to something like `systemUptimeMillis`, it generally can only access
+   * the current system time. This *does* mean that the touch latency could be
+   * computed incorrectly in cases of clock drift, so you should only use this
+   * as telemetry to get a decent, but not totally perfect, idea of performance.
+   * Do not use this latency information for anything "mission critical". You
+   * can assume it's probably reasonably accurate 99% of the time.
+   *
+   * Note that we attempt to adhere to the spec of timestamp here:
+   * https://dom.spec.whatwg.org/#dom-event-timestamp
+   * Notably, since `global` is not a Window object in React Native, we have
+   * some flexibility in how we define the time origin:
+   * https://w3c.github.io/hr-time/#dfn-time-origin
    */
   Float timestamp;
 

@@ -15,10 +15,10 @@ import type {Struct} from '../StructCollector';
 const {serializeConstantsStruct} = require('./serializeConstantsStruct');
 const {serializeRegularStruct} = require('./serializeRegularStruct');
 
-export type StructSerilizationOutput = $ReadOnly<{|
+export type StructSerilizationOutput = $ReadOnly<{
   methods: string,
   declaration: string,
-|}>;
+}>;
 
 function serializeStruct(
   hasteModuleName: string,

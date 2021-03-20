@@ -10,11 +10,8 @@
 
 'use strict';
 
-const {
-  capitalize,
-  getSafePropertyName,
-  getNamespacedStructName,
-} = require('../Utils');
+const {getSafePropertyName, getNamespacedStructName} = require('../Utils');
+const {capitalize} = require('../../../Utils');
 
 import type {Nullable} from '../../../../CodegenSchema';
 import type {StructTypeAnnotation, ConstantsStruct} from '../StructCollector';
@@ -26,11 +23,11 @@ const StructTemplate = ({
   hasteModuleName,
   structName,
   builderInputProps,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
   structName: string,
   builderInputProps: string,
-|}>) => `namespace JS {
+}>) => `namespace JS {
   namespace ${hasteModuleName} {
     struct ${structName} {
 
@@ -62,11 +59,11 @@ const MethodTemplate = ({
   hasteModuleName,
   structName,
   properties,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
   structName: string,
   properties: string,
-|}>) => `inline JS::${hasteModuleName}::${structName}::Builder::Builder(const Input i) : _factory(^{
+}>) => `inline JS::${hasteModuleName}::${structName}::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
 ${properties}
   return d;
@@ -87,7 +84,7 @@ function toObjCType(
   };
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapFollyOptional('double');
@@ -152,7 +149,7 @@ function toObjCValue(
   }
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapPrimitive('double');
@@ -222,15 +219,15 @@ function serializeConstantsStruct(
     builderInputProps: struct.properties
       .map(property => {
         const {typeAnnotation, optional} = property;
-        const propName = getSafePropertyName(property);
+        const safePropName = getSafePropertyName(property);
         const objCType = toObjCType(hasteModuleName, typeAnnotation, optional);
 
         if (!optional) {
-          return `RCTRequired<${objCType}> ${propName};`;
+          return `RCTRequired<${objCType}> ${safePropName};`;
         }
 
         const space = ' '.repeat(objCType.endsWith('*') ? 0 : 1);
-        return `${objCType}${space}${propName};`;
+        return `${objCType}${space}${safePropName};`;
       })
       .join('\n          '),
   });
@@ -240,17 +237,17 @@ function serializeConstantsStruct(
     structName: struct.name,
     properties: struct.properties
       .map(property => {
-        const {typeAnnotation, optional} = property;
-        const propName = getSafePropertyName(property);
+        const {typeAnnotation, optional, name: propName} = property;
+        const safePropName = getSafePropertyName(property);
         const objCValue = toObjCValue(
           hasteModuleName,
           typeAnnotation,
-          propName,
+          safePropName,
           0,
           optional,
         );
 
-        let varDecl = `auto ${propName} = i.${propName}`;
+        let varDecl = `auto ${safePropName} = i.${safePropName}`;
         if (!optional) {
           varDecl += '.get()';
         }

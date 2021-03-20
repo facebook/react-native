@@ -8,7 +8,8 @@
 #include "ImageResponseObserverCoordinator.h"
 
 #include <algorithm>
-#include <cassert>
+
+#include <react/debug/react_native_assert.h>
 
 namespace facebook {
 namespace react {
@@ -52,7 +53,7 @@ void ImageResponseObserverCoordinator::nativeImageResponseProgress(
     float progress) const {
   mutex_.lock();
   auto observers = observers_;
-  assert(status_ == ImageResponse::Status::Loading);
+  react_native_assert(status_ == ImageResponse::Status::Loading);
   mutex_.unlock();
 
   for (auto observer : observers) {
@@ -65,7 +66,7 @@ void ImageResponseObserverCoordinator::nativeImageResponseComplete(
   mutex_.lock();
   imageData_ = imageResponse.getImage();
   imageMetadata_ = imageResponse.getMetadata();
-  assert(status_ == ImageResponse::Status::Loading);
+  react_native_assert(status_ == ImageResponse::Status::Loading);
   status_ = ImageResponse::Status::Completed;
   auto observers = observers_;
   mutex_.unlock();
@@ -77,7 +78,7 @@ void ImageResponseObserverCoordinator::nativeImageResponseComplete(
 
 void ImageResponseObserverCoordinator::nativeImageResponseFailed() const {
   mutex_.lock();
-  assert(status_ == ImageResponse::Status::Loading);
+  react_native_assert(status_ == ImageResponse::Status::Loading);
   status_ = ImageResponse::Status::Failed;
   auto observers = observers_;
   mutex_.unlock();

@@ -239,7 +239,9 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
               if (mEventDispatcher == null) {
                 return;
               }
-              mEventDispatcher.dispatchEvent(new ViewGroupClickEvent(view.getId()));
+              mEventDispatcher.dispatchEvent(
+                  new ViewGroupClickEvent(
+                      UIManagerHelper.getSurfaceId(view.getContext()), view.getId()));
             }
           });
 

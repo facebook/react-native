@@ -18,13 +18,16 @@ namespace react {
  */
 class BatchedEventQueue final : public EventQueue {
  public:
-  using EventQueue::EventQueue;
+  BatchedEventQueue(
+      EventPipe eventPipe,
+      StatePipe statePipe,
+      std::unique_ptr<EventBeat> eventBeat);
 
   void onEnqueue() const override;
 
   /*
-   * Enqueues and (probably later) dispatch a given event.
-   * Deletes last RawEvent from the queu if it has the same type and target.
+   * Enqueues and (probably later) dispatches a given event.
+   * Deletes last RawEvent from the queue if it has the same type and target.
    * Can be called on any thread.
    */
   void enqueueUniqueEvent(const RawEvent &rawEvent) const;

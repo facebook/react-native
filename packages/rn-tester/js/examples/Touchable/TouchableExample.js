@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const React = require('react');
 
 const {
@@ -479,6 +477,105 @@ const remoteImage = {
   uri: 'https://www.facebook.com/favicon.ico',
 };
 
+const TouchableHighlightUnderlayMethods = () => {
+  const [underlayVisible, setUnderlayVisible] = useState(
+    'Underlay not visible',
+  );
+
+  const hiddenUnderlay = () => {
+    setUnderlayVisible('Press to make underlay visible');
+  };
+
+  const shownUnderlay = () => {
+    setUnderlayVisible('Underlay visible');
+  };
+  return (
+    <TouchableHighlight
+      style={styles.logBox}
+      underlayColor={'#eee'}
+      onShowUnderlay={shownUnderlay}
+      onHideUnderlay={hiddenUnderlay}
+      onPress={() => {
+        console.log('TouchableHighlight underlay shown!');
+      }}>
+      <Text style={styles.textBlock}>{underlayVisible}</Text>
+    </TouchableHighlight>
+  );
+};
+
+const TouchableTouchSoundDisabled = () => {
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const toggleTouchableSound = () => {
+    soundEnabled ? setSoundEnabled(false) : setSoundEnabled(true);
+  };
+  return (
+    <>
+      {Platform.OS === 'android' ? (
+        <>
+          <TouchableWithoutFeedback
+            touchSoundDisabled={soundEnabled}
+            onPress={() => console.log('touchSoundDisabled pressed!')}>
+            <Text
+              style={{
+                padding: 10,
+              }}>
+              Touchables make a sound on Android, which can be turned off.
+            </Text>
+          </TouchableWithoutFeedback>
+          <TouchableOpacity
+            style={{
+              padding: 10,
+            }}
+            onPress={toggleTouchableSound}
+            touchSoundDisabled={soundEnabled}>
+            <Text style={styles.button}>
+              {soundEnabled
+                ? 'Disable Touchable Sound'
+                : 'Enable Touchable Sound'}
+            </Text>
+          </TouchableOpacity>
+        </>
+      ) : null}
+    </>
+  );
+};
+
+function TouchableOnFocus<T: React.AbstractComponent<any, any>>() {
+  const ref = useRef<?React.ElementRef<T> | {focus: Function}>(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const [focusStatus, setFocusStatus] = useState(
+    'This touchable is not focused.',
+  );
+  const [isBlurred, setIsBlurred] = useState(
+    'This item still has focus, onBlur is not called',
+  );
+
+  const toggleFocus = () => {
+    isFocused
+      ? setFocusStatus('This touchable is focused')
+      : setIsFocused('This touchable is not focused') &&
+        setIsBlurred('This item has lost focus, onBlur called');
+  };
+  const focusTouchable = () => {
+    if (ref.current) {
+      ref.current.focus();
+    }
+  };
+
+  return (
+    <TouchableHighlight
+      ref={ref}
+      onFocus={toggleFocus}
+      onPress={focusTouchable}>
+      <Text>
+        {focusStatus}
+        {'\n'}
+        {isBlurred}
+      </Text>
+    </TouchableHighlight>
+  );
+}
+
 const styles = StyleSheet.create({
   row: {
     justifyContent: 'center',
@@ -601,6 +698,24 @@ exports.examples = [
           </View>
         </View>
       );
+    },
+  },
+  {
+    title: 'TouchableHighlight Underlay Visibility',
+    render: function(): React.Node {
+      return <TouchableHighlightUnderlayMethods />;
+    },
+  },
+  {
+    title: 'Touchable Touch Sound',
+    render: function(): React.Node {
+      return <TouchableTouchSoundDisabled />;
+    },
+  },
+  {
+    title: 'Touchable onFocus',
+    render: function(): React.Node {
+      return <TouchableOnFocus />;
     },
   },
   {

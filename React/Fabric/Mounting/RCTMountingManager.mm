@@ -13,6 +13,7 @@
 #import <React/RCTFollyConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
+#import <react/renderer/components/root/RootShadowNode.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
 #import <react/renderer/debug/SystraceSection.h>
@@ -67,6 +68,8 @@ static void RCTPerformMountInstructions(
 
         UIView<RCTComponentViewProtocol> *newChildComponentView = newChildViewDescriptor.view;
 
+        RCTAssert(newChildShadowView.props, @"`newChildShadowView.props` must not be null.");
+
         [newChildComponentView updateProps:newChildShadowView.props oldProps:oldChildShadowView.props];
         [newChildComponentView updateEventEmitter:newChildShadowView.eventEmitter];
         [newChildComponentView updateState:newChildShadowView.state oldState:oldChildShadowView.state];
@@ -94,6 +97,8 @@ static void RCTPerformMountInstructions(
         UIView<RCTComponentViewProtocol> *newChildComponentView = newChildViewDescriptor.view;
 
         auto mask = RNComponentViewUpdateMask{};
+
+        RCTAssert(newChildShadowView.props, @"`newChildShadowView.props` must not be null.");
 
         if (oldChildShadowView.props != newChildShadowView.props) {
           [newChildComponentView updateProps:newChildShadowView.props oldProps:oldChildShadowView.props];
@@ -142,6 +147,29 @@ static void RCTPerformMountInstructions(
   return self;
 }
 
+- (void)attachSurfaceToView:(UIView *)view surfaceId:(SurfaceId)surfaceId
+{
+  RCTAssertMainQueue();
+
+  RCTAssert(view.subviews.count == 0, @"The view must not have any subviews.");
+
+  RCTComponentViewDescriptor rootViewDescriptor =
+      [_componentViewRegistry dequeueComponentViewWithComponentHandle:RootShadowNode::Handle() tag:surfaceId];
+  [view addSubview:rootViewDescriptor.view];
+}
+
+- (void)detachSurfaceFromView:(UIView *)view surfaceId:(SurfaceId)surfaceId
+{
+  RCTAssertMainQueue();
+  RCTComponentViewDescriptor rootViewDescriptor = [_componentViewRegistry componentViewDescriptorWithTag:surfaceId];
+
+  [rootViewDescriptor.view removeFromSuperview];
+
+  [_componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
+                                                              tag:surfaceId
+                                          componentViewDescriptor:rootViewDescriptor];
+}
+
 - (void)scheduleTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
 {
   if (RCTIsMainQueue()) {
@@ -173,6 +201,22 @@ static void RCTPerformMountInstructions(
   RCTExecuteOnMainQueue(^{
     RCTAssertMainQueue();
     [self synchronouslyDispatchCommandOnUIThread:reactTag commandName:commandName args:args];
+  });
+}
+
+- (void)sendAccessibilityEvent:(ReactTag)reactTag eventType:(NSString *)eventType
+{
+  if (RCTIsMainQueue()) {
+    // Already on the proper thread, so:
+    // * No need to do a thread jump;
+    // * No need to allocate a block.
+    [self synchronouslyDispatchAccessbilityEventOnUIThread:reactTag eventType:eventType];
+    return;
+  }
+
+  RCTExecuteOnMainQueue(^{
+    RCTAssertMainQueue();
+    [self synchronouslyDispatchAccessbilityEventOnUIThread:reactTag eventType:eventType];
   });
 }
 
@@ -215,6 +259,15 @@ static void RCTPerformMountInstructions(
       });
 }
 
+- (void)setIsJSResponder:(BOOL)isJSResponder forShadowView:(facebook::react::ShadowView)shadowView
+{
+  RCTExecuteOnMainQueue(^{
+    UIView<RCTComponentViewProtocol> *componentView =
+        [self->_componentViewRegistry findComponentViewWithTag:shadowView.tag];
+    [componentView setIsJSResponder:isJSResponder];
+  });
+}
+
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
                              changedProps:(NSDictionary *)props
                       componentDescriptor:(const ComponentDescriptor &)componentDescriptor
@@ -251,6 +304,14 @@ static void RCTPerformMountInstructions(
   RCTAssertMainQueue();
   UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
   [componentView handleCommand:commandName args:args];
+}
+
+- (void)synchronouslyDispatchAccessbilityEventOnUIThread:(ReactTag)reactTag eventType:(NSString *)eventType
+{
+  if ([@"focus" isEqualToString:eventType]) {
+    UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, componentView);
+  }
 }
 
 @end

@@ -11,6 +11,7 @@ load(
 rn_android_library(
     name = "core",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
     deps = ([
         react_native_dep("third-party/android/androidx:test-espresso-core"),

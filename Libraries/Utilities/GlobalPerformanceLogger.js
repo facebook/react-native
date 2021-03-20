@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import createPerformanceLogger from './createPerformanceLogger';
 import type {IPerformanceLogger} from './createPerformanceLogger';
 

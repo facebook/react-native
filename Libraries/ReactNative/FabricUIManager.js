@@ -38,7 +38,6 @@ export type Spec = {|
   +appendChild: (parentNode: Node, child: Node) => Node,
   +appendChildToSet: (childSet: NodeSet, child: Node) => void,
   +completeRoot: (rootTag: number, childSet: NodeSet) => void,
-  +setNativeProps: (node: Node, nativeProps: NodeProps) => void,
   +measure: (node: Node, callback: MeasureOnSuccessCallback) => void,
   +measureInWindow: (
     node: Node,
@@ -57,6 +56,7 @@ export type Spec = {|
     // $FlowFixMe
     errorCallback: (error: Object) => void,
   ) => void,
+  +sendAccessibilityEvent: (node: Node, eventType: string) => void,
 |};
 
 const FabricUIManager: ?Spec = global.nativeFabricUIManager;

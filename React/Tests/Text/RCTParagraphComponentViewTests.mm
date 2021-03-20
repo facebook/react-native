@@ -130,6 +130,7 @@ using namespace facebook::react;
                   .props([] {
                     auto sharedProps = std::make_shared<ParagraphProps>();
                     auto &props = *sharedProps;
+                    props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
                     yogaStyle.positionType() = YGPositionTypeAbsolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
@@ -209,6 +210,7 @@ using namespace facebook::react;
                   .props([] {
                     auto sharedProps = std::make_shared<ParagraphProps>();
                     auto &props = *sharedProps;
+                    props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
                     yogaStyle.positionType() = YGPositionTypeAbsolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
@@ -252,6 +254,7 @@ using namespace facebook::react;
                   .props([] {
                     auto sharedProps = std::make_shared<ParagraphProps>();
                     auto &props = *sharedProps;
+                    props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
                     yogaStyle.positionType() = YGPositionTypeAbsolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
@@ -320,14 +323,17 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
 {
   ParagraphShadowNode::ConcreteState::Shared _stateA = stateWithShadowNode(ParagrahShadowNodeA_);
   RCTParagraphComponentView *paragraphComponentViewA = [[RCTParagraphComponentView alloc] init];
+  [paragraphComponentViewA updateProps:ParagrahShadowNodeA_->getProps() oldProps:nullptr];
   [paragraphComponentViewA updateState:_stateA oldState:nil];
 
   ParagraphShadowNode::ConcreteState::Shared _stateB = stateWithShadowNode(ParagrahShadowNodeB_);
   RCTParagraphComponentView *paragraphComponentViewB = [[RCTParagraphComponentView alloc] init];
+  [paragraphComponentViewB updateProps:ParagrahShadowNodeB_->getProps() oldProps:nullptr];
   [paragraphComponentViewB updateState:_stateB oldState:nil];
 
   ParagraphShadowNode::ConcreteState::Shared _stateC = stateWithShadowNode(ParagrahShadowNodeC_);
   RCTParagraphComponentView *paragraphComponentViewC = [[RCTParagraphComponentView alloc] init];
+  [paragraphComponentViewC updateProps:ParagrahShadowNodeC_->getProps() oldProps:nullptr];
   [paragraphComponentViewC updateState:_stateC oldState:nil];
 
   // Check the correctness of attributedString
@@ -353,6 +359,7 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
   // initialize the paragraphComponentView to get the accessibilityElements
   ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(ParagrahShadowNodeA_);
   RCTParagraphComponentView *paragraphComponentView = [[RCTParagraphComponentView alloc] init];
+  [paragraphComponentView updateProps:ParagrahShadowNodeA_->getProps() oldProps:nullptr];
   [paragraphComponentView updateState:_state oldState:nil];
 
   NSArray<UIAccessibilityElement *> *elements = [paragraphComponentView accessibilityElements];
@@ -373,6 +380,7 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
 {
   ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(ParagrahShadowNodeB_);
   RCTParagraphComponentView *paragraphComponentView = [[RCTParagraphComponentView alloc] init];
+  [paragraphComponentView updateProps:ParagrahShadowNodeB_->getProps() oldProps:nullptr];
   [paragraphComponentView updateState:_state oldState:nil];
 
   NSArray<UIAccessibilityElement *> *elements = [paragraphComponentView accessibilityElements];
@@ -386,6 +394,7 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
 {
   ParagraphShadowNode::ConcreteState::Shared _state = stateWithShadowNode(ParagrahShadowNodeC_);
   RCTParagraphComponentView *paragraphComponentView = [[RCTParagraphComponentView alloc] init];
+  [paragraphComponentView updateProps:ParagrahShadowNodeC_->getProps() oldProps:nullptr];
   [paragraphComponentView updateState:_state oldState:nil];
 
   NSArray<UIAccessibilityElement *> *elements = [paragraphComponentView accessibilityElements];

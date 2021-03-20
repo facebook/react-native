@@ -439,7 +439,7 @@ Value JSIExecutor::nativeCallSyncHook(const Value *args, size_t count) {
     throw std::invalid_argument("nativeCallSyncHook arg count must be 3");
   }
 
-  if (!args[2].asObject(*runtime_).isArray(*runtime_)) {
+  if (!args[2].isObject() || !args[2].asObject(*runtime_).isArray(*runtime_)) {
     throw std::invalid_argument(
         folly::to<std::string>("method parameters should be array"));
   }

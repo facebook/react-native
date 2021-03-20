@@ -504,4 +504,163 @@ describe('VirtualizedList', () => {
       'scrollToIndex out of range: requested index 3 is out of 0 to 2',
     );
   });
+
+  it('forwards correct stickyHeaderIndices when all in initial render window', () => {
+    const items = Array(10)
+      .fill()
+      .map((_, i) => (i % 3 === 0 ? {key: i, sticky: true} : {key: i}));
+    const stickyIndices = items
+      .filter(item => item.sticky)
+      .map(item => item.key);
+
+    const ITEM_HEIGHT = 10;
+
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={items}
+        stickyHeaderIndices={stickyIndices}
+        initialNumToRender={10}
+        renderItem={({item}) => <item value={item.key} sticky={item.sticky} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+        getItemLayout={(_, index) => ({
+          length: ITEM_HEIGHT,
+          offset: ITEM_HEIGHT * index,
+          index,
+        })}
+      />,
+    );
+
+    expect(component).toMatchSnapshot();
+  });
+
+  it('forwards correct stickyHeaderIndices when partially in initial render window', () => {
+    const items = Array(10)
+      .fill()
+      .map((_, i) => (i % 3 === 0 ? {key: i, sticky: true} : {key: i}));
+    const stickyIndices = items
+      .filter(item => item.sticky)
+      .map(item => item.key);
+
+    const ITEM_HEIGHT = 10;
+
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={items}
+        stickyHeaderIndices={stickyIndices}
+        initialNumToRender={5}
+        renderItem={({item}) => <item value={item.key} sticky={item.sticky} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+        getItemLayout={(_, index) => ({
+          length: ITEM_HEIGHT,
+          offset: ITEM_HEIGHT * index,
+          index,
+        })}
+      />,
+    );
+
+    expect(component).toMatchSnapshot();
+  });
+
+  it('realizes sticky headers in viewport on batched render', () => {
+    const items = Array(10)
+      .fill()
+      .map((_, i) => (i % 3 === 0 ? {key: i, sticky: true} : {key: i}));
+    const stickyIndices = items
+      .filter(item => item.sticky)
+      .map(item => item.key);
+
+    const ITEM_HEIGHT = 10;
+
+    const virtualizedListProps = {
+      data: items,
+      stickyHeaderIndices: stickyIndices,
+      initialNumToRender: 1,
+      windowSize: 1,
+      renderItem: ({item}) => <item value={item.key} sticky={item.sticky} />,
+      getItem: (data, index) => data[index],
+      getItemCount: data => data.length,
+      getItemLayout: (_, index) => ({
+        length: ITEM_HEIGHT,
+        offset: ITEM_HEIGHT * index,
+        index,
+      }),
+    };
+
+    let component;
+
+    ReactTestRenderer.act(() => {
+      component = ReactTestRenderer.create(
+        <VirtualizedList key={'A'} {...virtualizedListProps} />,
+      );
+    });
+
+    ReactTestRenderer.act(() => {
+      component
+        .getInstance()
+        ._onLayout({nativeEvent: {layout: {width: 10, height: 50}}});
+      component.getInstance()._onContentSizeChange(10, 100);
+      jest.runAllTimers();
+    });
+
+    expect(component).toMatchSnapshot();
+  });
+
+  it('keeps sticky headers realized after scrolled out of viewport', () => {
+    const items = Array(20)
+      .fill()
+      .map((_, i) =>
+        i % 3 === 0 ? {key: i, sticky: true} : {key: i, sticky: false},
+      );
+    const stickyIndices = items
+      .filter(item => item.sticky)
+      .map(item => item.key);
+
+    const ITEM_HEIGHT = 10;
+
+    const virtualizedListProps = {
+      data: items,
+      stickyHeaderIndices: stickyIndices,
+      initialNumToRender: 1,
+      windowSize: 1,
+      renderItem: ({item}) => <item value={item.key} sticky={item.sticky} />,
+      getItem: (data, index) => data[index],
+      getItemCount: data => data.length,
+      getItemLayout: (_, index) => ({
+        length: ITEM_HEIGHT,
+        offset: ITEM_HEIGHT * index,
+        index,
+      }),
+    };
+
+    let component;
+
+    ReactTestRenderer.act(() => {
+      component = ReactTestRenderer.create(
+        <VirtualizedList key={'A'} {...virtualizedListProps} />,
+      );
+    });
+
+    ReactTestRenderer.act(() => {
+      component
+        .getInstance()
+        ._onLayout({nativeEvent: {layout: {width: 10, height: 50}}});
+      component.getInstance()._onContentSizeChange(10, 200);
+      jest.runAllTimers();
+    });
+
+    ReactTestRenderer.act(() => {
+      component.getInstance()._onScroll({
+        nativeEvent: {
+          contentOffset: {x: 0, y: 150},
+          contentSize: {width: 10, height: 200},
+          layoutMeasurement: {width: 10, height: 50},
+        },
+      });
+      jest.runAllTimers();
+    });
+
+    expect(component).toMatchSnapshot();
+  });
 });

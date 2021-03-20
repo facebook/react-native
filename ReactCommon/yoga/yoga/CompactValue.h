@@ -125,8 +125,8 @@ public:
     data.repr &= ~PERCENT_BIT;
     data.repr += BIAS;
 
-    return YGValue{data.value,
-                   payload_.repr & 0x40000000 ? YGUnitPercent : YGUnitPoint};
+    return YGValue{
+        data.value, payload_.repr & 0x40000000 ? YGUnitPercent : YGUnitPoint};
   }
 
   bool isUndefined() const noexcept {

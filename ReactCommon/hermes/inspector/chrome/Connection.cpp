@@ -93,6 +93,8 @@ class Connection::Impl : public inspector::InspectorObserver,
       const m::heapProfiler::StartTrackingHeapObjectsRequest &req) override;
   void handle(
       const m::heapProfiler::StopTrackingHeapObjectsRequest &req) override;
+  void handle(const m::heapProfiler::StartSamplingRequest &req) override;
+  void handle(const m::heapProfiler::StopSamplingRequest &req) override;
   void handle(const m::heapProfiler::CollectGarbageRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
@@ -578,6 +580,45 @@ void Connection::Impl::handle(
       "HeapSnapshot.stopTrackingHeapObjects",
       req.reportProgress && *req.reportProgress,
       /* stopStackTraceCapture */ true);
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::StartSamplingRequest &req) {
+  const auto id = req.id;
+  // This is the same default sampling interval that Chrome uses.
+  // https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler/#method-startSampling
+  constexpr size_t kDefaultSamplingInterval = 1 << 15;
+  const size_t samplingInterval =
+      req.samplingInterval.value_or(kDefaultSamplingInterval);
+
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.startSampling",
+          [this, samplingInterval](const debugger::ProgramState &) {
+            getRuntime().instrumentation().startHeapSampling(samplingInterval);
+          })
+      .via(executor_.get())
+      .thenValue(
+          [this, id](auto &&) { sendResponseToClient(m::makeOkResponse(id)); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(const m::heapProfiler::StopSamplingRequest &req) {
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.stopSampling",
+          [this, id = req.id](const debugger::ProgramState &) {
+            std::ostringstream stream;
+            getRuntime().instrumentation().stopHeapSampling(stream);
+            folly::dynamic json = folly::parseJson(stream.str());
+            m::heapProfiler::StopSamplingResponse resp;
+            resp.id = id;
+            m::heapProfiler::SamplingHeapProfile profile{json};
+            resp.profile = profile;
+            sendResponseToClient(resp);
+          })
+      .via(executor_.get())
+      .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
 void Connection::Impl::handle(

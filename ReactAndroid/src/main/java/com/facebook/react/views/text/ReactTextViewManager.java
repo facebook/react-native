@@ -83,7 +83,15 @@ public class ReactTextViewManager
   @Override
   public Object updateState(
       ReactTextView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    ReadableNativeMap state = stateWrapper.getState();
+    if (stateWrapper == null) {
+      return null;
+    }
+
+    ReadableNativeMap state = stateWrapper.getStateData();
+    if (state == null) {
+      return null;
+    }
+
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
     Spannable spanned =

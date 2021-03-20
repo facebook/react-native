@@ -8,7 +8,6 @@
  * @format
  */
 
-'use strict';
 import type {Node} from 'react';
 import {ImageBackground, StyleSheet, Text, useColorScheme} from 'react-native';
 import React from 'react';

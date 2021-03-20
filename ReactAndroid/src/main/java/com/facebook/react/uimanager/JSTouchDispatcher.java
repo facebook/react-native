@@ -50,6 +50,17 @@ public class JSTouchDispatcher {
     mTargetTag = -1;
   }
 
+  private int getSurfaceId() {
+    if (mRootViewGroup instanceof ReactRoot) {
+      return ((ReactRoot) mRootViewGroup).getRootViewTag();
+    }
+    if (mRootViewGroup != null && mRootViewGroup.getContext() instanceof ThemedReactContext) {
+      ThemedReactContext context = (ThemedReactContext) mRootViewGroup.getContext();
+      return context.getSurfaceId();
+    }
+    return -1;
+  }
+
   /**
    * Main catalyst view is responsible for collecting and sending touch events to JS. This method
    * reacts for an incoming android native touch events ({@link MotionEvent}) and calls into {@link
@@ -70,9 +81,11 @@ public class JSTouchDispatcher {
       // this gesture
       mChildIsHandlingNativeGesture = false;
       mGestureStartTime = ev.getEventTime();
+
       mTargetTag = findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              getSurfaceId(),
               mTargetTag,
               TouchEventType.START,
               ev,
@@ -97,6 +110,7 @@ public class JSTouchDispatcher {
       findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              getSurfaceId(),
               mTargetTag,
               TouchEventType.END,
               ev,
@@ -111,6 +125,7 @@ public class JSTouchDispatcher {
       findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              getSurfaceId(),
               mTargetTag,
               TouchEventType.MOVE,
               ev,
@@ -122,6 +137,7 @@ public class JSTouchDispatcher {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              getSurfaceId(),
               mTargetTag,
               TouchEventType.START,
               ev,
@@ -133,6 +149,7 @@ public class JSTouchDispatcher {
       // Exactly onw of the pointers goes up
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              getSurfaceId(),
               mTargetTag,
               TouchEventType.END,
               ev,
@@ -181,6 +198,7 @@ public class JSTouchDispatcher {
     Assertions.assertNotNull(eventDispatcher)
         .dispatchEvent(
             TouchEvent.obtain(
+                getSurfaceId(),
                 mTargetTag,
                 TouchEventType.CANCEL,
                 androidEvent,

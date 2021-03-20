@@ -29,6 +29,7 @@ BlobCollector::~BlobCollector() {
     static auto removeMethod = jni::findClassStatic(kBlobModuleJavaDescriptor)
                                    ->getMethod<void(jstring)>("remove");
     removeMethod(blobModule_, jni::make_jstring(blobId_).get());
+    blobModule_.reset();
   });
 }
 

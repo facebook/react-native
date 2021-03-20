@@ -103,6 +103,8 @@ public final class FunctionResolvedType extends ResolvedType<FunctionType> {
     // React methods need special `@ReactMethod` annotation for now.
     methodBuilder.addAnnotation(annotationBuilder.build());
 
+    // TODO(T82242829) Add @DoNotStrip annotation
+
     return methodBuilder.build();
   }
 

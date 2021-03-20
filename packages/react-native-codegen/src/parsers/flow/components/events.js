@@ -12,10 +12,15 @@
 
 import type {
   EventTypeShape,
-  EventObjectPropertyType,
+  NamedShape,
+  EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 
-function getPropertyType(name, optional, typeAnnotation) {
+function getPropertyType(
+  name,
+  optional,
+  typeAnnotation,
+): NamedShape<EventTypeAnnotation> {
   const type =
     typeAnnotation.type === 'GenericTypeAnnotation'
       ? typeAnnotation.id.name
@@ -24,33 +29,43 @@ function getPropertyType(name, optional, typeAnnotation) {
   switch (type) {
     case 'BooleanTypeAnnotation':
       return {
-        type: 'BooleanTypeAnnotation',
         name,
         optional,
+        typeAnnotation: {
+          type: 'BooleanTypeAnnotation',
+        },
       };
     case 'StringTypeAnnotation':
       return {
-        type: 'StringTypeAnnotation',
         name,
         optional,
+        typeAnnotation: {
+          type: 'StringTypeAnnotation',
+        },
       };
     case 'Int32':
       return {
-        type: 'Int32TypeAnnotation',
         name,
         optional,
+        typeAnnotation: {
+          type: 'Int32TypeAnnotation',
+        },
       };
     case 'Double':
       return {
-        type: 'DoubleTypeAnnotation',
         name,
         optional,
+        typeAnnotation: {
+          type: 'DoubleTypeAnnotation',
+        },
       };
     case 'Float':
       return {
-        type: 'FloatTypeAnnotation',
         name,
         optional,
+        typeAnnotation: {
+          type: 'FloatTypeAnnotation',
+        },
       };
     case '$ReadOnly':
       return getPropertyType(
@@ -60,17 +75,21 @@ function getPropertyType(name, optional, typeAnnotation) {
       );
     case 'ObjectTypeAnnotation':
       return {
-        type: 'ObjectTypeAnnotation',
         name,
         optional,
-        properties: typeAnnotation.properties.map(buildPropertiesForEvent),
+        typeAnnotation: {
+          type: 'ObjectTypeAnnotation',
+          properties: typeAnnotation.properties.map(buildPropertiesForEvent),
+        },
       };
     case 'UnionTypeAnnotation':
       return {
-        type: 'StringEnumTypeAnnotation',
         name,
         optional,
-        options: typeAnnotation.types.map(option => ({name: option.value})),
+        typeAnnotation: {
+          type: 'StringEnumTypeAnnotation',
+          options: typeAnnotation.types.map(option => option.value),
+        },
       };
     default:
       (type: empty);
@@ -132,7 +151,7 @@ function findEventArgumentsAndType(
   }
 }
 
-function buildPropertiesForEvent(property): EventObjectPropertyType {
+function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
   const name = property.key.name;
   const optional =
     property.value.type === 'NullableTypeAnnotation' || property.optional;

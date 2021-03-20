@@ -91,7 +91,9 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
 
     @Override
     public void onItemSelected(int position) {
-      mEventDispatcher.dispatchEvent(new PickerItemSelectEvent(mReactPicker.getId(), position));
+      mEventDispatcher.dispatchEvent(
+          new PickerItemSelectEvent(
+              UIManagerHelper.getSurfaceId(mReactPicker), mReactPicker.getId(), position));
     }
   }
 }

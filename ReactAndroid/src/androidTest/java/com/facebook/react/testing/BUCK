@@ -9,6 +9,7 @@ rn_android_library(
             "network/**/*.java",
         ],
     ),
+    autoglob = False,
     is_androidx = True,
     visibility = [
         "PUBLIC",

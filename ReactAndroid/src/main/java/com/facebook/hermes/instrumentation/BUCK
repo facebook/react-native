@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_nat
 rn_android_library(
     name = "instrumentation",
     srcs = ["HermesMemoryDumper.java"],
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],
@@ -11,6 +12,7 @@ rn_android_library(
 rn_android_library(
     name = "hermes_samplingprofiler",
     srcs = ["HermesSamplingProfiler.java"],
+    autoglob = False,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = ["PUBLIC"],
     deps = [

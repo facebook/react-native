@@ -225,34 +225,26 @@ function getItemLayout(
   return {length, offset: (length + separator) * index + header, index};
 }
 
-function pressItem(context: Object, key: string) {
-  const index = Number(key);
-  const pressed = !context.state.data[index].pressed;
-  context.setState(state => {
-    const newData = [...state.data];
-    newData[index] = {
-      ...state.data[index],
-      pressed,
-      title: 'Item ' + key + (pressed ? ' (pressed)' : ''),
-    };
-    return {data: newData};
-  });
+function pressItem(item: Item): Item {
+  const title = `Item ${item.key}${!item.pressed ? ' (pressed)' : ''}`;
+  return {...item, title, pressed: !item.pressed};
 }
 
 function renderSmallSwitchOption(
-  context: Object,
-  key: string,
+  label: string,
+  value: boolean,
+  setValue: boolean => void,
 ): null | React.Node {
   if (Platform.isTV) {
     return null;
   }
   return (
     <View style={styles.option}>
-      <Text>{key}:</Text>
+      <Text>{label}:</Text>
       <Switch
         style={styles.smallSwitch}
-        value={context.state[key]}
-        onValueChange={value => context.setState({[key]: value})}
+        value={value}
+        onValueChange={setValue}
       />
     </View>
   );

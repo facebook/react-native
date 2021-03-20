@@ -7,6 +7,8 @@
 
 #include "AsynchronousEventBeat.h"
 
+#include <react/debug/react_native_assert.h>
+
 namespace facebook {
 namespace react {
 
@@ -23,7 +25,7 @@ AsynchronousEventBeat::AsynchronousEventBeat(
 void AsynchronousEventBeat::activityDidChange(
     RunLoopObserver::Delegate const *delegate,
     RunLoopObserver::Activity activity) const noexcept {
-  assert(delegate == this);
+  react_native_assert(delegate == this);
   induce();
 }
 

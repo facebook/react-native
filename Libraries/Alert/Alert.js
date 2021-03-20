@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import Platform from '../Utilities/Platform';
 import NativeDialogManagerAndroid, {
   type DialogOptions,

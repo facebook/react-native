@@ -62,6 +62,10 @@ class YogaDirtyFlagTest : public ::testing::Test {
                 Element<ScrollViewShadowNode>()
                   .reference(scrollViewShadowNode_)
                   .tag(7)
+                  .children({
+                    Element<ViewShadowNode>()
+                      .tag(8)
+                  })
               })
           });
     // clang-format on
@@ -208,9 +212,10 @@ TEST_F(YogaDirtyFlagTest, updatingStateForScrollViewMistNotDirtyYogaNode) {
             oldShadowNode.getFamily(),
             std::make_shared<ScrollViewState>(state));
 
-        return oldShadowNode.clone({ShadowNodeFragment::propsPlaceholder(),
-                                    ShadowNodeFragment::childrenPlaceholder(),
-                                    newState});
+        return oldShadowNode.clone(
+            {ShadowNodeFragment::propsPlaceholder(),
+             ShadowNodeFragment::childrenPlaceholder(),
+             newState});
       });
 
   EXPECT_FALSE(

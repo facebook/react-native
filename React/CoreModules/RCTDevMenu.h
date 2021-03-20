@@ -37,11 +37,6 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 /**
  * Deprecated, use RCTDevSettings instead.
  */
-@property (nonatomic, assign) BOOL liveReloadEnabled DEPRECATED_ATTRIBUTE;
-
-/**
- * Deprecated, use RCTDevSettings instead.
- */
 @property (nonatomic, assign) BOOL hotLoadingEnabled DEPRECATED_ATTRIBUTE;
 
 /**

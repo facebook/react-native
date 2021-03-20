@@ -7,10 +7,12 @@
 
 package com.facebook.react.turbomodule.core;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.perflogger.NativeModulePerfLogger;
 import com.facebook.soloader.SoLoader;
 import javax.annotation.Nullable;
 
+@DoNotStrip
 public class TurboModulePerfLogger {
   @Nullable private static NativeModulePerfLogger sNativeModulePerfLogger = null;
   private static boolean sIsSoLibraryLoaded = false;

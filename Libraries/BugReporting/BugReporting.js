@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';

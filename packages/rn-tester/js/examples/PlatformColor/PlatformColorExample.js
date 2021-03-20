@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const React = require('react');
 const ReactNative = require('react-native');
 import Platform from 'react-native/Libraries/Utilities/Platform';

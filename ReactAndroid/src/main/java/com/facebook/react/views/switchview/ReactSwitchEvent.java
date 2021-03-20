@@ -7,10 +7,10 @@
 
 package com.facebook.react.views.switchview;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /** Event emitted by a ReactSwitchManager once a switch is fully switched on/off */
 /*package*/ class ReactSwitchEvent extends Event<ReactSwitchEvent> {
@@ -19,8 +19,13 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   private final boolean mIsChecked;
 
+  @Deprecated
   public ReactSwitchEvent(int viewId, boolean isChecked) {
-    super(viewId);
+    this(-1, viewId, isChecked);
+  }
+
+  public ReactSwitchEvent(int surfaceId, int viewId, boolean isChecked) {
+    super(surfaceId, viewId);
     mIsChecked = isChecked;
   }
 
@@ -33,21 +38,18 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
     return EVENT_NAME;
   }
 
+  @Nullable
   @Override
-  public short getCoalescingKey() {
-    // All switch events for a given view can be coalesced.
-    return 0;
-  }
-
-  @Override
-  public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
-  }
-
-  private WritableMap serializeEventData() {
+  protected WritableMap getEventData() {
     WritableMap eventData = Arguments.createMap();
     eventData.putInt("target", getViewTag());
     eventData.putBoolean("value", getIsChecked());
     return eventData;
+  }
+
+  @Override
+  public short getCoalescingKey() {
+    // All switch events for a given view can be coalesced.
+    return 0;
   }
 }

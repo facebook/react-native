@@ -6,6 +6,7 @@ rn_android_library(
         "AndroidInfoModule.java",
         "ReactNativeVersion.java",
     ],
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
@@ -21,7 +22,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
     ],
     exported_deps = [
-        react_native_root_target("Libraries:generated_java_modules-FBReactNativeSpec"),
+        react_native_root_target("Libraries:FBReactNativeSpec"),
         ":systeminfo-moduleless",
     ],
 )
@@ -31,6 +32,7 @@ rn_android_library(
     srcs = [
         "AndroidInfoHelpers.java",
     ],
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
@@ -43,5 +45,5 @@ rn_android_library(
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("res:systeminfo"),
     ],
-    exported_deps = [react_native_root_target("Libraries:generated_java_modules-FBReactNativeSpec")],
+    exported_deps = [react_native_root_target("Libraries:FBReactNativeSpec")],
 )

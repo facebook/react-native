@@ -17,6 +17,7 @@ const {StyleSheet, Text, TouchableHighlight} = require('react-native');
 import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 type Props = $ReadOnly<{|
+  testID?: string,
   children?: React.Node,
   onPress?: ?(event: PressEvent) => mixed,
 |}>;
@@ -25,6 +26,7 @@ class RNTesterButton extends React.Component<Props> {
   render(): React.Node {
     return (
       <TouchableHighlight
+        testID={this.props.testID}
         onPress={this.props.onPress}
         style={styles.button}
         underlayColor="grey">

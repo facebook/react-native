@@ -11,6 +11,7 @@ import android.content.Context;
 import android.net.Uri;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import java.util.Objects;
 
 /** Class describing an image source (network URI or resource) and size. */
 public class ImageSource {
@@ -27,6 +28,22 @@ public class ImageSource {
     // Important: we compute the URI here so that we don't need to hold a reference to the context,
     // potentially causing leaks.
     mUri = computeUri(context);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ImageSource that = (ImageSource) o;
+    return Double.compare(that.mSize, mSize) == 0
+        && isResource == that.isResource
+        && Objects.equals(mUri, that.mUri)
+        && Objects.equals(mSource, that.mSource);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(mUri, mSource, mSize, isResource);
   }
 
   public ImageSource(Context context, String source) {

@@ -14,10 +14,10 @@ const Dimensions = require('../Utilities/Dimensions');
 const InspectorOverlay = require('./InspectorOverlay');
 const InspectorPanel = require('./InspectorPanel');
 const Platform = require('../Utilities/Platform');
+const PressabilityDebug = require('../Pressability/PressabilityDebug');
 const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Touchable = require('../Components/Touchable/Touchable');
 const View = require('../Components/View/View');
 
 const invariant = require('invariant');
@@ -170,7 +170,10 @@ class Inspector extends React.Component<
   _onAgentShowNativeHighlight = node => {
     clearTimeout(this._hideTimeoutID);
 
-    node.measure((x, y, width, height, left, top) => {
+    // Shape of `node` is different in Fabric.
+    const component = node.canonical ?? node;
+
+    component.measure((x, y, width, height, left, top) => {
       this.setState({
         hierarchy: [],
         inspected: {
@@ -279,7 +282,7 @@ class Inspector extends React.Component<
   }
 
   setTouchTargeting(val: boolean) {
-    Touchable.TOUCH_TARGET_DEBUG = val;
+    PressabilityDebug.setEnabled(val);
     this.props.onRequestRerenderApp(inspectedView => {
       this.setState({inspectedView});
     });
@@ -318,7 +321,7 @@ class Inspector extends React.Component<
             hierarchy={this.state.hierarchy}
             selection={this.state.selection}
             setSelection={this.setSelection.bind(this)}
-            touchTargeting={Touchable.TOUCH_TARGET_DEBUG}
+            touchTargeting={PressabilityDebug.isEnabled()}
             setTouchTargeting={this.setTouchTargeting.bind(this)}
             networking={this.state.networking}
             setNetworking={this.setNetworking.bind(this)}

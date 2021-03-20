@@ -40,6 +40,7 @@ struct ShadowView final {
 
   ComponentName componentName{};
   ComponentHandle componentHandle{};
+  SurfaceId surfaceId{};
   Tag tag{};
   Props::Shared props{};
   EventEmitter::Shared eventEmitter{};

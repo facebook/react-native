@@ -5,6 +5,7 @@ rn_android_library(
     srcs = glob([
         "*.java",
     ]),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
@@ -28,5 +29,5 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
     ],
-    exported_deps = [react_native_root_target("Libraries:generated_java_modules-FBReactNativeSpec")],
+    exported_deps = [react_native_root_target("Libraries:FBReactNativeSpec")],
 )

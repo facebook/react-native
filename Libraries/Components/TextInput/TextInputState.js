@@ -12,8 +12,6 @@
 // TextInputs. All calls relating to the keyboard should be funneled
 // through here.
 
-'use strict';
-
 const React = require('react');
 const Platform = require('../../Utilities/Platform');
 const {findNodeHandle} = require('../../Renderer/shims/ReactNative');

@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
 

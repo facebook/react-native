@@ -8,75 +8,26 @@
  * @format
  */
 
-'use strict';
-
-const ReactNativeViewConfigRegistry = require('../Renderer/shims/ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('../Components/View/ReactNativeViewViewConfig');
+import {createViewConfig} from '../NativeComponent/ViewConfig';
+import {type PartialViewConfig} from '../Renderer/shims/ReactNativeTypes';
+import ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
+import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
 import verifyComponentAttributeEquivalence from './verifyComponentAttributeEquivalence';
-
-export type GeneratedViewConfig = {
-  uiViewClassName: string,
-  bubblingEventTypes?: $ReadOnly<{
-    [eventName: string]: $ReadOnly<{|
-      phasedRegistrationNames: $ReadOnly<{|
-        captured: string,
-        bubbled: string,
-      |}>,
-    |}>,
-    ...,
-  }>,
-  directEventTypes?: $ReadOnly<{
-    [eventName: string]: $ReadOnly<{|
-      registrationName: string,
-    |}>,
-    ...,
-  }>,
-  validAttributes?: {
-    [propName: string]:
-      | true
-      | $ReadOnly<{|
-          diff?: <T>(arg1: any, arg2: any) => boolean,
-          process?: (arg1: any) => any,
-        |}>,
-    ...,
-  },
-  ...
-};
 
 function registerGeneratedViewConfig(
   componentName: string,
-  viewConfig: GeneratedViewConfig,
+  partialViewConfig: PartialViewConfig,
 ) {
-  const mergedViewConfig = {
-    uiViewClassName: componentName,
-    Commands: {},
-    /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.122.0 was deployed. To see the error, delete
-     * this comment and run Flow. */
-    bubblingEventTypes: {
-      ...ReactNativeViewViewConfig.bubblingEventTypes,
-      ...(viewConfig.bubblingEventTypes || {}),
-    },
-    /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.122.0 was deployed. To see the error, delete
-     * this comment and run Flow. */
-    directEventTypes: {
-      ...ReactNativeViewViewConfig.directEventTypes,
-      ...(viewConfig.directEventTypes || {}),
-    },
-    /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.122.0 was deployed. To see the error, delete
-     * this comment and run Flow. */
-    validAttributes: {
-      ...ReactNativeViewViewConfig.validAttributes,
-      ...(viewConfig.validAttributes || {}),
-    },
-  };
+  const staticViewConfig = createViewConfig(partialViewConfig);
 
   ReactNativeViewConfigRegistry.register(componentName, () => {
-    verifyComponentAttributeEquivalence(componentName, mergedViewConfig);
+    if (!global.RN$Bridgeless) {
+      const nativeViewConfig = getNativeComponentAttributes(componentName);
 
-    return mergedViewConfig;
+      verifyComponentAttributeEquivalence(nativeViewConfig, staticViewConfig);
+    }
+
+    return staticViewConfig;
   });
 }
 

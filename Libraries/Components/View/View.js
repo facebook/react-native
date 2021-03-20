@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import type {ViewProps} from './ViewPropTypes';
 
 const React = require('react');

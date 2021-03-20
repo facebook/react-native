@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import NativeImagePickerIOS from './NativeImagePickerIOS';
 import invariant from 'invariant';
 

@@ -14,6 +14,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
@@ -428,9 +429,13 @@ public class DevServerHelper {
 
   private String createBundleURL(
       String mainModuleID, BundleType type, String host, boolean modulesOnly, boolean runModule) {
+    String runtimeBytecodeVersion =
+        ReactBuildConfig.HERMES_BYTECODE_VERSION != 0
+            ? "&runtimeBytecodeVersion=" + ReactBuildConfig.HERMES_BYTECODE_VERSION
+            : "";
     return String.format(
         Locale.US,
-        "http://%s/%s.%s?platform=android&dev=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
+        "http://%s/%s.%s?platform=android&dev=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s%s",
         host,
         mainModuleID,
         type.typeID(),
@@ -438,7 +443,8 @@ public class DevServerHelper {
         getJSMinifyMode(),
         mPackageName,
         modulesOnly ? "true" : "false",
-        runModule ? "true" : "false");
+        runModule ? "true" : "false",
+        runtimeBytecodeVersion);
   }
 
   private String createBundleURL(String mainModuleID, BundleType type) {

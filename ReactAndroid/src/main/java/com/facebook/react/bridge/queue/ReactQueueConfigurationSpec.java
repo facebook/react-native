@@ -7,7 +7,6 @@
 
 package com.facebook.react.bridge.queue;
 
-import android.os.Build;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 

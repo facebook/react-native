@@ -62,8 +62,18 @@ type Props = $ReadOnly<{|
   size?: ?IndicatorSize,
 |}>;
 
-const ActivityIndicator = (props: Props, forwardedRef?: any) => {
-  const {onLayout, style, size, ...restProps} = props;
+const ActivityIndicator = (
+  {
+    animating = true,
+    color = Platform.OS === 'ios' ? GRAY : null,
+    hidesWhenStopped = true,
+    onLayout,
+    size = 'small',
+    style,
+    ...restProps
+  }: Props,
+  forwardedRef?: any,
+) => {
   let sizeStyle;
   let sizeProp;
 
@@ -77,11 +87,14 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
       sizeProp = 'large';
       break;
     default:
-      sizeStyle = {height: props.size, width: props.size};
+      sizeStyle = {height: size, width: size};
       break;
   }
 
   const nativeProps = {
+    animating,
+    color,
+    hidesWhenStopped,
     ...restProps,
     ref: forwardedRef,
     style: sizeStyle,
@@ -177,16 +190,6 @@ const ActivityIndicatorWithRef: React.AbstractComponent<
   HostComponent<mixed>,
 > = React.forwardRef(ActivityIndicator);
 ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
-
-/* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.89 was deployed. To see the error, delete this comment
- * and run Flow. */
-ActivityIndicatorWithRef.defaultProps = {
-  animating: true,
-  color: Platform.OS === 'ios' ? GRAY : null,
-  hidesWhenStopped: true,
-  size: 'small',
-};
 
 const styles = StyleSheet.create({
   container: {

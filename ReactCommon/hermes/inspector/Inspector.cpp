@@ -85,7 +85,7 @@ namespace debugger = ::facebook::hermes::debugger;
  */
 
 // TODO: read this out of an env variable or config
-static constexpr bool kShouldLog = true;
+static constexpr bool kShouldLog = false;
 
 // Logging state transitions is done outside of transition() in a macro so that
 // function and line numbers in the log will be accurate.
@@ -132,7 +132,6 @@ Inspector::Inspector(
 }
 
 Inspector::~Inspector() {
-  // TODO: think about expected detach flow
   debugger_.setEventObserver(nullptr);
 }
 
@@ -186,7 +185,7 @@ void Inspector::installConsoleFunction(
                 auto obj = val.getObject(runtime);
                 if (obj.isFunction(runtime)) {
                   auto func = obj.getFunction(runtime);
-                  func.call(runtime, args, count);
+                  func.callWithThis(runtime, *originalConsole, args, count);
                 }
               }
             }

@@ -70,6 +70,12 @@ std::vector<CxxModule::Method> SampleTurboCxxModuleLegacyImpl::getMethods() {
           },
           CxxModule::SyncTag),
       CxxModule::Method(
+          "getUnsafeObject",
+          [this](folly::dynamic args) {
+            return getUnsafeObject(xplat::jsArgAsObject(args, 0));
+          },
+          CxxModule::SyncTag),
+      CxxModule::Method(
           "getRootTag",
           [this](folly::dynamic args) {
             return getNumber(xplat::jsArgAsDouble(args, 0));
@@ -122,6 +128,11 @@ folly::dynamic SampleTurboCxxModuleLegacyImpl::getArray(
 }
 
 folly::dynamic SampleTurboCxxModuleLegacyImpl::getObject(
+    const folly::dynamic &arg) {
+  return arg;
+}
+
+folly::dynamic SampleTurboCxxModuleLegacyImpl::getUnsafeObject(
     const folly::dynamic &arg) {
   return arg;
 }

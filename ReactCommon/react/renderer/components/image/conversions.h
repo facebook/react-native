@@ -9,6 +9,7 @@
 
 #include <better/map.h>
 #include <folly/dynamic.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/graphics/conversions.h>
 #include <react/renderer/imagemanager/primitives.h>
 
@@ -49,7 +50,7 @@ inline void fromRawValue(const RawValue &value, ImageSource &result) {
         items.at("scale").hasType<Float>()) {
       result.scale = (Float)items.at("scale");
     } else {
-      result.scale = items.find("deprecated") != items.end() ? 0.0 : 1.0;
+      result.scale = items.find("deprecated") != items.end() ? 0.0f : 1.0f;
     }
 
     if (items.find("url") != items.end() &&
@@ -88,7 +89,7 @@ inline std::string toString(const ImageSource &value) {
 }
 
 inline void fromRawValue(const RawValue &value, ImageResizeMode &result) {
-  assert(value.hasType<std::string>());
+  react_native_assert(value.hasType<std::string>());
   auto stringValue = (std::string)value;
   if (stringValue == "cover") {
     result = ImageResizeMode::Cover;

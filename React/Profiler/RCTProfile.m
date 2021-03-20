@@ -469,14 +469,15 @@ void RCTProfileInit(RCTBridge *bridge)
     NSArray *orderedThreads =
         @[ @"JS async", @"RCTPerformanceLogger", @"com.facebook.react.JavaScript", @(RCTUIManagerQueueName), @"main" ];
     [orderedThreads enumerateObjectsUsingBlock:^(NSString *thread, NSUInteger idx, __unused BOOL *stop) {
-      RCTProfileAddEvent(kProfileTraceEvents,
-                         @"ph"
-                         : @"M", // metadata event
-                           @"name"
-                         : @"thread_sort_index", @"tid"
-                         : thread, @"args"
-                         :
-                         @{@"sort_index" : @(-1000 + (NSInteger)idx)});
+      RCTProfileAddEvent(
+          kProfileTraceEvents,
+          @"ph"
+          : @"M", // metadata event
+            @"name"
+          : @"thread_sort_index", @"tid"
+          : thread, @"args"
+          :
+          @{@"sort_index" : @(-1000 + (NSInteger)idx)});
     }];
   });
 

@@ -104,5 +104,12 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
   }
 
   @Override
-  public void invalidate() {}
+  public void invalidate() {
+    super.invalidate();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
+  }
 }

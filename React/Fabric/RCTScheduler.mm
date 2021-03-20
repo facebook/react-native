@@ -45,18 +45,17 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
   }
 
-  void schedulerDidSetJSResponder(
-      SurfaceId surfaceId,
-      const ShadowView &shadowView,
-      const ShadowView &initialShadowView,
-      bool blockNativeResponder) override
+  void schedulerDidSetIsJSResponder(ShadowView const &shadowView, bool isJSResponder, bool blockNativeResponder)
+      override
   {
-    // Does nothing for now.
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidSetIsJSResponder:isJSResponder forShadowView:shadowView];
   }
 
-  void schedulerDidClearJSResponder() override
+  void schedulerDidSendAccessibilityEvent(const ShadowView &shadowView, std::string const &eventType) override
   {
-    // Does nothing for now.
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidSendAccessibilityEvent:shadowView eventType:eventType];
   }
 
  private:
@@ -83,8 +82,8 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
     [scheduler onAllAnimationsComplete];
   }
 
-  void activityDidChange(RunLoopObserver::Delegate const *delegate, RunLoopObserver::Activity activity) const
-      noexcept override
+  void activityDidChange(RunLoopObserver::Delegate const *delegate, RunLoopObserver::Activity activity)
+      const noexcept override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler animationTick];
@@ -103,7 +102,7 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   BOOL _layoutAnimationsEnabled;
 }
 
-- (instancetype)initWithToolbox:(facebook::react::SchedulerToolbox)toolbox
+- (instancetype)initWithToolbox:(SchedulerToolbox)toolbox
 {
   if (self = [super init]) {
     auto reactNativeConfig =
@@ -141,41 +140,14 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   _animationDriver = nullptr;
 }
 
-- (void)startSurfaceWithSurfaceId:(SurfaceId)surfaceId
-                       moduleName:(NSString *)moduleName
-                     initialProps:(NSDictionary *)initialProps
-                layoutConstraints:(LayoutConstraints)layoutConstraints
-                    layoutContext:(LayoutContext)layoutContext
+- (void)registerSurface:(facebook::react::SurfaceHandler const &)surfaceHandler
 {
-  SystraceSection s("-[RCTScheduler startSurfaceWithSurfaceId:...]");
-
-  auto props = convertIdToFollyDynamic(initialProps);
-  _scheduler->startSurface(
-      surfaceId, RCTStringFromNSString(moduleName), props, layoutConstraints, layoutContext, _animationDriver);
-  _scheduler->renderTemplateToSurface(
-      surfaceId, props.getDefault("navigationConfig").getDefault("initialUITemplate", "").getString());
+  _scheduler->registerSurface(surfaceHandler);
 }
 
-- (void)stopSurfaceWithSurfaceId:(SurfaceId)surfaceId
+- (void)unregisterSurface:(facebook::react::SurfaceHandler const &)surfaceHandler
 {
-  SystraceSection s("-[RCTScheduler stopSurfaceWithSurfaceId:]");
-  _scheduler->stopSurface(surfaceId);
-}
-
-- (CGSize)measureSurfaceWithLayoutConstraints:(LayoutConstraints)layoutConstraints
-                                layoutContext:(LayoutContext)layoutContext
-                                    surfaceId:(SurfaceId)surfaceId
-{
-  SystraceSection s("-[RCTScheduler measureSurfaceWithLayoutConstraints:]");
-  return RCTCGSizeFromSize(_scheduler->measureSurface(surfaceId, layoutConstraints, layoutContext));
-}
-
-- (void)constraintSurfaceLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
-                                       layoutContext:(LayoutContext)layoutContext
-                                           surfaceId:(SurfaceId)surfaceId
-{
-  SystraceSection s("-[RCTScheduler constraintSurfaceLayoutWithLayoutConstraints:]");
-  _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
+  _scheduler->unregisterSurface(surfaceHandler);
 }
 
 - (ComponentDescriptor const *)findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:(ComponentHandle)handle
@@ -183,9 +155,9 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   return _scheduler->findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(handle);
 }
 
-- (MountingCoordinator::Shared)mountingCoordinatorWithSurfaceId:(SurfaceId)surfaceId
+- (void)setupAnimationDriver:(facebook::react::SurfaceHandler const &)surfaceHandler
 {
-  return _scheduler->findMountingCoordinator(surfaceId);
+  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(_animationDriver);
 }
 
 - (void)onAnimationStarted

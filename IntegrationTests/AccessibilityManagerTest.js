@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import invariant from 'invariant';
 import NativeAccessibilityManager from 'react-native/Libraries/Components/AccessibilityInfo/NativeAccessibilityManager';
 import {DeviceEventEmitter, NativeModules, View} from 'react-native';

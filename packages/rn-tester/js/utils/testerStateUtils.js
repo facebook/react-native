@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import {AsyncStorage} from 'react-native';
 
 import RNTesterList from './RNTesterList';

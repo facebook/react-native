@@ -10,7 +10,6 @@ package com.facebook.react.views.drawer.events;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 public class DrawerStateChangedEvent extends Event<DrawerStateChangedEvent> {
 
@@ -18,8 +17,13 @@ public class DrawerStateChangedEvent extends Event<DrawerStateChangedEvent> {
 
   private final int mDrawerState;
 
+  @Deprecated
   public DrawerStateChangedEvent(int viewId, int drawerState) {
-    super(viewId);
+    this(-1, viewId, drawerState);
+  }
+
+  public DrawerStateChangedEvent(int surfaceId, int viewId, int drawerState) {
+    super(surfaceId, viewId);
     mDrawerState = drawerState;
   }
 
@@ -39,11 +43,7 @@ public class DrawerStateChangedEvent extends Event<DrawerStateChangedEvent> {
   }
 
   @Override
-  public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
-  }
-
-  private WritableMap serializeEventData() {
+  protected WritableMap getEventData() {
     WritableMap eventData = Arguments.createMap();
     eventData.putDouble("drawerState", getDrawerState());
     return eventData;

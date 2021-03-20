@@ -53,6 +53,7 @@ class ScrollViewProps final : public ViewProps {
   bool snapToEnd{true};
   ContentInsetAdjustmentBehavior contentInsetAdjustmentBehavior{
       ContentInsetAdjustmentBehavior::Never};
+  bool scrollToOverflowEnabled{false};
 
 #pragma mark - DebugStringConvertible
 

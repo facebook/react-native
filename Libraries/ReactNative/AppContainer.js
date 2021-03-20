@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import View from '../Components/View/View';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import StyleSheet from '../StyleSheet/StyleSheet';

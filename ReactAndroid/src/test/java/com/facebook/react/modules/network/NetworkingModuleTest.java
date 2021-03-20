@@ -545,7 +545,7 @@ public class NetworkingModuleTest {
   }
 
   @Test
-  public void testCancelAllCallsOnCatalystInstanceDestroy() throws Exception {
+  public void testCancelAllCallsInvalidate() throws Exception {
     PowerMockito.mockStatic(OkHttpCallUtil.class);
     final int requests = 3;
     final Call[] calls = new Call[requests];
@@ -578,7 +578,7 @@ public class NetworkingModuleTest {
     }
     verify(mHttpClient, times(3)).newCall(any(Request.class));
 
-    mNetworkingModule.onCatalystInstanceDestroy();
+    mNetworkingModule.invalidate();
     PowerMockito.verifyStatic(OkHttpCallUtil.class, times(3));
     ArgumentCaptor<OkHttpClient> clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     ArgumentCaptor<Integer> requestIdArguments = ArgumentCaptor.forClass(Integer.class);
@@ -591,7 +591,7 @@ public class NetworkingModuleTest {
   }
 
   @Test
-  public void testCancelSomeCallsOnCatalystInstanceDestroy() throws Exception {
+  public void testCancelSomeCallsInvalidate() throws Exception {
     PowerMockito.mockStatic(OkHttpCallUtil.class);
     final int requests = 3;
     final Call[] calls = new Call[requests];
@@ -634,7 +634,7 @@ public class NetworkingModuleTest {
     // verifyStatic actually does not clear all calls so far, so we have to check for all of them.
     // If `cancelTag` would've been called again for the aborted call, we would have had
     // `requests + 1` calls.
-    mNetworkingModule.onCatalystInstanceDestroy();
+    mNetworkingModule.invalidate();
     PowerMockito.verifyStatic(OkHttpCallUtil.class, times(requests));
     clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     requestIdArguments = ArgumentCaptor.forClass(Integer.class);

@@ -17,7 +17,6 @@ using namespace facebook::react;
 // Backward-compatible export
 RCT_EXPORT_MODULE()
 
-@synthesize bridge = _bridge;
 @synthesize turboModuleRegistry = _turboModuleRegistry;
 
 // Backward-compatible queue configuration
@@ -93,6 +92,11 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSArray<id<NSObject>> *, getArray : (NSArray
 }
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getObject : (NSDictionary *)arg)
+{
+  return arg;
+}
+
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getUnsafeObject : (NSDictionary *)arg)
 {
   return arg;
 }

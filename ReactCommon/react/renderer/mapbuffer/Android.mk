@@ -15,7 +15,7 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../
 
-LOCAL_SHARED_LIBRARIES := libreact_utils
+LOCAL_SHARED_LIBRARIES := libreact_utils glog libglog_init
 
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
@@ -25,3 +25,5 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,react/utils)
+$(call import-module,glog)
+$(call import-module,fbgloginit)

@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import NativeFrameRateLogger from './NativeFrameRateLogger';
 
 const invariant = require('invariant');

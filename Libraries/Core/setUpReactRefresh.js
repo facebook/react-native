@@ -45,5 +45,7 @@ if (__DEV__) {
     },
   };
 
-  (require: any).Refresh = Refresh;
+  // The metro require polyfill can not have dependencies (applies for all polyfills).
+  // Expose `Refresh` by assigning it to global to make it available in the polyfill.
+  global[(global.__METRO_GLOBAL_PREFIX__ || '') + '__ReactRefresh'] = Refresh;
 }

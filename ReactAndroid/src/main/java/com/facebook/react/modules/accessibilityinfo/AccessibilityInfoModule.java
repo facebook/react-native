@@ -163,9 +163,13 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
-    getReactApplicationContext().removeLifecycleEventListener(this);
+  public void invalidate() {
+    super.invalidate();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
   }
 
   @Override

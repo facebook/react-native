@@ -39,9 +39,9 @@ using RuntimeExecutor =
 inline static void executeAsynchronously(
     RuntimeExecutor const &runtimeExecutor,
     std::function<void(jsi::Runtime &runtime)> &&callback) noexcept {
-  std::thread{[callback = std::move(callback), runtimeExecutor]() mutable {
+  std::thread([callback = std::move(callback), runtimeExecutor]() mutable {
     runtimeExecutor(std::move(callback));
-  }};
+  }).detach();
 }
 
 /*

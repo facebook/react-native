@@ -8,7 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
 import NativeToastAndroid from './NativeToastAndroid';
 
 /**

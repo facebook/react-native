@@ -20,7 +20,6 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
-import com.facebook.yoga.YogaDirection;
 
 // TODO: T63643819 refactor naming of TextAttributeProps to make explicit that this represents
 // TextAttributes and not TextProps. As part of this refactor extract methods that don't belong to
@@ -122,7 +121,10 @@ public class TextAttributeProps {
     setAllowFontScaling(getBooleanProp(ViewProps.ALLOW_FONT_SCALING, true));
     setFontSize(getFloatProp(ViewProps.FONT_SIZE, UNSET));
     setColor(props.hasKey(ViewProps.COLOR) ? props.getInt(ViewProps.COLOR, 0) : null);
-    setColor(props.hasKey("foregroundColor") ? props.getInt("foregroundColor", 0) : null);
+    setColor(
+        props.hasKey(ViewProps.FOREGROUND_COLOR)
+            ? props.getInt(ViewProps.FOREGROUND_COLOR, 0)
+            : null);
     setBackgroundColor(
         props.hasKey(ViewProps.BACKGROUND_COLOR)
             ? props.getInt(ViewProps.BACKGROUND_COLOR, 0)
@@ -226,11 +228,11 @@ public class TextAttributeProps {
     return useInlineViewHeight ? mHeightOfTallestInlineImage : mLineHeight;
   }
 
-  public void setNumberOfLines(int numberOfLines) {
+  private void setNumberOfLines(int numberOfLines) {
     mNumberOfLines = numberOfLines == 0 ? UNSET : numberOfLines;
   }
 
-  public void setLineHeight(float lineHeight) {
+  private void setLineHeight(float lineHeight) {
     mLineHeightInput = lineHeight;
     if (lineHeight == UNSET) {
       mLineHeight = Float.NaN;
@@ -242,7 +244,7 @@ public class TextAttributeProps {
     }
   }
 
-  public void setLetterSpacing(float letterSpacing) {
+  private void setLetterSpacing(float letterSpacing) {
     mLetterSpacingInput = letterSpacing;
   }
 
@@ -261,7 +263,7 @@ public class TextAttributeProps {
     return letterSpacingPixels / mFontSize;
   }
 
-  public void setAllowFontScaling(boolean allowFontScaling) {
+  private void setAllowFontScaling(boolean allowFontScaling) {
     if (allowFontScaling != mAllowFontScaling) {
       mAllowFontScaling = allowFontScaling;
       setFontSize(mFontSizeInput);
@@ -270,7 +272,7 @@ public class TextAttributeProps {
     }
   }
 
-  public void setFontSize(float fontSize) {
+  private void setFontSize(float fontSize) {
     mFontSizeInput = fontSize;
     if (fontSize != UNSET) {
       fontSize =
@@ -281,14 +283,14 @@ public class TextAttributeProps {
     mFontSize = (int) fontSize;
   }
 
-  public void setColor(@Nullable Integer color) {
+  private void setColor(@Nullable Integer color) {
     mIsColorSet = (color != null);
     if (mIsColorSet) {
       mColor = color;
     }
   }
 
-  public void setBackgroundColor(Integer color) {
+  private void setBackgroundColor(Integer color) {
     // TODO: Don't apply background color to anchor TextView since it will be applied on the View
     // directly
     // if (!isVirtualAnchor()) {
@@ -299,11 +301,11 @@ public class TextAttributeProps {
     // }
   }
 
-  public void setFontFamily(@Nullable String fontFamily) {
+  private void setFontFamily(@Nullable String fontFamily) {
     mFontFamily = fontFamily;
   }
 
-  public void setFontVariant(@Nullable ReadableArray fontVariant) {
+  private void setFontVariant(@Nullable ReadableArray fontVariant) {
     mFontFeatureSettings = ReactTypefaceUtils.parseFontVariant(fontVariant);
   }
 
@@ -311,7 +313,7 @@ public class TextAttributeProps {
    * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
    * can both use
    */
-  public void setFontWeight(@Nullable String fontWeightString) {
+  private void setFontWeight(@Nullable String fontWeightString) {
     int fontWeightNumeric =
         fontWeightString != null ? parseNumericFontWeight(fontWeightString) : -1;
     int fontWeight = UNSET;
@@ -330,7 +332,7 @@ public class TextAttributeProps {
    * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
    * can both use
    */
-  public void setFontStyle(@Nullable String fontStyleString) {
+  private void setFontStyle(@Nullable String fontStyleString) {
     int fontStyle = UNSET;
     if ("italic".equals(fontStyleString)) {
       fontStyle = Typeface.ITALIC;
@@ -342,11 +344,11 @@ public class TextAttributeProps {
     }
   }
 
-  public void setIncludeFontPadding(boolean includepad) {
+  private void setIncludeFontPadding(boolean includepad) {
     mIncludeFontPadding = includepad;
   }
 
-  public void setTextDecorationLine(@Nullable String textDecorationLineString) {
+  private void setTextDecorationLine(@Nullable String textDecorationLineString) {
     mIsUnderlineTextDecorationSet = false;
     mIsLineThroughTextDecorationSet = false;
     if (textDecorationLineString != null) {
@@ -360,7 +362,7 @@ public class TextAttributeProps {
     }
   }
 
-  public void setTextShadowOffset(ReadableMap offsetMap) {
+  private void setTextShadowOffset(ReadableMap offsetMap) {
     mTextShadowOffsetDx = 0;
     mTextShadowOffsetDy = 0;
 
@@ -378,7 +380,7 @@ public class TextAttributeProps {
     }
   }
 
-  public void setLayoutDirection(@Nullable String layoutDirection) {
+  private void setLayoutDirection(@Nullable String layoutDirection) {
     if (layoutDirection == null || "undefined".equals(layoutDirection)) {
       mLayoutDirection = UNSET;
     } else if ("rtl".equals(layoutDirection)) {
@@ -391,19 +393,19 @@ public class TextAttributeProps {
     }
   }
 
-  public void setTextShadowRadius(float textShadowRadius) {
+  private void setTextShadowRadius(float textShadowRadius) {
     if (textShadowRadius != mTextShadowRadius) {
       mTextShadowRadius = textShadowRadius;
     }
   }
 
-  public void setTextShadowColor(int textShadowColor) {
+  private void setTextShadowColor(int textShadowColor) {
     if (textShadowColor != mTextShadowColor) {
       mTextShadowColor = textShadowColor;
     }
   }
 
-  public void setTextTransform(@Nullable String textTransform) {
+  private void setTextTransform(@Nullable String textTransform) {
     if (textTransform == null || "none".equals(textTransform)) {
       mTextTransform = TextTransform.NONE;
     } else if ("uppercase".equals(textTransform)) {
@@ -417,7 +419,7 @@ public class TextAttributeProps {
     }
   }
 
-  public void setAccessibilityRole(@Nullable String accessibilityRole) {
+  private void setAccessibilityRole(@Nullable String accessibilityRole) {
     if (accessibilityRole != null) {
       mIsAccessibilityRoleSet = accessibilityRole != null;
       mAccessibilityRole =
@@ -458,42 +460,5 @@ public class TextAttributeProps {
             && fontWeightString.charAt(0) >= '1'
         ? 100 * (fontWeightString.charAt(0) - '0')
         : -1;
-  }
-
-  // TODO T63645393 remove this from here and add support to RTL
-  private YogaDirection getLayoutDirection() {
-    return YogaDirection.LTR;
-  }
-
-  public float getBottomPadding() {
-    return getPaddingProp(ViewProps.PADDING_BOTTOM);
-  }
-
-  public float getLeftPadding() {
-    return getPaddingProp(ViewProps.PADDING_LEFT);
-  }
-
-  public float getStartPadding() {
-    return getPaddingProp(ViewProps.PADDING_START);
-  }
-
-  public float getEndPadding() {
-    return getPaddingProp(ViewProps.PADDING_END);
-  }
-
-  public float getTopPadding() {
-    return getPaddingProp(ViewProps.PADDING_TOP);
-  }
-
-  public float getRightPadding() {
-    return getPaddingProp(ViewProps.PADDING_RIGHT);
-  }
-
-  private float getPaddingProp(String paddingType) {
-    if (mProps.hasKey(ViewProps.PADDING)) {
-      return PixelUtil.toPixelFromDIP(getFloatProp(ViewProps.PADDING, 0f));
-    }
-
-    return PixelUtil.toPixelFromDIP(getFloatProp(paddingType, 0f));
   }
 }

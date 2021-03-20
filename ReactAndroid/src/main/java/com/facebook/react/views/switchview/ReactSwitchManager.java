@@ -20,6 +20,7 @@ import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
@@ -89,7 +90,9 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
 
           uiManager
               .getEventDispatcher()
-              .dispatchEvent(new ReactSwitchEvent(buttonView.getId(), isChecked));
+              .dispatchEvent(
+                  new ReactSwitchEvent(
+                      UIManagerHelper.getSurfaceId(reactContext), buttonView.getId(), isChecked));
         }
       };
 

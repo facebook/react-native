@@ -8,8 +8,6 @@
  * @emails oncall+react_native
  */
 
-'use strict';
-
 import {Text} from 'react-native';
 import * as React from 'react';
 

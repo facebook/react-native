@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import NativeSettingsManager from './NativeSettingsManager';
 import invariant from 'invariant';

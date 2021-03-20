@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import * as React from 'react';
 import GlobalPerformanceLogger from './GlobalPerformanceLogger';
 import type {IPerformanceLogger} from './createPerformanceLogger';
@@ -23,4 +21,7 @@ import type {IPerformanceLogger} from './createPerformanceLogger';
 const PerformanceLoggerContext: React.Context<IPerformanceLogger> = React.createContext(
   GlobalPerformanceLogger,
 );
+if (__DEV__) {
+  PerformanceLoggerContext.displayName = 'PerformanceLoggerContext';
+}
 module.exports = PerformanceLoggerContext;

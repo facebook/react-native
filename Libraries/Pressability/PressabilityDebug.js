@@ -8,12 +8,9 @@
  * @format
  */
 
-'use strict';
-
 import normalizeColor from '../StyleSheet/normalizeColor';
 import type {ColorValue} from '../StyleSheet/StyleSheet';
 
-import Touchable from '../Components/Touchable/Touchable';
 import View from '../Components/View/View';
 import * as React from 'react';
 
@@ -73,9 +70,17 @@ export function PressabilityDebugView({color, hitSlop}: Props): React.Node {
   return null;
 }
 
+let isDebugEnabled = false;
+
 export function isEnabled(): boolean {
   if (__DEV__) {
-    return Touchable.TOUCH_TARGET_DEBUG;
+    return isDebugEnabled;
   }
   return false;
+}
+
+export function setEnabled(value: boolean): void {
+  if (__DEV__) {
+    isDebugEnabled = value;
+  }
 }

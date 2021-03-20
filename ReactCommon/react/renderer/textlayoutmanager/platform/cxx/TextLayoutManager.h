@@ -28,8 +28,7 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
  */
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared &contextContainer)
-      : contextContainer_(contextContainer){};
+  TextLayoutManager(const ContextContainer::Shared &contextContainer) {}
   ~TextLayoutManager();
 
   /*
@@ -41,15 +40,19 @@ class TextLayoutManager {
       LayoutConstraints layoutConstraints) const;
 
   /*
+   * Measures lines of `attributedString` using native text rendering
+   * infrastructure.
+   */
+  LinesMeasurements measureLines(
+      AttributedString attributedString,
+      ParagraphAttributes paragraphAttributes,
+      Size size) const;
+
+  /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.
    * Is used on a native views layer to delegate text rendering to the manager.
    */
   void *getNativeTextLayoutManager() const;
-
- private:
-  void *self_;
-
-  ContextContainer::Shared contextContainer_;
 };
 
 } // namespace react

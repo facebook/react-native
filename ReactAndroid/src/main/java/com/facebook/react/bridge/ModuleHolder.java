@@ -107,7 +107,7 @@ public class ModuleHolder {
 
   public synchronized void destroy() {
     if (mModule != null) {
-      mModule.onCatalystInstanceDestroy();
+      mModule.invalidate();
     }
   }
 

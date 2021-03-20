@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import * as React from 'react';
 
 const FlatList = require('../../Lists/FlatList');

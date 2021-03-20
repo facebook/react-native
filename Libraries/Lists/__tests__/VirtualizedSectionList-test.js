@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  * @emails oncall+react_native
  */
 
@@ -37,18 +38,6 @@ describe('VirtualizedSectionList', () => {
         renderItem={({item}) => <item value={item.key} />}
         getItem={(data, key) => data[key]}
         getItemCount={data => data.length}
-      />,
-    );
-    expect(component).toMatchSnapshot();
-  });
-
-  it('renders null list', () => {
-    const component = ReactTestRenderer.create(
-      <VirtualizedSectionList
-        sections={undefined}
-        renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, key) => data[key]}
-        getItemCount={data => 0}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -97,7 +86,11 @@ describe('VirtualizedSectionList', () => {
         ]}
         getItem={(data, key) => data[key]}
         getItemCount={data => data.length}
-        getItemLayout={({index}) => ({length: 50, offset: index * 50})}
+        getItemLayout={({index}) => ({
+          index: -1,
+          length: 50,
+          offset: index * 50,
+        })}
         inverted={true}
         keyExtractor={(item, index) => item.id}
         onRefresh={jest.fn()}
@@ -185,7 +178,11 @@ describe('VirtualizedSectionList', () => {
       );
       const instance = component.getInstance();
       const spy = jest.fn();
+
+      // $FlowFixMe[incompatible-use] wrong types
+      // $FlowFixMe[prop-missing] wrong types
       instance._listRef.scrollToIndex = spy;
+
       return {
         instance,
         spy,
@@ -199,7 +196,8 @@ describe('VirtualizedSectionList', () => {
 
       const viewOffset = 25;
 
-      instance.scrollToLocation({
+      // $FlowFixMe scrollToLocation isn't on instance
+      instance?.scrollToLocation({
         sectionIndex: 0,
         itemIndex: 1,
         viewOffset,
@@ -249,8 +247,8 @@ describe('VirtualizedSectionList', () => {
       'given sectionIndex, itemIndex and viewOffset, scrollToIndex is called with correct params',
       (scrollToLocationParams, expected) => {
         const {instance, spy} = createVirtualizedSectionList();
-
-        instance.scrollToLocation(scrollToLocationParams);
+        // $FlowFixMe[prop-missing] scrollToLocation not on instance
+        instance?.scrollToLocation(scrollToLocationParams);
         expect(spy).toHaveBeenCalledWith(expected);
       },
     );

@@ -8,17 +8,13 @@
  * @format
  */
 
-'use strict';
-
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
-
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
+import ReactNativeViewViewConfig from '../../Components/View/ReactNativeViewViewConfig';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
-import RCTPickerViewConfig from './RCTPickerViewConfig';
 import * as React from 'react';
 
 type PickerIOSChangeEvent = SyntheticEvent<
@@ -58,15 +54,33 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setNativeSelectedIndex'],
 });
 
-let RCTPickerNativeComponent;
-if (global.RN$Bridgeless) {
-  ReactNativeViewConfigRegistry.register('RCTPicker', () => {
-    return RCTPickerViewConfig;
-  });
-  RCTPickerNativeComponent = 'RCTPicker';
-} else {
-  RCTPickerNativeComponent = requireNativeComponent<NativeProps>('RCTPicker');
-}
+const RCTPickerNativeComponent: HostComponent<NativeProps> = NativeComponentRegistry.get<NativeProps>(
+  'RCTPicker',
+  () => ({
+    uiViewClassName: 'RCTPicker',
+    bubblingEventTypes: {
+      topChange: {
+        phasedRegistrationNames: {
+          bubbled: 'onChange',
+          captured: 'onChangeCapture',
+        },
+      },
+    },
+    directEventTypes: {},
+    validAttributes: {
+      ...ReactNativeViewViewConfig.validAttributes,
+      color: {process: require('../../StyleSheet/processColor')},
+      fontFamily: true,
+      fontSize: true,
+      fontStyle: true,
+      fontWeight: true,
+      items: true,
+      onChange: true,
+      selectedIndex: true,
+      textAlign: true,
+    },
+  }),
+);
 
 // flowlint-next-line unclear-type:off
 export default ((RCTPickerNativeComponent: any): HostComponent<NativeProps>);

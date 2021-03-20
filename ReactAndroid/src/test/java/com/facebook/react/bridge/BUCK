@@ -10,6 +10,7 @@ rn_android_library(
         ["*.java"],
         exclude = STANDARD_TEST_SRCS,
     ),
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],

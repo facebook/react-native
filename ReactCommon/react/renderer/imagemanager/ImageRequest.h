@@ -52,9 +52,7 @@ class ImageRequest final {
   /*
    * Returns the Image Source associated with the request.
    */
-  const ImageSource getImageSource() const {
-    return imageSource_;
-  }
+  const ImageSource &getImageSource() const;
 
   /*
    * Returns stored observer coordinator as a shared pointer.

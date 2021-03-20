@@ -2,7 +2,7 @@
 
 exports[`GeneratePropsJavaInterface can generate fixture ARRAY_PROPS 1`] = `
 Map {
-  "ArrayPropsNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/ArrayPropsNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -36,7 +36,7 @@ public interface ArrayPropsNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
 Map {
-  "ArrayPropsNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/ArrayPropsNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -60,7 +60,7 @@ public interface ArrayPropsNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture BOOLEAN_PROP 1`] = `
 Map {
-  "BooleanPropNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/BooleanPropNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -82,7 +82,7 @@ public interface BooleanPropNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture COLOR_PROP 1`] = `
 Map {
-  "ColorPropNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/ColorPropNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -105,7 +105,7 @@ public interface ColorPropNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture COMMANDS 1`] = `
 Map {
-  "CommandNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/CommandNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -129,7 +129,7 @@ public interface CommandNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture COMMANDS_AND_PROPS 1`] = `
 Map {
-  "CommandNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/CommandNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -154,7 +154,7 @@ public interface CommandNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture DOUBLE_PROPS 1`] = `
 Map {
-  "DoublePropNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/DoublePropNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -181,7 +181,7 @@ public interface DoublePropNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
-  "EventsNestedObjectNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/EventsNestedObjectNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -203,7 +203,7 @@ public interface EventsNestedObjectNativeComponentManagerInterface<T extends Vie
 
 exports[`GeneratePropsJavaInterface can generate fixture EVENT_PROPS 1`] = `
 Map {
-  "EventsNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/EventsNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -225,7 +225,7 @@ public interface EventsNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
 Map {
-  "InterfaceOnlyComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/InterfaceOnlyComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -251,7 +251,7 @@ exports[`GeneratePropsJavaInterface can generate fixture EXCLUDE_ANDROID_IOS 1`]
 
 exports[`GeneratePropsJavaInterface can generate fixture FLOAT_PROPS 1`] = `
 Map {
-  "FloatPropNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/FloatPropNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -278,7 +278,7 @@ public interface FloatPropNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture IMAGE_PROP 1`] = `
 Map {
-  "ImagePropNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/ImagePropNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -302,7 +302,7 @@ public interface ImagePropNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture INSETS_PROP 1`] = `
 Map {
-  "InsetsPropNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/InsetsPropNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -326,7 +326,7 @@ public interface InsetsPropNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture INT32_ENUM_PROP 1`] = `
 Map {
-  "Int32EnumPropsNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/Int32EnumPropsNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -349,7 +349,7 @@ public interface Int32EnumPropsNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture INTEGER_PROPS 1`] = `
 Map {
-  "IntegerPropNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/IntegerPropNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -373,7 +373,7 @@ public interface IntegerPropNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture INTERFACE_ONLY 1`] = `
 Map {
-  "InterfaceOnlyComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/InterfaceOnlyComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -396,7 +396,7 @@ public interface InterfaceOnlyComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
-  "ImageColorPropNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/ImageColorPropNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -423,7 +423,7 @@ public interface ImageColorPropNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture NO_PROPS_NO_EVENTS 1`] = `
 Map {
-  "NoPropsNoEventsComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/NoPropsNoEventsComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -445,7 +445,7 @@ public interface NoPropsNoEventsComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture OBJECT_PROPS 1`] = `
 Map {
-  "ObjectPropsManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/ObjectPropsManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -469,7 +469,7 @@ public interface ObjectPropsManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture POINT_PROP 1`] = `
 Map {
-  "PointPropNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/PointPropNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -493,7 +493,7 @@ public interface PointPropNativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture STRING_ENUM_PROP 1`] = `
 Map {
-  "StringEnumPropsNativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/StringEnumPropsNativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -516,7 +516,7 @@ public interface StringEnumPropsNativeComponentManagerInterface<T extends View> 
 
 exports[`GeneratePropsJavaInterface can generate fixture STRING_PROP 1`] = `
 Map {
-  "StringPropComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/StringPropComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -540,7 +540,7 @@ public interface StringPropComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
 Map {
-  "MultiFile1NativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/MultiFile1NativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -557,7 +557,7 @@ public interface MultiFile1NativeComponentManagerInterface<T extends View> {
   void setDisabled(T view, boolean value);
 }
 ",
-  "MultiFile2NativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/MultiFile2NativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -579,7 +579,7 @@ public interface MultiFile2NativeComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
 Map {
-  "MultiComponent1NativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/MultiComponent1NativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -596,7 +596,7 @@ public interface MultiComponent1NativeComponentManagerInterface<T extends View> 
   void setDisabled(T view, boolean value);
 }
 ",
-  "MultiComponent2NativeComponentManagerInterface.java" => "/**
+  "java/com/facebook/react/viewmanagers/MultiComponent2NativeComponentManagerInterface.java" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the

@@ -6,6 +6,7 @@
  */
 
 #import "RCTTurboModule.h"
+#import "RCTBlockGuard.h"
 
 #import <objc/message.h>
 #import <objc/runtime.h>
@@ -170,6 +171,16 @@ static RCTResponseSenderBlock
 convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   auto weakWrapper = CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
+  RCTBlockGuard *blockGuard;
+  if (RCTTurboModuleBlockGuardEnabled()) {
+    blockGuard = [[RCTBlockGuard alloc] initWithCleanup:^() {
+      auto strongWrapper = weakWrapper.lock();
+      if (strongWrapper) {
+        strongWrapper->destroy();
+      }
+    }];
+  }
+
   BOOL __block wrapperWasCalled = NO;
   RCTResponseSenderBlock callback = ^(NSArray *responses) {
     if (wrapperWasCalled) {
@@ -181,7 +192,7 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
       return;
     }
 
-    strongWrapper->jsInvoker().invokeAsync([weakWrapper, responses]() {
+    strongWrapper->jsInvoker().invokeAsync([weakWrapper, responses, blockGuard]() {
       auto strongWrapper2 = weakWrapper.lock();
       if (!strongWrapper2) {
         return;
@@ -190,16 +201,15 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
       std::vector<jsi::Value> args = convertNSArrayToStdVector(strongWrapper2->runtime(), responses);
       strongWrapper2->callback().call(strongWrapper2->runtime(), (const jsi::Value *)args.data(), args.size());
       strongWrapper2->destroy();
+
+      // Delete the CallbackWrapper when the block gets dealloced without being invoked.
+      (void)blockGuard;
     });
 
     wrapperWasCalled = YES;
   };
 
-  if (RCTTurboModuleBlockCopyEnabled()) {
-    return [callback copy];
-  }
-
-  return callback;
+  return [callback copy];
 }
 
 namespace facebook {
@@ -208,6 +218,7 @@ namespace react {
 jsi::Value ObjCTurboModule::createPromise(
     jsi::Runtime &runtime,
     std::shared_ptr<CallInvoker> jsInvoker,
+    std::string methodName,
     PromiseInvocationBlock invoke)
 {
   if (!invoke) {
@@ -215,6 +226,7 @@ jsi::Value ObjCTurboModule::createPromise(
   }
 
   jsi::Function Promise = runtime.global().getPropertyAsFunction(runtime, "Promise");
+  std::string moduleName = name_;
 
   // Note: the passed invoke() block is not retained by default, so let's retain it here to help keep it longer.
   // Otherwise, there's a risk of it getting released before the promise function below executes.
@@ -223,10 +235,14 @@ jsi::Value ObjCTurboModule::createPromise(
       runtime,
       jsi::PropNameID::forAscii(runtime, "fn"),
       2,
-      [invokeCopy, jsInvoker](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
+      [invokeCopy, jsInvoker, moduleName, methodName](
+          jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
+        std::string moduleMethod = moduleName + "." + methodName + "()";
+
         if (count != 2) {
           throw std::invalid_argument(
-              "Promise must pass constructor function two args. Passed " + std::to_string(count) + " args.");
+              moduleMethod + ": Promise must pass constructor function two args. Passed " + std::to_string(count) +
+              " args.");
         }
         if (!invokeCopy) {
           return jsi::Value::undefined();
@@ -240,11 +256,13 @@ jsi::Value ObjCTurboModule::createPromise(
 
         RCTPromiseResolveBlock resolveBlock = ^(id result) {
           if (rejectWasCalled) {
-            throw std::runtime_error("Tried to resolve a promise after it's already been rejected.");
+            RCTLogError(@"%s: Tried to resolve a promise after it's already been rejected.", moduleMethod.c_str());
+            return;
           }
 
           if (resolveWasCalled) {
-            throw std::runtime_error("Tried to resolve a promise more than once.");
+            RCTLogError(@"%s: Tried to resolve a promise more than once.", moduleMethod.c_str());
+            return;
           }
 
           auto strongResolveWrapper = weakResolveWrapper.lock();
@@ -273,11 +291,13 @@ jsi::Value ObjCTurboModule::createPromise(
 
         RCTPromiseRejectBlock rejectBlock = ^(NSString *code, NSString *message, NSError *error) {
           if (resolveWasCalled) {
-            throw std::runtime_error("Tried to reject a promise after it's already been resolved.");
+            RCTLogError(@"%s: Tried to reject a promise after it's already been resolved.", moduleMethod.c_str());
+            return;
           }
 
           if (rejectWasCalled) {
-            throw std::runtime_error("Tried to reject a promise more than once.");
+            RCTLogError(@"%s: Tried to reject a promise more than once.", moduleMethod.c_str());
+            return;
           }
 
           auto strongResolveWrapper = weakResolveWrapper.lock();
@@ -639,14 +659,10 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
       ? createPromise(
             runtime,
             jsInvoker_,
+            methodNameStr,
             ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
-              RCTPromiseResolveBlock resolveCopy = resolveBlock;
-              RCTPromiseRejectBlock rejectCopy = rejectBlock;
-
-              if (RCTTurboModuleBlockCopyEnabled()) {
-                resolveCopy = [resolveBlock copy];
-                rejectCopy = [rejectBlock copy];
-              }
+              RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
+              RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
 
               [inv setArgument:(void *)&resolveCopy atIndex:count + 2];
               [inv setArgument:(void *)&rejectCopy atIndex:count + 3];

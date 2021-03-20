@@ -209,11 +209,9 @@ const Systrace = {
 };
 
 if (__DEV__) {
-  // This is needed, because require callis in polyfills are not processed as
-  // other files. Therefore, calls to `require('moduleId')` are not replaced
-  // with numeric IDs
-  // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
-  (require: $FlowFixMe).Systrace = Systrace;
+  // The metro require polyfill can not have dependencies (true for all polyfills).
+  // Ensure that `Systrace` is available in polyfill by exposing it globally.
+  global[(global.__METRO_GLOBAL_PREFIX__ || '') + '__SYSTRACE'] = Systrace;
 }
 
 module.exports = Systrace;

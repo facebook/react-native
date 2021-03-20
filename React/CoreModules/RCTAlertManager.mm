@@ -161,6 +161,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
                                   case RCTAlertViewStylePlainTextInput:
                                   case RCTAlertViewStyleSecureTextInput:
                                     callback(@[ buttonKey, [weakAlertController.textFields.firstObject text] ]);
+                                    [weakAlertController hide];
                                     break;
                                   case RCTAlertViewStyleLoginAndPasswordInput: {
                                     NSDictionary<NSString *, NSString *> *loginCredentials = @{
@@ -168,10 +169,12 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
                                       @"password" : [weakAlertController.textFields.lastObject text]
                                     };
                                     callback(@[ buttonKey, loginCredentials ]);
+                                    [weakAlertController hide];
                                     break;
                                   }
                                   case RCTAlertViewStyleDefault:
                                     callback(@[ buttonKey ]);
+                                    [weakAlertController hide];
                                     break;
                                 }
                               }]];

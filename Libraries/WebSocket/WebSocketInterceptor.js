@@ -7,8 +7,6 @@
  * @format
  */
 
-'use strict';
-
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeWebSocketModule from './NativeWebSocketModule';
 import base64 from 'base64-js';
