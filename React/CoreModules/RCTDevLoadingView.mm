@@ -132,6 +132,16 @@ RCT_EXPORT_MODULE()
         self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, 20)];
         self->_label = [[UILabel alloc] initWithFrame:self->_window.bounds];
       }
+        
+      #if TARGET_OS_MACCATALYST
+        UIView *mainWindow = RCTKeyWindow();
+        CGSize windowSize = mainWindow ? mainWindow.bounds.size : screenSize;
+        self->_window =
+            [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, windowSize.width, mainWindow.safeAreaInsets.top + 10)];
+        self->_label =
+            [[UILabel alloc] initWithFrame:CGRectMake(0, mainWindow.safeAreaInsets.top - 10, windowSize.width, 20)];
+      #endif
+        
       [self->_window addSubview:self->_label];
 
       self->_window.windowLevel = UIWindowLevelStatusBar + 1;
