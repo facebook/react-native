@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/renderer/mapbuffer/Primitives.h>
+#include <react/renderer/mapbuffer/Primitive.h>
 
 namespace facebook {
 namespace react {
