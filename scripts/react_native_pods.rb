@@ -197,5 +197,5 @@ def use_react_native_codegen!(spec, options={})
     :show_env_vars_in_log => true
   }
 
-  spec.prepare_command = "#{mkdir_command} && touch #{generated_files.reduce() { |str, file| str + " " + file }}"
+  spec.prepare_command = "cd ../.. && #{mkdir_command} && touch #{generated_files.reduce() { |str, file| str + " " + file }}"
 end
