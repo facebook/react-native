@@ -1,0 +1,29 @@
+applications:
+-  name: jco-lch
+   buildpacks:
+   - java_buildpack
+   path: target/LchWorkflowApp-0.0.1-SNAPSHOT.war
+   memory: 700MB
+   env:
+      #USE_JCO: true
+      #xsuaa_connectivity_instance_name: lch_sapjco_xsuaa
+      #connectivity_instance_name: jco_con
+      #destination_instance_name: jco_des
+      TARGET_RUNTIME: tomcat
+      xsuaa_connectivity_instance_name: uaa_UserDetail
+   destinations: |
+      [{
+         "name":"lch_services",
+         "url" :"jco-lch.cfapps.eu10.hana.ondemand.com",
+         "forwardAuthToken": true},
+         {
+         "name":"lch_service_wf",
+         "url" :"jco-lch.cfapps.eu10.hana.ondemand.com",
+         "forwardAuthToken": true}
+      ]
+   services:
+   #- lch_sapjco_xsuaa
+   #- jco_con
+   #- jco_des
+   #- lch_workflow
+    - uaa_UserDetail

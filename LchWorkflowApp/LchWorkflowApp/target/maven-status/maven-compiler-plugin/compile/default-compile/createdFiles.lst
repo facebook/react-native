@@ -1,0 +1,8 @@
+com\incture\lch\workflow\dto\WorkflowCustomDto.class
+com\incture\lch\workflow\constant\WorkflowConstants.class
+com\incture\lch\workflow\constant\ApplicationConstants.class
+com\incture\lch\workflow\constant\AuthorizationConstants.class
+com\incture\lch\workflow\util\ServiceUtil.class
+com\incture\lch\workflow\dto\AdhocWorkflowCustomDto.class
+com\incture\lch\workflow\service\AdhocWorkflowService.class
+com\incture\lch\workflow\controller\WorkflowController.class
