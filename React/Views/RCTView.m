@@ -85,7 +85,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   NSMutableString *str = [NSMutableString stringWithString:@""];
   for (UIView *subview in view.subviews) {
     NSString *label = subview.accessibilityLabel;
-    if (!label) {
+    if (!label && ![subview isKindOfClass:[RCTView class]]) {
       label = RCTRecursiveAccessibilityLabel(subview);
     }
     if (label && label.length > 0) {
