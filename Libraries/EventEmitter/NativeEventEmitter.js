@@ -18,11 +18,12 @@ import Platform from '../Utilities/Platform';
 import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
 import invariant from 'invariant';
 
-type NativeModule = $ReadOnly<{
-  addListener: (eventType: string) => void,
-  removeListeners: (count: number) => void,
-  ...
-}>;
+type NativeModule = $ReadOnly<
+  interface {
+    addListener: (eventType: string) => void,
+    removeListeners: (count: number) => void,
+  },
+>;
 
 export type {EventSubscription};
 

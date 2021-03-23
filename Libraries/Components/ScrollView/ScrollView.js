@@ -446,7 +446,7 @@ type VRProps = $ReadOnly<{|
 
 type StickyHeaderComponentType = React.AbstractComponent<
   ScrollViewStickyHeaderProps,
-  $ReadOnly<{setNextHeaderY: number => void, ...}>,
+  $ReadOnly<interface {setNextHeaderY: number => void}>,
 >;
 
 export type Props = $ReadOnly<{|
