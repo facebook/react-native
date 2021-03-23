@@ -107,7 +107,6 @@ using namespace facebook::react;
   }
 
   auto textLayoutManager = _state->getData().layoutManager.lock();
-  //  assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
 
   if (!textLayoutManager) {
     return;

@@ -102,6 +102,8 @@ void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
 
   auto &state = getStateData();
 
+  react_native_assert(textLayoutManager_);
+
   if (state.attributedString == content.attributedString) {
     return;
   }
