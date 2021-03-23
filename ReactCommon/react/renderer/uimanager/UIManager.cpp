@@ -146,17 +146,13 @@ void UIManager::setIsJSResponder(
   }
 }
 
-ShadowTree const &UIManager::startSurface(
-    SurfaceId surfaceId,
+void UIManager::startSurface(
+    ShadowTree::Unique &&shadowTree,
     std::string const &moduleName,
-    folly::dynamic const &props,
-    LayoutConstraints const &layoutConstraints,
-    LayoutContext const &layoutContext) const {
+    folly::dynamic const &props) const {
   SystraceSection s("UIManager::startSurface");
 
-  auto shadowTree = std::make_unique<ShadowTree>(
-      surfaceId, layoutConstraints, layoutContext, *this);
-  auto shadowTreePointer = shadowTree.get();
+  auto surfaceId = shadowTree->getSurfaceId();
   shadowTreeRegistry_.add(std::move(shadowTree));
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
@@ -167,8 +163,6 @@ ShadowTree const &UIManager::startSurface(
 
     uiManagerBinding->startSurface(runtime, surfaceId, moduleName, props);
   });
-
-  return *shadowTreePointer;
 }
 
 ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {

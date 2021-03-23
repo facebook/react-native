@@ -68,12 +68,16 @@ void SurfaceHandler::start() const noexcept {
       parameters = parameters_;
     }
 
-    link_.shadowTree = &link_.uiManager->startSurface(
+    auto shadowTree = std::make_unique<ShadowTree>(
         parameters.surfaceId,
-        parameters.moduleName,
-        parameters.props,
         parameters.layoutConstraints,
-        parameters.layoutContext);
+        parameters.layoutContext,
+        *link_.uiManager);
+
+    link_.shadowTree = shadowTree.get();
+
+    link_.uiManager->startSurface(
+        std::move(shadowTree), parameters.moduleName, parameters.props);
 
     link_.status = Status::Running;
 
