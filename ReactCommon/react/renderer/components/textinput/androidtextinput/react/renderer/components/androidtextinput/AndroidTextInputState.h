@@ -66,13 +66,6 @@ class AndroidTextInputState final {
    */
   ShadowView defaultParentShadowView;
 
-  /*
-   * `TextLayoutManager` provides a connection to platform-specific
-   * text rendering infrastructure which is capable to render the
-   * `AttributedString`.
-   */
-  SharedTextLayoutManager layoutManager{};
-
   /**
    * Communicates Android theme padding back to the ShadowNode / Component
    * Descriptor for layout.
@@ -89,7 +82,6 @@ class AndroidTextInputState final {
       ParagraphAttributes const &paragraphAttributes,
       TextAttributes const &defaultTextAttributes,
       ShadowView const &defaultParentShadowView,
-      SharedTextLayoutManager const &layoutManager,
       float defaultThemePaddingStart,
       float defaultThemePaddingEnd,
       float defaultThemePaddingTop,

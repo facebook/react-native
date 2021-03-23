@@ -79,7 +79,6 @@ class AndroidTextInputComponentDescriptor final
             {},
             {},
             {},
-            textLayoutManager_,
             ((YGValue)theme[YGEdgeStart]).value,
             ((YGValue)theme[YGEdgeEnd]).value,
             ((YGValue)theme[YGEdgeTop]).value,
