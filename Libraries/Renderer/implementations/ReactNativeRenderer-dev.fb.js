@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<52910169037f1701220bf8592fad3950>>
+ * @generated SignedSource<<2fe382d0e0ada2126f1d6c90e3d2ef1d>>
  */
 
 'use strict';
@@ -1084,8 +1084,19 @@ function printTouchBank() {
   return printed;
 }
 
+var instrumentationCallback;
 var ResponderTouchHistoryStore = {
+  /**
+   * Registers a listener which can be used to instrument every touch event.
+   */
+  instrument: function(callback) {
+    instrumentationCallback = callback;
+  },
   recordTouchTrack: function(topLevelType, nativeEvent) {
+    if (instrumentationCallback != null) {
+      instrumentationCallback(topLevelType, nativeEvent);
+    }
+
     if (isMoveish(topLevelType)) {
       nativeEvent.changedTouches.forEach(recordTouchMove);
     } else if (isStartish(topLevelType)) {
@@ -4124,7 +4135,6 @@ var shouldYield = Scheduler_shouldYield;
 var requestPaint = // Fall back gracefully if we're running an older version of Scheduler.
   Scheduler_requestPaint !== undefined ? Scheduler_requestPaint : function() {};
 var syncQueue = null;
-var immediateQueueCallbackNode = null;
 var isFlushingSyncQueue = false;
 var initialTimeMs = Scheduler_now(); // If the initial timestamp is reasonably small, use Scheduler's `now` directly.
 // This will be the case for modern browsers that support `performance.now`. In
@@ -4172,16 +4182,7 @@ function scheduleSyncCallback(callback) {
   // Push this callback into an internal queue. We'll flush these either in
   // the next tick, or earlier if something calls `flushSyncCallbackQueue`.
   if (syncQueue === null) {
-    syncQueue = [callback]; // TODO: Figure out how to remove this It's only here as a last resort if we
-    // forget to explicitly flush.
-
-    {
-      // Flush the queue in the next tick.
-      immediateQueueCallbackNode = Scheduler_scheduleCallback(
-        Scheduler_ImmediatePriority,
-        flushSyncCallbackQueueImpl
-      );
-    }
+    syncQueue = [callback];
   } else {
     // Push onto existing queue. Don't need to schedule a callback because
     // we already scheduled one when we created the queue.
@@ -4192,16 +4193,6 @@ function cancelCallback(callbackNode) {
   Scheduler_cancelCallback(callbackNode);
 }
 function flushSyncCallbackQueue() {
-  if (immediateQueueCallbackNode !== null) {
-    var node = immediateQueueCallbackNode;
-    immediateQueueCallbackNode = null;
-    Scheduler_cancelCallback(node);
-  }
-
-  flushSyncCallbackQueueImpl();
-}
-
-function flushSyncCallbackQueueImpl() {
   if (!isFlushingSyncQueue && syncQueue !== null) {
     // Prevent re-entrancy.
     isFlushingSyncQueue = true;
@@ -4238,6 +4229,8 @@ function flushSyncCallbackQueueImpl() {
       isFlushingSyncQueue = false;
     }
   }
+
+  return null;
 }
 
 var SyncLanePriority = 15;
@@ -5008,6 +5001,7 @@ function shim() {
 var isSuspenseInstancePending = shim;
 var isSuspenseInstanceFallback = shim;
 var hydrateTextInstance = shim;
+var errorHydratingContainer = shim;
 
 var DefaultLanePriority$1 = DefaultLanePriority;
 var getViewConfigForType =
@@ -6692,11 +6686,6 @@ function resolveDefaultProps(Component, baseProps) {
   return baseProps;
 }
 
-// Max 31 bit integer. The max integer size in V8 for 32-bit systems.
-// Math.pow(2, 30) - 1
-// 0b111111111111111111111111111111
-var MAX_SIGNED_31_BIT_INT = 1073741823;
-
 var valueCursor = createCursor(null);
 var rendererSigil;
 
@@ -6707,14 +6696,14 @@ var rendererSigil;
 
 var currentlyRenderingFiber = null;
 var lastContextDependency = null;
-var lastContextWithAllBitsObserved = null;
+var lastFullyObservedContext = null;
 var isDisallowedContextReadInDEV = false;
 function resetContextDependencies() {
   // This is called right before React yields execution, to ensure `readContext`
   // cannot be called outside the render phase.
   currentlyRenderingFiber = null;
   lastContextDependency = null;
-  lastContextWithAllBitsObserved = null;
+  lastFullyObservedContext = null;
 
   {
     isDisallowedContextReadInDEV = false;
@@ -6759,29 +6748,6 @@ function popProvider(context, providerFiber) {
     context._currentValue = currentValue;
   }
 }
-function calculateChangedBits(context, newValue, oldValue) {
-  if (objectIs(oldValue, newValue)) {
-    // No change
-    return 0;
-  } else {
-    var changedBits =
-      typeof context._calculateChangedBits === "function"
-        ? context._calculateChangedBits(oldValue, newValue)
-        : MAX_SIGNED_31_BIT_INT;
-
-    {
-      if ((changedBits & MAX_SIGNED_31_BIT_INT) !== changedBits) {
-        error(
-          "calculateChangedBits: Expected the return value to be a " +
-            "31-bit integer. Instead received: %s",
-          changedBits
-        );
-      }
-    }
-
-    return changedBits | 0;
-  }
-}
 function scheduleWorkOnParentPath(parent, renderLanes) {
   // Update the child lanes of all the ancestors, including the alternates.
   var node = parent;
@@ -6809,28 +6775,13 @@ function scheduleWorkOnParentPath(parent, renderLanes) {
     node = node.return;
   }
 }
-function propagateContextChange(
-  workInProgress,
-  context,
-  changedBits,
-  renderLanes
-) {
+function propagateContextChange(workInProgress, context, renderLanes) {
   {
-    propagateContextChange_eager(
-      workInProgress,
-      context,
-      changedBits,
-      renderLanes
-    );
+    propagateContextChange_eager(workInProgress, context, renderLanes);
   }
 }
 
-function propagateContextChange_eager(
-  workInProgress,
-  context,
-  changedBits,
-  renderLanes
-) {
+function propagateContextChange_eager(workInProgress, context, renderLanes) {
   var fiber = workInProgress.child;
 
   if (fiber !== null) {
@@ -6849,10 +6800,7 @@ function propagateContextChange_eager(
 
       while (dependency !== null) {
         // Check if the context matches.
-        if (
-          dependency.context === context &&
-          (dependency.observedBits & changedBits) !== 0
-        ) {
+        if (dependency.context === context) {
           // Match! Schedule an update on this fiber.
           if (fiber.tag === ClassComponent) {
             // Schedule a force update on the work-in-progress.
@@ -6941,7 +6889,7 @@ function propagateContextChange_eager(
 function prepareToReadContext(workInProgress, renderLanes) {
   currentlyRenderingFiber = workInProgress;
   lastContextDependency = null;
-  lastContextWithAllBitsObserved = null;
+  lastFullyObservedContext = null;
   var dependencies = workInProgress.dependencies;
 
   if (dependencies !== null) {
@@ -6959,7 +6907,7 @@ function prepareToReadContext(workInProgress, renderLanes) {
     }
   }
 }
-function readContext(context, observedBits) {
+function readContext(context) {
   {
     // This warning would fire if you read context inside a Hook like useMemo.
     // Unlike the class check below, it's not enforced in production for perf.
@@ -6975,25 +6923,10 @@ function readContext(context, observedBits) {
 
   var value = context._currentValue;
 
-  if (lastContextWithAllBitsObserved === context);
-  else if (observedBits === false || observedBits === 0);
+  if (lastFullyObservedContext === context);
   else {
-    var resolvedObservedBits; // Avoid deopting on observable arguments or heterogeneous types.
-
-    if (
-      typeof observedBits !== "number" ||
-      observedBits === MAX_SIGNED_31_BIT_INT
-    ) {
-      // Observe all updates.
-      lastContextWithAllBitsObserved = context;
-      resolvedObservedBits = MAX_SIGNED_31_BIT_INT;
-    } else {
-      resolvedObservedBits = observedBits;
-    }
-
     var contextItem = {
       context: context,
-      observedBits: resolvedObservedBits,
       memoizedValue: value,
       next: null
     };
@@ -11927,8 +11860,8 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
   };
 
   HooksDispatcherOnMountInDEV = {
-    readContext: function(context, observedBits) {
-      return readContext(context, observedBits);
+    readContext: function(context) {
+      return readContext(context);
     },
     useCallback: function(callback, deps) {
       currentHookNameInDev = "useCallback";
@@ -11936,10 +11869,10 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       checkDepsAreArrayDev(deps);
       return mountCallback(callback, deps);
     },
-    useContext: function(context, observedBits) {
+    useContext: function(context) {
       currentHookNameInDev = "useContext";
       mountHookTypesDev();
-      return readContext(context, observedBits);
+      return readContext(context);
     },
     useEffect: function(create, deps) {
       currentHookNameInDev = "useEffect";
@@ -12030,18 +11963,18 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
   };
 
   HooksDispatcherOnMountWithHookTypesInDEV = {
-    readContext: function(context, observedBits) {
-      return readContext(context, observedBits);
+    readContext: function(context) {
+      return readContext(context);
     },
     useCallback: function(callback, deps) {
       currentHookNameInDev = "useCallback";
       updateHookTypesDev();
       return mountCallback(callback, deps);
     },
-    useContext: function(context, observedBits) {
+    useContext: function(context) {
       currentHookNameInDev = "useContext";
       updateHookTypesDev();
-      return readContext(context, observedBits);
+      return readContext(context);
     },
     useEffect: function(create, deps) {
       currentHookNameInDev = "useEffect";
@@ -12128,18 +12061,18 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
   };
 
   HooksDispatcherOnUpdateInDEV = {
-    readContext: function(context, observedBits) {
-      return readContext(context, observedBits);
+    readContext: function(context) {
+      return readContext(context);
     },
     useCallback: function(callback, deps) {
       currentHookNameInDev = "useCallback";
       updateHookTypesDev();
       return updateCallback(callback, deps);
     },
-    useContext: function(context, observedBits) {
+    useContext: function(context) {
       currentHookNameInDev = "useContext";
       updateHookTypesDev();
-      return readContext(context, observedBits);
+      return readContext(context);
     },
     useEffect: function(create, deps) {
       currentHookNameInDev = "useEffect";
@@ -12226,18 +12159,18 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
   };
 
   HooksDispatcherOnRerenderInDEV = {
-    readContext: function(context, observedBits) {
-      return readContext(context, observedBits);
+    readContext: function(context) {
+      return readContext(context);
     },
     useCallback: function(callback, deps) {
       currentHookNameInDev = "useCallback";
       updateHookTypesDev();
       return updateCallback(callback, deps);
     },
-    useContext: function(context, observedBits) {
+    useContext: function(context) {
       currentHookNameInDev = "useContext";
       updateHookTypesDev();
-      return readContext(context, observedBits);
+      return readContext(context);
     },
     useEffect: function(create, deps) {
       currentHookNameInDev = "useEffect";
@@ -12324,9 +12257,9 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
   };
 
   InvalidNestedHooksDispatcherOnMountInDEV = {
-    readContext: function(context, observedBits) {
+    readContext: function(context) {
       warnInvalidContextAccess();
-      return readContext(context, observedBits);
+      return readContext(context);
     },
     useCallback: function(callback, deps) {
       currentHookNameInDev = "useCallback";
@@ -12334,11 +12267,11 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       mountHookTypesDev();
       return mountCallback(callback, deps);
     },
-    useContext: function(context, observedBits) {
+    useContext: function(context) {
       currentHookNameInDev = "useContext";
       warnInvalidHookAccess();
       mountHookTypesDev();
-      return readContext(context, observedBits);
+      return readContext(context);
     },
     useEffect: function(create, deps) {
       currentHookNameInDev = "useEffect";
@@ -12437,9 +12370,9 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
   };
 
   InvalidNestedHooksDispatcherOnUpdateInDEV = {
-    readContext: function(context, observedBits) {
+    readContext: function(context) {
       warnInvalidContextAccess();
-      return readContext(context, observedBits);
+      return readContext(context);
     },
     useCallback: function(callback, deps) {
       currentHookNameInDev = "useCallback";
@@ -12447,11 +12380,11 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       updateHookTypesDev();
       return updateCallback(callback, deps);
     },
-    useContext: function(context, observedBits) {
+    useContext: function(context) {
       currentHookNameInDev = "useContext";
       warnInvalidHookAccess();
       updateHookTypesDev();
-      return readContext(context, observedBits);
+      return readContext(context);
     },
     useEffect: function(create, deps) {
       currentHookNameInDev = "useEffect";
@@ -12550,9 +12483,9 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
   };
 
   InvalidNestedHooksDispatcherOnRerenderInDEV = {
-    readContext: function(context, observedBits) {
+    readContext: function(context) {
       warnInvalidContextAccess();
-      return readContext(context, observedBits);
+      return readContext(context);
     },
     useCallback: function(callback, deps) {
       currentHookNameInDev = "useCallback";
@@ -12560,11 +12493,11 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       updateHookTypesDev();
       return updateCallback(callback, deps);
     },
-    useContext: function(context, observedBits) {
+    useContext: function(context) {
       currentHookNameInDev = "useContext";
       warnInvalidHookAccess();
       updateHookTypesDev();
-      return readContext(context, observedBits);
+      return readContext(context);
     },
     useEffect: function(create, deps) {
       currentHookNameInDev = "useEffect";
@@ -13173,12 +13106,7 @@ function updateMode(current, workInProgress, renderLanes) {
 
 function updateProfiler(current, workInProgress, renderLanes) {
   {
-    workInProgress.flags |= Update; // Reset effect durations for the next eventual effect phase.
-    // These are reset during render to allow the DevTools commit hook a chance to read them,
-
-    var stateNode = workInProgress.stateNode;
-    stateNode.effectDuration = 0;
-    stateNode.passiveEffectDuration = 0;
+    workInProgress.flags |= Update;
   }
 
   var nextProps = workInProgress.pendingProps;
@@ -14934,9 +14862,8 @@ function updateContextProvider(current, workInProgress, renderLanes) {
   {
     if (oldProps !== null) {
       var oldValue = oldProps.value;
-      var changedBits = calculateChangedBits(context, newValue, oldValue);
 
-      if (changedBits === 0) {
+      if (objectIs(oldValue, newValue)) {
         // No change. Bailout early if children are the same.
         if (oldProps.children === newProps.children && !hasContextChanged()) {
           return bailoutOnAlreadyFinishedWork(
@@ -14948,12 +14875,7 @@ function updateContextProvider(current, workInProgress, renderLanes) {
       } else {
         // The context value changed. Search for matching consumers and schedule
         // them to update.
-        propagateContextChange(
-          workInProgress,
-          context,
-          changedBits,
-          renderLanes
-        );
+        propagateContextChange(workInProgress, context, renderLanes);
       }
     }
   }
@@ -15009,7 +14931,7 @@ function updateContextConsumer(current, workInProgress, renderLanes) {
   }
 
   prepareToReadContext(workInProgress, renderLanes);
-  var newValue = readContext(context, newProps.unstable_observedBits);
+  var newValue = readContext(context);
   var newChildren;
 
   {
@@ -15189,12 +15111,7 @@ function beginWork(current, workInProgress, renderLanes) {
 
             if (hasChildWork) {
               workInProgress.flags |= Update;
-            } // Reset effect durations for the next eventual effect phase.
-            // These are reset during render to allow the DevTools commit hook a chance to read them,
-
-            var stateNode = workInProgress.stateNode;
-            stateNode.effectDuration = 0;
-            stateNode.passiveEffectDuration = 0;
+            }
           }
 
           break;
@@ -19023,7 +18940,10 @@ function scheduleUpdateOnFiber(fiber, lane, eventTime) {
       ensureRootIsScheduled(root, eventTime);
       schedulePendingInteractions(root, lane);
 
-      if (executionContext === NoContext) {
+      if (
+        executionContext === NoContext &&
+        (fiber.mode & ConcurrentMode) === NoMode
+      ) {
         // Flush the synchronous work now, unless we're already working or inside
         // a batch. This is intentionally inside scheduleUpdateOnFiber instead of
         // scheduleCallbackForFiber to preserve the ability to schedule a callback
@@ -19166,6 +19086,12 @@ function ensureRootIsScheduled(root, currentTime) {
     // Special case: Sync React callbacks are scheduled on a special
     // internal queue
     scheduleSyncCallback(performSyncWorkOnRoot.bind(null, root));
+
+    {
+      // Flush the queue in an Immediate task.
+      scheduleCallback(ImmediatePriority, flushSyncCallbackQueue);
+    }
+
     newCallbackNode = null;
   } else if (newCallbackPriority === SyncBatchedLanePriority) {
     newCallbackNode = scheduleCallback(
@@ -19243,6 +19169,11 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
 
       if (root.hydrate) {
         root.hydrate = false;
+
+        {
+          errorHydratingContainer(root.containerInfo);
+        }
+
         clearContainer(root.containerInfo);
       } // If something threw an error, try rendering one more time. We'll render
       // synchronously to block concurrent data mutations, and we'll includes
@@ -19440,6 +19371,11 @@ function performSyncWorkOnRoot(root) {
 
     if (root.hydrate) {
       root.hydrate = false;
+
+      {
+        errorHydratingContainer(root.containerInfo);
+      }
+
       clearContainer(root.containerInfo);
     } // If something threw an error, try rendering one more time. We'll render
     // synchronously to block concurrent data mutations, and we'll includes
