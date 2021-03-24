@@ -108,6 +108,9 @@ class UIManager final : public ShadowTreeDelegate {
   friend class Scheduler;
   friend class SurfaceHandler;
 
+  // `TimelineController` needs to call private `getShadowTreeRegistry()`.
+  friend class TimelineController;
+
   ShadowNode::Shared createNode(
       Tag tag,
       std::string const &componentName,
