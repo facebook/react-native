@@ -15,6 +15,7 @@ const React = require('react');
 const {Animated, Easing, StyleSheet, Text, View} = require('react-native');
 
 import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import RotatingImagesExample from './RotatingImagesExample';
 
 const styles = StyleSheet.create({
   content: {
@@ -278,68 +279,7 @@ exports.examples = ([
       );
     },
   },
-  {
-    title: 'Rotating Images',
-    description: 'Simple Animated.Image rotation.',
-    render: function(): React.Node {
-      this.anim = this.anim || new Animated.Value(0);
-      return (
-        <View>
-          <RNTesterButton
-            onPress={() => {
-              Animated.spring(this.anim, {
-                // Returns to the start
-                toValue: 0,
-
-                // Velocity makes it move
-                velocity: 3,
-
-                // Slow
-                tension: -10,
-
-                // Oscillate a lot
-                friction: 1,
-
-                useNativeDriver: false,
-              }).start();
-            }}>
-            Press to Spin it!
-          </RNTesterButton>
-          <Animated.Image
-            source={require('../../assets/bunny.png')}
-            style={[
-              styles.rotatingImage,
-              {
-                transform: [
-                  {
-                    scale: this.anim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [1, 10],
-                    }),
-                  },
-                  {
-                    translateX: this.anim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, 100],
-                    }),
-                  },
-                  {
-                    rotate: this.anim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [
-                        '0deg',
-                        '360deg', // 'deg' or 'rad'
-                      ],
-                    }),
-                  },
-                ],
-              },
-            ]}
-          />
-        </View>
-      );
-    },
-  },
+  RotatingImagesExample,
   {
     title: 'Moving box example',
     name: 'movingView',
