@@ -70,7 +70,7 @@ jest
       }
     }),
     hasViewManagerConfig: jest.fn(name => {
-      return true;
+      return name === 'AndroidDrawerLayout';
     }),
     measure: jest.fn(),
     manageChildren: jest.fn(),
